@@ -208,3 +208,54 @@ def forbidden_group_ids(env):
         if rec:
             out.add(rec.id)
     return out
+
+
+def implied_closure(groups):
+    """Every permission these permissions actually carry, themselves included.
+
+    A group that IMPLIES the administrator permission hands over the same
+    database as the administrator permission does, so every check in this module
+    that used to look at one group now looks at the whole closure. On this build
+    `res.groups.all_implied_ids` is that closure and it is REFLEXIVE — it
+    contains the group itself — so the field answers the question directly. The
+    hand walk below is there for a build where the field is not, because a rail
+    that silently stops checking is worse than no rail.
+    """
+    if not groups:
+        return groups
+    groups = groups.sudo()
+    if 'all_implied_ids' in groups._fields:
+        try:
+            return groups | groups.all_implied_ids
+        except Exception:                       # noqa: BLE001
+            _logger.warning(
+                'pb_vendor_access: all_implied_ids could not be read — '
+                'walking implied_ids by hand instead', exc_info=True)
+    seen = groups
+    frontier = groups
+    while frontier:
+        frontier = frontier.implied_ids - seen
+        seen |= frontier
+    return seen
+
+
+def forbidden_in_closure(groups, env):
+    """The forbidden permissions these permissions reach, if any.
+
+    Returns a `res.groups` recordset so the caller can name them in the refusal
+    — "it would carry X" is a sentence somebody can act on, and "no" is not.
+    """
+    empty = env['res.groups'].browse()
+    forbidden = forbidden_group_ids(env)
+    if not forbidden or not groups:
+        return empty
+    try:
+        return implied_closure(groups).filtered(lambda g: g.id in forbidden)
+    except Exception:                           # noqa: BLE001
+        # R92 — and this one is load-bearing: a check that cannot be made must
+        # be reported, never treated as a pass.
+        _logger.warning(
+            'pb_vendor_access: the forbidden-permission check could not be '
+            'made for %s', groups.ids, exc_info=True)
+        return env['res.groups'].browse(
+            [gid for gid in groups.ids if gid in forbidden])

@@ -32,7 +32,7 @@ from odoo.exceptions import AccessError, UserError
 
 from .vendor_common import (DELEGATION_ROW_CAP, HOLDER_CAP, PICKER_CAP,
                             area_label, counted, flag, fold,
-                            forbidden_group_ids, safe)
+                            forbidden_in_closure, safe)
 
 _logger = logging.getLogger(__name__)
 
@@ -124,13 +124,19 @@ class PbAccess(models.AbstractModel):
                 continue
             holders = profile.holders(cap=HOLDER_CAP)
             total = profile.holder_count
+            # THE SHAPE OF THIS ROW DOES NOT CHANGE. `group` was one permission
+            # name and is now the names of everything the bundle carries — one
+            # of them, for every role on this database today, so the board reads
+            # exactly as it did.
+            bundle = profile.group_ids
             out.append({
                 'id': profile.id,
                 'name': profile.name or '',
                 'description': profile.description or '',
                 'area': profile.area or '',
                 'area_label': area_label(profile.area, self.env),
-                'group': profile.group_id.display_name or '',
+                'group': ', '.join(
+                    n for n in bundle.mapped('display_name') if n) or '',
                 'holders': [{'id': u.id, 'name': u.name or '',
                              'login': u.login or '',
                              'avatar': '/web/image/res.users/%s/avatar_128'
@@ -138,7 +144,7 @@ class PbAccess(models.AbstractModel):
                             for u in holders],
                 'holder_count': total,
                 'more': max(0, total - len(holders)),
-                'i_hold': profile.group_id.id in set(
+                'i_hold': bool(bundle) and set(bundle.ids) <= set(
                     self.env.user.all_group_ids.ids),
                 'restricted': bool(profile.visible_group_id),
             })
@@ -162,7 +168,7 @@ class PbAccess(models.AbstractModel):
                  'area_label': area_label(p.area, self.env)}
                 for p in self.env['pb.role.profile'].search(
                     [('active', '=', True)], order='area, sequence, name')
-                if p.group_id.id in held]
+                if p.group_ids and set(p.group_ids.ids) <= held]
 
     def _delegations(self, limit=DELEGATION_ROW_CAP):
         """Hand-overs only — the roles board's grants are audit rows in the
@@ -238,18 +244,26 @@ class PbAccess(models.AbstractModel):
         The audit row is a `pb.access.delegation` with `origin='board'`, so the
         question "how did this person come to hold that" has ONE place to look
         rather than two.
+
+        A ROLE IS A BUNDLE, SO GRANTING IT ADDS ONLY THE MISSING PART. Somebody
+        who already reaches two of its three permissions gets the third, and the
+        audit row records the one thing that actually changed rather than three
+        things, two of which did not.
         """
         self._require_manage()
         profile = self._safe_profile(profile_id)
         user = self._internal_user(user_id)
-        if profile.group_id.id in set(user.sudo().all_group_ids.ids):
+        bundle = profile.group_ids
+        held = set(user.sudo().all_group_ids.ids)
+        if set(bundle.ids) <= held:
             raise UserError(_(
                 "%(who)s already has \"%(what)s\".",
                 who=user.sudo().name or '', what=profile.name))
 
         target = user.sudo()
         before = set(target.group_ids.ids)
-        target.write({'group_ids': [(4, profile.group_id.id)]})
+        target.write({'group_ids': [(4, g.id) for g in bundle
+                                    if g.id not in held]})
         target.invalidate_recordset(['group_ids'])
         added = sorted(set(target.group_ids.ids) - before)
 
@@ -271,19 +285,30 @@ class PbAccess(models.AbstractModel):
 
     @api.model
     def remove(self, profile_id, user_id, reason=None):
-        """Take a profile away, and write down that too.
+        """Take a role away, and write down that too.
 
-        It removes the profile's OWN group and nothing else. Somebody who holds
-        it through a ladder — a payroll manager who implies the officer tier —
-        keeps holding it, and the message says so rather than pretending the
-        removal worked.
+        It removes the role's OWN permissions and nothing else. Somebody who
+        holds one of them through a ladder — a payroll manager who implies the
+        officer tier — keeps holding it, and the message says so rather than
+        pretending the removal worked.
+
+        AND IT NEVER TAKES AWAY A PERMISSION ANOTHER ROLE THEY HOLD ALSO NEEDS.
+        Two roles could not share a permission before bundles — one row, one
+        group, unique — so the question could not arise. Now they can, and
+        removing "Budget team" must not quietly break "Finance — budgets" for
+        somebody who holds both. A permission that another role of theirs still
+        requires is KEPT, and if that leaves nothing to remove the answer says
+        so instead of reporting a removal that did not happen.
         """
         self._require_manage()
         profile = self._safe_profile(profile_id)
         user = self._internal_user(user_id)
         target = user.sudo()
-        if profile.group_id.id not in set(target.group_ids.ids):
-            if profile.group_id.id in set(target.all_group_ids.ids):
+        bundle = profile.group_ids
+        direct = set(target.group_ids.ids)
+        removable = bundle.filtered(lambda g: g.id in direct)
+        if not removable:
+            if set(bundle.ids) <= set(target.all_group_ids.ids):
                 raise UserError(_(
                     "%(who)s has \"%(what)s\" because of another role they "
                     "hold, not directly. Take that other role away instead — "
@@ -293,7 +318,17 @@ class PbAccess(models.AbstractModel):
                 "%(who)s does not have \"%(what)s\".",
                 who=target.name or '', what=profile.name))
 
-        target.write({'group_ids': [(3, profile.group_id.id)]})
+        shared = removable.filtered(
+            lambda g: g in self._groups_their_other_roles_need(target, profile))
+        removable -= shared
+        if not removable:
+            raise UserError(_(
+                "Every permission in \"%(what)s\" is also part of another role "
+                "%(who)s holds, so taking this one away would change nothing. "
+                "Take that other role away instead.",
+                what=profile.name, who=target.name or ''))
+
+        target.write({'group_ids': [(3, g.id) for g in removable]})
         self.env['pb.access.delegation'].sudo().create({
             'delegator_user_id': self.env.uid,
             'delegate_user_id': user.id,
@@ -304,7 +339,7 @@ class PbAccess(models.AbstractModel):
                                                   "board."),
             'state': 'revoked',
             'origin': 'board_removal',
-            'applied_group_ids': [(6, 0, [profile.group_id.id])],
+            'applied_group_ids': [(6, 0, removable.ids)],
             'applied_on': fields.Datetime.now(),
             'ended_on': fields.Datetime.now(),
             'ended_note': _("Taken away by %s.", self.env.user.name or ''),
@@ -313,22 +348,43 @@ class PbAccess(models.AbstractModel):
             "%(who)s no longer has \"%(what)s\".",
             who=target.name or '', what=profile.name)}
 
+    def _groups_their_other_roles_need(self, target, profile):
+        """Everything the OTHER roles this person fully holds are made of.
+
+        "Fully holds" is the same test the board uses everywhere else: all of a
+        role's permissions, transitively. A role they only partly hold is not a
+        role they hold, so it has no claim on a permission being removed.
+        """
+        held = set(target.all_group_ids.ids)
+        others = self.env['pb.role.profile'].sudo().search(
+            [('active', '=', True), ('id', '!=', profile.id)])
+        keep = self.env['res.groups'].browse()
+        for other in others:
+            if other.group_ids and set(other.group_ids.ids) <= held:
+                keep |= other.group_ids
+        return keep
+
     def _safe_profile(self, profile_id):
-        """The third refusal (see the module docstring)."""
+        """The third refusal (see the module docstring).
+
+        It looks at the whole bundle AND at the frozen single group the role
+        used to be, because the one route that has ever got past the model's
+        constraint is a raw write to that column.
+        """
         profile = self.env['pb.role.profile'].browse(int(profile_id or 0))
         if not profile.exists():
             raise UserError(_("That role is not on this system any more."))
         profile.check_access('read')
-        if not profile.group_id:
+        if not profile.group_ids:
             raise UserError(_(
                 "\"%s\" does not point at a permission, so there is nothing to "
                 "hand out.", profile.name or ''))
-        if profile.group_id.id in forbidden_group_ids(self.env):
+        if forbidden_in_closure(profile.group_ids | profile.group_id, self.env):
             raise UserError(_(
-                "\"%s\" is the administrator permission for the whole system. "
-                "It is never given out from this screen — an administrator "
-                "changes it on the user record itself, deliberately.",
-                profile.name or ''))
+                "\"%s\" would carry the administrator permission for the whole "
+                "system. It is never given out from this screen — an "
+                "administrator changes it on the person's own record, "
+                "deliberately.", profile.name or ''))
         return profile
 
     def _internal_user(self, user_id):

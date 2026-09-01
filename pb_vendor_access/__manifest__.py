@@ -24,6 +24,14 @@ WHAT THIS MODULE IS
     saying WHAT THIS LETS SOMEONE DO, and the people who hold it. It adds no
     permission primitive and invents no tier — there is still exactly one place
     access is decided, and this is a readable window onto it.
+  * **A role is a bundle of abilities.** An ability is the small unit somebody
+    recognises — "approve a pay run", "read the audit trail" — and it carries
+    the one or more permissions that sentence really costs. Roles are built out
+    of abilities; nobody builds one out of raw permissions, because a job that
+    needs two of them should not have to be split into two rows nobody
+    recognises. Abilities are data, so covering a new one costs no release.
+    Holding a role means holding ALL of it, and lending one means holding all of
+    it first.
   * **Hand-overs that take themselves back.** Somebody going away lends what
     they hold to somebody covering, until a date. Activation adds only what the
     lender ACTUALLY HOLDS — checked on the server, not just hidden in the dialog
@@ -51,7 +59,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

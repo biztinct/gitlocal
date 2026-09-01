@@ -220,7 +220,9 @@
                        decoration-warning="area == 'money'"
                        decoration-danger="area == 'system'"/>
                 <field name="holder_count" string="People" width="90px"/>
-                <field name="group_id" optional="hide"/>
+                <field name="ability_ids" widget="many2many_tags"
+                       optional="hide"/>
+                <field name="group_id" optional="hide" readonly="1"/>
                 <field name="visible_group_id" width="170px" optional="show"/>
                 <field name="active" column_invisible="1"/>
             </list>
@@ -238,8 +240,9 @@
                  with the name. -->
             <search string="Roles">
                 <field name="name" string="Role"
-                       filter_domain="['|', '|', ('name', 'ilike', self), ('description', 'ilike', self), ('group_id', 'ilike', self)]"/>
-                <field name="group_id"/>
+                       filter_domain="['|', '|', ('name', 'ilike', self), ('description', 'ilike', self), ('ability_ids', 'ilike', self)]"/>
+                <field name="ability_ids"/>
+                <field name="group_ids"/>
                 <field name="visible_group_id"/>
 
                 <filter name="area_payroll" string="Payroll"
@@ -269,8 +272,8 @@
                 <group name="group_by">
                     <filter name="gb_area" string="Area"
                             context="{'group_by': 'area'}"/>
-                    <filter name="gb_group" string="Permission group"
-                            context="{'group_by': 'group_id'}"/>
+                    <filter name="gb_ability" string="What it lets someone do"
+                            context="{'group_by': 'ability_ids'}"/>
                     <filter name="gb_visible" string="Only shown to"
                             context="{'group_by': 'visible_group_id'}"/>
                 </group>
@@ -290,7 +293,6 @@
                     <group>
                         <group>
                             <field name="area"/>
-                            <field name="group_id"/>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
@@ -302,6 +304,22 @@
                     <group string="What this lets someone do">
                         <field name="description" colspan="2" nolabel="1"
                                placeholder="One or two sentences, in the words somebody would use out loud. It is what the person granting it reads before they press the button."/>
+                    </group>
+                    <!-- THE ABILITIES ARE THE EDITABLE HALF AND THE
+                         PERMISSIONS ARE THE CONSEQUENCE. Showing the worked-out
+                         permissions beside the ticks is what stops this screen
+                         being a promise nobody can check; showing them as
+                         editable would be a second place to say the same thing,
+                         and two places is how they come to disagree. -->
+                    <group string="What it is made of">
+                        <field name="ability_ids" colspan="2" nolabel="1"
+                               widget="many2many_tags"
+                               options="{'no_quick_create': True}"/>
+                    </group>
+                    <group string="Permissions this adds up to">
+                        <field name="group_ids" colspan="2" nolabel="1"
+                               widget="many2many_tags" readonly="1"/>
+                        <field name="group_id" readonly="1"/>
                     </group>
                 </sheet>
             </form>
@@ -328,6 +346,70 @@
                 access board hands out. The system administrator permission is
                 never one of these.
             </p>
+        </field>
+    </record>
+
+    <!-- =========================== abilities =========================== -->
+    <!-- The small units a role is built from. There is no menu and no rail
+         item on purpose: this is what opens when somebody clicks an ability on
+         a role, and an auto-generated form would show the key first and the
+         sentence last, which is the wrong way round for the only two people
+         who will ever read it. -->
+
+    <record id="view_pb_role_ability_list" model="ir.ui.view">
+        <field name="name">pb.role.ability.list</field>
+        <field name="model">pb.role.ability</field>
+        <field name="arch" type="xml">
+            <list string="Abilities" multi_edit="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name" width="260px"/>
+                <field name="description" optional="show"/>
+                <field name="area" width="150px" widget="badge"
+                       decoration-info="area == 'payroll'"
+                       decoration-success="area == 'people'"
+                       decoration-warning="area == 'money'"
+                       decoration-danger="area == 'system'"/>
+                <field name="group_ids" widget="many2many_tags"
+                       optional="show"/>
+                <field name="technical_key" width="180px" optional="hide"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_role_ability_form" model="ir.ui.view">
+        <field name="name">pb.role.ability.form</field>
+        <field name="model">pb.role.ability</field>
+        <field name="arch" type="xml">
+            <form string="Ability">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Approve a pay run"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="area"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="technical_key" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="The honest sentence">
+                        <field name="description" colspan="2" nolabel="1"
+                               placeholder="What this lets somebody do, and what it stops short of. One sentence."/>
+                    </group>
+                    <group string="Permissions it carries">
+                        <field name="group_ids" colspan="2" nolabel="1"
+                               widget="many2many_tags"/>
+                    </group>
+                    <group string="Roles that include it">
+                        <field name="profile_ids" colspan="2" nolabel="1"
+                               widget="many2many_tags" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
