@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         The two letters this phase writes.
+
+         Both are `letter_type = custom`, deliberately. The letter type list
+         lives in P0 (`lifecycle_common.LETTER_TYPES`) and adding two values
+         to it would be an edit to a module this phase has no business
+         editing — `custom` is exactly the escape hatch P0 shipped for a
+         later phase's own letters, and nothing in the product branches on
+         the type.
+
+         noupdate="1" so a company that has reworded one keeps its wording
+         through every upgrade. Nothing here is evaluated — P0's letter
+         engine SUBSTITUTES, so a ${...} that is misspelt stays on the page
+         exactly as typed, which is what makes editing these safe for a
+         non-technical administrator. ${new_start}, ${new_end} and ${extra}
+         are handed in by the decision.
+
+         THE TONE IS THE POINT. Neither of these is a form. An extension
+         letter that reads like a reprieve makes somebody feel temporary;
+         a permanent-contract letter that reads like an HR notice wastes
+         the best day of somebody's year.
+         ================================================================== -->
+
+    <record id="letter_template_extension" model="pb.letter.template">
+        <field name="name">Contract extended</field>
+        <field name="letter_type">custom</field>
+        <field name="subject">Your contract</field>
+        <field name="sequence">31</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    We are glad to tell you that your contract as
+                    <strong>${job_title}</strong> in ${department} is being
+                    extended. A new agreement runs from
+                    <strong>${new_start}</strong> to
+                    <strong>${new_end}</strong>.
+                </p>
+                <p>
+                    Everything else stays as it is: the same pay, the same
+                    working hours and the same team. The agreement you are on
+                    today runs to its own end date, and the new one starts the
+                    day after, so there is no gap.
+                </p>
+                <p><strong>Why</strong><br/>
+                   ${extra}</p>
+                <p>
+                    Your manager will go through this with you. If anything
+                    here is not clear, ask them or your HR contact — that is
+                    what they are there for.
+                </p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_permanent" model="pb.letter.template">
+        <field name="name">Made permanent</field>
+        <field name="letter_type">custom</field>
+        <field name="subject">Your permanent contract</field>
+        <field name="sequence">32</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    Congratulations. Following your evaluation, we are
+                    delighted to offer you a permanent contract as
+                    <strong>${job_title}</strong> in ${department}, starting
+                    <strong>${new_start}</strong>. There is no end date on it.
+                </p>
+                <p>
+                    Your colleagues were asked what it has been like working
+                    with you, and their answers are the reason for this. Thank
+                    you for the work you have done since ${joining_date}.
+                </p>
+                <p>
+                    Your pay, your hours and your team stay exactly as they
+                    are. Your manager will go through the new agreement with
+                    you and your HR contact will file it with your documents.
+                </p>
+                <p>${extra}</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>
