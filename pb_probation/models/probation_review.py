@@ -99,8 +99,11 @@ class PbProbationReview(models.Model):
     nominee_ids = fields.Many2many(
         'hr.employee', 'pb_probation_review_nominee_rel', 'review_id',
         'employee_id', string='Colleagues asked')
+    # NOT "Colleagues asked" — that is the m2m's label, and two fields on one
+    # model sharing a label is a warning at every registry load and an
+    # ambiguous column header wherever both appear.
     nominee_count = fields.Integer(
-        compute='_compute_feedback_state', string='Colleagues asked')
+        compute='_compute_feedback_state', string='How many were asked')
     feedback_request_ids = fields.One2many(
         'pb.feedback.request', 'probation_review_id', string='Feedback links')
     feedback_deadline = fields.Date(string='Answers by', index=True)
@@ -394,6 +397,15 @@ class PbProbationReview(models.Model):
         The link IS the credential (P0's doctrine): a colleague may be on leave,
         may be a contractor with no login at all, and a questionnaire that needs
         a sign-in is a questionnaire nobody fills in.
+
+        THE DUPLICATE TEST ONLY EVER ASKS ABOUT VALUES THAT EXIST. A colleague
+        with no login and a colleague with no work email are both ordinary on
+        this database, and a search term of `respondent_user_id = False`
+        matches EVERY row that also has no user — so the second peer would be
+        recognised as "already asked" because the first peer also had no login,
+        and three colleagues would quietly become one. Only the identifiers the
+        person actually has go into the key; a person with neither has no
+        identity to be a duplicate of, and is asked.
         """
         self.ensure_one()
         Feedback = self.env['pb.feedback.request'].sudo()
@@ -401,16 +413,17 @@ class PbProbationReview(models.Model):
         made = 0
         for person in people:
             try:
-                existing = Feedback.search([
-                    ('probation_review_id', '=', self.id),
-                    ('subject_employee_id', '=', self.employee_id.id),
-                    '|', ('respondent_user_id', '=',
-                          person.user_id.id if person.user_id else False),
-                    ('respondent_email', '=',
-                     (person.work_email or '').strip() or False),
-                ], limit=1)
-                if existing:
-                    continue
+                key = []
+                if person.user_id:
+                    key.append(('respondent_user_id', '=', person.user_id.id))
+                if (person.work_email or '').strip():
+                    key.append(('respondent_email', '=',
+                                person.work_email.strip()))
+                if key:
+                    domain = [('probation_review_id', '=', self.id)]
+                    domain += (['|'] + key) if len(key) > 1 else key
+                    if Feedback.search_count(domain):
+                        continue
                 request = Feedback.create({
                     'subject_employee_id': self.employee_id.id,
                     'respondent_user_id': person.user_id.id
@@ -805,12 +818,22 @@ class PbProbationReview(models.Model):
             self.employee_id)
         if not pending:
             return True
+        # Two whole sentences rather than one with a bracketed plural in it
+        # (R46). "Tick it off" is wrong for three items and "tick them off" is
+        # wrong for one, so the sentence is chosen rather than patched.
+        if len(pending) == 1:
+            raise UserError(_(
+                "%(who)s cannot be confirmed yet — one course item is still "
+                "to finish: %(item)s. Tick it off on their training record "
+                "and the confirmation goes through.",
+                who=self.employee_id.name or _('This person'),
+                item=pending[0]))
         raise UserError(_(
-            "%(who)s cannot be confirmed yet — %(what)s still to finish: "
-            "%(items)s. Tick it off on their training record and the "
-            "confirmation goes through.",
+            "%(who)s cannot be confirmed yet — %(count)s course items are "
+            "still to finish: %(items)s. Tick them off on their training "
+            "record and the confirmation goes through.",
             who=self.employee_id.name or _('This person'),
-            what=counted(len(pending), _('course item'), _('course items')),
+            count=len(pending),
             items=joined_sentence(pending, limit=5)))
 
     def _verdict_pass(self):

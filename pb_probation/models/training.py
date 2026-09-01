@@ -69,12 +69,29 @@ class PbTrainingTrack(models.Model):
 
     # ------------------------------------------------------------- the rows
     @api.model
+    def _as_employee(self, employee):
+        """Accept a record OR an id.
+
+        Both public methods below are reachable over JSON-RPC, where a
+        recordset argument arrives as a plain integer (R43) — and an integer
+        does not have a `job_id`, so the call raises rather than quietly
+        answering the fallback. Coerce once, at the door.
+        """
+        if isinstance(employee, int):
+            return self.env['hr.employee'].sudo().browse(employee).exists()
+        if isinstance(employee, (list, tuple)) and employee:
+            return self.env['hr.employee'].sudo().browse(
+                int(employee[0])).exists()
+        return employee
+
+    @api.model
     def tracks_for(self, employee):
         """The courses this person's job requires.
 
         A track with NO jobs on it is deliberately not returned: it is an
         example somebody can copy, not a requirement everybody inherits.
         """
+        employee = self._as_employee(employee)
         if not employee or not employee.job_id:
             return self.browse()
         company_id = (employee.company_id or self.env.company).id
@@ -92,6 +109,7 @@ class PbTrainingTrack(models.Model):
         there and adds nothing, so it is safe from the joining hook, from the
         review's own create and from the daily job all at once (R30).
         """
+        employee = self._as_employee(employee)
         if not employee:
             return 0
         Status = self.env['pb.training.status'].sudo()

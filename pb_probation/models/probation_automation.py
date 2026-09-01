@@ -234,7 +234,12 @@ class PbJourneyCaseProbationAutomation(models.Model):
     # ------------------------------------------------------------ on demand
     @api.model
     def run_probation_automation(self):
-        """The same work, by hand. Managers only — it sends email."""
+        """The same work, by hand. Managers only — it sends email.
+
+        EXACTLY what the night does, in the same order, including the trial
+        state top-up. A "run it now" button that does a subset of the job is a
+        button whose result nobody can compare to tomorrow morning's.
+        """
         if not (self.env.user.has_group(GROUP_MANAGER)
                 or self.env.user._is_admin()):
             raise AccessError(_(
@@ -243,6 +248,7 @@ class PbJourneyCaseProbationAutomation(models.Model):
             'reviews': self._trigger_probation_reviews(),
             'reminders': self._remind_probation_hr(),
             'consolidated': self._consolidate_closed_windows(),
+            'backfilled': self._top_up_probation_states(),
             'alerts': self.env['pb.probation.review']._cron_deadline_alerts(),
         }
 

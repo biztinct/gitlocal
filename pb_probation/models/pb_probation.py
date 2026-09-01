@@ -126,10 +126,14 @@ class PbProbation(models.AbstractModel):
     def _row(self, emp, today=None):
         today = today or date.today()
         Review = self.env['pb.probation.review']
-        review = self._safe(
-            lambda: Review.search([('employee_id', '=', emp.id)],
-                                  order='state, id desc', limit=1),
-            default=Review.browse())
+        # `for_employee` and NOT `order='state, id desc'`. Ordering a board by a
+        # Selection column sorts by the STORED STRING, and "closed" is first in
+        # the alphabet — so a person whose second round had just been scheduled
+        # showed the first round's "Closed" on the board, with the live review
+        # invisible. `for_employee` asks the question properly: the open one if
+        # there is one, otherwise the most recent.
+        review = self._safe(lambda: Review.for_employee(emp),
+                            default=Review.browse())
         trial = self._safe(lambda: emp.sudo().trial_date_end, default=False)
         days = (trial - today).days if trial else None
         training = self._safe(
@@ -197,8 +201,8 @@ class PbProbation(models.AbstractModel):
         emp = self.env['hr.employee'].browse(int(employee_id)).exists()
         if not emp:
             raise UserError(_("That person could not be found."))
-        review = self.env['pb.probation.review'].search(
-            [('employee_id', '=', emp.id)], order='state, id desc', limit=1)
+        # The live review if there is one (see `_row` on why not an order=).
+        review = self.env['pb.probation.review'].for_employee(emp)
         checkins = self._safe(
             lambda: self.env['pb.employee.checkin'].sudo().search(
                 [('employee_id', '=', emp.id), ('state', '!=', 'cancelled')],
