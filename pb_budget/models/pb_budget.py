@@ -179,8 +179,8 @@ class PbBudget(models.AbstractModel):
             'fy_label': self._fy_label(fy),
             'fy_options': self._fy_options(fy),
             'budget_type': btype,
-            'type_label': type_label(btype),
-            'type_options': [{'key': k, 'label': type_label(k)}
+            'type_label': type_label(btype, self.env),
+            'type_options': [{'key': k, 'label': type_label(k, self.env)}
                              for k, _l in BUDGET_TYPES],
             'months': [{'key': m.strftime('%Y-%m'),
                         'label': m.strftime('%b'),
@@ -549,7 +549,7 @@ class PbBudget(models.AbstractModel):
                 'message': _("Added — it counts against %(month)s's %(type)s "
                              "budget.",
                              month=rec.period_month.strftime('%B %Y'),
-                             type=type_label(btype))}
+                             type=type_label(btype, self.env))}
 
     @api.model
     def export_board(self, fy=None, budget_type='manpower', currency='report',

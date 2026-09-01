@@ -9,8 +9,6 @@ idea is how a filter quietly matches nothing.
 import logging
 import unicodedata
 
-from odoo import _
-
 _logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------- the types
@@ -100,10 +98,16 @@ def fold(text):
     return out.strip().lower()
 
 
-def type_label(key):
+def type_label(key, env=None):
+    """The word for a budget type, translated where there is an env to ask.
+
+    Module-level `_()` has no language to work in and logs "no translation
+    language detected" on every call, so the environment is passed rather than
+    assumed — `env._()` is Odoo 19's own form for exactly this.
+    """
     for k, lbl in BUDGET_TYPES:
         if k == key:
-            return _(lbl)
+            return env._(lbl) if env is not None else lbl
     return key or ''
 
 

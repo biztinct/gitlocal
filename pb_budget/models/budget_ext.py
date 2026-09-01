@@ -189,7 +189,7 @@ class WfpBudgetActual(models.Model):
         where, and when — in that order, because that is how somebody looking at
         a list of them is trying to read it."""
         for rec in self:
-            bits = [type_label(rec.pb_budget_type)]
+            bits = [type_label(rec.pb_budget_type, self.env)]
             if rec.department_id:
                 bits.append(rec.department_id.name or '')
             if rec.period_month:

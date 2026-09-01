@@ -94,7 +94,7 @@ class PbBudgetUploadWizard(models.TransientModel):
             "under that month. Leave a month empty to leave it as it is; type "
             "0 to say nothing is budgeted. Do not change the department id "
             "column.", year=self.env['pb.budget']._fy_label(fy),
-            type=type_label(btype))).font = Font(italic=True)
+            type=type_label(btype, self.env))).font = Font(italic=True)
 
         cols = list(FIXED) + [m.strftime('%Y-%m') for m in months]
         for i, label in enumerate(cols, start=1):
@@ -110,13 +110,13 @@ class PbBudgetUploadWizard(models.TransientModel):
         for dept in depts:
             ws.cell(row=row, column=1, value=dept.complete_name or dept.name)
             ws.cell(row=row, column=2, value=dept.id)
-            ws.cell(row=row, column=3, value=type_label(btype))
+            ws.cell(row=row, column=3, value=type_label(btype, self.env))
             ws.cell(row=row, column=4, value=company.currency_id.name)
             ws.cell(row=row, column=5, value=0)
             row += 1
         # One last line for money the whole company spends and no team owns.
         ws.cell(row=row, column=1, value=_('Whole company'))
-        ws.cell(row=row, column=3, value=type_label(btype))
+        ws.cell(row=row, column=3, value=type_label(btype, self.env))
         ws.cell(row=row, column=4, value=company.currency_id.name)
         ws.cell(row=row, column=5, value=0)
 
@@ -133,7 +133,7 @@ class PbBudgetUploadWizard(models.TransientModel):
             'file_b64': base64.b64encode(out.read()).decode(),
             'filename': _('Budget template %(year)s %(type)s.xlsx',
                           year=self.env['pb.budget']._fy_label(fy),
-                          type=type_label(btype)),
+                          type=type_label(btype, self.env)),
             'mimetype': ('application/vnd.openxmlformats-officedocument.'
                          'spreadsheetml.sheet'),
             'departments': len(depts),
@@ -381,7 +381,7 @@ class PbBudgetUploadWizard(models.TransientModel):
         if not needle:
             return fallback
         for key, label in BUDGET_TYPES:
-            if needle in (fold(key), fold(label), fold(type_label(key))):
+            if needle in (fold(key), fold(label), fold(type_label(key, self.env))):
                 return key
         return fallback
 
