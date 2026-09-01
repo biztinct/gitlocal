@@ -1149,3 +1149,22 @@ without owner approval between them.
   SQL rename alone still crashes until restart. Verify with
   `SELECT id,name FROM res_groups_privilege WHERE name::text LIKE '%&%'`
   (must be zero rows) and by opening a user form.
+- **R125 — a hand-built `ir.actions.act_window` dict MUST carry `views`.**
+  `_preprocessAction` (web/static/src/webclient/actions/action_service.js:442)
+  runs `action.views.map(...)` unconditionally for act_window, and the
+  ORM-computed `views` field exists only on real `ir.actions.act_window`
+  RECORDS — a dict returned from a facade RPC and passed to `doAction` has
+  `view_mode` but no `views`, so the client throws `TypeError: Cannot read
+  properties of undefined (reading 'map')`, which the theme's error handler
+  shows as the generic "Something went wrong on our side" dialog with NO
+  useful console line (the message only appears if you attach an
+  `unhandledrejection` listener before clicking). Every cockpit "open this
+  record" door was affected; found 2026-09-01 on Lifecycle → Probation →
+  card → **Open the review**. Fix = add `'views': [[False, 'form']]`
+  (mirroring each `view_mode`) — done for 22 dicts in the RIZE modules plus 5
+  pre-existing cockpit-reachable ones (pb_payruns journals/payments,
+  pb_young_worker rules, pb_hr_payroll_base dashboard + import wizard);
+  commit 9564a8a7, Python-only (rsync + restart, no `-u`). **Regression gate:
+  an AST sweep** — walk every `pb_*/**/*.py`, flag any Dict literal whose
+  `type` is `ir.actions.act_window` and which lacks `views` when its
+  enclosing function name appears in any `.js` — must report zero.
