@@ -178,6 +178,12 @@ export const IC = {
     // already lived here. One shared registry, never a module-local map (W2),
     // Lucide paths only — no emoji anywhere in this product.
     cake:         '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 1 4 1 2.5-1 4-1 2.5 1 4 1 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v1M12 7v2M17 8v1"/>',
+    // RIZE P9 — budgets. `gauge` is the Budget lens itself and the heat view's
+    // one idea: a needle against a dial, which is what "how much of the money
+    // is gone against how much of the year is gone" actually is. The money
+    // (`banknote`), the treasury (`landmark`) and the percentage (`percent`)
+    // were already here. One shared registry, never a module-local map (W2).
+    gauge:        '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
 };
 
 /**
