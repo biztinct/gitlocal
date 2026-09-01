@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_probation_policy_staff,Probation policy read for staff,model_pb_probation_policy,base.group_user,1,0,0,0
+access_pb_probation_policy_user,Probation policy read,model_pb_probation_policy,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_probation_policy_manager,Probation policy manager,model_pb_probation_policy,pb_lifecycle.group_lifecycle_manager,1,0,0,0
+access_pb_probation_policy_admin,Probation policy admin,model_pb_probation_policy,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_probation_policy_system,Probation policy system,model_pb_probation_policy,base.group_system,1,1,1,1
+access_pb_probation_review_staff,Probation review mine and my team's,model_pb_probation_review,base.group_user,1,1,0,0
+access_pb_probation_review_portal,Probation review mine (portal),model_pb_probation_review,base.group_portal,1,0,0,0
+access_pb_probation_review_user,Probation review read,model_pb_probation_review,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_probation_review_manager,Probation review manager,model_pb_probation_review,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_probation_review_admin,Probation review admin,model_pb_probation_review,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_probation_review_system,Probation review system,model_pb_probation_review,base.group_system,1,1,1,1
+access_pb_training_track_staff,Training course read for staff,model_pb_training_track,base.group_user,1,0,0,0
+access_pb_training_track_manager,Training course manager,model_pb_training_track,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_training_track_admin,Training course admin,model_pb_training_track,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_training_track_system,Training course system,model_pb_training_track,base.group_system,1,1,1,1
+access_pb_training_item_staff,Training item read for staff,model_pb_training_item,base.group_user,1,0,0,0
+access_pb_training_item_manager,Training item manager,model_pb_training_item,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_training_item_admin,Training item admin,model_pb_training_item,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_training_item_system,Training item system,model_pb_training_item,base.group_system,1,1,1,1
+access_pb_training_status_staff,Training status mine and my team's,model_pb_training_status,base.group_user,1,1,0,0
+access_pb_training_status_user,Training status read,model_pb_training_status,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_training_status_manager,Training status manager,model_pb_training_status,pb_lifecycle.group_lifecycle_manager,1,1,1,1
+access_pb_training_status_admin,Training status admin,model_pb_training_status,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_training_status_system,Training status system,model_pb_training_status,base.group_system,1,1,1,1
