@@ -1197,3 +1197,31 @@ without owner approval between them.
   `.o_row.mw-50` released so `/ month` does not wrap). **VND/IDR/KHR-sized
   amounts are this product's norm — never trust a width tuned for two decimal
   places.** Asset change: purge `ir_attachment` `/web/assets/%` + restart.
+- **R128 — `nolabel="1"` inside a `<group>` needs `colspan="2"` or the field
+  renders ONE LABEL WIDE.** An inner group is a two-column grid (narrow label
+  column, wide value column); a label-less field takes one cell, and the cell
+  it gets is the narrow one — so a story/reason/note box came out ~150px with
+  ~1,000px of empty row beside it. Found on RnR "What they did" 2026-09-01;
+  **20 occurrences across 6 modules**, all fixed (commit a724f3e5). Fields in
+  notebook `<page>`s or `<div class="alert">`s are NOT in a grid and need
+  nothing. Safety net added in `vu_form_engine.scss`: an `.o_cell` holding
+  `.o_field_text`, `.o_field_html` or `.o_field_many2many_binary` spans
+  `1 / -1` (no `!important` — an arch can still overrule). **Audit command:**
+  find `<field nolabel="1">` whose lxml parent tag is `group` and which has no
+  `colspan`.
+- **R129 — Odoo 19 search `<group>` takes NO `string`/`expand`.** Already in
+  the global gotcha memory and hit again anyway: `<group name="group_by"
+  string="Group By">` fails RNG validation with `RELAXNG_ERR_INVALIDATTR` and
+  **aborts the whole module load** (EXIT=255, registry left down, real error
+  only in `/var/log/odoo/odoo-server.log`, not the sentinel). Write
+  `<group name="group_by">` bare.
+- **R130 — do not default a list to `group_by`.** Odoo opens groups
+  COLLAPSED, so `{'search_default_gb_area': 1}` on the Roles action landed the
+  screen on five headings and zero rows. Twenty-odd rows fit on one screen;
+  let colour-coded badge columns carry the grouping and leave Group By as a
+  press. Also: **a facet can survive a redeploy** — the client caches the last
+  search per action, so after changing an action's context clear
+  session storage (or use a fresh tab) before concluding it didn't work.
+  Column widths ARE supported on list `<field>` (`width="240px"`,
+  `common.rng`) — pin them where a long text column would otherwise starve
+  the name column.
