@@ -204,10 +204,53 @@ export const CATEGORIES = [
     },
 ];
 
+/**
+ * THE SOFT REGISTRY — how a later module bolts a category on.
+ *
+ * A module that adds a Settings category DEPENDS on this hub, so this hub can
+ * never import it back; the registry is what lets the dependency run one way
+ * only. It is the exact shape `pb_people_hub` has always had for its lenses,
+ * and the one P7 gave `pb_payhub` (R73), P8 `pb_home_hub` (R83) and P9
+ * `pb_insights_hub` (R96) — here applied to CATEGORIES rather than lenses,
+ * because that is the unit this hub is made of.
+ *
+ *     registry.category(SETTINGS_CATEGORIES).add("vendors", {
+ *         key: "vendors", icon: "briefcase", label: _t("Vendors"),
+ *         blurb: _t("…"), groups: [...],
+ *         cards: [{ id: "vendors", tag: "pb_vendors_board", … }],
+ *     }, { sequence: 20 });
+ *
+ * A registered descriptor is EXACTLY a `CATEGORIES` entry and goes through
+ * every rule this file already has: its gates are resolved with the same
+ * fail-open pass, its cards are probed for existence, a single-card category
+ * opens its one door directly, and a category nobody can use is absent rather
+ * than disabled. Nothing about it is special-cased.
+ *
+ * The eight shipped categories carry no sequence, so bolted-on ones land after
+ * them and start at 20.
+ */
+export const SETTINGS_CATEGORIES = "pb_settings_category";
+
+/**
+ * The registered categories, resolved ONCE per component (see `setup`).
+ *
+ * A getter would rebuild the array on every render and hand OWL a fresh object
+ * for every card on every keystroke (W21), which is exactly the bug the
+ * insights-hub test was written to prevent.
+ */
+export function extraCategories() {
+    return registry.category(SETTINGS_CATEGORIES).getAll().filter(Boolean);
+}
+
+/** The eight shipped categories plus anything a later module registered. */
+export function allCategories() {
+    return [...CATEGORIES, ...extraCategories()];
+}
+
 /** Every action xmlid the descriptor names, for one probe round trip. */
 export function settingsActionXmlids() {
-    return [...new Set(CATEGORIES.flatMap(
-        (c) => c.cards.filter((k) => k.xmlid).map((k) => k.xmlid)))];
+    return [...new Set(allCategories().flatMap(
+        (c) => (c.cards || []).filter((k) => k.xmlid).map((k) => k.xmlid)))];
 }
 
 export class PbSettingsHub extends Component {
@@ -222,6 +265,11 @@ export class PbSettingsHub extends Component {
 
         // Read ONCE, from props, never written back (HubShell's rule).
         this.back = hubBack(this.props);
+
+        // Resolved ONCE, here, never in a getter (W21). The registry cannot
+        // change while a component is mounted — a module either loaded before
+        // this one or it did not.
+        this.all = allCategories();
 
         this.state = useState({
             resolved: false,
@@ -272,7 +320,7 @@ export class PbSettingsHub extends Component {
 
     /** Fails OPEN per group — see the header. */
     async _resolveGroups() {
-        const names = [...new Set(CATEGORIES.flatMap((c) => c.groups || []))];
+        const names = [...new Set(this.all.flatMap((c) => c.groups || []))];
         const flags = {};
         await Promise.all(names.map(async (g) => {
             try { flags[g] = await user.hasGroup(g); }
@@ -282,7 +330,7 @@ export class PbSettingsHub extends Component {
             }
         }));
         const allowed = {};
-        for (const c of CATEGORIES) {
+        for (const c of this.all) {
             allowed[c.key] = !(c.groups || []).length
                 || c.groups.some((g) => flags[g]);
         }
@@ -317,7 +365,9 @@ export class PbSettingsHub extends Component {
         return !!this.state.present[card.xmlid];
     }
 
-    cardsOf(cat) { return cat.cards.filter((k) => this._cardPresent(k)); }
+    cardsOf(cat) {
+        return (cat.cards || []).filter((k) => this._cardPresent(k));
+    }
 
     /**
      * The categories on the left: allowed AND with something behind them.
@@ -327,7 +377,7 @@ export class PbSettingsHub extends Component {
      */
     get categories() {
         const allowed = this.state.allowed;
-        return CATEGORIES.filter(
+        return this.all.filter(
             (c) => (!allowed || allowed[c.key]) && this.cardsOf(c).length);
     }
 
