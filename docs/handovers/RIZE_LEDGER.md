@@ -183,7 +183,7 @@ without owner approval between them.
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T12 pass; one additive JS edit to pb_home_hub — a soft lens registry, now test-enforced — and one icon added to pb_import_kit) |
 | P9 | pb_budget (+ budget heat view wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, T12 waived by D9; two additive JS edits — a soft lens registry on pb_insights_hub, now test-enforced, and one icon in pb_import_kit) |
 | P10 | pb_contract_lifecycle | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 waived by D9; one fallback-safe edit to `pb_hr_payroll_analytics`, its own commit) |
-| P11 | pb_vendor_access | pending |
+| P11 | pb_vendor_access — vendor register + agreements, the role catalogue, hand-overs that auto-revert, two Settings panels | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 = memberships reverted / records left per D9; one additive JS edit to `pb_settings` — a soft CATEGORY registry, now test-enforced) |
 
 ## Gotchas discovered during RIZE phases (append here)
 
@@ -1024,3 +1024,114 @@ without owner approval between them.
   2326, R87's account, password unchanged) to prove a manager who holds NO HR
   group can agree an extension.
 
+
+### P11 (pb_vendor_access, 2026-09-01/02)
+
+- **R113 — "the live one first" is the WRONG headline for a register whose job
+  is to raise problems.** `pb.vendor.agreement_state` ranked `expiring` then
+  `running` then `expired`, so a supplier with a three-year licence running AND
+  a support contract that lapsed last month rendered as **Running**, the lapsed
+  row was invisible on the board, and the "already run out" figure beside it
+  read **zero** over a register that had one. Both halves were individually
+  defensible and together they were a lie. Rank the PROBLEM first — ended,
+  ending soon, running, not started, replaced — and within a band the one that
+  ends soonest, because that is the date somebody has to act on. R80 reached
+  from the other side: there the chip was wrong about the list, here the LIST
+  was wrong about the data.
+- **R114 — the kit's scrim is `.pbim-modal-scrim` and the modal is its CHILD,
+  not its sibling.** `.pbim-modal` carries no positioning of its own (R45 covers
+  its padding; this is the other half): the scrim is `position: fixed` with
+  `display:flex; align-items:center`, and that is the only thing that centres a
+  dialog. Written as a sibling — with a hand-rolled `.pbim-scrim` class that
+  does not exist — five dialogs rendered unstyled at the kit's default 1040px,
+  at the very bottom of the document, with no dimming. Nothing errored.
+  **And do not nest the dialog's own rules under the cockpit's root class.**
+  `modal.scss:43` says why in the kit's own words: "a scrim mounts OUTSIDE the
+  surface that opened it as often as inside". A descendant selector makes a
+  dialog's whole appearance depend on where in the DOM it lands, and the day
+  something portals it the rules vanish silently. Own classes, tokens
+  re-declared on the scrim.
+- **R115 — a blind `str.replace` on template indentation is how you close the
+  wrong `</div>`.** Adding the scrim's closing tag by matching
+  `'        </div>\n      </div>\n\n      <!--'` inserted it correctly for the
+  dialogs followed by a comment and NOT for the last one in each file — which
+  left the count balanced, the XML parsing cleanly, and the whole dialog block
+  sitting OUTSIDE the cockpit's root div. The tell was in the browser, not the
+  parser: `scrim.parentElement.className` read `o_action_manager`. **Verify OWL
+  template nesting by walking the parsed tree** (each scrim is a direct child of
+  the root and holds exactly one modal), never by "it still parses".
+- **R116 — R110 again, and the purge is NOT the fix on this build.**
+  `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` answered
+  **DELETE 0** every single time: this server has ZERO asset attachment rows and
+  serves `/web/assets/debug/web.assets_web.css` — an unversioned URL — straight
+  out of the bundler. So there is nothing to purge and the stale copy is in the
+  BROWSER. Separate the two questions before touching anything: `curl` the
+  bundle URL and grep for your own rule. If the server has it, the fix is
+  `emulate` with `Cache-Control: no-cache` plus a reload with `ignoreCache`; if
+  the server does not, it is a deploy or a Sass error. A restart alone changes
+  nothing either way.
+- **R117 — a phrase-frame with one word swapped produces "You does not have".**
+  `_("%(who)s does not have …", who=… if other else _("You"))` is the tidy
+  version and it is ungrammatical for exactly one of its two cases — and a
+  translator handed the frame and the word separately cannot fix a verb they
+  were never given (W80). Branch the WHOLE sentence. Same shape: a job that
+  reports "0 permissions were taken back" is a machine writing; "and nothing
+  needed taking back" is the same fact in words a person uses, and zero is a
+  real and common outcome here (the borrower already held it).
+- **R118 — a white-label gate must strip COMMENTS before it greps.** The
+  obvious test failed on `<!-- \`<act_window>\` is gone from the Odoo 19
+  data-file RNG -->` — the exact sentence that stops the next contributor
+  reintroducing the bug. The rule binds user-visible STRINGS; engineering
+  comments must be able to say the real name. Same lesson as W101/W114 inside
+  `pb_settings`, whose own tag gate then failed on this module's registry
+  example (`tag: "pb_vendors_board"` in a doc comment) — that gate now reads
+  `_code(_js())` like every other gate in the file.
+- **R119 — `pb_settings` had no soft registry.** Its eight categories were a
+  literal array, so P11 added ONE, exactly as P7 gave `pb_payhub` (R73), P8
+  `pb_home_hub` (R83) and P9 `pb_insights_hub` (R96) — here over CATEGORIES
+  rather than lenses, because that is the unit this hub is made of:
+  `SETTINGS_CATEGORIES = "pb_settings_category"`, `extraCategories()`, and an
+  `allCategories()` that **every rule in the file then reads** (the gate pass,
+  the card filter and the action probe all had to move off `CATEGORIES` — a
+  bolted-on category gated against the literal array renders UNGATED, and group
+  resolution fails open by design so nothing about that is visible at runtime).
+  JS ONLY, no manifest bump, and the seam is now enforced by
+  `pb_settings/tests/test_settings.py::TestSoftCategoryRegistry`. The eight
+  shipped categories carry no sequence, so bolted-on ones start at 20 — P11 took
+  **Vendors 20, Access & delegation 30**. Each has exactly ONE card, so the
+  hub's own `soleCard` rule opens it directly instead of drawing a section page
+  whose only content is that door.
+- **R120 — the catalogue is a HOOK, not a data file, and that is what keeps the
+  dependency list honest.** Every role profile points at a group owned by a
+  different module; a `<record ref="pb_pip.group_pip_head">` would make `pb_pip`
+  a hard dependency of a module about suppliers. The hook resolves each xmlid,
+  SKIPS the ones this database has never heard of, and says which in the log —
+  R107's "ensure by name, do not seed a record whose partner may not exist",
+  reached from the dependency side. One direction it must NOT fail in: a
+  RESTRICTED row whose gate group is missing is **not offered at all**, never
+  shown to everybody.
+- **R121 — the delegation snapshot must be MEASURED, not predicted, and that is
+  the whole security design.** `applied_group_ids` is
+  `after − before` read back off `res.users.group_ids` (with an
+  `invalidate_recordset` between, or the second read is the cached first).
+  Predicting it from the profiles is wrong in both directions: it over-removes
+  (a borrower who already held the group in their own right loses it
+  permanently because a two-week loan ended — proven live: snapshot `[]`, job
+  reported "nothing needed taking back", they kept it) and it under-describes
+  (edit the profile mid-window and the end takes back something the start never
+  gave). Odoo materialises only the DIRECT group on write; the implied tier
+  rides along in `all_group_ids` and leaves again with it.
+- **R122 — ⌘K blocks after P10.** P11 took the **3200** block (va_vendors 3200,
+  va_access 3210, va_delegate 3220, va_history 3230, va_roles 3240). A P12 would
+  start at **3300**.
+- **R123 — the P11 test cast and what was put back.** Vendors **11** (RIZE P11
+  Talent Partners, owner uid 2326) and **12** (RIZE P11 Cloudline Software,
+  owner uid 2333); agreements 17–20 plus the renewal; one attachment. Six
+  `pb.access.delegation` rows, all closed. **Every group membership this phase
+  touched was reverted** — `rize.p4.boss@example.com` was given the vendor-owner
+  and equipment-manager groups for T4/T7 and both were taken back, and
+  `rize.p9.plain@example.com` ended holding exactly the one group it started
+  with. Verified against a snapshot taken before the first write; all four test
+  users read identical to before P11. Records themselves are left in place
+  per D9. Passwords re-set to the ledger's values (R74's drift): `RizeP4!2026`,
+  `RizeP6!2026`, `RizeP8!2026`, `RizeP9!2026`.
