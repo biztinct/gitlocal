@@ -78,4 +78,8 @@ class PbZohoPipeline(models.AbstractModel):
                 'build recognises — the person arrives as they were', raw)
             return vals
         vals['employee_type'] = kind
+        # THE CONNECTED SYSTEM IS A STATEMENT, NOT A GUESS (ruling D8 puts
+        # employee core on its side of the line), so it stamps the flag the
+        # nightly guess respects.
+        vals['pb_employment_type_set'] = True
         return vals

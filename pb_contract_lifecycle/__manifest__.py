@@ -14,10 +14,10 @@ the first anybody hears of it is the person themselves.
 
 WHAT THIS MODULE IS
 
-  * **A first-class employment type.** Odoo's own `employee_type` was on this
-    build and nothing used it, so this module adopts it rather than minting a
-    field beside it, and adds the one value the blueprint needs and Odoo does
-    not ship: `intern`. Everybody already on the database is typed from the
+  * **A first-class employment type.** The platform already had an employment
+    type field and nothing used it, so this module adopts it rather than minting
+    one beside it, and adds the value the blueprint needs and the standard list
+    does not have: intern. Everybody already on the database is typed from the
     contract they are on, once, and never downgraded afterwards. The fragile
     string-match that counted contractors by looking for the word "contractor"
     in a contract-type NAME now reads the field, and keeps the string-match
@@ -72,6 +72,7 @@ after, as a draft, so a person reads it before it starts.
         'data/contract_params.xml',
         'data/letter_template_data.xml',
         'data/mail_template_data.xml',
+        'data/conversion_mail_data.xml',
         'views/contract_lifecycle_views.xml',
     ],
     'assets': {

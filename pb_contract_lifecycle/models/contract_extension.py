@@ -30,7 +30,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 from .contract_common import (
-    GROUP_MANAGER, P_APPROVE_DAYS, P_MAIL, add_months, counted, flag, number,
+    GROUP_MANAGER, P_APPROVE_DAYS, P_MAIL, counted, flag, number, term_end,
 )
 
 _logger = logging.getLogger(__name__)
@@ -116,8 +116,8 @@ class PbContractExtension(models.Model):
         for rec in self:
             end = rec.review_id.end_date if rec.review_id else False
             rec.new_date_start = (end + timedelta(days=1)) if end else False
-            rec.new_date_end = (add_months(rec.new_date_start,
-                                           max(1, rec.months or 1))
+            rec.new_date_end = (term_end(rec.new_date_start,
+                                         max(1, rec.months or 1))
                                 if rec.new_date_start else False)
 
     # ----------------------------------------------------------- the chain

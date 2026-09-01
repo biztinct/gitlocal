@@ -14,6 +14,8 @@ exists. The only in-place employment write RIZE allows is the probation trial
 end date, and that belongs to P5.
 """
 
+from datetime import timedelta
+
 # ---------------------------------------------------------------- what a review is
 #: The six places a contract decision can be. Deliberately linear apart from the
 #: two side-trips (an extension waiting for a manager, an evaluation running),
@@ -74,9 +76,15 @@ TYPE_WORDS = (
     ('student', ('student', 'thesis', 'sinh viên')),
     ('trainee', ('trainee', 'apprentice', 'apprenticeship', 'học việc')),
     ('freelance', ('freelance', 'freelancer')),
+    # NOT "fixed-term". A fixed-term EMPLOYEE is an employee — the whole point
+    # of this module is that a permanent member of staff can be on an agreement
+    # with a date on it — and typing them as a contractor would move them out
+    # of the headcount and out of the trial-period rules. The live backfill
+    # retyped a test employee on a contract called "P10 fixed-term — …" and
+    # that was the tell. The "Fixed-term contractor" contract type still
+    # matches, on the word "contractor" that is actually in it.
     ('contractor', ('contractor', 'subcontractor', 'sub-contractor',
-                    'consultant', 'outsourced', 'agency', 'fixed-term',
-                    'fixed term')),
+                    'consultant', 'outsourced', 'agency')),
     ('intern', ('intern', 'internship', 'thực tập')),
 )
 
@@ -183,6 +191,21 @@ def add_months(day, months):
             else 28,
             31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1]
     return day.replace(year=year, month=month, day=min(day.day, last))
+
+
+def term_end(start, months):
+    """The last day of a term of `months` that begins on `start`.
+
+    NOT `add_months(start, months)`. A twelve-month contract beginning on
+    1 November 2026 ends on 31 October 2027, and the next one begins on
+    1 November — `add_months` alone would end it on 1 November 2027 and the
+    next term would start on the 2nd, so every renewal walks a day further
+    from the anniversary it is supposed to keep. Found on the first live
+    extension, which came back a day long.
+    """
+    if not start:
+        return start
+    return add_months(start, months) - timedelta(days=1)
 
 
 def type_from_words(*texts):

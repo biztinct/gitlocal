@@ -22,10 +22,12 @@ and every read and write here goes through the ORM — a raw `SELECT
 employee_type FROM hr_employee` fails with *column does not exist* while the
 ORM read of the same field works perfectly.
 
-THE BACKFILL NEVER DOWNGRADES. It only ever changes a record that still says
-`employee`, which is the field's default and therefore the one value that means
-"nobody has said". A record somebody typed by hand, or that a connected system
-typed, survives every upgrade.
+THE BACKFILL NEVER ARGUES WITH A PERSON. It only ever changes a record that
+still says `employee` AND that nobody has deliberately typed — because
+`employee_type` is required with that default, so "nobody has said" and
+"somebody said permanent" are otherwise the same value. A deliberate write
+stamps `pb_employment_type_set`, and the nightly guess never looks at a record
+that carries it.
 """
 
 import logging
@@ -63,6 +65,12 @@ class HrVersion(models.Model):
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+
+    pb_employment_type_set = fields.Boolean(
+        string='Employment type was set deliberately', copy=False,
+        help='True once a person, a connected system or a contract decision '
+             'has said what kind of employment this is. The nightly guess from '
+             'contract names never touches a record that carries it.')
 
     # ------------------------------------------------------------- reading
     def pb_employment_label(self):
@@ -110,7 +118,8 @@ class HrEmployee(models.Model):
         if self._pb_employment_type() == kind:
             return True
         try:
-            self.sudo().write({'employee_type': kind})
+            self.sudo().write({'employee_type': kind,
+                               'pb_employment_type_set': True})
             if reason:
                 self.sudo().message_post(body=reason)
             return True
@@ -129,14 +138,17 @@ class HrEmployee(models.Model):
         was put on, and the name of the contract itself. Both are read; the
         more specific word wins (`type_from_words`).
 
-        NEVER A DOWNGRADE, and the guard is the field's own default: only a
-        record that still says `employee` is looked at. `employee_type` is
-        required with a default, so "unset" is not a state it can be in — which
-        means "nobody has said" and "somebody said permanent" are the same
-        value and cannot be told apart. Treating the default as "nobody has
-        said" is the only reading that lets a backfill run at all, and it is
-        safe in the direction that matters: a person somebody deliberately
-        typed as a contractor is never touched.
+        NEVER A DOWNGRADE, AND NEVER AN ARGUMENT WITH A PERSON. Two guards,
+        and the second one was learned the hard way. `employee_type` is
+        required with a default of `employee`, so "nobody has said" and
+        "somebody said permanent" are the SAME VALUE and cannot be told apart
+        — which meant the nightly top-up read the contract of somebody who had
+        just been made permanent, saw the word "contractor" in the category
+        they used to be on, and typed them back. Every night. So a deliberate
+        write — by a person, by a connected system, or by a conversion —
+        stamps `pb_employment_type_set`, and this pass never looks at a record
+        that carries it. A guess must lose to a statement, and the only way it
+        can is if the statement is written down.
 
         Returns the counts, and logs them, because a backfill that reports
         nothing is a backfill nobody can check.
@@ -170,7 +182,8 @@ class HrEmployee(models.Model):
                 if not ids:
                     return 0
                 people = Emp.search([('id', 'in', ids),
-                                     ('employee_type', '=', 'employee')],
+                                     ('employee_type', '=', 'employee'),
+                                     ('pb_employment_type_set', '=', False)],
                                     limit=cap)
                 counts['looked_at'] += len(people)
                 if not people:
@@ -183,8 +196,8 @@ class HrEmployee(models.Model):
                 return 0
 
         for kind, type_ids in by_kind.items():
-            made = _apply(kind, [('type_id', 'in', type_ids)])
-            counts[kind if kind in counts else 'other'] += made
+            counts[kind] = counts.get(kind, 0) + _apply(
+                kind, [('type_id', 'in', type_ids)])
 
         # AND THEN THE CONTRACT'S OWN NAME. A tenant whose types are all called
         # "Permanent" but whose contracts are called "Intern — summer 2026"
@@ -196,15 +209,20 @@ class HrEmployee(models.Model):
                 continue
             domain = ['|'] * (len(words) - 1) + [
                 ('name', 'ilike', word) for word in words]
-            made = _apply(kind, domain)
-            counts[kind if kind in counts else 'other'] += made
+            counts[kind] = counts.get(kind, 0) + _apply(kind, domain)
 
+        # EVERY KIND NAMED, never a bucket called "other". A backfill that
+        # reports "2 something else" is a backfill nobody can check — the
+        # whole reason it logs at all is so somebody can read the number and
+        # decide whether it is the number they expected.
+        named = ', '.join(
+            '%s %s' % (v, EMPLOYEE_TYPE_LABEL.get(k, k).lower())
+            for k, v in sorted(counts.items())
+            if k not in ('looked_at', 'other') and v)
         _logger.info(
             'pb_contract_lifecycle backfill: %s employees still on the '
-            'default were looked at, %s became interns, %s became '
-            'contractors, %s something else',
-            counts['looked_at'], counts['intern'], counts['contractor'],
-            counts['other'])
+            'default were looked at; %s',
+            counts['looked_at'], named or 'nobody was retyped')
         return counts
 
     # ------------------------------------------------- the two contract types

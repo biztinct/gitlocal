@@ -45,8 +45,8 @@ from odoo.exceptions import AccessError, UserError
 
 from .contract_common import (
     DECISION_LABEL, DECISIONS, GROUP_MANAGER, P_EXTENSION_MONTHS, P_LEAD_DAYS,
-    P_MAIL, REVIEW_OPEN, REVIEW_STATE_LABEL, REVIEW_STATES, add_months,
-    counted, first_name, flag, number,
+    P_MAIL, REVIEW_OPEN, REVIEW_STATE_LABEL, REVIEW_STATES, counted,
+    first_name, flag, number, term_end,
 )
 
 _logger = logging.getLogger(__name__)
@@ -96,8 +96,11 @@ class PbContractReview(models.Model):
     state = fields.Selection(
         REVIEW_STATES, string='Status', default='upcoming', required=True,
         index=True, tracking=True)
+    # NOT "Decision" — that is `name`'s label, and two fields on one model
+    # sharing a label is a warning at every registry load and an ambiguous
+    # column header wherever both appear.
     decision = fields.Selection(
-        DECISIONS, string='Decision', tracking=True)
+        DECISIONS, string='What was decided', tracking=True)
     decided_by = fields.Many2one('res.users', string='Decided by',
                                  readonly=True)
     decided_at = fields.Datetime(string='Decided on', readonly=True)
@@ -194,9 +197,30 @@ class PbContractReview(models.Model):
                 contract.employee_id.name or _('That contract')))
         existing = self.sudo().search([
             ('contract_id', '=', contract.id),
-            ('state', 'in', REVIEW_OPEN),
         ], order='id desc', limit=1)
-        if existing:
+        if existing and existing.state in REVIEW_OPEN:
+            return existing
+        if existing and existing.state == 'done':
+            # Already settled. Minting a second decision here is how a
+            # contract that was extended in September gets asked about again
+            # in October, with an email to the manager each time.
+            raise UserError(_(
+                "%(who)s's contract was already decided on %(when)s — "
+                "%(what)s. If something has changed, the contract to look at "
+                "is the one that followed it.",
+                who=(existing.employee_id.name or _('This person')),
+                when=(existing.decided_at.date()
+                      if existing.decided_at else _('an earlier date')),
+                what=DECISION_LABEL.get(existing.decision,
+                                        _('a decision was recorded')).lower()))
+        if existing and existing.state == 'lapsed':
+            # It ran out with nothing decided and somebody is picking it up
+            # late. That is exactly the thing to make easy: the same record
+            # comes back to life rather than a second one appearing beside it.
+            existing.sudo().write({'state': 'decide', 'notified': False,
+                                   'lapse_alerted': False})
+            existing.message_post(body=_(
+                "Picked up again after the contract had already ended."))
             return existing
 
         lead = int(lead_days if lead_days is not None
@@ -277,7 +301,7 @@ class PbContractReview(models.Model):
         elif decision == 'extend':
             span = int(months or number(self.env, P_EXTENSION_MONTHS, 12))
             new_start = (end + timedelta(days=1)) if end else False
-            new_end = add_months(new_start, span) if new_start else False
+            new_end = term_end(new_start, span) if new_start else False
             lines = [
                 _('You write down why, and %(who)s\'s manager is asked to '
                   'agree it.', who=who),
@@ -422,18 +446,49 @@ class PbContractReview(models.Model):
         self.ensure_one()
         end = self.end_date or self.contract_id.date_end
         start = (end + timedelta(days=1)) if end else fields.Date.today()
-        new_end = add_months(start, max(1, request.months or 1))
+        new_end = term_end(start, max(1, request.months or 1))
         contract = self._build_new_contract(start, new_end)
         if not contract:
             return False
         self._close('extend', note=request.reason, new_contract=contract)
-        self._prepare_letter('pb_contract_lifecycle.letter_template_extension',
-                             {'new_start': str(start), 'new_end': str(new_end),
-                              'extra': request.reason or ''})
-        self._mail('pb_contract_lifecycle.mail_template_extension_done',
-                   self._employee_addresses() + self._manager_addresses()
-                   + self._hr_addresses())
+        # THE PAPERWORK IS NOT THE AGREEMENT. The contract exists and the
+        # decision is written down; a letter that would not render and a
+        # mailbox that would not take a message are both worth knowing about
+        # and neither is a reason to report that nothing happened. The first
+        # live approval failed HERE, on an address read, and the manager was
+        # told the contract could not be prepared — over a contract that had
+        # been created a line earlier.
+        self._tell_them('extend', {'new_start': str(start),
+                                   'new_end': str(new_end),
+                                   'extra': request.reason or ''})
         return contract
+
+    def _tell_them(self, decision, extra=None):
+        """The letter and the email that follow a decision. Never raises."""
+        self.ensure_one()
+        letter_xmlid = {
+            'extend': 'pb_contract_lifecycle.letter_template_extension',
+            'convert': 'pb_contract_lifecycle.letter_template_permanent',
+        }.get(decision)
+        mail_xmlid = {
+            'extend': 'pb_contract_lifecycle.mail_template_extension_done',
+            'convert': 'pb_contract_lifecycle.mail_template_converted',
+        }.get(decision)
+        if letter_xmlid:
+            try:
+                self._prepare_letter(letter_xmlid, extra)
+            except Exception:           # noqa: BLE001
+                _logger.exception('pb_contract_lifecycle: the %s letter for '
+                                  'decision %s', decision, self.id)
+        if mail_xmlid:
+            try:
+                self._mail(mail_xmlid,
+                           self._employee_addresses() + self._manager_addresses()
+                           + self._hr_addresses())
+            except Exception:           # noqa: BLE001
+                _logger.exception('pb_contract_lifecycle: the %s email for '
+                                  'decision %s', decision, self.id)
+        return True
 
     # =====================================================================
     #  3. MAKE IT PERMANENT
@@ -509,7 +564,8 @@ class PbContractReview(models.Model):
         self.ensure_one()
         end = self.end_date or self.contract_id.date_end
         start = (end + timedelta(days=1)) if end else fields.Date.today()
-        contract = self._build_new_contract(start, False)
+        contract = self._build_new_contract(
+            start, False, contract_type=self._permanent_contract_type())
         if not contract:
             return False
         emp = self.employee_id
@@ -517,18 +573,13 @@ class PbContractReview(models.Model):
             "Made permanent on %s, after a conversion evaluation.",
             fields.Date.today()))
         self._close('convert', new_contract=contract)
-        self._prepare_letter(
-            'pb_contract_lifecycle.letter_template_permanent',
-            {'new_start': str(start), 'extra': ''})
-        self._mail('pb_contract_lifecycle.mail_template_converted',
-                   self._employee_addresses() + self._manager_addresses()
-                   + self._hr_addresses())
+        self._tell_them('convert', {'new_start': str(start), 'extra': ''})
         return contract
 
     # =====================================================================
     #  THE ONE PLACE A NEW CONTRACT IS MADE (ruling D1)
     # =====================================================================
-    def _build_new_contract(self, date_start, date_end):
+    def _build_new_contract(self, date_start, date_end, contract_type=None):
         """A NEW contract carrying the old one's terms, with new dates on it.
 
         THROUGH THE PEOPLE WIZARD'S OWN CREATE PATH, deliberately. The renewal
@@ -597,6 +648,17 @@ class PbContractReview(models.Model):
                 value = value.id if value else False
             if value or value == 0:
                 carried[name] = value
+        # A PERMANENT CONTRACT MUST NOT SAY "FIXED-TERM" ON IT. Everything
+        # else is copied verbatim, and that is the rule — but the contract
+        # CATEGORY is the one field whose whole job is to name the kind of
+        # agreement, and the first live conversion produced a contract with no
+        # end date carrying the category "Fixed-term contractor". Swapped only
+        # when a permanent category actually exists on this database; when it
+        # does not, the old one is kept and the chatter says so, because
+        # inventing a category is worse than an honest wrong label somebody can
+        # correct.
+        if contract_type:
+            carried['type_id'] = contract_type.id
         carried['pb_renewed_from_id'] = old.id
         try:
             contract.write(carried)
@@ -609,6 +671,39 @@ class PbContractReview(models.Model):
             old=old.name or _('the contract before it'),
             when=old.date_end or ''))
         return contract
+
+    def _permanent_contract_type(self):
+        """The contract category that means "no end date", or nothing.
+
+        Asked of the database rather than assumed, and only used when the
+        contract being replaced is on a category that reads as temporary — a
+        tenant whose people are all on one category called "Employee" should
+        keep it rather than be moved onto something this module picked.
+        """
+        self.ensure_one()
+        old = self.contract_id.type_id if self.contract_id else False
+        if not old:
+            return False
+        from .contract_common import type_from_words
+        if not type_from_words(old.name):
+            # The category it is on already reads as permanent staff. Leave it.
+            return False
+        Type = self.env['hr.contract.type'].sudo()
+        for domain in ([('name', '=ilike', 'Permanent')],
+                       [('name', '=ilike', 'Employee')],
+                       [('name', 'ilike', 'permanent')],
+                       [('name', 'ilike', 'indefinite')]):
+            try:
+                found = Type.search(domain, limit=1)
+            except Exception:           # noqa: BLE001
+                found = False
+            if found and found.id != old.id:
+                return found
+        self.message_post(body=_(
+            "The new contract keeps the category \"%s\" — this database has "
+            "no permanent category to move it to. Change it by hand if that "
+            "matters.", old.name or ''))
+        return False
 
     # ------------------------------------------------------------- closing
     def _close(self, decision, note=None, new_contract=None, exit_case=None):
@@ -727,31 +822,56 @@ class PbContractReview(models.Model):
                               'decision %s', xmlid, self.id)
             return False
 
+    # =====================================================================
+    #  WHO GETS TOLD.  Every one of these reads the employee AS THE SYSTEM.
+    #
+    #  R56, hit again and hit hard. `private_email` carries
+    #  `groups="hr.group_hr_user"`, and the person who agrees an extension is
+    #  the employee's OWN MANAGER, who holds no HR group by definition. So the
+    #  first live approval built the contract, closed the decision, filed the
+    #  letter — and then died reading an address, inside the caller's
+    #  try/except, which told the manager the contract could not be prepared
+    #  over a contract that had just been created.
+    #
+    #  The security boundary is the search that found the record and the
+    #  `_require_manager()` gate in front of the button. Working out who to
+    #  email is not a place to re-litigate it.
+    # =====================================================================
     def _manager_addresses(self):
         self.ensure_one()
         out = []
-        if self.manager_user_id and self.manager_user_id.email:
-            out.append(self.manager_user_id.email)
-        manager = self.employee_id.parent_id if self.employee_id else False
-        if manager and manager.work_email:
-            out.append(manager.work_email)
+        try:
+            if self.manager_user_id and self.manager_user_id.sudo().email:
+                out.append(self.manager_user_id.sudo().email)
+            emp = self.employee_id.sudo() if self.employee_id else False
+            manager = emp.parent_id if emp else False
+            if manager and manager.work_email:
+                out.append(manager.work_email)
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_contract_lifecycle: no manager address for '
+                            'decision %s', self.id, exc_info=True)
         return out
 
     def _hr_addresses(self):
         self.ensure_one()
         out = []
         try:
-            people = self.env['pb.journey.case']._users_in_group(
+            people = self.env['pb.journey.case'].sudo()._users_in_group(
                 GROUP_MANAGER, self.company_id or self.env.company, limit=0)
-            out.extend(u.email for u in people if u.email)
+            out.extend(u.sudo().email for u in people if u.sudo().email)
         except Exception:               # noqa: BLE001
-            _logger.debug('pb_contract_lifecycle: no HR addresses for '
-                          'decision %s', self.id)
+            _logger.warning('pb_contract_lifecycle: no HR addresses for '
+                            'decision %s', self.id, exc_info=True)
         return out
 
     def _employee_addresses(self):
         self.ensure_one()
-        emp = self.employee_id
-        if not emp:
+        if not self.employee_id:
             return []
-        return [a for a in (emp.work_email, emp.private_email) if a][:1]
+        try:
+            emp = self.employee_id.sudo()
+            return [a for a in (emp.work_email, emp.private_email) if a][:1]
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_contract_lifecycle: no address for the '
+                            'employee on decision %s', self.id, exc_info=True)
+            return []
