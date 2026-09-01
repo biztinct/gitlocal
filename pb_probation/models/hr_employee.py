@@ -65,9 +65,11 @@ class HrEmployee(models.Model):
         for rec in self:
             found = Review.browse()
             try:
-                found = Review.search(
-                    [('employee_id', '=', rec.id)],
-                    order='state, trial_end desc, id desc', limit=1)
+                # The LIVE one if there is one. An `order=` on the state
+                # column sorts by the stored string, where "closed" is first
+                # in the alphabet — so a closed round would shadow a scheduled
+                # one. `for_employee` asks the question properly.
+                found = Review.for_employee(rec)
             except Exception:           # noqa: BLE001
                 _logger.debug('pb_probation: no review readable for %s', rec.id)
             rec.pb_probation_review_id = found.id or False
