@@ -1,0 +1,1226 @@
+// ===========================================================================
+// pb_vendor_access — the Vendors and Access & delegation panels.
+//
+// pbim tokens only, one accent, flat fills, no gradients. Every rule that
+// depends on a token also carries a literal fallback, because a panel that
+// renders where the token sheet has not loaded must still be readable rather
+// than transparent-on-transparent.
+//
+// R32 — the kit's `.pbim-stats` is a grid with NO columns on purpose (each
+// cockpit knows how many numbers it has). Both KPI rows below declare theirs.
+//
+// R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex box:
+// it is built for head / body / foot rails, which pad themselves. Every dialog
+// here ships those three rails, so they inherit the right shape.
+//
+// R33 — `.pbim-badge` capitalises every word. Nothing here puts a SENTENCE in
+// a badge: the "what this lets someone do" line is `.pbva-role-d`, which is
+// prose and sets `text-transform: none` explicitly.
+//
+// R26 — equal-specificity CSS is decided by SOURCE ORDER, and a later generic
+// rule wins. Every narrow width below is qualified (`.pbva-in.pbva-…`) rather
+// than relying on where its block happens to sit in the file.
+//
+// R85 — every MOVING declaration (the opacity, the transform AND the
+// animation) is inside `@media (prefers-reduced-motion: no-preference)`. Under
+// a reduced-motion preference none of the three is applied at all, so the
+// panels paint finished on the first frame with nothing to recover from — a
+// better property than declaring an animation and then cancelling it.
+// `@keyframes` lives at the TOP LEVEL: nested inside a selector, Sass emits it
+// nested too and no browser plays it.
+//
+// Sass `min()`/`max()` with MIXED px/% units kills the entire asset bundle —
+// none of that here; widths are declared as width/max-width pairs.
+//
+// THE STATE COLOURS are a map and this is the ONLY place one is spelled.
+// Python ships a state NAME (`running`, `expiring`, `expired`, `renewed`,
+// `draft`) and never a hex, so no tenant can put an arbitrary colour on the
+// board — and every card carries the number of days AND a word beside the
+// colour, so it reads identically without any colour at all.
+// ===========================================================================
+
+$pbva-states: (
+    running:  (#15803D, #E9F7EE),
+    expiring: (#B45309, #FDF3E3),
+    expired:  (#BE123C, #FCEDF1),
+    renewed:  (#0E7490, #E6F6FA),
+    draft:    (#475569, #EEF1F5),
+    none:     (#475569, #EEF1F5),
+    active:   (#15803D, #E9F7EE),
+    revoked:  (#475569, #EEF1F5),
+);
+
+// The stagger. Top level, or Sass nests it and nothing plays it.
+@keyframes pbva-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.pbim.pbva {
+
+    // ============================================================== the head
+    .pbva-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .pbva-h {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        margin: 0 0 4px;
+    }
+
+    .pbva-s {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+        margin: 0;
+        max-width: 720px;
+    }
+
+    .pbva-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    // ============================================================ the numbers
+    .pbva-kpis {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-bottom: 14px;
+
+        &.pbva-kpis--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+        @media (max-width: 1180px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            &.pbva-kpis--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 700px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            &.pbva-kpis--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    }
+
+    // ============================================================= the filters
+    .pbva-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 10px 12px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        margin-bottom: 14px;
+    }
+
+    .pbva-field {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        position: relative;
+    }
+
+    .pbva-field--search {
+        flex: 1 1 240px;
+        max-width: 380px;
+    }
+
+    .pbva-in-ic {
+        position: absolute;
+        left: 9px;
+        display: inline-flex;
+        color: var(--pbim-muted, #64748B);
+        pointer-events: none;
+    }
+
+    .pbva-in {
+        width: 100%;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        color: var(--pbim-ink, #1B1733);
+        font-size: 13px;
+        padding: 7px 10px;
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+    }
+
+    // Qualified, not positional (R26): the search input needs room for its
+    // icon and the generic rule two hundred lines away must not decide that.
+    .pbva-field--search .pbva-in { padding-left: 30px; }
+
+    .pbva-area {
+        resize: vertical;
+        font-family: inherit;
+        line-height: 1.5;
+    }
+
+    .pbva-chips {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+
+        &.pbva-chips--wrap { flex-wrap: wrap; overflow: visible; }
+    }
+
+    .pbva-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-ink, #1B1733);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 11px;
+        white-space: nowrap;
+        cursor: pointer;
+
+        b {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--pbim-muted, #64748B);
+        }
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+
+        &.is-on {
+            background: var(--pbim-primary, #6355C7);
+            border-color: var(--pbim-primary, #6355C7);
+            color: #FFFFFF;
+            b { color: rgba(255, 255, 255, .82); }
+        }
+    }
+
+    .pbva-clear { margin-left: auto; }
+
+    .pbva-tabs {
+        display: inline-flex;
+        gap: 4px;
+        padding: 3px;
+        border-radius: 999px;
+        background: var(--pbim-bg, #F8F9FC);
+        border: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+
+        &.is-on {
+            background: var(--pbim-surface, #FFFFFF);
+            color: var(--pbim-ink, #1B1733);
+            box-shadow: var(--pbim-sh, 0 1px 2px rgba(16, 24, 40, .06));
+        }
+    }
+
+    .pbva-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        padding: 9px 12px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        margin-bottom: 12px;
+
+        &.pbva-note--warn {
+            color: #B45309;
+            background: #FDF3E3;
+            border-color: #F3DFBF;
+        }
+    }
+
+    // =========================================================== empty states
+    .pbva-empty {
+        text-align: center;
+        padding: 44px 24px;
+
+        h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            margin: 12px 0 6px;
+        }
+
+        p {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--pbim-muted, #64748B);
+            margin: 0 auto 14px;
+            width: 100%;
+            max-width: 520px;
+        }
+    }
+
+    .pbva-empty-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .pbva-mini-empty {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        color: var(--pbim-muted, #64748B);
+
+        p { margin: 0; font-size: 12.5px; line-height: 1.55; }
+    }
+
+    // ============================================================== the badge
+    .pbva-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        white-space: nowrap;
+        // A status word, so capitals are right here — but never for a
+        // sentence, which is why `.pbva-role-d` is prose and not a badge.
+        background: var(--pbim-pill, #EEF1F5);
+        color: var(--pbim-slate, #475569);
+
+        &.pbva-badge--mine {
+            background: #E9F7EE;
+            color: #15803D;
+        }
+
+        &.pbva-badge--quiet {
+            background: var(--pbim-bg, #F8F9FC);
+            color: var(--pbim-muted, #64748B);
+            font-weight: 600;
+        }
+    }
+}
+
+// =========================================================================
+// THE VENDOR CARDS
+// =========================================================================
+.pbim.pbva-vendors {
+
+    .pbva-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 12px;
+    }
+
+    .pbva-card {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 14px;
+        cursor: pointer;
+        transition: border-color .14s ease, box-shadow .14s ease;
+
+        &:hover {
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: var(--pbim-sh, 0 1px 2px rgba(16, 24, 40, .06));
+        }
+
+        &.is-open {
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+    }
+
+    @each $key, $pair in $pbva-states {
+        .pbva-card--#{$key} .pbva-badge {
+            color: nth($pair, 1);
+            background: nth($pair, 2);
+        }
+    }
+
+    .pbva-card-h {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .pbva-card-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .pbva-card-id {
+        min-width: 0;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    // A VENDOR'S NAME IS ITS IDENTITY AND MUST NOT BE ABBREVIATED. Ellipsised
+    // on one line it read "RIZE P11 Cloudline S…" beside "RIZE P11 Talent P…",
+    // which is two cards a person cannot tell apart at a glance — and the
+    // whole board is a glance. It wraps to two lines and then clamps, so a
+    // very long name is still bounded without any name being cut at eight
+    // characters.
+    .pbva-card-n {
+        font-size: 14.5px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: var(--pbim-ink, #1B1733);
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow-wrap: anywhere;
+    }
+
+    .pbva-card-t {
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .pbva-kv {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        min-width: 0;
+
+        b {
+            font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    // A DATE THAT IS CUT IN HALF IS WORSE THAN NO DATE. "Next agreement ends
+    // 3 Jul 202" was the live finding: two nowrap items on one row, and the
+    // one carrying the year lost to the one carrying the count. The row wraps
+    // now, and the date is never the thing that gets squeezed.
+    .pbva-card-f {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px 10px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-when {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 5px;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .pbva-count { white-space: nowrap; font-weight: 600; flex: 0 0 auto; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbva-card {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: pbva-rise .32s ease forwards;
+            animation-delay: calc(var(--pbva-i, 0) * 28ms);
+        }
+    }
+
+    // ============================================================ the drawer
+    .pbva-scrim {
+        position: fixed;
+        inset: 0;
+        background: var(--pbim-scrim, rgba(16, 20, 38, .32));
+        z-index: 1040;
+    }
+
+    .pbva-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 92vw;
+        max-width: 520px;
+        background: var(--pbim-surface, #FFFFFF);
+        border-left: 1px solid var(--pbim-line, #E6E8F0);
+        box-shadow: var(--pbim-sh-lg, -8px 0 30px rgba(16, 24, 40, .12));
+        z-index: 1041;
+        overflow-y: auto;
+        padding: 18px;
+    }
+
+    .pbva-drawer-h {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+
+        h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            margin: 0 0 2px;
+        }
+
+        p {
+            font-size: 12.5px;
+            color: var(--pbim-muted, #64748B);
+            margin: 0;
+        }
+    }
+
+    .pbva-drawer-facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 12px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        margin-bottom: 12px;
+    }
+
+    .pbva-fact {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--pbim-muted, #64748B);
+        }
+
+        b {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .pbva-drawer-notes {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+        margin: 0 0 12px;
+        white-space: pre-wrap;
+    }
+
+    .pbva-drawer-actions {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .pbva-drawer-t {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+        margin: 0 0 10px;
+    }
+
+    // ======================================================== the agreements
+    .pbva-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pbva-agreement {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-left: 3px solid var(--pbim-slate, #475569);
+        border-radius: var(--pbim-r-sm, 8px);
+        padding: 12px;
+        background: var(--pbim-surface, #FFFFFF);
+    }
+
+    @each $key, $pair in $pbva-states {
+        .pbva-agreement--#{$key} {
+            border-left-color: nth($pair, 1);
+            .pbva-badge { color: nth($pair, 1); background: nth($pair, 2); }
+            .pbva-fill { background: nth($pair, 1); }
+        }
+    }
+
+    .pbva-agreement-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .pbva-agreement-n {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbva-agreement-when {
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 8px;
+    }
+
+    // THE ONE COMPARISON. The fill is how much of the term has gone; the notch
+    // is where the renewal conversation was meant to start.
+    .pbva-track {
+        position: relative;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--pbim-pill, #EEF1F5);
+        overflow: visible;
+        margin-bottom: 8px;
+    }
+
+    .pbva-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 999px;
+        background: var(--pbim-slate, #475569);
+    }
+
+    .pbva-notch {
+        position: absolute;
+        top: -3px;
+        bottom: -3px;
+        width: 2px;
+        background: var(--pbim-ink, #1B1733);
+        border-radius: 1px;
+    }
+
+    .pbva-agreement-f {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbva-value { color: var(--pbim-muted, #64748B); font-weight: 600; }
+
+    .pbva-agreement-note {
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        margin: 6px 0 0;
+        line-height: 1.5;
+    }
+
+    .pbva-files {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .pbva-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--pbim-bg, #F8F9FC);
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        color: var(--pbim-ink, #1B1733);
+        text-decoration: none;
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+    }
+
+    .pbva-agreement-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .pbva-upload {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+
+        input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+    }
+}
+
+// =========================================================================
+// THE ROLES BOARD
+// =========================================================================
+.pbim.pbva-access {
+
+    .pbva-roles {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pbva-role {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 14px 16px;
+
+        &.is-open {
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+    }
+
+    .pbva-role-h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .pbva-role-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .pbva-role-id {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .pbva-role-n {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbva-role-a {
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-role-count {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        min-width: 24px;
+        text-align: right;
+    }
+
+    .pbva-role-caret {
+        display: inline-flex;
+        color: var(--pbim-muted, #64748B);
+        transition: transform .14s ease;
+    }
+
+    .pbva-role.is-open .pbva-role-caret { transform: rotate(180deg); }
+
+    // THE SENTENCE. Prose, not a badge — `.pbim-badge` capitalises every word
+    // and this is what the person granting the role actually reads (R33).
+    .pbva-role-d {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+        text-transform: none;
+        margin: 10px 0 10px 44px;
+        width: 100%;
+        max-width: 760px;
+    }
+
+    .pbva-role-people {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: 44px;
+    }
+
+    .pbva-role-line {
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-grant { margin-left: auto; }
+
+    .pbva-faces {
+        display: flex;
+        align-items: center;
+    }
+
+    .pbva-face {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--pbim-surface, #FFFFFF);
+        background: var(--pbim-pill, #EEF1F5);
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        flex: 0 0 auto;
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    .pbva-faces .pbva-face + .pbva-face { margin-left: -8px; }
+
+    .pbva-face--more { background: var(--pbim-primary-light, #EEECFA); }
+
+    .pbva-holders {
+        margin: 12px 0 0 44px;
+        padding-top: 12px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-holder-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 8px;
+    }
+
+    .pbva-holder {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 10px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        min-width: 0;
+    }
+
+    .pbva-holder-id {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+
+        b {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        small {
+            font-size: 11px;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbva-hint {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+        margin: 8px 0 0;
+
+        &.pbva-hint--lead {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border-radius: var(--pbim-r-sm, 8px);
+            background: var(--pbim-primary-light, #EEECFA);
+            color: var(--pbim-primary-dark, #4A3EA6);
+        }
+    }
+
+    .pbva-foot {
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    // ========================================================= the hand-overs
+    .pbva-handovers {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 12px;
+    }
+
+    .pbva-hand {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-left: 3px solid var(--pbim-slate, #475569);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 14px;
+    }
+
+    @each $key, $pair in $pbva-states {
+        .pbva-hand--#{$key} {
+            border-left-color: nth($pair, 1);
+            .pbva-badge { color: nth($pair, 1); background: nth($pair, 2); }
+        }
+    }
+
+    .pbva-hand-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .pbva-hand-who {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        font-size: 13.5px;
+        color: var(--pbim-ink, #1B1733);
+
+        b {
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbva-arrow {
+        display: inline-flex;
+        color: var(--pbim-muted, #64748B);
+        flex: 0 0 auto;
+    }
+
+    .pbva-hand-what {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 9px;
+    }
+
+    .pbva-tag {
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary-dark, #4A3EA6);
+    }
+
+    .pbva-hand-f {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        padding-top: 9px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-when {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .pbva-hand-days {
+        font-weight: 600;
+        color: var(--pbim-ink, #1B1733);
+        white-space: nowrap;
+    }
+
+    .pbva-hand-note {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+        margin: 8px 0 0;
+    }
+
+    .pbva-hand-actions { margin-top: 10px; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbva-role,
+        .pbva-hand {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: pbva-rise .32s ease forwards;
+            animation-delay: calc(var(--pbva-i, 0) * 28ms);
+        }
+    }
+}
+
+// =========================================================================
+// THE DIALOGS.
+//
+// TWO THINGS THE KIT DECIDES AND THIS FILE MUST FOLLOW.
+//
+//   1. `.pbim-modal` has NO padding and IS a column flex box (R45) — it is
+//      built for head / body / foot rails, which pad themselves. Every dialog
+//      here ships those three rails.
+//   2. `.pbim-modal-scrim` is the CENTRING container and the modal is its
+//      CHILD. Written as a sibling instead, the dialog renders unstyled at
+//      1040px wherever the document happens to put it — which is what the
+//      first live run produced, at the very bottom of the page.
+//
+// AND THESE RULES ARE NOT NESTED UNDER `.pbim.pbva`. The kit says so itself,
+// at `modal.scss:43`: "a scrim mounts OUTSIDE the surface that opened it as
+// often as inside" (W66). A descendant selector makes a dialog's whole
+// appearance depend on where in the DOM it ends up, and the day something
+// portals it — an overlay service, a future HubShell — it silently loses
+// every rule. So the classes are their own, the tokens are re-declared on the
+// scrim, and the dialog looks the same wherever it is mounted.
+// =========================================================================
+.pbva-modal-scrim,
+.pbim-modal-scrim {
+    // Tokens, in case the scrim is not inside a `.pbim` (W66).
+    --pbim-ink: #1B1733;
+    --pbim-muted: #64748B;
+    --pbim-line: #E6E8F0;
+    --pbim-surface: #FFFFFF;
+    --pbim-bg: #F8F9FC;
+    --pbim-primary: #6355C7;
+    --pbim-primary-dark: #4A3EA6;
+    --pbim-primary-light: #EEECFA;
+    --pbim-r: 12px;
+    --pbim-r-sm: 8px;
+    --pbim-ring: rgba(99, 85, 199, .18);
+}
+
+.pbim-modal-scrim {
+
+    // The kit ships `.pbim-modal` at 1040px, which is right for an import
+    // preview and far too wide for a five-field form. Qualified rather than
+    // positional (R26): the kit's own rule sits in another file entirely and
+    // source order between two files is not something to rely on.
+    .pbim-modal.pbva-modal {
+        width: 92vw;
+        max-width: 560px;
+    }
+
+    .pbva-modal-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+
+        h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            margin: 0;
+        }
+    }
+
+    .pbva-modal-b {
+        padding: 16px 18px;
+        overflow-y: auto;
+        max-height: 62vh;
+    }
+
+    .pbva-modal-f {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 18px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-lbl {
+        display: block;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+        margin: 12px 0 5px;
+
+        &:first-child { margin-top: 0; }
+    }
+
+    .pbva-two {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .pbva-picker {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        margin-top: 4px;
+        overflow: hidden;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .pbva-pick {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: 0;
+        background: var(--pbim-surface, #FFFFFF);
+        text-align: left;
+        padding: 7px 10px;
+        font-size: 13px;
+        color: var(--pbim-ink, #1B1733);
+        cursor: pointer;
+
+        small { color: var(--pbim-muted, #64748B); font-size: 11.5px; }
+        &:hover { background: var(--pbim-bg, #F8F9FC); }
+    }
+
+    .pbva-what {
+        padding: 12px 14px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-primary-light, #EEECFA);
+        margin-bottom: 14px;
+
+        h4 {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--pbim-primary-dark, #4A3EA6);
+            margin: 0 0 5px;
+        }
+
+        p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--pbim-ink, #1B1733);
+            margin: 0;
+            text-transform: none;
+        }
+    }
+
+    .pbva-picks {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .pbva-pickable {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 10px 12px;
+        cursor: pointer;
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-primary-light, #EEECFA);
+
+            .pbva-pickable-tick {
+                background: var(--pbim-primary, #6355C7);
+                border-color: var(--pbim-primary, #6355C7);
+                color: #FFFFFF;
+            }
+        }
+    }
+
+    .pbva-pickable-tick {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        border-radius: 5px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: transparent;
+        margin-top: 1px;
+    }
+
+    .pbva-pickable-tx {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        b {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+
+        small {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+}
+
+// The embedded form drops its own H1 — the hub draws the title (the same
+// contract every cockpit here honours).
+.pbim.pbva.pbva--embedded .pbva-h { display: none; }

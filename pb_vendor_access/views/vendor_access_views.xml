@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         `<act_window>` and `<report>` shortcut tags are gone from the
+         Odoo 19 data-file RNG; every action here is an explicit
+         `<record model="ir.actions.act_window">`.
+
+         This module ships NO menu and NO rail item. Its doors are the two
+         panels behind the Settings cog and the command palette. The plain
+         lists below are what a "see them all" chip opens for somebody who
+         would rather read a table — and, for the hand-over history, they
+         are the audit view.
+
+         A view `<group>` in a search view has no `expand`/`string` attrs
+         on Odoo 19, and xpath may not select by `[@string=...]`.
+         ================================================================== -->
+
+    <!-- ============================= vendors ============================= -->
+
+    <record id="view_pb_vendor_list" model="ir.ui.view">
+        <field name="name">pb.vendor.list</field>
+        <field name="model">pb.vendor</field>
+        <field name="arch" type="xml">
+            <list string="Vendors">
+                <field name="name"/>
+                <field name="vendor_type"/>
+                <field name="department_id"/>
+                <field name="responsible_user_id"/>
+                <field name="country_id" optional="show"/>
+                <field name="agreement_count"/>
+                <field name="next_end_date"/>
+                <field name="agreement_state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_vendor_form" model="ir.ui.view">
+        <field name="name">pb.vendor.form</field>
+        <field name="model">pb.vendor</field>
+        <field name="arch" type="xml">
+            <form string="Vendor">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Talentnet"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vendor_type"/>
+                            <field name="department_id"/>
+                            <field name="responsible_user_id"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="contact_name"/>
+                            <field name="contact_email" widget="email"/>
+                            <field name="contact_phone" widget="phone"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Agreements">
+                            <field name="agreement_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="renewal_date"/>
+                                    <field name="value"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state"/>
+                                    <field name="is_renewed"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Anything worth knowing about working with them."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_vendor_search" model="ir.ui.view">
+        <field name="name">pb.vendor.search</field>
+        <field name="model">pb.vendor</field>
+        <field name="arch" type="xml">
+            <search string="Vendors">
+                <field name="name"/>
+                <field name="contact_name"/>
+                <field name="responsible_user_id"/>
+                <filter name="mine" string="I look after them"
+                        domain="[('responsible_user_id', '=', uid)]"/>
+                <filter name="expiring" string="Ending soon"
+                        domain="[('agreement_state', '=', 'expiring')]"/>
+                <filter name="expired" string="Already run out"
+                        domain="[('agreement_state', '=', 'expired')]"/>
+                <group>
+                    <filter name="by_type" string="What they do"
+                            context="{'group_by': 'vendor_type'}"/>
+                    <filter name="by_owner" string="Who looks after them"
+                            context="{'group_by': 'responsible_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_vendor" model="ir.actions.act_window">
+        <field name="name">Vendors</field>
+        <field name="res_model">pb.vendor</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_vendor_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No suppliers on the register yet</p>
+            <p>
+                This is where the agencies, training providers, insurers and
+                software suppliers HR deals with live — who they are, who here
+                looks after them, and when the agreement runs out. Payobook
+                tells the owner before it does.
+            </p>
+        </field>
+    </record>
+
+    <!-- =========================== agreements =========================== -->
+
+    <record id="view_pb_vendor_agreement_list" model="ir.ui.view">
+        <field name="name">pb.vendor.agreement.list</field>
+        <field name="model">pb.vendor.agreement</field>
+        <field name="arch" type="xml">
+            <list string="Agreements">
+                <field name="vendor_id"/>
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="renewal_date"/>
+                <field name="days_left"/>
+                <field name="value"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state"/>
+                <field name="responsible_user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_vendor_agreement_form" model="ir.ui.view">
+        <field name="name">pb.vendor.agreement.form</field>
+        <field name="model">pb.vendor.agreement</field>
+        <field name="arch" type="xml">
+            <form string="Agreement">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Agency terms 2026"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vendor_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="renewal_date"/>
+                        </group>
+                        <group>
+                            <field name="value"/>
+                            <field name="currency_id"/>
+                            <field name="state"/>
+                            <field name="is_renewed"/>
+                            <field name="renewed_by_id" invisible="not is_renewed"/>
+                        </group>
+                    </group>
+                    <group string="Files">
+                        <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
+                    </group>
+                    <group string="Notes">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_vendor_agreement" model="ir.actions.act_window">
+        <field name="name">Vendor agreements</field>
+        <field name="res_model">pb.vendor.agreement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============================= roles ============================= -->
+
+    <record id="view_pb_role_profile_list" model="ir.ui.view">
+        <field name="name">pb.role.profile.list</field>
+        <field name="model">pb.role.profile</field>
+        <field name="arch" type="xml">
+            <list string="Roles">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="area"/>
+                <field name="group_id"/>
+                <field name="holder_count"/>
+                <field name="visible_group_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_role_profile_form" model="ir.ui.view">
+        <field name="name">pb.role.profile.form</field>
+        <field name="model">pb.role.profile</field>
+        <field name="arch" type="xml">
+            <form string="Role">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Payroll approver — final"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="area"/>
+                            <field name="group_id"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="holder_count"/>
+                            <field name="visible_group_id"/>
+                        </group>
+                    </group>
+                    <group string="What this lets someone do">
+                        <field name="description" nolabel="1"
+                               placeholder="One or two sentences, in the words somebody would use out loud. It is what the person granting it reads before they press the button."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_role_profile" model="ir.actions.act_window">
+        <field name="name">Roles</field>
+        <field name="res_model">pb.role.profile</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No roles written down yet</p>
+            <p>
+                A role is a permission group with a name a person can act on and
+                one sentence saying what it lets somebody do. It is what the
+                access board hands out. The system administrator permission is
+                never one of these.
+            </p>
+        </field>
+    </record>
+
+    <!-- ========================== the hand-overs ========================== -->
+
+    <record id="view_pb_access_delegation_list" model="ir.ui.view">
+        <field name="name">pb.access.delegation.list</field>
+        <field name="model">pb.access.delegation</field>
+        <field name="arch" type="xml">
+            <list string="Access history" create="false" delete="false">
+                <field name="date_start"/>
+                <field name="origin"/>
+                <field name="delegator_user_id"/>
+                <field name="delegate_user_id"/>
+                <field name="profile_ids" widget="many2many_tags"/>
+                <field name="kind"/>
+                <field name="date_end"/>
+                <field name="state"/>
+                <field name="reason" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_access_delegation_form" model="ir.ui.view">
+        <field name="name">pb.access.delegation.form</field>
+        <field name="model">pb.access.delegation</field>
+        <field name="arch" type="xml">
+            <form string="Hand-over" create="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="delegator_user_id"/>
+                            <field name="delegate_user_id"/>
+                            <field name="kind"/>
+                            <field name="origin"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="state"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="What was handed over">
+                        <field name="profile_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <group string="What was actually added to their account">
+                        <field name="applied_group_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="applied_on"/>
+                            <field name="ended_on"/>
+                        </group>
+                        <group>
+                            <field name="ended_note"/>
+                        </group>
+                    </group>
+                    <group string="Why">
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_access_delegation_search" model="ir.ui.view">
+        <field name="name">pb.access.delegation.search</field>
+        <field name="model">pb.access.delegation</field>
+        <field name="arch" type="xml">
+            <search string="Access history">
+                <field name="delegator_user_id"/>
+                <field name="delegate_user_id"/>
+                <filter name="running" string="Running now"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="handovers" string="Hand-overs only"
+                        domain="[('origin', '=', 'delegation')]"/>
+                <group>
+                    <filter name="by_state" string="Where it is"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_to" string="Who got it"
+                            context="{'group_by': 'delegate_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_access_delegation" model="ir.actions.act_window">
+        <field name="name">Access history</field>
+        <field name="res_model">pb.access.delegation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_access_delegation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has been handed over yet</p>
+            <p>
+                Every hand-over of access, and every role given or taken away on
+                the access board, is a line here. Nothing on this list can be
+                deleted — that is the point of it.
+            </p>
+        </field>
+    </record>
+
+    <!-- ====================== the two panels themselves ====================== -->
+    <!-- `ir.actions.client` RECORDS, never a bare tag: a bare tag reaches the
+         action service with no NAME, and anything returning through a
+         breadcrumb then lands on a crumb labelled "Unnamed". -->
+
+    <record id="action_pb_vendors_board" model="ir.actions.client">
+        <field name="name">Vendors</field>
+        <field name="tag">pb_vendors_board</field>
+    </record>
+
+    <record id="action_pb_access_board" model="ir.actions.client">
+        <field name="name">Access &amp; delegation</field>
+        <field name="tag">pb_access_board</field>
+    </record>
+
+</odoo>
