@@ -41,6 +41,7 @@ import logging
 from datetime import timedelta
 
 from odoo import api, fields, models, _
+from odoo.tools import format_date
 from odoo.exceptions import AccessError, UserError
 
 from .contract_common import (
@@ -276,6 +277,26 @@ class PbContractReview(models.Model):
     # =====================================================================
     #  WHAT EACH BUTTON WILL DO, IN WORDS, BEFORE IT IS PRESSED
     # =====================================================================
+    def _day(self, value):
+        """A date the way a person writes one.
+
+        `str(date)` puts "2027-02-01" in the middle of an English sentence and
+        inside a letter that goes to somebody's home address. `format_date`
+        answers in the reader's own language and format.
+        """
+        if not value:
+            return _('a date nobody has set')
+        try:
+            # An explicit pattern rather than the locale's own. The locale's
+            # own for an English admin is `02/01/2027`, which is the first of
+            # February to half the world and the second of January to the
+            # other half — and the board beside it already writes "1 Feb
+            # 2027". Two date formats on one screen is one too many, and an
+            # ambiguous one on a contract letter is worse than that.
+            return format_date(self.env, value, date_format='d MMM y')
+        except Exception:               # noqa: BLE001
+            return str(value)
+
     def decision_preview(self, decision, months=None):
         """The consequence copy the drawer shows above the three buttons.
 
@@ -292,9 +313,10 @@ class PbContractReview(models.Model):
         if decision == 'terminate':
             lines = [
                 _('%(who)s\'s contract runs to %(when)s and then stops. '
-                  'Nothing about it is changed.', who=who, when=end),
+                  'Nothing about it is changed.', who=who,
+                  when=self._day(end)),
                 _('Their leaving checklist opens, dated %s — the clearances, '
-                  'the handover and the exit questionnaire.', end),
+                  'the handover and the exit questionnaire.', self._day(end)),
                 _('No email goes to them from here. Their manager and the HR '
                   'team are told, and somebody speaks to them.'),
             ]
@@ -307,9 +329,9 @@ class PbContractReview(models.Model):
                   'agree it.', who=who),
                 _('When they agree, a NEW contract is prepared: %(start)s to '
                   '%(end)s, on exactly the terms of the one running now.',
-                  start=new_start, end=new_end),
+                  start=self._day(new_start), end=self._day(new_end)),
                 _('The contract running now is not touched. It ends on '
-                  '%s, as it always would have.', end),
+                  '%s, as it always would have.', self._day(end)),
                 _('The new contract is prepared as a draft, so somebody reads '
                   'it before it starts.'),
             ]
@@ -458,8 +480,8 @@ class PbContractReview(models.Model):
         # live approval failed HERE, on an address read, and the manager was
         # told the contract could not be prepared — over a contract that had
         # been created a line earlier.
-        self._tell_them('extend', {'new_start': str(start),
-                                   'new_end': str(new_end),
+        self._tell_them('extend', {'new_start': self._day(start),
+                                   'new_end': self._day(new_end),
                                    'extra': request.reason or ''})
         return contract
 
@@ -573,7 +595,8 @@ class PbContractReview(models.Model):
             "Made permanent on %s, after a conversion evaluation.",
             fields.Date.today()))
         self._close('convert', new_contract=contract)
-        self._tell_them('convert', {'new_start': str(start), 'extra': ''})
+        self._tell_them('convert', {'new_start': self._day(start),
+                                    'extra': ''})
         return contract
 
     # =====================================================================

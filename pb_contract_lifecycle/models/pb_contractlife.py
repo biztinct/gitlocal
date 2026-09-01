@@ -168,7 +168,11 @@ class PbContractLife(models.AbstractModel):
             'capped': len(rows) >= BOARD_LIMIT,
             'kinds': _facet(rows, 'kind_label'),
             'departments': _facet(rows, 'dept'),
-            'months': _facet(rows, 'end_month'),
+            # A MONTH FACET IS READ IN CALENDAR ORDER, not in order of size.
+            # Sorted by count, the row read "October 2026, November 2026,
+            # August 2026, December 2026…" and a reader looking for next month
+            # had to hunt for it.
+            'months': _facet(rows, 'end_month', by_key=True),
             'states': _facet(rows, 'review_label'),
         }
 
@@ -295,10 +299,17 @@ class PbContractLife(models.AbstractModel):
                 'new_end': str(extension.new_date_end or ''),
             } if extension else None,
             'evaluation': self._evaluation(review),
+            # WHAT HAS BEEN DECIDED **BEFORE** — so the live one is not in
+            # it. The drawer already shows the open decision at the top, with
+            # its three choices or the panel for whatever is running; repeating
+            # it under a past-tense heading made the screen say "The contract
+            # ran to 31 Jan 2027" about a contract that has not started yet.
             'history': [{
                 'id': r.id,
                 'raised': str(r.create_date.date()) if r.create_date else '',
                 'end_date': str(r.end_date or ''),
+                'about': _('About the contract ending %s.',
+                           r.end_date or _('on no particular date')),
                 'state': r.state,
                 'state_label': r.state_label(),
                 'decision': r.decision or '',
@@ -313,7 +324,7 @@ class PbContractLife(models.AbstractModel):
                                  if r.new_contract_id else ''),
                 'exit_case_id': r.exit_case_id.id if r.exit_case_id else 0,
                 'letter_id': r.letter_id.id if r.letter_id else 0,
-            } for r in history],
+            } for r in history if not (review and r.id == review.id)],
             'kinds': [{'id': k, 'label': v}
                       for k, v in EMPLOYEE_TYPE_LABEL.items()],
         }
@@ -484,11 +495,18 @@ def _when(days):
     return _('%s days ago', -days)
 
 
-def _facet(rows, key):
+def _facet(rows, key, by_key=False):
+    """The chips beside a list, counted from THAT LIST'S OWN rows (R80).
+
+    `by_key` sorts alphabetically rather than by size, which for a `YYYY-MM`
+    key is calendar order — the only order a month chip can sensibly be read
+    in.
+    """
     counts = {}
     for row in rows:
         value = row.get(key) or ''
         if value:
             counts[value] = counts.get(value, 0) + 1
+    order = (lambda kv: kv[0]) if by_key else (lambda kv: -kv[1])
     return [{'id': k, 'label': k, 'count': v}
-            for k, v in sorted(counts.items(), key=lambda kv: -kv[1])]
+            for k, v in sorted(counts.items(), key=order)]
