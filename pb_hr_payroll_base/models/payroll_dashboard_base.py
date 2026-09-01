@@ -872,6 +872,7 @@ class PayrollDashboard(models.Model):
             'name': f'Export {self.country} Bank File',
             'res_model': 'payroll.bank.export.wizard',
             'view_mode': 'form',
+            'views': [[False, 'form']],
             'target': 'new',
             'context': {
                 'default_country_code': self.country,

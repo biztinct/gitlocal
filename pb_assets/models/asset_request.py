@@ -287,4 +287,5 @@ class PbAssetRequest(models.Model):
             'res_model': 'pb.asset',
             'res_id': self.asset_id.id,
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }

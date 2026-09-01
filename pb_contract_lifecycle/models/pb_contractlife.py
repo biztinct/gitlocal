@@ -437,14 +437,16 @@ class PbContractLife(models.AbstractModel):
         if not self._can_read():
             raise AccessError(_("This is looked after by the HR team."))
         return {'type': 'ir.actions.act_window', 'res_model': 'hr.contract',
-                'res_id': int(contract_id), 'view_mode': 'form'}
+                'res_id': int(contract_id), 'view_mode': 'form',
+                'views': [[False, 'form']]}
 
     @api.model
     def open_employee_action(self, employee_id):
         if not self._can_read():
             raise AccessError(_("This is looked after by the HR team."))
         return {'type': 'ir.actions.act_window', 'res_model': 'hr.employee',
-                'res_id': int(employee_id), 'view_mode': 'form'}
+                'res_id': int(employee_id), 'view_mode': 'form',
+                'views': [[False, 'form']]}
 
     @api.model
     def open_review_action(self, review_id):
@@ -452,7 +454,8 @@ class PbContractLife(models.AbstractModel):
             raise AccessError(_("This is looked after by the HR team."))
         return {'type': 'ir.actions.act_window',
                 'res_model': 'pb.contract.review',
-                'res_id': int(review_id), 'view_mode': 'form'}
+                'res_id': int(review_id), 'view_mode': 'form',
+                'views': [[False, 'form']]}
 
     @api.model
     def open_evaluation_action(self, evaluation_id):
@@ -460,7 +463,8 @@ class PbContractLife(models.AbstractModel):
             raise AccessError(_("This is looked after by the HR team."))
         return {'type': 'ir.actions.act_window',
                 'res_model': 'pb.probation.review',
-                'res_id': int(evaluation_id), 'view_mode': 'form'}
+                'res_id': int(evaluation_id), 'view_mode': 'form',
+                'views': [[False, 'form']]}
 
     @api.model
     def open_letter_action(self, letter_id):
@@ -477,7 +481,8 @@ class PbContractLife(models.AbstractModel):
             raise AccessError(_("This is looked after by the HR team."))
         return {'type': 'ir.actions.act_window',
                 'res_model': 'pb.journey.case',
-                'res_id': int(case_id), 'view_mode': 'form'}
+                'res_id': int(case_id), 'view_mode': 'form',
+                'views': [[False, 'form']]}
 
 
 def _when(days):

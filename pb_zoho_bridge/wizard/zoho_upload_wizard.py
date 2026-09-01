@@ -269,6 +269,7 @@ class PbZohoUploadWizard(models.TransientModel):
             'name': _('Arrivals from the connected system'),
             'res_model': 'pb.zoho.inbox',
             'view_mode': 'list,form',
+            'views': [[False, 'list'], [False, 'form']],
             'target': 'current',
             'context': {'search_default_filter_today': 1},
         }
@@ -285,6 +286,7 @@ class PbZohoUploadWizard(models.TransientModel):
             'res_model': self._name,
             'res_id': self.id,
             'view_mode': 'form',
+            'views': [[False, 'form']],
             'target': 'new',
         }
 

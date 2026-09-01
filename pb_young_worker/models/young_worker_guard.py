@@ -165,5 +165,6 @@ class PbYoungWorkerGuard(models.AbstractModel):
             'name': _("Young Worker Rules"),
             'res_model': 'pb.young.worker.rule',
             'view_mode': 'list,form',
+            'views': [[False, 'list'], [False, 'form']],
             'target': 'current',
         }

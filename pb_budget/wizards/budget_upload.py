@@ -452,4 +452,5 @@ class PbBudgetUploadWizard(models.TransientModel):
 
     def _reopen(self):
         return {'type': 'ir.actions.act_window', 'res_model': self._name,
-                'res_id': self.id, 'view_mode': 'form', 'target': 'new'}
+                'res_id': self.id, 'view_mode': 'form',
+                'views': [[False, 'form']], 'target': 'new'}

@@ -695,6 +695,7 @@ class HrPayslipRun(models.Model):
             return self._pb_toast(_('Accounting is not installed.'))
         return {'type': 'ir.actions.act_window', 'name': _('Journal Entries'),
                 'res_model': 'account.move', 'view_mode': 'list,form',
+                'views': [[False, 'list'], [False, 'form']],
                 'domain': [('company_id', '=', self.env.company.id),
                            ('date', '>=', self.date_start), ('date', '<=', self.date_end)],
                 'context': {'search_default_posted': 1}}
@@ -706,5 +707,6 @@ class HrPayslipRun(models.Model):
             return self._pb_toast(_('Accounting is not installed.'))
         return {'type': 'ir.actions.act_window', 'name': _('Payments'),
                 'res_model': 'account.payment', 'view_mode': 'list,form',
+                'views': [[False, 'list'], [False, 'form']],
                 'domain': [('company_id', '=', self.env.company.id),
                            ('date', '>=', self.date_start), ('date', '<=', self.date_end)]}
