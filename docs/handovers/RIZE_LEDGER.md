@@ -179,7 +179,7 @@ without owner approval between them.
 | P4 | pb_offboarding — resignation, clearances, handover, the settlement gate, Exits lens, /my/resignation | **DONE** (live on `payobook`, 19.0.1.0.0, T1-T16 pass) |
 | P5 | pb_probation — policy, `pb_probation_state`, the review machine, the training gate, Probation lens, `/my/journey` card | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P6 | pb_pip — coaching, the plan, the decision, `/my/growth`, its OWN group ladder | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T15 pass) |
-| P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | pending |
+| P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass; one additive edit to pb_payhub — assets only, no version bump) |
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | pending |
 | P9 | pb_budget (+ budget heat view wow) | pending |
 | P10 | pb_contract_lifecycle | pending |
@@ -614,3 +614,106 @@ without owner approval between them.
   one. P6 renamed the surface to "Growth plans", which fits at 54px and has
   the better property of being the same phrase the employee reads on their
   own page.
+
+### P7 (pb_comp_ben, 2026-09-01)
+
+- **R64 — A CONTRACT COMPONENT IS NOT NECESSARILY MONEY, and the scheme's own
+  metadata cannot tell you which is which.** Bootstrapping a pay package from
+  contract 1 produced 1,014,240,048 ₫ a year against a wage of 15,000,000 a
+  month, because `Ngạch lương` is a salary GRADE of 60,000,000, `NPT` is a
+  count of dependants (3) and `Tỷ lệ %` is a ratio (1) — and all three carry
+  `value_kind='money'` with no net role on this tenant, exactly like the meal
+  allowance beside them. There is no rule that separates them, so do not invent
+  one. The bootstrap PROPOSES instead: every line off the contract arrives
+  `checked = False`, is shown with its number so a human can judge it, counts
+  towards no total, and `action_activate` REFUSES while any is unchecked —
+  naming each one and saying to tick it or delete it. The wage line is checked,
+  because a wage is money by definition. A total that is always true is worth
+  more than a total that is usually complete. Any phase that derives money from
+  somebody else's typed field inherits this problem.
+- **R65 — R60 bites INSIDE a module as easily as across one.**
+  `pb.benefit.enrollment` shipped the narrow "my own enrolment" rule for the
+  portal without the wide pay-team rule beside it, and `read` on the enrolment
+  the phase had just created was refused for uid 2. Rules are ORed over the
+  rules that APPLY, so a narrow rule shipped alone is a narrowing. Ship the
+  pair, in the same file, always — including for a model your own module owns.
+- **R66 — `hr.payslip.run` HAS NO CHATTER on this build.** No `mail.thread`, so
+  every `message_post` the finance pack wanted for an honest note was an
+  AttributeError — and the first live test failed twice over: once on a bad bank
+  format, and again on the note that was explaining it. Do NOT add `mail.thread`
+  to the run (P4 declined the same for `hr.full.final.settlement`, and the run
+  is worse: the payroll batch creates these in bulk). The outcome lives in a
+  `pb_pack_note` Text field on the run, surfaced on the native form, written
+  through a `_pb_note` helper that swallows its own failures. A note is a
+  courtesy and must never be able to affect an approval.
+- **R67 — a bad config value must be answered with the list of what IS
+  accepted.** `pb_comp_ben.bank_format` set to something the export wizard does
+  not know raised a raw ORM ValueError at the user. The field is now asked what
+  it accepts (`Wizard._fields['bank_format'].selection`) and the skip says so:
+  "… is not a bank this build knows. The ones it knows are acb, bidv,
+  generic, …". Any config parameter that feeds a Selection should do this.
+- **R68 — a heading that asserts a sign is wrong half the time.** A statutory
+  line entered as a POSITIVE number inflated the package under a heading that
+  read "What is taken off by law". The heading now FOLLOWS the sign — "What is
+  taken off by law" or "Paid on your behalf by law" — and the amount's help says
+  to enter a deduction as a negative. Never let a label make a promise the data
+  is free to break.
+- **R69 — a try/except around a parse swallows the permission error of the field
+  it is parsing.** `dependants()` wrapped `json.loads(enrolment.dependants_json)`
+  with the field READ inside the try, so an AccessError came out as "unreadable
+  family list" — a permission problem reported to the user as a data problem,
+  with nothing in the log to say otherwise. Read the field OUTSIDE the try; only
+  the parse belongs inside it.
+- **R70 — `done_payslip_run()` is NOT the done transition on this build.** Its
+  own docstring (`pb_payruns/models/hr_payslip_run.py:550`) says it is the
+  **draft → level0** entry; the final Finance approval that writes 'done' is
+  `action_payslip_run_level2_done` (`:472`). The P7 handover named the wrong one
+  from the method's name alone. Hooking it would have built a finance pack on
+  submission and marked awards paid before anybody had approved them. Read the
+  docstring, not the name.
+- **R71 — `payroll_import_batch._create_payslip` ALWAYS CREATES**
+  (`payroll_import_batch.py:3512`) — there is no "find the slip this run already
+  has for this person and update it" path. So processing an import batch against
+  a run that has already been computed puts a SECOND payslip on one person for
+  one month, the exact duplicate `pb_payrun_wizard._adopt_loose_slips` exists to
+  prevent — and the run an award is aimed at is by definition already computed.
+  The award lane therefore uses the one-time batch only as the audit record and
+  the safety rail (`one_time`, `auto_create_employees=False`,
+  `auto_create_contracts=False`, `create_payslips=False`), creates its lines
+  DIRECTLY rather than through a generated XLSX, and DELIVERS by merging the
+  amount into the existing payslip's `formula_input_values` **and** the run's own
+  import-line blob, then rebuilding the lines with the batch's own
+  `_compute_and_create_payslip_lines` — the function the Recalculate button uses
+  (`hr_payslip_formula.py:913`). Writing the blob too is what makes the award
+  survive a later recompute, because `action_recompute_formula_lines` re-reads
+  the sources (RD45). The value is SET, not added, so the lane is idempotent. A
+  person with no payslip in the run is REPORTED, never created. Anything that
+  needs to put a number onto an EXISTING payslip must use this lane.
+- **R72 — the pay component code is a REQUIREMENT, not a preference.** A
+  payslip's inputs are `config.rule_ids` where `column_type == 'input'`
+  (`hr_payslip_formula.py:492`). A number written under a code the run's scheme
+  has never heard of is read by nothing and lands nowhere — no error, no line,
+  no total. The feed therefore REFUSES a run whose scheme has no input component
+  with the configured code (`pb_comp_ben.incentive_code`, default `INCENTV`) and
+  the preview names the scheme that is missing it. It never auto-edits a formula
+  scheme: adding the component is a human act on the Mapping screen.
+- **R73 — `pb_payhub` had no soft lens registry.** Its eight lenses were a
+  literal array, so P7 added ONE additive edit: the exported constant
+  `PAY_LENSES = "pb_payhub_lens"` and an `extraLenses()` spread at the end of the
+  list, an exact clone of `pb_people_hub`'s (`people_hub.js:113`). The eight
+  shipped lenses carry no sequence, so bolted-on ones start at 20 (P7 took
+  **Calendar 20, Awards 30**). The edit is JS ONLY — no manifest bump — so the
+  deploy needs the asset-cache purge and never a `-u pb_payhub`, and anyone
+  verifying it should read the registry in the browser
+  (`odoo.loader.modules.get("@web/core/registry").registry.category("pb_payhub_lens")`)
+  rather than trust a version number. Same trick verifies ⌘K rows through
+  `registry.category("pb_hub_palette")`.
+- **R74 — the ESS demo passwords drift between phases.** R29's `RizeP2!2026` on
+  `ess1.demo@payobook.com` (employee 10080, uid 1984) no longer worked at P7 and
+  the portal test read as a broken route rather than a stale password. Do not
+  debug the route: set the password again as admin (`res.users.write` over
+  `call_kw`) before testing any `/my/...` surface. P7 set **`RizeP7!2026`**.
+  Owner debt, with R29's: clear these at programme end.
+- **R75 — ⌘K blocks after P6.** P7 took the **2800** block (cb_paycal 2800,
+  cb_awards 2810, cb_packages 2820, cb_benefits 2830, cb_my_pay 2840). P8 starts
+  at 2900.
