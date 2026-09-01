@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_pip_template_staff,Improvement plan template read for staff,model_pb_pip_template,base.group_user,1,0,0,0
+access_pb_pip_template_user,Improvement plan template read,model_pb_pip_template,pb_pip.group_pip_user,1,0,0,0
+access_pb_pip_template_head,Improvement plan template admin,model_pb_pip_template,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_template_line_staff,Improvement plan focus area read for staff,model_pb_pip_template_line,base.group_user,1,0,0,0
+access_pb_pip_template_line_user,Improvement plan focus area read,model_pb_pip_template_line,pb_pip.group_pip_user,1,0,0,0
+access_pb_pip_template_line_head,Improvement plan focus area admin,model_pb_pip_template_line,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_case_requester,Improvement plan the one I asked for,model_pb_pip_case,base.group_user,1,0,0,0
+access_pb_pip_case_user,Improvement plan HR,model_pb_pip_case,pb_pip.group_pip_user,1,1,1,0
+access_pb_pip_case_head,Improvement plan head of HR,model_pb_pip_case,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_objective_user,Improvement plan objective HR,model_pb_pip_objective,pb_pip.group_pip_user,1,1,1,1
+access_pb_pip_objective_head,Improvement plan objective head of HR,model_pb_pip_objective,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_checkin_user,Check-in for improvement plans,pb_lifecycle.model_pb_employee_checkin,pb_pip.group_pip_user,1,1,1,0
+access_pb_pip_checkin_head,Check-in for improvement plans head,pb_lifecycle.model_pb_employee_checkin,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_feedback_user,Evaluation form for improvement plans,pb_lifecycle.model_pb_feedback_request,pb_pip.group_pip_user,1,1,1,0
+access_pb_pip_feedback_head,Evaluation form for improvement plans head,pb_lifecycle.model_pb_feedback_request,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_letter_user,Plan letter,pb_lifecycle.model_pb_hr_letter,pb_pip.group_pip_user,1,1,1,0
+access_pb_pip_letter_head,Plan letter head,pb_lifecycle.model_pb_hr_letter,pb_pip.group_pip_head,1,1,1,1
+access_pb_pip_letter_template_user,Letter template read,pb_lifecycle.model_pb_letter_template,pb_pip.group_pip_user,1,0,0,0

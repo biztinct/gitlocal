@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Two starting points, and they are deliberately the two things
+         improvement plans are actually about: the work itself, and working
+         with the people around you. Anything more specific is a company's
+         own, which is why these are records rather than code.
+
+         COMPANY-LESS (R8). `company_id` defaults to the loading user's
+         company, so a seeded template installs onto whichever company ran
+         the install and the `['|',('company_id','=',False),...]` rule then
+         hides it from everyone else. `eval="False"` on every one, and the
+         install hook frees any that slipped through anyway.
+
+         noupdate="1" so a company that has reworded one keeps its wording
+         through every upgrade.
+
+         THE COACHING TEXT IS WHERE THE TONE IS SET. It is written as
+         something an HR person would actually say out loud, and it opens by
+         saying what this stage is NOT — because the single most useful thing
+         a coaching note can do is stop everybody in the room believing a
+         decision has already been made.
+         ================================================================== -->
+
+    <record id="pip_template_delivery" model="pb.pip.template">
+        <field name="name">Delivery and quality — 6 weeks</field>
+        <field name="sequence">10</field>
+        <field name="default_weeks">6</field>
+        <field name="checkin_freq">weekly</field>
+        <field name="company_id" eval="False"/>
+        <field name="coaching_body_html" type="html">
+            <div>
+                <p>
+                    <b>This is a conversation, not a decision.</b> Nothing has
+                    been written to anybody's record and nothing has been filed.
+                    The point of this stage is to find out what is actually in
+                    the way, and most of the time that is where it ends.
+                </p>
+                <p><b>What we talked about</b><br/>
+                   </p>
+                <p><b>What they said was getting in the way</b><br/>
+                   </p>
+                <p><b>What we agreed to try, and by when</b><br/>
+                   </p>
+                <p><b>What support they are getting</b><br/>
+                   </p>
+            </div>
+        </field>
+        <field name="focus_line_ids" eval="[
+            (0, 0, {'name': 'Work that lands on time',
+                    'description': 'Agreed dates are either met or moved before they pass, not after.',
+                    'sequence': 10}),
+            (0, 0, {'name': 'Work that comes back',
+                    'description': 'How much has to be redone, and how often the same thing is redone twice.',
+                    'sequence': 20}),
+            (0, 0, {'name': 'Saying when something is stuck',
+                    'description': 'A problem is raised while there is still time to do something about it.',
+                    'sequence': 30}),
+        ]"/>
+    </record>
+
+    <record id="pip_template_collaboration" model="pb.pip.template">
+        <field name="name">Working with the team — 4 weeks</field>
+        <field name="sequence">20</field>
+        <field name="default_weeks">4</field>
+        <field name="checkin_freq">weekly</field>
+        <field name="company_id" eval="False"/>
+        <field name="coaching_body_html" type="html">
+            <div>
+                <p>
+                    <b>This is a conversation, not a decision.</b> Nothing has
+                    been written to anybody's record and nothing has been filed.
+                    Where two people work badly together there are usually two
+                    accounts of why, and this stage exists to hear the second
+                    one.
+                </p>
+                <p><b>What we talked about</b><br/>
+                   </p>
+                <p><b>Their account of it</b><br/>
+                   </p>
+                <p><b>What we agreed to try, and by when</b><br/>
+                   </p>
+                <p><b>What their manager is doing differently</b><br/>
+                   </p>
+            </div>
+        </field>
+        <field name="focus_line_ids" eval="[
+            (0, 0, {'name': 'Answering the people who are waiting',
+                    'description': 'Messages and requests from colleagues are answered within a working day, even when the answer is &quot;not yet&quot;.',
+                    'sequence': 10}),
+            (0, 0, {'name': 'Handing work over cleanly',
+                    'description': 'The next person can pick it up without having to come back and ask.',
+                    'sequence': 20}),
+            (0, 0, {'name': 'Disagreeing in the room',
+                    'description': 'Concerns are raised with the person they are about, at the time, rather than afterwards.',
+                    'sequence': 30}),
+        ]"/>
+    </record>
+
+</odoo>
