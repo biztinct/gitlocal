@@ -39,7 +39,8 @@ def _refusal():
     return {
         'allowed': False, 'can_write': False, 'can_review': False,
         'rows': [], 'kpis': {}, 'values': [], 'cycles': [], 'states': [],
-        'outcomes': [], 'celebrations': [], 'total': 0, 'capped': False,
+        'outcomes': [], 'celebrations': [], 'celebration_total': 0,
+        'total': 0, 'capped': False,
         'currency': '', 'switches': {},
         'why': _("Recognition is looked after by the people who run it. This "
                  "screen is not part of the general HR permissions — somebody "
@@ -121,6 +122,11 @@ class PbRnr(models.AbstractModel):
             'celebrations': self._safe(
                 lambda: self.env['pb.rnr.celebration'].upcoming_celebrations(
                     days=14), []),
+            # The TRUE number, not the length of a capped strip (see
+            # `pb.rnr.celebration.count_upcoming`).
+            'celebration_total': self._safe(
+                lambda: self.env['pb.rnr.celebration'].count_upcoming(
+                    days=14), 0),
             'switches': self._switches(),
             'kpis': {
                 'this_month': len([r for r in rows
@@ -167,7 +173,7 @@ class PbRnr(models.AbstractModel):
             'nominee': nominee.name or '',
             'nominee_id': nominee.id,
             'initials': initials(nominee.name or ''),
-            'avatar': ('/web/image/hr.employee/%s/image_128' % nominee.id
+            'avatar': ('/web/image/hr.employee/%s/avatar_128' % nominee.id
                        if nominee else ''),
             'department': (nominee.department_id.name
                            if nominee and nominee.department_id else ''),
@@ -275,8 +281,13 @@ class PbRnr(models.AbstractModel):
         nominee = self.env['hr.employee'].sudo().browse(nominee_id).exists()
         if not nominee:
             raise UserError(_("That colleague could not be found."))
-        if nominee.company_id and nominator.company_id \
-                and nominee.company_id != nominator.company_id:
+        # THE COMPANY TEST IS AGAINST THE SESSION, not against the writer's own
+        # employee record. Reaching outside the companies you are signed in to
+        # is the thing that must not happen; whether an administrator's own
+        # `hr.employee` happens to sit in the empty company 1 (R16) is not a
+        # fact about who they may thank.
+        if nominee.company_id and self.env.companies.ids \
+                and nominee.company_id.id not in self.env.companies.ids:
             raise UserError(_(
                 "You can only thank a colleague in your own company."))
         rec = self.env['pb.rnr.nomination'].sudo().create({
@@ -296,29 +307,46 @@ class PbRnr(models.AbstractModel):
         """Colleagues to pick from — ACTIVE, in the caller's own company, and
         never themselves.
 
-        R27's lesson in a different shape: the list a picker offers has one job
-        and it is not the same job as the list a report groups by. Read as the
-        system (R56); the domain is the gate.
+        THE MATCH IS ACCENT-FOLDED AND THE SEARCH IS NOT `ilike`, and that is a
+        fact about this database rather than a preference: Postgres has no
+        `unaccent` extension here, so `ilike '%bui%'` does not find "Bùi" — and
+        four and a half thousand of the five thousand people on this tenant have
+        an accent in their name. Typing without diacritics is how a Vietnamese
+        keyboard is used at speed, so a picker that only matches the accented
+        spelling is a picker that finds nobody (R28, from the other direction).
+
+        `search_read` of TWO COLUMNS rather than a `search` of records: reading
+        one field of an `hr.employee` prefetches forty and about forty of those
+        sit behind payroll groups (R56), so the whole-company scan is done over
+        the two strings this needs and nothing is browsed at all.
         """
         Emp = self.env['hr.employee'].sudo()
         me = self._me()
-        company = (me.company_id or self.env.company)
-        domain = [('active', '=', True), ('company_id', '=', company.id)]
+        # THE COMPANIES THE SESSION IS IN, not the caller's own employee record.
+        # An HR administrator's `hr.employee` sits in company 1 — the empty
+        # shell the initial install left (R16) — so scoping the picker to it
+        # offers an administrator nobody at all, which is exactly what happened
+        # the first time this was tried. The cross-company rule is still
+        # enforced, at the moment of writing, where it belongs
+        # (`_create_nomination` compares nominee to nominator).
+        domain = [('active', '=', True),
+                  ('company_id', 'in', self.env.companies.ids)]
         if me:
             domain.append(('id', '!=', me.id))
-        rows = Emp.search(domain, order='name', limit=400)
+        rows = Emp.search_read(domain, ['name', 'barcode', 'department_id'],
+                               order='name')
         needle = fold(term or '')
         out = []
-        for emp in rows:
-            if needle and needle not in fold(emp.name or '') \
-                    and needle not in fold(emp.barcode or ''):
+        for row in rows:
+            if needle and needle not in fold(row.get('name') or '') \
+                    and needle not in fold(row.get('barcode') or ''):
                 continue
+            dept = row.get('department_id')
             out.append({
-                'id': emp.id, 'name': emp.name or '',
-                'code': emp.barcode or '',
-                'department': (emp.department_id.name
-                               if emp.department_id else ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'id': row['id'], 'name': row.get('name') or '',
+                'code': row.get('barcode') or '',
+                'department': dept[1] if dept else '',
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % row['id'],
             })
             if len(out) >= 25:
                 break

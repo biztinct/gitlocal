@@ -48,6 +48,7 @@ export class PbRnrBoard extends Component {
             cycles: [],
             states: [],
             celebrations: [],
+            celebrationTotal: 0,
             switches: {},
             currency: "",
             capped: false,
@@ -102,6 +103,7 @@ export class PbRnrBoard extends Component {
                 cycles: data.cycles || [],
                 states: data.states || [],
                 celebrations: data.celebrations || [],
+                celebrationTotal: data.celebration_total || 0,
                 switches: data.switches || {},
                 currency: data.currency || "",
                 capped: data.capped,
@@ -160,7 +162,8 @@ export class PbRnrBoard extends Component {
     }
 
     get celebrationLine() {
-        const n = (this.state.celebrations || []).length;
+        // The TRUE count, never the length of the capped strip beside it.
+        const n = this.state.celebrationTotal;
         if (!n) { return _t("Nobody is celebrating in the next two weeks."); }
         return n === 1
             ? _t("1 birthday or work anniversary in the next two weeks")

@@ -85,7 +85,7 @@ class PbRnrWall(models.AbstractModel):
                 'nominee': nominee.name or '',
                 'nominee_id': nominee.id,
                 'initials': initials(nominee.name or ''),
-                'avatar': ('/web/image/hr.employee/%s/image_128' % nominee.id
+                'avatar': ('/web/image/hr.employee/%s/avatar_128' % nominee.id
                            if nominee else ''),
                 'department': (nominee.department_id.name
                                if nominee and nominee.department_id else ''),
@@ -123,7 +123,7 @@ class PbRnrWall(models.AbstractModel):
             rows.append({
                 'name': emp.name or '',
                 'initials': initials(emp.name or ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
                 'value': rec.value_id.sudo().name or '',
                 'color': rec.value_id.sudo().color or 'primary',
             })
@@ -134,16 +134,34 @@ class PbRnrWall(models.AbstractModel):
 
     @api.model
     def _values(self):
-        """The values, with how often each has been reached for. The wall's own
-        quiet argument that these are not a poster."""
+        """The values, with how often each is ON THIS WALL.
+
+        NOT `pb.company.value.nomination_count`, which counts every agreed
+        story including the ones their writer asked to keep private. A chip
+        that says "Excellence 1" over a wall with no Excellence story on it is
+        two failures at once: a filter that matches nothing (R27), and a
+        quiet admission that a private story exists. The count is therefore
+        taken from `_public_domain()` — the same one clause that decides what
+        the wall shows — so the number and the tiles can never disagree.
+        """
         recs = self.env['pb.company.value'].sudo().search([
             ('active', '=', True),
             '|', ('company_id', '=', False),
             ('company_id', 'in', self.env.companies.ids),
         ], order='sequence, id')
+        Nom = self.env['pb.rnr.nomination'].sudo()
+        counts = {}
+        try:
+            groups = Nom._read_group(
+                Nom._public_domain() + [('value_id', 'in', recs.ids)],
+                ['value_id'], ['__count'])
+            counts = {val.id: n for val, n in groups}
+        except Exception:               # noqa: BLE001 — a count, never a wall
+            _logger.debug('pb_rnr: the wall could not count its values')
+            counts = {}
         return [{'id': v.id, 'name': v.name or '', 'motto': v.motto or '',
                  'icon': v.icon or 'award', 'color': v.color or 'primary',
-                 'count': v.nomination_count} for v in recs]
+                 'count': counts.get(v.id, 0)} for v in recs]
 
     @api.model
     def _me_summary(self):

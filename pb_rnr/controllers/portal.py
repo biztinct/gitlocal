@@ -128,6 +128,7 @@ class PbRnrPortal(CustomerPortal):
             return request.redirect('/my')
         Wall = request.env['pb.rnr.wall'].sudo()
         wall = Wall.get_wall()
+        team = self._team(emp)
         values = {
             'page_name': 'recognition',
             'employee': emp,
@@ -135,7 +136,8 @@ class PbRnrPortal(CustomerPortal):
             'celebrations': wall.get('celebrations') or [],
             'winners': wall.get('winners') or {},
             'values': request.env['pb.rnr'].sudo().values_list(),
-            'colleagues': self._colleagues(emp),
+            'team': team,
+            'colleagues': self._colleagues(emp, exclude=[t['id'] for t in team]),
             'waiting': self._waiting_for_me(emp),
             'received': self._mine(emp, 'nominee_id'),
             'given': self._mine(emp, 'nominator_id'),
@@ -151,19 +153,40 @@ class PbRnrPortal(CustomerPortal):
             'declined': _("Noted. Nothing about it will be shown to anybody."),
         }.get(key or '', '')
 
-    def _colleagues(self, emp):
-        """Who this person may thank: ACTIVE, in their own company, not them.
+    def _team(self, emp):
+        """The people this person sits with: their manager, and everybody who
+        reports to the same manager, and everybody who reports to them.
 
-        The whole list rather than a search box, because a portal page has no
-        typeahead worth the JavaScript and 4,500 names in a native `<select>`
-        with a browser's own type-to-find is faster than either.
+        Most praise goes to somebody near you, so these go at the TOP of the
+        picker. It is the only ergonomic move available on a page that carries
+        no JavaScript of ours, and it is the one that matters.
+        """
+        boss = emp.parent_id
+        domain = ['&', ('active', '=', True), ('id', '!=', emp.id)]
+        if boss:
+            domain += ['|', '|', ('id', '=', boss.id),
+                       ('parent_id', '=', boss.id), ('parent_id', '=', emp.id)]
+        else:
+            domain += [('parent_id', '=', emp.id)]
+        rows = request.env['hr.employee'].sudo().search(domain, order='name')
+        return [{'id': e.id, 'name': e.name or ''} for e in rows]
+
+    def _colleagues(self, emp, exclude=None):
+        """Everybody else this person may thank: ACTIVE, in their own company.
+
+        The whole list rather than a search box, because this page carries no
+        JavaScript of ours and a native `<select>` with the browser's own
+        type-to-find is faster than anything we could write — and it works with
+        a keyboard, a screen reader and no network.
         """
         rows = request.env['hr.employee'].sudo().search([
             ('active', '=', True),
             ('company_id', '=', (emp.company_id or request.env.company).id),
             ('id', '!=', emp.id),
         ], order='name')
-        return [{'id': e.id, 'name': e.name or ''} for e in rows]
+        skip = set(exclude or [])
+        return [{'id': e.id, 'name': e.name or ''}
+                for e in rows if e.id not in skip]
 
     def _waiting_for_me(self, emp):
         """A manager's own step. The record is found FROM the session person —
@@ -196,7 +219,7 @@ class PbRnrPortal(CustomerPortal):
             'id': rec.id,
             'nominee': nominee.name or '',
             'initials': initials(nominee.name or ''),
-            'avatar': ('/web/image/hr.employee/%s/image_128' % nominee.id
+            'avatar': ('/web/image/hr.employee/%s/avatar_128' % nominee.id
                        if nominee else ''),
             'nominator': nominator.name or '',
             'value': val.name or '',

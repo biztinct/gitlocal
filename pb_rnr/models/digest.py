@@ -119,7 +119,7 @@ class PbRnrDigest(models.AbstractModel):
                 'id': rec.id,
                 'nominee': nominee.name or '',
                 'initials': initials(nominee.name or ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % nominee.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % nominee.id,
                 'nominator': Nom._person(rec.nominator_id).name or '',
                 'value': val.name or '',
                 'color': val.color or 'primary',
@@ -165,7 +165,7 @@ class PbRnrDigest(models.AbstractModel):
                 'employee_id': emp.id,
                 'name': emp.name or '',
                 'initials': initials(emp.name or ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
                 'job': emp.job_title or (emp.job_id.name if emp.job_id else ''),
                 'department': (emp.department_id.name
                                if emp.department_id else ''),
@@ -202,7 +202,7 @@ class PbRnrDigest(models.AbstractModel):
             rows.append({
                 'name': emp.name or '',
                 'initials': initials(emp.name or ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
                 'value': rec.value_id.sudo().name or '',
                 'color': rec.value_id.sudo().color or 'primary',
                 'ink': value_hex(rec.value_id.sudo().color)[0],

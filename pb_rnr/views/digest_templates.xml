@@ -179,8 +179,7 @@
                         <b><t t-esc="ce['name']"/></b>
                       </td>
                       <td style="padding:5px 0;font-size:13px;color:#5B6478;text-align:right;">
-                        <t t-if="ce['kind'] == 'birthday'">Birthday</t>
-                        <t t-else=""><t t-esc="ce['years']"/> years with us</t>
+                        <t t-esc="ce['years_label']"/>
                         · <t t-esc="ce['day_label']"/>
                       </td>
                     </tr>
@@ -256,9 +255,9 @@
     <div style="margin:0;padding:0;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
       <p>Hello <t t-esc="manager"/>,</p>
       <p>
-        <t t-esc="count_line"/> in your team have something to celebrate in the
-        next week. A message from you on the day is worth more than anything
-        this system can send.
+        There <t t-if="one">is</t><t t-else="">are</t>
+        <t t-esc="count_line"/> in your team over the next week. A message from
+        you on the day is worth more than anything this system can send.
       </p>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0"
              width="100%" style="width:100%;margin:14px 0;">
@@ -267,8 +266,7 @@
             <b><t t-esc="row['name']"/></b>
           </td>
           <td style="padding:7px 0;border-bottom:1px solid #E7E5F2;font-size:13px;color:#5B6478;text-align:right;">
-            <t t-if="row['kind'] == 'birthday'">Birthday</t>
-            <t t-else=""><t t-esc="row['years']"/> years with us</t>
+            <t t-esc="row['years_label']"/>
             · <t t-esc="row['day_label']"/>
           </td>
         </tr>

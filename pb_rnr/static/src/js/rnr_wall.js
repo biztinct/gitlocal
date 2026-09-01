@@ -110,11 +110,8 @@ export class PbRnrWall extends Component {
                     got: me.received });
     }
 
-    kindLabel(row) {
-        if (row.kind === "birthday") { return _t("Birthday"); }
-        return row.years === 1 ? _t("1 year with us")
-                               : _t("%s years with us", row.years);
-    }
+    /** Built server-side, once, so four surfaces say the same thing (R46). */
+    kindLabel(row) { return row.years_label || ""; }
 
     // ----------------------------------------------------------- new praise
     openCreate() {

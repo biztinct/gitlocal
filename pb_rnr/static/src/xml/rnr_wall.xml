@@ -68,8 +68,9 @@
         <!-- ======================= the value chips ======================= -->
         <div t-if="state.values.length" class="rnw-values">
           <button t-foreach="state.values" t-as="vl" t-key="vl.id"
-                  t-attf-class="rnw-vchip rnw-vchip--{{vl.color}} {{ state.valueFilter === vl.name ? 'is-on' : '' }}"
+                  t-attf-class="rnw-vchip rnw-vchip--{{vl.color}} {{ state.valueFilter === vl.name ? 'is-on' : '' }} {{ vl.count ? '' : 'is-empty' }}"
                   t-att-title="vl.motto"
+                  t-att-disabled="!vl.count"
                   t-on-click="() => this.setValueFilter(vl.name)">
             <span class="rnw-vchip-n" t-esc="vl.name"/>
             <span class="rnw-vchip-c" t-esc="vl.count"/>
@@ -98,9 +99,7 @@
                    t-attf-style="--rnw-i: {{sty_index}}">
                 <div class="rnw-tile-h">
                   <span class="rnw-chip" t-esc="sty.value"/>
-                  <span t-if="sty.winner" class="rnw-chip rnw-chip--win">
-                    Chosen for the quarter
-                  </span>
+                  <span t-if="sty.winner" class="rnw-chip rnw-chip--win">Quarter winner</span>
                 </div>
                 <p class="rnw-story" t-esc="sty.story"/>
                 <div class="rnw-tile-f">

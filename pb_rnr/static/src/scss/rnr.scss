@@ -137,9 +137,9 @@ $rnr-colors: (
         flex-wrap: wrap;
         margin: 14px 0 4px;
         padding: 10px 14px;
-        border: 1px dashed var(--pbim-line, #E2E1EF);
+        border: 1px solid var(--pbim-line, #E2E1EF);
         border-radius: var(--pbim-r, 12px);
-        background: var(--pbim-soft2, #FAFAFE);
+        background: var(--pbim-surface, #FFFFFF);
         font-size: 12.5px;
         color: var(--pbim-muted, #64748B);
     }
@@ -243,6 +243,11 @@ $rnr-colors: (
     }
 
     .rnr-money { font-size: 13px; font-weight: 800; }
+
+    // R33 — `.pbim-badge` capitalises every word, which is right for a status
+    // word and wrong for a phrase. "Chosen For The Quarter" is how a screen
+    // announces nobody read it out loud.
+    .rnr-winner { text-transform: none; }
 
     .rnr-private {
         display: inline-flex;
@@ -604,6 +609,14 @@ $rnr-colors: (
         font-weight: 700;
         cursor: pointer;
         color: var(--pbim-text, #1B1733);
+    }
+
+    // A value nothing has been filed under yet. Still SHOWN, because the list
+    // teaches what the company says it cares about — but not offered as a
+    // filter, because a filter that matches nothing is a broken promise (R27).
+    .rnw-vchip.is-empty {
+        opacity: .5;
+        cursor: default;
     }
 
     .rnw-vchip-c {
