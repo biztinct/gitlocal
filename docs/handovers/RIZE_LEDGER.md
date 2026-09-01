@@ -178,7 +178,7 @@ without owner approval between them.
 | P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P4 | pb_offboarding — resignation, clearances, handover, the settlement gate, Exits lens, /my/resignation | **DONE** (live on `payobook`, 19.0.1.0.0, T1-T16 pass) |
 | P5 | pb_probation — policy, `pb_probation_state`, the review machine, the training gate, Probation lens, `/my/journey` card | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
-| P6 | pb_pip | pending |
+| P6 | pb_pip — coaching, the plan, the decision, `/my/growth`, its OWN group ladder | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T15 pass) |
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | pending |
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | pending |
 | P9 | pb_budget (+ budget heat view wow) | pending |
@@ -533,3 +533,84 @@ without owner approval between them.
   backfill's expensive path — the ORM pass over the exceptions — was never
   exercised at scale; the cheap path, one UPDATE over 4,537 rows, ran in
   well under a second.)
+
+### P6 (pb_pip, 2026-09-01)
+
+- **R56 — reading ONE field of an `hr.employee` reads FORTY, and about forty
+  of them are behind payroll groups.** `employee_id.name` prefetches every
+  stored field of the record, `check_field_access_rights` is applied to the
+  whole prefetch, and this build's employee carries `payroll_country`,
+  `insurance_code`, `trade_union_fee_code`, `tham_gia_bhxh` and some
+  thirty-odd more behind `groups=`. So a reader who holds a NEW module's
+  group but not the payroll ones gets `AccessError: The fields
+  "location,full_name_vn,org_employee_type,…"` — forty names nobody asked
+  for — in the middle of an action that wanted a first name. It is invisible
+  to any phase whose testers are administrators, which is every phase before
+  this one. **A module with its own group ladder must read employee
+  attributes as the system** (`pb.pip.case._person()`,
+  `pb.pip._emp()`); the security boundary stays the search that found the
+  record. The alternative — requiring the new group's holders to also hold
+  the payroll groups — hands out far more than it withholds.
+- **R57 — a `noupdate` seed is skipped only if the FILE says so AND the
+  `ir_model_data` row says so.** They are ANDed, both directions. Clearing
+  `ir_model_data.noupdate` in SQL is not enough on its own (P6 watched a
+  reworded letter template not land, twice), and neither is stripping the
+  file attribute. To genuinely reload a seeded record on this database:
+  `UPDATE ir_model_data SET noupdate=false WHERE module='<m>'`, strip
+  `noupdate="1"` from the file, `-u`, then re-sync the clean file. And
+  **restore the flags PRECISELY afterwards** — P6 set all 212 rows back to
+  `noupdate=true`, which silently froze its own `ir.ui.view` records, and the
+  next three template edits did not reach the screen. Only the genuinely
+  seeded families (`mail.template`, `pb.letter.template`, the module's own
+  seed models, `ir.config_parameter`, the `ir.rule` records inside a
+  noupdate block) want the flag set.
+- **R58 — `(0, 0, {...})` inside a one2many in a seed file mints new
+  children on EVERY load.** It is a CREATE command with nothing to match on,
+  so there is no update path: three reloads of the same data file turned
+  three focus areas into nine, and the dialog rendering them showed each one
+  three times. There is no error and the parent record looks fine. **Every
+  seeded child gets its own `<record>` and its own xmlid**, so it is matched
+  and updated like anything else.
+- **R59 — a `noupdate` config-parameter write DOES invalidate the record-rule
+  cache, so a switch expressed as a computed field on `res.users` bites
+  immediately.** `ir.rule._compute_domain` is memoised in the `default`
+  ormcache group; `ir.config_parameter.write` clears `stable`, and
+  `registry.__caches_groups__['stable'] = ('stable', 'default',
+  'templates.cached_values')`. That is what makes the shape work: a rule
+  domain of `[('requested_by_user_id', '=', user.id if
+  user.pip_manager_sees_own else -1)]` reading a non-stored computed field
+  that answers a config parameter. ONE source of truth, no sync job, no
+  toggled `ir.rule.active` to drift out of step with the setting, and no
+  re-login. Proven both ways in the same session.
+- **R60 — `ir.rule` group rules are ORed, so ADDING a narrow rule for a new
+  group SILENTLY NARROWS anyone who holds both.** P0 put only GLOBAL company
+  rules on `pb.employee.checkin` / `pb.feedback.request` / `pb.hr.letter` and
+  no group rules at all, so today a lifecycle manager sees every row. Adding
+  one rule limiting the PIP group to `pip_case_id != False` would have meant
+  a lifecycle manager who is also given the PIP group has exactly ONE
+  applicable group rule — the narrow one — and loses sight of every
+  onboarding check-in in the company. **Ship the pair**: an explicit
+  "everything" rule for the existing tiers beside the narrow one for the new
+  tier. Any phase that borrows a model from an earlier phase and wants to see
+  less of it has to do this.
+- **R61 — an Html field edited in a plain textarea shows its own tags.**
+  Obvious said out loud, invisible while the field is empty: `coaching_html`
+  looked perfect until somebody saved once and came back to
+  `<p>Spoke on the 1st.</p>` in the box they were typing in. A cockpit drawer
+  that edits prose wants a `Text` field; `Html` is for something that is
+  rendered and never re-entered, or for a surface with a real editor in it.
+- **R62 — a portal home card gated on a COUNTER is never drawn.**
+  `portal.portal_my_home` fetches its counters lazily after the page renders,
+  so at render time `growth_count` is not a number and `t-if="growth_count"`
+  is simply false. There is no error. A card whose PRESENCE is conditional
+  needs its own eagerly-computed key, set in a `home()` override on every
+  path through it (QWeb raises on a name it has never heard of, so a missing
+  key turns a hidden card into a 500 for the whole of `/my`).
+- **R63 — the lens rail label box is 60px.** "Probation" fills it exactly;
+  "Improvement plans" measured 76px and spilled outside the rail. Measure a
+  new lens label in the DOM before shipping it
+  (`getBoundingClientRect().width` against the parent's), and prefer a label
+  whose LONGEST WORD fits — the box wraps between words but never inside
+  one. P6 renamed the surface to "Growth plans", which fits at 54px and has
+  the better property of being the same phrase the employee reads on their
+  own page.
