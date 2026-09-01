@@ -145,7 +145,11 @@ class PbRnrCelebration(models.AbstractModel):
                 'department': (emp.department_id.name
                                if emp.department_id else ''),
             })
-        out.sort(key=lambda r: (r['day'], r['kind'], r['name']))
+        # SORTED BY DAY AND THEN BY NAME, never by kind. Sorting by kind puts
+        # every 'anniversary' above every 'birthday' on the same day — which is
+        # alphabetical order, not importance (R50) — and a strip capped at
+        # eight then shows nothing but anniversaries for ever.
+        out.sort(key=lambda r: (r['day'], r['name'], r['kind']))
         cap = int(limit or 0)
         return out[:cap] if cap > 0 else out
 
