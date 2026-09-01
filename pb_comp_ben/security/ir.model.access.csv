@@ -1,0 +1,23 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_employee_comp_user,Pay package pay team,model_pb_employee_comp,pb_comp_ben.group_comp_user,1,1,1,0
+access_pb_employee_comp_head,Pay package head of pay,model_pb_employee_comp,pb_comp_ben.group_comp_head,1,1,1,1
+access_pb_employee_comp_mine,Pay package my own,model_pb_employee_comp,base.group_user,1,0,0,0
+access_pb_employee_comp_line_user,Pay package line pay team,model_pb_employee_comp_line,pb_comp_ben.group_comp_user,1,1,1,1
+access_pb_employee_comp_line_head,Pay package line head of pay,model_pb_employee_comp_line,pb_comp_ben.group_comp_head,1,1,1,1
+access_pb_employee_comp_line_mine,Pay package line my own,model_pb_employee_comp_line,base.group_user,1,0,0,0
+access_pb_incentive_user,Award pay team,model_pb_incentive,pb_comp_ben.group_comp_user,1,1,1,0
+access_pb_incentive_head,Award head of pay,model_pb_incentive,pb_comp_ben.group_comp_head,1,1,1,1
+access_pb_payroll_calendar_staff,Payroll month read for staff,model_pb_payroll_calendar,base.group_user,1,0,0,0
+access_pb_payroll_calendar_user,Payroll month pay team,model_pb_payroll_calendar,pb_comp_ben.group_comp_user,1,1,1,0
+access_pb_payroll_calendar_head,Payroll month head of pay,model_pb_payroll_calendar,pb_comp_ben.group_comp_head,1,1,1,1
+access_pb_benefit_plan_staff,Benefit plan read for staff,model_pb_benefit_plan,base.group_user,1,0,0,0
+access_pb_benefit_plan_user,Benefit plan pay team,model_pb_benefit_plan,pb_comp_ben.group_comp_user,1,1,1,0
+access_pb_benefit_plan_head,Benefit plan head of pay,model_pb_benefit_plan,pb_comp_ben.group_comp_head,1,1,1,1
+access_pb_benefit_enrollment_mine,Benefit enrollment my own,model_pb_benefit_enrollment,base.group_user,1,0,0,0
+access_pb_benefit_enrollment_user,Benefit enrollment pay team,model_pb_benefit_enrollment,pb_comp_ben.group_comp_user,1,1,1,0
+access_pb_benefit_enrollment_head,Benefit enrollment head of pay,model_pb_benefit_enrollment,pb_comp_ben.group_comp_head,1,1,1,1
+access_cb_letter_user,Award letter,pb_lifecycle.model_pb_hr_letter,pb_comp_ben.group_comp_user,1,1,1,0
+access_cb_letter_head,Award letter head,pb_lifecycle.model_pb_hr_letter,pb_comp_ben.group_comp_head,1,1,1,1
+access_cb_letter_template_user,Letter template read,pb_lifecycle.model_pb_letter_template,pb_comp_ben.group_comp_user,1,0,0,0
+access_cb_approval_log_user,Award approval trail,biz_approval_chain.model_biz_approval_step_log,pb_comp_ben.group_comp_user,1,0,1,0
+access_cb_approval_log_head,Award approval trail head,biz_approval_chain.model_biz_approval_step_log,pb_comp_ben.group_comp_head,1,0,1,0

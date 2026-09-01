@@ -51,6 +51,21 @@ import { LedgerCockpit } from "@pb_payrun_ledgers/js/ledger";
  */
 const STAGE_LENS = { 1: "run", 2: "runs", 3: "payslips", 4: "deliver", 5: "runs" };
 
+/**
+ * THE SOFT REGISTRY — the one door a later module has into this hub.
+ *
+ * The eight lenses above are declared here because this module depends on all
+ * eight cockpits. A module written AFTER the hub cannot be imported from here
+ * without inverting its own dependency, so it registers instead — the exact
+ * shape `pb_people_hub` uses for `pb_records` (`extraLenses()`, people_hub.js:113).
+ *
+ * A registered entry is `{key, icon, label, Component, groups?, props?,
+ * propsFromContext?}` added with a `{sequence}`; the shipped eight carry no
+ * sequence, so bolted-on lenses start at 20 and land after them. `groups` is
+ * advisory — every facade re-asks the question server-side (W12).
+ */
+export const PAY_LENSES = "pb_payhub_lens";
+
 export class PbPayHub extends Component {
     static template = "pb_payhub.PbPayHub";
     static components = { HubShell };
@@ -133,10 +148,21 @@ export class PbPayHub extends Component {
                                  icon: "file", model: "pb.fullfinal" }],
                     },
                 },
+                ...this.extraLenses(),
             ],
         };
 
         onWillStart(async () => { await this.loadPeriod(); });
+    }
+
+    /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
+    extraLenses() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        return registry.category(PAY_LENSES).getAll().map((def) => {
+            const props = typeof def.propsFromContext === "function"
+                ? def.propsFromContext(ctx) : (def.props || {});
+            return { ...def, props };
+        });
     }
 
     // ------------------------------------------------------------- the period

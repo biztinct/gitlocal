@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Payroll calendar lens.
+
+       Section comments are ruled with `=` and never a doubled hyphen: a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file with it (R35/W22).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in — OWL reserves those as operators (R1). The month loop is `mo`, the
+       year loop is `yr`, the log loop is `ln`.
+
+       `t-att-class` with a DICT is correct HERE and only here: this is OWL,
+       where the dict merges with the static class. In a server-side template
+       the same thing writes the Python repr into the attribute (R42).
+       ==================================================================== -->
+  <t t-name="pb_comp_ben.PbPaycalBoard">
+    <div class="pbim pbim-page pcal"
+         t-att-class="{ 'pcal--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the calendar…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader is not in the group ============ -->
+        <div t-if="!state.allowed" class="pbim-panel pcal-locked">
+          <div class="pcal-locked-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>This one is deliberately locked</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pcal-head">
+            <div class="pcal-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Payroll calendar</h1>
+              <p class="pbim-sub">When changes stop being accepted, and when
+                 people are paid.</p>
+            </div>
+            <div class="pcal-head-actions">
+              <div class="pbim-seg pcal-years">
+                <button t-foreach="state.years" t-as="yr" t-key="yr"
+                        class="pbim-segbtn"
+                        t-att-class="{ 'is-on': yr === state.year }"
+                        t-on-click="() => this.pickYear(yr)">
+                  <t t-esc="yr"/>
+                </button>
+              </div>
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the calendar again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openAll">
+                <t t-out="ic('list',15)"/> All months
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn"
+                      t-on-click="openBuild">
+                <t t-out="ic('calendar',15)"/> Plan the year
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= the countdown hero ================= -->
+          <div class="pcal-hero" t-att-class="{ 'is-idle': !state.next }">
+            <div class="pcal-hero-ic"><t t-out="ic('clock',26)"/></div>
+            <div class="pcal-hero-tx">
+              <div class="pcal-hero-n" t-if="state.next">
+                <t t-esc="state.next.days_left"/>
+                <span class="pcal-hero-u">
+                  <t t-esc="state.next.days_left === 1 ? 'day' : 'days'"/>
+                </span>
+              </div>
+              <div class="pcal-hero-l" t-esc="countdown"/>
+              <div class="pcal-hero-s" t-if="state.next">
+                Changes close <t t-esc="state.next.cutoff_label"/> ·
+                people are paid <t t-esc="state.next.pay_label"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= the reminder banner ================= -->
+          <div class="pcal-switch"
+               t-att-class="{ 'is-on': state.remindersOn }">
+            <span class="pcal-switch-ic">
+              <t t-out="ic(state.remindersOn ? 'mail' : 'eyeOff',16)"/>
+            </span>
+            <span class="pcal-switch-tx">
+              <t t-if="state.remindersOn">
+                Reminders are on — the pay team is emailed before each closing date.
+              </t>
+              <t t-else="">
+                Reminders are off. The nightly job still counts what it would have
+                sent, so nothing is a surprise when you switch it on.
+              </t>
+            </span>
+            <span class="pcal-switch-btns" t-if="state.canWrite">
+              <button class="pbim-btn-sm ghost" t-on-click="runReminders"
+                      t-att-disabled="state.busy">Run it now</button>
+              <button class="pbim-btn-sm" t-on-click="toggleReminders"
+                      t-att-disabled="state.busy">
+                <t t-esc="state.remindersOn ? 'Switch off' : 'Switch on'"/>
+              </button>
+            </span>
+          </div>
+
+          <!-- ======================= the numbers ======================= -->
+          <div class="pbim-stats pcal-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('calendar',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.planned || 0"/><span>months planned</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.ahead || 0"/><span>still ahead</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('lock',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.closed || 0"/><span>closed</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('send',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.reminders || 0"/><span>reminders sent</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================= the year strip ==================== -->
+          <div t-if="!hasMonths" class="pbim-empty pcal-empty">
+            <div class="pcal-empty-ic"><t t-out="ic('calendar',30)"/></div>
+            <h3>The year is not planned yet</h3>
+            <p>Say which day of the month changes stop being accepted and which day
+               people are paid, and Payobook builds the next twelve months for you.</p>
+            <button t-if="state.canWrite" class="pbim-btn" t-on-click="openBuild">
+              Plan the year
+            </button>
+          </div>
+
+          <div t-else="" class="pcal-strip">
+            <t t-foreach="state.months" t-as="mo" t-key="mo.id">
+              <div class="pcal-card"
+                   t-att-class="{
+                       'is-past': mo.is_past,
+                       'is-closed': mo.state === 'closed',
+                       'is-next': !!(state.next &amp;&amp; state.next.id === mo.id),
+                       'is-open': isOpen(mo) }"
+                   t-on-click="() => this.toggleMonth(mo)">
+                <div class="pcal-card-m" t-esc="mo.short"/>
+                <div class="pcal-card-rows">
+                  <div class="pcal-card-row">
+                    <span class="pcal-card-k">Closes</span>
+                    <span class="pcal-card-v" t-esc="mo.cutoff_label"/>
+                  </div>
+                  <div class="pcal-card-row">
+                    <span class="pcal-card-k">Paid</span>
+                    <span class="pcal-card-v" t-esc="mo.pay_label"/>
+                  </div>
+                </div>
+                <div class="pcal-card-foot">
+                  <span class="pbim-badge"
+                        t-att-class="{ 'ok': mo.state === 'upcoming',
+                                       'muted': mo.state === 'closed' }">
+                    <t t-esc="mo.state === 'closed' ? 'Closed' : 'Open'"/>
+                  </span>
+                  <span class="pcal-card-rem" t-if="mo.reminders">
+                    <t t-out="ic('send',12)"/><t t-esc="mo.reminders"/>
+                  </span>
+                </div>
+              </div>
+            </t>
+          </div>
+
+          <!-- ================== the open month's panel ================== -->
+          <div t-if="state.open" class="pbim-panel pcal-detail">
+            <div class="pbim-panel-h">
+              <h3 t-esc="state.open.label"/>
+              <div class="pcal-detail-btns" t-if="state.canWrite">
+                <button class="pbim-btn-sm ghost"
+                        t-if="state.open.state === 'upcoming'"
+                        t-on-click="() => this.setState(state.open, 'closed')">
+                  Close this month
+                </button>
+                <button class="pbim-btn-sm ghost"
+                        t-if="state.open.state === 'closed'"
+                        t-on-click="() => this.setState(state.open, 'upcoming')">
+                  Open it again
+                </button>
+              </div>
+            </div>
+            <div class="pcal-detail-grid">
+              <div>
+                <span class="pbim-eyebrow">Changes close</span>
+                <p t-esc="state.open.cutoff_label"/>
+              </div>
+              <div>
+                <span class="pbim-eyebrow">People are paid</span>
+                <p t-esc="state.open.pay_label"/>
+              </div>
+              <div>
+                <span class="pbim-eyebrow">Reminded before</span>
+                <p>
+                  <t t-esc="state.open.offsets.length
+                            ? state.open.offsets.join(', ') + ' days'
+                            : 'not set'"/>
+                </p>
+              </div>
+            </div>
+            <div class="pcal-log" t-if="state.open.log.length">
+              <span class="pbim-eyebrow">Reminders already sent</span>
+              <ul>
+                <li t-foreach="state.open.log" t-as="ln" t-key="ln" t-esc="ln"/>
+              </ul>
+            </div>
+            <p class="pbim-note" t-if="state.open.notes" t-esc="state.open.notes"/>
+          </div>
+
+          <!-- =================== plan the year dialog =================== -->
+          <div t-if="state.building" class="pbim-modal-scrim"
+               t-on-click="closeBuild">
+            <div class="pbim-modal pcal-modal" t-on-click.stop="() => {}">
+              <div class="pcal-modal-head">
+                <h3>Plan the year</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeBuild">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="pcal-modal-body">
+                <p class="pbim-sub">
+                  Give the two days that repeat every month. Anything already
+                  planned is left exactly as it is.
+                </p>
+                <label>
+                  <span>Changes close on day</span>
+                  <input type="number" min="1" max="28" class="pcal-in"
+                         t-att-value="state.build.cutoff"
+                         t-on-input="(ev) => this.onBuildField('cutoff', ev)"/>
+                </label>
+                <label>
+                  <span>People are paid on day</span>
+                  <input type="number" min="1" max="28" class="pcal-in"
+                         t-att-value="state.build.pay"
+                         t-on-input="(ev) => this.onBuildField('pay', ev)"/>
+                </label>
+                <label>
+                  <span>How many months</span>
+                  <input type="number" min="1" max="24" class="pcal-in"
+                         t-att-value="state.build.months"
+                         t-on-input="(ev) => this.onBuildField('months', ev)"/>
+                </label>
+                <label>
+                  <span>Remind this many days before</span>
+                  <input type="text" class="pcal-in"
+                         t-att-value="state.build.offsets"
+                         t-on-input="(ev) => this.onBuildField('offsets', ev)"/>
+                </label>
+                <p class="pbim-note">
+                  A pay day earlier in the month than the closing day means the
+                  month after — paying on the 1st against a close on the 25th is
+                  the 1st of the next month, which is what everybody means.
+                </p>
+              </div>
+              <div class="pcal-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeBuild">Cancel</button>
+                <button class="pbim-btn" t-on-click="confirmBuild"
+                        t-att-disabled="state.busy">Build it</button>
+              </div>
+            </div>
+          </div>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>
