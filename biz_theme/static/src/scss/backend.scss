@@ -1573,3 +1573,30 @@ a {
     min-width: 200px;
     max-width: 350px;
 }
+// =========================================================================
+// MONETARY FIELDS IN LARGE-DENOMINATION CURRENCIES
+//
+// The monetary widget prints its currency symbol in an absolutely positioned
+// overlay: an invisible ghost copy of the value, then the visible symbol
+// straight after it. That only reads correctly while the field is wide
+// enough to hold value AND symbol — the ghost carries `max-width: 100%`, so
+// in a field that is too narrow it is CLAMPED, and the symbol is drawn on
+// top of the last digits instead of after them.
+//
+// Odoo's `o_hr_narrow_field` caps the contract wage at 128px, which is
+// generous for 5,000.00 and far too small for 12,200,000 ₫ — the wage read
+// as `12,200,00₫` with the symbol sitting over the final digit (found live
+// 2026-09-01). VND, IDR, KHR and VND-sized amounts are the norm in this
+// product, not the exception, so the cap is lifted and a floor set instead;
+// the row that hosts it (`o_row mw-50`, e.g. wage + "/ month") is released
+// from its half-width cap in the same breath, or the suffix wraps onto its
+// own line.
+// =========================================================================
+.o_field_monetary.o_hr_narrow_field {
+    max-width: none !important;
+    min-width: 9.5rem !important;
+}
+
+.o_row.mw-50:has(.o_field_monetary) {
+    max-width: 100% !important;
+}
