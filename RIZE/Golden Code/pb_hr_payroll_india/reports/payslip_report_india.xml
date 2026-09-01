@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- India Payslip Report Template -->
+    <template id="report_payslip_india">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    
+                    <!-- Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                                <h2 style="margin: 0;"><strong><span t-field="o.company_id.name"/></strong></h2>
+                                <p style="margin: 5px 0;">SALARY SLIP</p>
+                                <p style="margin: 0;">For the period: <span t-field="o.date_from"/> to <span t-field="o.date_to"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Employee Information -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="40%"><strong>Employee Name:</strong></td>
+                                    <td><span t-field="o.employee_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Employee ID:</strong></td>
+                                    <td><span t-field="o.employee_id.employee_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Designation:</strong></td>
+                                    <td><span t-field="o.employee_id.job_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Department:</strong></td>
+                                    <td><span t-field="o.employee_id.department_id.name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="40%"><strong>Date of Joining:</strong></td>
+                                    <td><span t-field="o.contract_id.date_start"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>PAN Number:</strong></td>
+                                    <td><span t-field="o.contract_id.pan_number"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UAN Number:</strong></td>
+                                    <td><span t-field="o.contract_id.uan_number"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Working Days:</strong></td>
+                                    <td><span t-field="o.worked_days_line_ids[0].number_of_days" t-options="{'widget': 'float', 'precision': 0}"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Payslip Details -->
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table table-sm" style="border: 1px solid #000;">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th style="border: 1px solid #000; padding: 8px; width: 50%;">EARNINGS</th>
+                                        <th style="border: 1px solid #000; padding: 8px; text-align: right; width: 20%;">AMOUNT (₹)</th>
+                                        <th style="border: 1px solid #000; padding: 8px; width: 50%;">DEDUCTIONS</th>
+                                        <th style="border: 1px solid #000; padding: 8px; text-align: right; width: 20%;">AMOUNT (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Earnings and Deductions Side by Side -->
+                                    <t t-set="earnings" t-value="o.line_ids.filtered(lambda x: x.category_id.code in ['IND_BASIC', 'IND_ALLOW', 'IND_GROSS'])"/>
+                                    <t t-set="deductions" t-value="o.line_ids.filtered(lambda x: x.category_id.code in ['IND_DED', 'IND_PF', 'IND_TAX'] and x.total &lt; 0)"/>
+                                    <t t-set="max_lines" t-value="max(len(earnings), len(deductions))"/>
+                                    
+                                    <t t-foreach="range(max_lines)" t-as="i">
+                                        <tr>
+                                            <!-- Earnings Column -->
+                                            <td style="border: 1px solid #000; padding: 5px;">
+                                                <t t-if="i &lt; len(earnings)">
+                                                    <span t-field="earnings[i].name"/>
+                                                </t>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 5px; text-align: right;">
+                                                <t t-if="i &lt; len(earnings)">
+                                                    <span t-field="earnings[i].total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                </t>
+                                            </td>
+                                            
+                                            <!-- Deductions Column -->
+                                            <td style="border: 1px solid #000; padding: 5px;">
+                                                <t t-if="i &lt; len(deductions)">
+                                                    <span t-field="deductions[i].name"/>
+                                                </t>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 5px; text-align: right;">
+                                                <t t-if="i &lt; len(deductions)">
+                                                    <span t-esc="abs(deductions[i].total)" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    
+                                    <!-- Totals Row -->
+                                    <tr style="background-color: #f8f9fa; font-weight: bold;">
+                                        <td style="border: 1px solid #000; padding: 8px;">TOTAL EARNINGS</td>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-set="total_earnings" t-value="sum(earnings.mapped('total'))"/>
+                                            <span t-esc="total_earnings" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">TOTAL DEDUCTIONS</td>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-set="total_deductions" t-value="abs(sum(deductions.mapped('total')))"/>
+                                            <span t-esc="total_deductions" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Net Pay -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <table class="table table-sm" style="border: 2px solid #000;">
+                                <tr style="background-color: #e9ecef; font-weight: bold; font-size: 16px;">
+                                    <td style="border: 1px solid #000; padding: 10px; width: 50%;">NET PAY</td>
+                                    <td style="border: 1px solid #000; padding: 10px; text-align: right; width: 50%;">
+                                        <t t-set="net_pay_line" t-value="o.line_ids.filtered(lambda x: x.code == 'NETPAY')"/>
+                                        <span t-field="net_pay_line[0].total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Net Pay in Words -->
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <p><strong>Net Pay in Words:</strong> 
+                                <t t-set="net_amount" t-value="net_pay_line[0].total if net_pay_line else 0"/>
+                                <span t-esc="o.company_id.currency_id.amount_to_text(net_amount)"/>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Employer Contributions -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5>Employer Contributions</h5>
+                            <table class="table table-sm table-bordered">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th>Contribution Type</th>
+                                        <th class="text-right">Amount (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="employer_contributions" t-value="o.line_ids.filtered(lambda x: x.category_id.code == 'IND_EMP_CONTRIB')"/>
+                                    <t t-foreach="employer_contributions" t-as="contrib">
+                                        <tr>
+                                            <td><span t-field="contrib.name"/></td>
+                                            <td class="text-right">
+                                                <span t-field="contrib.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <p><strong>Generated on:</strong> <span t-esc="datetime.datetime.now().strftime('%d-%m-%Y %H:%M')"/></p>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p><strong>Authorized Signatory</strong></p>
+                            <br/>
+                            <p>_____________________</p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Report Action -->
+    <record id="action_report_payslip_india" model="ir.actions.report">
+        <field name="name">India Payslip</field>
+        <field name="model">hr.payslip</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_india.report_payslip_india</field>
+        <field name="report_file">pb_hr_payroll_india.report_payslip_india</field>
+        <field name="binding_model_id" ref="om_hr_payroll.model_hr_payslip"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_a4"/>
+    </record>
+    
+</odoo>
