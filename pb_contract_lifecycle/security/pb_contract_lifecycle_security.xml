@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         NO NEW GROUP LADDER. A contract decision is not a separate
+         permission from the rest of the employee lifecycle — this board
+         lives inside the Lifecycle hub and asks a question about the same
+         people — so these two models ride P0's user / manager /
+         administrator tiers. P3, P4 and P5 all made the same call for the
+         same reason: a seventh ladder would be a group nobody would know
+         to grant, and the first symptom would be an empty board on a
+         database full of contracts about to run out.
+
+         WHY THERE ARE `base.group_user` ROWS IN THE ACCESS LIST AT ALL.
+         The person who agrees an extension is the employee's OWN MANAGER,
+         who is not in the HR team by definition. An approval only the HR
+         team can give is an approval HR gives, which is not a manager's
+         judgement — it is HR's. So a plain internal user may see and act
+         on the decisions of the people who report to them, and nothing
+         else.
+
+         Granted at the ACCESS-LIST level and narrowed HERE, which is the
+         standard shape: the list says what the model allows, the rule says
+         which rows.
+         ================================================================== -->
+
+    <record id="rule_contract_review_company" model="ir.rule">
+        <field name="name">Contract decision: company</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_contract_extension_company" model="ir.rule">
+        <field name="name">Extension request: company</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE DECISION.
+
+         SHIP THE PAIR, ALWAYS (R60/R65). `ir.rule` group rules are ORed
+         over the rules that APPLY, so a narrow rule shipped on its own is
+         a NARROWING: an HR person who also holds the plain internal-user
+         tier would have exactly one applicable group rule — the tight one
+         — and would lose sight of every contract in the company. The wide
+         rule beside it is not redundant; it is what makes the narrow one
+         safe to add.
+         ================================================================== -->
+
+    <record id="rule_contract_review_own" model="ir.rule">
+        <field name="name">Contract decision: mine and my team's</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id), ('manager_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_contract_review_all" model="ir.rule">
+        <field name="name">Contract decision: the HR team</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_contract_extension_own" model="ir.rule">
+        <field name="name">Extension request: mine and my team's</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id), ('approver_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_contract_extension_all" model="ir.rule">
+        <field name="name">Extension request: the HR team</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+</odoo>
