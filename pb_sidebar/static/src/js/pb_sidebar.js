@@ -150,7 +150,13 @@ export class PbSidebar extends Component {
             const ctrl = this.actionService.currentController;
             const a = ctrl && ctrl.action;
             const isPb = (s) => typeof s === "string" &&
-                (s.startsWith("pb_") || s.includes("pb_hr_payroll") ||
+                // `pb_` catches tags and xmlids; `pb.` catches res_models —
+                // a cockpit that opens `pb.probation.review` is every bit as
+                // much ours as one whose tag is `pb_probation_board`, and
+                // leaving the dotted form out is what first hid the rail
+                // behind "Open the review".
+                (s.startsWith("pb_") || s.startsWith("pb.") ||
+                 s.includes("pb_hr_payroll") ||
                  // match both underscore (tag/xmlid) and dotted (res_model) forms,
                  // e.g. res_model "hr.payslip.run" opened via doAction from the wizard.
                  s.includes("hr_payslip") || s.includes("hr.payslip"));
@@ -171,9 +177,57 @@ export class PbSidebar extends Component {
             if (!visible && a && this._isClaimed(a)) {
                 visible = true;
             }
+            // ...and STAY on screen for anything opened FROM one of our
+            // surfaces.
+            //
+            // Everything above asks "is THIS action ours", which a drill-down
+            // fails: the cockpits open ordinary records — `pb.probation.review`
+            // (dotted, so the `pb_` prefix test misses it), and worse
+            // `hr.contract`, `hr.employee`, `pb.hr.letter`, which are not ours
+            // by name at all and never can be. The rail therefore vanished the
+            // moment anybody pressed "Open the review" or "Their record", and
+            // Odoo's native app menu took its place — the product changing
+            // its own chrome halfway through a click-through.
+            //
+            // The stack answers the question the name cannot. Odoo 19 keeps
+            // the WHOLE breadcrumb in the path — a review reached from the
+            // probation board is at `/bizapp/pb_probation_board/
+            // pb.probation.review/4` — so if any ancestor segment is a surface
+            // the rail owns, the rail belongs on this screen too. Reading the
+            // URL (rather than remembering "it was visible a moment ago") is
+            // deliberate: it survives a refresh and a pasted link, and it goes
+            // false by itself the moment the user leaves for another app.
+            if (!visible) visible = this._openedFromOurs();
         }
         if (this.state.visible !== visible) this.state.visible = visible;
         document.body.classList.toggle("has-pb-sidebar", visible);
+    }
+
+    /**
+     * Is any ANCESTOR of the current screen a rail surface? Splits the action
+     * path into its segments, drops the last one (that is the screen itself —
+     * already judged above, and judging it twice here would let a bare
+     * `/bizapp/hr.contract/1` typed from nowhere show the rail), and asks the
+     * same two questions of what is left: does a rail item claim it, or does
+     * it read as ours by name.
+     *
+     * Segments are `<tag>` or `<res.model>/<id>`; ids are skipped by the
+     * claim/name tests anyway, so no parsing beyond the split is needed.
+     */
+    _openedFromOurs() {
+        let path = "";
+        try { path = window.location.pathname || ""; } catch (e) { return false; }
+        const segs = path.split("/").filter(Boolean);
+        // /bizapp/<a>/<b>/<id> → ancestors are everything but the trailing
+        // screen. A depth-1 path has no ancestor and returns false here.
+        const ancestors = segs.slice(1, -1);
+        return ancestors.some((s) =>
+            this._tagIndex[s] !== undefined ||
+            this._xmlidIndex[s] !== undefined ||
+            this._modelIndex[s] !== undefined ||
+            s.startsWith("pb_") || s.startsWith("pb.") ||
+            s.includes("pb_hr_payroll") ||
+            s.includes("hr_payslip") || s.includes("hr.payslip"));
     }
 
     /**

@@ -574,6 +574,27 @@
         }
     }
 
+    // ── the monetary currency symbol must not land ON the last digit ──
+    //
+    // The monetary widget draws its symbol in an ABSOLUTELY POSITIONED overlay
+    // that is a sibling of the input: an invisible ghost copy of the value,
+    // then the visible symbol immediately after it. The symbol therefore sits
+    // in the right place ONLY while the ghost's first character starts at the
+    // exact same x as the input's first character — i.e. while the overlay and
+    // the input share their horizontal padding, which they do natively because
+    // both are plain `.o_input`.
+    //
+    // The engine gives inputs an 11px inset (1px border + 11px padding is what
+    // every other boxed field uses); the overlay kept Odoo's 8px. Three pixels
+    // of drift is enough to print "₫" over the final "0" — a wage of
+    // 17,700,000 ₫ read as `17,70Ç`, which is how this was found (live, on the
+    // contract form, 2026-09-01). Re-pin the overlay to the input's inset;
+    // never change one of these two numbers without the other.
+    .o_field_monetary > div > span.o_input {
+        padding-left: 11px !important;
+        padding-right: 11px !important;
+    }
+
     // legacy underline-style draws a stray bottom border on unfocused
     // editable field wrappers — one lone line in an otherwise boxed form
     .o_cell .o_field_widget,
