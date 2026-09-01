@@ -382,7 +382,7 @@ class PbBudgetActuals(models.AbstractModel):
                 skipped += 1
                 continue
             total += value
-        return round(total, 2), skipped
+        return (target.round(total) if target else round(total, 2)), skipped
 
     # ------------------------------------------------------------- the write
     @api.model
@@ -406,6 +406,13 @@ class PbBudgetActuals(models.AbstractModel):
             if not known:
                 out['skipped_fx'] = out.get('skipped_fx', 0) + 1
                 return rec
+            # ROUNDED TO THE ROW'S OWN CURRENCY BEFORE IT IS COMPARED, because
+            # that is what the column will hold. A Monetary in dong keeps no
+            # cents, so an unrounded 103,634,883.44 was written, read back as
+            # 103,634,883 and found "changed" on the next run — for ever. The
+            # figures were identical every time; only the count lied, which is
+            # the kind of number somebody eventually acts on.
+            value = target.round(value) if target else value
             vals = {'actual_cost': value,
                     'pb_actual_synced_on': fields.Datetime.now()}
             if heads is not None:
@@ -429,7 +436,8 @@ class PbBudgetActuals(models.AbstractModel):
             'pb_currency_id': company.currency_id.id,
             'forecast_cost': 0.0,
             'forecast_headcount': 0,
-            'actual_cost': amount,
+            'actual_cost': (company.currency_id.round(amount)
+                            if company.currency_id else amount),
             'actual_headcount': heads or 0,
             'pb_actual_synced_on': fields.Datetime.now(),
             'pb_note': _('Spend with no budget set against it.'),

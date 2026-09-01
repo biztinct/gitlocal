@@ -112,9 +112,15 @@ def type_label(key, env=None):
 
 
 def safe(fn, default=None, what='a piece of the budget board'):
-    """Every independent probe gets its OWN try/except — never a shared one."""
+    """Every independent probe gets its OWN try/except — never a shared one.
+
+    And it says so at WARNING with the traceback. A swallowed failure logged at
+    DEBUG is invisible on a live server, which turned a job that half worked
+    into a job that reported a cheerful small number — the exact shape R54 and
+    R76 both warn about, reached from a third direction.
+    """
     try:
         return fn()
-    except Exception as e:                      # noqa: BLE001
-        _logger.debug('pb_budget: %s could not be read: %s', what, e)
+    except Exception:                           # noqa: BLE001
+        _logger.warning('pb_budget: %s could not be read', what, exc_info=True)
         return default

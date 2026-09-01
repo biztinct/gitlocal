@@ -85,11 +85,21 @@ class PbBudgetFx(models.AbstractModel):
         one, which is the same lie R23 records wearing a different hat. What is
         actually being asked is whether a `res.currency.rate` row exists, so
         that is what is asked.
+
+        AND WHOSE ROW IT IS. A rate row belongs to a COMPANY, and `_get_rates`
+        reads only the rows whose company is empty or is the one being
+        converted for. So the probe asks exactly what the conversion will ask —
+        anything looser answers "known" about a rate the conversion is then not
+        allowed to use. On this tenant every rate row belongs to company 1, so
+        the operating company genuinely cannot convert, and the per-row manual
+        rate is the answer rather than a number nobody can stand behind.
         """
         if not currency:
             return False
         return bool(self.env['res.currency.rate'].sudo().search_count([
-            ('currency_id', '=', currency.id), ('name', '<=', day)]))
+            ('currency_id', '=', currency.id), ('name', '<=', day),
+            '|', ('company_id', '=', False),
+            ('company_id', '=', self.env.company.id)]))
 
     @api.model
     def rate_known(self, src, dst, date=None):
