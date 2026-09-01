@@ -151,10 +151,16 @@ class PbBudget(models.AbstractModel):
         months = self._fy_months(fy)
         cap = int(row_cap or BOARD_ROW_CAP)
 
+        # The company clause is EXPLICIT, not left to the record rule. The rule
+        # is the boundary for every other route into the model; a facade that
+        # is one day called under `sudo()` — a report render, a job, a wizard —
+        # would otherwise quietly widen to every company, which is exactly how
+        # another company's departments got into a company-scoped PDF.
         rows = self.env['wfp.budget.actual'].search([
             ('pb_budget_type', '=', btype),
             ('period_month', '>=', months[0]),
             ('period_month', '<=', months[-1]),
+            ('company_id', 'in', self.env.companies.ids),
         ], order='period_month, department_id', limit=cap)
         truncated = 1 if len(rows) >= cap else 0
 
@@ -427,6 +433,7 @@ class PbBudget(models.AbstractModel):
             ('budget_type', '=', btype),
             ('period_month', '>=', months[0]),
             ('period_month', '<=', months[-1]),
+            ('company_id', 'in', self.env.companies.ids),
         ], order='spend_date desc', limit=EXPENSE_ROW_CAP)
         return [{
             'id': r.id, 'name': r.name or '',
@@ -445,6 +452,7 @@ class PbBudget(models.AbstractModel):
             ('pb_budget_type', '=', btype),
             ('period_month', '>=', months[0]),
             ('period_month', '<=', months[-1]),
+            ('company_id', 'in', self.env.companies.ids),
         ], order='period_month, department_id', limit=BOARD_ROW_CAP)
         out = []
         for rec in recs:

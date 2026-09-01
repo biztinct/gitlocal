@@ -156,8 +156,15 @@ class PbBudgetExport(models.TransientModel):
         if not report:
             raise UserError(_("The budget report is not installed on this "
                               "system."))
-        pdf, _ext = report.sudo()._render_qweb_pdf(
-            'pb_budget.report_budget_year_document', res_ids=self.ids)
+        # NOT `sudo()`. The report re-reads the board while it renders, and a
+        # superuser env sees every company — which put another company's
+        # departments into a company-scoped person's PDF, with totals that then
+        # disagreed with the spreadsheet beside it. The render runs as the
+        # person who pressed the button, carrying their company set explicitly.
+        pdf, _ext = report.with_context(
+            allowed_company_ids=self.env.companies.ids,
+        )._render_qweb_pdf('pb_budget.report_budget_year_document',
+                           res_ids=self.ids)
         return {
             'ok': True,
             'file_b64': base64.b64encode(pdf).decode(),

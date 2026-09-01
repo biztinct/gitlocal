@@ -103,9 +103,13 @@ class PbBudgetUploadWizard(models.TransientModel):
             c.fill = fill
             c.alignment = Alignment(horizontal='center', wrap_text=True)
 
+        # `complete_name` is COMPUTED and not stored on this build, so it
+        # cannot go in an ORDER BY — the sort happens in Python, over the
+        # records, which is where a translated tree path has to be sorted
+        # anyway.
         depts = self.env['hr.department'].search(
-            [('company_id', 'in', self.env.companies.ids)],
-            order='complete_name')
+            [('company_id', 'in', self.env.companies.ids)]
+        ).sorted(lambda d: (d.complete_name or d.name or '').lower())
         row = 4
         for dept in depts:
             ws.cell(row=row, column=1, value=dept.complete_name or dept.name)
