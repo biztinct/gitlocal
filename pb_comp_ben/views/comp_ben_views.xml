@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day
+         surfaces are the two lenses on the Pay Run hub; these are the records
+         behind them, reached from the boards, from the command bar and from a
+         record's own chatter.
+
+         `<act_window>` and `<report>` shortcut tags are gone from the Odoo 19
+         data-file RNG — every action below is an explicit
+         `<record model="ir.actions.act_window">`. -->
+
+    <!-- ================================================================ -->
+    <!--  Pay packages                                                    -->
+    <!-- ================================================================ -->
+    <record id="view_pb_employee_comp_list" model="ir.ui.view">
+        <field name="name">pb.employee.comp.list</field>
+        <field name="model">pb.employee.comp</field>
+        <field name="arch" type="xml">
+            <list string="Pay packages">
+                <field name="employee_id"/>
+                <field name="effective_date"/>
+                <field name="monthly_total" optional="show"/>
+                <field name="annual_total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'superseded'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_employee_comp_form" model="ir.ui.view">
+        <field name="name">pb.employee.comp.form</field>
+        <field name="model">pb.employee.comp</field>
+        <field name="arch" type="xml">
+            <form string="Pay package">
+                <header>
+                    <button name="action_bootstrap" type="object"
+                            string="Build from the contract"
+                            invisible="state != 'draft'"/>
+                    <button name="action_activate" type="object"
+                            string="Make this the current package"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" type="object"
+                            string="Put back in preparation"
+                            invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="effective_date"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="monthly_total"/>
+                            <field name="annual_total"/>
+                            <field name="superseded_by_id" readonly="1"
+                                   invisible="not superseded_by_id"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="What it is made of">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kind"/>
+                                    <field name="amount"/>
+                                    <field name="period"/>
+                                    <field name="annual_amount" readonly="1"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note" placeholder="Anything the person should be told with it."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_employee_comp_search" model="ir.ui.view">
+        <field name="name">pb.employee.comp.search</field>
+        <field name="model">pb.employee.comp</field>
+        <field name="arch" type="xml">
+            <search string="Pay packages">
+                <field name="employee_id"/>
+                <filter name="f_active" string="Current"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="f_draft" string="Being prepared"
+                        domain="[('state', '=', 'draft')]"/>
+                <group>
+                    <filter name="g_employee" string="Person"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_employee_comp" model="ir.actions.act_window">
+        <field name="name">Pay packages</field>
+        <field name="res_model">pb.employee.comp</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_employee_comp_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write down what somebody is paid</p>
+            <p>A pay package is the whole of what a person gets — salary, benefits, perks —
+               written down on a date, so it can be shown to them and looked back at.
+               Build one from their contract and edit it from there.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Awards                                                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_incentive_list" model="ir.ui.view">
+        <field name="name">pb.incentive.list</field>
+        <field name="model">pb.incentive</field>
+        <field name="arch" type="xml">
+            <list string="Awards">
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="period_month"/>
+                <field name="source" optional="hide"/>
+                <field name="run_id" optional="show"/>
+                <field name="fulfilment" widget="badge" optional="show"
+                       decoration-success="fulfilment == 'paid'"
+                       decoration-info="fulfilment == 'queued'"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state == 'submitted'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_incentive_form" model="ir.ui.view">
+        <field name="name">pb.incentive.form</field>
+        <field name="model">pb.incentive</field>
+        <field name="arch" type="xml">
+            <form string="Award">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Send for approval" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object"
+                            string="Approve" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_refuse_chain" type="object"
+                            string="Do not approve"
+                            invisible="state not in ('draft', 'submitted')"/>
+                    <button name="action_make_letter" type="object"
+                            string="Prepare the letter again"
+                            invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="kind" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id"/>
+                            <field name="period_month"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="fulfilment" readonly="1"/>
+                            <field name="letter_id" readonly="1"/>
+                            <field name="run_id" readonly="1"/>
+                            <field name="feed_batch_ref" readonly="1"/>
+                            <field name="source" readonly="1"/>
+                            <field name="requested_by_user_id" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Why">
+                        <field name="reason" nolabel="1"
+                               placeholder="What this is for, in the words the person will read."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_incentive_search" model="ir.ui.view">
+        <field name="name">pb.incentive.search</field>
+        <field name="model">pb.incentive</field>
+        <field name="arch" type="xml">
+            <search string="Awards">
+                <field name="employee_id"/>
+                <filter name="f_waiting" string="Waiting for approval"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="f_approved" string="Approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="f_toqueue" string="Not in a pay run yet"
+                        domain="[('state', '=', 'approved'), ('fulfilment', 'in', ('pending', 'letter'))]"/>
+                <filter name="f_paid" string="Paid"
+                        domain="[('fulfilment', '=', 'paid')]"/>
+                <group>
+                    <filter name="g_employee" string="Person"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter name="g_month" string="Month"
+                            context="{'group_by': 'period_month'}"/>
+                    <filter name="g_state" string="Approval"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_incentive" model="ir.actions.act_window">
+        <field name="name">Awards</field>
+        <field name="res_model">pb.incentive</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_incentive_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has been awarded yet</p>
+            <p>A bonus, an incentive or a spot award: raise it, get it agreed, the person
+               gets a letter, and it goes into the next pay run.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Payroll months                                                  -->
+    <!-- ================================================================ -->
+    <record id="view_pb_payroll_calendar_list" model="ir.ui.view">
+        <field name="name">pb.payroll.calendar.list</field>
+        <field name="model">pb.payroll.calendar</field>
+        <field name="arch" type="xml">
+            <list string="Payroll months">
+                <field name="name"/>
+                <field name="cutoff_date"/>
+                <field name="pay_date"/>
+                <field name="country_id" optional="hide"/>
+                <field name="reminder_offset_days" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'upcoming'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_payroll_calendar_form" model="ir.ui.view">
+        <field name="name">pb.payroll.calendar.form</field>
+        <field name="model">pb.payroll.calendar</field>
+        <field name="arch" type="xml">
+            <form string="Payroll month">
+                <header>
+                    <button name="action_close" type="object"
+                            string="Close this month"
+                            invisible="state == 'closed'"/>
+                    <button name="action_reopen" type="object"
+                            string="Open it again"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="month"/>
+                            <field name="cutoff_date"/>
+                            <field name="pay_date"/>
+                        </group>
+                        <group>
+                            <field name="reminder_offset_days"/>
+                            <field name="country_id"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Reminders already sent">
+                        <field name="reminder_log" nolabel="1" readonly="1"/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_payroll_calendar" model="ir.actions.act_window">
+        <field name="name">Payroll months</field>
+        <field name="res_model">pb.payroll.calendar</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">The year is not planned yet</p>
+            <p>Say when changes stop being accepted each month and when people are paid,
+               and everybody gets reminded before the door closes.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Benefit plans                                                   -->
+    <!-- ================================================================ -->
+    <record id="view_pb_benefit_plan_list" model="ir.ui.view">
+        <field name="name">pb.benefit.plan.list</field>
+        <field name="model">pb.benefit.plan</field>
+        <field name="arch" type="xml">
+            <list string="Benefit plans">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="provider_name"/>
+                <field name="country_id" optional="hide"/>
+                <field name="enrolled_count"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_benefit_plan_form" model="ir.ui.view">
+        <field name="name">pb.benefit.plan.form</field>
+        <field name="model">pb.benefit.plan</field>
+        <field name="arch" type="xml">
+            <form string="Benefit plan">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Health cover"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="kind"/>
+                            <field name="provider_name"/>
+                            <field name="provider_url"
+                                   placeholder="https://…" widget="url"/>
+                        </group>
+                        <group>
+                            <field name="country_id"/>
+                            <field name="active"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="What it covers">
+                        <field name="coverage_html" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="People on it">
+                            <field name="enrollment_ids">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="member_ref"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_benefit_plan" model="ir.actions.act_window">
+        <field name="name">Benefit plans</field>
+        <field name="res_model">pb.benefit.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No benefit plans yet</p>
+            <p>Health cover, life cover, wellness — what the company buys, who provides it,
+               and a link people can use to make a claim.</p>
+        </field>
+    </record>
+
+    <record id="view_pb_benefit_enrollment_list" model="ir.ui.view">
+        <field name="name">pb.benefit.enrollment.list</field>
+        <field name="model">pb.benefit.enrollment</field>
+        <field name="arch" type="xml">
+            <list string="Who is covered" editable="bottom">
+                <field name="plan_id"/>
+                <field name="employee_id"/>
+                <field name="member_ref"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_benefit_enrollment" model="ir.actions.act_window">
+        <field name="name">Who is covered</field>
+        <field name="res_model">pb.benefit.enrollment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The two lenses, also reachable on their own                     -->
+    <!-- ================================================================ -->
+    <record id="action_pb_paycal" model="ir.actions.client">
+        <field name="name">Payroll calendar</field>
+        <field name="tag">pb_comp_ben_paycal</field>
+    </record>
+
+    <record id="action_pb_incentives" model="ir.actions.client">
+        <field name="name">Awards</field>
+        <field name="tag">pb_comp_ben_incentives</field>
+    </record>
+
+    <!-- The person's own page. An action record rather than a raw URL, because
+         the command palette knows exactly two doors — a client-action tag and
+         an xmlid — and nothing else. -->
+    <record id="action_my_compensation" model="ir.actions.act_url">
+        <field name="name">My pay package</field>
+        <field name="url">/my/compensation</field>
+        <field name="target">self</field>
+    </record>
+
+</odoo>

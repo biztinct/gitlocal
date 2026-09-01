@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes no
+         eval expression in a data file, so the first run is simply the next tick
+         after installation.
+
+         Everything it sends is behind `pb_comp_ben.calendar_reminders`, which
+         ships OFF. Switched off, the job still runs and COUNTS what it would
+         have sent, and logs the number — so the first thing anybody reads about
+         it is a real figure rather than silence (R54). -->
+    <record id="cron_payroll_calendar_reminders" model="ir.cron">
+        <field name="name">Payroll calendar: cut-off reminders</field>
+        <field name="model_id" ref="model_pb_payroll_calendar"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_payroll_calendar_reminders()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>
