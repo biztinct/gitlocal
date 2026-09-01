@@ -430,6 +430,7 @@ class PbExits(models.AbstractModel):
             'res_model': 'pb.journey.case',
             'res_id': int(case_id or 0),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     @api.model
@@ -441,6 +442,7 @@ class PbExits(models.AbstractModel):
             'name': _('Final settlement'),
             'res_model': 'hr.full.final.settlement',
             'view_mode': 'list,form',
+            'views': [[False, 'list'], [False, 'form']],
             'domain': [('employee_id', '=', int(employee_id or 0))],
             'context': {'search_default_employee_id': int(employee_id or 0)},
         }
@@ -455,6 +457,7 @@ class PbExits(models.AbstractModel):
             'res_model': 'pb.resignation',
             'res_id': int(resignation_id or 0),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
 

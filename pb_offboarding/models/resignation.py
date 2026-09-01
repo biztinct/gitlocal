@@ -591,6 +591,7 @@ class PbResignation(models.Model):
             'res_model': 'pb.journey.case',
             'res_id': self.case_id.id,
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     # ------------------------------------------------------------- the reader

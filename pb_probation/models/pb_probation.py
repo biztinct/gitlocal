@@ -415,6 +415,7 @@ class PbProbation(models.AbstractModel):
             'res_model': 'pb.probation.review',
             'res_id': int(review_id),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     @api.model
@@ -435,6 +436,7 @@ class PbProbation(models.AbstractModel):
             'res_model': 'hr.employee',
             'res_id': int(employee_id),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
 

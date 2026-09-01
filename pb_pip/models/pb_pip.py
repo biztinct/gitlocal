@@ -614,6 +614,7 @@ class PbPip(models.AbstractModel):
             'res_model': 'pb.pip.case',
             'res_id': int(case_id),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     @api.model
@@ -632,6 +633,7 @@ class PbPip(models.AbstractModel):
             'res_model': 'hr.employee',
             'res_id': int(employee_id),
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     # -------------------------------------------------------------- plumbing

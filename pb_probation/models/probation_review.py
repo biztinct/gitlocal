@@ -1031,6 +1031,7 @@ class PbProbationReview(models.Model):
             'res_model': 'pb.journey.case',
             'res_id': case.id,
             'view_mode': 'form',
+            'views': [[False, 'form']],
         }
 
     # ------------------------------------------------------- extension point
