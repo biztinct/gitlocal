@@ -126,11 +126,39 @@ class TestHomeHubStatic(TransactionCase):
     """The shell contract, and the promises that are absences."""
 
     def test_the_lens_order_matches_the_mockup(self):
+        """The two lenses this hub SHIPS, in the mockup's order.
+
+        Bolted-on lenses arrive through the soft registry below and are
+        deliberately not part of this assertion: they are other modules'
+        promises, not this one's.
+        """
         keys = re.findall(r'key: "(\w+)", icon: "(\w+)", label:',
                           _hub('static', 'src', 'js', 'home_hub.js'))
         self.assertEqual(
             keys, [('pulse', 'activity'), ('approvals', 'inbox')],
             'the lens order and icons are the mockup spec, not a preference')
+
+    def test_a_later_module_can_bolt_a_lens_on_without_editing_this_hub(self):
+        """The soft registry, and the three pieces that make it one.
+
+        A module that mounts a lens here DEPENDS on this hub, so this hub can
+        never import it back — the registry is what lets the dependency run one
+        way only (`pb_people_hub`'s shape, and the one P7 gave `pb_payhub`).
+        Three things have to be true together and each fails silently on its
+        own: the category name is EXPORTED so the other module can name it, the
+        config SPREADS the resolved list, and the resolution happens once in
+        `extraLenses()` rather than in a getter — a fresh array per render
+        recreates every lens on every keystroke (W21).
+        """
+        src = _code(_hub('static', 'src', 'js', 'home_hub.js'))
+        self.assertIn('export const HOME_LENSES = "pb_home_hub_lens"', src,
+                      'the lens registry category must be exported by name')
+        self.assertIn('...this.extraLenses()', src,
+                      'the config must spread the registered lenses')
+        self.assertIn('extraLenses() {', src,
+                      'lenses are resolved ONCE in a method, never in a getter')
+        self.assertNotIn('get extraLenses', src,
+                         'a getter would rebuild the lens list on every render')
 
     def test_the_lens_persistence_key_is_namespaced_per_hub(self):
         src = _hub('static', 'src', 'js', 'home_hub.js')
