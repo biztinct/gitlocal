@@ -32,6 +32,18 @@ WHAT THIS MODULE IS
     recognises. Abilities are data, so covering a new one costs no release.
     Holding a role means holding ALL of it, and lending one means holding all of
     it first.
+  * **One home, with lenses over the same truth.** The roles board is the
+    Access home: a lens bar, and role cards that OPEN OUT into the three
+    questions people actually ask — what does it open on the left menu, what
+    does it let them do, and who holds it. Which screens a role opens is never
+    written down on the role: it is worked out by matching what the role
+    carries against what each left-menu entry asks for, using the left menu's
+    own rule, on the server. Re-gate a screen and every role's answer changes
+    with it, because there is only ever one answer.
+  * **A builder that shows the outcome while you build it.** "New role" is a
+    name, one honest sentence, and a list of ABILITIES to tick — never a raw
+    permission — beside a miniature of the left menu that lights up as they are
+    ticked. Nobody has to imagine what they are about to hand out.
   * **Hand-overs that take themselves back.** Somebody going away lends what
     they hold to somebody covering, until a date. Activation adds only what the
     lender ACTUALLY HOLDS — checked on the server, not just hidden in the dialog
@@ -59,7 +71,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -74,6 +86,11 @@ registry, flat fills, one accent. No emoji.
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_hub',               # HubShell's back chip, openHub, the ⌘K registry
         'pb_settings',          # the cog this module's two panels bolt onto
+        'pb_sidebar',           # the left menu the Access home reads to work
+                                # out which screens a role opens. Already here
+                                # through pb_settings; named because this
+                                # module now depends on the MODEL, not just on
+                                # whatever happens to be installed alongside.
         'pb_assets',            # `pb.asset` — the vendor_id link
         'pb_budget',            # `pb.budget.expense` — the optional vendor link
     ],
@@ -88,9 +105,11 @@ registry, flat fills, one accent. No emoji.
         'web.assets_backend': [
             'pb_vendor_access/static/src/scss/vendor_access.scss',
             # the leaf components first, then the file that names their doors
+            'pb_vendor_access/static/src/js/mini_rail.js',
             'pb_vendor_access/static/src/js/vendors_board.js',
             'pb_vendor_access/static/src/js/access_board.js',
             'pb_vendor_access/static/src/js/vendor_palette.js',
+            'pb_vendor_access/static/src/xml/mini_rail.xml',
             'pb_vendor_access/static/src/xml/vendors_board.xml',
             'pb_vendor_access/static/src/xml/access_board.xml',
         ],
