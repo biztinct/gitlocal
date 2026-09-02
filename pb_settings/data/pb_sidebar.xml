@@ -25,8 +25,32 @@
          `pb_demo` restricts this item on demo databases — see
          `pb_demo/hooks.py`, which is where the demo world's lock lives and where
          the remap from the retired ADMIN section is documented. -->
+    <!-- GATED SINCE ACCESS P4 — and gated by a ROLE ALONE, which is why nothing
+         is added to `groups_id` here.
+
+         Every other entry got an older PERMISSION written into its own hub's
+         data file, because the screens behind those entries already check one.
+         There is no such permission for this cog: the hub is explicitly not a
+         security boundary (it renders only the categories a persona can open,
+         and the target actions' own ACLs are the rail), so the honest gate is
+         the ACCESS TEAM ROLE — and a role can only be put on the row by
+         `pb_vendor_access`, which this module must never depend on. On a build
+         without the Access home this entry therefore stays as it always was.
+
+         `restricted` is the other half of the decision. Somebody who is not on
+         the access team should not simply lose the cog: they would look for it,
+         not find it, and ask. Shown LOCKED they see where the setting lives and
+         who to ask, in one line — which is the whole difference between a menu
+         that hides things and a menu that explains itself.
+
+         The message is written down rather than left to the default, because the
+         default is the demo world's upsell ("available in the full platform"),
+         and that is not true of somebody who works here and simply is not on the
+         access team. -->
     <record id="item_settings" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_admin"/>
+        <field name="restricted" eval="True"/>
+        <field name="restriction_reason">Settings is looked after by the access team. This is where it lives, and they can change anything in here for you — ask them. To hand your own access to somebody covering for you, use the search box at the top and look for "Hand my access".</field>
         <field name="name">Settings</field>
         <field name="icon">settings</field>
         <field name="sequence">10</field>

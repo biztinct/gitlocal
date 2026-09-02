@@ -329,11 +329,22 @@ class PbAccess(models.AbstractModel):
             lambda g: g in self._groups_their_other_roles_need(target, profile))
         removable -= shared
         if not removable:
+            # THE WAY OUT IS PART OF THE REFUSAL (ledger B7). Two roles made of
+            # the same permissions each point at the other, and somebody who is
+            # only told "take the other one away instead" has been sent round a
+            # circle. So the sentence names the other role AND says the thing
+            # that actually ends it.
+            others = self._roles_covering(target, profile)
+            named = ', '.join('"%s"' % (p.name or '') for p in others[:3])
             raise UserError(_(
-                "Every permission in \"%(what)s\" is also part of another role "
-                "%(who)s holds, so taking this one away would change nothing. "
-                "Take that other role away instead.",
-                what=profile.name, who=target.name or ''))
+                "Every permission in \"%(what)s\" is also part of %(others)s, "
+                "which %(who)s holds too — so taking this one away would "
+                "change nothing. Take the other one away instead, or, if the "
+                "two roles have come to mean the same thing, archive one of "
+                "them from its own card.",
+                what=profile.name,
+                others=named or _("another role"),
+                who=target.name or ''))
 
         target.write({'group_ids': [(3, g.id) for g in removable]})
         self.env['pb.access.delegation'].sudo().create({
@@ -354,6 +365,25 @@ class PbAccess(models.AbstractModel):
         return {'ok': True, 'message': _(
             "%(who)s no longer has \"%(what)s\".",
             who=target.name or '', what=profile.name)}
+
+    def _roles_covering(self, target, profile):
+        """The other roles this person fully holds that between them account for
+        every permission in `profile`.
+
+        It is the refusal's evidence: "another role" is a shrug, and the name of
+        the role somebody has to deal with is an instruction.
+        """
+        wanted = set(profile.group_ids.ids)
+        held = set(target.sudo().all_group_ids.ids)
+        out = self.env['pb.role.profile'].sudo().browse()
+        for other in self.env['pb.role.profile'].sudo().search(
+                [('active', '=', True), ('id', '!=', profile.id)],
+                order='area, sequence, name'):
+            if not other.group_ids or not set(other.group_ids.ids) <= held:
+                continue
+            if set(other.group_ids.ids) & wanted:
+                out |= other
+        return out
 
     def _groups_their_other_roles_need(self, target, profile):
         """Everything the OTHER roles this person fully holds are made of.
@@ -523,13 +553,46 @@ class PbAccess(models.AbstractModel):
         return items.filtered(lambda i: not i.parent_id)
 
     def _any_gated(self):
-        """Is ANY entry on the left menu limited to a permission at all?
+        """Is ANY entry on the left menu limited at all — by a permission OR by
+        a role?
 
         When nothing is, every "this role opens…" answer is honestly empty, and
         the screens say so in those words instead of showing a blank column.
+        The role lane counts here for the same reason it counts everywhere
+        else: an entry only the access team opens IS gated, and a screen that
+        said "nothing is limited yet" beside it would be wrong.
         """
         _sections, items = self._rail()
-        return bool(items) and any(items.mapped('groups_id'))
+        if not items:
+            return False
+        return bool(any(items.mapped('groups_id'))
+                    or any(items.filtered(lambda i: self._gate_roles_raw(i))))
+
+    def _gate_roles(self, item):
+        """The roles that open ONE entry, archived ones left out.
+
+        Same answer as the model's own `_gate_roles`, asked from the facade so
+        every derivation below reads it the one way.
+        """
+        if 'role_ids' not in item._fields:
+            return self.env['pb.role.profile'].browse()
+        # `active_test` does NOT reach into a many-to-many read — it comes off
+        # the relation table — so the archived ones are filtered by hand, here
+        # and in the model's own `_gate_roles`, which is the rule this mirrors.
+        return item.sudo().with_context(
+            active_test=False).role_ids.filtered('active')
+
+    def _gate_roles_raw(self, item):
+        """Every role written on the entry, archived ones INCLUDED.
+
+        "Is this entry gated at all" is a different question from "who gets
+        through it", and answering the first with the active list would make
+        archiving the last role on an entry open that entry to everybody — see
+        `pb.sidebar.item._gate_roles_raw`, which is the rule this mirrors.
+        """
+        if 'role_ids' not in item._fields:
+            return self.env['pb.role.profile'].browse()
+        return item.sudo().with_context(active_test=False).role_ids
 
     def _held_ids(self, groups):
         """Everything these permissions actually carry, as a set of ids.
@@ -544,12 +607,19 @@ class PbAccess(models.AbstractModel):
     def _unlocks(self, item, held):
         """The left menu's OWN test, one entry at a time.
 
-        An entry with no permissions on it is open to everybody and is
-        therefore opened by NOBODY IN PARTICULAR — it is not something a role
-        can claim credit for. An entry that names permissions is opened by
-        holding any one of them.
+        An entry with no permissions and no roles on it is open to everybody
+        and is therefore opened by NOBODY IN PARTICULAR — it is not something a
+        role can claim credit for. An entry that names permissions is opened by
+        holding any one of them; an entry that names ROLES is opened by holding
+        one of those roles in full, which is the same test the menu itself now
+        applies (`pb.sidebar.item._state_for`).
         """
-        return bool(item.groups_id) and bool(set(item.groups_id.ids) & held)
+        if item.groups_id and set(item.groups_id.ids) & held:
+            return True
+        for role in self._gate_roles(item):
+            if role.group_ids and set(role.group_ids.ids) <= held:
+                return True
+        return False
 
     def _opens_for(self, groups, rail=None):
         """Which entries on the left menu these permissions unlock.
@@ -590,7 +660,8 @@ class PbAccess(models.AbstractModel):
         if items is None:
             return []
         return [i.name or '' for i in items.filtered(
-            lambda i: not i.parent_id and not i.groups_id)]
+            lambda i: not i.parent_id and not i.groups_id
+            and not self._gate_roles_raw(i))]
 
     def _opens_hint(self, groups, rail=None):
         """"opens Pay Run and People" — the one-line version, for a tick box."""
@@ -609,9 +680,9 @@ class PbAccess(models.AbstractModel):
         an entry marked as a teaser is SHOWN to people who cannot open it, so
         "off" would be a lie about what they see.
         """
-        if not item.groups_id:
+        if not item.groups_id and not self._gate_roles_raw(item):
             return 'on', False
-        if set(item.groups_id.ids) & held:
+        if self._unlocks(item, held):
             return 'on', True
         return ('locked' if item.restricted else 'off'), False
 
@@ -837,6 +908,23 @@ class PbAccess(models.AbstractModel):
                 ', '.join('"%s"' % (g.display_name or g.name or '')
                           for g in bad)))
 
+        # TWO ROLES THAT HAND OUT EXACTLY THE SAME THING ARE ONE ROLE WITH TWO
+        # NAMES, and they are worse than that: neither can ever be taken away
+        # from somebody who holds both, because each is the reason the other's
+        # permissions have to stay (ledger A4/B7). The refusal names the role
+        # that already exists and offers the honest alternative — start from it
+        # — rather than leaving somebody to discover the deadlock months later.
+        twin = self._identical_role(abilities.group_ids)
+        if twin:
+            raise UserError(_(
+                "\"%(what)s\" would hand out exactly what \"%(twin)s\" already "
+                "hands out, down to the last permission. Two roles that mean "
+                "the same thing cannot be told apart afterwards, and neither "
+                "can be taken away from somebody who holds both. Give this one "
+                "something \"%(twin)s\" does not have — or start from "
+                "\"%(twin)s\" and change it.",
+                what=name, twin=twin.name or ''))
+
         area = area or self._dominant_area(abilities)
         last = self.env['pb.role.profile'].sudo().search(
             [('area', '=', area)], order='sequence desc', limit=1)
@@ -861,6 +949,98 @@ class PbAccess(models.AbstractModel):
             "it, so they hold it from the start.",
             what=name,
             who=counted(held, _("1 person is"), _("%s people are")))}
+
+    def _identical_role(self, groups):
+        """The active role whose permissions are EXACTLY these, if there is one.
+
+        Exactly, not "overlapping": a role that is a bigger or smaller version
+        of another is a different job and a legitimate thing to write down. It
+        is the two that are indistinguishable that cause the deadlock.
+        """
+        wanted = set(groups.ids)
+        if not wanted:
+            return self.env['pb.role.profile'].browse()
+        for other in self.env['pb.role.profile'].sudo().search(
+                [('active', '=', True)], order='area, sequence, name'):
+            if set(other.group_ids.ids) == wanted:
+                return other
+        return self.env['pb.role.profile'].browse()
+
+    @api.model
+    def archive_role(self, profile_id):
+        """Put a role away.
+
+        NOT A DELETE, AND DELIBERATELY NOT. The audit trail points at roles by
+        name and by id, and a role that has been given to somebody and taken
+        away again is part of what happened here — deleting the row would leave
+        the history saying "given X" about nothing at all. Archiving keeps the
+        record and takes the name off every screen.
+
+        IT REFUSES WHILE ANYBODY STILL HOLDS IT. Archiving does not remove a
+        single permission from a single person — it only stops the board naming
+        what they have. A role put away with four holders would leave four
+        people carrying access nobody can see or take back, which is the exact
+        opposite of what this board is for. So the refusal names them.
+        """
+        self._require_manage()
+        profile = self.env['pb.role.profile'].browse(int(profile_id or 0))
+        if not profile.exists():
+            raise UserError(_("That role is not on this system any more."))
+        profile.check_access('read')
+
+        holders = profile.holders(cap=HOLDER_CAP)
+        if holders:
+            names = ', '.join(u.name or '' for u in holders[:4])
+            more = max(0, profile.holder_count - 4)
+            raise UserError(_(
+                "%(who)s still %(has)s \"%(what)s\"%(more)s. Take it away from "
+                "them first — archiving it would leave them holding access "
+                "this board can no longer name.",
+                who=names,
+                has=_("holds") if profile.holder_count == 1 else _("hold"),
+                what=profile.name or '',
+                more=(_(" and %s more", more) if more else '')))
+
+        running = safe(
+            lambda: self.env['pb.access.delegation'].sudo().search_count(
+                [('state', '=', 'active'), ('origin', '=', 'delegation'),
+                 ('profile_ids', 'in', profile.id)]),
+            0, 'the running hand-overs of a role')
+        if running:
+            raise UserError(_(
+                "\"%s\" is part of a hand-over that is still running. End the "
+                "hand-over first — the Hand-overs tab has it.",
+                profile.name or ''))
+
+        gated = self._entries_gated_only_by(profile)
+        profile.sudo().write({'active': False})
+        message = _("\"%s\" has been put away. It is off the board, and "
+                    "everything it was ever part of is still in the history.",
+                    profile.name or '')
+        if gated:
+            # NO DEAD END. An entry whose only key has just been put away is an
+            # entry nobody but an administrator can reach, and the person who
+            # archived the role is the one person who can still fix it.
+            message = _(
+                "%(said)s One entry on the left menu was opened only by it — "
+                "%(where)s — so nobody can reach that entry now. The Screens "
+                "lens shows it with a warning.",
+                said=message, where=', '.join('"%s"' % n for n in gated))
+        return {'ok': True, 'message': message, 'gated': gated}
+
+    def _entries_gated_only_by(self, profile):
+        """The left-menu entries this role is the ONLY way into."""
+        _sections, items = self._rail()
+        if items is None:
+            return []
+        out = []
+        for item in items:
+            roles = self._gate_roles(item)
+            if not roles or item.groups_id:
+                continue
+            if set(roles.ids) == {profile.id}:
+                out.append(item.name or '')
+        return out
 
     def _dominant_area(self, abilities):
         """Where a new role belongs, if nobody said.
@@ -1177,6 +1357,462 @@ class PbAccess(models.AbstractModel):
                and (not needle or needle in fold(r['name'])
                     or needle in fold(r['login']))]
         return out[:PICKER_CAP]
+
+    # =============================================================== the screens
+    #
+    # THE THIRD QUESTION, AND THE ONE NOBODY COULD ANSWER BEFORE. The roles lens
+    # says who holds what; the people lens says what one person has; this one
+    # says WHO CAN OPEN THIS SCREEN — and it draws the left menu AS the left
+    # menu, because that is the thing everybody is already looking at.
+    #
+    # IT IS ALSO THE ONLY PLACE A GATE IS EDITED. Before this lens, changing who
+    # sees an entry meant a list view of permission-group names, which is how
+    # the live menu ended up with no gates at all: the screen that could change
+    # them was unreadable, so nobody did. Here a gate is a ROLE — a name and a
+    # sentence — and the row shows, while you edit it, who that lets in.
+    #
+    # NOT A SECOND VISIBILITY RULE. Every state on every row comes from
+    # `pb.sidebar.item.visibility_for`, the same method the real menu and the
+    # person passport ask. This section decides nothing; it reads, and it writes
+    # gates back.
+
+    def _rail_all(self):
+        """The left menu INCLUDING what is switched off.
+
+        `_rail()` hands back the live menu, which is right for every other
+        reader here and wrong for this one: an editor that hid the entries
+        somebody has switched off is an editor with no way to switch one back
+        on.
+        """
+        if 'pb.sidebar.item' not in self.env:
+            return None, None
+        sections = self.env['pb.sidebar.section'].sudo().with_context(
+            active_test=False).search([], order='sequence, id')
+        items = self.env['pb.sidebar.item'].sudo().with_context(
+            active_test=False).search([], order='section_id, sequence, id')
+        return sections, items
+
+    def _screen_roles(self, item):
+        """(the roles that open it, the ones that have been put away).
+
+        Archived roles are read back deliberately: an entry whose only key has
+        been archived is reachable by nobody, and a lens that simply showed no
+        gate would be describing it as open to everybody.
+        """
+        if 'role_ids' not in item._fields:
+            empty = self.env['pb.role.profile'].browse()
+            return empty, empty
+        every = item.sudo().with_context(active_test=False).role_ids
+        return every.filtered('active'), every.filtered(lambda r: not r.active)
+
+    def _role_chip(self, profile, archived=False):
+        return {
+            'id': profile.id,
+            'name': profile.name or '',
+            'description': profile.description or '',
+            'area': profile.area or '',
+            'area_label': area_label(profile.area, self.env),
+            'holders': safe(lambda: profile.holder_count, 0,
+                            'how many people hold a role'),
+            'archived': bool(archived),
+        }
+
+    def _roles_by_group(self):
+        """{permission id: the roles that carry it}, worked out ONCE.
+
+        Asked per entry it would be one search over the whole catalogue per row
+        on the lens, which on a menu of sixty entries is sixty searches to
+        answer one question that has the same answer every time.
+        """
+        out = {}
+        for profile in self.env['pb.role.profile'].sudo().search(
+                [('active', '=', True)], order='area, sequence, name'):
+            for group in profile.group_ids:
+                out.setdefault(group.id, []).append(profile.name or '')
+        return out
+
+    def _legacy_note(self, item, by_group=None):
+        """What the entry's older PERMISSIONS mean, said without naming one.
+
+        Raw permission-group names are exactly what this home exists to stop
+        showing people, so a permission that is part of a role is reported as
+        THAT ROLE, and one that is part of none is reported as a count. Both are
+        honest; neither is a technical name on a screen about plain English.
+        """
+        groups = item.sudo().groups_id
+        if not groups:
+            return {'n': 0, 'roles': [], 'loose': 0}
+        by_group = self._roles_by_group() if by_group is None else by_group
+        names, loose = [], 0
+        for group in groups:
+            carried = by_group.get(group.id)
+            if not carried:
+                loose += 1
+                continue
+            for name in carried:
+                if name not in names:
+                    names.append(name)
+        return {'n': len(groups), 'roles': names, 'loose': loose}
+
+    def _screen_row(self, item, states, seen_by, by_group=None):
+        active_roles, archived_roles = self._screen_roles(item)
+        legacy = self._legacy_note(item, by_group=by_group)
+        gated = bool(active_roles or archived_roles or item.sudo().groups_id)
+        chips = ([self._role_chip(r) for r in active_roles]
+                 + [self._role_chip(r, archived=True) for r in archived_roles])
+        raw = states.get(item.id, 'hidden' if item.active else 'off')
+        return {
+            'id': item.id,
+            'label': item.name or '',
+            'icon': item.icon or 'circle',
+            'section_id': item.section_id.id,
+            'parent_id': item.parent_id.id or 0,
+            'sequence': item.sequence or 0,
+            'active': bool(item.active),
+            'restricted': bool(item.restricted),
+            'everyone': not gated,
+            'gates': chips,
+            'legacy': legacy,
+            'state': ('off' if raw == 'hidden' else raw) if item.active else 'off',
+            # NOBODY CAN GET IN. Two different kinds of nobody, and they need
+            # different sentences: a gate whose roles are all archived is a
+            # mistake somebody made, and a gate whose roles are simply unheld is
+            # a role waiting to be given to somebody.
+            'dead': bool(archived_roles and not active_roles
+                         and not item.sudo().groups_id),
+            'orphan': bool(active_roles and not item.sudo().groups_id
+                           and not any(c['holders'] for c in chips)),
+            'seen_by': seen_by.get(item.id, 0),
+            'children': [],
+        }
+
+    def _seen_by_counts(self, items):
+        """{entry id: how many people with a login can open it}.
+
+        Asked the cheap way round: an entry's audience is the union of the
+        people who hold each permission on it and the people who hold each of
+        its roles, which is a handful of reads — where asking it per PERSON
+        would be one closure walk per person per entry.
+
+        AND EACH OF THOSE READS IS MADE ONCE. The same permission gates several
+        entries and the same role opens several more, so the two memos below are
+        the difference between a handful of queries and a hundred.
+        """
+        out = {}
+        admins = safe(
+            lambda: self.env.ref('base.group_system').sudo(
+            ).all_user_ids.filtered('active'),
+            None, 'who the administrators are')
+        admin_ids = set(admins.ids) if admins is not None else set()
+        everybody = safe(
+            lambda: self.env['res.users'].sudo().search_count(
+                [('active', '=', True), ('share', '=', False)]),
+            0, 'how many people have a login')
+        by_group, by_role = {}, {}
+        for item in items:
+            active_roles, _archived = self._screen_roles(item)
+            groups = item.sudo().groups_id
+            if not groups and not active_roles:
+                out[item.id] = everybody
+                continue
+            who = set(admin_ids)
+            for group in groups.sudo():
+                if group.id not in by_group:
+                    by_group[group.id] = set(safe(
+                        lambda g=group: g.all_user_ids.filtered('active').ids,
+                        [], 'who holds a permission') or [])
+                who |= by_group[group.id]
+            for profile in active_roles:
+                if profile.id not in by_role:
+                    by_role[profile.id] = set(safe(
+                        lambda p=profile: p._holder_users().filtered(
+                            'active').ids, [], 'who holds a role') or [])
+                who |= by_role[profile.id]
+            out[item.id] = len(who)
+        return out
+
+    @api.model
+    def screens_board(self, user_id=None):
+        """The left menu, drawn as the left menu, with its gates on it."""
+        self._require()
+        person = self._person(user_id)
+        sections, items = self._rail_all()
+        if sections is None:
+            return {'can_manage': self.can_manage(), 'sections': [],
+                    'roles': [], 'any_gated': False,
+                    'counts': {'entries': 0, 'gated': 0, 'everyone': 0},
+                    'seeing': {'id': person.id, 'name': person.sudo().name or '',
+                               'is_me': person.id == self.env.uid},
+                    'headline': _("There is no left menu on this system yet.")}
+
+        states = self.env['pb.sidebar.item'].sudo().visibility_for(person)
+        seen_by = self._seen_by_counts(items)
+        by_group = self._roles_by_group()
+        item_states, sec_states = states['items'], states['sections']
+
+        out, gated, everyone = [], 0, 0
+        for section in sections:
+            mine = items.filtered(lambda i, s=section: i.section_id == s)
+            rows = []
+            for item in mine.filtered(lambda i: not i.parent_id):
+                row = self._screen_row(item, item_states, seen_by, by_group)
+                row['children'] = [
+                    self._screen_row(kid, item_states, seen_by, by_group)
+                    for kid in mine.filtered(
+                        lambda c, p=item: c.parent_id == p)]
+                rows.append(row)
+                if item.active:
+                    gated += 0 if row['everyone'] else 1
+                    everyone += 1 if row['everyone'] else 0
+            if not rows:
+                continue
+            out.append({
+                'id': section.id,
+                'key': section.technical_key or '',
+                'label': section.name or '',
+                'show_label': bool(section.show_label),
+                'active': bool(section.active),
+                'restricted': sec_states.get(section.id) == 'locked',
+                'items': rows,
+            })
+        return {
+            'can_manage': self.can_manage(),
+            'sections': out,
+            'roles': [{'id': p.id, 'name': p.name or '',
+                       'description': p.description or '',
+                       'area': p.area or '',
+                       'area_label': area_label(p.area, self.env),
+                       'holders': p.holder_count}
+                      for p in self.env['pb.role.profile'].visible()],
+            'any_gated': self._any_gated(),
+            'counts': {'entries': gated + everyone, 'gated': gated,
+                       'everyone': everyone},
+            'seeing': {'id': person.id, 'name': person.sudo().name or '',
+                       'is_me': person.id == self.env.uid},
+            'headline': self._screens_headline(gated, everyone),
+        }
+
+    def _screens_headline(self, gated, everyone):
+        """ONE expression per sentence, so the spaces survive (R34)."""
+        if not gated:
+            return _("Every entry on the left menu is open to everybody with a "
+                     "login. Put a role on one and only the people who hold it "
+                     "will see it.")
+        if not everyone:
+            return _("Every entry on the left menu asks for something.")
+        return _("%(g)s on the left menu %(v)s limited to a role; %(e)s open to "
+                 "everybody with a login.",
+                 g=counted(gated, _("1 entry"), _("%s entries")),
+                 v=_("is") if gated == 1 else _("are"),
+                 e=counted(everyone, _("1 is"), _("%s are")))
+
+    @api.model
+    def screen_detail(self, item_id, user_id=None):
+        """One entry, opened out: who can reach it, through what, and what is
+        inside it."""
+        self._require()
+        item = self._screen(item_id)
+        person = self._person(user_id)
+        sections, items = self._rail_all()
+        states = self.env['pb.sidebar.item'].sudo().visibility_for(person)
+        seen_by = self._seen_by_counts(item | items.filtered(
+            lambda i, p=item: i.parent_id == p))
+
+        by_group = self._roles_by_group()
+        row = self._screen_row(item, states['items'], seen_by, by_group)
+        kids = items.filtered(lambda c, p=item: c.parent_id == p)
+        row['children'] = [
+            self._screen_row(k, states['items'], seen_by, by_group)
+            for k in kids]
+        active_roles, archived_roles = self._screen_roles(item)
+        held_ids = set(active_roles.ids) | set(archived_roles.ids)
+        row.update({
+            'section_label': item.section_id.name or '',
+            'restriction_reason': item.restriction_reason or '',
+            'who': self._who_sees(item, active_roles),
+            'options': [{'id': p.id, 'name': p.name or '',
+                         'description': p.description or '',
+                         'area': p.area or '',
+                         'area_label': area_label(p.area, self.env),
+                         'holders': p.holder_count}
+                        for p in self.env['pb.role.profile'].visible()
+                        if p.id not in held_ids],
+            'can_manage': self.can_manage(),
+        })
+        return row
+
+    def _screen(self, item_id):
+        item = self.env['pb.sidebar.item'].sudo().with_context(
+            active_test=False).browse(int(item_id or 0))
+        if not item.exists():
+            raise UserError(_("That entry is not on the left menu any more."))
+        return item
+
+    def _who_sees(self, item, active_roles):
+        """The people who can open this entry, and WHY each of them can.
+
+        Capped, because an entry open to everybody is a fact and not a list —
+        and the count beside it already says how many.
+        """
+        groups = item.sudo().groups_id
+        if not groups and not active_roles:
+            return {'everyone': True, 'rows': [], 'total': 0, 'more': 0}
+
+        by_role = {}
+        for profile in active_roles:
+            for uid in safe(
+                    lambda p=profile: p._holder_users().filtered('active').ids,
+                    [], 'who holds a role') or []:
+                by_role.setdefault(uid, []).append(profile.name or '')
+        by_group = set()
+        for group in groups.sudo():
+            by_group |= set(safe(
+                lambda g=group: g.all_user_ids.filtered('active').ids, [],
+                'who holds a permission') or [])
+        admins = set(safe(
+            lambda: self.env.ref('base.group_system').sudo(
+            ).all_user_ids.filtered('active').ids, [],
+            'who the administrators are') or [])
+
+        everybody = set(by_role) | by_group | admins
+        users = self.env['res.users'].sudo().browse(
+            sorted(everybody)).exists().filtered('active')
+        users = users.sorted(lambda u: (not bool(by_role.get(u.id)),
+                                        fold(u.name)))
+        rows = []
+        for user in users[:HOLDER_CAP]:
+            roles = by_role.get(user.id) or []
+            if roles:
+                why = _("Holds %s", ', '.join(roles))
+            elif user.id in by_group:
+                why = _("An older permission this entry has always asked for")
+            else:
+                why = _("An administrator — every entry is open to them")
+            rows.append({'id': user.id, 'name': user.name or '',
+                         'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+                         'why': why,
+                         'via_role': bool(roles)})
+        return {'everyone': False, 'rows': rows, 'total': len(users),
+                'more': max(0, len(users) - len(rows))}
+
+    # -------------------------------------------------------- changing a gate
+    @api.model
+    def set_screen_roles(self, item_id, role_ids):
+        """Say which roles open an entry.
+
+        THE PERMISSION LANE IS NOT TOUCHED. Entries carry older permission
+        groups from before roles existed, and this screen deliberately cannot
+        remove one: a lens that let somebody drop a permission they cannot see
+        the name of would take a door away from people it never showed them.
+        Those are edited on the advanced list, by an administrator, on purpose.
+        """
+        self._require_manage()
+        item = self._screen(item_id)
+        wanted = self.env['pb.role.profile'].sudo().browse(
+            [int(r) for r in (role_ids or []) if r]).exists()
+        for profile in wanted:
+            self._gateable_profile(profile)
+        before = set(self._screen_roles(item)[0].ids)
+        item.sudo().write({'role_ids': [(6, 0, wanted.ids)]})
+        after = set(wanted.ids)
+        return {'ok': True, 'message': self._gate_message(item, before, after)}
+
+    def _gateable_profile(self, profile):
+        """May this role be put on a left-menu gate?
+
+        NOT `_safe_profile`, and the difference is deliberate. That one asks
+        "may the person in front of me be handed this role", so it checks their
+        READ access — which is right for granting and wrong here: a role that is
+        only LISTED to the heads of HR (`visible_group_id`) still gates the
+        People entry, the lens already draws it on the gate, and refusing to
+        write the list back would leave somebody unable to change any OTHER gate
+        on that entry. Which roles open a menu entry is a fact about the MENU.
+
+        What is still checked is the absolute, over the whole implied closure —
+        a gate is not a way to smuggle the administrator permission onto a
+        screen — and that the role hands out anything at all.
+        """
+        if not profile.sudo().group_ids:
+            raise UserError(_(
+                "\"%s\" does not hand out anything yet, so putting it on this "
+                "entry would gate it on nothing.", profile.sudo().name or ''))
+        if forbidden_in_closure(profile.sudo().group_ids, self.env):
+            raise UserError(_(
+                "\"%s\" would carry the administrator permission for the whole "
+                "system. It is never something a role can hand out, and never "
+                "something a screen can ask for.", profile.sudo().name or ''))
+        return profile
+
+    def _gate_message(self, item, before, after):
+        """ONE expression per sentence (R34), and it says what CHANGED."""
+        added, dropped = after - before, before - after
+        what = item.name or ''
+        if added and not dropped:
+            return _("%(n)s can now open %(what)s.",
+                     n=counted(len(added), _("One more role"),
+                               _("%s more roles")), what=what)
+        if dropped and not added:
+            if not after and not item.sudo().groups_id:
+                return _("%s is open to everybody with a login again.", what)
+            return _("%(n)s no longer opens %(what)s.",
+                     n=counted(len(dropped), _("One role"), _("%s roles")),
+                     what=what)
+        if added or dropped:
+            return _("The roles that open %s have been changed.", what)
+        return _("Nothing changed — those are the roles it already asked for.")
+
+    @api.model
+    def set_screen_flags(self, item_id, active=None, restricted=None):
+        """Switch an entry on or off, and choose what people without it see."""
+        self._require_manage()
+        item = self._screen(item_id)
+        vals = {}
+        if active is not None:
+            vals['active'] = bool(active)
+        if restricted is not None:
+            vals['restricted'] = bool(restricted)
+        if not vals:
+            raise UserError(_("Nothing was asked for."))
+        item.sudo().write(vals)
+
+        if 'active' in vals:
+            return {'ok': True, 'message': (
+                _("\"%s\" is back on the left menu.", item.name or '')
+                if vals['active'] else
+                _("\"%s\" is off the left menu. Nobody sees it, and nothing "
+                  "behind it has changed — switch it back on whenever you "
+                  "want.", item.name or ''))}
+        return {'ok': True, 'message': (
+            _("People who cannot open \"%s\" now see it locked, with a note "
+              "saying what it is.", item.name or '')
+            if vals['restricted'] else
+            _("People who cannot open \"%s\" no longer see it at all.",
+              item.name or ''))}
+
+    @api.model
+    def reorder_screens(self, section_id, item_ids):
+        """Put the entries of one section in the order they were dragged into.
+
+        Numbered in TENS, so the next thing somebody adds by hand has somewhere
+        to land between two of them without renumbering the section.
+        """
+        self._require_manage()
+        section = self.env['pb.sidebar.section'].sudo().with_context(
+            active_test=False).browse(int(section_id or 0))
+        if not section.exists():
+            raise UserError(_("That block of the left menu is not here."))
+        items = self.env['pb.sidebar.item'].sudo().with_context(
+            active_test=False).browse(
+                [int(i) for i in (item_ids or []) if i]).exists()
+        stray = items.filtered(lambda i: i.section_id != section)
+        if stray:
+            raise UserError(_(
+                "\"%s\" is not in that part of the menu. Entries are reordered "
+                "inside their own block.", stray[0].name or ''))
+        for index, item in enumerate(items):
+            item.write({'sequence': (index + 1) * 10})
+        return {'ok': True,
+                'message': _("The left menu is in the new order.")}
 
     # ================================================================ exports
     @api.model

@@ -22,10 +22,31 @@
          inside the Import cockpit, and before this cutover it left the rail with
          nothing selected.
 
-         UNGATED, like every hub item — the shell gates each lens from the ACL of
-         the model behind it (W95). -->
+         GATED SINCE ACCESS P4, in TWO LANES that are read as an OR.
+
+         The lane written HERE is the older PERMISSION the payroll screens behind
+         this entry already check: anybody who works a pay run holds
+         `om_hr_payroll.group_hr_payroll_user`, directly or through the manager
+         tier that implies it, so writing it down takes the door away from nobody
+         who had a reason to be standing in it. The second lane — the ROLES that
+         open this entry — is written onto the row by `pb_vendor_access`, which
+         this module must never depend on. That is the whole reason this file
+         names a permission and not a role.
+
+         `(4, ref(…))` and never `(6, 0, …)`. This file is `noupdate="0"`, so an
+         upgrade re-asserts what is written here, and a REPLACE would drop the
+         demo persona's own group that `pb_demo` joins onto every gated entry
+         (`pb_demo/models/demo_sidebar_access.py`). An ADD leaves it alone.
+         Taking a permission back off this entry is therefore a migration, on
+         purpose: the failure that matters is a gate that widens by accident,
+         and this is the direction that cannot happen by itself.
+
+         The shell still gates each lens from the ACL of the model behind it
+         (W95). This decides only whether the door is on the wall. -->
     <record id="item_pay_run" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id"
+               eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
         <field name="name">Pay Run</field>
         <field name="icon">zap</field>
         <field name="sequence">10</field>

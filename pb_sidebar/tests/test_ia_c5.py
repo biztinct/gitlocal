@@ -18,7 +18,7 @@ thing it points at is still there).
 import os
 import re
 
-from odoo.modules.module import get_module_path
+from odoo.modules.module import get_manifest, get_module_path
 from odoo.tests import TransactionCase, tagged
 
 # ---------------------------------------------------------------------------
@@ -569,15 +569,41 @@ class TestIaCycle5Migration(TransactionCase):
                   encoding='utf-8') as fh:
             return fh.read()
 
-    def test_the_module_version_is_the_one_the_migration_lives_under(self):
-        """Odoo only runs migration scripts on a version CHANGE, so a migration
-        directory whose name is not the manifest's version is a script that
-        never runs — and nothing says so."""
+    def test_no_migration_lives_under_a_version_this_module_never_reaches(self):
+        """Odoo runs migration scripts on a version CHANGE and only up to the
+        version being installed, so a migration directory named ABOVE the
+        manifest's version is a script that never runs — and nothing says so.
+
+        WRITTEN AS AN INEQUALITY RATHER THAN AS A LITERAL, ON PURPOSE. It used
+        to assert the manifest was exactly `19.0.3.0.0`, which made every later
+        release of this module fail a test about a migration that had already
+        run everywhere — a gate that fires on the wrong event teaches people to
+        edit the gate. What actually matters is that nothing is stranded above
+        the version, and that the database is on the version the repository
+        ships.
+        """
         module = self.env['ir.module.module'].sudo().search(
             [('name', '=', 'pb_sidebar')], limit=1)
         self.assertTrue(module)
-        self.assertEqual(module.latest_version, '19.0.3.0.0')
         self.assertTrue(os.path.isdir(self.MIG))
+
+        def parts(raw):
+            """`19.0.3.1.0` and `3.1.0` are the same version — Odoo prefixes
+            the series onto a manifest that leaves it out."""
+            bits = [int(b) for b in str(raw).split('.') if b.isdigit()]
+            return tuple(bits[-3:])
+
+        manifest = parts(get_manifest('pb_sidebar')['version'])
+        self.assertEqual(parts(module.latest_version), manifest,
+                         'the database is not on the version the repository '
+                         'ships — the module has not been upgraded here')
+        root = os.path.join(get_module_path('pb_sidebar'), 'migrations')
+        stranded = [d for d in os.listdir(root)
+                    if os.path.isdir(os.path.join(root, d))
+                    and parts(d) > manifest]
+        self.assertFalse(stranded,
+                         'these migrations are named above the manifest '
+                         'version and can never run: %s' % ', '.join(stranded))
 
     def test_the_migration_agrees_with_every_data_file(self):
         """W27's warning, made a gate.

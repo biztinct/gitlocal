@@ -50,6 +50,19 @@ WHAT THIS MODULE IS
     repaints the whole home as somebody else's reality; it is a VIEW and can
     never be anything else, because nothing on this screen takes "who am I
     looking at" as an argument to a write.
+  * **The left menu, drawn as the left menu, with its gates on it.** The
+    Screens lens answers the third question — not "who holds this role" or
+    "what does this person have" but WHO SEES THIS SCREEN. Every entry is a row
+    in the rail's own order with the rail's own icon, carrying the ROLES that
+    open it, whether the person in the "see it as" picker can open it, and a
+    switch for whether it is on the menu at all. Clicking one says who can reach
+    it today and through which role, what is inside it, and what everybody else
+    sees instead. It is also the only place a gate is edited: before it, the one
+    way to change who saw an entry was a table of permission-group names, which
+    is exactly why the live menu had ended up with no gates on it at all. No
+    permission-group name appears anywhere on it — an older permission that is
+    part of a role is named as that role, and one that belongs to no role is a
+    count.
   * **A builder that shows the outcome while you build it.** "New role" is a
     name, one honest sentence, and a list of ABILITIES to tick — never a raw
     permission — beside a miniature of the left menu that lights up as they are
@@ -81,7 +94,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

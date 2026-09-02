@@ -111,6 +111,24 @@ export class PbSidebar extends Component {
 
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._onUiUpdated());
 
+        // "SOMEBODY JUST CHANGED WHO SEES WHAT — READ ME AGAIN."
+        //
+        // The rail is drawn once, on mount, because who may see what does not
+        // change while somebody is looking at a screen. There is exactly one
+        // place in the product where it does: the Access home's Screens lens,
+        // which edits these very rows. Without this, changing a gate there
+        // updated the editor and left the real menu beside it showing the old
+        // answer until a page reload — a screen contradicting itself two
+        // hundred pixels apart.
+        //
+        // A BUS EVENT AND NOT AN IMPORT. This module knows nothing about roles
+        // or about the Access home, and must not: it publishes the event name
+        // and anything that changes a rail row announces it. `_load()` asks the
+        // server the same question it asked on mount, so the answer is the real
+        // one for the real user — never a patch applied optimistically in the
+        // browser.
+        useBus(this.env.bus, "PB_SIDEBAR:RELOAD", () => this._reload());
+
         this.uid = user.userId;
 
         onMounted(async () => {
@@ -252,6 +270,28 @@ export class PbSidebar extends Component {
         this.state.sections = data;
         this.state.loaded = true;
         this._buildIndex();
+    }
+
+    /**
+     * Read the menu again, and light the right entry afterwards.
+     *
+     * The indexes are rebuilt by `_load`, so the id that was active a moment
+     * ago may no longer be in them — an entry that has just been switched off,
+     * or one the current user has just lost. `_onUiUpdated` asks the question
+     * again from the action on screen rather than trusting the old answer.
+     *
+     * A failure here leaves the LAST GOOD menu on screen and says so in the
+     * console. A rail that blanked itself on one slow answer would read as
+     * "you have lost everything", which is the one thing it must never say by
+     * accident.
+     */
+    async _reload() {
+        try {
+            await this._load();
+            this._onUiUpdated();
+        } catch (e) {
+            console.warn("pb_sidebar: the menu could not be read again", e);
+        }
     }
 
     _buildIndex() {

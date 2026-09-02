@@ -17,8 +17,22 @@
          group, every internal user for a bank-change request, the payroll/
          attendance tiers for young workers, the payroll manager for the audit
          console. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access`.
+
+         TWO permissions, because this entry really is two jobs: the filing flow
+         has its own group, and the audit console is the payroll manager's. Either
+         is enough, which keeps both of the people this entry was built for.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module. -->
     <record id="item_compliance" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_insights"/>
+        <field name="groups_id"
+               eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user')),
+                      (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
         <field name="name">Compliance</field>
         <field name="icon">shield</field>
         <field name="sequence">20</field>

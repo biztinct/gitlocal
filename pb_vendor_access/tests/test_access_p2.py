@@ -274,22 +274,27 @@ class TestTheComposer(AccessHomeCase):
         self.assertTrue(row['description'])
 
     def test_creating_writes_the_role_down_and_enrols_nobody(self):
+        # TWO abilities, and the second one is not decoration (ACCESS P4/ledger
+        # B7): a role whose permissions are EXACTLY another active role's is now
+        # refused by name, and the seeded `self.role` already carries
+        # `self.ability` on its own. Building the new one out of one more thing
+        # is what a person would do too — the refusal's own advice.
         res = self.access.create_role(
             'ZZ Built here %s' % self.stamp, 'One honest sentence.',
-            False, self.ability.ids)
+            False, (self.ability | self.empty_ability).ids)
         role = self.env['pb.role.profile'].browse(res['id'])
-        self.assertEqual(role.ability_ids, self.ability)
-        self.assertEqual(role.group_ids, self.above)
+        self.assertEqual(role.ability_ids, self.ability | self.empty_ability)
+        self.assertEqual(role.group_ids, self.above | self.unused)
         self.assertEqual(role.area, 'system')
         self.assertEqual(role.holder_count, 0)
         self.assertIn('ZZ Built here', res['message'])
         self.assertIn('Nobody holds it yet', res['message'])
 
     def test_the_message_does_not_contradict_the_board_behind_it(self):
-        self._user('Alreadyholds', self.above)
+        self._user('Alreadyholds', self.above | self.unused)
         res = self.access.create_role(
             'ZZ Already held %s' % self.stamp, 'A sentence.', False,
-            self.ability.ids)
+            (self.ability | self.empty_ability).ids)
         role = self.env['pb.role.profile'].browse(res['id'])
         self.assertEqual(role.holder_count, 1)
         self.assertNotIn('Nobody holds it yet', res['message'])
@@ -298,7 +303,7 @@ class TestTheComposer(AccessHomeCase):
     def test_it_lands_on_the_board_and_opens_out(self):
         res = self.access.create_role(
             'ZZ On the board %s' % self.stamp, 'A sentence.', False,
-            self.ability.ids)
+            (self.ability | self.empty_ability).ids)
         board = self.access.get_board()
         self.assertIn(res['id'], [row['id'] for row in board['profiles']])
         detail = self.access.role_detail(res['id'])
@@ -314,11 +319,11 @@ class TestTheComposer(AccessHomeCase):
             self.access.create_role('   ', '', False, self.ability.ids)
 
     def test_a_second_role_with_the_same_name_is_refused(self):
-        self.access.create_role('ZZ Only one %s' % self.stamp, '', False,
-                                self.ability.ids)
+        both = (self.ability | self.empty_ability).ids
+        self.access.create_role('ZZ Only one %s' % self.stamp, '', False, both)
         with self.assertRaises(UserError):
             self.access.create_role('  zz only one %s  ' % self.stamp, '',
-                                    False, self.ability.ids)
+                                    False, both)
 
     def test_the_area_is_worked_out_when_nobody_says(self):
         people = self._ability('zz-p2-people-%s' % self.stamp,
@@ -335,7 +340,8 @@ class TestTheComposer(AccessHomeCase):
 
     def test_the_area_can_be_overridden(self):
         res = self.access.create_role(
-            'ZZ Told where %s' % self.stamp, '', 'payroll', self.ability.ids)
+            'ZZ Told where %s' % self.stamp, '', 'payroll',
+            (self.ability | self.empty_ability).ids)
         self.assertEqual(
             self.env['pb.role.profile'].browse(res['id']).area, 'payroll')
 
@@ -381,5 +387,6 @@ class TestWhoMayUseTheBuilder(AccessHomeCase):
         self.assertTrue(facade.can_manage())
         self.assertTrue(facade.composer_options()['abilities'])
         res = facade.create_role('ZZ Made by the team %s' % self.stamp,
-                                 'A sentence.', False, self.ability.ids)
+                                 'A sentence.', False,
+                                 (self.ability | self.empty_ability).ids)
         self.assertTrue(res['ok'])

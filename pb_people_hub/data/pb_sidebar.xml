@@ -20,12 +20,25 @@
          `hr.contract`, and the rail's active-item index is FLAT and
          last-writer-wins (W71), so Contracts won by ordering accident.
 
-         UNGATED, like every hub item — the shell gates its lenses from the ACL
-         of the model behind each one (W95), which is a narrower and more honest
-         answer than the pb_hr_payroll_base tiers the two retired items carried
-         over `hr.employee` and `hr.contract`. -->
+         GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the other lane (the roles) is written by
+         `pb_vendor_access` onto the row.
+
+         `hr.group_hr_user` and not the pb_hr_payroll_base tiers the two retired
+         items carried: this entry is about `hr.employee` and `hr.contract`, and
+         the group whose ACL actually opens those records is the HR one. It is
+         also implied by every tier above it, so a manager keeps the door.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module.
+
+         The shell still gates its lenses from the ACL of the model behind each
+         one (W95), which stays the narrower and more honest answer about what
+         somebody can do once they are inside. -->
     <record id="item_people" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
         <field name="name">People</field>
         <field name="icon">users</field>
         <field name="sequence">20</field>

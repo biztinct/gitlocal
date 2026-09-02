@@ -57,8 +57,22 @@
          rail says the word twice. The shell's own lens rail still labels its
          approvals lens plainly "Approvals" — W38: judge an in-surface label by
          what else is visible in that surface. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access`. The "UNGATED, on purpose" note above is what was
+         true before that phase, and the reason it gives — that the seven items
+         this one replaced had five different gates between them — is exactly
+         why the lane here is the WIDEST of the seven rather than the narrowest:
+         the two attendance tiers, either of which is enough.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module. -->
     <record id="item_workforce" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id"
+               eval="[(4, ref('hr_attendance.group_hr_attendance_officer')),
+                      (4, ref('hr_attendance.group_hr_attendance_manager'))]"/>
         <field name="name">Workforce</field>
         <field name="icon">compass</field>
         <field name="sequence">30</field>

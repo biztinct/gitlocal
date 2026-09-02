@@ -27,8 +27,23 @@
          added to the CLOSED `ICONS` set in `pb_sidebar/static/src/js/pb_sidebar.js`
          in the same change; a name that is not in that set renders a plain
          circle and logs nothing at all. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access` instead. The note above about being ungated is what
+         was true before that phase; the reasoning it gives still holds for the
+         LENSES, which go on asking their own question and answering with an
+         empty board rather than an access dialog.
+
+         `hr.group_hr_user` is the lane here: a journey is about a person, every
+         lifecycle tier implies the HR one, and somebody who can open an employee
+         record is somebody who has a reason to see this door.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so a joined group survives the
+         next upgrade of this module. -->
     <record id="item_lifecycle" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
         <field name="name">Lifecycle</field>
         <field name="icon">refresh-cw</field>
         <field name="sequence">25</field>
