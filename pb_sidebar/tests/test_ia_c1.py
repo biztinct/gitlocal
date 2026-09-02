@@ -151,6 +151,15 @@ class TestIaCycle1Sidebar(TransactionCase):
         in `_buildIndex` at all — so the assertion follows the claim to the live
         item that inherited it.
         """
+        # THE CLAIM CANNOT SURVIVE A CUTOVER ON A DATABASE THAT NEVER HAD THE
+        # ENTRY THAT INHERITED IT. The claim moved from the retired Import Data
+        # entry to the Pay Run hub, and the golden template ships a smaller
+        # module set than a live tenant — no Pay Run hub, so no claimer, and no
+        # steal to find either. Skipped rather than asserted-away: "there are
+        # zero claimers" is the RIGHT answer there and the WRONG answer
+        # anywhere the Pay Run hub exists (ACCESS P6, ledger C6).
+        if not self.env.ref('pb_payhub.item_pay_run', raise_if_not_found=False):
+            self.skipTest('the Pay Run hub is not on this database')
         claimers = [i for i in self.env['pb.sidebar.item'].search([])
                     if 'hr.payroll.import.batch'
                     in {m.strip() for m in (i.match_models or '').split(',')}]

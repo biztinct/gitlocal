@@ -1212,6 +1212,9 @@ export class PbAccessBoard extends Component {
             area: source ? (source.area || "") : "",
             abilities: source ? (source.ability_ids || []).slice() : [],
             picking: false,
+            // The role this one was started from, so the comparison below
+            // stays anchored on it even after a dozen ticks.
+            fromId: source ? source.id : null,
         };
         this.state.preview = null;
         await this.refreshPreview();
@@ -1250,6 +1253,66 @@ export class PbAccessBoard extends Component {
     hasAbility(id) {
         return Boolean(this.state.composer)
             && this.state.composer.abilities.includes(id);
+    }
+
+    /**
+     * HOW WHAT IS BEING BUILT DIFFERS FROM A ROLE THAT ALREADY EXISTS.
+     *
+     * The question people actually ask in front of this dialog is not "what
+     * have I ticked" — they can see that — but "is this not just the Payroll
+     * manager role again". Two roles that grant the same things are the one
+     * mistake this screen can make that nobody notices for a year, and the
+     * refusal on Create says so far too late to be useful.
+     *
+     * So the comparison is made WHILE they tick, against the role that is
+     * closest to what they have built (or against the one they started from,
+     * which stays the anchor however far they wander). It is derived entirely
+     * from what the builder already read — every role's ability list is in
+     * `composer_options` — so it costs no call, no round trip and no new shape.
+     *
+     * A role with nothing in common is not offered: "compared with a role that
+     * shares nothing" is noise, and the honest answer there is silence.
+     */
+    get comparison() {
+        const comp = this.state.composer;
+        const options = this.state.options;
+        if (!comp || !options || !comp.abilities.length) { return null; }
+        const mine = new Set(comp.abilities);
+        const names = new Map(
+            (options.abilities || []).map((a) => [a.id, a.name]));
+        let best = null;
+        for (const role of options.roles || []) {
+            const theirs = new Set(role.ability_ids || []);
+            if (!theirs.size) { continue; }
+            let shared = 0;
+            for (const id of mine) { if (theirs.has(id)) { shared += 1; } }
+            if (!shared) { continue; }
+            // The one they started from wins any tie, and any comparison at
+            // all: wandering away from a role is exactly when the difference
+            // matters most.
+            const score = (role.id === comp.fromId ? 1000 : 0)
+                + shared / (mine.size + theirs.size - shared);
+            if (!best || score > best.score) {
+                best = { role, theirs, shared, score };
+            }
+        }
+        if (!best) { return null; }
+        const adds = [...mine].filter((id) => !best.theirs.has(id));
+        const drops = [...best.theirs].filter((id) => !mine.has(id));
+        return {
+            name: best.role.name,
+            same: !adds.length && !drops.length,
+            adds: adds.map((id) => names.get(id) || "").filter(Boolean),
+            drops: drops.map((id) => names.get(id) || "").filter(Boolean),
+        };
+    }
+
+    /** "A, B and C" — never "A, B, C" and never a bracketed count. */
+    listOf(items) {
+        const parts = (items || []).filter(Boolean);
+        if (parts.length <= 1) { return parts[0] || ""; }
+        return parts.slice(0, -1).join(", ") + _t(" and ")
+            + parts[parts.length - 1];
     }
 
     /** The abilities on offer, in their areas — an ungrouped list of thirty-five
