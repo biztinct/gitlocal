@@ -25,7 +25,7 @@
        camera when the field is unset, answers 200, and looks broken only to a
        person.
        ==================================================================== -->
-  <t t-name="pb_vendor_access.PbAccessBoard">
+  <t t-name="biz_access.PbAccessBoard">
     <div class="pbim pbim-page pbva pbva-access"
          t-att-class="{ 'pbva--embedded': props.embedded }">
 
@@ -1031,9 +1031,9 @@
             <h3>Nobody is covering for anybody</h3>
             <p>
               Going away? Hand what you can do to whoever is covering, until a
-              date. Payobook adds only what you actually hold, writes down
-              exactly what it added, and takes it back on the morning after —
-              nobody has to remember.
+              date. Only what you actually hold is added, exactly what was
+              added is written down, and it is taken back on the morning
+              after — nobody has to remember.
             </p>
             <button class="pbim-btn primary" t-on-click="openDelegate">
               Hand my access over
@@ -1404,8 +1404,8 @@
             </div>
           </div>
           <p t-if="state.hand.kind === 'temporary'" class="pbva-hint">
-            On the morning after that date, Payobook takes back exactly what it
-            gave — and only what is still there. Nobody has to remember.
+            On the morning after that date, exactly what was given is taken
+            back — and only what is still there. Nobody has to remember.
           </p>
           <p t-else="" class="pbva-hint">
             There is no end date, so it stays until somebody takes it back. If

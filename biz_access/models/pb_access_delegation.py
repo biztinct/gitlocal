@@ -41,7 +41,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import format_date
 
-from .vendor_common import (DELEGATION_KINDS, DELEGATION_STATES, counted, flag,
+from .access_common import (DELEGATION_KINDS, DELEGATION_STATES, counted, flag,
                             forbidden_in_closure, param_int)
 
 _logger = logging.getLogger(__name__)
@@ -312,11 +312,11 @@ class PbAccessDelegation(models.Model):
     def _mail(self, kind):
         """Both people are told. The recipient is passed EXPLICITLY (R6)."""
         self.ensure_one()
-        if not flag(self.env, 'pb_vendor_access.delegation_mail'):
+        if not flag(self.env, 'biz_access.delegation_mail'):
             return False
-        xmlid = ('pb_vendor_access.mail_template_delegation_ended'
+        xmlid = ('biz_access.mail_template_delegation_ended'
                  if kind == 'ended'
-                 else 'pb_vendor_access.mail_template_delegation_handed')
+                 else 'biz_access.mail_template_delegation_handed')
         template = self.env.ref(xmlid, raise_if_not_found=False)
         if not template:
             return False
@@ -456,7 +456,7 @@ class PbAccessDelegation(models.Model):
             return
         if self.env.user.has_group('base.group_system'):
             return
-        for xmlid in ('pb_vendor_access.group_access_manager',):
+        for xmlid in ('biz_access.group_access_manager',):
             group = self.env.ref(xmlid, raise_if_not_found=False)
             if group and self.env.user.has_group(xmlid):
                 return
@@ -466,4 +466,4 @@ class PbAccessDelegation(models.Model):
 
     @api.model
     def default_end_days(self):
-        return param_int(self.env, 'pb_vendor_access.default_window_days', 14)
+        return param_int(self.env, 'biz_access.default_window_days', 14)

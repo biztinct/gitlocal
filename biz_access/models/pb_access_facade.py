@@ -30,22 +30,20 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
-from .vendor_common import (DELEGATION_ROW_CAP, HOLDER_CAP, PEOPLE_CAP,
-                            PICKER_CAP, PROFILE_AREAS, area_label, counted,
-                            flag, fold, forbidden_in_closure, implied_closure,
-                            safe)
+from .access_common import (BOARD_GROUPS, DELEGATION_ROW_CAP, HOLDER_CAP,
+                            MANAGE_GROUPS, PEOPLE_CAP, PICKER_CAP, area_label,
+                            counted, flag, fold, forbidden_in_closure,
+                            implied_closure, profile_areas, safe)
 
 _logger = logging.getLogger(__name__)
 
-#: Who may open the board at all. Everybody internal, because the "Delegate my
-#: access" half is for everybody by requirement — what each person then SEES is
-#: the record rules' business.
-BOARD_GROUPS = ('base.group_user',)
-#: Who may grant and remove on somebody else's behalf.
-MANAGE_GROUPS = (
-    'pb_vendor_access.group_access_manager',
-    'pb_lifecycle.group_lifecycle_admin',
-)
+# `BOARD_GROUPS` — everybody with a login, because the "hand my access over"
+# half is for everybody by requirement — and `MANAGE_GROUPS` — who may grant
+# and remove on somebody else's behalf — are REGISTRIES in `access_common`
+# rather than literals here. An application adds its own administrator tier to
+# the manage gate with one call at import time and this module never learns its
+# name. Both are read on every call, so a registration made after this file was
+# imported still counts.
 
 
 class PbAccess(models.AbstractModel):
@@ -72,8 +70,8 @@ class PbAccess(models.AbstractModel):
         if self._is_admin() or self._has(BOARD_GROUPS):
             return
         raise AccessError(_(
-            "This board is for people with a Payobook login. Portal accounts "
-            "do not have one."))
+            "This board is for people with a full login. Portal accounts do "
+            "not have one."))
 
     @api.model
     def _require_manage(self):
@@ -431,7 +429,7 @@ class PbAccess(models.AbstractModel):
         if user.sudo().share:
             raise UserError(_(
                 "%s has an employee login only. Roles are for people who work "
-                "inside Payobook.", user.sudo().name or ''))
+                "inside this application.", user.sudo().name or ''))
         return user
 
     # ================================================================ hand-over
@@ -794,7 +792,7 @@ class PbAccess(models.AbstractModel):
         rail = self._rail()
         return {
             'areas': [{'key': key, 'label': area_label(key, self.env)}
-                      for key, _label in PROFILE_AREAS],
+                      for key, _label in profile_areas()],
             'abilities': [{'id': a.id, 'name': a.name or '',
                            'description': a.description or '',
                            'area': a.area or '',
@@ -1049,7 +1047,7 @@ class PbAccess(models.AbstractModel):
         breaks a tie — never whichever one the database happened to return
         first, which is how the same ticks land in two different places.
         """
-        order = [key for key, _label in PROFILE_AREAS]
+        order = [key for key, _label in profile_areas()]
         counts = {}
         for ability in abilities:
             if ability.area:
@@ -1818,9 +1816,9 @@ class PbAccess(models.AbstractModel):
     @api.model
     def export_roles(self):
         self._require()
-        return self.env['pb.vendor.export'].build_roles()
+        return self.env['biz.access.export'].build_roles()
 
     @api.model
     def export_delegations(self):
         self._require()
-        return self.env['pb.vendor.export'].build_delegations()
+        return self.env['biz.access.export'].build_delegations()

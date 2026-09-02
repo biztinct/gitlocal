@@ -14,6 +14,12 @@ of, saying which in the log. On the main tenant every one of them resolves; on a
 payroll-only build about half do, and the board is correspondingly shorter
 rather than broken.
 
+WHERE THIS SITS. The models, the home and the seeding machinery are
+`biz_access`, which knows no product's vocabulary. This file IS the vocabulary:
+the roles this product ships, the abilities they are built from, which of them
+open which entry on the left menu, and the bundle a tenant's own administrator
+holds. It is registered with the generic module rather than imported by it.
+
 TWO LAYERS, SEEDED IN ORDER.
 
   * **Abilities** — the small units. One sentence, an area, and the one or more
@@ -50,10 +56,11 @@ file cannot get one in.
 """
 
 import logging
-import re
-import unicodedata
 
 from odoo import SUPERUSER_ID, api
+
+from odoo.addons.biz_access.hooks import (  # noqa: F401
+    _slug, ensure_bundles, register_catalogue)
 
 _logger = logging.getLogger(__name__)
 
@@ -219,7 +226,7 @@ ROLE_ABILITY_GROUPS = {
 
     'vendor-owner': ('pb_vendor_access.group_vendor_user',),
     'vendor-team': ('pb_vendor_access.group_vendor_manager',),
-    'access-team': ('pb_vendor_access.group_access_manager',),
+    'access-team': ('biz_access.group_access_manager',),
 }
 
 # =============================================================================
@@ -583,19 +590,6 @@ def _role_backed_abilities():
 ABILITIES = _role_backed_abilities() + NEW_ABILITIES
 
 
-def _slug(text, fallback='ability'):
-    """A stable key out of a name an administrator typed.
-
-    Accents folded rather than stripped (R28/R78): "Chế độ" must not become
-    "ch-", which is a key that collides with the next three roles like it.
-    """
-    raw = unicodedata.normalize('NFKD', str(text or ''))
-    raw = ''.join(c for c in raw if not unicodedata.combining(c))
-    raw = raw.replace('đ', 'd').replace('Đ', 'D')
-    raw = re.sub(r'[^a-zA-Z0-9]+', '-', raw).strip('-').lower()
-    return raw or fallback
-
-
 # =========================================================================
 #  seeding
 # =========================================================================
@@ -746,6 +740,9 @@ def ensure_catalogue(env):
     # The bundle a tenant's own administrator holds. It is made of the
     # abilities seeded above, so it can only be built after them.
     ensure_tenant_admin_role(env)
+    # Anything an administrator made by hand gets an ability of its own, so
+    # nothing is left with an empty bundle. That sweep is the generic module's
+    # — it is a fact about the model rather than about this catalogue.
     linked += ensure_bundles(env)
     _logger.info(
         'pb_vendor_access: role catalogue — %s created, %s already there, '
@@ -755,54 +752,17 @@ def ensure_catalogue(env):
             'absent': absent, 'abilities': abilities}
 
 
-def ensure_bundles(env):
-    """Give every remaining role an ability, so nothing is left unbundled.
+def _seed_payobook_catalogue(env):
+    """What `biz_access` runs when it is told to seed whatever is registered."""
+    ensure_catalogue(env)
+    ensure_screen_gates(env)
 
-    The catalogue covers the roles this module seeded. An administrator may have
-    added their own before bundles existed — one name, one permission — and that
-    role would otherwise have an EMPTY bundle after the upgrade, which the board
-    reads as "nobody holds this" for something several people plainly hold. So
-    each one gets an ability of its own, wrapping exactly the permission it
-    already carried, named after the role because that is the only honest
-    sentence available for it.
 
-    It changes nobody's permissions. It writes down, in the new shape, what the
-    old shape already said.
-    """
-    Profile = env['pb.role.profile'].sudo().with_context(active_test=False)
-    Ability = env['pb.role.ability'].sudo().with_context(active_test=False)
-    orphans = Profile.search(
-        [('ability_ids', '=', False), ('group_id', '!=', False)])
-    linked = 0
-    for profile in orphans:
-        key = 'role-%s-%s' % (_slug(profile.name, 'role'), profile.id)
-        # Found by its own key and by nothing else. Reusing "an ability that
-        # happens to contain this permission" would attach the OTHER
-        # permissions in it too, and a migration that widens somebody's access
-        # is the one outcome this phase must not have.
-        ability = Ability.search([('technical_key', '=', key)], limit=1)
-        try:
-            if not ability:
-                ability = Ability.create({
-                    'technical_key': key,
-                    'name': profile.name or key,
-                    'description': profile.description or '',
-                    'area': profile.area or 'people',
-                    'sequence': profile.sequence or 10,
-                    'group_ids': [(6, 0, [profile.group_id.id])],
-                })
-            profile.write({'ability_ids': [(6, 0, ability.ids)]})
-            linked += 1
-        except Exception:                       # noqa: BLE001
-            _logger.warning(
-                'pb_vendor_access: the "%s" role could not be given an '
-                'ability for the permission it already carried',
-                profile.name, exc_info=True)
-    if linked:
-        _logger.info(
-            'pb_vendor_access: %s roles outside the seeded catalogue were '
-            'written down as bundles of what they already carried', linked)
-    return linked
+# THE REGISTRATION, MADE AT IMPORT TIME. `biz_access` seeds nothing of its own
+# and asks the applications on the database what they want seeded; this is how
+# this product answers. It is idempotent — registering the same callable twice
+# adds it once — and it costs nothing on a database where nothing calls it.
+register_catalogue(_seed_payobook_catalogue, name='pb_vendor_access')
 
 
 def post_init_hook(env):

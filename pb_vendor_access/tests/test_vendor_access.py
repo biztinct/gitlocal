@@ -153,7 +153,7 @@ class TestTheAbsolute(TransactionCase):
         self.assertNotIn('base.group_erp_manager', named)
 
     def test_no_seeded_profile_points_at_a_forbidden_group(self):
-        from odoo.addons.pb_vendor_access.models.vendor_common import (
+        from odoo.addons.biz_access.models.access_common import (
             forbidden_group_ids)
         forbidden = forbidden_group_ids(self.env)
         rows = self.env['pb.role.profile'].sudo().search([])
@@ -308,10 +308,15 @@ class TestDelegation(TransactionCase):
             rec.sudo().unlink()
 
     def test_the_acl_grants_unlink_to_nobody(self):
-        path = get_module_path('pb_vendor_access')
-        with open(path + '/security/ir.model.access.csv', encoding='utf-8') as fh:
-            lines = [ln for ln in fh.read().splitlines()
-                     if 'model_pb_access_delegation' in ln]
+        """Both halves of the split: the generic module's own lines, and this
+        product's one extra line for its lifecycle administrators."""
+        lines = []
+        for module in ('biz_access', 'pb_vendor_access'):
+            path = get_module_path(module)
+            with open(path + '/security/ir.model.access.csv',
+                      encoding='utf-8') as fh:
+                lines += [ln for ln in fh.read().splitlines()
+                          if 'model_pb_access_delegation' in ln]
         self.assertTrue(lines)
         for line in lines:
             self.assertTrue(
@@ -355,8 +360,7 @@ class TestSourceGates(TransactionCase):
         """A Python habit here is a JS SyntaxError, and Odoo's asset pipeline
         concatenates without ever parsing — so one of these blanks
         `web.assets_backend` for every user with a clean server log (R2)."""
-        for fname in ('vendors_board.js', 'access_board.js',
-                      'vendor_palette.js'):
+        for fname in ('vendors_board.js', 'vendor_palette.js'):
             src = _src('static', 'src', 'js', fname)
             self.assertFalse(
                 _RE_ADJACENT_STRINGS.search(src),
@@ -367,7 +371,7 @@ class TestSourceGates(TransactionCase):
         as a bare `<` and the whole template dies, pointing at the template and
         never at the loop (R1)."""
         reserved = {'lt', 'gt', 'lte', 'gte', 'and', 'or', 'not', 'in'}
-        for fname in ('vendors_board.xml', 'access_board.xml'):
+        for fname in ('vendors_board.xml',):
             src = _src('static', 'src', 'xml', fname)
             for name in re.findall(r't-as="(\w+)"', src):
                 self.assertNotIn(name, reserved,
@@ -383,7 +387,7 @@ class TestSourceGates(TransactionCase):
                                    fh.read(), re.M))
         self.assertIn('briefcase', known, 'the icon registry did not parse')
         used = set()
-        for fname in ('vendors_board.xml', 'access_board.xml'):
+        for fname in ('vendors_board.xml',):
             used |= set(re.findall(r"ic\('([A-Za-z0-9_]+)'",
                                    _src('static', 'src', 'xml', fname)))
         used |= set(re.findall(r'icon:\s*"([A-Za-z0-9_]+)"',
@@ -404,7 +408,6 @@ class TestSourceGates(TransactionCase):
         checked, which is the half a person can read.
         """
         for parts in (('static', 'src', 'xml', 'vendors_board.xml'),
-                      ('static', 'src', 'xml', 'access_board.xml'),
                       ('data', 'mail_template_data.xml'),
                       ('views', 'vendor_access_views.xml')):
             src = re.sub(r'<!--.*?-->', '', _src(*parts), flags=re.S)
@@ -417,47 +420,24 @@ class TestSourceGates(TransactionCase):
         """"1 agreement(s)" is how a screen announces it was written by a
         programme rather than by a person (R46)."""
         for parts in (('models', 'vendor_alerts.py'),
-                      ('models', 'pb_access_delegation.py'),
                       ('models', 'pb_vendors_facade.py'),
-                      ('models', 'pb_access_facade.py'),
-                      ('static', 'src', 'xml', 'vendors_board.xml'),
-                      ('static', 'src', 'xml', 'access_board.xml')):
+                      ('static', 'src', 'xml', 'vendors_board.xml')):
             src = _src(*parts)
             self.assertFalse(
                 re.search(r'\w\(s\)', src),
                 '%s has a bracketed plural' % parts[-1])
 
-    def test_the_delegation_snapshot_is_measured_and_not_predicted(self):
-        """The single most important line in the module: what was ADDED is read
-        back off the user, never computed from the profiles."""
-        src = _src('models', 'pb_access_delegation.py')
-        block = src.split('def _activate_one', 1)[1].split('def _groups_to_hand',
-                                                           1)[0]
-        self.assertIn('before = set(delegate.group_ids.ids)', block)
-        self.assertIn("invalidate_recordset(['group_ids'])", block)
-        self.assertIn('added = sorted(after - before)', block)
-
-    def test_the_revert_only_removes_what_is_still_there(self):
-        src = _src('models', 'pb_access_delegation.py')
-        block = src.split('def _end(', 1)[1].split('def _mail(', 1)[0]
-        self.assertIn('still = applied.filtered', block)
-        self.assertIn('gone = applied - still', block)
-
 
 @tagged('post_install', '-at_install')
 class TestTheDoors(TransactionCase):
 
-    def test_the_two_client_actions_exist_and_carry_a_name(self):
+    def test_the_client_action_exists_and_carries_a_name(self):
         """A bare tag reaches the action service with no NAME and the
-        breadcrumb reads "Unnamed"."""
-        for xmlid, tag, name in (
-                ('pb_vendor_access.action_pb_vendors_board',
-                 'pb_vendors_board', 'Vendors'),
-                ('pb_vendor_access.action_pb_access_board',
-                 'pb_access_board', 'Access & delegation')):
-            act = self.env.ref(xmlid)
-            self.assertEqual(act.tag, tag)
-            self.assertEqual(act.name, name)
+        breadcrumb reads "Unnamed". The Access home's own door is asserted the
+        same way, in the module that now owns it."""
+        act = self.env.ref('pb_vendor_access.action_pb_vendors_board')
+        self.assertEqual(act.tag, 'pb_vendors_board')
+        self.assertEqual(act.name, 'Vendors')
 
     def test_the_palette_and_the_settings_panels_name_real_actions(self):
         src = _src('static', 'src', 'js', 'vendor_palette.js')
@@ -477,7 +457,7 @@ class TestTheDoors(TransactionCase):
 
     def test_this_module_ships_no_menu_and_no_rail_item(self):
         """Its doors are the two Settings panels and the palette."""
-        for tag in ('pb_vendors_board', 'pb_access_board'):
+        for tag in ('pb_vendors_board',):
             act = self.env['ir.actions.client'].sudo().search(
                 [('tag', '=', tag)], limit=1)
             menus = self.env['ir.ui.menu'].sudo().with_context(
@@ -489,8 +469,7 @@ class TestTheDoors(TransactionCase):
         if 'pb.sidebar.item' in self.env:
             items = self.env['pb.sidebar.item'].sudo().with_context(
                 active_test=False).search(
-                    [('action_tag', 'in',
-                      ['pb_vendors_board', 'pb_access_board'])])
+                    [('action_tag', '=', 'pb_vendors_board')])
             self.assertFalse(items, 'this module claims no rail item')
 
     def test_the_asset_link_exists_on_both_models(self):

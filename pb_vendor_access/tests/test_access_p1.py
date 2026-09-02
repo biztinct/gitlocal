@@ -27,13 +27,21 @@ from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
+from odoo.addons.biz_access.tests.test_access_generic import RailBMixin
 from odoo.addons.pb_vendor_access.hooks import ABILITIES, ROLE_ABILITY_GROUPS
 from odoo.addons.pb_vendor_access.models.vendor_common import (
     FORBIDDEN_GROUP_XMLIDS, forbidden_group_ids, implied_closure)
 
 
 @tagged('post_install', '-at_install')
-class TestRailB(TransactionCase):
+class TestRailB(TransactionCase, RailBMixin):
+
+    def test_the_shared_tripwire_passes_over_this_product_catalogue(self):
+        """THE SAME WALK, RUN BY THE GENERIC MODULE'S OWN HARNESS. The two
+        assertions below say the same thing about the seeded rows; this one
+        says it about every row on the database, using the code every other
+        product will use, so the tripwire can never quietly diverge."""
+        self.assert_nothing_reaches_the_keys()
     """No ability may reach the keys to the building. Ever, by any route."""
 
     def test_no_seeded_ability_reaches_a_forbidden_permission(self):

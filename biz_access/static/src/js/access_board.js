@@ -71,7 +71,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
-import { PbMiniRail, railIcon } from "@pb_vendor_access/js/mini_rail";
+import { PbMiniRail, railIcon } from "@biz_access/js/mini_rail";
 
 /**
  * The lenses this home offers, in the order they are offered.
@@ -94,7 +94,7 @@ const LENS_CONTEXT_KEY = "pb_lens";
 const SEARCH_PAUSE = 220;
 
 export class PbAccessBoard extends Component {
-    static template = "pb_vendor_access.PbAccessBoard";
+    static template = "biz_access.PbAccessBoard";
     static components = { HubBackChip, PbMiniRail };
     static props = ["*"];
 
@@ -1390,11 +1390,11 @@ export class PbAccessBoard extends Component {
     }
 
     openHistory() {
-        this.action.doAction("pb_vendor_access.action_pb_access_delegation");
+        this.action.doAction("biz_access.action_pb_access_delegation");
     }
 
     openRoleList() {
-        this.action.doAction("pb_vendor_access.action_pb_role_profile");
+        this.action.doAction("biz_access.action_pb_role_profile");
     }
 
     // ----------------------------------------------------------------- errors

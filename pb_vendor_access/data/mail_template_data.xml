@@ -12,11 +12,10 @@
          addressed to nobody with no error anywhere. The `email_to` field
          below is kept as documentation of who each one is FOR.
 
-         A template renders against the model it is declared on, so the two
-         agreement mails are on `pb.vendor.agreement` and the two hand-over
-         mails are on `pb.access.delegation`. Handing a delegation's id to
-         a template declared on the agreement would silently render
-         somebody else's record. -->
+         A template renders against the model it is declared on, so both
+         mails below are on `pb.vendor.agreement`. The two hand-over mails
+         moved to `biz_access` with the model they render against (ACCESS
+         P6). -->
 
     <!-- ============ an agreement is coming up for renewal ============ -->
     <record id="mail_template_agreement_renewal" model="mail.template">
@@ -89,91 +88,6 @@
                     Open <strong>Settings</strong> in Payobook, go to
                     <strong>Vendors</strong> and either record the new agreement
                     or take the old one off the register.
-                </p>
-                <br/>
-                The HR team<br/>
-            </div>
-        </field>
-    </record>
-
-    <!-- ============ somebody has been handed some access ============ -->
-    <record id="mail_template_delegation_handed" model="mail.template">
-        <field name="name">Access: somebody is covering for you</field>
-        <field name="model_id" ref="model_pb_access_delegation"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
-        <field name="email_to">{{ object.delegate_user_id.email or '' }}</field>
-        <field name="subject">{{ object.delegator_user_id.name }} has handed some access to {{ object.delegate_user_id.name }}</field>
-        <field name="auto_delete" eval="False"/>
-        <field name="body_html" type="html">
-            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
-                <p>Hello,</p>
-                <p>
-                    <strong><t t-out="object.delegator_user_id.name or ''"/></strong>
-                    has handed some of what they can do to
-                    <strong><t t-out="object.delegate_user_id.name or ''"/></strong>.
-                    Both of you are getting this message.
-                </p>
-                <p><strong>What was handed over</strong></p>
-                <ul>
-                    <t t-foreach="object.profile_ids" t-as="prof">
-                        <li>
-                            <strong><t t-out="prof.name or ''"/></strong>
-                            — <t t-out="prof.description or ''"/>
-                        </li>
-                    </t>
-                </ul>
-                <p t-if="object.kind == 'temporary'">
-                    It runs from <strong><t t-out="object.date_start or ''"/></strong>
-                    until <strong><t t-out="object.date_end or ''"/></strong>.
-                    On the morning after that it is taken back automatically —
-                    nobody has to remember.
-                </p>
-                <p t-if="object.kind != 'temporary'">
-                    It has no end date. Either of you can have it taken back at
-                    any time, and the HR access team can too.
-                </p>
-                <p t-if="object.reason">
-                    <strong>Why:</strong> <t t-out="object.reason or ''"/>
-                </p>
-                <p style="color:#4A5568;">
-                    If this is not something you expected, say so now — every
-                    hand-over is written down and can be taken back in seconds.
-                </p>
-                <br/>
-                The HR team<br/>
-            </div>
-        </field>
-    </record>
-
-    <!-- ================ the access has been taken back ================ -->
-    <record id="mail_template_delegation_ended" model="mail.template">
-        <field name="name">Access: a hand-over has ended</field>
-        <field name="model_id" ref="model_pb_access_delegation"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
-        <field name="email_to">{{ object.delegate_user_id.email or '' }}</field>
-        <field name="subject">The access {{ object.delegator_user_id.name }} lent has been taken back</field>
-        <field name="auto_delete" eval="False"/>
-        <field name="body_html" type="html">
-            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
-                <p>Hello,</p>
-                <p>
-                    The access
-                    <strong><t t-out="object.delegator_user_id.name or ''"/></strong>
-                    lent to
-                    <strong><t t-out="object.delegate_user_id.name or ''"/></strong>
-                    has been taken back. Both of you are getting this message.
-                </p>
-                <p><strong>What has gone</strong></p>
-                <ul>
-                    <t t-foreach="object.profile_ids" t-as="prof">
-                        <li><t t-out="prof.name or ''"/></li>
-                    </t>
-                </ul>
-                <p><t t-out="object.ended_note or ''"/></p>
-                <p style="color:#4A5568;">
-                    Anything either of you did while it was running stays
-                    exactly as it was. This only changes what can be done from
-                    now on.
                 </p>
                 <br/>
                 The HR team<br/>
