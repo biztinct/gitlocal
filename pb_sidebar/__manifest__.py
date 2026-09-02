@@ -26,7 +26,12 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'biz_theme', 'pb_hr_payroll_base'],
+    # hr_attendance: data/pb_sidebar_data.xml gates item_wf_roster on
+    # hr_attendance.group_hr_attendance_officer. Undeclared, that ref cannot
+    # resolve on a fresh database ("External ID not found in the system:
+    # hr_attendance.group_hr_attendance_officer"). Inert where it is already
+    # installed, which is every database in the estate.
+    'depends': ['web', 'biz_theme', 'pb_hr_payroll_base', 'hr_attendance'],
     'data': [
         'security/ir.model.access.csv',
         'views/pb_sidebar_views.xml',
