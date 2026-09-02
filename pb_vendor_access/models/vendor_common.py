@@ -92,6 +92,10 @@ DELEGATION_ROW_CAP = 500
 #: thousand people is a fact, not a list, and the board says the number.
 HOLDER_CAP = 40
 PICKER_CAP = 20
+#: People listed in the People lens at once. A list of two hundred colleagues
+#: is already longer than anybody scrolls; past it, the search box is the
+#: answer, and the lens says so rather than truncating in silence.
+PEOPLE_CAP = 200
 
 # --------------------------------------------------------------- the switches
 #: Defaults live in CODE, never in a `noupdate="1"` record — a shipped record

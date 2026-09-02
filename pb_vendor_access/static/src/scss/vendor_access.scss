@@ -362,12 +362,20 @@ $pbva-states: (
     }
 
     .pbmr-sec {
+        display: flex;
+        align-items: center;
+        gap: 5px;
         font-size: 9px;
         font-weight: 700;
         letter-spacing: .13em;
         text-transform: uppercase;
         color: var(--pbmr-muted);
         padding: 8px 8px 3px;
+    }
+
+    .pbmr-sec-lock {
+        display: inline-flex;
+        color: var(--pbmr-locked);
     }
 
     .pbmr-it {
@@ -1688,3 +1696,485 @@ $pbva-states: (
 // The embedded form drops its own H1 — the hub draws the title (the same
 // contract every cockpit here honours).
 .pbim.pbva.pbva--embedded .pbva-h { display: none; }
+
+// =========================================================================
+// THE PEOPLE LENS, THE PASSPORT, AND THE SPECTACLES.
+//
+// A SECOND BLOCK ON THE SAME ROOT, ON PURPOSE. Identical specificity, later in
+// the file, and nothing here re-declares anything above it — so the rules read
+// as one addition rather than as edits scattered through fifteen hundred lines
+// somebody else has to re-check.
+//
+// R26 — every width below is a width/max-width pair, never Sass `min()` with
+// mixed units, which kills the whole asset bundle rather than one rule.
+// R85 — every MOVING declaration is inside `prefers-reduced-motion:
+// no-preference`; under a reduced-motion preference the panes paint finished.
+//
+// THE AREA TINT is a map and this is the only place a colour for one is
+// spelled. Python ships the area KEY; a tenant cannot put an arbitrary colour
+// on the board, and every row carries the area's WORD beside the colour so it
+// reads identically without any colour at all.
+// =========================================================================
+
+$pbva-areas: (
+    payroll:   (#4A3EA6, #EEECFA),
+    people:    (#0E7490, #E6F6FA),
+    lifecycle: (#15803D, #E9F7EE),
+    money:     (#B45309, #FDF3E3),
+    system:    (#475569, #EEF1F5),
+);
+
+@keyframes pbva-slip {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.pbim.pbva {
+
+    // ========================================================= see it as…
+    .pbva-sim { position: relative; }
+
+    .pbva-simchip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        font-size: 12.5px;
+        padding: 6px 12px;
+        cursor: pointer;
+
+        b { color: var(--pbim-ink, #1B1733); font-weight: 700; }
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+
+        // ON is a state somebody must be able to see from across the room:
+        // everything on the screen is somebody else's reality while it is.
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-primary-light, #EEECFA);
+            color: var(--pbim-primary-dark, #4A3EA6);
+
+            b { color: var(--pbim-primary-dark, #4A3EA6); }
+        }
+    }
+
+    .pbva-simchip-l { color: inherit; }
+
+    // A click anywhere else puts the menu away. A transparent sheet rather
+    // than a document listener: it cannot leak past this component's life.
+    .pbva-simscrim {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+    }
+
+    // OPENS FROM THE CHIP, RIGHTWARDS. The chip is the FIRST control in the
+    // header row, so an `right: 0` menu hangs off the LEFT of it and slides
+    // under the left menu — which is what the first version did.
+    .pbva-simmenu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        z-index: 31;
+        width: 320px;
+        max-width: 86vw;
+        padding: 12px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        box-shadow: 0 12px 32px rgba(16, 24, 40, .14);
+
+        .pbva-picker { margin-top: 8px; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: pbva-slip .16s ease both;
+        }
+    }
+
+    .pbva-simmenu-h {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+        margin: 0 0 8px;
+    }
+
+    .pbva-simfield {
+        margin-top: 8px;
+        max-width: none;
+    }
+
+    // THE PICKER ROWS ARE SPELLED HERE, NOT INHERITED. `.pbva-pick` and
+    // `.pbva-picker` are declared under `.pbva-modal-scrim` (W66 — a dialog
+    // must look the same wherever it is portalled), so a picker OUTSIDE a
+    // dialog gets none of it and renders as bare inline-block text. Found on
+    // the live run: the name and the login ran into one another.
+    .pbva-simmenu .pbva-picker {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        overflow: hidden;
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .pbva-simmenu .pbva-pick {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        border: 0;
+        background: var(--pbim-surface, #FFFFFF);
+        text-align: left;
+        padding: 8px 10px;
+        border-radius: var(--pbim-r-sm, 8px);
+        font-size: 13px;
+        color: var(--pbim-ink, #1B1733);
+        cursor: pointer;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 600;
+        }
+
+        small {
+            color: var(--pbim-muted, #64748B);
+            font-size: 11.5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &:hover { background: var(--pbim-bg, #F8F9FC); }
+        & + .pbva-pick { border-top: 1px solid var(--pbim-line, #E6E8F0); }
+    }
+
+    .pbva-simmenu .pbva-picker .pbva-pick { border-radius: 0; }
+
+    // The banner. The chip says WHO; this says what it means and how to stop,
+    // in the same breath, so nobody is ever in this mode by accident.
+    .pbva-simbar {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        border: 1px solid var(--pbim-primary, #6355C7);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-primary-light, #EEECFA);
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: pbva-slip .18s ease both;
+        }
+    }
+
+    .pbva-simbar-tx {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+
+        b {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-primary-dark, #4A3EA6);
+        }
+
+        small {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--pbim-slate, #475569);
+        }
+    }
+
+    .pbva-badge.pbva-badge--seen {
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary-dark, #4A3EA6);
+    }
+
+    // ====================================================== the people lens
+    // THE MEDIA QUERY MEASURES THE WINDOW AND THE PANE IS NARROWER THAN IT.
+    // The left menu takes 256px off every one of these widths, so a passport
+    // inside a 1100px window has about 810px to work with — which is why the
+    // breakpoints below are generous rather than "when it visibly breaks".
+    // Found on the live 1100px pass: the roles column had wrapped to one word
+    // per line while the window was still nominally wide.
+    .pbva-people {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+
+        @media (max-width: 1250px) { grid-template-columns: 248px minmax(0, 1fr); }
+        @media (max-width: 900px) { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .pbva-plist {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 12px;
+        min-width: 0;
+    }
+
+    .pbva-plist-search {
+        max-width: none;
+        margin-bottom: 10px;
+    }
+
+    .pbva-prows {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-height: 62vh;
+        overflow-y: auto;
+    }
+
+    .pbva-personrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        border: 1px solid transparent;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: transparent;
+        padding: 8px 10px;
+        cursor: pointer;
+        min-width: 0;
+
+        &:hover { background: var(--pbim-bg, #F8F9FC); }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-primary-light, #EEECFA);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            transition: background-color .14s ease, border-color .14s ease;
+        }
+    }
+
+    .pbva-personrow-tx {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+
+        b {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        small {
+            font-size: 11.5px;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbva-personrow-n {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
+        font-size: 11.5px;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ========================================================= the passport
+    .pbva-passport {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 18px;
+        min-width: 0;
+    }
+
+    .pbva-pass-h {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding-bottom: 14px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-pass-face {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--pbim-pill, #EEF1F5);
+        flex: 0 0 auto;
+    }
+
+    .pbva-pass-id {
+        flex: 1 1 240px;
+        min-width: 0;
+
+        h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            margin: 0 0 3px;
+        }
+    }
+
+    .pbva-pass-sub {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        margin: 0;
+    }
+
+    // The one sentence this whole lens exists to say. Prose, at full size,
+    // never a badge (R33).
+    .pbva-pass-sees {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--pbim-ink, #1B1733);
+        margin: 6px 0 0;
+        text-transform: none;
+    }
+
+    .pbva-dot { color: var(--pbim-line, #E6E8F0); }
+
+    .pbva-pass-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pbva-pass-cols {
+        display: grid;
+        grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+
+        @media (max-width: 1280px) { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .pbva-pass-rail,
+    .pbva-pass-roles { min-width: 0; }
+
+    .pbva-pass-rail .pbva-note { margin: 12px 0 0; }
+
+    // Stacked, the miniature would stretch the width of the passport and stop
+    // looking like the thing it is a picture of.
+    @media (max-width: 1280px) {
+        .pbva-pass-rail .pbmr { width: 100%; max-width: 460px; }
+    }
+
+    .pbva-passroles {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .pbva-passrole {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-left: 3px solid var(--pbim-slate, #475569);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 11px 13px;
+        min-width: 0;
+    }
+
+    .pbva-passrole-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        border-radius: 8px;
+        background: var(--pbim-pill, #EEF1F5);
+        color: var(--pbim-slate, #475569);
+    }
+
+    .pbva-passrole-tx {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+
+        b {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+
+        p {
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: var(--pbim-slate, #475569);
+            margin: 4px 0 0;
+            text-transform: none;
+        }
+
+        small {
+            font-size: 11.5px;
+            color: var(--pbim-muted, #64748B);
+            margin-top: 4px;
+        }
+    }
+
+    @each $key, $pair in $pbva-areas {
+        .pbva-passrole.pbva-area--#{$key} {
+            border-left-color: nth($pair, 1);
+
+            .pbva-passrole-ic {
+                color: nth($pair, 1);
+                background: nth($pair, 2);
+            }
+        }
+    }
+
+    // A role to GIVE is picked, not ticked — the row leads somewhere rather
+    // than switching on, so it carries the role's own mark and no empty box.
+    .pbva-picks--tall {
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .pbva-pickable-go {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        color: var(--pbim-primary, #6355C7);
+        margin-top: 2px;
+    }
+}

@@ -30,9 +30,10 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
-from .vendor_common import (DELEGATION_ROW_CAP, HOLDER_CAP, PICKER_CAP,
-                            PROFILE_AREAS, area_label, counted, flag, fold,
-                            forbidden_in_closure, implied_closure, safe)
+from .vendor_common import (DELEGATION_ROW_CAP, HOLDER_CAP, PEOPLE_CAP,
+                            PICKER_CAP, PROFILE_AREAS, area_label, counted,
+                            flag, fold, forbidden_in_closure, implied_closure,
+                            safe)
 
 _logger = logging.getLogger(__name__)
 
@@ -878,10 +879,292 @@ class PbAccess(models.AbstractModel):
         return sorted(counts, key=lambda k: (-counts[k], order.index(k)
                                              if k in order else 99))[0]
 
+    # ================================================================== people
+    #
+    # THE OTHER WAY ROUND. The roles lens answers "who holds this"; this one
+    # answers "what does this person have" — and the second question is the one
+    # somebody asks when a colleague says they cannot find a screen. The answer
+    # is a PICTURE of that colleague's left menu, not a list of permissions,
+    # because the left menu is the thing they are both looking at.
+    #
+    # AND IT IS THE LEFT MENU'S OWN ANSWER. The states come from
+    # `pb.sidebar.item.visibility_for`, which is the SAME code that draws the
+    # real menu for the real person. This module does not own that rule and
+    # deliberately keeps no copy of it: a copy would drift, and it would drift
+    # by showing an administrator a menu their colleague does not have.
+    #
+    # NOBODY READS SOMEBODY ELSE'S ACCESS UNLESS THEY MAY. The self-only rule
+    # for everybody outside the access team is enforced HERE, on the server, in
+    # `_person` — not by leaving the picker off the screen. A picker that is
+    # absent is a picker somebody can call around.
+
+    def _person(self, user_id):
+        """The person being looked at, and the refusal when it is not allowed.
+
+        An empty id means "me", so the lens can open without knowing who it is
+        about yet.
+        """
+        uid = int(user_id or 0) or self.env.uid
+        if uid != self.env.uid and not self.can_manage():
+            raise AccessError(_(
+                "You can look at your own access here. Looking at somebody "
+                "else's is something the access team does."))
+        return self._internal_user(uid)
+
+    def _job_titles(self, users):
+        """What people do, where the system knows — {user id: job title}.
+
+        A name on its own is not enough to pick the right Nguyen out of four,
+        and the job title is the thing a person granting access recognises.
+        Absent on a build with no employee records, which is why this is a
+        `safe()` probe and not a join.
+        """
+        if not users or 'hr.employee' not in self.env:
+            return {}
+        def read():
+            rows = self.env['hr.employee'].sudo().search_read(
+                [('user_id', 'in', users.ids)], ['user_id', 'job_title'])
+            out = {}
+            for row in rows:
+                title = (row.get('job_title') or '').strip()
+                if title and row['user_id']:
+                    out.setdefault(row['user_id'][0], title)
+            return out
+        return safe(read, {}, 'the job titles on the people lens') or {}
+
+    def _holders_by_profile(self, profiles):
+        """{profile id: the set of people who hold ALL of it}, worked out once.
+
+        Asked per person it would be one intersection per person per role; the
+        roles are two dozen and the people are not, so it is asked per ROLE and
+        counted afterwards.
+        """
+        out = {}
+        for profile in profiles:
+            out[profile.id] = set(safe(
+                lambda p=profile: p._holder_users().filtered('active').ids,
+                [], 'who holds a role') or [])
+        return out
+
+    def _lent_counts(self):
+        """{user id: how many roles are on loan to them right now}."""
+        rows = safe(
+            lambda: self.env['pb.access.delegation'].sudo().search(
+                [('state', '=', 'active'), ('origin', '=', 'delegation')]),
+            None, 'the running hand-overs')
+        out = {}
+        for row in (rows or []):
+            uid = row.delegate_user_id.id
+            out[uid] = out.get(uid, 0) + len(row.profile_ids)
+        return out
+
+    @api.model
+    def people(self, search=None):
+        """Everybody with a login, and how much access each of them carries.
+
+        ME FIRST, THEN ALPHABETICAL. The person opening this screen is the one
+        they check first — their own access — and putting them at the top of a
+        list of two hundred names saves the one search everybody would
+        otherwise type.
+        """
+        self._require()
+        if not self.can_manage():
+            # NOT A NARROWER LIST — A LIST OF ONE. Everybody may look at their
+            # own access; nobody else's is any of their business, and the lens
+            # renders honestly as a single passport rather than an empty search.
+            me = self.env.user
+            return [self._person_row(
+                me, self._holders_by_profile(
+                    self.env['pb.role.profile'].visible()),
+                self._lent_counts(), self._job_titles(me))]
+
+        needle = fold(search)
+        users = self.env['res.users'].sudo().search(
+            [('active', '=', True), ('share', '=', False)])
+        if needle:
+            users = users.filtered(
+                lambda u: needle in fold('%s %s' % (u.name or '', u.login or '')))
+        profiles = self.env['pb.role.profile'].visible()
+        holders = self._holders_by_profile(profiles)
+        lent = self._lent_counts()
+        titles = self._job_titles(users)
+
+        me = self.env.uid
+        users = users.sorted(lambda u: (u.id != me, fold(u.name), u.id))
+        return [self._person_row(u, holders, lent, titles)
+                for u in users[:PEOPLE_CAP]]
+
+    def _person_row(self, user, holders, lent, titles):
+        user = user.sudo()
+        return {
+            'id': user.id,
+            'name': user.name or '',
+            'login': user.login or '',
+            'title': titles.get(user.id, ''),
+            'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+            'role_count': len([1 for ids in holders.values()
+                               if user.id in ids]),
+            'lent_count': lent.get(user.id, 0),
+            'is_me': user.id == self.env.uid,
+        }
+
+    # ============================================================ the passport
+    def _rail_as_seen_by(self, user, rail=None):
+        """The left menu, drawn as THIS PERSON sees it.
+
+        The shape is the mini-rail's, so the passport and the role builder draw
+        the same component from the same kind of answer. The word differs by
+        one: the left menu calls what somebody cannot see `hidden`, and the
+        miniature calls it `off` — the same thing, and this is the one place
+        the two vocabularies meet.
+        """
+        sections, items = rail if rail is not None else self._rail()
+        if sections is None:
+            return [], 0, 0, 0
+        seen = self.env['pb.sidebar.item'].sudo().visibility_for(user)
+        states, sec_states = seen['items'], seen['sections']
+
+        def state_of(item):
+            raw = states.get(item.id, 'hidden')
+            return 'off' if raw == 'hidden' else raw
+
+        out, on, locked, total = [], 0, 0, 0
+        for section in sections:
+            rows = []
+            mine = items.filtered(lambda i, s=section: i.section_id == s)
+            for item in mine.filtered(lambda i: not i.parent_id):
+                state = state_of(item)
+                total += 1
+                on += 1 if state == 'on' else 0
+                locked += 1 if state == 'locked' else 0
+                kids = [{'id': k.id, 'label': k.name or '',
+                         'icon': k.icon or 'circle', 'state': state_of(k),
+                         'newly_lit': False}
+                        for k in mine.filtered(lambda c, p=item: c.parent_id == p)]
+                rows.append({'id': item.id, 'label': item.name or '',
+                             'icon': item.icon or 'circle', 'state': state,
+                             'newly_lit': False, 'children': kids})
+            if rows:
+                out.append({'key': section.technical_key or '',
+                            'label': section.name or '',
+                            'show_label': bool(section.show_label),
+                            'restricted': sec_states.get(section.id) == 'locked',
+                            'items': rows})
+        return out, on, total, locked
+
+    def _roles_of(self, user):
+        """Every role this person holds, and WHY they hold it.
+
+        Held or lent, and a lent one carries who lent it and until when —
+        because "take this away" and "end the hand-over" are different actions
+        with different consequences, and a screen that offered the first for a
+        loan would leave a hand-over record pointing at access that is gone
+        (ledger B3).
+        """
+        held = set(user.sudo().all_group_ids.ids)
+        loans = self._loans_to(user)
+        manage = self.can_manage()
+        out = []
+        for profile in self.env['pb.role.profile'].visible():
+            if not profile.group_ids or not set(profile.group_ids.ids) <= held:
+                continue
+            loan = loans.get(profile.id)
+            out.append({
+                'profile_id': profile.id,
+                'name': profile.name or '',
+                'description': profile.description or '',
+                'area': profile.area or '',
+                'area_label': area_label(profile.area, self.env),
+                'source': 'lent' if loan else 'held',
+                'lent_by': (loan or {}).get('by', ''),
+                'lent_until': (loan or {}).get('until', ''),
+                'delegation_id': (loan or {}).get('id', 0),
+                'can_take_back': bool(manage and not loan),
+            })
+        return out
+
+    def _loans_to(self, user):
+        """{profile id: the running hand-over that put it there}.
+
+        A grant made on the roles board is a row in the same table and is NOT a
+        loan — putting an end date on it would be the screen inventing one.
+        """
+        out = {}
+        rows = safe(
+            lambda: self.env['pb.access.delegation'].sudo().search(
+                [('state', '=', 'active'), ('origin', '=', 'delegation'),
+                 ('delegate_user_id', '=', user.id)]),
+            None, 'the running hand-overs for a person')
+        for row in (rows or []):
+            for profile in row.profile_ids:
+                out.setdefault(profile.id, {
+                    'id': row.id,
+                    'until': fields.Date.to_string(row.date_end) or '',
+                    'by': row.delegator_user_id.name or '',
+                })
+        return out
+
+    @api.model
+    def passport(self, user_id=None):
+        """One person's access, whole: their menu, their roles, and why."""
+        self._require()
+        user = self._person(user_id)
+        rows, on, total, locked = self._rail_as_seen_by(user)
+        roles = self._roles_of(user)
+        titles = self._job_titles(user)
+        return {
+            'header': {
+                'id': user.id,
+                'name': user.sudo().name or '',
+                'login': user.sudo().login or '',
+                'title': titles.get(user.id, ''),
+                'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+                'sees_x': on,
+                'of_y': total,
+                'locked_n': locked,
+                'role_count': len(roles),
+                'lent_count': len([r for r in roles if r['source'] == 'lent']),
+                'is_me': user.id == self.env.uid,
+                'is_admin': bool(safe(
+                    lambda: user.sudo().has_group('base.group_system'), False,
+                    'whether somebody is an administrator')),
+            },
+            'rail': rows,
+            'roles': roles,
+            'any_gated': self._any_gated(),
+            'can_manage': self.can_manage(),
+        }
+
+    @api.model
+    def as_user(self, user_id=None):
+        """The overlay every lens needs to repaint itself as somebody else.
+
+        IT IS A VIEW AND NOTHING ELSE. It returns what a person HOLDS so a
+        screen can say so; it changes nothing, it is not passed to any write,
+        and no write on this board takes a "who am I looking at" argument —
+        granting and lending both name their target outright.
+        """
+        self._require()
+        user = self._person(user_id)
+        held = set(user.sudo().all_group_ids.ids)
+        return {
+            'id': user.id,
+            'name': user.sudo().name or '',
+            'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+            'is_me': user.id == self.env.uid,
+            'profile_ids': [p.id for p in self.env['pb.role.profile'].visible()
+                            if p.group_ids and set(p.group_ids.ids) <= held],
+        }
+
     # =============================================================== the picker
     @api.model
     def user_options(self, term=None):
-        """Folded in Python over `search_read` of two columns (R78/R56)."""
+        """Folded in Python over `search_read` of two columns (R78/R56).
+
+        SHAPE FROZEN. Three dialogs read it; the People lens does not — it
+        needs the person's roles counted and their own row included, which is a
+        different question and gets its own method rather than a flag here.
+        """
         needle = fold(term)
         rows = self.env['res.users'].sudo().search_read(
             [('active', '=', True), ('share', '=', False)],

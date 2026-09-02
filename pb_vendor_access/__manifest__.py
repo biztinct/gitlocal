@@ -40,6 +40,16 @@ WHAT THIS MODULE IS
     carries against what each left-menu entry asks for, using the left menu's
     own rule, on the server. Re-gate a screen and every role's answer changes
     with it, because there is only ever one answer.
+  * **A passport for every person, and a pair of spectacles.** The People lens
+    answers the other question — not "who holds this role" but "what does this
+    person have". Their LEFT MENU is drawn as they see it, entry by entry, and
+    the states come from the left menu's own code rather than from a copy of its
+    rule: there is one answer to "can they open this", and both screens ask the
+    same one. Under it, every role they carry and the reason they carry it —
+    theirs, or lent until a date by somebody named. "See it as…" in the header
+    repaints the whole home as somebody else's reality; it is a VIEW and can
+    never be anything else, because nothing on this screen takes "who am I
+    looking at" as an argument to a write.
   * **A builder that shows the outcome while you build it.** "New role" is a
     name, one honest sentence, and a list of ABILITIES to tick — never a raw
     permission — beside a miniature of the left menu that lights up as they are
@@ -71,7 +81,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

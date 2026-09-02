@@ -59,30 +59,89 @@ class PbSidebarItem(models.Model):
     _DEFAULT_UPSELL = ("This functionality is available in the full Payobook platform. "
                        "Please contact Payobook to arrange a personalised demonstration.")
 
+    # ========================================================== THE RULE, ONCE
+    #
+    # WHO SEES WHAT IS DECIDED IN EXACTLY ONE PLACE, AND THIS IS IT. Two
+    # questions are asked of it: "draw MY menu" (`get_sidebar_data`, on every
+    # page load) and "what does THIS PERSON'S menu look like" (`visibility_for`,
+    # asked by the Access home's person passport). They are the same rule, so
+    # they are the same three lines — not two copies that agree today. A second
+    # copy is a copy that will one day disagree, and it would disagree by
+    # telling somebody with the access board open that a colleague can reach a
+    # screen the colleague cannot see.
+    #
+    # The rule itself: an administrator sees everything; an entry with no
+    # permissions on it is open to everybody; otherwise holding ANY ONE of the
+    # permissions named on it is enough, and holding is transitive
+    # (`all_group_ids`, never `group_ids`, which is direct membership only).
+    # Somebody who cannot reach an entry does not see it AT ALL — unless it is
+    # flagged as a teaser, in which case they see it locked, with a note.
+
+    def _access_of(self, user):
+        """(is this person an administrator, everything they actually hold).
+
+        `sudo()` because the caller may legitimately be asking about SOMEBODY
+        ELSE — reading another person's group membership is not something an
+        ordinary reader may do, and answering "what does their menu look like"
+        is not the same as handing them the membership list.
+        """
+        user = user.sudo()
+        # Odoo 19 renamed res.users.groups_id -> group_ids; all_group_ids
+        # includes everything implied by a ladder.
+        return user.has_group('base.group_system'), user.all_group_ids
+
+    def _state_for(self, item, is_admin, user_groups):
+        """(visible, locked): items the user can't access are hidden, unless
+        flagged restricted — then shown locked (upsell) instead of hidden."""
+        if is_admin or not item.groups_id or bool(item.groups_id & user_groups):
+            return True, False
+        if item.restricted:
+            return True, True
+        return False, False
+
+    @api.model
+    def visibility_for(self, user):
+        """Every entry on the left menu, as ONE PERSON sees it.
+
+        `{'items': {id: 'on' | 'locked' | 'hidden'},
+          'sections': {id: 'on' | 'locked'}}` over every ACTIVE section and
+        item — including the ones this person does not get, because "what do
+        they not have" is half of what somebody looking at their access is
+        asking.
+
+        Keys are integers on purpose: this is a python-to-python helper for
+        another module's server code, never an RPC answer of its own. The
+        Access home draws it; the rule stays here.
+        """
+        is_admin, user_groups = self._access_of(user)
+        sections = self.env['pb.sidebar.section'].sudo().search(
+            [('active', '=', True)])
+        items = self.sudo().search([('active', '=', True)])
+        out_items = {}
+        for item in items:
+            visible, locked = self._state_for(item, is_admin, user_groups)
+            out_items[item.id] = ('locked' if locked
+                                  else ('on' if visible else 'hidden'))
+        return {
+            'items': out_items,
+            'sections': {
+                s.id: ('locked' if (s.restricted and not is_admin) else 'on')
+                for s in sections
+            },
+        }
+
     @api.model
     def get_sidebar_data(self):
         user = self.env.user
-        is_admin = user.has_group('base.group_system')
+        is_admin, user_groups = self._access_of(user)
 
         sections = self.env['pb.sidebar.section'].search(
             [('active', '=', True)], order='sequence, id')
         all_items = self.search(
             [('active', '=', True)], order='section_id, sequence, id')
 
-        # Odoo 19 renamed res.users.groups_id -> group_ids; all_group_ids includes implied.
-        user_groups = user.all_group_ids
-
-        def _has_access(item):
-            return is_admin or not item.groups_id or bool(item.groups_id & user_groups)
-
         def _state(item):
-            """(visible, locked): items the user can't access are hidden, unless
-            flagged restricted — then shown locked (upsell) instead of hidden."""
-            if _has_access(item):
-                return True, False
-            if item.restricted:
-                return True, True
-            return False, False
+            return self._state_for(item, is_admin, user_groups)
 
         def _split(val):
             return [v.strip() for v in (val or '').split(',') if v.strip()]
