@@ -18,6 +18,9 @@
           <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'platform'" t-on-click="refreshFleetHealth">
             <t t-out="ic('refresh',15)"/> Refresh health
           </button>
+          <button class="pbim-btn outline" t-on-click="openSync">
+            <t t-out="ic('layers',15)"/> In step with master
+          </button>
           <button class="pbim-btn primary tnx-new" t-on-click="openWizard">
             <t t-out="ic('rocket',16)"/> New tenant
           </button>
@@ -284,6 +287,98 @@
           </t>
         </div>
       </div>
+    </div>
+
+    <!-- ============================================ IN STEP WITH MASTER ============================================ -->
+    <div t-elif="state.view === 'sync'" class="pbim-wrap tnx-sync">
+      <div class="tnx-head">
+        <div>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="backToFleet"><t t-out="ic('back',14)"/> Fleet</button>
+          <h1 class="pbim-h1">In step with master</h1>
+          <div class="pbim-sub">
+            Every customer should have what the master has — except the parts that run the platform itself.
+            <b>Nothing is installed on its own.</b> This page only reports; somebody has to press the button.
+          </div>
+        </div>
+        <div class="tnx-head-actions">
+          <button class="pbim-btn ghost" t-on-click="loadSync"><t t-out="ic('refresh',15)"/> Re-check</button>
+        </div>
+      </div>
+
+      <div t-if="!state.sync.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading every database…</span></div>
+      <t t-else="">
+        <t t-set="s" t-value="state.sync.d"/>
+        <div class="pbim-note tnx-sync-master">
+          <t t-out="ic('database',14)"/> The master (<code t-esc="s.master_db"/>) has
+          <b><t t-esc="s.master_count"/></b> parts installed.
+        </div>
+
+        <div class="pbim-tablewrap">
+          <table class="pbim-table tnx-sync-table">
+            <thead><tr><th>Customer</th><th>Status</th><th>Has</th><th>Behind</th><th/></tr></thead>
+            <tbody>
+              <t t-foreach="s.tenants" t-as="t" t-key="t.id">
+                <tr>
+                  <td>
+                    <b t-esc="t.name"/>
+                    <span class="tnx-sync-slug"><code t-esc="t.slug"/></span>
+                  </td>
+                  <td>
+                    <span t-if="!t.checked" class="pbim-badge muted">not checked</span>
+                    <span t-elif="t.in_step" class="pbim-badge ok">in step</span>
+                    <span t-else="" class="pbim-badge warn">behind</span>
+                    <span t-if="t.error" class="tnx-sync-err" t-esc="t.error"/>
+                  </td>
+                  <td><t t-if="t.checked"><t t-esc="t.installed"/></t><t t-else="">—</t></td>
+                  <td><t t-if="t.checked"><t t-esc="t.behind.length"/></t><t t-else="">—</t></td>
+                  <td class="tnx-row-actions">
+                    <button t-if="t.checked" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.toggleSyncRow(t.id)">
+                      <t t-out="ic('list',13)"/> <t t-esc="state.sync.open[t.id] ? 'Hide' : 'Show'"/> the detail
+                    </button>
+                    <button t-if="t.checked and !t.in_step" class="pbim-btn primary pbim-btn-sm"
+                            t-att-disabled="state.sync.busy === t.id" t-on-click="() => this.syncInstall(t)">
+                      <t t-if="state.sync.busy === t.id"><span class="pbim-spin tnx-minispin"/> Installing…</t>
+                      <t t-else=""><t t-out="ic('download',13)"/> Install the <t t-esc="t.behind.length"/> missing</t>
+                    </button>
+                  </td>
+                </tr>
+                <tr t-if="state.sync.open[t.id]" class="tnx-sync-detail">
+                  <td colspan="5">
+                    <div class="tnx-sync-cols">
+                      <div class="tnx-sync-col">
+                        <h4><t t-out="ic('download',14)"/> Should be installed (<t t-esc="t.behind.length"/>)</h4>
+                        <div t-if="!t.behind.length" class="pbim-empty">Nothing is behind.</div>
+                        <div t-foreach="t.behind" t-as="m" t-key="m.module" class="tnx-sync-item">
+                          <b t-esc="m.label"/><code t-esc="m.module"/>
+                        </div>
+                      </div>
+                      <div class="tnx-sync-col">
+                        <h4><t t-out="ic('lock',14)"/> Never installed here (<t t-esc="t.held_back.length"/>)</h4>
+                        <div t-if="!t.held_back.length" class="pbim-empty">The master has none of these to give.</div>
+                        <div t-foreach="t.held_back" t-as="m" t-key="m.module" class="tnx-sync-item held">
+                          <b t-esc="m.label"/><code t-esc="m.module"/>
+                          <span class="tnx-sync-why" t-esc="m.reason"/>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </t>
+              <tr t-if="!s.tenants.length"><td colspan="5" class="pbim-empty">No customers yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pbim-card tnx-sync-never">
+          <h3><t t-out="ic('shield',16)"/> Never installed on a customer's database</h3>
+          <p>Whatever else the master gains, these stay here. They run the platform, or they would
+            put made-up people and our own shop window inside somebody's payroll.</p>
+          <div t-foreach="s.never" t-as="m" t-key="m.module" class="tnx-sync-item held">
+            <b t-esc="m.label"/><code t-esc="m.module"/>
+            <span class="tnx-sync-why" t-esc="m.reason"/>
+          </div>
+        </div>
+      </t>
     </div>
 
     <!-- ================================================== DETAIL ================================================== -->

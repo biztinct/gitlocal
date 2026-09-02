@@ -43,6 +43,8 @@ export class PbTenants extends Component {
             checklistOpen: true,
             wiz: this._freshWiz(),
             det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null },
+            // "In step with master": read-only until somebody presses install.
+            sync: { loaded: false, busy: "", d: null, open: {}, result: null },
         });
         onWillStart(async () => { await this.loadFleet(); });
     }
@@ -217,6 +219,65 @@ export class PbTenants extends Component {
         const w = this.state.wiz;
         w.steps.forEach((s) => { if (s.state === "fail") { s.state = "pending"; } });
         this.runProvision();
+    }
+
+    // -------------------------------------------------- in step with master
+    //
+    // The whole view is READ-ONLY until somebody presses the one button, and
+    // the copy says so in those words. Nothing on this screen runs on a timer,
+    // on an upgrade or on a deploy: a customer's database does not gain a part
+    // of the product because something else was upgraded.
+
+    async openSync() {
+        this.state.view = "sync";
+        this.state.sync = { loaded: false, busy: "", d: null, open: {}, result: null };
+        await this.loadSync();
+    }
+
+    async loadSync() {
+        const s = this.state.sync;
+        try {
+            s.d = await this.orm.silent.call("pb.tenants", "sync_report", []);
+            s.loaded = true;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The report could not be read.")), { type: "danger" });
+            this.state.view = "fleet";
+        }
+    }
+
+    toggleSyncRow(id) {
+        this.state.sync.open[id] = !this.state.sync.open[id];
+    }
+
+    syncInstall(t) {
+        const s = this.state.sync;
+        const n = t.behind.length;
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Install on %(tenant)s", { tenant: t.name }),
+            body: _t(
+                "This installs %(count)s part(s) of the product on the live database " +
+                "'%(database)s'. Their data is not touched and nothing is removed. " +
+                "The platform cockpit, the demonstration data and the public site are " +
+                "never installed on a customer's database.",
+                { count: n, database: t.slug }
+            ),
+            confirmLabel: _t("Install %(count)s", { count: n }),
+            confirm: async () => {
+                s.busy = t.id;
+                s.result = null;
+                try {
+                    const r = await this.orm.call("pb.tenants", "sync_install", [t.id, false]);
+                    s.result = r;
+                    this.notif.add(r.message || _t("Done."), { type: "success" });
+                    await this.loadSync();
+                } catch (e) {
+                    this.notif.add(this.errText(e, _t("The install did not finish.")), { type: "danger" });
+                } finally {
+                    s.busy = "";
+                }
+            },
+            cancel: () => {},
+        });
     }
 
     // ------------------------------------------------------------- detail
