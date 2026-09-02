@@ -531,4 +531,38 @@
         <field name="tag">pb_access_board</field>
     </record>
 
+    <!-- ================= the roles, on the plain menu tables =================
+         THE FALLBACK HAS TO TELL THE TRUTH TOO. The Screens lens is where a
+         gate is meant to be edited, and the two plain tables behind it stay
+         registered for the administrator who needs the row itself. If those
+         tables went on showing only the permission column, they would describe
+         an entry gated on a role as ungated — and an administrator would then
+         "fix" it by widening something that was never open.
+
+         `optional="show"` on the list rather than a plain column: the table is
+         already wide, and the field belongs to a module the table's owner has
+         never heard of. -->
+    <record id="view_pb_sidebar_item_list_roles" model="ir.ui.view">
+        <field name="name">pb.sidebar.item.list.roles</field>
+        <field name="model">pb.sidebar.item</field>
+        <field name="inherit_id" ref="pb_sidebar.view_pb_sidebar_item_list"/>
+        <field name="arch" type="xml">
+            <field name="groups_id" position="after">
+                <field name="role_ids" widget="many2many_tags"
+                       optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_pb_sidebar_item_form_roles" model="ir.ui.view">
+        <field name="name">pb.sidebar.item.form.roles</field>
+        <field name="model">pb.sidebar.item</field>
+        <field name="inherit_id" ref="pb_sidebar.view_pb_sidebar_item_form"/>
+        <field name="arch" type="xml">
+            <field name="groups_id" position="after">
+                <field name="role_ids" widget="many2many_tags"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>

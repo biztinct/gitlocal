@@ -19,14 +19,21 @@
  *   sentence this lens exists to answer, and a list of permission names does
  *   not answer it.
  *
+ *   **Screens** — "who sees this screen". The left menu drawn AS the left menu,
+ *   in its own order and with its own icons, each entry carrying the ROLES that
+ *   open it and — while the spectacles are on — whether that person can open
+ *   it. It is also the only place a gate is edited, which is the point: before
+ *   it, the only way to change one was a list of permission-group names, and
+ *   that is exactly why the live menu ended up with no gates on it at all.
+ *
  *   **Hand-overs** — "who is covering for whom". A running hand-over shows the
  *   days left on it, because the thing worth knowing about temporary access is
  *   when it stops being temporary.
  *
  * THE LENS BAR IS A REGISTRY, NOT A ROW OF BUTTONS. `LENS_REGISTRY` below is
- * the list, the bar draws whatever is in it, and the body switches on the key.
- * One more lens is coming — the menu editor — and it is a line in that array
- * plus a branch in the template, not a rewrite of this file.
+ * the list, the bar draws whatever is in it, and the body switches on the key —
+ * which is how the Screens lens landed as one line in that array plus a branch
+ * in the template rather than as a rewrite of this file.
  *
  * "SEE IT AS…" IS A VIEW AND CAN NEVER BE ANYTHING ELSE. The header picker
  * repaints the lenses as somebody else's reality; `state.seeing` is where that
@@ -64,7 +71,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
-import { PbMiniRail } from "@pb_vendor_access/js/mini_rail";
+import { PbMiniRail, railIcon } from "@pb_vendor_access/js/mini_rail";
 
 /**
  * The lenses this home offers, in the order they are offered.
@@ -76,8 +83,12 @@ import { PbMiniRail } from "@pb_vendor_access/js/mini_rail";
 const LENS_REGISTRY = [
     { key: "roles", icon: "idCard", label: _t("Roles") },
     { key: "people", icon: "users", label: _t("People") },
+    { key: "screens", icon: "compass", label: _t("Screens") },
     { key: "handovers", icon: "arrowLeftRight", label: _t("Hand-overs") },
 ];
+
+/** The context key a card or a palette row deep-links a lens through. */
+const LENS_CONTEXT_KEY = "pb_lens";
 
 /** How long the People search waits before asking the server. */
 const SEARCH_PAUSE = 220;
@@ -111,12 +122,31 @@ export class PbAccessBoard extends Component {
         // the client still gets its turn.
         useExternalListener(window, "keydown", this.onKeyDown, { capture: true });
 
+        //: Same rule again for the Screens lens and the entry beside it.
+        this.screensSeq = 0;
+        this.screenSeq = 0;
+        //: What is being dragged, and over what. Plain fields rather than
+        //: state: a drag redraws nothing until it is dropped, and putting the
+        //: pointer's position into reactive state re-renders the list under the
+        //: cursor forty times a second.
+        this.dragFrom = null;
+
+        // WHERE A CARD OR A ⌘K ROW ASKED US TO LAND. The Settings cog's
+        // "Navigation" card opens this home on the Screens lens, and the
+        // protocol's key for that is `pb_lens` (pb_hub/js/hub_nav.js) — the
+        // same key every other hub in the product reads, so nobody has to
+        // learn a second vocabulary to deep-link into this one.
+        const asked = (this.props.action && this.props.action.context
+                       && this.props.action.context[LENS_CONTEXT_KEY]) || "";
+        const landing = LENS_REGISTRY.some((l) => l.key === asked)
+            ? asked : "roles";
+
         this.state = useState({
             loaded: false,
             failed: "",
             board: null,
 
-            lens: "roles",             // see LENS_REGISTRY
+            lens: landing,             // see LENS_REGISTRY
             area: "",
             search: "",
             open: 0,                   // the role that is opened out
@@ -137,6 +167,17 @@ export class PbAccessBoard extends Component {
             passport: null,
             passportBusy: false,
             passportFailed: "",
+
+            // the screens lens
+            screens: null,             // the menu with its gates, or null
+            screensBusy: false,
+            screensFailed: "",
+            screenId: 0,               // which entry is opened out
+            screen: null,              // that entry, in full
+            screenBusy: false,
+            picking: false,            // the "add a role" picker is open
+            pickSearch: "",
+            dragOver: 0,               // the row the pointer is over
 
             // "see it as…" — a VIEW over the lenses, never an input to a write
             seeing: null,              // { id, name, avatar } or null for "you"
@@ -160,10 +201,25 @@ export class PbAccessBoard extends Component {
             busy: false,
         });
 
-        onWillStart(async () => { await this.load(); });
+        onWillStart(async () => {
+            await this.load();
+            // A deep link lands ON a lens, so the lens's own read has to happen
+            // before the first paint too — otherwise the card that promised the
+            // menu opens on an empty pane and fills itself in afterwards.
+            if (this.state.lens === "people") { await this.loadPeople(); }
+            if (this.state.lens === "screens") { await this.loadScreens(); }
+        });
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    /** A LEFT-MENU icon, by the name the row actually carries.
+     *
+     * The Screens lens draws the menu as the menu, and an entry drawn with the
+     * wrong icon is an entry somebody has to read to recognise. `railIcon` is
+     * the miniature's own mapper (mini_rail.js) — one place, one answer, and a
+     * plain dot for a name it cannot draw rather than a confident wrong one. */
+    railIcon(n, s = 15) { return railIcon(n, s); }
 
     // ------------------------------------------------------------- reading
     async load() {
@@ -195,6 +251,8 @@ export class PbAccessBoard extends Component {
         // reporting success and then contradicting it.
         if (this.state.peopleList) { await this.loadPeople(); }
         if (this.state.personId) { await this.loadPassport(this.state.personId); }
+        if (this.state.screens) { await this.loadScreens(); }
+        if (this.state.screenId) { await this.loadScreen(this.state.screenId); }
         if (this.state.seeing) { await this.loadSeeing(this.state.seeing.id); }
     }
 
@@ -212,6 +270,7 @@ export class PbAccessBoard extends Component {
         // about a role, and a person list nobody asked for is a query nobody
         // needed.
         if (key === "people" && !this.state.peopleList) { this.loadPeople(); }
+        if (key === "screens" && !this.state.screens) { this.loadScreens(); }
     }
 
     async setArea(key) {
@@ -472,6 +531,344 @@ export class PbAccessBoard extends Component {
               name: this.state.passport.header.name });
     }
 
+    // -------------------------------------------------------- the screens lens
+    /**
+     * WHO SEES THIS SCREEN — the third question, and the one nobody could
+     * answer before.
+     *
+     * THE MENU IS DRAWN AS THE MENU. Not a table of entries with a column of
+     * permission names: the left-hand pane is the rail, in the rail's own
+     * order, with its sections and its icons, because that is the thing
+     * everybody in the company is already looking at. A gate is a ROLE chip on
+     * the row — a name and a sentence — and the row says, in the same glance,
+     * whether the person in the "see it as" picker can open it.
+     *
+     * AND IT IS THE ONLY PLACE A GATE IS EDITED. Before this lens, changing who
+     * sees an entry meant a list view of permission-group names, which is
+     * exactly how the live menu ended up with no gates at all: the screen that
+     * could change them was unreadable, so nobody did.
+     *
+     * NOTHING HERE DECIDES ANYTHING. Every state comes from the server, from
+     * the same rule that draws the real menu for the real person
+     * (`pb.sidebar.item._state_for`). This file draws what it is handed.
+     */
+    async loadScreens() {
+        const seq = ++this.screensSeq;
+        this.state.screensBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "screens_board", [
+                this.state.seeing ? this.state.seeing.id : null,
+            ]);
+            if (seq !== this.screensSeq) { return; }
+            this.state.screens = res;
+            this.state.screensFailed = "";
+            // LAND ON AN ENTRY. An empty right-hand pane beside a drawing of
+            // the menu is a screen asking a question it could have answered
+            // itself — but only when nothing is open yet, so a reload after an
+            // edit does not move the page under somebody.
+            if (!this.state.screenId) {
+                const first = this.screenRows.find((r) => r.active);
+                if (first) { await this.loadScreen(first.id); }
+            }
+        } catch (e) {
+            if (seq !== this.screensSeq) { return; }
+            this.state.screens = null;
+            this.state.screensFailed = this._msg(
+                e, _t("The left menu could not be read."));
+        } finally {
+            if (seq === this.screensSeq) { this.state.screensBusy = false; }
+        }
+    }
+
+    async loadScreen(id) {
+        const seq = ++this.screenSeq;
+        this.state.screenId = id;
+        this.state.picking = false;
+        this.state.screenBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "screen_detail", [
+                id, this.state.seeing ? this.state.seeing.id : null,
+            ]);
+            if (seq !== this.screenSeq) { return; }
+            this.state.screen = res;
+        } catch (e) {
+            if (seq !== this.screenSeq) { return; }
+            this.state.screen = null;
+            this.notif.add(this._msg(e, _t("That entry could not be opened out.")),
+                           { type: "danger" });
+        } finally {
+            if (seq === this.screenSeq) { this.state.screenBusy = false; }
+        }
+    }
+
+    get screenSections() {
+        return (this.state.screens && this.state.screens.sections) || [];
+    }
+
+    /** Every top-level row, in menu order — used to land on the first one. */
+    get screenRows() {
+        return this.screenSections.flatMap((s) => s.items);
+    }
+
+    get screensCanManage() {
+        return Boolean(this.state.screens && this.state.screens.can_manage);
+    }
+
+    /** ONE expression per sentence, so the spaces survive (R34). */
+    seeingLine() {
+        if (!this.state.seeing) {
+            return _t("Showing what YOU can open. Pick somebody in "
+                      + "\"See it as\" to look through their eyes.");
+        }
+        return _t("Showing what %s can open.", this.state.seeing.name);
+    }
+
+    stateWord(row) {
+        if (!row.active) { return _t("off the menu"); }
+        if (row.state === "on") { return _t("sees it"); }
+        if (row.state === "locked") { return _t("sees it locked"); }
+        return _t("not on their menu");
+    }
+
+    stateIcon(row) {
+        if (!row.active) { return ic("eyeOff", 13); }
+        if (row.state === "on") { return ic("checkCircle", 13); }
+        if (row.state === "locked") { return ic("lock", 13); }
+        return ic("eyeOff", 13);
+    }
+
+    /** "3 people", and never "3 person" or "1 people" (R46). */
+    seenByLine(row) {
+        if (row.everyone) { return _t("Everybody with a login"); }
+        if (!row.seen_by) { return _t("Nobody can open it"); }
+        if (row.seen_by === 1) { return _t("1 person can open it"); }
+        return _t("%s people can open it", row.seen_by);
+    }
+
+    /**
+     * "…and the permission it has always asked for."
+     *
+     * NO PERMISSION-GROUP NAMES ON THIS SCREEN, EVER. A permission that is part
+     * of a role is reported as that ROLE, so the sentence stays in the
+     * vocabulary the rest of the home uses; one that belongs to no role at all
+     * is reported as a count, which is honest without being technical.
+     */
+    legacyLine(row) {
+        const lg = row.legacy || { n: 0, roles: [], loose: 0 };
+        if (!lg.n) { return ""; }
+        if (lg.roles.length === 1) {
+            return _t("Also opens for anybody who holds %s.", lg.roles[0]);
+        }
+        if (lg.roles.length > 1) {
+            return _t("Also opens for anybody who holds %s or %s.",
+                      lg.roles.slice(0, -1).join(", "),
+                      lg.roles[lg.roles.length - 1]);
+        }
+        if (lg.loose === 1) {
+            return _t("It also asks for one older permission, kept from before "
+                      + "roles were written down.");
+        }
+        return _t("It also asks for %s older permissions, kept from before "
+                  + "roles were written down.", lg.loose);
+    }
+
+    // ------------------------------------------------------------ editing gates
+    /** Put a role on an entry, or take it off. */
+    async toggleGate(role) {
+        const sc = this.state.screen;
+        if (!sc || !this.screensCanManage) { return; }
+        const held = sc.gates.map((g) => g.id);
+        const at = held.indexOf(role.id);
+        const next = at >= 0
+            ? held.filter((id) => id !== role.id)
+            : held.concat([role.id]);
+        await this._writeGates(sc.id, next);
+    }
+
+    async _writeGates(id, roleIds) {
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(
+                "pb.access", "set_screen_roles", [id, roleIds]);
+            this.notif.add(res.message, { type: "success" });
+            await this.afterScreenWrite();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That gate could not be changed.")),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    async setScreenActive(row, on) {
+        await this._flags(row.id, { active: on });
+    }
+
+    async setScreenRestricted(row, on) {
+        await this._flags(row.id, { restricted: on });
+    }
+
+    async _flags(id, vals) {
+        if (!this.screensCanManage) { return; }
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(
+                "pb.access", "set_screen_flags",
+                [id, vals.active === undefined ? null : vals.active,
+                 vals.restricted === undefined ? null : vals.restricted]);
+            this.notif.add(res.message, { type: "success" });
+            await this.afterScreenWrite();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be changed.")),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    /**
+     * READ EVERYTHING THAT JUST BECAME YESTERDAY'S ANSWER — including the REAL
+     * MENU down the side of the screen.
+     *
+     * A gate edit changes the very rows the rail is drawn from, and leaving the
+     * rail showing the old answer two hundred pixels from the editor that just
+     * changed it is the worst kind of stale: the screen contradicting itself.
+     * `PB_SIDEBAR:RELOAD` is a bus event `pb_sidebar` listens for; it re-asks
+     * the server rather than patching anything in the browser, so what the rail
+     * shows afterwards is what the rail would show on a fresh page load.
+     */
+    async afterScreenWrite() {
+        await this.loadScreens();
+        if (this.state.screenId) { await this.loadScreen(this.state.screenId); }
+        // The Roles lens's "opens on the left menu" column was read before this
+        // and is now out of date for every role.
+        this.state.detail = {};
+        if (this.state.open) { await this.loadDetail(this.state.open); }
+        if (this.state.personId) { await this.loadPassport(this.state.personId); }
+        this.env.bus.trigger("PB_SIDEBAR:RELOAD");
+    }
+
+    togglePicker() {
+        this.state.picking = !this.state.picking;
+        this.state.pickSearch = "";
+    }
+
+    onPickSearch(ev) { this.state.pickSearch = ev.target.value; }
+
+    /** The roles not already on this gate, narrowed by what has been typed. */
+    get gateOptions() {
+        const sc = this.state.screen;
+        if (!sc) { return []; }
+        const term = (this.state.pickSearch || "").trim().toLowerCase();
+        if (!term) { return sc.options || []; }
+        return (sc.options || []).filter(
+            (r) => `${r.name} ${r.description}`.toLowerCase().includes(term));
+    }
+
+    /** "Give this role to somebody" straight from a gate nobody can pass. */
+    giveGateRole(gate) {
+        this.state.granting = {
+            profile: { id: gate.id, name: gate.name,
+                       description: gate.description },
+            mode: "grant",
+        };
+        this.state.grantTarget = { id: 0, name: "" };
+        this.state.grantReason = "";
+        this.state.people = [];
+    }
+
+    /** The raw tables, for the administrator who needs the row itself. */
+    openAdvancedList() {
+        this.action.doAction("pb_sidebar.action_pb_sidebar_item");
+    }
+
+    // ---------------------------------------------------------------- reorder
+    /**
+     * DRAG TO REORDER, INSIDE ONE BLOCK OF THE MENU.
+     *
+     * The order is `sequence` on the row, and it is renumbered in TENS on drop
+     * so the next entry somebody adds by hand has somewhere to land between two
+     * of them. Dragging across blocks is not offered: an entry's block is what
+     * the section header says it is, and moving one is a different decision from
+     * putting two in a different order.
+     */
+    onDragStart(ev, section, row) {
+        if (!this.screensCanManage) { return; }
+        this.dragFrom = { section: section.id, id: row.id };
+        ev.dataTransfer.effectAllowed = "move";
+        try { ev.dataTransfer.setData("text/plain", String(row.id)); }
+        catch (e) { /* Safari refuses an empty payload */ }
+    }
+
+    onDragOver(ev, section, row) {
+        if (!this.dragFrom || this.dragFrom.section !== section.id) { return; }
+        ev.preventDefault();
+        this.state.dragOver = row.id;
+    }
+
+    onDragEnd() {
+        this.dragFrom = null;
+        this.state.dragOver = 0;
+    }
+
+    async onDrop(ev, section, row) {
+        if (!this.dragFrom || this.dragFrom.section !== section.id) { return; }
+        ev.preventDefault();
+        const moved = this.dragFrom.id;
+        this.dragFrom = null;
+        this.state.dragOver = 0;
+        if (moved === row.id) { return; }
+        const ids = section.items.map((i) => i.id).filter((i) => i !== moved);
+        const at = ids.indexOf(row.id);
+        ids.splice(at < 0 ? ids.length : at, 0, moved);
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(
+                "pb.access", "reorder_screens", [section.id, ids]);
+            this.notif.add(res.message, { type: "success" });
+            await this.afterScreenWrite();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The order could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    /** The keyboard's version of a drag — a list nobody can reorder without a
+     *  mouse is a list some people cannot reorder. */
+    async nudge(section, row, delta) {
+        if (!this.screensCanManage) { return; }
+        const ids = section.items.map((i) => i.id);
+        const at = ids.indexOf(row.id);
+        const to = at + delta;
+        if (at < 0 || to < 0 || to >= ids.length) { return; }
+        ids.splice(to, 0, ids.splice(at, 1)[0]);
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(
+                "pb.access", "reorder_screens", [section.id, ids]);
+            this.notif.add(res.message, { type: "success" });
+            await this.afterScreenWrite();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The order could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    onScreenKey(ev, section, row) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.loadScreen(row.id);
+            return;
+        }
+        if (!ev.altKey) { return; }
+        if (ev.key === "ArrowUp") { ev.preventDefault(); this.nudge(section, row, -1); }
+        if (ev.key === "ArrowDown") { ev.preventDefault(); this.nudge(section, row, 1); }
+    }
+
     // ------------------------------------------------------------ see it as…
     /**
      * THE SIMULATOR IS A PAIR OF SPECTACLES, NOT A LOGIN. It repaints what the
@@ -511,6 +908,9 @@ export class PbAccessBoard extends Component {
         // The People lens is about one person, so it goes to the one being
         // looked at rather than leaving two different answers on one screen.
         if (this.state.peopleList) { await this.loadPassport(person.id); }
+        // The Screens lens says, on every row, whether the person in the picker
+        // can open it — so putting the spectacles on repaints it (P4).
+        await this.repaintScreens();
     }
 
     seeAsMe() {
@@ -518,6 +918,17 @@ export class PbAccessBoard extends Component {
         this.state.seeingHeld = [];
         this.state.simOpen = false;
         this.state.people = [];
+        this.repaintScreens();
+    }
+
+    /** The Screens lens, re-read for whoever the spectacles are on now.
+     *
+     * Only when it has been opened at all: taking the spectacles off before
+     * anybody has looked at the menu is not a reason to go and read it. */
+    async repaintScreens() {
+        if (!this.state.screens) { return; }
+        await this.loadScreens();
+        if (this.state.screenId) { await this.loadScreen(this.state.screenId); }
     }
 
     async loadSeeing(id) {
@@ -609,6 +1020,38 @@ export class PbAccessBoard extends Component {
             await this.reload();
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be done.")),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // --------------------------------------------------------- putting one away
+    /**
+     * ARCHIVE A ROLE — the way out of the deadlock, and nothing more.
+     *
+     * NOT A DELETE. The history points at roles by name, and a role that was
+     * given to somebody and taken away again is part of what happened here;
+     * deleting the row would leave the trail saying "given X" about nothing.
+     * The server refuses while anybody still holds it, and the refusal names
+     * them — surfaced verbatim, because "who still has it" is the whole
+     * instruction.
+     */
+    async archiveRole(profile) {
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(
+                "pb.access", "archive_role", [profile.id]);
+            this.state.open = 0;
+            this.notif.add(res.message, { type: "success", sticky: true });
+            // A role that has been put away may have been the only way into a
+            // left-menu entry, so the Screens lens and the real rail both have
+            // to be re-read.
+            this.state.options = null;
+            await this.reload();
+            this.env.bus.trigger("PB_SIDEBAR:RELOAD");
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That role could not be put away.")),
                            { type: "danger" });
         } finally {
             this.state.busy = false;
@@ -907,6 +1350,7 @@ export class PbAccessBoard extends Component {
         if (this.state.granting) { this.state.granting = null; return; }
         if (this.state.delegating) { this.state.delegating = false; return; }
         if (this.state.simOpen) { this.state.simOpen = false; return; }
+        if (this.state.picking) { this.state.picking = false; return; }
         // Escape puts the spectacles down. It is the way back from "somebody
         // else's reality" that needs no button to be found first.
         if (this.state.seeing) { this.seeAsMe(); }

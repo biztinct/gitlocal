@@ -312,6 +312,116 @@ NEW_ABILITIES = [
 ]
 
 
+# =============================================================================
+# WHICH ROLES OPEN WHICH ENTRY ON THE LEFT MENU.
+#
+# THE OTHER HALF OF A TWO-LANE RE-GATE, AND THE HALF THAT CANNOT LIVE IN A DATA
+# FILE. Each hub module ships its own left-menu record and none of them may
+# depend on this one — a payroll product that needed the access board installed
+# before it could draw a menu would have the dependency backwards. So the
+# PERMISSION lane is written into those modules' own data files, where an
+# upgrade re-asserts it, and the ROLE lane is written here, by this migration,
+# on the rows themselves.
+#
+# BOTH LANES, ON PURPOSE. An entry answers to its permissions OR to its roles,
+# so re-gating a menu that was open to everybody takes nothing away from
+# somebody who already held the permission the screens behind it check. The role
+# lane is what the Access home can then edit; the permission lane is what stops
+# the day of the change being the day people lose doors.
+#
+# KEYED BY ABILITY, NOT BY ROLE NAME. A role's name is the one thing an
+# administrator is invited to change; its ability's `technical_key` is unique,
+# constrained and never shown to anybody. Matching on the name would silently
+# gate nothing the first time somebody reworded a card.
+#
+# ADDITIVE AND IDEMPOTENT. It only ever ADDS roles to an entry, so a gate
+# somebody has since edited on the Screens lens is not undone by the next
+# upgrade, and a second run changes nothing.
+# =============================================================================
+SCREEN_GATES = {
+    # Home and Learn are deliberately absent: they are everybody's.
+    'pb_payhub.item_pay_run': (
+        'payroll-read', 'payroll-officer', 'payroll-manager',
+        'payroll-final-approver', 'payroll-administrator'),
+    'pb_people_hub.item_people': (
+        'equipment-read', 'equipment-team', 'packages-and-awards',
+        'packages-and-awards-head', 'recognition', 'recognition-lead',
+        'growth-plans-hr', 'growth-plans-head',
+        'lifecycle-read', 'lifecycle-team', 'lifecycle-admin'),
+    'pb_lifecycle.item_lifecycle': (
+        'lifecycle-read', 'lifecycle-team', 'lifecycle-admin'),
+    'pb_mission.item_workforce': (
+        'budget-holder', 'budget-finance', 'budget-team'),
+    'pb_insights_hub.item_insights': (
+        'pay-reporting-read', 'payroll-manager', 'payroll-administrator'),
+    'pb_compliance_hub.item_compliance': (
+        'payroll-manager', 'payroll-administrator'),
+    'pb_settings.item_settings': ('access-team',),
+}
+
+
+def ensure_screen_gates(env):
+    """Put the role lane on the left menu. Safe to run again, and additive.
+
+    Every entry it cannot find is SKIPPED and said so in the log: this module
+    installs onto builds that have three of these hubs and onto builds that have
+    all seven, and a missing hub is not a failure.
+    """
+    if 'pb.sidebar.item' not in env:
+        _logger.info('pb_vendor_access: no left menu on this database — no '
+                     'role gates to put on it')
+        return {'gated': 0, 'absent': 0, 'added': 0}
+    Item = env['pb.sidebar.item'].sudo().with_context(active_test=False)
+    gated = absent = added = 0
+    for xmlid, keys in SCREEN_GATES.items():
+        item = env.ref(xmlid, raise_if_not_found=False)
+        if not item or item._name != 'pb.sidebar.item':
+            absent += 1
+            _logger.info(
+                'pb_vendor_access: %s is not a left-menu entry on this '
+                'database — no role gate put on it', xmlid)
+            continue
+        profiles = _profiles_for_keys(env, keys)
+        if not profiles:
+            absent += 1
+            _logger.warning(
+                'pb_vendor_access: none of the roles %s are on this database, '
+                'so "%s" is left as it is rather than gated on nothing',
+                ', '.join(keys), item.name)
+            continue
+        already = set(Item.browse(item.id).role_ids.ids)
+        new = [p.id for p in profiles if p.id not in already]
+        if not new:
+            gated += 1
+            continue
+        try:
+            Item.browse(item.id).write({'role_ids': [(4, pid) for pid in new]})
+            gated += 1
+            added += len(new)
+        except Exception:                           # noqa: BLE001
+            _logger.warning(
+                'pb_vendor_access: the role gate could not be put on "%s"',
+                item.name, exc_info=True)
+    _logger.info(
+        'pb_vendor_access: left-menu role gates — %s entries gated, %s role '
+        'links added, %s entries skipped (not on this database)',
+        gated, added, absent)
+    return {'gated': gated, 'absent': absent, 'added': added}
+
+
+def _profiles_for_keys(env, keys):
+    """The active roles built out of these abilities.
+
+    A role is matched through its ABILITY rather than its name, so an
+    administrator who has reworded a card still gets the gate they had.
+    """
+    abilities = env['pb.role.ability'].by_keys(list(keys))
+    if not abilities:
+        return env['pb.role.profile'].browse()
+    return env['pb.role.profile'].sudo().search(
+        [('active', '=', True), ('ability_ids', 'in', abilities.ids)])
+
+
 def _role_backed_abilities():
     """One ability per seeded role, in the role's own words."""
     out = []
@@ -552,3 +662,7 @@ def post_init_hook(env):
     if not isinstance(env, api.Environment):    # pragma: no cover - old shape
         env = api.Environment(env, SUPERUSER_ID, {})
     ensure_catalogue(env)
+    # A fresh install gets the same left-menu gates the upgrade puts on, so a
+    # database seeded today and one migrated today are the same database
+    # afterwards.
+    ensure_screen_gates(env)

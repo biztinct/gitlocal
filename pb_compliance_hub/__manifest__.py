@@ -34,7 +34,7 @@ A payroll OFFICER therefore sees three of the four lenses and the audit lens is
 ABSENT rather than disabled, which is the shell's answer to a door the facade
 would refuse (W29).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

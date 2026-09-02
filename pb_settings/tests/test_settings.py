@@ -291,20 +291,31 @@ class TestSoftCategoryRegistry(TransactionCase):
                       'probed renders and answers a click with silence (W79)')
 
     def test_the_eight_shipped_categories_are_still_the_first_eight(self):
-        """A bolted-on category lands AFTER what this hub ships, because the
-        eight shipped ones carry no sequence and `allCategories` spreads the
-        registry behind them. If that ever stops being true, a later module
-        could push Formula Engine off the top of the list without editing this
-        file."""
+        """A bolted-on category lands AFTER what this hub ships, and a
+        REPLACEMENT keeps the position the reader learnt.
+
+        `allCategories` used to be a plain spread of the shipped array and the
+        registry. It is now a spread of `shipped` — the shipped array with any
+        registered category of the SAME KEY swapped in, in place — followed by
+        the genuinely new ones. That seam is what lets the module owning the
+        Access home replace "Navigation" with the lens that draws the rail,
+        without editing this file and without the word appearing twice.
+
+        What must stay true either way: the eight this hub ships come first, in
+        their own order, and nothing a later module registers can push Formula
+        Engine off the top of the list.
+        """
         src = _code(_js())
         self.assertLess(
             src.index('export const CATEGORIES'), src.index('allCategories()'),
             'the shipped array must be declared before the combining helper')
         combined = src.split('export function allCategories()', 1)[1]
         combined = combined.split('\n}', 1)[0]
-        self.assertIn('...CATEGORIES', combined)
-        self.assertLess(combined.index('...CATEGORIES'),
-                        combined.index('...extraCategories()'),
+        self.assertIn('CATEGORIES.map(', combined,
+                      'the shipped order is what the combined list is built on')
+        self.assertIn('...shipped', combined)
+        self.assertLess(combined.index('...shipped'),
+                        combined.index('extra.filter('),
                         'the shipped categories come first')
 
 

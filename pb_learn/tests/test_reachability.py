@@ -178,11 +178,22 @@ class TestReachability(TransactionCase):
             raise_if_not_found=False)
         if not manager_group:
             self.skipTest('the payroll manager group is not on this database')
+        # `hr.group_hr_user` is part of the probe since ACCESS P4 gated the
+        # left menu, and it is not padding to make a test pass: the People
+        # entry is about `hr.employee` and `hr.contract`, whose own ACLs are
+        # the HR family and not the payroll ladder (W95), so it is now gated on
+        # the HR group. Every actual payroll manager on this product holds it —
+        # a persona that did not could open the People hub and read an empty
+        # board, which is the door this product deliberately stopped offering.
+        # A probe without it is a person this product does not have.
+        hr_user = self.env.ref('hr.group_hr_user', raise_if_not_found=False)
+        groups = [self.env.ref('base.group_user').id, manager_group.id]
+        if hr_user:
+            groups.append(hr_user.id)
         user = self.env['res.users'].create({
             'name': 'W108 manager probe',
             'login': 'w108_manager_probe',
-            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
-                                  manager_group.id])],
+            'group_ids': [(6, 0, groups)],
         })
         Intent = self.env['learn.intent'].with_user(user)
         denied = []

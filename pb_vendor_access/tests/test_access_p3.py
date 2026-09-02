@@ -303,7 +303,9 @@ class TestThePassport(PassportCase):
         self.assertTrue(twin.holder_count)
         with self.assertRaises(UserError) as caught:
             self.mgr_access.remove(self.role.id, holder.id)
-        self.assertIn('another role', str(caught.exception))
+        # ACCESS P4 (ledger B7) made the refusal NAME the other role and offer
+        # the way out, rather than saying "another role" and stopping.
+        self.assertIn(twin.name, str(caught.exception))
 
     def test_somebody_with_no_roles_gets_an_honest_passport(self):
         plain = self._user('Bare')

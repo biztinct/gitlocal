@@ -74,7 +74,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # 19.0.1.6.0 — IA Cycle 6: the workspace accepts `pb_cmd` on ARRIVAL, so a
     # foreign cockpit can deep link to a lens's own sub-view (Insights' bonus
     # tile → the Overtime desk's bonus review) instead of only to the lens.
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

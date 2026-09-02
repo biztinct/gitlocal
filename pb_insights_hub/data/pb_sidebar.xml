@@ -19,8 +19,22 @@
          facade or ACL (W95), and the four lenses here do not share one answer:
          three read the analytics tier and the Payroll Report reads
          `hr.payslip.run`. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access`.
+
+         `pb_hr_payroll_base.group_payroll_analytics_user` is the lane: three of
+         this entry's four lenses read the analytics tier, and the manager tier
+         above it implies it. The fourth lens reads `hr.payslip.run` and is
+         reached by the roles lane instead — which is the point of having two.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module. -->
     <record id="item_insights" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_insights"/>
+        <field name="groups_id"
+               eval="[(4, ref('pb_hr_payroll_base.group_payroll_analytics_user'))]"/>
         <field name="name">Insights</field>
         <field name="icon">trending-up</field>
         <field name="sequence">10</field>

@@ -109,6 +109,52 @@ categories.add("access", {
     }],
 }, { sequence: 30 });
 
+/**
+ * NAVIGATION, RE-POINTED AT THE LENS THAT DRAWS IT AS THE MENU.
+ *
+ * The shipped "Navigation" category offered two raw list views — one row per
+ * left-menu entry, with a column of permission-group names. That screen is why
+ * the live menu ended up with no gates on it at all: the only place to change
+ * one was unreadable, so nobody did. The Screens lens is the same rows drawn as
+ * the rail, with the gate said as a ROLE and the people it lets in shown beside
+ * it while you edit.
+ *
+ * IT REPLACES RATHER THAN ADDS. `allCategories()` swaps a shipped category for a
+ * registered one of the same key, in place, so the cog keeps eight cards in the
+ * order people learnt — and on a database without this module the two list views
+ * are still exactly where they were. Nothing is deleted: both actions stay
+ * registered, and the lens itself carries a quiet link to them for the day an
+ * administrator needs the raw table.
+ *
+ * ONE CARD, so the hub's own `soleCard` rule opens the lens directly instead of
+ * drawing a page whose only content is one tile.
+ */
+categories.add("nav", {
+    key: "nav",
+    icon: "compass",
+    label: _t("Navigation"),
+    blurb: _t("What the left menu offers, who can see each entry, and in what "
+              + "order."),
+    // The people who can actually CHANGE a gate, which is narrower than the
+    // people who may open the Access home. The lens itself is readable by
+    // anybody who reaches it — a door that only ever shows somebody their own
+    // reality is not a door worth putting on this cog.
+    groups: ACCESS_MANAGE_GATE,
+    cards: [{
+        id: "screens",
+        tag: "pb_access_board",
+        // The lens to land on, under the protocol's own key (`HUB_LENS_KEY`).
+        // `openHub` merges a card's `context` (hub_nav.js) and the board reads
+        // it on startup — which is how a card deep-links into a lens without
+        // either side knowing anything about the other's internals.
+        context: { pb_lens: "screens" },
+        icon: "compass",
+        label: _t("The left menu"),
+        sub: _t("Every entry drawn as the menu itself — who can open it, why, "
+                + "and in what order."),
+    }],
+}, { sequence: 15 });
+
 // ================================================================== the ⌘K
 
 const palette = registry.category("pb_hub_palette");
@@ -159,6 +205,17 @@ palette.add("va_history", {
     requires: "pb_access_board",
     action: { xmlid: "pb_vendor_access.action_pb_access_delegation" },
 }, { sequence: 3230 });
+
+palette.add("va_screens", {
+    id: "va_screens",
+    label: _t("The left menu"),
+    sublabel: _t("Access"),
+    icon: "compass",
+    groups: ACCESS_MANAGE_GATE,
+    requires: "pb_access_board",
+    action: { xmlid: "pb_vendor_access.action_pb_access_board",
+              lens: "screens" },
+}, { sequence: 3250 });
 
 palette.add("va_roles", {
     id: "va_roles",

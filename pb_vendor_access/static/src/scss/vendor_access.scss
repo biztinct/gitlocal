@@ -1254,6 +1254,417 @@ $pbva-states: (
 
     .pbva-hand-actions { margin-top: 10px; }
 
+    // ========================================================== the screens
+    //
+    // THE MENU, DRAWN AS THE MENU. The left pane is deliberately the WIDER of
+    // the two and deliberately reads top to bottom like the rail itself: same
+    // order, same sections, same icons. A table with a permissions column is
+    // what this replaces, and the whole reason it replaces it is that nobody
+    // could recognise their own product in the table.
+    //
+    // W66/C4 — the row styles live HERE, at the lens's own level, and NOT under
+    // `.pbva-modal-scrim`. `.pbva-pick`/`.pbva-picker` learned that lesson the
+    // expensive way: a rule scoped to a scrim is a rule that vanishes the day
+    // the markup is used anywhere else.
+    //
+    // C4 again — a media query measures the WINDOW, and this pane is ~256px
+    // narrower than the window because of the rail beside it. Every breakpoint
+    // below is therefore generous by about that much.
+    .pbva-screens {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, .95fr);
+        gap: 14px;
+        align-items: start;
+
+        @media (max-width: 1250px) { grid-template-columns: minmax(0, 1fr); }
+
+        // The busy, failed and nothing-here states are the WHOLE lens, not a
+        // column of it — left in one track they would sit in a narrow half
+        // beside an empty space, which reads as a broken layout rather than as
+        // a message.
+        > .pbim-busy,
+        > .pbim-empty { grid-column: 1 / -1; }
+    }
+
+    .pbva-scrlist,
+    .pbva-scrdetail {
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        min-width: 0;
+    }
+
+    .pbva-scrdetail { padding: 18px; }
+
+    .pbva-scrlist-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-scrlist-who {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        color: var(--pbim-ink, #1B1733);
+        font-weight: 600;
+    }
+
+    .pbva-scrlist-hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .pbva-scrsec-h {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 11px 14px 5px;
+        background: var(--pbim-bg, #F8F9FC);
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-scrrow {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        width: 100%;
+        text-align: left;
+        padding: 10px 14px;
+        border: 0;
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+        border-left: 3px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        min-width: 0;
+
+        &:hover { background: var(--pbim-bg, #F8F9FC); }
+
+        &.is-on {
+            background: var(--pbim-primary-light, #EEECFA);
+            border-left-color: var(--pbim-primary, #6355C7);
+        }
+
+        // The drop target, while something is being dragged over it.
+        &.is-over { border-top: 2px solid var(--pbim-primary, #6355C7); }
+
+        // OFF THE MENU, NOT DELETED. Dimmed and struck through, so it reads as
+        // "this is here and switched off" rather than as an error.
+        &.is-off {
+            opacity: .55;
+            .pbva-scrtx b { text-decoration: line-through; }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            transition: background-color .14s ease, border-color .14s ease;
+        }
+    }
+
+    .pbva-scrgrip {
+        display: inline-flex;
+        color: var(--pbim-line-strong, #C3C9D6);
+        cursor: grab;
+        flex: 0 0 auto;
+
+        &:active { cursor: grabbing; }
+    }
+
+    .pbva-scrico {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        color: var(--pbim-ink, #1B1733);
+        flex: 0 0 auto;
+
+        &.pbva-scrico--big { width: 38px; height: 38px; }
+    }
+
+    .pbva-scrtx {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1 1 auto;
+        min-width: 0;
+
+        b {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    .pbva-scrgates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        align-items: center;
+    }
+
+    // A GATE IS A ROLE, AND IT IS TINTED BY ITS AREA — the same five tints the
+    // role cards use, so a chip on the menu and a card on the roles lens are
+    // recognisably the same thing.
+    .pbva-gate {
+        font-size: 10.5px;
+        font-weight: 600;
+        line-height: 1.5;
+        border-radius: 999px;
+        padding: 1px 8px;
+        background: var(--pbim-pill, #EEF1F5);
+        color: var(--pbim-slate, #475569);
+        white-space: nowrap;
+        max-width: 15rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &.pbva-gate--all {
+            background: var(--pbim-primary-light, #EEECFA);
+            color: var(--pbim-primary-dark, #4A3EA6);
+        }
+
+        &.pbva-gate--lock {
+            background: #FBF0E1;
+            color: #B45309;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        &.pbva-gate--warn { background: #FBF0E1; color: #B45309; }
+        &.pbva-gate--bad { background: #FCE8ED; color: #BE123C; }
+
+        // A role that has been put away still has to be VISIBLE on the gate —
+        // an entry it is the only key to is reachable by nobody, and a chip
+        // that simply disappeared would describe that entry as open to all.
+        &.is-gone {
+            text-decoration: line-through;
+            opacity: .7;
+        }
+    }
+
+    .pbva-scrstate {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        flex: 0 0 auto;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--pbim-muted, #64748B);
+
+        &.is-on { color: #15803D; }
+        &.is-locked { color: #B45309; }
+        &.is-off,
+        &.is-gone { color: var(--pbim-muted, #64748B); }
+    }
+
+    // The switch. A word beside a colour everywhere else in this file; here the
+    // shape IS the word, and the title attribute says it in full for anybody
+    // reading with a screen reader or hovering to be sure.
+    .pbva-switch {
+        position: relative;
+        width: 30px;
+        height: 17px;
+        border-radius: 999px;
+        border: 0;
+        background: #D8DCE6;
+        flex: 0 0 auto;
+        cursor: pointer;
+        padding: 0;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 13px;
+            height: 13px;
+            border-radius: 999px;
+            background: #FFFFFF;
+        }
+
+        &.is-on { background: #2AB090; }
+        &.is-on::after { left: 15px; }
+        &:disabled { opacity: .5; cursor: default; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            &::after { transition: left .12s ease; }
+        }
+    }
+
+    .pbva-scrfoot {
+        padding: 10px 14px;
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    // ------------------------------------------------- one entry, opened out
+    .pbva-scrdet-h {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 14px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-scrdet-id {
+        min-width: 0;
+
+        h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    .pbva-scrdet-sub {
+        margin: 2px 0 0;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+
+        // The shared dot is line-coloured, which is right between two lines of
+        // a passport header and invisible between two words of a sentence —
+        // "Operate 30 people can open it" reads as one broken phrase. Here it
+        // has to be seen to do its job.
+        .pbva-dot { color: var(--pbim-muted, #64748B); margin: 0 2px; }
+    }
+
+    // NO DEAD ENDS. A warning here always sits directly above the control that
+    // ends it, so the sentence and the fix are one glance apart.
+    .pbva-scrwarn {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border-radius: var(--pbim-r-sm, 8px);
+        font-size: 12.5px;
+        line-height: 1.55;
+
+        &.is-warn { background: #FBF0E1; color: #B45309; }
+        &.is-bad { background: #FCE8ED; color: #BE123C; }
+    }
+
+    .pbva-scrempty {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+        padding: 8px 0 2px;
+    }
+
+    .pbva-scrnote {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 10px 0 0;
+        padding: 9px 11px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-gaterow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        margin-bottom: 8px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-left: 3px solid var(--pbim-slate, #475569);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+
+        &.is-gone { opacity: .75; }
+    }
+
+    .pbva-gaterow-ic {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        color: var(--pbim-muted, #64748B);
+        flex: 0 0 auto;
+    }
+
+    .pbva-gaterow-tx {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1 1 auto;
+        min-width: 0;
+
+        b {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+
+        small {
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .pbva-gaterow-none { color: #B45309 !important; font-weight: 600; }
+
+    .pbva-scradd { margin-top: 10px; }
+
+    .pbva-scrpick {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+
+        .pbva-field { max-width: none; margin-bottom: 8px; }
+    }
+
+    .pbva-subgate {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--pbim-line, #E6E8F0);
+        font-size: 13px;
+
+        &:last-child { border-bottom: none; }
+
+        b {
+            width: 150px;
+            flex: 0 0 auto;
+            font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    .pbva-archive { margin-left: 8px; }
+
     @media (prefers-reduced-motion: no-preference) {
         .pbva-role,
         .pbva-hand {
@@ -2154,6 +2565,28 @@ $pbva-areas: (
             border-left-color: nth($pair, 1);
 
             .pbva-passrole-ic {
+                color: nth($pair, 1);
+                background: nth($pair, 2);
+            }
+        }
+
+        // THE SAME FIVE TINTS ON THE MENU. A gate chip on the Screens lens and
+        // a role card on the Roles lens are the same thing, so they are the
+        // same colour — and the chip carries the role's NAME, so it reads
+        // identically to somebody who cannot see the colour at all.
+        //
+        // Declared HERE rather than beside the rest of the Screens lens because
+        // `$pbva-areas` is spelled further down this file than that block is,
+        // and Sass reads a variable only after it has been written.
+        .pbva-gate.pbva-area--#{$key} {
+            color: nth($pair, 1);
+            background: nth($pair, 2);
+        }
+
+        .pbva-gaterow.pbva-area--#{$key} {
+            border-left-color: nth($pair, 1);
+
+            .pbva-gaterow-ic {
                 color: nth($pair, 1);
                 background: nth($pair, 2);
             }

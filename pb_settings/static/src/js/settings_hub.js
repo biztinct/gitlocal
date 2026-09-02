@@ -242,9 +242,28 @@ export function extraCategories() {
     return registry.category(SETTINGS_CATEGORIES).getAll().filter(Boolean);
 }
 
-/** The eight shipped categories plus anything a later module registered. */
+/**
+ * The eight shipped categories plus anything a later module registered.
+ *
+ * A REGISTERED CATEGORY WITH A SHIPPED CATEGORY'S KEY REPLACES IT, IN PLACE.
+ * That is the seam a module needs when it does not add a new door but builds a
+ * BETTER ONE for a door that is already here: Navigation shipped as two raw
+ * list views, and the module that owns the Access home replaces it with the
+ * lens that draws the same rows as the rail itself. Registering a second "nav"
+ * would leave the hub showing the word twice, and editing this file from the
+ * other module would put the dependency the wrong way round.
+ *
+ * IN PLACE, so a replacement keeps the position the reader learnt. And only
+ * where the module is actually installed: on a build without it, nothing is
+ * registered and the shipped category stands exactly as it always did — which
+ * is what keeps this safe on the databases the replacing module never reaches.
+ */
 export function allCategories() {
-    return [...CATEGORIES, ...extraCategories()];
+    const extra = extraCategories();
+    const byKey = new Map(extra.map((c) => [c.key, c]));
+    const shipped = CATEGORIES.map((c) => byKey.get(c.key) || c);
+    const replaced = new Set(CATEGORIES.map((c) => c.key));
+    return [...shipped, ...extra.filter((c) => !replaced.has(c.key))];
 }
 
 /** Every action xmlid the descriptor names, for one probe round trip. */
