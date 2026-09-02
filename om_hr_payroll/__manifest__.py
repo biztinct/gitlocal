@@ -5,7 +5,10 @@
     'category': 'Generic Modules/Human Resources',
     # 19.0.1.0.2 — W105: hr.payslip.line record rules mirroring the two
     # hr.payslip rules in security/hr_payroll_security.xml.
-    'version': '19.0.1.2.0',
+    # 19.0.1.3.0 — ACCESS P7: declare the report_xlsx dependency the payslip
+    # spreadsheet report has always had, and stop the root Payroll menu
+    # pointing at pb_hr_flow (a module that depends on this one).
+    'version': '19.0.1.3.0',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
     'summary': 'Generic Payroll system',
@@ -18,7 +21,14 @@
         'hr_contract',
         'hr_holidays',
         'web_notify',
-        'account'
+        'account',
+        # models/hr_payslip.py PayslipLinesXlsx does
+        # _inherit = ['report.report_xlsx.abstract'], which report_xlsx defines.
+        # Undeclared, the registry only happened to build because report_xlsx
+        # sits shallower in the dependency graph whenever something else pulled
+        # it in; on a fresh database that installs om_hr_payroll on its own it
+        # is simply absent and the registry build fails.
+        'report_xlsx',
     ],
     'data': [
         'security/hr_payroll_security.xml',
