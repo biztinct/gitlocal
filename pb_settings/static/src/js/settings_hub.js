@@ -22,6 +22,12 @@
  *     per group: an xmlid that will not resolve means the module is not
  *     installed, and reading that as "denied" hides a category for the wrong
  *     reason. Nothing here is a security boundary; every action keeps its own.
+ *     ONE EXCEPTION, ADDED BY ACCESS P5: the three categories that belong to
+ *     whoever runs the PLATFORM rather than to the customer whose database this
+ *     is — the fleet of tenants, the raw permission table, and the settings
+ *     screen carrying the developer-mode links — are answered by the SERVER
+ *     (`pb.settings.resolve_gates`) and fail CLOSED. The browser is editable;
+ *     that answer must not be.
  *  3. **A cockpit is opened with a back chip; a native form is opened with a
  *     breadcrumb.** The bespoke cockpits render `<HubBackChip/>` from the
  *     `pb_back` context key. The four native `act_window` cards cannot — they
@@ -232,6 +238,35 @@ export const CATEGORIES = [
 export const SETTINGS_CATEGORIES = "pb_settings_category";
 
 /**
+ * THE PLATFORM-ONLY SET, RESTATED HERE — AND ONLY AS A FALLBACK.
+ *
+ * The real answer comes from the server (`pb.settings.resolve_gates`), which
+ * refuses these three categories and these doors to anybody who is not a system
+ * administrator WITHOUT looking at what the browser sent. This copy exists for
+ * the one case the server cannot answer: the call itself failed. When that
+ * happens the hub falls back to asking about permissions the old way, and these
+ * lists are what keep that fallback closed rather than open.
+ *
+ * They are the same three names as `pb_settings/models/pb_settings.py`. If they
+ * ever disagree the SERVER's list is the one that decides — this one can only
+ * ever hide something the server would also have hidden.
+ */
+export const PLATFORM_ONLY_CATEGORIES = ["org", "roles", "payroll"];
+export const PLATFORM_ONLY_ACTIONS = [
+    "base.action_res_users",
+    "base.action_res_company_form",
+    "om_hr_payroll.action_hr_payroll_configuration",
+    "pb_sidebar.action_pb_sidebar_item",
+    "pb_sidebar.action_pb_sidebar_section",
+];
+export const PLATFORM_ONLY_TAGS = ["pb_tenants"];
+
+/** The stable name of one card, used as the key of the server's answer. */
+export function cardKey(cat, card) {
+    return `${cat.key}:${card.id}`;
+}
+
+/**
  * The registered categories, resolved ONCE per component (see `setup`).
  *
  * A getter would rebuild the array on every render and hand OWL a fresh object
@@ -296,6 +331,11 @@ export class PbSettingsHub extends Component {
             allowed: null,
             // action xmlid -> boolean
             present: {},
+            // "categoryKey:cardId" -> false for a door the server refuses to
+            // offer this persona. Absent means "not refused"; the map only ever
+            // carries denials, so an unanswered card behaves exactly as it did
+            // before Rail C.
+            blocked: {},
             cat: this._restoreCat(),
         });
 
@@ -321,10 +361,11 @@ export class PbSettingsHub extends Component {
      * actually installed here.
      */
     async _resolve() {
-        const [allowed, present] = await Promise.all([
-            this._resolveGroups(), this._resolveActions(),
+        const [gates, present] = await Promise.all([
+            this._resolveGates(), this._resolveActions(),
         ]);
-        this.state.allowed = allowed;
+        this.state.allowed = gates.categories;
+        this.state.blocked = gates.cards;
         this.state.present = present;
         this.state.resolved = true;
 
@@ -335,6 +376,78 @@ export class PbSettingsHub extends Component {
         if (!this.categories.some((c) => c.key === this.state.cat)) {
             this.state.cat = first ? first.key : "";
         }
+    }
+
+    /**
+     * WHO MAY SEE WHAT — ASKED OF THE SERVER (Rail C).
+     *
+     * Most of this cog is the customer's own configuration and its gates fail
+     * OPEN on purpose. Three categories are the PLATFORM's — the fleet of
+     * customer databases, the raw permission table, and the settings screen
+     * that carries the developer-mode links — and "the browser decides" is not
+     * an answer for those: this file is the browser, and it is editable.
+     *
+     * So the answer comes from `pb.settings.resolve_gates`, which refuses the
+     * platform-only set to anybody who is not a system administrator without
+     * consulting the payload at all. Everything else keeps exactly the rule it
+     * has always had.
+     *
+     * ON FAILURE IT FALLS BACK, AND THE FALLBACK IS CLOSED. The old per-group
+     * pass runs (which already answers "no" for those three, since each of them
+     * names the administrator permission and nothing else), and the platform-
+     * only lists are applied on top so that a category somebody has since
+     * re-gated cannot come back through the failure path.
+     */
+    async _resolveGates() {
+        const payload = this.all.map((c) => ({
+            key: c.key,
+            groups: c.groups || [],
+            cards: (c.cards || []).map(
+                (k) => ({ id: k.id, tag: k.tag, xmlid: k.xmlid })),
+        }));
+        try {
+            const res = await this.orm.call(
+                "pb.settings", "resolve_gates", [payload]);
+            return this._floor({ categories: res.categories || {},
+                                 cards: res.cards || {} }, !!res.is_system);
+        } catch (e) {
+            console.warn("pb_settings: could not ask the server who may see "
+                         + "which category — falling back", e);
+            return this._closedFallback();
+        }
+    }
+
+    /** The old browser-side pass, with the platform-only set forced shut. */
+    async _closedFallback() {
+        let isSystem = false;
+        try { isSystem = await user.hasGroup(SYSTEM); } catch { isSystem = false; }
+        const categories = await this._resolveGroups();
+        return this._floor({ categories, cards: {} }, isSystem);
+    }
+
+    /**
+     * The platform-only set, applied as a FLOOR on whatever answer we have.
+     *
+     * It can only ever take something away, and never from the person who runs
+     * the platform. Applied to the server's answer as well as to the fallback,
+     * so a category the server did not answer for — a descriptor a later module
+     * registered with an odd key, say — cannot be the way one of these three
+     * comes back.
+     */
+    _floor(gates, isSystem) {
+        if (isSystem) { return gates; }
+        for (const c of this.all) {
+            if (PLATFORM_ONLY_CATEGORIES.includes(c.key)) {
+                gates.categories[c.key] = false;
+            }
+            for (const k of c.cards || []) {
+                if (PLATFORM_ONLY_TAGS.includes(k.tag)
+                    || PLATFORM_ONLY_ACTIONS.includes(k.xmlid)) {
+                    gates.cards[cardKey(c, k)] = false;
+                }
+            }
+        }
+        return gates;
     }
 
     /** Fails OPEN per group — see the header. */
@@ -376,8 +489,21 @@ export class PbSettingsHub extends Component {
     }
 
     // --------------------------------------------------------------- the tree
-    /** Is the thing behind this card on this database at all? */
-    _cardPresent(card) {
+    /**
+     * Is the thing behind this card on this database, AND may this persona be
+     * offered it?
+     *
+     * Two questions with one answer on purpose: a door the server refuses to
+     * offer is ABSENT here, exactly as a door that was never installed is —
+     * the same choice rule 1 in the header makes, and the same answer HubShell
+     * gives a lens it may not show. A disabled tile would be a door that can
+     * only produce an access dialog, which is the thing this file exists to
+     * stop shipping (W29).
+     */
+    _cardPresent(cat, card) {
+        if (this.state.blocked[cardKey(cat, card)] === false) {
+            return false;
+        }
         if (card.tag) {
             return registry.category("actions").contains(card.tag);
         }
@@ -385,7 +511,7 @@ export class PbSettingsHub extends Component {
     }
 
     cardsOf(cat) {
-        return (cat.cards || []).filter((k) => this._cardPresent(k));
+        return (cat.cards || []).filter((k) => this._cardPresent(cat, k));
     }
 
     /**
@@ -396,8 +522,13 @@ export class PbSettingsHub extends Component {
      */
     get categories() {
         const allowed = this.state.allowed;
+        // An EXPLICIT false hides a category; anything else leaves it to its
+        // cards. A key the answer did not carry must not disappear on that
+        // account — the platform-only set is refused explicitly (`_floor`), so
+        // silence here can only ever be about a category nobody is guarding.
         return this.all.filter(
-            (c) => (!allowed || allowed[c.key]) && this.cardsOf(c).length);
+            (c) => (!allowed || allowed[c.key] !== false)
+                && this.cardsOf(c).length);
     }
 
     get current() {

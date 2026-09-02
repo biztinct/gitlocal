@@ -18,6 +18,12 @@ the hub can never become a second place where a setting lives.
     category never offers a card whose action is not on this database. A tile
     pointing at a deleted action renders normally and answers a click with
     nothing (W79); the probe is what stops that from being possible here.
+  * `pb.settings.resolve_gates(categories)` — who may see which category,
+    answered on the SERVER. Most of the cog is the customer's own configuration
+    and its gates deliberately fail open; the three that belong to whoever runs
+    the platform (the fleet of tenants, the raw permission table, and the
+    settings screen carrying the developer-mode links) fail CLOSED and ignore
+    what the browser sent.
   * Categories, their order, their gates and their cards are declared ONCE in
     `static/src/js/settings_hub.js` (`CATEGORIES`). `tests/test_settings.py`
     reads that array back and asserts every action xmlid and every group xmlid
@@ -35,7 +41,7 @@ back, exactly as it is for the other native admin actions.
 pbim tokens only, `.pbst-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills (W1/W2/W3).
 """,
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

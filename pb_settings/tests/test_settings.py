@@ -473,3 +473,140 @@ class TestSettingsGatesMatchTheAcls(TransactionCase):
                     "that card can only produce an access dialog (W29). "
                     "Groups that can: %s"
                     % (key, gate, model, sorted(allowed)))
+
+
+@tagged('post_install', '-at_install')
+class TestRailCGates(TransactionCase):
+    """ACCESS P5, Rail C — the three categories the customer does not own.
+
+    The hub decides visibility in the browser, and for most of it that is the
+    right place. Three categories are the PLATFORM's — the fleet of customer
+    databases, the raw permission table, and the settings screen that carries
+    the developer-mode links — and for those "the browser decides" is not an
+    answer, because the browser is the thing being defended against.
+
+    So each of these asks the server directly, the way a tampered client would.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # A database whose administrator account is switched off — the golden
+        # template ships that way so it cannot be logged into — refuses to
+        # create ANY user, because the constraint that says a database must
+        # have an administrator reads the group's user list and that leaves
+        # archived accounts out. Switch one on inside the transaction.
+        if not cls.env.ref('base.group_system').user_ids:
+            admin = cls.env.ref('base.user_admin', raise_if_not_found=False)
+            if admin:
+                admin.sudo().write({'active': True})
+        cls.plain = cls.env['res.users'].create({
+            'name': 'Rail C Plain', 'login': 'pbst_rail_plain',
+            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id])],
+        })
+        cls.boss = cls.env['res.users'].create({
+            'name': 'Rail C System', 'login': 'pbst_rail_system',
+            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
+                                  cls.env.ref('base.group_system').id])],
+        })
+
+    def _gates(self, user, categories):
+        return self.env['pb.settings'].with_user(user).resolve_gates(categories)
+
+    def test_a_platform_category_is_refused_however_the_payload_is_edited(self):
+        """The tamper case, which is the whole point of the method.
+
+        The payload says the category is open to everybody (no permissions named
+        at all) and carries a made-up key alongside. The server must still
+        refuse the platform-only one, because the answer for those does not come
+        from the payload.
+        """
+        res = self._gates(self.plain, [
+            {'key': 'org', 'groups': [], 'cards': [
+                {'id': 'tenants', 'tag': 'pb_tenants'},
+                {'id': 'companies', 'xmlid': 'base.action_res_company_form'}]},
+            {'key': 'roles', 'groups': [], 'cards': [
+                {'id': 'users', 'xmlid': 'base.action_res_users'}]},
+            {'key': 'payroll', 'groups': [], 'cards': []},
+        ])
+        self.assertFalse(res['is_system'])
+        self.assertEqual(res['categories'],
+                         {'org': False, 'roles': False, 'payroll': False})
+        self.assertFalse(res['cards']['org:tenants'])
+        self.assertFalse(res['cards']['org:companies'])
+        self.assertFalse(res['cards']['roles:users'])
+
+    def test_a_platform_door_is_refused_wherever_it_is_put(self):
+        """Card-level, not only category-level.
+
+        The Navigation category is REPLACED on databases that have the Access
+        home, so its key is not on the platform-only list — but the raw list
+        views behind the shipped version of it still are.
+        """
+        res = self._gates(self.plain, [
+            {'key': 'nav', 'groups': [], 'cards': [
+                {'id': 'sidebar_items',
+                 'xmlid': 'pb_sidebar.action_pb_sidebar_item'},
+                {'id': 'screens', 'tag': 'pb_access_board'}]},
+        ])
+        self.assertTrue(res['categories']['nav'],
+                        "the Navigation category itself is not the platform's")
+        self.assertFalse(res['cards']['nav:sidebar_items'])
+        self.assertTrue(res['cards']['nav:screens'],
+                        "the lens that replaces those list views is not the "
+                        "platform's and must still be offered")
+
+    def test_a_system_administrator_still_sees_everything(self):
+        res = self._gates(self.boss, [
+            {'key': 'org', 'groups': ['base.group_system'], 'cards': [
+                {'id': 'tenants', 'tag': 'pb_tenants'}]},
+        ])
+        self.assertTrue(res['is_system'])
+        self.assertTrue(res['categories']['org'])
+        self.assertTrue(res['cards']['org:tenants'])
+
+    def test_an_ordinary_category_keeps_the_rule_it_always_had(self):
+        res = self._gates(self.plain, [
+            {'key': 'open_to_all', 'groups': [], 'cards': []},
+            {'key': 'admin_only', 'groups': ['base.group_system'], 'cards': []},
+            {'key': 'never_installed',
+             'groups': ['pb_settings.group_that_does_not_exist'], 'cards': []},
+        ])
+        self.assertTrue(res['categories']['open_to_all'],
+                        "a category naming no permissions is everybody's")
+        self.assertFalse(res['categories']['admin_only'])
+        self.assertTrue(
+            res['categories']['never_installed'],
+            "a permission this database has never heard of means the module is "
+            "not installed; reading it as 'denied' hides a category for the "
+            "wrong reason")
+
+    def test_the_call_cannot_be_turned_into_an_unbounded_walk(self):
+        junk = [{'key': 'k%d' % i, 'groups': [], 'cards': []}
+                for i in range(200)]
+        res = self._gates(self.plain, junk)
+        self.assertLessEqual(len(res['categories']), 40)
+
+    def test_malformed_entries_are_skipped_rather_than_raising(self):
+        res = self._gates(self.plain, [
+            None, 'nonsense', {'nokey': 1}, {'key': ''},
+            {'key': 'good', 'groups': None, 'cards': [None, {'tag': 'x'}]},
+        ])
+        self.assertEqual(list(res['categories']), ['good'])
+        self.assertEqual(res['cards'], {})
+
+    def test_the_browser_fallback_names_the_same_three_categories(self):
+        """The JS copy of the platform-only set is a FALLBACK, and a fallback
+        that has drifted from the rule it stands in for is worse than none."""
+        from odoo.addons.pb_settings.models.pb_settings import (
+            PLATFORM_ONLY_ACTIONS, PLATFORM_ONLY_CATEGORIES,
+            PLATFORM_ONLY_TAGS)
+        src = _code(_js())
+        for name, values in (('PLATFORM_ONLY_CATEGORIES', PLATFORM_ONLY_CATEGORIES),
+                             ('PLATFORM_ONLY_ACTIONS', PLATFORM_ONLY_ACTIONS),
+                             ('PLATFORM_ONLY_TAGS', PLATFORM_ONLY_TAGS)):
+            block = src.split('export const %s = ' % name, 1)[1].split('];', 1)[0]
+            found = set(re.findall(r'"([\w.]+)"', block))
+            self.assertEqual(
+                found, set(values),
+                "settings_hub.js's %s has drifted from the server's" % name)
