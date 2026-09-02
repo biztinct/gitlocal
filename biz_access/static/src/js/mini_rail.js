@@ -89,7 +89,7 @@ export function railIcon(name, size = 14) {
 }
 
 export class PbMiniRail extends Component {
-    static template = "pb_vendor_access.PbMiniRail";
+    static template = "biz_access.PbMiniRail";
     static props = {
         sections: { type: Array },
         legend: { type: Boolean, optional: true },

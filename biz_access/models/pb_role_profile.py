@@ -47,8 +47,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from .vendor_common import (PROFILE_AREAS, forbidden_group_ids,
-                            forbidden_in_closure)
+from .access_common import (default_area, forbidden_group_ids,
+                            forbidden_in_closure, profile_areas)
 
 _logger = logging.getLogger(__name__)
 
@@ -84,7 +84,8 @@ class PbRoleProfile(models.Model):
         help='One or two sentences, in plain English. It is what the person '
              'granting it reads before they press the button.')
     area = fields.Selection(
-        PROFILE_AREAS, string='Area', required=True, default='people',
+        selection=lambda self: profile_areas(), string='Area',
+        required=True, default=lambda self: default_area(),
         index=True)
     sequence = fields.Integer(string='Order', default=10)
     active = fields.Boolean(default=True)

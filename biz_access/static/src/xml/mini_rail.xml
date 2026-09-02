@@ -15,7 +15,7 @@
        one somebody building a role is actually asking. Hidden rows are drawn
        faint, with the word for it beside them.
        ==================================================================== -->
-  <t t-name="pb_vendor_access.PbMiniRail">
+  <t t-name="biz_access.PbMiniRail">
     <div class="pbmr">
       <div class="pbmr-rail" role="img"
            aria-label="A miniature of the left menu, showing which entries this opens">

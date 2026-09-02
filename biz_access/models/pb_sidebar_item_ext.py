@@ -77,7 +77,7 @@ class PbSidebarItem(models.Model):
             return item.sudo().with_context(active_test=False).role_ids
         except Exception:                           # noqa: BLE001
             _logger.warning(
-                'pb_vendor_access: the roles on left-menu entry %s could not '
+                'biz_access: the roles on left-menu entry %s could not '
                 'be read — it is treated as having none', item.id,
                 exc_info=True)
             return self.env['pb.role.profile'].browse()
@@ -104,7 +104,7 @@ class PbSidebarItem(models.Model):
                 active_test=False).role_ids.filtered('active')
         except Exception:                           # noqa: BLE001
             _logger.warning(
-                'pb_vendor_access: the roles on left-menu entry %s could not '
+                'biz_access: the roles on left-menu entry %s could not '
                 'be read — it is treated as having none', item.id,
                 exc_info=True)
             return self.env['pb.role.profile'].browse()

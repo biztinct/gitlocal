@@ -83,7 +83,7 @@ class PassportCase(TransactionCase):
         self.role = self._role('ZZ P3 Gatekeeper %s' % stamp, self.ability)
 
         self.manager = self._user('Mgr', self.env.ref(
-            'pb_vendor_access.group_access_manager'))
+            'biz_access.group_access_manager'))
         self.mgr_access = self.env['pb.access'].with_user(self.manager)
 
     # ------------------------------------------------------------- fixtures

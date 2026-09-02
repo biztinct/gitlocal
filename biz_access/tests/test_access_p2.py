@@ -382,7 +382,7 @@ class TestWhoMayUseTheBuilder(AccessHomeCase):
 
     def test_the_access_team_can(self):
         manager = self._user('Mgr', self.env.ref(
-            'pb_vendor_access.group_access_manager'))
+            'biz_access.group_access_manager'))
         facade = self.env['pb.access'].with_user(manager)
         self.assertTrue(facade.can_manage())
         self.assertTrue(facade.composer_options()['abilities'])

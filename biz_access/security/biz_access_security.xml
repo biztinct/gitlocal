@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE PERMISSION OF ITS OWN, GRANTED BY NAME.
+
+           access team   "I decide who holds what" — the Access home, and
+                         taking back anybody's hand-over
+
+         NO `implied_ids` from any application group in either direction.
+         Deciding who holds what is not something to give to everybody who
+         happens to hold a permission somewhere else. An application whose
+         own administrator tier should also manage access REGISTERS that
+         permission (`access_common.register_manager_groups`) rather than
+         being wired into this file — the dependency only ever runs one
+         way.
+
+         WHAT IS NOT HERE, AND NEVER WILL BE. Nothing in this module ever
+         hands out `base.group_system` or `base.group_erp_manager`. The
+         models refuse to point at one, over the whole implied closure, and
+         the facade checks again before it writes. Three refusals for one
+         rule, because it is the only rule here whose failure cannot be
+         undone by somebody who is still allowed to log in.
+         ================================================================== -->
+
+    <record id="module_category_access" model="ir.module.category">
+        <field name="name">Access</field>
+        <field name="sequence">58</field>
+    </record>
+
+    <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
+    <record id="res_groups_privilege_access" model="res.groups.privilege">
+        <field name="name">Access</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_access"/>
+    </record>
+
+    <record id="group_access_manager" model="res.groups">
+        <field name="name">Access team</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_access"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Adding
+             whoever happened to run the upgrade is the failure a ladder like
+             this exists to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Give people roles and take them away, see every hand-over of access in the company, and take any of them back. It never includes the system administrator permission.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. A global rule (no `groups`), ANDed with everything below.
+
+         Anything SEEDED is company-less, so it is visible to everyone
+         rather than to whichever company happened to run the install. The
+         `'|' company_id = False` clause below is what makes that work.
+         ================================================================== -->
+
+    <record id="rule_delegation_company" model="ir.rule">
+        <field name="name">Hand-over: company</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE CATALOGUE. Everybody with a login reads it — the hand-over
+         dialog is for everybody by requirement, and it cannot offer what
+         it cannot read.
+
+         `visible_group_id` is the exception: a role that is nobody else's
+         business names the permission whose holders may see it listed.
+
+         THE PAIR. `ir.rule` group rules are ORed, but only over the rules
+         that APPLY — so a narrow rule shipped ALONE is a narrowing, and
+         somebody who holds two of the groups below would end up with only
+         the narrow one applying and lose everything they had. Every wide
+         tier gets its OWN rule, in the same file as the narrow one, and
+         each gets its own record so that revoking one can never silently
+         widen another.
+         ================================================================== -->
+
+    <record id="rule_profile_visible" model="ir.rule">
+        <field name="name">Role: the ones this person is meant to see</field>
+        <field name="model_id" ref="model_pb_role_profile"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('visible_group_id', '=', False), ('visible_group_id', 'in', user.all_group_ids.ids)]</field>
+    </record>
+
+    <record id="rule_profile_access_team_all" model="ir.rule">
+        <field name="name">Role: the access team sees all of them</field>
+        <field name="model_id" ref="model_pb_role_profile"/>
+        <field name="groups" eval="[(4, ref('group_access_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE HAND-OVERS. Mine, or ones handed to me — plus the access team,
+         who see all of them. An application adds a rule of its own for its
+         own administrator tier, in its own file.
+
+         HISTORY IS NEVER DELETED. The ACL grants unlink to nobody and
+         `unlink()` refuses for everybody, an administrator included: an
+         audit trail with a delete button is a diary.
+         ================================================================== -->
+
+    <record id="rule_delegation_mine" model="ir.rule">
+        <field name="name">Hand-over: mine, or handed to me</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('delegator_user_id', '=', user.id), ('delegate_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_delegation_access_team_all" model="ir.rule">
+        <field name="name">Hand-over: the access team sees all of them</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="groups" eval="[(4, ref('group_access_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+</odoo>
