@@ -506,6 +506,45 @@ class PbAccess(models.AbstractModel):
         res = self.env['pb.access.delegation'].run_auto_revert(limit=None)
         return {'ok': True, 'message': res['message'], 'counters': res}
 
+    # ====================================================== re-reading the seed
+    #
+    # WHY THIS EXISTS, AND IT IS NOT A CONVENIENCE (ACCESS P8, ledger H1).
+    # The catalogue is seeded by this module's `post_init_hook`, which fires at
+    # THIS MODULE'S turn in the install cascade. An ability whose permission
+    # belongs to a module that is installed LATER in the same run does not exist
+    # yet at that moment, so the ability is skipped — correctly, since gating a
+    # role on nothing would be worse — and never asked about again: a hook does
+    # not fire on an upgrade (ledger A2), so the gap is permanent.
+    #
+    # Installing a whole family of applications onto a customer's database in
+    # one go hits that every time. This is the one call that closes it: it asks
+    # every application on the database to seed its own catalogue again. Seeding
+    # is create-only and idempotent by construction (ledger E3), so running it a
+    # second time cannot widen a role somebody already holds, and running it on
+    # a database where nothing is missing changes nothing.
+    #
+    # It is deliberately NOT wired to a button. The caller is the platform's own
+    # tooling, straight after it has installed something.
+    @api.model
+    def reseed_catalogue(self):
+        """Ask every application on this database to seed its catalogue again."""
+        if not self._is_admin():
+            raise AccessError(_(
+                "Re-reading the role catalogue is something a system "
+                "administrator does."))
+        from ..hooks import ensure_catalogue      # noqa: PLC0415 - see below
+        # Imported here rather than at the top of the file on purpose: this
+        # module's `__init__` loads `models` BEFORE `hooks`, and a top-level
+        # import would tie the two together for the sake of one call.
+        res = ensure_catalogue(self.env)
+        return {
+            'ok': True,
+            'providers': res.get('providers', []),
+            'linked': res.get('linked', 0),
+            'roles': self.env['pb.role.profile'].sudo().search_count([]),
+            'abilities': self.env['pb.role.ability'].sudo().search_count([]),
+        }
+
     # =========================================================== the left menu
     #
     # "WHICH SCREENS DOES THIS ROLE OPEN" IS NEVER WRITTEN DOWN ON THE ROLE.
