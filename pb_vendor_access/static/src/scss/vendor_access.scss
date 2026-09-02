@@ -324,6 +324,113 @@ $pbva-states: (
             color: var(--pbim-muted, #64748B);
             font-weight: 600;
         }
+
+        // Somebody holding a role only because it was lent to them. The word
+        // AND the colour, never the colour alone.
+        &.pbva-badge--lent {
+            background: #FDF3E3;
+            color: #B45309;
+        }
+    }
+}
+
+// =========================================================================
+// THE LEFT MENU, DRAWN SMALL (`PbMiniRail`).
+//
+// TOP LEVEL, NOT NESTED, for the same reason the dialogs are not (W66): this
+// is a shared component, it is used inside a dialog today and on a person's
+// passport next, and a descendant selector would make its whole appearance
+// depend on which of the two it happens to be mounted in. Its own tokens are
+// declared on its own root.
+//
+// IT IS DARK ON PURPOSE. It is a picture of the left menu, and the left menu
+// is dark — a pale miniature would be a picture of something else.
+// =========================================================================
+.pbmr {
+    --pbmr-chrome: #1B1733;
+    --pbmr-text: #CFCBE4;
+    --pbmr-muted: #8B87A6;
+    --pbmr-on: #6EC9A8;
+    --pbmr-locked: #E7B96A;
+
+    .pbmr-rail {
+        background: var(--pbmr-chrome);
+        border-radius: var(--pbim-r, 12px);
+        padding: 10px 8px;
+        color: var(--pbmr-text);
+        font-size: 12px;
+    }
+
+    .pbmr-sec {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+        color: var(--pbmr-muted);
+        padding: 8px 8px 3px;
+    }
+
+    .pbmr-it {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 8px;
+        border-radius: 7px;
+        min-width: 0;
+    }
+
+    .pbmr-it--sub {
+        padding-left: 30px;
+        font-size: 11.5px;
+    }
+
+    .pbmr-it-ic {
+        display: inline-flex;
+        opacity: .85;
+        flex: 0 0 auto;
+    }
+
+    .pbmr-it-n {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .pbmr-it-st {
+        margin-left: auto;
+        display: inline-flex;
+        flex: 0 0 auto;
+    }
+
+    .pbmr-it.is-on .pbmr-it-st { color: var(--pbmr-on); }
+
+    .pbmr-it.is-locked {
+        color: var(--pbmr-muted);
+        .pbmr-it-st { color: var(--pbmr-locked); }
+    }
+
+    // Faint, never gone. "What they do NOT get" is half the answer somebody
+    // building a role is looking for, and a row that vanishes cannot be read.
+    .pbmr-it.is-off { opacity: .32; }
+
+    .pbmr-it.is-new {
+        background: rgba(42, 176, 144, .18);
+        color: #FFFFFF;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbmr-it { transition: background-color .16s ease, opacity .16s ease; }
+    }
+
+    .pbmr-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 9px;
+        font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+
+        span { display: inline-flex; align-items: center; gap: 5px; }
     }
 }
 
@@ -714,11 +821,16 @@ $pbva-states: (
         gap: 10px;
     }
 
+    // THE CARD PADS NOTHING ITSELF. Opened out it carries three columns with
+    // rules between them, and a rule that stops 16px short of the card's edge
+    // reads as a mistake. So the card is a box, and every rail inside it pads
+    // itself — the same shape the dialogs already use (R45).
     .pbva-role {
         border: 1px solid var(--pbim-line, #E6E8F0);
         border-radius: var(--pbim-r, 12px);
         background: var(--pbim-surface, #FFFFFF);
-        padding: 14px 16px;
+        overflow: hidden;
+        transition: border-color .14s ease, box-shadow .14s ease;
 
         &.is-open {
             border-color: var(--pbim-primary, #6355C7);
@@ -728,9 +840,30 @@ $pbva-states: (
 
     .pbva-role-h {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
         cursor: pointer;
+
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #6355C7);
+            outline-offset: -2px;
+        }
+    }
+
+    .pbva-role-top {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .pbva-role-side {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 0 0 auto;
+        padding-top: 2px;
     }
 
     .pbva-role-ic {
@@ -769,6 +902,9 @@ $pbva-states: (
         color: var(--pbim-muted, #64748B);
         min-width: 24px;
         text-align: right;
+        // Lining figures, so a column of counts down a list of cards lines up
+        // instead of shuffling by a pixel per row.
+        font-variant-numeric: tabular-nums;
     }
 
     .pbva-role-caret {
@@ -783,28 +919,185 @@ $pbva-states: (
     // and this is what the person granting the role actually reads (R33).
     .pbva-role-d {
         font-size: 13px;
-        line-height: 1.6;
+        line-height: 1.55;
         color: var(--pbim-muted, #64748B);
         text-transform: none;
-        margin: 10px 0 10px 44px;
+        margin: 3px 0 0;
         width: 100%;
-        max-width: 760px;
+        max-width: 70ch;
     }
 
-    .pbva-role-people {
+    .pbva-grant { margin-top: 6px; }
+
+    // ==================================== the card, opened out
+    //
+    // THREE COLUMNS, IN THE ORDER THE QUESTIONS ARRIVE: what does it open,
+    // what does it let them do, who holds it. Below 1080px they stack — three
+    // columns of 200px each is three columns nobody can read.
+    .pbva-role-body {
+        border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    .pbva-detail-busy { padding: 18px 16px; }
+
+    .pbva-cols {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1.1fr;
+
+        @media (max-width: 1080px) { grid-template-columns: 1fr; }
+    }
+
+    .pbva-col {
+        padding: 14px 16px;
+        min-width: 0;
+
+        h4 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 0 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .pbva-col + .pbva-col {
+        border-left: 1px solid var(--pbim-line, #E6E8F0);
+
+        @media (max-width: 1080px) {
+            border-left: 0;
+            border-top: 1px solid var(--pbim-line, #E6E8F0);
+        }
+    }
+
+    .pbva-col-empty {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+        margin: 0;
+    }
+
+    .pbva-col-note {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+        margin: 8px 0 0;
+    }
+
+    .pbva-scrchips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pbva-scrchip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        padding: 4px 9px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8F9FC);
+        font-size: 12.5px;
+        color: var(--pbim-ink, #1B1733);
+
+        b { font-weight: 600; }
+
+        small {
+            font-weight: 500;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbva-scrchip-lock {
+        display: inline-flex;
+        color: #B45309;
+    }
+
+    .pbva-verb {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .pbva-verb-ic {
+        display: inline-flex;
+        color: #15803D;
+        margin-top: 2px;
+        flex: 0 0 auto;
+    }
+
+    .pbva-verb-tx {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        b { font-weight: 600; color: var(--pbim-ink, #1B1733); }
+
+        small {
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .pbva-prow {
         display: flex;
         align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-left: 44px;
+        gap: 9px;
+        font-size: 13px;
+        margin-bottom: 8px;
+        min-width: 0;
     }
 
-    .pbva-role-line {
+    .pbva-prow-who {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+
+        b {
+            font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        small {
+            font-size: 11.5px;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbva-linkbtn {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--pbim-primary, #6355C7);
         font-size: 12.5px;
-        color: var(--pbim-muted, #64748B);
-    }
+        font-weight: 600;
+        cursor: pointer;
+        flex: 0 0 auto;
 
-    .pbva-grant { margin-left: auto; }
+        &:hover { text-decoration: underline; }
+        &:disabled { opacity: .5; cursor: default; }
+    }
 
     .pbva-faces {
         display: flex;
@@ -830,54 +1123,6 @@ $pbva-states: (
     }
 
     .pbva-faces .pbva-face + .pbva-face { margin-left: -8px; }
-
-    .pbva-face--more { background: var(--pbim-primary-light, #EEECFA); }
-
-    .pbva-holders {
-        margin: 12px 0 0 44px;
-        padding-top: 12px;
-        border-top: 1px solid var(--pbim-line, #E6E8F0);
-    }
-
-    .pbva-holder-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 8px;
-    }
-
-    .pbva-holder {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        padding: 7px 10px;
-        border-radius: var(--pbim-r-sm, 8px);
-        background: var(--pbim-bg, #F8F9FC);
-        min-width: 0;
-    }
-
-    .pbva-holder-id {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        flex: 1 1 auto;
-
-        b {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--pbim-ink, #1B1733);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        small {
-            font-size: 11px;
-            color: var(--pbim-muted, #64748B);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-    }
 
     .pbva-hint {
         font-size: 12px;
@@ -1060,6 +1305,15 @@ $pbva-states: (
         max-width: 560px;
     }
 
+    // The role builder is two panes side by side — a form and a picture of
+    // what the form is about to produce — so it needs the width the kit
+    // originally offered. Qualified past the 560px rule above by one extra
+    // class, not by source order (R26).
+    .pbim-modal.pbva-modal.pbva-modal--wide {
+        width: 94vw;
+        max-width: 980px;
+    }
+
     .pbva-modal-h {
         display: flex;
         align-items: center;
@@ -1076,6 +1330,30 @@ $pbva-states: (
         }
     }
 
+    .pbva-modal-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-primary-light, #EEECFA);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .pbva-modal-t {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        p {
+            margin: 2px 0 0;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
     .pbva-modal-b {
         padding: 16px 18px;
         overflow-y: auto;
@@ -1088,6 +1366,176 @@ $pbva-states: (
         gap: 8px;
         padding: 12px 18px;
         border-top: 1px solid var(--pbim-line, #E6E8F0);
+    }
+
+    // ================================================== the role builder
+    //
+    // FORM ON THE LEFT, CONSEQUENCE ON THE RIGHT. Below 900px they stack, and
+    // the picture goes FIRST — on a narrow screen the ability list is long
+    // enough that a preview underneath it would never be seen at the moment it
+    // is meant to be read.
+    .pbva-modal-f--split {
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .pbva-modal-f-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .pbva-comp {
+        display: grid;
+        grid-template-columns: 1.25fr .9fr;
+        overflow-y: auto;
+        max-height: 68vh;
+
+        @media (max-width: 900px) { grid-template-columns: 1fr; }
+    }
+
+    .pbva-comp-l {
+        padding: 18px 20px;
+        border-right: 1px solid var(--pbim-line, #E6E8F0);
+        min-width: 0;
+
+        @media (max-width: 900px) {
+            border-right: 0;
+            border-top: 1px solid var(--pbim-line, #E6E8F0);
+            order: 2;
+        }
+    }
+
+    .pbva-comp-r {
+        padding: 18px 20px;
+        background: var(--pbim-bg, #F8F9FC);
+        min-width: 0;
+
+        @media (max-width: 900px) { order: 1; }
+    }
+
+    .pbva-colhead {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 0 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbva-comp-count {
+        margin: 10px 0 0;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .pbva-cap-area {
+        h5 {
+            margin: 16px 0 7px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-ink, #1B1733);
+        }
+
+        &:first-child h5 { margin-top: 10px; }
+    }
+
+    .pbva-cap {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid var(--pbim-line, #E6E8F0);
+        border-radius: 9px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        font-size: 13.5px;
+        background: var(--pbim-surface, #FFFFFF);
+
+        &:hover { border-color: #CBD0DE; }
+
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #6355C7);
+            outline-offset: 1px;
+        }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-primary-light, #EEECFA);
+
+            .pbva-cap-box {
+                background: var(--pbim-primary, #6355C7);
+                border-color: var(--pbim-primary, #6355C7);
+                color: #FFFFFF;
+            }
+        }
+    }
+
+    .pbva-cap-box {
+        display: grid;
+        place-items: center;
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        margin-top: 2px;
+        border-radius: 5px;
+        border: 1.5px solid #C3C9D6;
+        color: transparent;
+    }
+
+    .pbva-cap-tx {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+
+        b { font-weight: 600; color: var(--pbim-ink, #1B1733); }
+
+        small {
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .pbva-cap-opens {
+        flex: 0 0 auto;
+        max-width: 40%;
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+        text-align: right;
+    }
+
+    .pbva-comp-from { position: relative; }
+
+    // The list of roles to start from opens UPWARDS: it hangs off a link in
+    // the footer, and downwards is off the bottom of the dialog.
+    .pbva-picker.pbva-picker--up {
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 0;
+        width: 360px;
+        max-width: 70vw;
+        z-index: 2;
+        background: var(--pbim-surface, #FFFFFF);
+        box-shadow: 0 14px 40px rgba(27, 23, 51, .18);
+    }
+
+    .pbva-note.pbva-note--shield {
+        margin-top: 12px;
+        background: var(--pbim-surface, #FFFFFF);
+        align-items: flex-start;
+
+        svg { flex: 0 0 auto; margin-top: 2px; }
     }
 
     .pbva-lbl {
@@ -1132,6 +1580,22 @@ $pbva-states: (
 
         small { color: var(--pbim-muted, #64748B); font-size: 11.5px; }
         &:hover { background: var(--pbim-bg, #F8F9FC); }
+    }
+
+    // A ROLE IS NOT A PERSON. The person picker is a row — face, name, login —
+    // and putting a role's name and its whole sentence in that same row squeezes
+    // the name into a four-word-tall column. A role stacks: the name, then the
+    // sentence under it, which is how it is written everywhere else on the
+    // screen.
+    .pbva-picker--up .pbva-pick {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 9px 12px;
+
+        span { font-weight: 600; }
+        small { line-height: 1.45; }
+        & + .pbva-pick { border-top: 1px solid var(--pbim-line, #E6E8F0); }
     }
 
     .pbva-what {
