@@ -78,6 +78,17 @@ WHAT THIS MODULE IS
     role given or taken away on the board, is a row in the same table. `unlink`
     is refused for everybody, an administrator included.
 
+  * **A role for the person who runs a customer's own application.** On a
+    platform where one database belongs to one customer, "administrator" has
+    meant the system administrator permission — the view editor, every model's
+    raw table, the module list, the switch that turns developer mode on. That
+    is the platform's, not the customer's. So "Tenant administrator" is a role
+    like any other: the administrator tier of pay, people, joining and leaving,
+    budgets, reporting, the connected systems, the calculation rules, the
+    supplier register, the audit trail, and who here can do what — and nothing
+    at all outside the application. Growth plans are deliberately left out of
+    it; they are given separately, on purpose.
+
 THE ONE ABSOLUTE. Nothing here can ever hand out the system administrator
 permission (`base.group_system` / `base.group_erp_manager`). It is excluded from
 the seeded catalogue, the role model refuses to be created pointing at one, and
@@ -94,7 +105,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

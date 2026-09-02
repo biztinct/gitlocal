@@ -78,6 +78,65 @@ def currency_change(country_currency_id, company_currency_id):
     return country_currency_id
 
 
+# =============================================================================
+# THE TENANT-ADMINISTRATOR RAILS (ACCESS P5).
+#
+# THE FINDING THIS EXISTS FOR. Provisioning creates no user and assigns no
+# permissions: `_step_admin` re-uses the golden template's own `base.user_admin`
+# account, which the template ships archived, and simply renames it and switches
+# it on. That account carries the SYSTEM ADMINISTRATOR permission, so every
+# customer's own administrator has been holding the keys to the whole database —
+# the view editor, every model's raw table, the module list, the switch that
+# turns developer mode on — not because anybody decided that, but because that
+# is what the template's account happened to have.
+#
+# WHAT THE RAILS DO. For a tenant created from here on, that account is given
+# the "Tenant administrator" ROLE — the administrator tier of every part of the
+# product — and the platform permissions are taken off it. It runs its whole
+# application and nothing of ours. A second account, which cannot be logged
+# into and is never shown to the customer, is left in the clone so the platform
+# can still get in when something has gone wrong (see `_ensure_break_glass` for
+# why it is switched on rather than archived — Odoo will not let a database
+# exist with no active administrator, and that refusal is the reason).
+#
+# NOTHING HAPPENS TO A TENANT THAT ALREADY EXISTS. This runs during
+# provisioning, for a database that has existed for about a minute and that
+# nobody has logged into. Applying it to a live customer is a separate,
+# deliberate act with its own method, its own dry run and its own guards
+# (`apply_tenant_admin_rails`), and it is not called from anywhere.
+#
+# AND THERE IS A SWITCH. `pb_tenants.tenant_admin_rails` = 0 and provisioning
+# goes back to handing over the account exactly as it did before, without a
+# deploy.
+# =============================================================================
+#: The role a tenant's own administrator holds instead of the platform's keys.
+#: Seeded by the access module; an xmlid rather than a name, because the name is
+#: the one thing an administrator is invited to change.
+TENANT_ADMIN_ROLE_XMLID = 'pb_vendor_access.role_tenant_administrator'
+
+#: What a tenant administrator must not carry. The same two the access module
+#: refuses to put in any role.
+PLATFORM_GROUP_XMLIDS = ('base.group_system', 'base.group_erp_manager')
+
+#: Defaults for the switches. In CODE rather than in a `noupdate="1"` record,
+#: so an upgrade cannot freeze whatever a test run left behind.
+RAILS_DEFAULTS = {
+    #: Are the rails applied to newly provisioned tenants? On.
+    'pb_tenants.tenant_admin_rails': '1',
+    #: The archived account the platform keeps in every clone.
+    'pb_tenants.break_glass_login': 'platform.recovery@payobook.com',
+    #: Logins the rails will never demote, whatever else is asked of them.
+    #: The owner's own account is here because on at least one existing tenant
+    #: the customer administrator IS the owner's address.
+    'pb_tenants.tenant_admin_rails_protect': 'ash@biztinct.com',
+    #: Databases the flip routine refuses outright, on top of the platform's own.
+    'pb_tenants.tenant_admin_rails_never': 'payobook_template',
+}
+
+#: Words that mean "off" for any of the switches above. Anything else leaves the
+#: rail armed — a mistyped value must never quietly stand a rail down.
+_OFF_WORDS = ('0', 'off', 'false', 'no')
+
 PROVISION_STEPS = [
     ('clone', 'Clone golden template'),
     ('configure', 'Configure tenant'),
@@ -607,10 +666,340 @@ class PbTenants(models.AbstractModel):
             else:
                 say('Payroll dashboard action not found — home screen left at the default.', 'warn')
             say('Tenant administrator: %s' % tenant.admin_email)
+            # The rails. A brand-new database nobody has logged into yet is the
+            # only safe moment to do this, and it is the moment that decides
+            # what "administrator" means for the life of this tenant.
+            self._apply_rails_to(env, admin, say)
         say('Credentials generated — shown once on completion, never stored.', 'warn')
         return {'credentials': {'url': self._tenant_url(slug),
                                 'login': tenant.admin_email,
                                 'password': password}}
+
+    # ================================================ the tenant-admin rails
+    def _rails_param(self, key):
+        return str(self._param(key, RAILS_DEFAULTS[key]) or '').strip()
+
+    def _rails_armed(self):
+        return self._rails_param(
+            'pb_tenants.tenant_admin_rails').lower() not in _OFF_WORDS
+
+    def _protected_logins(self):
+        """Accounts the rails never touch, whatever they are asked to do."""
+        raw = self._rails_param('pb_tenants.tenant_admin_rails_protect')
+        return {x.strip().lower() for x in raw.split(',') if x.strip()}
+
+    def _never_flip(self):
+        """Databases the flip routine refuses outright."""
+        raw = self._rails_param('pb_tenants.tenant_admin_rails_never')
+        names = {x.strip() for x in raw.split(',') if x.strip()}
+        # The platform's own database is on this list by construction and can
+        # never be taken off it by editing a parameter.
+        names.add(self.env.cr.dbname)
+        names.add(self._template_db())
+        return names
+
+    def _ensure_break_glass(self, env, say):
+        """The recovery account the platform keeps in every tenant database.
+
+        WHY IT IS HERE. Once the customer's administrator no longer carries the
+        platform permissions, nobody in that database does — and the day
+        something goes wrong with a customer's data is not the day to discover
+        that. So one account is left behind that still does.
+
+        WHY IT IS SWITCHED ON RATHER THAN ARCHIVED, WHICH IS NOT WHAT THE PLAN
+        SAID. Odoo refuses to let a database exist with no ACTIVE administrator:
+        `res.users._check_at_least_one_administrator` reads the group's user
+        list, which leaves archived accounts out, and raises on the very write
+        that would take the last one away. Measured, not guessed — it is the
+        same refusal that makes creating any user in the golden template fail
+        today, because the template's own administrator ships archived. So an
+        archived recovery account would not be a recovery account: it would be
+        a demotion that cannot happen.
+
+        SO IT IS SWITCHED ON AND IT CANNOT BE LOGGED INTO. No password is ever
+        set on it, so there is no secret to store, to leak or to hand over and
+        no password to guess; and it is given no email address, so the "forgot
+        my password" flow has nowhere to send a token. Getting in is a
+        deliberate act by whoever owns the server — set a password on it from
+        the platform side — and nothing about it is shown to the customer or
+        returned to any screen.
+        """
+        login = self._rails_param('pb_tenants.break_glass_login')
+        Users = env['res.users'].sudo().with_context(active_test=False)
+        group_ids = []
+        for xmlid in ('base.group_user',) + PLATFORM_GROUP_XMLIDS:
+            group = env.ref(xmlid, raise_if_not_found=False)
+            if group:
+                group_ids.append(group.id)
+        existing = Users.search([('login', '=', login)], limit=1)
+        if existing:
+            vals = {} if existing.active else {'active': True}
+            missing = [g for g in group_ids
+                       if g not in existing.group_ids.ids]
+            if missing:
+                vals['group_ids'] = [(4, g) for g in missing]
+            if vals:
+                existing.write(vals)
+                existing.partner_id.write({'active': True})
+            return existing
+        try:
+            user = Users.create({
+                'name': 'Platform support (recovery account)',
+                'login': login,
+                'active': True,
+                'group_ids': [(6, 0, group_ids)],
+            })
+            # No email anywhere on it: "forgot my password" has nowhere to send
+            # a token, and no password was ever set, so there is nothing to
+            # guess either.
+            user.partner_id.write({'email': False})
+        except Exception as e:                      # noqa: BLE001
+            _logger.warning("Recovery account could not be created: %s", e)
+            say('The platform recovery account could not be created, so the '
+                'tenant administrator is NOT being restricted — nobody has '
+                'lost anything.', 'warn')
+            return Users.browse()
+        say('Platform recovery account kept in this database. It has no '
+            'password and no email address, so nobody can log in as it until '
+            'the platform team deliberately gives it one.')
+        return user
+
+    def _platform_group_ids(self, env):
+        out = []
+        for xmlid in PLATFORM_GROUP_XMLIDS:
+            group = env.ref(xmlid, raise_if_not_found=False)
+            if group:
+                out.append(group.id)
+        return out
+
+    def _group_names(self, user):
+        """What somebody holds, in a form a person can read in a report."""
+        return sorted(g.display_name or g.name or str(g.id)
+                      for g in user.sudo().group_ids)
+
+    def _apply_rails_to(self, env, user, say, dry_run=False):
+        """Give this account the Tenant administrator role, take the keys back.
+
+        THE ORDER IS LOAD-BEARING. The role goes on FIRST and the platform
+        permissions come off SECOND, so there is no moment in between where the
+        account can do neither. And the result is CHECKED rather than assumed:
+        the platform permission can be held through a ladder as well as
+        directly, so taking the two memberships away is not by itself proof
+        that it is gone. If it is still there afterwards the whole thing is
+        undone and said out loud — a tenant told it was restricted when it was
+        not is worse than one that was never restricted.
+
+        It refuses, rather than half-doing it, when:
+          * the switch is off;
+          * the access module (and therefore the role) is not on this database;
+          * this login is on the protected list;
+          * the recovery account could not be kept.
+        """
+        report = {'applied': False, 'login': user.login,
+                  'before': self._group_names(user), 'after': None,
+                  'reason': ''}
+        if not self._rails_armed():
+            report['reason'] = 'The tenant-administrator rails are switched off.'
+            say('Tenant-administrator rails are switched off — this account '
+                'keeps full administrator permissions.', 'warn')
+            return report
+        if (user.login or '').lower() in self._protected_logins():
+            report['reason'] = 'This login is on the protected list.'
+            say('%s is a protected login — left exactly as it is.' % user.login,
+                'warn')
+            return report
+        role = env.ref(TENANT_ADMIN_ROLE_XMLID, raise_if_not_found=False)
+        if not role or role._name != 'pb.role.profile':
+            report['reason'] = ('The Tenant administrator role is not on this '
+                                'database.')
+            say('The Tenant administrator role is not on this database, so the '
+                'account keeps full administrator permissions. Install the '
+                'access module here and run this again.', 'warn')
+            return report
+        if not role.group_ids:
+            report['reason'] = 'The Tenant administrator role carries nothing.'
+            say('The Tenant administrator role carries no permissions here — '
+                'the account is left as it is rather than being emptied.',
+                'warn')
+            return report
+
+        platform_ids = self._platform_group_ids(env)
+        keep = [g.id for g in role.group_ids]
+        if dry_run:
+            report['after'] = sorted(set(report['before']) | {
+                g.display_name or g.name for g in role.group_ids})
+            report['reason'] = 'Dry run — nothing was written.'
+            report['would_remove'] = sorted(
+                g.display_name or g.name
+                for g in user.sudo().group_ids if g.id in platform_ids)
+            return report
+
+        if not self._ensure_break_glass(env, say):
+            report['reason'] = 'No recovery account could be kept.'
+            return report
+
+        target = user.sudo()
+        target.write({'group_ids': [(4, gid) for gid in keep]})
+        target.write({'group_ids': [(3, gid) for gid in platform_ids]})
+        target.invalidate_recordset()
+
+        # THE CHECK IS ON THE TRANSITIVE SET, NOT ON THE TWO MEMBERSHIPS.
+        # A permission can be held through a ladder — a group that IMPLIES the
+        # system administrator permission hands over the same database — so
+        # "the two rows are gone" is not the same question as "is it gone".
+        # `all_group_ids` is the transitive set and is what decides here.
+        def still_holds():
+            return set(platform_ids) & set(target.all_group_ids.ids)
+
+        laddered = []
+        for _attempt in range(4):
+            if not still_holds():
+                break
+            culprits = target.group_ids.filtered(
+                lambda g: set(platform_ids) & set(g.all_implied_ids.ids))
+            if not culprits:
+                break
+            laddered += [g.display_name or g.name for g in culprits]
+            target.write({'group_ids': [(3, g.id) for g in culprits]})
+            target.invalidate_recordset()
+
+        if still_holds():
+            # Put it back exactly as it was and say so. Half a rail is a lie.
+            raise UserError(_(
+                'This account still holds the system administrator permission '
+                'after the change, so nothing has been changed at all. Nobody '
+                'has been locked out; tell the platform team.'))
+
+        # An internal login is what everything else assumes.
+        internal = env.ref('base.group_user', raise_if_not_found=False)
+        if internal and internal.id not in target.all_group_ids.ids:
+            target.write({'group_ids': [(4, internal.id)]})
+            target.invalidate_recordset()
+
+        report.update({'applied': True, 'after': self._group_names(target),
+                       'laddered': sorted(set(laddered)),
+                       'role': role.name})
+        say('%s now holds the "%s" role and no longer holds the system '
+            'administrator permission.' % (target.login, role.name))
+        if laddered:
+            say('Also removed, because it carried the same permission through '
+                'another one: %s' % ', '.join(sorted(set(laddered))), 'warn')
+        return report
+
+    @api.model
+    def prepare_template_for_rails(self):
+        """Put the recovery account into the golden template. Safe to run again.
+
+        WHY THE TEMPLATE NEEDS ONE AT ALL. Odoo refuses to let a database exist
+        with no ACTIVE administrator — `res.users._check_at_least_one_
+        administrator` reads the group's user list, which leaves archived
+        accounts out, and raises on any write that would take the last one
+        away. The golden template ships its own administrator ARCHIVED so that
+        the template cannot be logged into, which means the template currently
+        has none: creating ANY user in it fails, and so would the demotion
+        step, on the clone, on the day a tenant is provisioned.
+
+        So the template gets the same account every tenant gets: switched on,
+        with no password and no email address, therefore impossible to log in
+        as and impossible to reset your way into. The template stays unloggable
+        — its own administrator is still archived — and every clone starts life
+        already carrying the recovery account, so provisioning has one less
+        thing that can fail at the worst moment.
+
+        Run once, by the platform, after this version ships. Running it again
+        changes nothing.
+        """
+        self._require_admin()
+        name = self._template_db()
+        lines = []
+
+        def say(line, level='info'):
+            lines.append({'line': line, 'level': level})
+            _logger.info("template recovery account [%s]: %s", name, line)
+
+        if not self._db_exists(name):
+            raise UserError(_('There is no database called "%s" here.') % name)
+        with self._tenant_env(name) as env:
+            user = self._ensure_break_glass(env, say)
+            ok = bool(user)
+            login = user.login if user else ''
+        if ok:
+            say('The golden template now has an administrator that nobody can '
+                'log in as. Clones made from it can be handed over safely.')
+        return {'database': name, 'ok': ok, 'login': login, 'log': lines}
+
+    @api.model
+    def apply_tenant_admin_rails(self, dbname, dry_run=True):
+        """THE FLIP — restrict an EXISTING tenant's administrator. Not automatic.
+
+        Nothing calls this. It exists so that the day the owner decides an
+        existing customer's administrator should stop holding the keys to their
+        whole database, that is one call with a dry run in front of it rather
+        than a hand-written script written under pressure.
+
+        HOW IT IS RUN. From the platform database, as a system administrator::
+
+            env['pb.tenants'].apply_tenant_admin_rails('acme')                # look
+            env['pb.tenants'].apply_tenant_admin_rails('acme', dry_run=False) # do
+
+        The first form CHANGES NOTHING and returns what the second one would
+        do: the account it found, everything it holds now, and everything it
+        would hold afterwards. The second form is the only one that writes, and
+        `dry_run` has to be spelled out to get there.
+
+        WHAT IT REFUSES, AND WHY EACH ONE IS A REFUSAL RATHER THAN A WARNING.
+          * the platform's own database, and the golden template. Demoting the
+            platform's administrator would lock the owner out of the fleet, and
+            demoting the template's would ship the demotion to every future
+            clone through the back door instead of through provisioning.
+          * a database that is not on this server.
+          * a protected login — including the owner's own address, which IS the
+            administrator account on at least one existing tenant.
+          * a database without the access module: there is no role to give, and
+            taking permissions away without giving a role back is how a customer
+            ends up with an administrator who can do nothing.
+
+        It reports what it did in plain words; it never returns a password and
+        it never touches anybody but the one administrator account.
+        """
+        self._require_admin()
+        name = str(dbname or '').strip()
+        if not name or not re.match(r'^[A-Za-z0-9_][A-Za-z0-9_.-]*$', name):
+            raise UserError(_('That is not a database name.'))
+        if name in self._never_flip():
+            raise UserError(_(
+                '"%s" is the platform\'s own database or the golden template. '
+                'The rails are never applied to those.') % name)
+        if not self._db_exists(name):
+            raise UserError(_('There is no database called "%s" here.') % name)
+
+        lines = []
+
+        def say(line, level='info'):
+            lines.append({'line': line, 'level': level})
+            _logger.info("tenant-admin rails [%s]: %s", name, line)
+
+        with self._tenant_env(name) as env:
+            admin = env.ref('base.user_admin', raise_if_not_found=False)
+            if not admin:
+                raise UserError(_(
+                    'There is no administrator account in "%s".') % name)
+            report = self._apply_rails_to(env, admin, say,
+                                          dry_run=bool(dry_run))
+            # Anybody else still holding the keys is worth saying out loud —
+            # this method deliberately touches one account and only one.
+            others = []
+            group = env.ref('base.group_system', raise_if_not_found=False)
+            if group:
+                others = sorted(
+                    u.login for u in group.sudo().all_user_ids
+                    if u.id != admin.id and u.active)
+            if others:
+                say('Still holding the system administrator permission in this '
+                    'database: %s' % ', '.join(others), 'warn')
+        report.update({'database': name, 'dry_run': bool(dry_run),
+                       'log': lines, 'others_with_the_keys': others})
+        return report
 
     def _tenant_cert_vals(self, tenant):
         """What certificate is this tenant's subdomain actually being served?
