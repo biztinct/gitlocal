@@ -23,8 +23,10 @@
         - Friendly error dialogs (access / validation / missing / timeout /
           session / crash) and non-blocking loading UX
         - Searchable grid apps menu
+        - Developer-mode rail: `?debug=` is honoured for system administrators
+          only (kill-switch: biz_theme.debug_rail = off)
     ''',
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',
