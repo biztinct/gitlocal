@@ -8,10 +8,20 @@
               action="action_internal_user_portal"
               web_icon="om_hr_payroll,static/description/icon.png"/>
     -->
+    <!-- NOTE: this used to carry action="pb_hr_flow.action_hr_flow_wizard".
+         pb_hr_flow DEPENDS on om_hr_payroll, so on a fresh database that
+         reference can never resolve ("External ID not found in the system:
+         pb_hr_flow.action_hr_flow_wizard") — a base module may not point at a
+         downstream module's action. It was also dead weight: pb_dashboard
+         (depth 6) loads after om_hr_payroll (depth 4) and re-points this same
+         menu to its own cockpit in views/pb_dashboard_action.xml, which is what
+         every database in the estate actually holds. Re-pointing from
+         pb_hr_flow instead would have CHANGED that, because pb_hr_flow (depth 8)
+         loads after pb_dashboard and would win. So the root menu simply carries
+         no action of its own; whoever owns the landing screen sets it. -->
     <menuitem id="menu_hr_payroll_root"
               name="Payroll"
               sequence="50"
-              action="pb_hr_flow.action_hr_flow_wizard"
               web_icon="om_hr_payroll,static/description/icon.png"/>
 
 <!--
