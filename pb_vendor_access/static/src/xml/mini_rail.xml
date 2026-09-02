@@ -20,7 +20,16 @@
       <div class="pbmr-rail" role="img"
            aria-label="A miniature of the left menu, showing which entries this opens">
         <t t-foreach="props.sections" t-as="ms" t-key="ms.key or ms.label">
-          <div t-if="ms.show_label !== false" class="pbmr-sec" t-esc="ms.label"/>
+          <div t-if="ms.show_label !== false" class="pbmr-sec">
+            <span t-esc="ms.label"/>
+            <!-- A WHOLE SECTION CAN BE A TEASER, not just an entry. It is
+                 drawn where it is true and silent where it is not, so the
+                 miniature never invents a lock nobody set. -->
+            <span t-if="ms.restricted" class="pbmr-sec-lock"
+                  title="This whole group is shown to them locked, with a note about what it is.">
+              <t t-out="ic('lock',10)"/>
+            </span>
+          </div>
           <t t-foreach="ms.items" t-as="mi" t-key="mi.id">
             <div t-attf-class="pbmr-it is-{{mi.state}} {{ mi.newly_lit ? 'is-new' : '' }}"
                  t-att-title="title(mi)">

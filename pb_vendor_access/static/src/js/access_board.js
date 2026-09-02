@@ -12,15 +12,28 @@
  *   card answers the three questions in the order somebody asks them: what does
  *   it OPEN, what does it LET THEM DO, and who HOLDS it.
  *
+ *   **People** — "what does this person have". A searchable list of everybody
+ *   with a login, and beside it a PASSPORT: their left menu drawn as they see
+ *   it, and every role they carry with the reason they carry it. The picture of
+ *   the menu is the hero, because "I cannot find the pay run screen" is the
+ *   sentence this lens exists to answer, and a list of permission names does
+ *   not answer it.
+ *
  *   **Hand-overs** — "who is covering for whom". A running hand-over shows the
  *   days left on it, because the thing worth knowing about temporary access is
  *   when it stops being temporary.
  *
  * THE LENS BAR IS A REGISTRY, NOT A ROW OF BUTTONS. `LENS_REGISTRY` below is
  * the list, the bar draws whatever is in it, and the body switches on the key.
- * Two more lenses are coming — the person passport and the menu editor — and
- * they are a line in that array plus a branch in the template, not a rewrite of
- * this file.
+ * One more lens is coming — the menu editor — and it is a line in that array
+ * plus a branch in the template, not a rewrite of this file.
+ *
+ * "SEE IT AS…" IS A VIEW AND CAN NEVER BE ANYTHING ELSE. The header picker
+ * repaints the lenses as somebody else's reality; `state.seeing` is where that
+ * choice lives and `state.seeingHeld` is what they hold. Nothing in this file
+ * passes either into a write: granting and lending both name their target
+ * outright, in their own dialog, and the simulator has no way to reach them.
+ * The next lens subscribes by reading those two, and by nothing else.
  *
  * WHICH SCREENS A ROLE OPENS IS NOT DECIDED HERE, AND MUST NOT BE. It is worked
  * out on the server, by the same rule the left menu itself uses, and arrives
@@ -56,14 +69,18 @@ import { PbMiniRail } from "@pb_vendor_access/js/mini_rail";
 /**
  * The lenses this home offers, in the order they are offered.
  *
- * The person passport and the left-menu editor are the next two, and adding
- * either is a line here plus a branch in the template — which is the point of
- * writing it down as data rather than as two hard-coded buttons.
+ * The left-menu editor is the next one, and adding it is a line here plus a
+ * branch in the template — which is the point of writing it down as data rather
+ * than as a row of hard-coded buttons.
  */
 const LENS_REGISTRY = [
     { key: "roles", icon: "idCard", label: _t("Roles") },
+    { key: "people", icon: "users", label: _t("People") },
     { key: "handovers", icon: "arrowLeftRight", label: _t("Hand-overs") },
 ];
+
+/** How long the People search waits before asking the server. */
+const SEARCH_PAUSE = 220;
 
 export class PbAccessBoard extends Component {
     static template = "pb_vendor_access.PbAccessBoard";
@@ -80,6 +97,11 @@ export class PbAccessBoard extends Component {
         //: newer one — ticking three boxes quickly is three requests, and the
         //: slowest is not the one that is true.
         this.previewSeq = 0;
+        //: Same rule for the People search and the passport: an answer to an
+        //: older keystroke must never overwrite the answer to a newer one.
+        this.peopleSeq = 0;
+        this.passportSeq = 0;
+        this.searchTimer = null;
 
         // CAPTURE, NOT BUBBLE. Escape is a hotkey the web client already
         // handles, and its own handler stops the event before it ever reaches
@@ -106,6 +128,21 @@ export class PbAccessBoard extends Component {
             options: null,             // the ability catalogue, read once
             preview: null,             // the left menu as a holder would see it
             creating: false,
+
+            // the people lens
+            peopleList: null,          // the rows, or null before the first read
+            peopleBusy: false,
+            peopleSearch: "",
+            personId: 0,               // whose passport is open
+            passport: null,
+            passportBusy: false,
+            passportFailed: "",
+
+            // "see it as…" — a VIEW over the lenses, never an input to a write
+            seeing: null,              // { id, name, avatar } or null for "you"
+            seeingHeld: [],            // the role ids that person holds
+            simOpen: false,
+            simSearch: "",
 
             // grant / remove
             granting: null,            // { profile, mode: "grant" | "remove" }
@@ -152,6 +189,13 @@ export class PbAccessBoard extends Component {
         this.state.detail = {};
         await this.load();
         if (this.state.open) { await this.loadDetail(this.state.open); }
+        // The passport and the list beside it were also read before whatever
+        // just happened. A take-back that left the rail showing the screens
+        // somebody no longer has would be the worst kind of stale: the screen
+        // reporting success and then contradicting it.
+        if (this.state.peopleList) { await this.loadPeople(); }
+        if (this.state.personId) { await this.loadPassport(this.state.personId); }
+        if (this.state.seeing) { await this.loadSeeing(this.state.seeing.id); }
     }
 
     get board() { return this.state.board || {}; }
@@ -162,7 +206,13 @@ export class PbAccessBoard extends Component {
     get mine() { return this.board.mine || []; }
     get lenses() { return LENS_REGISTRY; }
 
-    setLens(key) { this.state.lens = key; }
+    setLens(key) {
+        this.state.lens = key;
+        // Read on first arrival, never on load: most visits to this home are
+        // about a role, and a person list nobody asked for is a query nobody
+        // needed.
+        if (key === "people" && !this.state.peopleList) { this.loadPeople(); }
+    }
 
     async setArea(key) {
         this.state.area = this.state.area === key ? "" : key;
@@ -254,6 +304,252 @@ export class PbAccessBoard extends Component {
         });
     }
 
+    // --------------------------------------------------------- the people lens
+    /**
+     * WHAT DOES THIS PERSON HAVE — the other half of the roles board.
+     *
+     * The list is people; the passport beside it is their LEFT MENU, drawn as
+     * they see it, and then their roles with the reason they hold each one.
+     * The menu comes first on purpose: "I cannot find the pay run screen" is
+     * the sentence this lens exists to answer, and it is answered by a picture
+     * of the thing they are looking at, not by a list of permission names.
+     */
+    async loadPeople() {
+        const seq = ++this.peopleSeq;
+        this.state.peopleBusy = true;
+        try {
+            const rows = await this.orm.call(
+                "pb.access", "people", [this.state.peopleSearch || ""]);
+            if (seq !== this.peopleSeq) { return; }
+            this.state.peopleList = rows;
+            // LAND ON SOMEBODY, ONCE. An empty right-hand pane beside a list of
+            // names is a screen asking a question it could have answered
+            // itself. But only on the FIRST read: a search that swapped the
+            // passport underneath somebody halfway through typing would be the
+            // screen taking the page away from them.
+            if (!this.state.personId) {
+                const wanted = this.state.seeing ? this.state.seeing.id : 0;
+                const pick = rows.find((r) => r.id === wanted)
+                    || rows.find((r) => r.is_me) || rows[0];
+                if (pick) { await this.loadPassport(pick.id); }
+            }
+        } catch (e) {
+            if (seq !== this.peopleSeq) { return; }
+            this.state.peopleList = [];
+            this.notif.add(this._msg(e, _t("The list of people could not be read.")),
+                           { type: "danger" });
+        } finally {
+            if (seq === this.peopleSeq) { this.state.peopleBusy = false; }
+        }
+    }
+
+    /** Debounced, and searched on the SERVER — the list is the whole company. */
+    onPeopleSearch(ev) {
+        this.state.peopleSearch = ev.target.value;
+        clearTimeout(this.searchTimer);
+        this.searchTimer = setTimeout(() => this.loadPeople(), SEARCH_PAUSE);
+    }
+
+    async loadPassport(id) {
+        const seq = ++this.passportSeq;
+        this.state.personId = id;
+        this.state.passportBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "passport", [id]);
+            if (seq !== this.passportSeq) { return; }
+            this.state.passport = res;
+            this.state.passportFailed = "";
+        } catch (e) {
+            if (seq !== this.passportSeq) { return; }
+            this.state.passport = null;
+            this.state.passportFailed = this._msg(
+                e, _t("That person's access could not be read."));
+        } finally {
+            if (seq === this.passportSeq) { this.state.passportBusy = false; }
+        }
+    }
+
+    get peopleRows() { return this.state.peopleList || []; }
+
+    get passport() { return this.state.passport; }
+
+    /**
+     * "The menu, as Mai sees it" — the name somebody would actually SAY.
+     *
+     * Vietnamese names run family-first and a person is called by the LAST
+     * syllable, so "Nguyễn Thị Mai" is Mai. Two-word names are read the other
+     * way round, so those keep the first word. Most of the people on this
+     * system are the first kind, and getting somebody's name wrong on a screen
+     * about them is not a small thing.
+     */
+    callName(name) {
+        // Anything in brackets is a note about the account, not part of what
+        // anybody calls them — "Ash (temporary)" is Ash.
+        const bare = (name || "").replace(/\([^)]*\)/g, " ").trim();
+        const parts = bare.split(/\s+/).filter(Boolean);
+        if (!parts.length) { return (name || "").trim(); }
+        return parts.length >= 3 ? parts[parts.length - 1] : parts[0];
+    }
+
+    /** ONE expression per sentence, so the spaces survive (R34). */
+    seesLine(head) {
+        if (!head.of_y) { return _t("There is no left menu on this system."); }
+        if (head.is_admin) {
+            return _t("Sees all %s entries on the left menu — they are an "
+                      + "administrator.", head.of_y);
+        }
+        if (head.locked_n) {
+            return _t("Sees %s of %s entries on the left menu, plus %s shown "
+                      + "locked.", head.sees_x, head.of_y, head.locked_n);
+        }
+        return _t("Sees %s of %s entries on the left menu.",
+                  head.sees_x, head.of_y);
+    }
+
+    rolesLine(head) {
+        if (!head.role_count) { return _t("No roles"); }
+        if (head.role_count === 1) { return _t("1 role"); }
+        return _t("%s roles", head.role_count);
+    }
+
+    personNote(row) {
+        if (!row.role_count && !row.lent_count) { return _t("No roles"); }
+        const roles = row.role_count === 1
+            ? _t("1 role") : _t("%s roles", row.role_count);
+        if (!row.lent_count) { return roles; }
+        return _t("%s · %s lent", roles, row.lent_count);
+    }
+
+    roleSourceLine(row) {
+        if (row.source !== "lent") { return _t("Theirs"); }
+        if (!row.lent_until) { return _t("Lent by %s", row.lent_by || ""); }
+        return _t("Lent by %s, until %s",
+                  row.lent_by || "", this.day(row.lent_until));
+    }
+
+    /** Their own history, filtered to them — the same rows the Hand-overs lens
+     *  shows, asked about one person. */
+    openPersonHistory(head) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: _t("What %s was given, and when", head.name),
+            res_model: "pb.access.delegation",
+            views: [[false, "list"], [false, "form"]],
+            domain: [["delegate_user_id", "=", head.id]],
+            target: "current",
+        });
+    }
+
+    /** "Give a role" from a passport: the person is known, the role is not —
+     *  the same dialog, asking the other question. */
+    openGiveRole(head) {
+        this.state.granting = {
+            profile: null, mode: "grant",
+            person: { id: head.id, name: head.name },
+        };
+        this.state.grantTarget = { id: head.id, name: head.name };
+        this.state.grantReason = "";
+        this.state.people = [];
+    }
+
+    pickRoleToGive(profile) {
+        if (this.state.granting) { this.state.granting.profile = profile; }
+    }
+
+    /** The roles this person does not already hold — offering one they have is
+     *  offering a refusal. */
+    get givableRoles() {
+        const held = new Set(
+            ((this.state.passport && this.state.passport.roles) || [])
+                .map((r) => r.profile_id));
+        return this.profiles.filter((p) => !held.has(p.id));
+    }
+
+    takeBackRole(row) {
+        this.openRemove(
+            { id: row.profile_id, name: row.name, description: row.description },
+            { id: this.state.passport.header.id,
+              name: this.state.passport.header.name });
+    }
+
+    // ------------------------------------------------------------ see it as…
+    /**
+     * THE SIMULATOR IS A PAIR OF SPECTACLES, NOT A LOGIN. It repaints what the
+     * lenses SAY; it changes nothing about what the person using it can do, and
+     * it is never an argument to a write. Roles cards gain a tag where the
+     * chosen person holds them; the People lens jumps to their passport.
+     *
+     * The next lens subscribes by reading `state.seeing` and `state.seeingHeld`
+     * — which is why they are two plain pieces of state and not a private field.
+     */
+    toggleSim() {
+        this.state.simOpen = !this.state.simOpen;
+        this.state.simSearch = "";
+        if (this.state.simOpen) { this.state.people = []; }
+    }
+
+    async onSimSearch(ev) {
+        const term = ev.target.value;
+        this.state.simSearch = term;
+        if (!term || term.length < 2) { this.state.people = []; return; }
+        try {
+            this.state.people = await this.orm.call(
+                "pb.access", "user_options", [term]);
+        } catch (e) {
+            this.state.people = [];
+        }
+    }
+
+    async seeAs(person) {
+        this.state.simOpen = false;
+        this.state.people = [];
+        if (!person) { this.seeAsMe(); return; }
+        this.state.seeing = {
+            id: person.id, name: person.name, avatar: person.avatar || "",
+        };
+        await this.loadSeeing(person.id);
+        // The People lens is about one person, so it goes to the one being
+        // looked at rather than leaving two different answers on one screen.
+        if (this.state.peopleList) { await this.loadPassport(person.id); }
+    }
+
+    seeAsMe() {
+        this.state.seeing = null;
+        this.state.seeingHeld = [];
+        this.state.simOpen = false;
+        this.state.people = [];
+    }
+
+    async loadSeeing(id) {
+        try {
+            const res = await this.orm.call("pb.access", "as_user", [id]);
+            this.state.seeing = {
+                id: res.id, name: res.name, avatar: res.avatar || "",
+            };
+            this.state.seeingHeld = res.profile_ids || [];
+        } catch (e) {
+            this.state.seeingHeld = [];
+            this.notif.add(
+                this._msg(e, _t("That person's access could not be read.")),
+                { type: "danger" });
+        }
+    }
+
+    get seeingName() {
+        return this.state.seeing ? this.state.seeing.name : _t("you");
+    }
+
+    /** True when the simulated person holds this role. Never shown for "you" —
+     *  the card already carries "You hold this". */
+    simHolds(id) {
+        return Boolean(this.state.seeing)
+            && this.state.seeingHeld.includes(id);
+    }
+
+    simTag() {
+        return _t("%s holds this", this.seeingName);
+    }
+
     // ------------------------------------------------------ grant and remove
     openGrant(profile) {
         this.state.granting = { profile, mode: "grant" };
@@ -293,6 +589,11 @@ export class PbAccessBoard extends Component {
     async confirmGrant() {
         const g = this.state.granting;
         if (!g) { return; }
+        if (!g.profile) {
+            this.notif.add(_t("Choose which role to give them."),
+                           { type: "warning" });
+            return;
+        }
         if (!this.state.grantTarget.id) {
             this.notif.add(_t("Choose who it is for."), { type: "warning" });
             return;
@@ -604,7 +905,11 @@ export class PbAccessBoard extends Component {
         if (ev.key !== "Escape") { return; }
         if (this.state.composer) { this.state.composer = null; return; }
         if (this.state.granting) { this.state.granting = null; return; }
-        if (this.state.delegating) { this.state.delegating = false; }
+        if (this.state.delegating) { this.state.delegating = false; return; }
+        if (this.state.simOpen) { this.state.simOpen = false; return; }
+        // Escape puts the spectacles down. It is the way back from "somebody
+        // else's reality" that needs no button to be found first.
+        if (this.state.seeing) { this.seeAsMe(); }
     }
 
     // ---------------------------------------------------------------- exports
