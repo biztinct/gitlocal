@@ -313,6 +313,151 @@ NEW_ABILITIES = [
 
 
 # =============================================================================
+# THE TENANT ADMINISTRATOR (ACCESS P5).
+#
+# WHY THIS ROLE EXISTS. This product runs one database per customer, and until
+# now the person who administers a customer's own application was given the
+# SYSTEM ADMINISTRATOR permission to do it — because that is what the golden
+# template's admin account happened to carry, not because anybody decided it.
+# That permission is not "runs this company's payroll": it is the view editor,
+# every model's raw table, the server-action runner, the module list, and the
+# switch that turns developer mode on. It is the platform's, and the platform is
+# ours.
+#
+# So "tenant administrator" becomes a ROLE, made of the same abilities everybody
+# else's roles are made of — the administrator tier of each part of the product,
+# and nothing whatsoever outside it. Somebody holding it runs their whole
+# application: pay, people, joining and leaving, budgets, reporting, the
+# connected systems, the formulas, and who here can do what. They cannot reach
+# the fleet of customer databases, the raw permission table, the settings screen
+# that switches developer mode on, or anything else that belongs to whoever runs
+# the platform.
+#
+# THE ACCESS TEAM ABILITY IS NOT OPTIONAL. Without it the person cannot open
+# Settings at all (the left-menu entry is gated on it) and cannot give anybody
+# else a role — which would leave a customer with an administrator who cannot
+# administer. The role is not seeded at all on a database where that ability is
+# missing, rather than being seeded short: half of this role is worse than none.
+#
+# WHAT IS DELIBERATELY LEFT OUT: growth plans. Somebody being coached through a
+# difficulty is their own business, their manager's and HR's, which is why those
+# two roles are not even LISTED to anybody outside the heads of HR. A blanket
+# administrator role that quietly carried them would undo that decision for
+# every customer at once. The tenant's own administrator can give the growth-
+# plan roles to their head of HR in two clicks, deliberately, and the audit
+# trail records that they did.
+# =============================================================================
+#: The xmlid this role is registered under, so provisioning and the flip routine
+#: can find it by something an administrator is never invited to edit.
+TENANT_ADMIN_XMLID = 'pb_vendor_access.role_tenant_administrator'
+TENANT_ADMIN_KEY = 'role_tenant_administrator'
+
+#: Without this one the role is not seeded.
+TENANT_ADMIN_REQUIRED = ('access-team',)
+
+#: The administrator tier of every part of the product, and nothing else.
+TENANT_ADMIN_ABILITIES = (
+    # pay
+    'payroll-administrator',        # every payroll screen, every country
+    'payroll-final-approver',       # the last signature before money moves
+    'payroll-ops-manage',           # the core payroll desk, end to end
+    'pay-reporting-manage',         # build and export the pay reports
+    'integrations-run',             # the syncs from connected systems
+    'formula-admin',                # the calculation engine itself
+    # people
+    'lifecycle-admin',              # joining and leaving, and their templates
+    'equipment-team',               # the equipment register
+    'packages-and-awards-head',     # pay packages, awards, and approving them
+    'recognition-lead',             # the award cycles and the wall
+    'time-attendance-manage',       # clock-ins and the working-hours rules
+    # money
+    'budget-team',                  # the budgets and what was spent against them
+    'workforce-plan-manage',        # headcount plans and their approval
+    # running the application itself
+    'vendor-team',                  # the supplier register and its agreements
+    'access-team',                  # who here can do what — REQUIRED
+    'audit-read',                   # who changed what, and when
+)
+
+TENANT_ADMIN_NAME = 'Tenant administrator'
+TENANT_ADMIN_DESCRIPTION = (
+    'Runs this whole application: pay, people, joining and leaving, budgets, '
+    'reporting, the connected systems, the calculation rules, and who here can '
+    'do what. It does not include the system administrator permission, so it '
+    'cannot switch developer mode on, open the raw permission table, or reach '
+    'anything belonging to the platform this runs on. Growth plans are '
+    'deliberately not part of it — give those to your head of HR separately.')
+
+
+def ensure_tenant_admin_role(env):
+    """Seed the Tenant administrator role. Safe to run again.
+
+    CREATE-ONLY, ON PURPOSE. If the role is already here it is left exactly as
+    it is, even when a newly installed module has since made one of its
+    abilities available. Adding an ability to a role somebody already holds
+    WIDENS what they can do, silently, during an upgrade — and widening access
+    without anybody pressing anything is the one outcome this module refuses
+    everywhere else. A customer who installs a new part of the product later
+    ticks the ability onto the role themselves, and the audit trail says so.
+    """
+    Profile = env['pb.role.profile'].sudo().with_context(active_test=False)
+    existing = env.ref(TENANT_ADMIN_XMLID, raise_if_not_found=False)
+    if existing and existing._name == 'pb.role.profile':
+        _logger.info(
+            'pb_vendor_access: the "%s" role is already on this database — '
+            'left exactly as it is', existing.name)
+        return existing
+
+    abilities = env['pb.role.ability'].by_keys(list(TENANT_ADMIN_ABILITIES))
+    have = set(abilities.mapped('technical_key'))
+    missing_required = [k for k in TENANT_ADMIN_REQUIRED if k not in have]
+    if missing_required:
+        _logger.warning(
+            'pb_vendor_access: the "%s" role is NOT seeded on this database — '
+            'it would have no way to give anybody a role (%s missing). Install '
+            'the access module fully and run the catalogue again.',
+            TENANT_ADMIN_NAME, ', '.join(missing_required))
+        return Profile.browse()
+    absent = [k for k in TENANT_ADMIN_ABILITIES if k not in have]
+    if absent:
+        # Seeding what exists is right — a build without budgets still has a
+        # tenant administrator — but a shorter role than the sentence promises
+        # is exactly the kind of quiet difference that has to be logged.
+        _logger.warning(
+            'pb_vendor_access: the "%s" role is seeded WITHOUT %s, whose parts '
+            'of the product are not on this database',
+            TENANT_ADMIN_NAME, ', '.join(absent))
+    try:
+        role = Profile.create({
+            'name': TENANT_ADMIN_NAME,
+            'description': TENANT_ADMIN_DESCRIPTION,
+            'area': 'system',
+            'sequence': 40,
+            'ability_ids': [(6, 0, abilities.ids)],
+        })
+    except Exception:                               # noqa: BLE001
+        _logger.warning('pb_vendor_access: could not seed the "%s" role',
+                        TENANT_ADMIN_NAME, exc_info=True)
+        return Profile.browse()
+
+    # An xmlid, written by hand because the record is made in python. It is the
+    # only stable handle provisioning and the flip routine have: a name is the
+    # one thing an administrator is invited to change, and the ability set is
+    # the thing they are invited to tick.
+    env['ir.model.data'].sudo().create({
+        'module': 'pb_vendor_access',
+        'name': TENANT_ADMIN_KEY,
+        'model': 'pb.role.profile',
+        'res_id': role.id,
+        'noupdate': True,
+    })
+    _logger.info(
+        'pb_vendor_access: seeded the "%s" role — %s abilities, %s permissions',
+        TENANT_ADMIN_NAME, len(abilities), len(role.group_ids))
+    return role
+
+
+# =============================================================================
 # WHICH ROLES OPEN WHICH ENTRY ON THE LEFT MENU.
 #
 # THE OTHER HALF OF A TWO-LANE RE-GATE, AND THE HALF THAT CANNOT LIVE IN A DATA
@@ -598,6 +743,9 @@ def ensure_catalogue(env):
             _logger.warning(
                 'pb_vendor_access: could not seed the "%s" role', name,
                 exc_info=True)
+    # The bundle a tenant's own administrator holds. It is made of the
+    # abilities seeded above, so it can only be built after them.
+    ensure_tenant_admin_role(env)
     linked += ensure_bundles(env)
     _logger.info(
         'pb_vendor_access: role catalogue — %s created, %s already there, '
