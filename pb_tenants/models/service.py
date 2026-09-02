@@ -137,6 +137,97 @@ RAILS_DEFAULTS = {
 #: rail armed — a mistyped value must never quietly stand a rail down.
 _OFF_WORDS = ('0', 'off', 'false', 'no')
 
+
+# =============================================================================
+# KEEPING A CUSTOMER'S DATABASE IN STEP WITH THE MASTER (ACCESS P8).
+#
+# THE OWNER'S RULE, IN HIS OWN WORDS (2026-09-02), AND IT IS THE WHOLE SPEC:
+#
+#   "From now on all tenant databases should get installed once master gets it,
+#    except anything related to the platform cockpit or anything which can
+#    interfere or be misused against the master tenant / platform functions."
+#
+# So the DEFAULT ANSWER IS YES. A part of the product that the master database
+# has is a part every customer should have, and the list below is the short,
+# argued set of exceptions — not a shortlist of what is allowed. Anything new
+# ships to everybody unless somebody writes down here why it must not.
+#
+# WHY THE LIST LIVES IN THIS MODULE. `pb_tenants` is the platform cockpit, and
+# it is the one module a customer's database is never allowed to have. A list of
+# "what a customer must never be given" that shipped INSIDE a customer's
+# database would be a map of the platform's soft spots, sitting in the hands of
+# the people it is there to keep out.
+#
+# WHAT THIS IS NOT. It is not an automatic installer. Nothing here runs on an
+# upgrade, on a cron, or on a master deploy: a customer's database must not gain
+# a part of the product because somebody upgraded something else. The report
+# says what is behind; a person presses the button. That sentence is on the
+# screen too, in those words, so nobody has to read this comment to know it.
+# =============================================================================
+
+#: Never installed on a customer's database, and the plain-English reason why.
+#: The reason is shown ON SCREEN beside the module, so it is written for the
+#: owner rather than for an engineer.
+TENANT_SYNC_NEVER = {
+    'pb_tenants':
+        "The platform cockpit itself. It creates, backs up, restores and "
+        "deletes every database on the fleet — including the master. Inside a "
+        "customer's database it would be the controls to everybody else's.",
+    'pb_demo':
+        "Made-up employees, contracts and pay runs, used to demonstrate the "
+        "product. It has no place in a real company's payroll, where it would "
+        "be indistinguishable from staff who exist.",
+    'pb_demo_portal':
+        "The self-serve demo sign-up and its guided tour. It hands out logins "
+        "to a demonstration world — not something a customer's database should "
+        "be able to do.",
+    'pb_website':
+        "The public marketing site that sits at the front door of the product. "
+        "A customer's database is not the product's shop window, and serving "
+        "one from it would put our pages on their address.",
+}
+
+#: A module is also held back when its name starts with one of these. Nothing
+#: uses it today; it is here so a future platform module is refused BY DEFAULT
+#: rather than shipped to every customer the day it is written.
+TENANT_SYNC_NEVER_PREFIXES = ('pb_platform',)
+
+
+def sync_split(master_modules, tenant_modules):
+    """What is behind on one customer's database, split in two.
+
+    PURE ON PURPOSE, and for the same reason `currency_change` is: the call site
+    reads two databases on a live box and cannot be exercised anywhere but a
+    deploy, so the decision is lifted out to where a test can reach it
+    (`pb_tenants/tests/test_tenant_sync.py`).
+
+    Returns `(to_install, held_back)` — both sorted lists of module names.
+    `to_install` is what the master has and this database does not, minus the
+    exceptions; `held_back` is the exceptions that the master has and this
+    database does not, so the screen can say what it is NOT doing and why.
+    A module the customer has and the master does not is not this function's
+    business: taking something away is never a sync.
+    """
+    master = set(master_modules or ())
+    tenant = set(tenant_modules or ())
+    behind = master - tenant
+    held, safe_set = [], []
+    for name in behind:
+        if name in TENANT_SYNC_NEVER or name.startswith(TENANT_SYNC_NEVER_PREFIXES):
+            held.append(name)
+        else:
+            safe_set.append(name)
+    return sorted(safe_set), sorted(held)
+
+
+def sync_never_reason(name):
+    """The plain-English reason a module is never put on a customer's database."""
+    if name in TENANT_SYNC_NEVER:
+        return TENANT_SYNC_NEVER[name]
+    return ("Reserved for the platform. Parts of the product that run the "
+            "fleet are never installed on a customer's database.")
+
+
 PROVISION_STEPS = [
     ('clone', 'Clone golden template'),
     ('configure', 'Configure tenant'),
@@ -1000,6 +1091,211 @@ class PbTenants(models.AbstractModel):
         report.update({'database': name, 'dry_run': bool(dry_run),
                        'log': lines, 'others_with_the_keys': others})
         return report
+
+    # ============================================== in step with the master
+    #
+    # The rule this implements is quoted in full at the top of this file, beside
+    # TENANT_SYNC_NEVER. Two entry points, and the split between them is the
+    # point: `sync_report` only ever READS, and `sync_install` only ever runs
+    # because somebody pressed something.
+
+    def _installed_on(self, dbname):
+        """The module names installed on another database of this cluster.
+
+        Read with plain SQL rather than an ORM environment on purpose: this runs
+        once per tenant every time the report is opened, and loading a whole
+        registry per customer to answer "what is installed" would make a
+        read-only screen the most expensive thing in the cockpit.
+        """
+        with self._pg_cursor(dbname) as cr:
+            cr.execute("SELECT name FROM ir_module_module WHERE state = 'installed'")
+            return {r[0] for r in cr.fetchall()}
+
+    def _module_labels(self, names):
+        """The name a person would recognise, for each module, off the master."""
+        if not names:
+            return {}
+        mods = self.env['ir.module.module'].sudo().search(
+            [('name', 'in', list(names))])
+        return {m.name: (m.shortdesc or m.name) for m in mods}
+
+    @api.model
+    def sync_report(self):
+        """What every customer's database is missing that the master has.
+
+        READ ONLY. Nothing here installs, upgrades or writes anything, on any
+        database — including this one.
+        """
+        self._require_admin()
+        master_db = self.env.cr.dbname
+        master = {
+            m.name: (m.shortdesc or m.name)
+            for m in self.env['ir.module.module'].sudo().search(
+                [('state', '=', 'installed')])
+        }
+        rows = []
+        for t in self.env['pb.tenant'].sudo().search([]):
+            row = {'id': t.id, 'name': t.name, 'slug': t.slug,
+                   'state': t.state, 'checked': False, 'error': '',
+                   'installed': 0, 'behind': [], 'held_back': [],
+                   'in_step': False}
+            if t.state == 'decommissioned':
+                row['error'] = _("This tenant has been decommissioned.")
+                rows.append(row)
+                continue
+            if not self._db_exists(t.slug):
+                row['error'] = _("There is no database for this tenant yet.")
+                rows.append(row)
+                continue
+            try:
+                have = self._installed_on(t.slug)
+            except Exception as exc:                    # noqa: BLE001
+                _logger.warning("pb_tenants: could not read the module list of "
+                                "%s", t.slug, exc_info=True)
+                row['error'] = _("This database could not be read: %s") % exc
+                rows.append(row)
+                continue
+            behind, held = sync_split(master, have)
+            row.update({
+                'checked': True,
+                'installed': len(have),
+                'behind': [{'module': n, 'label': master.get(n, n)}
+                           for n in behind],
+                'held_back': [{'module': n, 'label': master.get(n, n),
+                               'reason': sync_never_reason(n)} for n in held],
+                'in_step': not behind,
+            })
+            rows.append(row)
+        return {
+            'master_db': master_db,
+            'master_count': len(master),
+            'never': [{'module': n, 'label': master.get(n, n),
+                       'reason': r} for n, r in sorted(TENANT_SYNC_NEVER.items())],
+            'tenants': rows,
+        }
+
+    @api.model
+    def sync_install(self, tenant_id, dry_run=True):
+        """Install, on ONE customer's database, the safe set it is missing.
+
+        Never called by anything but a person pressing the button that says so.
+        """
+        self._require_admin()
+        t = self.env['pb.tenant'].sudo().browse(int(tenant_id))
+        if not t.exists():
+            raise UserError(_("That tenant is not on the list any more."))
+        if t.state == 'decommissioned':
+            raise UserError(_(
+                '"%s" has been decommissioned. Nothing is installed on a '
+                'database that is on its way out.') % t.name)
+        return self._sync_install(t.slug, dry_run=dry_run)
+
+    def _sync_install(self, dbname, dry_run=True):
+        """The install itself, by database name.
+
+        TWO THINGS HAPPEN HERE AND THE SECOND ONE IS NOT OPTIONAL (ledger H1).
+        Installing a family of applications in one go seeds the role catalogue
+        at the moment the access module's turn comes round, which is BEFORE the
+        applications later in the same cascade exist. Their abilities are
+        skipped, and a hook never fires again. So the install is followed by
+        asking the access home to read its catalogue once more — create-only and
+        idempotent, and a no-op where nothing was missed.
+
+        WHAT THE SECOND PASS DELIBERATELY DOES NOT FIX (ledger H2). A ROLE that
+        already exists is never widened by a re-seed — that is P5's ruling (E3)
+        and it is the right one: adding an ability to a role somebody holds,
+        during an upgrade, with nobody pressing anything, is the outcome the
+        access module refuses everywhere else. So on a first sync the seeded
+        "Tenant administrator" bundle comes out of this holding the abilities
+        that existed at the moment it was created, not the ones the same run
+        installed a second later. Nobody holds that role on a tenant until the
+        flip is run, and ticking the extra abilities on is two clicks in the
+        Access home with an audit line behind them. Installing in two separate
+        runs — everything, then the access module — is the other way round it,
+        and is what the runbook does for a database being synced by hand.
+        """
+        name = (dbname or '').strip()
+        if not name:
+            raise UserError(_("Which database?"))
+        if name == self.env.cr.dbname:
+            raise UserError(_(
+                "This is the master database. It is where the parts come "
+                "FROM — it is never a place to sync them to."))
+        if not self._db_exists(name):
+            raise UserError(_('There is no database called "%s".') % name)
+
+        master = {
+            m.name: (m.shortdesc or m.name)
+            for m in self.env['ir.module.module'].sudo().search(
+                [('state', '=', 'installed')])
+        }
+        have = self._installed_on(name)
+        behind, held = sync_split(master, have)
+        plan = {
+            'database': name,
+            'dry_run': bool(dry_run),
+            'installed_before': len(have),
+            'to_install': [{'module': n, 'label': master.get(n, n)}
+                           for n in behind],
+            'held_back': [{'module': n, 'label': master.get(n, n),
+                           'reason': sync_never_reason(n)} for n in held],
+            'installed': [],
+            'seeded': {},
+            'installed_after': len(have),
+        }
+        if not behind:
+            plan['message'] = _("This database already has everything the "
+                                "master has.")
+            return plan
+        if dry_run:
+            plan['message'] = _(
+                "%s would be installed. Nothing has been changed.",
+                len(behind))
+            return plan
+
+        # THE LAST GUARD, AND IT IS DELIBERATELY THE THIRD. `sync_split` already
+        # took the exceptions out; this re-asks the question of the exact list
+        # about to be written, because that list is what actually runs and every
+        # earlier check is a check of something else.
+        blocked = [n for n in behind
+                   if n in TENANT_SYNC_NEVER
+                   or n.startswith(TENANT_SYNC_NEVER_PREFIXES)]
+        if blocked:
+            raise UserError(_(
+                "Refusing to install %s on a customer's database.",
+                ', '.join(blocked)))
+
+        _logger.info("pb_tenants: installing %s module(s) on %s: %s",
+                     len(behind), name, ', '.join(behind))
+        with self._tenant_env(name) as env:
+            mods = env['ir.module.module'].search([('name', 'in', behind)])
+            missing = set(behind) - set(mods.mapped('name'))
+            if missing:
+                raise UserError(_(
+                    'The database "%(db)s" has never heard of %(mods)s. Update '
+                    'its list of available parts first.',
+                    db=name, mods=', '.join(sorted(missing))))
+            mods.button_immediate_install()
+        # `button_immediate_install` rebuilds that database's registry and
+        # closes the environment above with it, so everything after this point
+        # asks for a fresh one.
+        with self._tenant_env(name) as env:
+            if 'pb.access' in env:
+                try:
+                    plan['seeded'] = env['pb.access'].sudo().reseed_catalogue()
+                except Exception:                       # noqa: BLE001
+                    _logger.warning("pb_tenants: the access catalogue on %s "
+                                    "could not be re-read", name, exc_info=True)
+        after = self._installed_on(name)
+        plan.update({
+            'installed': [{'module': n, 'label': master.get(n, n)}
+                          for n in sorted(set(behind) & after)],
+            'installed_after': len(after),
+            'still_missing': sorted(set(behind) - after),
+        })
+        plan['message'] = _("%(done)s of %(asked)s installed.",
+                            done=len(plan['installed']), asked=len(behind))
+        return plan
 
     def _tenant_cert_vals(self, tenant):
         """What certificate is this tenant's subdomain actually being served?

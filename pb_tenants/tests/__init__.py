@@ -2,3 +2,4 @@
 # LEARNOS Phase 3 — the provisioning currency decision.
 from . import test_currency
 from . import test_tenant_admin_rails
+from . import test_tenant_sync
