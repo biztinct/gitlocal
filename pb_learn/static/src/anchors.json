@@ -99,6 +99,36 @@
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
       "desc": "The exceptions list — every payslip the engine wants a human to look at."
     },
+    "pw-paydata": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "This month's pay data. The step that only appears when a scheme binds components to spreadsheet columns.",
+      "reserved": true
+    },
+    "pw-paymode": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "What should these values do — replace this month only, or update the record?",
+      "reserved": true
+    },
+    "pw-coverage": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Coverage. How many of the people in this run the spreadsheet actually covers.",
+      "reserved": true
+    },
+    "pw-missing": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "The people the spreadsheet does not cover, named, with the door that adds them.",
+      "reserved": true
+    },
+    "pw-skipsheet": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Run without a spreadsheet. Skipping is a choice made in front of the list, never a default.",
+      "reserved": true
+    },
     "pk-kpis": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns_kanban.xml",

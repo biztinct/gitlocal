@@ -261,6 +261,23 @@ $pbva-states: (
             background: #FDF3E3;
             border-color: #F3DFBF;
         }
+
+        // THE COMPARISON WHILE SOMEBODY BUILDS A ROLE. It is information and
+        // not a warning — the sentence it carries is usually the reassuring
+        // one — so it takes the accent's quiet tint rather than the amber the
+        // "this already exists" line above needs. Both carry an icon AND the
+        // difference in words, so neither depends on its colour.
+        &.pbva-note--diff {
+            color: var(--pbim-ink, #1B1733);
+            background: var(--pbim-primary-light, #EEECFA);
+            border-color: #DAD5F4;
+            align-items: flex-start;
+
+            svg { flex: 0 0 auto; margin-top: 2px;
+                  color: var(--pbim-primary-dark, #4A3EA6); }
+
+            b { font-weight: 700; }
+        }
     }
 
     // =========================================================== empty states

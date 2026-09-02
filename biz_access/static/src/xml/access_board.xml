@@ -1283,6 +1283,33 @@
                 </span>
               </p>
 
+              <!-- HOW THIS DIFFERS FROM A ROLE THAT ALREADY EXISTS. Worked
+                   out in the browser from what the builder already read, and
+                   shown WHILE they tick rather than refused on Create. Two
+                   roles that grant the same things are the one mistake this
+                   screen can make that nobody notices for a year. -->
+              <p t-if="comparison and comparison.same"
+                 class="pbva-note pbva-note--warn">
+                <t t-out="ic('alert',14)"/>
+                <span>
+                  This is exactly <b t-esc="comparison.name"/> again. Two roles
+                  that let people do the same things are two things to keep in
+                  step forever — give that one out instead, or tick something
+                  else.
+                </span>
+              </p>
+              <p t-elif="comparison" class="pbva-note pbva-note--diff">
+                <t t-out="ic('gitMerge',14)"/>
+                <span>
+                  Next to <b t-esc="comparison.name"/>: <t
+                    t-if="comparison.adds.length">this also lets somebody <b
+                    t-esc="listOf(comparison.adds)"/></t><t
+                    t-if="comparison.adds.length and comparison.drops.length">, and </t><t
+                    t-if="comparison.drops.length">this leaves out <b
+                    t-esc="listOf(comparison.drops)"/></t>.
+                </span>
+              </p>
+
               <p class="pbva-note pbva-note--shield">
                 <t t-out="ic('shieldCheck',14)"/>
                 <span>
