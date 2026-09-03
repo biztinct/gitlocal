@@ -407,6 +407,28 @@ class PbTenants(models.AbstractModel):
             'drift_tenants': len(live.filtered(
                 lambda t: t.release_state == 'behind'
                 or (t.behind_count or 0) or (t.stale_count or 0))),
+            # FLEET P3. Two numbers the fleet head cannot be read without: how
+            # much is wrong right now, and whether this machine can take
+            # another customer. Both are cheap — one search, one read of
+            # /proc — so they ride along with the fleet rather than needing a
+            # second call after the screen has already drawn.
+            'alerts': self._alert_head(),
+            'capacity': self._capacity(),
+        }
+
+    def _alert_head(self):
+        """The chip in the fleet header: how many, how bad, and the one that
+        cannot email itself."""
+        Alert = self.env['pb.alert'].sudo()
+        rows = Alert.search([('state', '=', 'open')])
+        channel = rows.filtered(lambda a: a.kind == 'alert_channel_down')
+        return {
+            'open': len(rows),
+            'critical': len(rows.filtered(lambda a: a.severity == 'critical')),
+            'acknowledged': Alert.search_count([('state', '=', 'acknowledged')]),
+            # THE ONE ALERT THAT CANNOT EMAIL ITSELF is carried in full, because
+            # the screen is the only place it can possibly be read.
+            'channel_down': (channel[0].text or '') if channel else '',
         }
 
     def _release_brief(self):
@@ -504,7 +526,8 @@ class PbTenants(models.AbstractModel):
         except OSError:
             disk_free_h, disk_pct = '—', 0
         dbfilter = cfg['dbfilter'] or ''
-        smtp_ok = bool(self.env['ir.mail_server'].sudo().search_count([]))
+        mail_row = self._mail_check()
+        status_row = self._status_check()
         checks = [
             {'key': 'dbfilter', 'label': 'Subdomain routing (dbfilter)', 'ok': '%d' in dbfilter,
              'hint': "Server config needs dbfilter = ^%d$ (currently: '" + (dbfilter or 'not set') + "')"},
@@ -516,8 +539,8 @@ class PbTenants(models.AbstractModel):
              'hint': 'Add at your registrar: A record, host "*", value %s' % (ip or 'server IP')},
             {'key': 'tls', 'label': 'Wildcard TLS certificate', 'ok': tls['ok'] and not tls_expiring,
              'hint': tls_hint},
-            {'key': 'smtp', 'label': 'Outgoing mail (SMTP)', 'ok': smtp_ok,
-             'hint': 'Configure an outgoing mail server so tenant emails can send.'},
+            mail_row,
+            status_row,
             {'key': 'domain_script', 'label': 'Custom-domain automation', 'ok': os.path.exists('/usr/local/bin/pb-domain-attach'),
              'hint': 'Install pb-domain-attach (deploy runbook) to automate client domains.'},
         ]
@@ -622,6 +645,17 @@ class PbTenants(models.AbstractModel):
             raise UserError(_('A valid admin email is required.'))
         if not self._db_exists(self._template_db()):
             raise UserError(_('Golden template database "%s" does not exist yet — build it first (deploy runbook).') % self._template_db())
+        # FLEET P3 — THE MEMORY GUARD (owner ruling 4). A customer created past
+        # the safe count does not fail here; it fails at 09:00 on a Monday,
+        # taking every other customer down with it, because this box has one
+        # process and one pool of memory. So the refusal is at the door, it
+        # names the way out, and the way out is one page long.
+        cap = self._capacity()
+        if cap['level'] == 'full':
+            raise UserError(_(
+                "This machine cannot safely hold another customer. Resize it "
+                "first — the runbook is one page: docs/SAAS_RESIZE_RUNBOOK.md.\n\n%s",
+                cap['reason']))
         tenant = self.env['pb.tenant'].sudo().create({
             'name': name, 'slug': slug, 'state': 'provisioning',
             'admin_name': (form.get('admin_name') or '').strip(),
@@ -1902,7 +1936,7 @@ class PbTenants(models.AbstractModel):
 
     @api.model
     def notice_send(self, target, kind, title, text, starts_at, ends_at,
-                    live=False):
+                    live=False, public=False):
         """Put a message at the top of every page on one customer, or on all.
 
         The message is composed ONCE — one id, one wording, one window — and the
@@ -1925,6 +1959,13 @@ class PbTenants(models.AbstractModel):
             raise UserError(str(exc)) from exc
         if live:
             payload['live'] = True
+        # FLEET P3. `public` puts the SAME words on payobook.com/status, where
+        # anybody can read them without signing in — which is where somebody
+        # locked out by the very thing being announced will look. It is a
+        # deliberate tick on the composer and never a default: most messages
+        # are addressed to one customer about their own database.
+        if public:
+            payload['public'] = True
         tenants = self._notice_recipients(target)
         if not tenants:
             raise UserError(_(
@@ -1948,6 +1989,11 @@ class PbTenants(models.AbstractModel):
             else:
                 skipped.append({'name': t.name, 'reason': res['reason']})
                 self._log_line(t, 'notice', res['reason'], 'warn')
+        # The public page is rewritten HERE rather than waiting for the
+        # five-minute job: a maintenance notice that appears on the status page
+        # four minutes after it appears on the customers' screens is a status
+        # page people learn not to trust.
+        self._refresh_status_page_quietly()
         return {
             'notice': payload,
             'sent': sent, 'skipped': skipped,
@@ -1971,6 +2017,7 @@ class PbTenants(models.AbstractModel):
                 cleared.append(t.name)
             else:
                 skipped.append({'name': t.name, 'reason': res['reason']})
+        self._refresh_status_page_quietly()
         return {'cleared': cleared, 'skipped': skipped,
                 'message': (_("Taken down for 1 customer.") if len(cleared) == 1
                             else _("Taken down for %(n)s customers.", n=len(cleared)))}
