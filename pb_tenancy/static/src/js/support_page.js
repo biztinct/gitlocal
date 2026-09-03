@@ -55,12 +55,14 @@ export function stampText(stamp) {
 export function durationText(minutes) {
     const m = Math.max(0, Math.round(Number(minutes) || 0));
     if (!m) { return ""; }
+    if (m === 1) { return _t("1 minute"); }
     if (m < 60) { return _t("%(m)s minutes", { m }); }
     const h = Math.floor(m / 60);
     const rest = m % 60;
     if (!rest) {
         return h === 1 ? _t("1 hour") : _t("%(h)s hours", { h });
     }
+    if (rest === 1) { return _t("%(h)s hours 1 minute", { h }); }
     return _t("%(h)s hours %(m)s minutes", { h, m: rest });
 }
 
@@ -157,9 +159,20 @@ export class PbTenancySupportPage extends Component {
         this.state.open = this.state.open === id ? null : id;
     }
 
+    /**
+     * The name of a screen, or its address when the page never gave it one.
+     *
+     * The product titles its pages "Payobook - Employees", so the brand is
+     * stripped from either end; a title that is nothing BUT the brand (a page
+     * caught mid-load) is no name at all and the address is shown instead.
+     */
     screenLabel(screen) {
-        const title = (screen.title || "").replace(/\s*[|·-]\s*Payobook\s*$/i, "");
-        return title || screen.action || "";
+        const title = (screen.title || "")
+            .replace(/^\s*Payobook\s*[-|\u00b7]\s*/i, "")
+            .replace(/\s*[-|\u00b7]\s*Payobook\s*$/i, "")
+            .trim();
+        if (title && title.toLowerCase() !== "payobook") { return title; }
+        return screen.action || "";
     }
 
     /** A CLICK handler. The customer's own decision, and the only writer of it. */

@@ -317,17 +317,41 @@ class PbTenantsAlerts(models.AbstractModel):
                   info='For information').get(alert.severity, ''), where))
 
     def _mail_new_alerts(self, alerts):
+        """The email for something that has just been raised.
+
+        NOT EVERYTHING RAISED IS A PROBLEM (FLEET P6). Until this phase every
+        alert was a fault, so the subject could safely say "Worth a look" and
+        the heading "Something needs your attention". A support session is
+        neither: it is a deliberate act by somebody here, recorded on purpose,
+        and telling the owner that it "needs" them is crying wolf about the one
+        thing that must never be scrolled past. An `info` alert therefore says
+        what it is — worth knowing — and nothing louder.
+        """
         if not alerts:
             return None
-        worst = 'critical' if any(a.severity == 'critical' for a in alerts) else 'warning'
-        word = 'Needs attention now' if worst == 'critical' else 'Worth a look'
+        if any(a.severity == 'critical' for a in alerts):
+            worst = 'critical'
+        elif any(a.severity == 'warning' for a in alerts):
+            worst = 'warning'
+        else:
+            worst = 'info'
+        word = {'critical': 'Needs attention now',
+                'warning': 'Worth a look',
+                'info': 'For information'}[worst]
+        info_only = worst == 'info'
         if len(alerts) == 1:
             subject = '[Payobook] %s: %s' % (word, alerts[0].title)
-            intro = "One new thing needs you."
+            intro = ("One thing worth knowing." if info_only
+                     else "One new thing needs you.")
         else:
-            subject = '[Payobook] %s: %d new problems' % (word, len(alerts))
-            intro = "%d new things need you." % len(alerts)
-        body = self._mail_shell("Something needs your attention", intro,
+            subject = ('[Payobook] %s: %d new things' % (word, len(alerts))
+                       if info_only
+                       else '[Payobook] %s: %d new problems' % (word, len(alerts)))
+            intro = ("%d things worth knowing." % len(alerts) if info_only
+                     else "%d new things need you." % len(alerts))
+        heading = ("Worth knowing" if info_only
+                   else "Something needs your attention")
+        body = self._mail_shell(heading, intro,
                                 [self._alert_block(a) for a in alerts])
         return subject, body
 

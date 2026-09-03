@@ -10,6 +10,7 @@ deploy time and reported (rail R4), exactly as every phase before this one.
 from contextlib import contextmanager
 from unittest.mock import patch
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
@@ -271,6 +272,44 @@ class TestSupportService(TransactionCase):
             [('key', '=', 'support_session:p6probe'),
              ('state', '=', 'open')])
         self.assertFalse(alert)
+
+    def test_t6_29b_a_link_in_flight_does_not_close_the_alert(self):
+        """Found live. The cockpit re-reads the record the instant the button
+        is pressed, which is BEFORE the tab has opened the link — and reading
+        "nothing is running" as "it is over" closed the alert about a session
+        that had not begun."""
+        self._run(lambda: self.svc.support_open(self.tenant.id, REASON, 120))
+        issued = [{'id': 1, 'state': 'issued', 'who': 'Ash', 'reason': REASON,
+                   'issued_at': '', 'used_at': '', 'ended_at': '',
+                   'session_expires_at': '', 'minutes': 120, 'source_ip': '',
+                   'screens': [], 'ended_by': '', 'refused_reason': ''}]
+        with patch.object(type(self.svc), '_tenancy_installed',
+                          lambda s, db: True), \
+                patch.object(type(self.svc), '_support_allowed_on',
+                             lambda s, db: True), \
+                patch.object(type(self.svc), '_support_rows_on',
+                             lambda s, db, limit=25: issued):
+            brief = self.svc.support_history(self.tenant.id)
+        self.assertTrue(brief['pending'])
+        self.assertTrue(self.env['pb.alert'].sudo().search(
+            [('key', '=', 'support_session:p6probe'), ('state', '=', 'open')]),
+            "A link that is out there is not a session that is over.")
+
+    def test_t6_29c_an_info_alert_is_not_dressed_up_as_a_problem(self):
+        """Found live. The new-alert email said "Worth a look" and "needs you"
+        about a deliberate, routine act — which is how an inbox learns to
+        scroll past the one thing that must never be scrolled past."""
+        alert = self.env['pb.alert'].sudo().create({
+            'key': 'support_session:probe', 'kind': 'support_session',
+            'severity': 'info', 'title': "Payobook support opened Probe Ltd",
+            'text': "Somebody opened it.", 'state': 'open',
+            'first_seen': fields.Datetime.now(),
+            'last_seen': fields.Datetime.now(), 'count': 1,
+        })
+        subject, body = self.svc._mail_new_alerts(alert)
+        self.assertIn('For information', subject)
+        self.assertNotIn('needs you', body)
+        self.assertIn('worth knowing', body.lower())
 
     def test_t6_30_the_platforms_own_database_is_refused_by_name(self):
         """Rail R2, re-asked on the literal database about to be written."""

@@ -235,6 +235,31 @@ class TestSupportLogin(TransactionCase):
         self.assertEqual([r['title'] for r in row.routes()],
                          ['Employees', 'Pay runs'])
 
+    def test_t2_09b_only_screens_are_recorded_not_every_request(self):
+        """Found live. A page load is thirty requests — a stylesheet, eleven
+        avatars, a websocket — and the first version recorded every one, which
+        buried the two screens somebody actually opened."""
+        from odoo.addons.pb_tenancy.models.ir_http import _is_screen
+        for path in ('/bizapp', '/bizapp/action-1078', '/odoo', '/odoo/discuss'):
+            self.assertTrue(_is_screen(path), path)
+        for path in ('/web/image/res.partner/6046/avatar_128',
+                     '/web/assets/1/web.assets_backend.css',
+                     '/biz_theme/tokens.css', '/websocket',
+                     '/web/webclient/load_menus', '/bizappish', '/'):
+            self.assertFalse(_is_screen(path), path)
+
+    def test_t2_09c_a_repeat_fills_in_the_name_it_could_not_know(self):
+        """Found live. The request seam sees the address before the page has a
+        name, so every line on the customer's trail read "Payobook"."""
+        row = self._issue('abc123')
+        self._login('abc123')
+        self.env.flush_all()
+        self.assertTrue(row.note_route('/bizapp/action-1078', ''))
+        self.assertTrue(row.note_route('/bizapp/action-1078', 'Employees'))
+        self.assertEqual(len(row.routes()), 1, "still one visit")
+        self.assertEqual(row.routes()[0]['title'], 'Employees')
+        self.assertFalse(row.note_route('/bizapp/action-1078', 'Employees'))
+
     def test_t2_10_a_finished_session_records_nothing_more(self):
         row = self._issue('abc123')
         self._login('abc123')

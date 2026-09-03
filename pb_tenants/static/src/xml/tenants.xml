@@ -2377,6 +2377,23 @@
             It is also in tomorrow morning's summary email.
           </p>
 
+          <t t-if="supStagingAvailable">
+            <label class="pplw-label">Which copy?</label>
+            <div class="pbim-seg tnx-supseg">
+              <button t-attf-class="pbim-segbtn {{ state.sup.staging ? 'on' : '' }}"
+                      t-on-click="() => this.setSupStaging(true)">The practice copy</button>
+              <button t-attf-class="pbim-segbtn {{ state.sup.staging ? '' : 'on' }}"
+                      t-on-click="() => this.setSupStaging(false)">Their real data</button>
+            </div>
+            <div class="tnx-supblurb">
+              <t t-if="state.sup.staging">A throwaway copy of their data.
+                Nobody sees it, nothing you do reaches them, and it is not
+                written on their own screen.</t>
+              <t t-else="">Their live payroll. Everything you open is written
+                on their own screen and emailed in the daily summary.</t>
+            </div>
+          </t>
+
           <label class="pplw-label">How long do you need?</label>
           <div class="pbim-seg tnx-supseg">
             <button t-foreach="supDurations" t-as="dur" t-key="dur.minutes"
