@@ -9,6 +9,7 @@ behind the pure functions in `test_sync_rules.py` (rail R6).
 import json
 from unittest.mock import patch
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
@@ -60,13 +61,23 @@ class TestReleaseCut(TransactionCase):
             self.env['pb.release'].search_count([('is_current', '=', True)]), 1)
 
     def test_t8_03_the_second_cut_of_a_day_gets_its_own_name(self):
+        """Two cuts on one day are two records, not a unique-key error.
+
+        The suffix is NOT asserted to be `-2`: this runs on the live master,
+        where a release cut for real earlier today is already sitting in the
+        table, so the next free number is whatever it is. What matters is that
+        both names share today's date and that the second one is new.
+        """
+        today = fields.Date.today().strftime('%Y.%m.%d')
         with patch.object(self.cls, '_master_modules',
                           return_value=dict(FAKE_MASTER)):
             self.svc.release_cut()
             self.svc.release_cut()
         names = self.env['pb.release'].search([], order='id desc', limit=2).mapped('name')
-        self.assertEqual(len(set(names)), 2)
-        self.assertTrue(names[0].endswith('-2'), names)
+        self.assertEqual(len(set(names)), 2, names)
+        for name in names:
+            self.assertTrue(name.startswith(today), names)
+        self.assertRegex(names[0], r'-\d+$')
 
     def test_t8_04_a_master_behind_its_own_files_cannot_be_photographed(self):
         """Rail R3. A master halfway through applying itself is a mixture."""
