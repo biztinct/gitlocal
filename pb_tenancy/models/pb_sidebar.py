@@ -135,6 +135,16 @@ class PbSidebarItem(models.Model):
         return False, False, ''
 
     # ------------------------------------------------- the drawn menu only
+    #
+    # `@api.model` HAS TO BE WRITTEN AGAIN HERE. It is not inherited: the
+    # framework reads it off the function it is about to call
+    # (`odoo/service/model.py:86`), so an override that leaves it out turns a
+    # model-level method into a record-level one for every browser that asks —
+    # and the browser sends no ids, so the whole left menu dies with
+    # "list index out of range" and every page loses its navigation. Nothing in
+    # a Python test can see it, because Python calls it directly and both
+    # shapes work there.
+    @api.model
     def get_sidebar_data(self):
         """Unchanged, except that a padlock put there by a switch says why.
 
