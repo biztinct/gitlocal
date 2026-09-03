@@ -46,4 +46,30 @@
         <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=30, second=0) + timedelta(days=1))"/>
         <field name="active" eval="True"/>
     </record>
+    <!-- FLEET P2B. The rollout worker. It does ONE step of whatever a person
+         started — never starts anything itself, never touches a customer who
+         is not on a list somebody made (rail R1) — and does nothing at all
+         when no rollout is running, which is most of the time. Five minutes is
+         short enough that a maintenance window is not spent idle and long
+         enough that a task (minutes) is never raced. -->
+    <record id="cron_rollout_worker" model="ir.cron">
+        <field name="name">Payobook Tenants: rollout worker</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_rollout_worker()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P2B. The evening-before warning. Only ever speaks to a customer
+         with a queued task in a rollout a person started, and only once. -->
+    <record id="cron_rollout_notices" model="ir.cron">
+        <field name="name">Payobook Tenants: rollout warnings</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_rollout_notices()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>

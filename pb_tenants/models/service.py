@@ -1614,8 +1614,19 @@ class PbTenants(models.AbstractModel):
 
         Never fatal. A message that could not be delivered must not turn a
         successful update into a failed one; it becomes a line in the log.
+
+        FLEET P2B ADDS ONE DOOR AND NOTHING ELSE. Inside a rollout the update
+        is not finished when the install is: the site still has to answer and
+        the log still has to be clean. So a rollout runs the unit with
+        `pb_defer_release_stamp` in the context and does this itself, after its
+        checks have passed. A customer must never be shown "you are on release
+        X — see what's new" about an update that is about to be called a
+        failure.
         """
         plan['release_pushed'] = False
+        if self.env.context.get('pb_defer_release_stamp'):
+            plan['release_deferred'] = True
+            return
         if plan.get('release_state') != 'on' or not rel:
             return
         try:
