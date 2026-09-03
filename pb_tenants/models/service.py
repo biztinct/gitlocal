@@ -328,11 +328,27 @@ class PbTenants(models.AbstractModel):
 
     @contextmanager
     def _tenant_env(self, dbname):
-        """ORM environment on another database of this cluster (commits on success)."""
+        """ORM environment on another database of this cluster (commits on success).
+
+        AND IT TELLS EVERY OTHER PROCESS WHAT IT CHANGED (FLEET P5). A bare
+        `cr.commit()` writes the row and clears the cache of THIS process's copy
+        of that registry — and stops there. The database-wide invalidation
+        sequence is only bumped by `signal_changes()`, which the framework calls
+        at the end of a request or a cron job, and which nothing calls here.
+
+        It went unnoticed for three phases because the cockpit runs inside the
+        server process: the tenant registry it clears IS the one serving that
+        tenant's requests. Run the same call from a shell — or, later, from a
+        second worker — and the customer's own database goes on answering from
+        a cache that is now wrong. It cost an hour on this phase: the platform
+        said a customer was un-paused, their database agreed in SQL, and their
+        people were still meeting the locked door.
+        """
         reg = Registry(dbname)
         with reg.cursor() as cr:
             yield api.Environment(cr, SUPERUSER_ID, {})
             cr.commit()
+        reg.signal_changes()
 
     def _probe(self, host):
         """HTTP probe of this Odoo through localhost with a tenant Host header."""

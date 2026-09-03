@@ -101,7 +101,15 @@ class PbPlan(models.Model):
             'pricing': self.pricing,
             'pricing_label': PRICING_LABEL.get(self.pricing, ''),
             'price': self.price or 0.0,
-            'tiers': [{'id': t.id, 'up_to': t.up_to, 'price': t.price}
+            # EVERY FIGURE THAT REACHES A SCREEN IS FORMATTED HERE, once, by
+            # the one money formatter. A band shown as "6000000" is a number
+            # nobody can read at a glance and nobody can check against an
+            # invoice.
+            'tiers': [{'id': t.id, 'up_to': t.up_to, 'price': t.price,
+                       'up_to_h': qty_text(t.up_to),
+                       'price_h': money(t.price, cur.symbol or '',
+                                        cur.rounding or 0.01,
+                                        cur.position or 'after')}
                       for t in self.tier_ids.sorted(lambda t: t.up_to)],
             'currency_id': cur.id,
             'currency': cur.name or '',
