@@ -56,6 +56,15 @@ class TestTenancyState(TransactionCase):
         self.assertEqual(n['kind'], 'maintenance')
         self.assertEqual(n['id'], 'n1')
 
+    def test_t1_02b_the_live_flag_survives_the_read(self):
+        """FLEET P2B. An update that is happening now marks itself `live`, and
+        the customer's bar reads that flag to hide its own close button. The
+        reader is the browser, so all this side has to do is not lose it."""
+        raw = json.loads(_notice(title="Payobook is being updated right now"))
+        raw['live'] = True
+        self._set(**{P_NOTICE: json.dumps(raw)})
+        self.assertTrue(self.svc.state()['notice']['live'])
+
     def test_t1_03_a_notice_with_no_end_stands_until_cleared(self):
         self._set(**{P_NOTICE: _notice(ends=None, kind='info')})
         self.assertIsNotNone(self.svc.state()['notice'])

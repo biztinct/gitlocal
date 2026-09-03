@@ -70,6 +70,19 @@
         &:hover { opacity: 1; background: rgba(0, 0, 0, .07); }
     }
 
+    // An update in progress has no close button. It has a dot, which is doing
+    // the same job as the spinner on a screen that is loading: it says the
+    // reason this bar is here has not finished yet.
+    .pbtn-bar-live {
+        flex: none;
+        width: 9px;
+        height: 9px;
+        margin: 0 6px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pbtn-bar-live 1.2s ease-in-out infinite;
+    }
+
     // ---- planned update: amber, the promoted "something is about to happen"
     &.pbtn-maintenance {
         background: #FEF3C7;
@@ -109,8 +122,16 @@
 
 // A reader who has asked their machine to stop moving things gets the bar
 // without the slide. It still appears; it simply does not travel.
+@keyframes pbtn-bar-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .45; transform: scale(.7); }
+}
+
+// A reader who has asked their machine to stop moving things gets the bar
+// without the slide. It still appears; it simply does not travel.
 @media (prefers-reduced-motion: reduce) {
     .pbtn-bar { animation: none; }
+    .pbtn-bar-live { animation: none; }
 }
 
 // =============================================================================

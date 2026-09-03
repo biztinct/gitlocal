@@ -1901,12 +1901,21 @@ class PbTenants(models.AbstractModel):
         }
 
     @api.model
-    def notice_send(self, target, kind, title, text, starts_at, ends_at):
+    def notice_send(self, target, kind, title, text, starts_at, ends_at,
+                    live=False):
         """Put a message at the top of every page on one customer, or on all.
 
         The message is composed ONCE — one id, one wording, one window — and the
         same dict is written on every recipient, so two customers can never be
         looking at two different versions of the same announcement.
+
+        `live` marks a message the reader may not close: an update that is
+        happening to them right now. FLEET P2B's worker is the only caller that
+        passes it, and it must travel through THIS method rather than round it,
+        because this is the one door that mints an id, mirrors the message on
+        our own record and leaves a line in the customer's trail. It was
+        dropped on the floor here once, which made the whole no-close rule on
+        the customer's side dead code.
         """
         self._require_admin()
         try:
@@ -1914,6 +1923,8 @@ class PbTenants(models.AbstractModel):
                                      uuid.uuid4().hex[:12])
         except ValueError as exc:
             raise UserError(str(exc)) from exc
+        if live:
+            payload['live'] = True
         tenants = self._notice_recipients(target)
         if not tenants:
             raise UserError(_(

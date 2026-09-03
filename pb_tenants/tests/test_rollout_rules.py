@@ -12,8 +12,9 @@ from datetime import datetime, timedelta
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_tenants.models.rollout_rules import (
-    CUSTOMER_RINGS, RING_ORDER, advance, eligible, health_verdict, next_window,
-    notice_for, plan_tasks, watch_hours_for, window_bounds, window_open,
+    CUSTOMER_RINGS, DEFAULT_LOG_IGNORE, RING_ORDER, advance, eligible,
+    filter_errors, health_verdict, next_window, notice_for, parse_ignore,
+    plan_tasks, watch_hours_for, window_bounds, window_open,
 )
 
 VN = 'Asia/Ho_Chi_Minh'          # UTC+7 all year, no daylight saving
@@ -223,6 +224,37 @@ class TestRolloutRules(TransactionCase):
         self.assertFalse(ok)
         self.assertIn('500', why)
 
+    def test_t4_10_a_line_that_always_fires_does_not_stop_a_rollout(self):
+        """Found on the very first live rehearsal.
+
+        A vendor module on this build writes one ERROR every time ANY database
+        loads its registry, about a licence file that has never existed. It
+        stopped a rollout whose copy was in perfect health. The lines are set
+        aside, not deleted — they stay on the record where somebody can read
+        them.
+        """
+        lines = [
+            '2026-09-03 10:39:33 ERROR ...license_state: License check FAILED: missing',
+            '2026-09-03 10:39:40 ERROR ...payslip: could not compute',
+        ]
+        kept, ignored = filter_errors(lines, DEFAULT_LOG_IGNORE)
+        self.assertEqual(len(kept), 1)
+        self.assertIn('payslip', kept[0])
+        self.assertEqual(len(ignored), 1)
+        # And with only the noise present, the verdict is healthy.
+        self.assertTrue(health_verdict(200, 0, filter_errors(
+            [lines[0]], DEFAULT_LOG_IGNORE)[0])[0])
+
+    def test_t4_11_an_empty_ignore_list_ignores_nothing(self):
+        lines = ['ERROR License check FAILED: missing']
+        self.assertEqual(filter_errors(lines, [])[0], lines)
+        self.assertEqual(filter_errors(lines, None)[0], lines)
+
+    def test_t4_12_the_ignore_list_is_read_as_one_substring_per_line(self):
+        self.assertEqual(parse_ignore("  one \n\n two  \n"), ['one', 'two'])
+        self.assertEqual(parse_ignore(''), [])
+        self.assertEqual(parse_ignore(None), list(DEFAULT_LOG_IGNORE))
+
     def test_t4_09_no_reason_mentions_the_framework(self):
         for args in ((0, 0, []), (200, 2, []), (200, 0, ['x']), (500, 0, [])):
             self.assertNotIn('Odoo', health_verdict(*args)[1])
@@ -378,6 +410,12 @@ class TestRolloutRules(TransactionCase):
         self.assertIn('right now', n['title'])
         self.assertEqual(n['starts_at'], '')
         self.assertEqual(n['ends_at'], '')
+
+    def test_t6_05_only_the_in_progress_message_cannot_be_hidden(self):
+        """The bar a reader may not close is the one explaining a pause."""
+        self.assertTrue(notice_for('now', notice_id='a').get('live'))
+        self.assertFalse(notice_for('pre', '2026-09-03 15:00:00',
+                                    '2026-09-03 18:00:00', 'b').get('live'))
 
     def test_t6_03_neither_message_says_odoo_or_talks_like_a_computer(self):
         for n in (notice_for('pre', '2026-09-03 15:00:00', '2026-09-03 18:00:00', 'a'),

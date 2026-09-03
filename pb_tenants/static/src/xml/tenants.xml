@@ -372,7 +372,7 @@
           <div class="tnx-ro-head">
             <span t-attf-class="tnx-ro-ic {{ rollout.state }}"><t t-out="ic('waves',18)"/></span>
             <div class="tnx-ro-tt">
-              <b>Release <t t-esc="rollout.release"/> is going out</b>
+              <b t-esc="rolloutTitle"/>
               <span t-esc="rolloutHeadline"/>
             </div>
             <span t-attf-class="pbim-badge {{ rollout.state === 'done' ? 'ok' : (rollout.state === 'paused' ? 'err' : (rollout.state === 'waiting' ? 'warn' : 'info')) }}"
@@ -464,6 +464,8 @@
                     <t t-if="task.state === 'done'">
                       <t t-esc="task.added"/> added, <t t-esc="task.updated"/> brought up to date ·
                       <t t-esc="secs(task.duration_s)"/>
+                      <t t-if="task.health.ignored_count"> · <span class="tnx-sync-when">
+                        <t t-esc="task.health.ignored_count"/> known log line(s) set aside</span></t>
                       <t t-if="task.health_reason"> · <span class="tnx-sync-when" t-esc="task.health_reason"/></t>
                     </t>
                     <t t-elif="task.state === 'failed'"><span class="tnx-sync-err bad" t-esc="task.error"/></t>
@@ -931,6 +933,8 @@
                       in <t t-esc="h.health.probe_ms"/> ms.</t>
                     <t t-if="h.health.error_count >= 0"> <t t-esc="h.health.error_count"/> error line(s)
                       in the log while it ran.</t>
+                    <t t-if="h.health.ignored_count"> <t t-esc="h.health.ignored_count"/> line(s)
+                      were set aside as the noise this server always makes.</t>
                     <t t-if="h.health_reason"> <span t-esc="h.health_reason"/></t>
                   </div>
                   <div t-if="h.health.errors and h.health.errors.length" class="tnx-result-log">

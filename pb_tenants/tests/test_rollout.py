@@ -12,6 +12,7 @@ sentence, a retry putting it back, and calling the whole thing off.
 transaction.
 """
 import inspect
+import json
 from unittest.mock import patch
 
 from odoo import fields
@@ -19,6 +20,7 @@ from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_tenants.models import rollout_service
+from odoo.addons.pb_tenants.models.service import PbTenants
 
 FAKE_RESULT = {
     'installed': [{'module': 'pb_tenancy', 'label': 'Platform Link'}],
@@ -48,6 +50,13 @@ class TestRollout(TransactionCase):
         # never reaches them). What is being argued with here is the machine,
         # not whatever the fleet happens to look like today.
         self.env['pb.tenant'].sudo().search([]).write({'state': 'decommissioned'})
+        # Same reason, and this one bit: a real rollout paused on the platform
+        # made every test here fail with "one is already going out" — which is
+        # the guard doing exactly its job, against the suite instead of a
+        # person. Stood down inside the transaction, never on their record.
+        self.env['pb.rollout'].sudo().search(
+            [('state', 'in', ('draft', 'running', 'waiting', 'paused'))]
+        ).write({'state': 'aborted'})
         self.canary = self.env['pb.tenant'].sudo().create({
             'name': 'Canary Co', 'slug': 'canaryco2026', 'state': 'live',
             'ring': 'canary'})
@@ -132,6 +141,49 @@ class TestRollout(TransactionCase):
         with self.assertRaises(UserError) as e:
             self._run(go)
         self.assertIn('Canary Co', str(e.exception))
+
+    def test_t7_03b_no_backup_to_practise_on_refuses_the_whole_rollout(self):
+        """Rail R4, found in live validation.
+
+        With the only usable backup file moved aside, the planner quietly left
+        the practice run out and offered to update a real customer with nobody
+        having rehearsed anything. A warning is not enough for this one.
+        """
+        def go():
+            with patch.object(self.cls, '_rehearsal_source', lambda self_: None):
+                self.svc.rollout_start(self.rel.id)
+        with self.assertRaises(UserError) as e:
+            self._run(go)
+        self.assertIn('no backup to practise on', str(e.exception))
+        self.assertIn('Backup now', str(e.exception))
+
+    def test_t7_03c_with_no_live_customers_the_template_still_goes(self):
+        """Nothing to practise on and nobody to protect: not a refusal."""
+        self.env['pb.tenant'].sudo().search([]).write({'state': 'decommissioned'})
+
+        def go():
+            with patch.object(self.cls, '_rehearsal_source', lambda self_: None):
+                self.svc.rollout_start(self.rel.id, 0, 0)
+        self._run(go)
+        r = self._rollout()
+        self.assertEqual([t.ring for t in r.task_ids], ['template'])
+        self.assertEqual(r.state, 'done')
+
+    def test_t7_03d_the_ignore_list_falls_back_when_the_setting_is_absent(self):
+        """`get_param` answers False, not None, for a key that is not there.
+
+        Read naively that becomes the one-line ignore list ["False"] — which
+        ignores nothing while looking exactly like a working list. It cost a
+        live rehearsal, twice.
+        """
+        icp = self.env['ir.config_parameter'].sudo()
+        icp.search([('key', '=', 'pb_tenants.health_ignore')]).unlink()
+        self.assertIn('License check FAILED', self.svc._log_ignore())
+        icp.set_param('pb_tenants.health_ignore', 'my own line')
+        self.assertEqual(self.svc._log_ignore(), ['my own line'])
+        icp.set_param('pb_tenants.health_ignore', '')
+        self.assertEqual(self.svc._log_ignore(), [],
+                         "Deliberately empty must mean 'ignore nothing'.")
 
     def test_t7_04_a_second_rollout_is_refused_while_one_is_going(self):
         self.env['pb.rollout'].sudo().create({
@@ -308,7 +360,7 @@ class TestRollout(TransactionCase):
         rest = self._task_for(r, self.rest)
         told = []
 
-        def fake_send(self_, target, kind, title, text, starts, ends):
+        def fake_send(self_, target, kind, title, text, starts, ends, live=False):
             told.append((target, title))
             return {'sent': ['x'], 'skipped': [], 'message': ''}
         ps = self._patches()
@@ -334,7 +386,7 @@ class TestRollout(TransactionCase):
     def test_t7_19_the_customer_gets_told_and_untold_around_their_update(self):
         seen = []
 
-        def fake_send(self_, target, kind, title, text, starts, ends):
+        def fake_send(self_, target, kind, title, text, starts, ends, live=False):
             seen.append(('up', target, title))
             return {'sent': ['x'], 'skipped': [], 'message': ''}
 
@@ -359,6 +411,39 @@ class TestRollout(TransactionCase):
         self.assertLess(seen.index(('up', self.canary.id,
                                     'Payobook is being updated right now')),
                         seen.index(('down', self.canary.id, '')))
+
+    def test_t7_19b_the_bar_that_goes_up_during_an_update_cannot_be_closed(self):
+        """The `live` flag has to survive the one door it travels through.
+
+        It did not: `notice_send` re-composed the payload from its parts and
+        quietly dropped the flag, which made the no-close rule on the
+        customer's side dead code. Nothing on screen said so.
+        """
+        sent = []
+
+        def fake_push(self_, target, values):
+            sent.append(json.loads(values.get('pb_tenancy.notice') or '{}'))
+            return {'ok': True, 'database': 'x', 'label': 'x', 'reason': ''}
+        ps = self._patches()
+        for p in ps:
+            p.start()
+        try:
+            # The REAL notice_send, captured before the harness replaced it —
+            # patching with `type(self.svc).notice_send` here would re-install
+            # the harness's own stub over itself.
+            with patch.object(self.cls, 'notice_send', PbTenants.notice_send), \
+                 patch.object(self.cls, 'push_tenancy', fake_push), \
+                 patch.object(self.cls, '_log_line', lambda *a, **kw: ''):
+                self.svc.rollout_start(self.rel.id, 0, 0)
+        finally:
+            for p in reversed(ps):
+                p.stop()
+        ups = [n for n in sent if n.get('title')]
+        self.assertTrue(ups, "the bar must go up at all")
+        self.assertTrue(all(n.get('live') for n in ups),
+                        "every in-progress bar must be marked unclosable")
+        # Taking it down again is asserted in t7_19; here `notice_clear` is
+        # still the harness's stub, so it never reaches the push.
 
     def test_t7_20_the_release_stamp_waits_for_the_health_check(self):
         """A customer is never told "you are on the new release" too early."""
