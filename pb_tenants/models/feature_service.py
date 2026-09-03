@@ -28,6 +28,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .billing_rules import SERVING_STATES
 from .feature_rules import (
     MODES, T_FEATURES, custom_count, effective_features, features_sentence,
 )
@@ -309,7 +310,8 @@ class PbTenantsFeatures(models.AbstractModel):
         if 'name' in clean and not (clean['name'] or '').strip():
             raise UserError(_("A feature needs a name people can read."))
         feature.write(clean)
-        for tenant in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for tenant in self.env['pb.tenant'].sudo().search(
+                [('state', 'in', SERVING_STATES)]):
             self._push_features(tenant, _("%s was edited in the catalogue.")
                                 % feature.name)
         self._push_features_here()

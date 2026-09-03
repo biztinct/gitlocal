@@ -179,6 +179,16 @@ from .tenancy_rules import (  # noqa: E402
 from .feature_rules import (  # noqa: E402
     T_FEATURES, custom_count, effective_features, features_sentence,
 )
+# FLEET P5. "Live" stopped being one state. A customer on trial, a customer
+# whose access is paused and a customer scheduled for deletion all still HAVE a
+# database — it is backed up, kept in step, measured and watched exactly as a
+# paying one is. Everything below that used to search for `state = 'live'` now
+# searches SERVING_STATES; the places that genuinely mean "paying and running"
+# say so on their own line.
+from .billing_rules import (
+    SERVING_STATES, T_ACCESS, T_ACCESS_TEXT, T_PLAN_NAME, T_SEAT_LIMIT,
+    T_TRIAL_ENDS,
+)
 
 #: The module a customer's database needs before the platform can say anything
 #: to it. Not on the never-list (rail R2) — it is a part of the product, and it
@@ -392,7 +402,7 @@ class PbTenants(models.AbstractModel):
         Tenant = self.env['pb.tenant'].sudo()
         tenants = Tenant.search([])
         platform = self._platform_status()
-        live = tenants.filtered(lambda t: t.state == 'live')
+        live = tenants.filtered(lambda t: t.state in SERVING_STATES)
         total_db = sum(live.mapped('db_size')) + sum(live.mapped('filestore_size'))
         last_backups = [t.last_backup_at for t in live if t.last_backup_at]
         stale_cut = datetime.now() - timedelta(hours=30)
@@ -402,6 +412,14 @@ class PbTenants(models.AbstractModel):
             'platform': platform,
             'kpis': {
                 'live': len(live),
+                # FLEET P5. The three standings that are not "paying and
+                # running", counted separately — a fleet KPI that says
+                # "5 customers" while two of them are paused is a KPI that
+                # hides the thing the owner most needs to see.
+                'trial': len(tenants.filtered(lambda t: t.state == 'trial')),
+                'suspended': len(tenants.filtered(lambda t: t.state == 'suspended')),
+                'pending_deletion': len(tenants.filtered(
+                    lambda t: t.state == 'pending_deletion')),
                 'provisioning': len(tenants.filtered(lambda t: t.state in ('draft', 'provisioning', 'error'))),
                 'storage': self._human(total_db),
                 'disk_free': platform.get('disk_free_h', '—'),
@@ -433,6 +451,23 @@ class PbTenants(models.AbstractModel):
             # inside every customer's brief would turn the fleet screen into
             # one query per customer for a number nobody reads there.
             'features': self._features_head(live),
+            # FLEET P5. The chip on the "Billing" button: what is owed and how
+            # much of it is late. Two searches of our OWN invoice table — the
+            # fleet screen still opens without touching a customer.
+            'billing': self._billing_head(),
+        }
+
+    def _billing_head(self):
+        """"2 unpaid · 1 overdue" — and the month everything else opens on."""
+        Invoice = self.env['pb.tenant.invoice'].sudo()
+        unpaid = Invoice.search([('state', 'in', ('sent', 'overdue'))])
+        drafts = Invoice.search_count([('state', '=', 'draft')])
+        return {
+            'unpaid': len(unpaid),
+            'overdue': len(unpaid.filtered(lambda i: i.state == 'overdue')),
+            'drafts': drafts,
+            'no_plan': self.env['pb.tenant'].sudo().search_count(
+                [('state', 'in', SERVING_STATES), ('plan_id', '=', False)]),
         }
 
     def _features_head(self, live):
@@ -468,7 +503,8 @@ class PbTenants(models.AbstractModel):
         rel = self.env['pb.release'].sudo().current()
         if not rel:
             return None
-        live = self.env['pb.tenant'].sudo().search([('state', '=', 'live')])
+        live = self.env['pb.tenant'].sudo().search(
+            [('state', 'in', SERVING_STATES)])
         return {
             'id': rel.id, 'name': rel.name,
             'captured_at': rel.captured_at.isoformat(sep=' ', timespec='minutes'),
@@ -503,6 +539,15 @@ class PbTenants(models.AbstractModel):
             # our own record — reading it back out of their database on every
             # fleet load would open a registry per customer for one string.
             'notice': self._notice_brief(t),
+            # FLEET P5. What they pay for and where they stand, for the badge
+            # on the card. Read off our own record; no query per customer.
+            'plan': t.plan_id.name or '',
+            'trial_ends': t.trial_ends.isoformat() if t.trial_ends else '',
+            'trial_days_left': (t.trial_state()['days_left']
+                                if t.state == 'trial' and t.trial_ends else 0),
+            'suspend_reason': t.suspend_reason or '',
+            'delete_after': (t.delete_after.isoformat()
+                             if t.delete_after else ''),
         }
 
     def _notice_brief(self, t):
@@ -821,6 +866,10 @@ class PbTenants(models.AbstractModel):
             #
             # It is still rail R1: this runs because somebody pressed "Create".
             try:
+                # FLEET P5. The plan's own features are written down FIRST, so
+                # the payload below already carries what this customer bought.
+                if tenant.plan_id:
+                    self._apply_plan_features(tenant, tenant.plan_id)
                 icp.set_param(T_FEATURES, self._features_payload(tenant))
                 icp.set_param(T_PUSHED_AT,
                               fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -831,6 +880,31 @@ class PbTenants(models.AbstractModel):
                                 slug, exc_info=True)
                 say('Feature switches could not be set — the Features screen '
                     'has a "Push again" button for this customer.', 'warn')
+            # FLEET P5. Their plan, their employee limit and their trial date,
+            # written into the same registry that is already open. The tenant
+            # is not `live` yet, so `push_tenancy` (which resolves a live
+            # customer) cannot be used — same reasoning as the switches above.
+            try:
+                access = self._access_values(tenant)
+                icp.set_param(T_ACCESS, access['access'])
+                icp.set_param(T_ACCESS_TEXT, access['access_text'])
+                icp.set_param(T_TRIAL_ENDS, access['trial_ends'])
+                icp.set_param(T_PLAN_NAME, access['plan_name'])
+                icp.set_param(T_SEAT_LIMIT, access['seat_limit'])
+                tenant.sudo().write({'access_pushed_at': fields.Datetime.now()})
+                if tenant.plan_id:
+                    say('Plan set: %s%s.' % (
+                        tenant.plan_id.name,
+                        tenant.trial_ends and (' — trial until %s'
+                                               % tenant.trial_ends.isoformat())
+                        or ''))
+                else:
+                    say('No plan chosen yet — pick one on their Plan tab.', 'warn')
+            except Exception:                           # noqa: BLE001
+                _logger.warning("pb_tenants: could not seed the plan on %s",
+                                slug, exc_info=True)
+                say('The plan could not be written to their database — their '
+                    'Plan tab has a button that sends it again.', 'warn')
         return {}
 
     def _step_admin(self, tenant, say):
@@ -1836,7 +1910,8 @@ class PbTenants(models.AbstractModel):
                             "own What's new could not be updated", exc_info=True)
         # Re-measure everybody against the new photograph. READ ONLY on their
         # databases: the only thing written is our own record of where they are.
-        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for t in self.env['pb.tenant'].sudo().search(
+                [('state', 'in', SERVING_STATES)]):
             try:
                 self._measure(t, master, snapshot, rel)
             except Exception:                           # noqa: BLE001
@@ -1997,7 +2072,7 @@ class PbTenants(models.AbstractModel):
         """
         Tenant = self.env['pb.tenant'].sudo()
         if isinstance(target, str) and target.strip() == 'all':
-            return Tenant.search([('state', '=', 'live')])
+            return Tenant.search([('state', 'in', SERVING_STATES)])
         _dbname, _label, tenant, is_template = self._resolve_sync_target(target)
         if tenant is None:
             raise UserError(_(
@@ -2010,7 +2085,8 @@ class PbTenants(models.AbstractModel):
         """What the composer opens holding. Read-only."""
         self._require_admin()
         starts, ends = default_window()
-        live = self.env['pb.tenant'].sudo().search([('state', '=', 'live')])
+        live = self.env['pb.tenant'].sudo().search(
+            [('state', 'in', SERVING_STATES)])
         return {
             'kinds': list(NOTICE_KINDS),
             'starts_at': starts,
@@ -2261,7 +2337,7 @@ class PbTenants(models.AbstractModel):
     @api.model
     def refresh_health(self, tenant_id=None):
         self._require_admin()
-        dom = [('state', '=', 'live')]
+        dom = [('state', 'in', SERVING_STATES)]
         if tenant_id:
             dom = [('id', '=', int(tenant_id))]
         for t in self.env['pb.tenant'].sudo().search(dom):
@@ -2484,13 +2560,15 @@ class PbTenants(models.AbstractModel):
     # ================================================================== crons
     @api.model
     def _cron_nightly_backups(self):
-        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for t in self.env['pb.tenant'].sudo().search(
+            [('state', 'in', SERVING_STATES)]):
             self._do_backup(t, 'nightly')
             self.env.cr.commit()
 
     @api.model
     def _cron_health(self):
-        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for t in self.env['pb.tenant'].sudo().search(
+            [('state', 'in', SERVING_STATES)]):
             try:
                 self._refresh_one(t)
             except Exception as e:
@@ -2517,7 +2595,8 @@ class PbTenants(models.AbstractModel):
         tenants are not touched at all, so nginx is not reloaded for nothing.
         """
         script = '/usr/local/bin/pb-tenant-cert'
-        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for t in self.env['pb.tenant'].sudo().search(
+            [('state', 'in', SERVING_STATES)]):
             host = '%s.%s' % (t.slug, self._base_domain())
             try:
                 vals = self._tenant_cert_vals(t)

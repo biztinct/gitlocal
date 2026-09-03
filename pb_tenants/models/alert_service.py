@@ -30,6 +30,7 @@ import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .billing_rules import SERVING_STATES
 from .alert_rules import (
     DEFAULT_THRESHOLDS, capacity_verdict, digest_lines, readings_to_alerts,
     reconcile, render_status_page, should_notify, status_state,
@@ -480,7 +481,7 @@ class PbTenantsAlerts(models.AbstractModel):
         since = now - timedelta(minutes=window_minutes)
         dom = self._base_domain()
         Tenant = self.env['pb.tenant'].sudo()
-        live = Tenant.search([('state', '=', 'live')])
+        live = Tenant.search([('state', 'in', SERVING_STATES)])
         dbfilter_live = '%d' in (odoo.tools.config['dbfilter'] or '')
         counts = self._log_error_counts([t.slug for t in live] + [self.env.cr.dbname],
                                         since)
@@ -637,7 +638,8 @@ class PbTenantsAlerts(models.AbstractModel):
         Alert = self.env['pb.alert'].sudo()
         rows = Alert.search([('state', 'in', ('open', 'acknowledged'))])
         lines = digest_lines(rows.as_dict(), now)
-        live = self.env['pb.tenant'].sudo().search_count([('state', '=', 'live')])
+        live = self.env['pb.tenant'].sudo().search_count(
+            [('state', 'in', SERVING_STATES)])
         if lines:
             subject = '[Payobook] Morning summary — %d open' % len(lines)
             blocks = [
@@ -667,7 +669,8 @@ class PbTenantsAlerts(models.AbstractModel):
     # ================================================================= capacity
     def _capacity(self):
         mem = self._memory_reading()
-        live = self.env['pb.tenant'].sudo().search_count([('state', '=', 'live')])
+        live = self.env['pb.tenant'].sudo().search_count(
+            [('state', 'in', SERVING_STATES)])
         try:
             cost = float(self._alert_param('pb_tenants.tenant_cost_mb', '') or 0)
         except (TypeError, ValueError):
@@ -719,7 +722,8 @@ class PbTenantsAlerts(models.AbstractModel):
         tz = self._status_tz()
         local_now = to_local(now, tz)
         seen, out = set(), []
-        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+        for t in self.env['pb.tenant'].sudo().search(
+                [('state', 'in', SERVING_STATES)]):
             if not t.notice:
                 continue
             if t.notice_until and t.notice_until <= now:

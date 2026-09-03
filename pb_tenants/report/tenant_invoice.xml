@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FLEET P5 — the invoice a customer receives.
+
+         Odoo 19 explicit `<record model="ir.actions.report">` form. The
+         `<report>` shortcut was removed from this framework and fails at load
+         with a message that names the file rather than the tag; the themed
+         payslip in pb_hr_payroll_formula is the precedent this clones.
+
+         NOT `web.external_layout`. That layout prints the COMPANY's header and
+         footer, which on the platform's own database is the platform, and its
+         footer carries the framework's own "powered by" line — a user-visible
+         string with the wrong word in it (rail R7). Everything here is drawn
+         by hand from brand tokens, so what is on the page is what we put on it.
+    -->
+    <record id="action_report_tenant_invoice" model="ir.actions.report">
+        <field name="name">Payobook invoice</field>
+        <field name="model">pb.tenant.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_tenants.report_tenant_invoice</field>
+        <field name="report_file">pb_tenants.report_tenant_invoice</field>
+        <field name="print_report_name">'%s' % object.number</field>
+    </record>
+
+    <template id="report_tenant_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="inv">
+                <t t-set="d" t-value="inv._render_data()"/>
+                <div class="page"
+                     style="font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#1E1B2E; font-size:12px;">
+                    <style>
+                        .pbinv-h { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #5A4BB0; padding-bottom:14px; margin-bottom:20px; }
+                        .pbinv-brand { font-size:22px; font-weight:800; letter-spacing:-.5px; color:#5A4BB0; }
+                        .pbinv-eyebrow { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:#6B6880; font-weight:700; }
+                        .pbinv-no { font-size:16px; font-weight:700; text-align:right; }
+                        .pbinv-cols { width:100%; margin-bottom:22px; }
+                        .pbinv-cols td { vertical-align:top; width:50%; padding-right:16px; }
+                        .pbinv-label { font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:#6B6880; font-weight:700; margin-bottom:5px; }
+                        .pbinv-block { font-size:12px; line-height:1.6; }
+                        .pbinv-tbl { width:100%; border-collapse:collapse; margin-bottom:16px; }
+                        .pbinv-tbl th { text-align:left; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:#6B6880; border-bottom:1px solid #E6E4F0; padding:0 8px 7px 0; }
+                        .pbinv-tbl th.num, .pbinv-tbl td.num { text-align:right; padding-right:0; }
+                        .pbinv-tbl td { padding:10px 8px 10px 0; border-bottom:1px solid #F1F0F7; vertical-align:top; }
+                        .pbinv-detail { color:#6B6880; font-size:10px; display:block; margin-top:2px; }
+                        .pbinv-tot { width:56%; margin-left:44%; border-collapse:collapse; }
+                        .pbinv-tot td { padding:5px 0; font-size:12px; }
+                        .pbinv-tot td.num { text-align:right; }
+                        .pbinv-tot tr.grand td { border-top:2px solid #5A4BB0; padding-top:9px; font-size:15px; font-weight:800; }
+                        .pbinv-bank { border-left:3px solid #5A4BB0; padding:8px 0 8px 13px; margin:22px 0 0; font-size:11px; line-height:1.7; white-space:pre-wrap; }
+                        .pbinv-foot { margin-top:26px; padding-top:12px; border-top:1px solid #E6E4F0; font-size:10px; color:#6B6880; line-height:1.6; }
+                        .pbinv-chip { display:inline-block; padding:3px 9px; border-radius:20px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+                        .pbinv-paid { background:#E7F3EC; color:#2E7D4F; }
+                        .pbinv-void { background:#F1F0F7; color:#6B6880; }
+                    </style>
+
+                    <div class="pbinv-h">
+                        <div>
+                            <div class="pbinv-brand" t-esc="d['seller_name']"/>
+                            <div class="pbinv-eyebrow">Payroll, run properly</div>
+                        </div>
+                        <div>
+                            <div class="pbinv-eyebrow">Invoice</div>
+                            <div class="pbinv-no" t-esc="d['number']"/>
+                            <div style="text-align:right;margin-top:5px;">
+                                <span t-if="d['state'] == 'paid'" class="pbinv-chip pbinv-paid">Paid</span>
+                                <span t-if="d['state'] == 'void'" class="pbinv-chip pbinv-void">Cancelled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="pbinv-cols">
+                        <tr>
+                            <td>
+                                <div class="pbinv-label">Billed to</div>
+                                <div class="pbinv-block">
+                                    <b t-esc="d['customer_name']"/>
+                                    <div t-if="d['customer_address']" t-esc="d['customer_address']"/>
+                                    <div t-if="d['customer_vat']">Tax number: <t t-esc="d['customer_vat']"/></div>
+                                    <div t-if="d['customer_email']" t-esc="d['customer_email']"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="pbinv-label">From</div>
+                                <div class="pbinv-block">
+                                    <b t-esc="d['seller_name']"/>
+                                    <div t-if="d['seller_address']" t-esc="d['seller_address']"/>
+                                    <div t-if="d['seller_vat']">Tax number: <t t-esc="d['seller_vat']"/></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="pbinv-cols">
+                        <tr>
+                            <td>
+                                <div class="pbinv-label">For the month of</div>
+                                <div class="pbinv-block"><b t-esc="d['period_label']"/></div>
+                            </td>
+                            <td>
+                                <div class="pbinv-label">Issued / due by</div>
+                                <div class="pbinv-block">
+                                    <t t-esc="d['issued_at']"/> · <b t-esc="d['due_date']"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="pbinv-tbl">
+                        <thead>
+                            <tr>
+                                <th style="width:52%">What this covers</th>
+                                <th class="num" style="width:12%">Quantity</th>
+                                <th class="num" style="width:18%">Price each</th>
+                                <th class="num" style="width:18%">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="d['lines']" t-as="line" t-key="line_index">
+                                <td>
+                                    <b t-esc="line['label']"/>
+                                    <span t-if="line['detail']" class="pbinv-detail" t-esc="line['detail']"/>
+                                </td>
+                                <td class="num" t-esc="line['qty_h']"/>
+                                <td class="num" t-esc="line['unit_h']"/>
+                                <td class="num" t-esc="line['amount_h']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="pbinv-tot">
+                        <tr>
+                            <td>Subtotal</td>
+                            <td class="num" t-esc="d['subtotal_h']"/>
+                        </tr>
+                        <tr t-if="d['vat_pct']">
+                            <td>Tax at <t t-esc="d['vat_pct_h']"/>%</td>
+                            <td class="num" t-esc="d['vat_h']"/>
+                        </tr>
+                        <tr class="grand">
+                            <td>Total to pay</td>
+                            <td class="num" t-esc="d['total_h']"/>
+                        </tr>
+                    </table>
+
+                    <div t-if="d['bank_details']" class="pbinv-bank">
+                        <div class="pbinv-label" style="margin-bottom:6px;">How to pay</div>
+                        <t t-esc="d['bank_details']"/>
+                    </div>
+                    <div t-else="" class="pbinv-bank">
+                        <div class="pbinv-label" style="margin-bottom:6px;">How to pay</div>
+                        <t>Bank details have not been set yet — please reply to the email this
+                           invoice arrived with and we will send them.</t>
+                    </div>
+
+                    <div class="pbinv-foot">
+                        <div t-if="d['footer']" t-esc="d['footer']"/>
+                        <div>Questions about this invoice? Reply to the message it came with.
+                             Please quote <b t-esc="d['number']"/> with your payment.</div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

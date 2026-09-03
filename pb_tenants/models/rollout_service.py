@@ -24,6 +24,7 @@ import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .billing_rules import SERVING_STATES
 from .rollout_rules import (
     CUSTOMER_RINGS, DEFAULT_HOURS, DEFAULT_START_HOUR, DEFAULT_TZ, PRE_NOTICE_HOURS,
     RING_LABEL, RING_MEANING, RING_ORDER, advance, health_verdict, next_window,
@@ -217,7 +218,7 @@ class PbTenantsRollout(models.AbstractModel):
         database with the most in it.
         """
         Tenant = self.env['pb.tenant'].sudo()
-        live = Tenant.search([('state', '=', 'live')])
+        live = Tenant.search([('state', 'in', SERVING_STATES)])
         def usable(t):
             b = self.env['pb.tenant.backup'].sudo().search(
                 [('tenant_id', '=', t.id), ('state', '=', 'done')], limit=1)
