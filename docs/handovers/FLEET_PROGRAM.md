@@ -35,7 +35,7 @@ in that document's PRIORITIES section is in scope here.
 | **P3 Alerts, capacity, status** | 5, 8, 9 (status page) | `pb.alert` events + dedup + email delivery (sender config fixed and proven), platform "Outgoing mail" check made real, memory gauge + provisioning guard + resize runbook, static status page nginx serves at `/status` with a staleness self-check, planned-maintenance notice |
 | **P4 Feature switches** | 6 | `pb.feature` catalogue on the apex, per-tenant on/off with reason, pushed to tenants, `pb_tenancy` helpers (server + JS) and a `feature_key` gate on sidebar items so a switched-off feature vanishes cleanly |
 | **P5 Plans, trial, suspend, invoices** | 7 | `pb.plan` (three price structures), tenant `trial`/`suspended`/`pending_deletion` states with a retention clock, monthly usage meter, invoices (own model, PDF, email, mark paid, overdue → reminder → optional auto-suspend), seat-limit enforcement + trial/limit banners on the tenant, customer-side "Plan & usage" card |
-| **P6 Support access with a trail** | 10 | "Open as support" from the cockpit: reason required, one-time token, time-boxed session as the recovery account, every access logged on the tenant where the customer's administrator can read it, customer switch to refuse support access |
+| **P6 Support access with a trail** ✅ | 10 | "Open as support" from the cockpit: reason required, one-time token, time-boxed session as the recovery account, every access logged on the tenant where the customer's administrator can read it, customer switch to refuse support access. **DONE 2026-09-03** — live on `payobook`, `payobook_template` and `abm` at release 2026.09.03-6; see `FLEET_P6_CLOSEOUT.md`. |
 
 Handovers (all written 2026-09-03; later ones are adjusted from earlier reports before launch):
 `FLEET_P1_DRIFT.md` · `FLEET_P2A_TENANCY.md` · `FLEET_P2B_ROLLOUT.md` ·
@@ -585,3 +585,74 @@ kit registry (shared). The phase report scores itself against this bar.
   fleet: AB Mauri's 36 payslips are ALL drafts, so a per-payslip plan invoices
   them ₫0 — which is the honest answer and the reason the live validation put
   them on the flat-tier plan instead (owner decision, see the P5 report).
+- **F62** (P6, 2026-09-03) **A route declared `auth='none'` is READ-ONLY by
+  default on this framework.** `odoo/http.py:947` —
+  `default_mode = routing.get('readonly', default_auth == 'none')`. Signing
+  somebody in writes (the login log, the last-login stamp, this phase's own
+  row), so the support door answered *"cannot execute INSERT in a read-only
+  transaction"*. The framework knows how to recover from that — `_serve_db`
+  catches `ReadOnlySqlTransaction` and runs the whole request again on a
+  read/write cursor (`odoo/http.py:2274`) — but the controller's blanket
+  `except Exception` caught it first and turned it into "your link has
+  expired", hiding the real fault for a whole test cycle. Two rules out of it:
+  **say `readonly=False` on a route that writes**, and **never wrap
+  `authenticate()` in a bare `except Exception`**. The same reasoning is why
+  `_pre_dispatch` deliberately re-raises `ReadOnlySqlTransaction`: most pages in
+  this product are served on a read-only cursor, and swallowing it there would
+  silently lose the end of a support session.
+- **F63** (P6) **`invalidate_recordset()` DISCARDS a write that has not been
+  flushed.** `write()` puts the value in the cache and queues the flush;
+  `invalidate_recordset()` throws the cache away and re-reads the database — so
+  a test that writes, invalidates and then asserts reads exactly the value it
+  was asserting against, and the failure looks like the write never happened. It
+  cost two test cycles here. Use `env.flush_all()` when the point is to see the
+  write; `invalidate_recordset()` is for forgetting, not for refreshing.
+- **F64** (P6) **`assertRaises` takes a savepoint and rolls it back.**
+  `odoo.tests.common.BaseCase` documents it as "clears the environment upon
+  failure", which is right for the usual case and wrong whenever the whole point
+  of the refusal is that it LEAVES SOMETHING BEHIND — here, a refused support
+  link marked on the customer's own record. Wrapped in `assertRaises` the row
+  went back to `issued` twice before it was noticed. Catch the exception by hand
+  (`try/except … else: self.fail(...)`) whenever the side effect is the subject.
+- **F65** (P6) **`HttpCase` owns the session cookie, so a login performed inside
+  a CONTROLLER is ignored by every later request in the test.** The harness pins
+  `session_id` on `domain=''` in `setUp`; the server then sets its own cookie for
+  `domain='127.0.0.1'`, the pinned one is sent first and wins, and every
+  following request arrives signed out — which looks exactly like a broken login
+  seam. The framework's own comment inside `authenticate()` describes the trap.
+  Build the session the harness's way (`session_store.new()` + `session_token =
+  security.compute_session_token(...)` + re-point the opener) when the test is
+  about what happens AFTER somebody is in; test the door itself separately.
+  Related, and the second half of F13: `--db-filter=.*` gets a test client past
+  the hostname rule and then leaves five databases matching and none chosen, so
+  every request 404s with "No database is selected" — a signed-out `HttpCase`
+  must send `X-Odoo-Database`.
+- **F66** (P6) **A page load is thirty requests, and a route log that records
+  requests is a record of nothing.** The first version of the support trail
+  wrote down every stylesheet, avatar, translations bundle and websocket
+  upgrade; the two screens somebody actually opened were invisible among
+  thirty-three lines of `/web/image`. Only the backend addresses (`/bizapp`,
+  `/odoo`) are screens. Second half: **the request seam sees the address before
+  the page has a NAME**, so recording on the address alone left every line
+  reading "Payobook" — the browser-side bar reports again when `document.title`
+  changes, and a repeat of the same address fills the name in rather than being
+  deduplicated away.
+- **F67** (P6) **The fifteen-minute sweep is the wrong channel for something
+  that just happened.** Everything P3 mails is a fault that will still be a
+  fault in a quarter of an hour. A support session is an act, and a
+  thirty-minute session ended after two minutes is resolved before the sweep
+  ever looks — so the owner heard nothing at all about a session on a live
+  customer. The mail now goes on the press of the button, stamped only if it
+  actually went (F40), and skipped under `config['test_enable']` because the
+  suite's own attempts wrote five ERROR lines per run into the log the rollout
+  health gate reads (F25/F44).
+- **F68** (P6) **Not everything raised is a problem, and the alert email did not
+  know that.** `_mail_new_alerts` assumed `warning` was the floor: an `info`
+  alert went out as "Worth a look … One new thing needs you … Something needs
+  your attention" about a deliberate, routine act. That is how an inbox learns
+  to scroll past the one thing it must never scroll past. It now says "For
+  information / Worth knowing" when nothing worse is in the group. Related:
+  reading the record the instant the button is pressed finds a link *issued but
+  not yet used* — treating that as "nothing is running" closed the alert about a
+  session that had not begun (`pending` now covers `issued` as well as `active`).
+
