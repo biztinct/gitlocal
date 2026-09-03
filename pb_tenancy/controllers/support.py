@@ -25,6 +25,7 @@ import threading
 import time
 
 from odoo import _, http
+from odoo.exceptions import AccessDenied
 from odoo.http import request
 
 from ..models.support import token_digest
@@ -81,8 +82,18 @@ def _entry_path(env):
 class PbTenancySupport(http.Controller):
 
     # =================================================== the one-time link
+    #
+    # `readonly=False`, AND IT IS LOAD-BEARING. On this framework a route
+    # declared `auth='none'` is READ-ONLY by default — `odoo/http.py:947`,
+    # `default_mode = routing.get('readonly', default_auth == 'none')` — and
+    # signing somebody in writes: the last-login stamp, the login log, and this
+    # phase's own row. Without this the door answered
+    # "cannot execute INSERT in a read-only transaction", which the framework
+    # WOULD have retried on a read/write cursor had the handler below not
+    # caught it first. Saying what the route needs is better than relying on a
+    # retry to notice.
     @http.route('/pb_tenancy/support/<string:token>', type='http',
-                auth='none', sitemap=False, csrf=False)
+                auth='none', sitemap=False, csrf=False, readonly=False)
     def support_enter(self, token, **kw):
         ip = request.httprequest.environ.get('REMOTE_ADDR') or ''
         if not _rate_ok(ip):
@@ -97,13 +108,18 @@ class PbTenancySupport(http.Controller):
             request.session.authenticate(env, {
                 'type': 'pb_support_token', 'login': login, 'token': token,
             })
-        except Exception:                                    # noqa: BLE001
-            # EVERY failure looks the same from out here, on purpose: a page
+        except AccessDenied:
+            # EVERY refusal looks the same from out here, on purpose: a page
             # that distinguishes "expired" from "never existed" tells whoever
             # is knocking which of their guesses was close. The trail on the
             # customer's own page carries the real reason.
             _logger.info("pb_tenancy: a support link was not accepted (from %s)", ip)
             return self._gone()
+        # ANYTHING ELSE IS ALLOWED OUT. A blanket `except Exception` here turned
+        # a read-only-cursor error into "your link has expired" and hid the real
+        # fault for a whole test cycle — and it would also have swallowed the
+        # one exception the framework itself knows how to recover from
+        # (`ReadOnlySqlTransaction`, retried on a read/write cursor).
         row = request.env['pb.support.access'].sudo().search(
             [('token_hash', '=', token_digest(token))], limit=1)
         if row:

@@ -21,3 +21,5 @@ from . import test_features
 # FLEET P5 — plans, the meter, invoices and a customer's standing.
 from . import test_billing_rules
 from . import test_billing
+# FLEET P6 — support access from the platform's side.
+from . import test_support
