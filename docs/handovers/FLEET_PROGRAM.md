@@ -499,3 +499,89 @@ kit registry (shared). The phase report scores itself against this bar.
   is running. That is fine while exactly one rollout exists (F50 now enforces
   it) and is the reason a paused rollout must be called off rather than left
   lying about: a second one started later would restore the same copy again.
+- **F52** (P5, 2026-09-03) **`_mail_shell` was a NAME COLLISION on a shared
+  facade, and it broke a button two phases old.** `pb.tenants` is one model
+  assembled from six files; `alert_service.py` already had a `_mail_shell(heading,
+  intro, blocks, footer_note='')` and this phase's billing file defined its own
+  with a different signature. Python's MRO did what it is supposed to and the
+  platform's "Send a test email" button started failing with
+  `TypeError: got an unexpected keyword argument 'footer_note'` — in a file
+  nobody would have opened. **A helper added to a facade is added to every file
+  that shares it.** The phase's helpers are now `_billing_mail_shell` /
+  `_billing_mail_box`. It was caught only because the test scope named every
+  module the phase touched (F49's rule), not just the two it was writing.
+- **F53** (P5) **`request.env.user` is an EMPTY recordset on a route declared
+  `auth='none'`, even when somebody is signed in** — and `has_group()` on an
+  empty recordset raises `ValueError: Expected singleton: res.users()`. The
+  paused door caught it in its own fail-open handler and let EVERY request
+  through, silently, on every page. `/odoo` on this build is exactly such a
+  route (biz_deroute's redirect to `/bizapp`), so the door was open on the first
+  hop of every navigation. Read `request.env.uid or request.session.uid` and
+  browse the user explicitly. Second half of the lesson: a fail-open handler
+  must put the REASON in its log line, not only in a traceback — the line is the
+  only thing anybody greps, and here a silent failure means an open door.
+- **F54** (P5) **`<div class="article">` is what gives a printed document its
+  character set.** `ir_actions_report._prepare_html` hands wkhtmltopdf one file
+  per `article` div, each wrapped in `web.minimal_layout` — the only template
+  that carries `<meta charset="utf-8"/>`. A report with no `article` div falls
+  through to a fallback (`ir_actions_report.py:438`) that hands the printer a
+  bare fragment; the printer reads it as Latin-1, and every `₫` becomes `â‚«`
+  and every `—` becomes `â€"`. **It renders, it looks deliberate, and it goes
+  to the customer.** The invoice's page div is `class="article page"` with the
+  `data-oe-model`/`data-oe-id` attributes the standard layouts also set.
+- **F55** (P5) **A report with no `title` in its context is titled "Odoo
+  Report".** `web.report_layout` renders `<title t-esc="title or 'Odoo
+  Report'"/>`, and that string becomes the PDF's DOCUMENT title — what a PDF
+  viewer shows in its window and what the file's properties carry. It is a
+  user-visible string like any other (rail R7). `<t t-set="title">…</t>` before
+  the `t-call`. Related: a page that prints no header must also set
+  `data_report_margin_top` / `data_report_header_spacing`, or the paper format
+  reserves ~35 mm for a header that is not there.
+- **F56** (P5) **A cross-database write from OUTSIDE the server process is
+  invisible to it.** `_tenant_env` committed and stopped. The database-wide
+  invalidation sequence is bumped only by `Registry.signal_changes()`, which the
+  framework calls at the end of a request or a cron and which nothing here
+  called. It went unnoticed through P2A, P2B and P4 because the cockpit runs
+  INSIDE the server: the tenant registry it clears IS the object serving that
+  tenant's requests. Drive the same facade from an `odoo-bin shell` — as every
+  live validation does — and the platform says a customer is un-paused, their
+  database agrees in SQL, and their people go on meeting the locked door.
+  `_tenant_env` now calls `reg.signal_changes()` after the commit. This also
+  makes the whole facade correct the day this box gains a second worker.
+- **F57** (P5) **The kit's dialog scrim is `pbim-modal-scrim`, with ONE hyphen
+  — the only part of that primitive that is not BEM** (`__head`, `__body`,
+  `__foot`, `__x`, `__sp` all are). Written the BEM way it matches no rule at
+  all, so the dialog renders INLINE, in the flow of the page, with no overlay,
+  no centring and no error. All five dialogs this phase added had it. Second
+  half: `.pbim-modal__body` carries no padding of its own, so every dialog
+  supplies it or its content runs flush to both edges under an inset title.
+- **F58** (P5) **`t-att-x` bound to a JavaScript `true` renders the attribute
+  with an EMPTY value.** `t-att-aria-pressed="autoSuspendOn"` therefore never
+  matches `[aria-pressed="true"]`, and the auto-suspend switch sat grey and
+  motionless beside a paragraph in red saying it was on. A control that
+  disagrees with its own explanation is worse than no control. Bind the string:
+  `t-att-aria-pressed="flag ? 'true' : 'false'"`.
+- **F59** (P5) **A backup taken from a shell with the wrong `HOME` contains no
+  file store, and still says "done".** There is no `data_dir` in
+  `/etc/odoo-server.conf`, so the file store is `$HOME/.local/share/Odoo` and
+  the service's `HOME` is `/odoo`. An `odoo-bin` run started with
+  `--setenv=HOME=/tmp` (which a detached `systemd-run` needs for other reasons)
+  writes and reads a DIFFERENT, empty file store: `backup_now` produced a 9 MB
+  archive with 5 files in it beside a real one of 219 MB with 1,280, and
+  recorded it as a good backup. It was deleted. **Every `odoo-bin` invocation
+  that touches attachments — a backup, a restore, a report — must run with
+  `HOME=/odoo`**, and a suspiciously small backup is the symptom to look for.
+- **F60** (P5) **A plan priced by company size must be created WITH its bands,
+  in one write.** The model refuses a `flat_tier` plan with no bands, which is
+  correct — and a data file that creates the plan and then adds
+  `pb.plan.tier` records fails that constraint in between and takes the whole
+  upgrade with it. The seed uses an inline `tier_ids` eval; `plan_save` builds
+  `[(5, 0, 0)] + [(0, 0, …)]` into the same write.
+- **F61** (P5) **"Payslips produced" is `state NOT IN ('draft', 'cancel')`, and
+  on the one live customer that is nought.** A draft payslip is arithmetic
+  somebody is still doing and a rejected one never happened; charging for either
+  is charging for work the customer did not get. The four remaining states
+  (`verify`, `level1`, `level2`, `done`) all count. Measured consequence on this
+  fleet: AB Mauri's 36 payslips are ALL drafts, so a per-payslip plan invoices
+  them ₫0 — which is the honest answer and the reason the live validation put
+  them on the flat-tier plan instead (owner decision, see the P5 report).
