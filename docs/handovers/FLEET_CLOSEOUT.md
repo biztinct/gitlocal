@@ -26,15 +26,14 @@ green across the touched modules (517 at P5, the largest run). Commits: **51 unp
 
 ## Owner decisions open (nothing here is done without you)
 
-1. **Push** the 51 commits on `19.1`? Nothing has been pushed at any point.
-2. **The validator account.** `igc1.validator` on the master is a system administrator with password
-   `FleetP1#Validate2026`, set in P1 for browser checks and used by every phase. **Change the
-   password or archive the account now that the program is closed.**
-3. **Static IP.** Confirm in the Lightsail console (Networking) that `3.25.57.42` is a *Static IP*
-   attached to the instance. If not, the resize runbook's first step is to make it one — otherwise
-   a resize changes the address and breaks every customer URL.
-4. **Emails received?** Test alerts, the morning summary and invoice PB-2026-08-0001 were sent to
-   `ash@biztinct.com`; the server saw Gmail accept them. Only you can confirm arrival.
+1. ~~Push~~ **DONE 2026-09-04** — `19.1` pushed (52 commits).
+2. ~~The validator account~~ **DONE 2026-09-04** — `igc1.validator` archived, password scrambled,
+   login with the old password proven refused; one active system administrator remains.
+3. ~~Static IP~~ **DONE 2026-09-04** — the owner attached a Lightsail static IP; the address is now
+   **`3.104.113.197`** (was `3.25.57.42`), DNS `@`/`*` repointed at Mat Bao, ssh alias updated.
+   Nothing on the box named the old address (nginx routes by `server_name`, the cockpit resolves the
+   domain), so no server change was needed.
+4. ~~Emails received?~~ **CONFIRMED by the owner 2026-09-04.**
 5. **AB Mauri's plan** is **Enterprise** (Growth would bill ₫0 — all 36 payslips are drafts;
    Starter's 50-employee limit would lock a 153-employee customer). Confirm or change.
 6. **Prices, VAT, bank details.** Seeded prices are placeholders (Starter 30,000 ₫/employee,
