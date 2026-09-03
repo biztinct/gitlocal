@@ -97,6 +97,11 @@ T_TRIAL_ENDS = 'pb_tenancy.trial_ends'
 T_PLAN_NAME = 'pb_tenancy.plan_name'
 T_SEAT_LIMIT = 'pb_tenancy.seat_limit'
 T_INVOICES = 'pb_tenancy.invoices'
+#: The one account that still gets in while a customer is paused. Mirrored onto
+#: the customer's database so their own door can check it without asking us —
+#: a locked door that needs the platform to be reachable is a locked door that
+#: locks the platform's own engineer out on the day the platform is broken.
+T_RECOVERY = 'pb_tenancy.recovery_login'
 
 
 # =============================================================================

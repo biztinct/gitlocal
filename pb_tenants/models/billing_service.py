@@ -37,7 +37,8 @@ from .billing_rules import (
     DEFAULT_DUE_DAYS, DEFAULT_REMINDER_DAYS, DEFAULT_RETENTION_DAYS,
     DEFAULT_SUSPEND_AFTER_DAYS, DEFAULT_TRIAL_DAYS, PRICING, PRICING_LABEL,
     SERVING_STATES, T_ACCESS, T_ACCESS_TEXT, T_INVOICES, T_PLAN_NAME,
-    T_SEAT_LIMIT, T_TRIAL_ENDS, TRIAL_GRACE_DAYS, access_payload, due_date_for,
+    T_RECOVERY, T_SEAT_LIMIT, T_TRIAL_ENDS, TRIAL_GRACE_DAYS, access_payload,
+    due_date_for,
     invoice_number, invoice_totals, money, month_closed, month_end,
     month_start, next_state, period_label, prev_month, price_for, qty_text,
     seat_verdict, state_transition, trial_phase, trial_sentence,
@@ -518,7 +519,15 @@ class PbTenantsBilling(models.AbstractModel):
                     'reason': self._plain_smtp(mail.failure_reason or '')}
         return {'ok': True, 'to': address, 'reason': '', 'mail_id': mail.id}
 
-    def _mail_shell(self, heading, lead, blocks, tenant=None):
+    # NAMED `_billing_mail_shell`, NOT `_mail_shell`, AND THE NAME IS THE
+    # LESSON. `alert_service.py` already has a `_mail_shell` on this same
+    # facade with a different signature, and the first version of this file
+    # called its own helper by that name — which silently REPLACED the
+    # platform's alert-email builder and broke the "Send a test email" button
+    # with a TypeError nobody would have looked for here. One model, one
+    # namespace: a helper added to a facade is a helper added to every file
+    # that shares it.
+    def _billing_mail_shell(self, heading, lead, blocks, tenant=None):
         """One house style for every customer-facing email in this phase.
 
         Brand tokens, no gradients, no images, and NOT ONE MENTION of the
@@ -541,7 +550,7 @@ class PbTenantsBilling(models.AbstractModel):
             '</div>' % (heading, lead, body))
 
     @staticmethod
-    def _mail_box(rows):
+    def _billing_mail_box(rows):
         """A small table of label/value pairs, as an email can render it."""
         cells = ''.join(
             '<tr><td style="padding:5px 12px 5px 0;color:#6B6880;font-size:14px">'
@@ -576,13 +585,13 @@ class PbTenantsBilling(models.AbstractModel):
                 (_("Due by"), invoice.due_date.isoformat()
                  if invoice.due_date else '—')]
         bank = (self._billing_param('pb_tenants.bank_details', '') or '').strip()
-        blocks = [self._mail_box(rows)]
+        blocks = [self._billing_mail_box(rows)]
         if bank:
             blocks.append(
                 '<div style="border-left:3px solid #5A4BB0;padding:6px 0 6px 12px;'
                 'margin:0 0 14px;font-size:14px;line-height:1.6;white-space:'
                 'pre-wrap">%s</div>' % bank)
-        body = self._mail_shell(
+        body = self._billing_mail_shell(
             _("Your Payobook invoice for %s") % period_label(invoice.period),
             _("Here is your invoice for %(month)s. The PDF is attached, and "
               "it is also in Payobook under Settings → Plan &amp; usage.",
@@ -715,7 +724,9 @@ class PbTenantsBilling(models.AbstractModel):
         payload = {T_ACCESS: vals['access'], T_ACCESS_TEXT: vals['access_text'],
                    T_TRIAL_ENDS: vals['trial_ends'],
                    T_PLAN_NAME: vals['plan_name'],
-                   T_SEAT_LIMIT: vals['seat_limit']}
+                   T_SEAT_LIMIT: vals['seat_limit'],
+                   T_RECOVERY: self._rails_param(
+                       'pb_tenants.break_glass_login')}
         try:
             res = self.push_tenancy(tenant.id, payload)
         except UserError as e:
@@ -991,13 +1002,13 @@ class PbTenantsBilling(models.AbstractModel):
                 (_("Was due"), invoice.due_date.isoformat()
                  if invoice.due_date else '—')]
         bank = (self._billing_param('pb_tenants.bank_details', '') or '').strip()
-        blocks = [self._mail_box(rows)]
+        blocks = [self._billing_mail_box(rows)]
         if bank:
             blocks.append(
                 '<div style="border-left:3px solid #5A4BB0;padding:6px 0 6px 12px;'
                 'margin:0 0 14px;font-size:14px;line-height:1.6;white-space:'
                 'pre-wrap">%s</div>' % bank)
-        body = self._mail_shell(
+        body = self._billing_mail_shell(
             _("A reminder about invoice %s") % invoice.number,
             _("Invoice %(n)s is %(d)s day(s) past its due date. If it has "
               "already been paid, please ignore this — and tell us, so we can "
@@ -1107,7 +1118,7 @@ class PbTenantsBilling(models.AbstractModel):
             lead = _("Everything you have entered stays exactly where it is. "
                      "Reply to this message and we will move you onto a plan "
                      "before it runs out.")
-        body = self._mail_shell(heading, lead, [self._mail_box([
+        body = self._billing_mail_shell(heading, lead, [self._billing_mail_box([
             (_("Trial ends"), tenant.trial_ends.isoformat()
              if tenant.trial_ends else '—'),
             (_("Plan"), tenant.plan_id.name or _("Not chosen yet")),
@@ -1305,6 +1316,24 @@ class PbTenantsBilling(models.AbstractModel):
             raise UserError(_("A plan needs a name people can read."))
         if 'pricing' in clean and clean['pricing'] not in PRICING:
             raise UserError(_("Pick how the plan charges."))
+        # THE BANDS GO IN THE SAME WRITE AS THE PRICE STRUCTURE. A plan saved
+        # as "one price by company size" and then given its bands afterwards
+        # fails its own constraint in between — which is correct, and which is
+        # why the two halves travel together.
+        tiers = (vals or {}).get('tiers')
+        if tiers is not None:
+            rows = []
+            for tier in tiers:
+                try:
+                    rows.append((0, 0, {'up_to': int(tier.get('up_to') or 0),
+                                        'price': float(tier.get('price') or 0.0)}))
+                except (TypeError, ValueError):
+                    raise UserError(_("A size band needs a number of "
+                                      "employees and a price."))
+            clean['tier_ids'] = [(5, 0, 0)] + rows
+        features = (vals or {}).get('feature_ids')
+        if features is not None:
+            clean['feature_ids'] = [(6, 0, [int(f) for f in features])]
         Plan = self.env['pb.plan'].sudo()
         if plan_id:
             plan = Plan.browse(int(plan_id)).exists()
@@ -1318,21 +1347,6 @@ class PbTenantsBilling(models.AbstractModel):
                 r'[^a-z0-9_]+', '_', clean['name'].lower()).strip('_') or 'plan')
             clean.setdefault('currency_id', self.env.company.currency_id.id)
             plan = Plan.create(clean)
-        tiers = (vals or {}).get('tiers')
-        if tiers is not None:
-            plan.tier_ids.unlink()
-            for tier in tiers:
-                try:
-                    up_to = int(tier.get('up_to') or 0)
-                    price = float(tier.get('price') or 0.0)
-                except (TypeError, ValueError):
-                    raise UserError(_("A size band needs a number of "
-                                      "employees and a price."))
-                self.env['pb.plan.tier'].sudo().create({
-                    'plan_id': plan.id, 'up_to': up_to, 'price': price})
-        features = (vals or {}).get('feature_ids')
-        if features is not None:
-            plan.write({'feature_ids': [(6, 0, [int(f) for f in features])]})
         # A plan's included features moved, so every customer on it is brought
         # back in line — still rail R1, somebody pressed Save.
         for tenant in plan.tenant_ids.filtered(

@@ -43,6 +43,16 @@
         <field name="trial_days">14</field>
     </record>
 
+    <!-- The size bands are written INLINE, in the same create as the plan.
+         A separate `pb.plan.tier` record after it fails the plan's own
+         constraint ("a plan priced by company size needs at least one band")
+         at the moment the plan is created with none, and takes the whole
+         upgrade with it. Same reason `plan_save` builds its bands into the
+         create rather than adding them afterwards.
+
+         OWNER TO CONFIRM: every band below. The top band is open-ended by
+         design — a company that hires its 2,001st person is charged the top
+         band rather than nothing at all. -->
     <record id="plan_enterprise" model="pb.plan">
         <field name="name">Enterprise</field>
         <field name="code">enterprise</field>
@@ -54,25 +64,10 @@
         <field name="employee_limit">0</field>
         <field name="vat_pct">0</field>
         <field name="trial_days">30</field>
-    </record>
-
-    <!-- OWNER TO CONFIRM: every band below. The top band is open-ended by
-         design — a company that hires its 2,001st person is charged the top
-         band rather than nothing at all. -->
-    <record id="plan_enterprise_tier_1" model="pb.plan.tier">
-        <field name="plan_id" ref="plan_enterprise"/>
-        <field name="up_to">200</field>
-        <field name="price">6000000</field>
-    </record>
-    <record id="plan_enterprise_tier_2" model="pb.plan.tier">
-        <field name="plan_id" ref="plan_enterprise"/>
-        <field name="up_to">500</field>
-        <field name="price">12000000</field>
-    </record>
-    <record id="plan_enterprise_tier_3" model="pb.plan.tier">
-        <field name="plan_id" ref="plan_enterprise"/>
-        <field name="up_to">2000</field>
-        <field name="price">30000000</field>
+        <field name="tier_ids" eval="[(5, 0, 0),
+            (0, 0, {'up_to': 200, 'price': 6000000}),
+            (0, 0, {'up_to': 500, 'price': 12000000}),
+            (0, 0, {'up_to': 2000, 'price': 30000000})]"/>
     </record>
 
 </odoo>

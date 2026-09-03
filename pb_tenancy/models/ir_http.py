@@ -62,13 +62,17 @@ class IrHttp(models.AbstractModel):
             cls._pb_paused_door(rule)
         except (werkzeug.exceptions.HTTPException, AccessDenied):
             raise
-        except Exception:                                    # noqa: BLE001
+        except Exception as exc:                             # noqa: BLE001
             # FAIL OPEN, ALWAYS. A broken settings row, a half-installed
             # module, a database with no `pb.tenancy` yet — none of those may
             # be allowed to shut a payroll office out of its own data. The
             # only thing that closes this door is the platform saying so.
-            _logger.warning("pb_tenancy: could not read the access state; "
-                            "letting the request through", exc_info=True)
+            #
+            # THE REASON IS IN THE MESSAGE, not only in the traceback: this is
+            # the one place where a silent failure means an open door, and the
+            # line has to be greppable on a live box.
+            _logger.warning("pb_tenancy: could not read the access state (%r); "
+                            "letting the request through", exc, exc_info=True)
 
     @classmethod
     def _pb_paused_door(cls, rule):
@@ -84,7 +88,16 @@ class IrHttp(models.AbstractModel):
         administrator group, which on a customer's database is normally nobody
         at all (the tenant-admin rails see to that).
         """
-        if not request or not request.session.uid:
+        if not request:
+            return
+        # `request.env.uid` FIRST, AND `request.session.uid` ONLY AS A FALLBACK.
+        # A route declared `auth='none'` runs with an environment whose uid is
+        # None even when somebody is signed in, so `env.user` is an EMPTY
+        # recordset and `has_group()` raises "Expected singleton" — which the
+        # handler above swallowed, leaving the door open on every request.
+        # The session still knows who it is, so the user is browsed explicitly.
+        uid = request.env.uid or request.session.uid
+        if not uid:
             return
         path = request.httprequest.path or ''
         if path.startswith(OPEN_PREFIXES):
@@ -95,7 +108,9 @@ class IrHttp(models.AbstractModel):
         state = env['pb.tenancy'].sudo().access_state()
         if state['access'] != 'suspended':
             return
-        user = env.user
+        user = env['res.users'].sudo().browse(uid).exists()
+        if not user:
+            return
         recovery = env['pb.tenancy'].sudo().recovery_login()
         if recovery and (user.login or '').strip().lower() == recovery:
             return
