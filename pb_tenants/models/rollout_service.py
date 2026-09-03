@@ -341,6 +341,22 @@ class PbTenantsRollout(models.AbstractModel):
         than in an hour's time.
         """
         self._require_admin()
+        # ONE PERSON, TWICE, IS TWO ROLLOUTS — AND THEY FIGHT OVER THE PRACTICE
+        # COPY. "Release X is already going out" is checked below, but this
+        # whole call runs the practice run before it commits, which takes a
+        # minute and a half. A second press inside that minute cannot see the
+        # first rollout at all, writes a second one, and the two then restore
+        # and drop the same throwaway database underneath each other: the first
+        # dies with "connection already closed", the second with "could not
+        # serialize access", and both stop with nothing having reached a
+        # customer. Seen exactly that way on the live platform, 2026-09-03.
+        #
+        # This lock is held to the end of the transaction, so the second press
+        # waits for the first to finish and then gets the refusal it should
+        # have had. Advisory rather than a row lock: there is no row to lock
+        # until the very thing being guarded has happened.
+        self.env.cr.execute(
+            "SELECT pg_advisory_xact_lock(hashtext('pb_tenants.rollout_start'))")
         Release = self.env['pb.release'].sudo()
         rel = (Release.browse(int(release_id)).exists() if release_id
                else Release.current())
