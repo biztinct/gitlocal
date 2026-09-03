@@ -186,8 +186,8 @@ from .feature_rules import (  # noqa: E402
 # searches SERVING_STATES; the places that genuinely mean "paying and running"
 # say so on their own line.
 from .billing_rules import (
-    SERVING_STATES, T_ACCESS, T_ACCESS_TEXT, T_PLAN_NAME, T_SEAT_LIMIT,
-    T_TRIAL_ENDS,
+    SERVING_STATES, T_ACCESS, T_ACCESS_TEXT, T_PLAN_NAME, T_RECOVERY,
+    T_SEAT_LIMIT, T_TRIAL_ENDS,
 )
 
 #: The module a customer's database needs before the platform can say anything
@@ -455,6 +455,10 @@ class PbTenants(models.AbstractModel):
             # much of it is late. Two searches of our OWN invoice table — the
             # fleet screen still opens without touching a customer.
             'billing': self._billing_head(),
+            # FLEET P5. The plans the New-customer wizard offers. One read of
+            # our own table; the wizard cannot ask for them separately because
+            # it opens on the fleet data it already has.
+            'plans': self.env['pb.plan'].sudo().catalogue(),
         }
 
     def _billing_head(self):
@@ -734,13 +738,26 @@ class PbTenants(models.AbstractModel):
                 "This machine cannot safely hold another customer. Resize it "
                 "first — the runbook is one page: docs/SAAS_RESIZE_RUNBOOK.md.\n\n%s",
                 cap['reason']))
-        tenant = self.env['pb.tenant'].sudo().create({
+        # FLEET P5. A customer is created ON a plan. A customer with no plan
+        # cannot be invoiced, has no employee limit and gets whatever the
+        # feature catalogue's defaults happen to be — and the moment to notice
+        # that is now, not at the end of the month.
+        plan = self.env['pb.plan'].sudo().browse(
+            int(form.get('plan_id') or 0)).exists()
+        if not plan:
+            raise UserError(_('Pick a plan for this customer.'))
+        vals = {
             'name': name, 'slug': slug, 'state': 'provisioning',
             'admin_name': (form.get('admin_name') or '').strip(),
             'admin_email': email,
             'country_code': (form.get('country_code') or '').strip().upper()[:2],
             'provision_log': '[]',
-        })
+            'plan_id': plan.id,
+        }
+        if form.get('trial'):
+            vals['trial_ends'] = fields.Date.context_today(self) + timedelta(
+                days=plan.trial_days or 14)
+        tenant = self.env['pb.tenant'].sudo().create(vals)
         self._log_line(tenant, 'start', 'Tenant record created for %s (%s)' % (name, self._tenant_url(slug)))
         return {'tenant_id': tenant.id,
                 'steps': [{'key': k, 'label': l} for k, l in PROVISION_STEPS]}
@@ -773,7 +790,14 @@ class PbTenants(models.AbstractModel):
                 extra = self._step_verify(tenant, say)
             else:
                 raise UserError(_('Unknown provisioning step: %s') % step)
-            tenant.write({'last_error': False, 'state': 'live' if step == 'verify' else 'provisioning'})
+            # FLEET P5. A customer created as a trial goes LIVE as a trial —
+            # promoting them to `live` here and then having somebody set them
+            # back would be a customer who was a paying customer for a minute.
+            if step == 'verify':
+                done_state = 'trial' if tenant.trial_ends else 'live'
+            else:
+                done_state = 'provisioning'
+            tenant.write({'last_error': False, 'state': done_state})
             return {'ok': True, 'ms': int((time.time() - t0) * 1000), 'log': log, **extra}
         except Exception as e:
             _logger.exception("Provisioning step %s failed for %s", step, tenant.slug)
@@ -891,6 +915,8 @@ class PbTenants(models.AbstractModel):
                 icp.set_param(T_TRIAL_ENDS, access['trial_ends'])
                 icp.set_param(T_PLAN_NAME, access['plan_name'])
                 icp.set_param(T_SEAT_LIMIT, access['seat_limit'])
+                icp.set_param(T_RECOVERY, self._rails_param(
+                    'pb_tenants.break_glass_login'))
                 tenant.sudo().write({'access_pushed_at': fields.Datetime.now()})
                 if tenant.plan_id:
                     say('Plan set: %s%s.' % (

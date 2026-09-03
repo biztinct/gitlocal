@@ -831,3 +831,398 @@
     .tnx .tnx-railitem { animation: none; }
     .tnx .tnx-fcell, .tnx .tnx-fknob { transition: none; }
 }
+
+// =============================================================================
+// FLEET P5 — Billing: the month strip, the customer table, the plans, and the
+// two dialogs that decide what a customer is charged.
+//
+// EVERY RULE BELOW IS WRITTEN FROM `.tnx` OUTWARDS, at the root of the file.
+// Ledger F35: this stylesheet has more than one root block, and a rule
+// appended "at the end" without its own scope lands inside whichever block
+// happened to be last and matches nothing at all — a bar that shipped 0 px
+// tall with no error anywhere. Ledger F37: any state colour on a shared-kit
+// control carries `.pbim` on the front, or the kit's three-class rule wins.
+// =============================================================================
+
+.tnx .tnx-bill { display: flex; flex-direction: column; gap: 14px; }
+
+.tnx .tnx-billchip.bad {
+    border-color: #F3CBD6; color: #DC2668;
+}
+.pbim .tnx-billchip.bad .tnx-count { background: #DC2668; color: #fff; }
+
+// ----------------------------------------------------------- the month strip
+.tnx .tnx-strip {
+    display: flex; align-items: stretch; gap: 22px; padding: 14px 18px;
+    flex-wrap: wrap;
+}
+.tnx .tnx-strip-months { display: flex; align-items: flex-end; gap: 5px; }
+.tnx .tnx-month {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border: 0; background: none; cursor: pointer; padding: 4px 3px 2px;
+    border-radius: 8px; position: relative;
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+
+    .tnx-month-bar {
+        width: 20px; height: 42px; border-radius: 5px;
+        background: var(--pbim-line-soft, #F1F0F7);
+        display: flex; align-items: flex-end; overflow: hidden;
+        i {
+            display: block; width: 100%;
+            background: var(--pbim-primary, #5A4BB0); opacity: .34;
+            border-radius: 5px;
+            transition: height .5s cubic-bezier(.2,.7,.3,1);
+        }
+    }
+    .tnx-month-l { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    .tnx-month-n {
+        position: absolute; top: -4px; right: -2px;
+        font-size: 9px; font-weight: 700; line-height: 1;
+        padding: 2px 4px; border-radius: 20px;
+        background: var(--pbim-primary, #5A4BB0); color: #fff;
+    }
+    &.on {
+        background: var(--pbim-soft, #EDEAF8);
+        .tnx-month-bar i { opacity: 1; }
+        .tnx-month-l { color: var(--pbim-primary, #5A4BB0); font-weight: 700; }
+    }
+    &.late .tnx-month-n { background: #DC2668; }
+}
+
+.tnx .tnx-strip-now {
+    display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    flex: 1; min-width: 240px;
+}
+.tnx .tnx-strip-tt {
+    display: flex; align-items: center; gap: 9px;
+    b { font-size: 18px; letter-spacing: -.3px; }
+}
+.tnx .tnx-strip-figs { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.tnx .tnx-strip-due {
+    display: flex; flex-direction: column;
+    b { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-strip-late {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #DC2668; font-weight: 700; font-size: 13px;
+}
+.tnx .tnx-strip-clear {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #2E7D4F; font-weight: 600; font-size: 13px;
+}
+
+// -------------------------------------------------------- the customer table
+.tnx .tnx-billtbl { padding: 0; overflow-x: auto; }
+.tnx .tnx-billrow {
+    display: grid;
+    grid-template-columns: 190px 120px 110px 90px 110px 170px minmax(230px, 1fr);
+    align-items: center; gap: 12px; padding: 12px 18px; min-width: 1080px;
+    border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    &:last-child { border-bottom: 0; }
+    &:hover:not(.head) { background: var(--pbim-hover, #FAF9FD); }
+
+    &.head {
+        font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); font-weight: 700;
+        background: var(--pbim-hover, #FAF9FD);
+    }
+}
+.tnx .tnx-bill-cust {
+    display: flex; flex-direction: column; gap: 3px; min-width: 0;
+    b { font-size: 14px; }
+    small { display: flex; align-items: center; gap: 6px; font-size: 11px;
+            color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-bill-plan { font-size: 13px; }
+.tnx .tnx-bill-noplan { color: #D97706; font-weight: 600; cursor: pointer;
+                        text-decoration: underline; }
+.tnx .tnx-bill-seat {
+    display: flex; flex-direction: column;
+    b { font-size: 15px; font-weight: 700; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    &.warn b { color: #D97706; }
+    &.bad  b { color: #DC2668; }
+}
+.tnx .tnx-bill-slips { font-size: 15px; font-weight: 600; }
+.tnx .tnx-bill-spark {
+    svg { width: 100%; height: 22px; display: block; }
+    polyline { fill: none; stroke: var(--pbim-primary, #5A4BB0);
+               stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round;
+               vector-effect: non-scaling-stroke; }
+}
+.tnx .tnx-bill-inv {
+    display: flex; flex-direction: column; gap: 3px;
+    b { font-size: 14px; font-weight: 700; }
+    small { display: flex; align-items: center; gap: 5px; font-size: 11px;
+            color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-bill-none { color: var(--pbim-muted, #64748B); font-size: 12px; }
+.tnx .tnx-billacts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+// ---------------------------------------------------------- what was raised
+.tnx .tnx-raised { padding: 14px 18px; }
+.tnx .tnx-raised-h {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 9px;
+    .tnx-raised-ic { color: #2E7D4F; display: flex; }
+    b { font-size: 14px; }
+    button { margin-left: auto; }
+}
+.tnx .tnx-raised-row, .tnx .tnx-raised-skip {
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+    padding: 5px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    .tnx-raised-amt { margin-left: auto; font-weight: 700; }
+}
+.tnx .tnx-raised-skip { color: var(--pbim-muted, #64748B); }
+
+// ------------------------------------------------------------------ the plans
+.tnx .tnx-plans {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px; align-items: start;
+}
+.tnx .tnx-plan {
+    display: flex; flex-direction: column; gap: 10px; padding: 17px 19px;
+    &.off { opacity: .62; }
+}
+.tnx .tnx-plan-h {
+    display: flex; align-items: flex-start; gap: 12px;
+    b { font-size: 17px; letter-spacing: -.2px; }
+    .tnx-plan-blurb { display: block; font-size: 12.5px;
+                      color: var(--pbim-muted, #64748B); margin-top: 2px; }
+    .tnx-plan-price { margin-left: auto; text-align: right; font-size: 13px;
+                      font-weight: 700; color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-plan-facts {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px;
+    color: var(--pbim-muted, #64748B);
+    span { display: inline-flex; align-items: center; gap: 5px; }
+}
+.tnx .tnx-plan-tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.tnx .tnx-plan-tier {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 20px;
+    background: var(--pbim-hover, #FAF9FD);
+    border: 1px solid var(--pbim-line, #E6E4F0);
+}
+.tnx .tnx-plan-feats { display: flex; flex-wrap: wrap; gap: 5px; }
+.tnx .tnx-plan-feat {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 20px;
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary, #5A4BB0); font-weight: 600;
+}
+.tnx .tnx-plan-acts { display: flex; gap: 7px; margin-top: 2px; }
+
+// ------------------------------------------------------- the preview dialog
+.tnx .tnx-previewbox { width: 860px; max-width: 94vw; }
+.tnx .tnx-planbox   { width: 780px; max-width: 94vw; }
+.tnx .tnx-billsetbox { width: 720px; max-width: 94vw; }
+.tnx .tnx-smallbox  { width: 470px; max-width: 94vw; }
+
+.tnx .tnx-prev-warn {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 14px; border-radius: 11px; margin-bottom: 14px;
+    border: 1px solid #F6E4C8; background: #FDF6EC; color: #7C4A05;
+    font-size: 13px; line-height: 1.55;
+}
+.tnx .tnx-prev-sum {
+    display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap;
+    padding-bottom: 11px; margin-bottom: 6px;
+    border-bottom: 1px solid var(--pbim-line, #E6E4F0);
+    font-size: 13px;
+    .tnx-prev-tot b { font-size: 19px; font-weight: 800; letter-spacing: -.4px; }
+    .tnx-prev-skipn { color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-prev-row {
+    padding: 11px 0; border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    animation: tnx-previn .26s cubic-bezier(.2,.7,.3,1) both;
+    &.skipped { opacity: .68; }
+    &:last-child { border-bottom: 0; }
+}
+.tnx .tnx-prev-h {
+    display: flex; align-items: baseline; gap: 10px;
+    b { font-size: 14px; }
+    .tnx-prev-plan { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    .tnx-prev-amt { font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+    .tnx-prev-why { font-size: 12.5px; color: var(--pbim-muted, #64748B);
+                    text-align: right; max-width: 60%; }
+}
+.tnx .tnx-prev-lines { margin-top: 7px; }
+.tnx .tnx-prev-line {
+    display: grid; grid-template-columns: minmax(0,1fr) 190px 130px;
+    gap: 10px; align-items: baseline; padding: 4px 0 4px 14px;
+    border-left: 2px solid var(--pbim-line, #E6E4F0);
+    font-size: 12.5px;
+    .tnx-prev-lab small { display: block; font-size: 11px;
+                          color: var(--pbim-muted, #64748B); }
+    .tnx-prev-q { color: var(--pbim-muted, #64748B); text-align: right; }
+    .tnx-prev-a { text-align: right; font-weight: 700; }
+    &.vat { color: var(--pbim-muted, #64748B); }
+}
+@keyframes tnx-previn {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: none; }
+}
+
+// ------------------------------------------------------- the plan editor
+.tnx .tnx-planform {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 11px; margin-bottom: 13px;
+}
+.tnx .tnx-planfield { display: flex; flex-direction: column; gap: 4px;
+                      &.wide { grid-column: 1 / -1; } }
+.tnx .tnx-priceseg { margin-bottom: 13px; flex-wrap: wrap; }
+.tnx .tnx-tiers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 13px; }
+.tnx .tnx-tier {
+    display: flex; align-items: center; gap: 8px;
+    .tnx-tier-l { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    .tnx-tier-n { width: 100px; }
+    .tnx-tier-p { width: 150px; }
+}
+.tnx .tnx-tier-add { display: flex; align-items: center; gap: 10px;
+                     .tnx-tier-cur { width: 120px; } }
+.tnx .tnx-planfeats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.tnx .tnx-planfeat {
+    font-size: 12px; padding: 5px 11px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-surface, #fff); color: var(--pbim-muted, #64748B);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+    &.on {
+        background: var(--pbim-soft, #EDEAF8);
+        border-color: var(--pbim-primary, #5A4BB0);
+        color: var(--pbim-primary, #5A4BB0); font-weight: 700;
+    }
+}
+.tnx .tnx-ta { resize: vertical; font-family: inherit; }
+.tnx .tnx-setsec { margin: 16px 0 8px; font-size: 13px; }
+
+// --------------------------------- the one switch that needs a paragraph
+.tnx .tnx-autosus {
+    display: flex; gap: 13px; align-items: flex-start;
+    padding: 13px 16px; border-radius: 12px; margin-bottom: 16px;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-hover, #FAF9FD);
+    &.on { border-color: #F3CBD6; background: #FDF1F5; }
+
+    .tnx-autosus-tx { display: flex; flex-direction: column; gap: 5px;
+                      b { font-size: 13.5px; }
+                      span { font-size: 12.5px; line-height: 1.6;
+                             color: var(--pbim-muted, #64748B); } }
+    .tnx-autosus-red { color: #DC2668 !important; font-weight: 600; }
+}
+.tnx .tnx-switch {
+    flex: 0 0 42px; width: 42px; height: 24px; border-radius: 20px;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-line-soft, #F1F0F7); cursor: pointer;
+    padding: 0; position: relative; margin-top: 1px;
+    transition: background .18s ease, border-color .18s ease;
+    i {
+        position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+        border-radius: 50%; background: #fff; display: block;
+        box-shadow: 0 1px 3px rgba(30,27,46,.28);
+        transition: transform .18s cubic-bezier(.2,.7,.3,1);
+    }
+    &[aria-pressed="true"] {
+        background: #DC2668; border-color: #DC2668;
+        i { transform: translateX(18px); }
+    }
+}
+
+// ============================================================ one customer's
+// plan tab
+.tnx .tnx-standing {
+    display: flex; align-items: center; gap: 13px; padding: 15px 18px;
+    margin-bottom: 14px; flex-wrap: wrap;
+    .tnx-standing-ic { color: #2E7D4F; display: flex; }
+    .tnx-standing-tx { display: flex; flex-direction: column; gap: 3px;
+                       b { font-size: 15px; }
+                       span { font-size: 12.5px; line-height: 1.55;
+                              color: var(--pbim-muted, #64748B); } }
+    &.suspended { border-color: #F3CBD6; background: #FDF1F5;
+                  .tnx-standing-ic { color: #DC2668; } }
+    &.trial { border-color: #CFE0FA; background: #F4F8FE;
+              .tnx-standing-ic { color: #2563EB; } }
+    &.pending_deletion { .tnx-standing-ic { color: var(--pbim-muted, #64748B); } }
+}
+.tnx .tnx-plangrid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 14px; align-items: start; margin-bottom: 14px;
+}
+.tnx .tnx-plancard { padding: 17px 19px; display: flex; flex-direction: column; gap: 10px;
+                     h4 { display: flex; align-items: center; gap: 7px; margin: 0;
+                          font-size: 14px; } }
+.tnx .tnx-planpick { display: flex; flex-direction: column; gap: 7px; }
+.tnx .tnx-planopt {
+    display: flex; flex-direction: column; gap: 2px; text-align: left;
+    padding: 10px 13px; border-radius: 11px; cursor: pointer;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-surface, #fff);
+    transition: border-color .15s ease, background .15s ease;
+    b { font-size: 13.5px; }
+    span { font-size: 12px; color: var(--pbim-primary, #5A4BB0); font-weight: 600; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+    &.on { border-color: var(--pbim-primary, #5A4BB0);
+           background: var(--pbim-soft, #EDEAF8); }
+}
+.tnx .tnx-planrow { display: flex; flex-direction: column; gap: 4px;
+                    label { font-size: 11.5px; color: var(--pbim-muted, #64748B);
+                            font-weight: 600; } }
+.tnx .tnx-pushed { font-size: 11.5px; }
+.tnx .tnx-seatbar {
+    height: 9px; border-radius: 20px; overflow: hidden;
+    background: var(--pbim-line-soft, #F1F0F7);
+    i { display: block; height: 100%; border-radius: 20px;
+        background: var(--pbim-primary, #5A4BB0);
+        transition: width .6s cubic-bezier(.2,.7,.3,1); }
+    &.near i { background: #D97706; }
+    &.full i { background: #DC2668; }
+}
+.tnx .tnx-usagelist { display: flex; flex-direction: column; }
+.tnx .tnx-usagerow {
+    display: flex; align-items: baseline; gap: 8px; font-size: 12.5px;
+    padding: 6px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    small { color: var(--pbim-muted, #64748B); font-size: 11px; }
+    .tnx-usagewhen { margin-left: auto; font-size: 11px;
+                     color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-planinv { padding: 17px 19px; margin-bottom: 14px;
+                    h4 { display: flex; align-items: center; gap: 7px;
+                         margin: 0 0 8px; font-size: 14px; } }
+.tnx .tnx-planinvrow {
+    display: flex; align-items: center; gap: 11px; font-size: 13px;
+    padding: 8px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    .tnx-planinvamt { font-weight: 700; }
+    .tnx-planinvwhen { margin-left: auto; font-size: 11.5px;
+                       color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-planrisk {
+    padding: 17px 19px; border-color: #F3CBD6;
+    h4 { display: flex; align-items: center; gap: 7px; margin: 0 0 10px;
+         font-size: 14px; color: #DC2668; }
+}
+.tnx .tnx-planrisk-row {
+    display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap;
+    padding: 11px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    > div:first-child { flex: 1 1 320px;
+        b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+        span { font-size: 12.5px; line-height: 1.55;
+               color: var(--pbim-muted, #64748B); } }
+}
+.tnx .tnx-planrisk-form {
+    display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
+    input { width: 190px; }
+    .tnx-days { width: 80px; }
+}
+
+// ---------------------------------------------------- the wizard's plan step
+.tnx .tnx-wizplan { margin-top: 16px; }
+.tnx .tnx-trialtoggle {
+    display: flex; gap: 9px; align-items: flex-start; margin-top: 11px;
+    font-size: 12.5px; line-height: 1.55; color: var(--pbim-muted, #64748B);
+    cursor: pointer;
+    input { margin-top: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tnx .tnx-prev-row { animation: none; }
+    .tnx .tnx-month-bar i, .tnx .tnx-seatbar i, .tnx .tnx-switch i { transition: none; }
+}
