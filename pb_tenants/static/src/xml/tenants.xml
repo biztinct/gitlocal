@@ -15,6 +15,15 @@
           <div class="pbim-sub">One platform, many databases — create, watch and manage every client on <b t-esc="state.data.base_domain"/>.</div>
         </div>
         <div class="tnx-head-actions">
+          <!-- FLEET P3. The chip is the answer to "is anything wrong", and it
+               is rose the moment something urgent is open. It is a BUTTON even
+               when the count is nought, because "nothing is wrong" is a thing
+               somebody wants to check on purpose. -->
+          <button t-attf-class="pbim-btn outline tnx-alertchip {{ (state.data.alerts &amp;&amp; state.data.alerts.critical) ? 'bad' : ((state.data.alerts &amp;&amp; state.data.alerts.open) ? 'warn' : '') }}"
+                  t-on-click="openAlerts">
+            <t t-out="ic('bell',15)"/> Alerts
+            <span t-if="state.data.alerts &amp;&amp; state.data.alerts.open" class="tnx-count" t-esc="state.data.alerts.open"/>
+          </button>
           <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'platform'" t-on-click="refreshFleetHealth">
             <t t-out="ic('refresh',15)"/> Refresh health
           </button>
@@ -31,8 +40,31 @@
         </div>
       </div>
 
-      <!-- go-live checklist -->
-      <div t-if="!state.data.platform.ready" class="pbim-card tnx-golive">
+      <!-- THE ONE ALERT THAT CANNOT EMAIL ITSELF. It has to be on the screen,
+           at the top, in the one colour nobody scrolls past — there is by
+           definition no other way for it to reach anybody. -->
+      <div t-if="state.data.alerts and state.data.alerts.channel_down" class="tnx-channeldown">
+        <span class="tnx-cd-ic"><t t-out="ic('bellOff',18)"/></span>
+        <div class="tnx-cd-tx">
+          <b>Alert emails are not getting out</b>
+          <span t-esc="state.data.alerts.channel_down"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="openSettings">
+          <t t-out="ic('settings',13)"/> Alert settings
+        </button>
+        <button class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.det.busy === 'mailtest'"
+                t-on-click="sendTestEmail">
+          <t t-if="state.det.busy === 'mailtest'"><span class="pbim-spin tnx-minispin"/> Sending…</t>
+          <t t-else=""><t t-out="ic('send',13)"/> Send a test email</t>
+        </button>
+      </div>
+
+      <!-- go-live checklist. Shown while anything is unfinished — INCLUDING the
+           two rows P3 adds, which are not part of "can this platform make a
+           tenant" but are very much part of "can it tell you when one breaks" —
+           and reachable from the live strip once everything is green, because
+           "Send a test email" is a button somebody wants on a good day too. -->
+      <div t-if="platformIssues or state.checksOpen" class="pbim-card tnx-golive">
         <div class="tnx-golive-head" t-on-click="() => state.checklistOpen = !state.checklistOpen">
           <span class="tnx-golive-ic"><t t-out="ic('gauge',18)"/></span>
           <div class="tnx-golive-tt">
@@ -53,6 +85,22 @@
               <div class="tnx-check-tx">
                 <b t-esc="c.label"/>
                 <span t-if="!c.ok" t-esc="c.hint"/>
+                <!-- A row that can be PROVEN carries the proof button, and a
+                     green row keeps it: "it worked last week" is not the same
+                     answer as "it works now". -->
+                <span class="tnx-check-act">
+                  <button t-if="c.action === 'mail_test'" class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="state.det.busy === 'mailtest'" t-on-click="sendTestEmail">
+                    <t t-if="state.det.busy === 'mailtest'"><span class="pbim-spin tnx-minispin"/> Sending…</t>
+                    <t t-else=""><t t-out="ic('send',13)"/> <t t-esc="c.action_label"/></t>
+                  </button>
+                  <a t-if="c.link" class="pbim-btn ghost pbim-btn-sm" t-att-href="c.link" target="_blank">
+                    <t t-out="ic('external',13)"/> <t t-esc="c.link_label"/>
+                  </a>
+                </span>
+                <span t-if="c.key === 'mail' and state.mailTest"
+                      t-attf-class="tnx-check-res {{ state.mailTest.ok ? 'ok' : 'bad' }}"
+                      t-esc="state.mailTest.message"/>
               </div>
             </div>
           </div>
@@ -69,12 +117,17 @@
             <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.det.busy === 'platform'" t-on-click="recheckPlatform">
               <t t-out="ic('refresh',13)"/> Re-check platform
             </button>
+            <button t-if="!platformIssues" class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => state.checksOpen = false">Hide checks</button>
           </div>
         </div>
       </div>
       <div t-else="" class="tnx-live-strip">
-        <span class="tnx-live-dot"/> Platform live — wildcard routing, TLS and template ready.
+        <span class="tnx-live-dot"/> Platform live — routing, certificates, mail and the public page all check out.
         <span class="tnx-live-ip">server <code t-esc="state.data.platform.public_ip"/></span>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => state.checksOpen = true">
+          <t t-out="ic('checkShield',13)"/> Platform checks
+        </button>
       </div>
 
       <!-- KPIs -->
@@ -90,6 +143,28 @@
         <div class="pbim-stat">
           <span class="pbim-stat-ic teal"><t t-out="ic('database',18)"/></span>
           <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.storage"/><span class="l">Fleet storage</span></span>
+        </div>
+        <!-- FLEET P3 — THE CAPACITY GAUGE. Not "how much memory is used", which
+             nobody can act on, but "how many more customers this machine can
+             safely hold", which is the only question the number is ever asked.
+             The per-customer cost behind it was WEIGHED on this box, not
+             guessed, and it is a setting so it can be weighed again. -->
+        <div t-attf-class="pbim-stat tnx-cap {{ capacity.level }}" t-att-title="capacity.reason">
+          <span t-attf-class="pbim-stat-ic {{ capacity.level === 'full' ? 'rose' : (capacity.level === 'warn' ? 'amber' : 'green') }}">
+            <t t-out="ic('gauge',18)"/>
+          </span>
+          <span class="pbim-stat-tx">
+            <span class="n">
+              <t t-if="capacity.level === 'full'">Full</t>
+              <t t-else=""><t t-esc="capacity.headroom"/></t>
+            </span>
+            <span class="l">
+              <t t-if="capacity.level === 'full'">No room for another customer</t>
+              <t t-elif="capacity.headroom === 1">Room for 1 more customer</t>
+              <t t-else="">Room for more customers</t>
+            </span>
+            <span class="tnx-capbar"><i t-attf-style="width:{{ capacityBar.pct }}%"/></span>
+          </span>
         </div>
         <div class="pbim-stat">
           <span class="pbim-stat-ic amber"><t t-out="ic('hardDrive',18)"/></span>
@@ -149,6 +224,142 @@
       </div>
     </div>
 
+    <!-- ================================================== ALERTS ==================================================
+         WHAT IS WRONG RIGHT NOW, IN THE ORDER SOMEBODY WOULD WORK THROUGH IT.
+         Measured against a triage list, not a log: three groups, every row
+         carrying the sentence that says what to do next, and two buttons that
+         mean two different things — "I know" (stop reminding me) and "this is
+         over" (close it). Arrow keys walk the rows, `a` acknowledges the one
+         under the cursor, Escape goes back. -->
+    <div t-elif="state.view === 'alerts'" class="pbim-wrap tnx-alerts">
+      <div class="tnx-head">
+        <div>
+          <button class="pbim-btn ghost pbim-btn-sm tnx-back" t-on-click="backToFleet">
+            <t t-out="ic('back',14)"/> Fleet
+          </button>
+          <div class="pbim-eyebrow"><t t-out="ic('bell',13)"/> Platform · Alerts</div>
+          <h1 class="pbim-h1">What needs you</h1>
+          <div class="pbim-sub" t-if="state.alerts.d">
+            Checked every 15 minutes. Emails go to
+            <b t-esc="state.alerts.d.recipients.join(', ') || 'nobody yet'"/>
+            from <t t-esc="state.alerts.d.from"/>. Last look <t t-esc="state.alerts.d.checked_at"/>.
+          </div>
+        </div>
+        <div class="tnx-head-actions">
+          <a class="pbim-btn ghost" t-if="state.alerts.d" t-att-href="state.alerts.d.status_url" target="_blank">
+            <t t-out="ic('globe',15)"/> Public status page
+          </a>
+          <button class="pbim-btn ghost" t-on-click="openSettings">
+            <t t-out="ic('settings',15)"/> Alert settings
+          </button>
+          <button class="pbim-btn outline" t-att-disabled="state.alerts.busy === 'check'" t-on-click="checkNow">
+            <t t-if="state.alerts.busy === 'check'"><span class="pbim-spin tnx-minispin"/> Looking…</t>
+            <t t-else=""><t t-out="ic('refresh',15)"/> Check now</t>
+          </button>
+        </div>
+      </div>
+
+      <div t-if="!state.alerts.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the alerts…</span></div>
+
+      <t t-else="">
+        <div class="pbim-seg tnx-alert-tabs">
+          <button t-attf-class="pbim-segbtn {{ state.alerts.tab === 'open' ? 'on' : '' }}"
+                  t-on-click="() => state.alerts.tab = 'open'">
+            Open <span t-if="state.alerts.d.open_count" class="tnx-count" t-esc="state.alerts.d.open_count"/>
+          </button>
+          <button t-attf-class="pbim-segbtn {{ state.alerts.tab === 'history' ? 'on' : '' }}"
+                  t-on-click="() => state.alerts.tab = 'history'">
+            Last 30 days
+          </button>
+        </div>
+
+        <t t-if="state.alerts.tab === 'open'">
+          <!-- ===== the empty state, which is the one we want to be in ===== -->
+          <div t-if="alertEmpty" class="tnx-alert-none">
+            <span class="tnx-alert-none-ic"><t t-out="ic('checkCircle',32)"/></span>
+            <h3>Nothing open</h3>
+            <p>The platform will email you the moment that changes — within
+               fifteen minutes, with the one thing to do about it.</p>
+            <span class="tnx-alert-none-sub">
+              A short summary arrives every morning either way, so you can tell
+              a quiet platform from a broken alarm.
+            </span>
+          </div>
+
+          <t t-else="">
+            <t t-foreach="[['critical','Needs attention now'],['warning','Worth a look'],['acknowledged','Acknowledged']]"
+               t-as="grp" t-key="grp[0]">
+              <div t-if="state.alerts.d[grp[0]].length" class="tnx-alert-grp">
+                <h2 t-attf-class="tnx-alert-h {{ grp[0] }}">
+                  <t t-esc="grp[1]"/>
+                  <span class="tnx-count" t-esc="state.alerts.d[grp[0]].length"/>
+                </h2>
+                <div t-foreach="state.alerts.d[grp[0]]" t-as="row" t-key="row.id"
+                     t-attf-class="tnx-alert {{ row.severity }} {{ row.state === 'acknowledged' ? 'ack' : '' }}"
+                     tabindex="0">
+                  <span class="tnx-alert-ic"><t t-out="ic(row.icon,17)"/></span>
+                  <div class="tnx-alert-tx">
+                    <b t-esc="row.title"/>
+                    <span class="tnx-alert-meta">
+                      <t t-esc="row.kind_label"/>
+                      <t t-if="row.tenant"> · <b t-esc="row.tenant"/></t>
+                      · since <t t-esc="row.since"/>
+                      <t t-if="row.count > 1"> · seen <t t-esc="row.count"/>×</t>
+                      <t t-if="row.age"> · <t t-esc="row.age"/></t>
+                      <t t-if="row.notified"> · told you <t t-esc="row.notified"/></t>
+                      <t t-else=""> · not emailed yet</t>
+                    </span>
+                    <span class="tnx-alert-next" t-esc="row.text"/>
+                  </div>
+                  <div class="tnx-alert-btns">
+                    <button t-if="row.tenant_id" class="pbim-btn ghost pbim-btn-sm"
+                            t-on-click="() => this.openAlertTenant(row)">
+                      <t t-out="ic('external',13)"/> Open customer
+                    </button>
+                    <button t-if="row.state === 'open'" class="pbim-btn outline pbim-btn-sm"
+                            t-att-disabled="state.alerts.busy === 'a' + row.id"
+                            t-on-click="() => this.ackAlert(row)">
+                      <t t-out="ic('check',13)"/> I know
+                    </button>
+                    <button class="pbim-btn primary pbim-btn-sm"
+                            t-att-disabled="state.alerts.busy === 'a' + row.id"
+                            t-on-click="() => this.askResolve(row)">
+                      It is over
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </t>
+            <div class="pbim-note tnx-alert-keys">
+              <t t-out="ic('keyboard',13)"/> ↑ ↓ to walk the list · <b>a</b> to acknowledge · <b>r</b> to look again · <b>Esc</b> back
+            </div>
+          </t>
+        </t>
+
+        <t t-else="">
+          <!-- ===== what has already been dealt with ===== -->
+          <div t-if="!state.alerts.d.history.length" class="tnx-alert-none">
+            <span class="tnx-alert-none-ic"><t t-out="ic('history',30)"/></span>
+            <h3>Nothing has gone wrong in the last 30 days</h3>
+            <p>Anything that opens and closes will be listed here, with how long it lasted.</p>
+          </div>
+          <div t-else="" class="tnx-hist">
+            <div t-foreach="state.alerts.d.history" t-as="row" t-key="row.id" class="tnx-hist-row">
+              <span t-attf-class="tnx-hist-dot {{ row.severity }}"/>
+              <div class="tnx-hist-tx">
+                <b t-esc="row.title"/>
+                <span>
+                  <t t-if="row.tenant"><t t-esc="row.tenant"/> · </t>
+                  lasted <t t-esc="row.age"/> · ended <t t-esc="row.ended"/>
+                  <t t-if="row.resolution"> · <t t-esc="row.resolution"/></t>
+                </span>
+              </div>
+            </div>
+          </div>
+        </t>
+      </t>
+    </div>
+
     <!-- ================================================== WIZARD ================================================== -->
     <div t-elif="state.view === 'wizard'" class="pplw-root tnx-wiz">
       <div class="pplw-card tnx-wiz-card">
@@ -177,6 +388,20 @@
 
         <!-- step 1 : identity -->
         <div t-if="state.wiz.step === 1" class="pplw-body">
+          <!-- FLEET P3 — THE GUARD, SAID BEFORE ANYTHING IS TYPED. The server
+               refuses at `full` whatever this says; this is here so nobody
+               fills in a form that is going to be turned down, and so the
+               warning at "one left" arrives while there is still time to plan
+               the resize rather than on the morning of the sale. -->
+          <div t-if="capacity.level !== 'ok'" t-attf-class="tnx-caproom {{ capacity.level }}">
+            <span class="tnx-caproom-ic"><t t-out="ic('gauge',18)"/></span>
+            <div>
+              <b t-if="capacity.level === 'full'">This machine cannot safely hold another customer</b>
+              <b t-else="">Room for one more customer after this one</b>
+              <span t-esc="capacity.reason"/>
+              <span class="tnx-caproom-run">The resize is one page: docs/SAAS_RESIZE_RUNBOOK.md — a snapshot, a bigger machine, the same address. About an hour, and the platform is offline while it happens.</span>
+            </div>
+          </div>
           <div class="tnx-urlprev" t-attf-data-st="{{ state.wiz.slug.st }}">
             <span class="tnx-urlprev-proto">https://</span><span class="tnx-urlprev-slug" t-esc="state.wiz.form.slug || 'your-client'"/><span class="tnx-urlprev-dom">.<t t-esc="state.data.base_domain"/></span>
             <span class="tnx-urlprev-st">
@@ -1248,6 +1473,162 @@
       </div>
     </div>
 
+    <!-- ============================================== CLOSE AN ALERT ============================================
+         "It is over" asks WHY, and does not insist. Weeks later the history is
+         the only record of what a person actually did about a problem, and
+         "Closed by hand" answers nothing. -->
+    <div t-if="state.alerts.resolveFor" class="pbim-modal-scrim" t-on-click="() => state.alerts.resolveFor = null">
+      <div class="pbim-modal is-narrow tnx-resolve" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('checkCircle',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Close this alert</div>
+            <div class="pbim-modal__sub" t-esc="state.alerts.resolveFor.title"/>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="() => state.alerts.resolveFor = null"><t t-out="ic('x',15)"/></button>
+        </div>
+        <div class="pbim-modal__body">
+          <label class="tnx-notice-f">
+            <span class="pplw-label">What did you do? <small>— optional, but it is what the history will show</small></span>
+            <input class="pplw-in" t-model="state.alerts.resolveText"
+                   placeholder="Removed six old backups"/>
+          </label>
+          <div class="pbim-note">
+            If the problem is still there, the next check will open it again in
+            fifteen minutes — closing it is not the same as fixing it.
+          </div>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="() => state.alerts.resolveFor = null">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="confirmResolve">Close it</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ ALERT SETTINGS ==============================================
+         Everything the alarm judges by, in one place, in words. Every box says
+         what it means for the person reading it, and the server refuses
+         anything that would quietly switch the alarm off. -->
+    <div t-if="state.settings.open" class="pbim-modal-scrim" t-on-click="closeSettings">
+      <div class="pbim-modal tnx-settings" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('bell',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Alert settings</div>
+            <div class="pbim-modal__sub">Who is told, how often, and how bad a thing has to be.</div>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="closeSettings"><t t-out="ic('x',15)"/></button>
+        </div>
+        <div class="pbim-modal__body tnx-set-body">
+          <div t-if="state.settings.error" class="tnx-notice-err">
+            <t t-out="ic('alert',15)"/> <span t-esc="state.settings.error"/>
+          </div>
+          <div t-if="!state.settings.d" class="pbim-busy"><div class="pbim-spin"/><span>Reading the settings…</span></div>
+          <t t-else="">
+            <h4 class="tnx-set-h">Who is told</h4>
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Email addresses <small>— separated by commas</small></span>
+              <input class="pplw-in" t-model="state.settings.d.emails"
+                     t-att-placeholder="state.settings.d.default_recipients.join(', ')"/>
+              <small class="tnx-notice-help">
+                Leave it empty and every platform administrator with an address is
+                used — today that is <t t-esc="state.settings.d.default_recipients.join(', ') || 'nobody'"/>.
+              </small>
+            </label>
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Sent from</span>
+              <input class="pplw-in" t-model="state.settings.d.from"
+                     t-att-placeholder="state.settings.d.from_effective"/>
+              <small class="tnx-notice-help">
+                Empty means the address the outgoing mail server signs in with
+                (<t t-esc="state.settings.d.from_effective"/>). Every message
+                carries this address explicitly — without one, nothing sends at all.
+              </small>
+            </label>
+
+            <h4 class="tnx-set-h">How often you are reminded</h4>
+            <div class="tnx-set-grid">
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Urgent problems <small>— hours</small></span>
+                <input class="pplw-in" type="number" min="0" max="168" t-model="state.settings.d.interval_critical"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Smaller problems <small>— hours</small></span>
+                <input class="pplw-in" type="number" min="0" max="168" t-model="state.settings.d.interval_warning"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Morning summary <small>— hour of the day</small></span>
+                <input class="pplw-in" type="number" min="0" max="23" t-model="state.settings.d.digest_hour"/>
+              </label>
+            </div>
+            <div class="pbim-note">
+              Nought hours means "never remind me". A problem you have
+              acknowledged never reminds you again either way.
+            </div>
+
+            <h4 class="tnx-set-h">When to say something</h4>
+            <div class="tnx-set-grid">
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Disk free falls below <small>— %</small></span>
+                <input class="pplw-in" type="number" min="1" max="90" t-model="state.settings.d.thresholds.disk_free_pct"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Free memory falls below <small>— MB</small></span>
+                <input class="pplw-in" type="number" min="32" max="8192" t-model="state.settings.d.thresholds.mem_available_mb"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">No backup for <small>— hours</small></span>
+                <input class="pplw-in" type="number" min="1" max="720" t-model="state.settings.d.thresholds.backup_stale_hours"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Certificate has fewer than <small>— days left</small></span>
+                <input class="pplw-in" type="number" min="1" max="90" t-model="state.settings.d.thresholds.cert_tenant_days"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Errors in 15 minutes <small>— before we say</small></span>
+                <input class="pplw-in" type="number" min="1" max="500" t-model="state.settings.d.thresholds.error_lines"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Behind the release by <small>— days</small></span>
+                <input class="pplw-in" type="number" min="1" max="365" t-model="state.settings.d.thresholds.drift_days"/>
+              </label>
+            </div>
+
+            <h4 class="tnx-set-h">How much room this machine has</h4>
+            <div class="tnx-set-grid">
+              <label class="tnx-notice-f">
+                <span class="pplw-label">One customer costs <small>— MB of memory</small></span>
+                <input class="pplw-in" type="number" min="1" max="4096" t-model="state.settings.d.tenant_cost_mb"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Keep free for the rest <small>— MB</small></span>
+                <input class="pplw-in" type="number" min="0" max="8192" t-model="state.settings.d.reserve_mb"/>
+              </label>
+            </div>
+            <div t-attf-class="tnx-set-cap {{ state.settings.d.capacity.level }}">
+              <t t-out="ic('gauge',15)"/> <span t-esc="state.settings.d.capacity.reason"/>
+            </div>
+          </t>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'mailtest'" t-on-click="sendTestEmail">
+            <t t-if="state.det.busy === 'mailtest'"><span class="pbim-spin tnx-minispin"/> Sending…</t>
+            <t t-else=""><t t-out="ic('send',14)"/> Send a test email</t>
+          </button>
+          <span t-if="state.mailTest" t-attf-class="tnx-check-res {{ state.mailTest.ok ? 'ok' : 'bad' }}" t-esc="state.mailTest.message"/>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeSettings">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.settings.busy || !state.settings.d" t-on-click="saveSettings">
+            <t t-if="state.settings.busy"><span class="pbim-spin tnx-minispin"/> Saving…</t>
+            <t t-else="">Save</t>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ============================================== SEND A NOTICE ==============================================
          A scrim over whatever view opened it, because a message is composed
          ABOUT something the owner is looking at — a customer's page, or the
@@ -1356,6 +1737,22 @@
                 <input class="pplw-in" type="datetime-local" t-model="state.notice.ends_at"/>
               </label>
             </div>
+
+            <!-- FLEET P3. The same words, on the page anybody can read without
+                 signing in — which is where somebody locked out by the very
+                 thing being announced will go looking. Off by default: most
+                 messages are about one customer's own database. -->
+            <label class="tnx-notice-pub">
+              <input type="checkbox" t-model="state.notice.public"/>
+              <span>
+                <b>Also show this on the public status page</b>
+                <small>
+                  payobook.com/status is served without signing in and names no
+                  customer. Tick this for anything the whole world may as well
+                  know — planned maintenance, or an outage you are working on.
+                </small>
+              </span>
+            </label>
 
             <!-- ===== the hero: exactly what they will see ===== -->
             <div class="tnx-notice-prev">
