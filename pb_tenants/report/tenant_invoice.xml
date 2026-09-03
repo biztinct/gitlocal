@@ -29,10 +29,31 @@
              sees in their PDF viewer's window and in the file's properties.
              It is a user-visible string like any other (rail R7). -->
         <t t-set="title">Payobook invoice</t>
+        <!-- THE PAGE HAS NO HEADER, SO IT MUST NOT RESERVE ROOM FOR ONE. The
+             paper format leaves ~35 mm at the top for the company header every
+             standard report prints; this document draws its own, so without
+             these the invoice began a third of the way down a mostly empty
+             sheet. Read off the root html tag by `_prepare_html`. -->
+        <t t-set="data_report_margin_top" t-value="7"/>
+        <t t-set="data_report_header_spacing" t-value="0"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="inv">
                 <t t-set="d" t-value="inv._render_data()"/>
-                <div class="page"
+                <!-- `article` IS LOAD-BEARING AND IT IS ABOUT THE CHARACTER SET.
+                     The PDF printer is handed one file per `<div class="article">`
+                     found in the rendered page, each one wrapped in
+                     `web.minimal_layout` — which is the only thing that carries
+                     `<meta charset="utf-8"/>`. A document with no `article` div
+                     falls through to a fallback that hands the printer a bare
+                     fragment, the printer reads it as Latin-1, and every dong
+                     sign on the invoice comes out as "â‚«" and every dash as
+                     "â€“". It rendered, it looked deliberate, and it was
+                     unreadable. The `data-oe-*` attributes are the same
+                     convention, so a multi-invoice print keeps its rows in
+                     step with its records. -->
+                <div class="article page"
+                     t-att-data-oe-model="inv._name" t-att-data-oe-id="inv.id"
+                     t-att-data-oe-lang="inv.env.context.get('lang')"
                      style="font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#1E1B2E; font-size:12px;">
                     <style>
                         .pbinv-h { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #5A4BB0; padding-bottom:14px; margin-bottom:20px; }

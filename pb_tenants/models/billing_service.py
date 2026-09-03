@@ -312,8 +312,22 @@ class PbTenantsBilling(models.AbstractModel):
             row['skip'] = priced['problem']
             return row
         if priced['nothing_to_bill']:
-            row['skip'] = _("Nothing to bill — no employees and no payslips "
-                            "in %s.") % period_label(period)
+            # THE SENTENCE HAS TO NAME THE COUNT THAT IS NOUGHT, and the count
+            # that is nought depends on how the plan charges. "No employees and
+            # no payslips" was written for both at once and read as a plain
+            # untruth on a customer with 153 people and a per-payslip plan —
+            # which is exactly the customer somebody would be looking at when
+            # they wonder why no invoice appeared.
+            if plan['pricing'] == 'per_payslip':
+                row['skip'] = _(
+                    "Nothing to bill — this plan charges per payslip produced, "
+                    "and no payslips were produced in %s.") % period_label(period)
+            elif plan['pricing'] == 'per_employee':
+                row['skip'] = _(
+                    "Nothing to bill — this plan charges per employee, and "
+                    "nobody was on Payobook at the end of %s.") % period_label(period)
+            else:
+                row['skip'] = _("Nothing to bill for %s.") % period_label(period)
             return row
         totals = invoice_totals(priced['lines'], plan['vat_pct'],
                                 cur.rounding or 0.01)
