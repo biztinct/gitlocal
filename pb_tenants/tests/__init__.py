@@ -15,3 +15,6 @@ from . import test_rollout
 # FLEET P3 — alerts that reach a human, capacity, and the public page.
 from . import test_alert_rules
 from . import test_alerts
+# FLEET P4 — which parts of the product each customer gets.
+from . import test_feature_rules
+from . import test_features

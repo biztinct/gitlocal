@@ -78,6 +78,16 @@ class PbTenant(models.Model):
              "own at this moment — nobody has to come back and clear it.")
     notice_sent_at = fields.Datetime()
 
+    # FLEET P4. When this customer's database was last told which parts of the
+    # product are switched on for it. Empty means NEVER — and a customer who
+    # has never been told loses nothing: their database reads "no answer" as
+    # "everything on" (fail open, `pb_tenancy`). The screen shows the empty
+    # state as "never pushed" with the button that fixes it, so the difference
+    # between "everything on because that is the answer" and "everything on
+    # because nobody has said otherwise" is never hidden from the owner.
+    features_pushed_at = fields.Datetime()
+    feature_ids = fields.One2many('pb.tenant.feature', 'tenant_id')
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')

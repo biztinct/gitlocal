@@ -167,6 +167,19 @@ from .tenancy_rules import (  # noqa: E402
     parse_stamp, releases_list, render_range,
 )
 
+# =============================================================================
+# WHICH PARTS OF THE PRODUCT A CUSTOMER GETS (FLEET P4).
+#
+# The catalogue, the per-customer answers and the screen behind them are in
+# `feature.py` / `feature_service.py`. What is needed HERE is the one setting
+# name, because provisioning writes it in the same breath as the company's name
+# and the base URL — a brand-new customer must not spend its first minutes with
+# nothing said about it.
+# =============================================================================
+from .feature_rules import (  # noqa: E402
+    T_FEATURES, custom_count, effective_features, features_sentence,
+)
+
 #: The module a customer's database needs before the platform can say anything
 #: to it. Not on the never-list (rail R2) — it is a part of the product, and it
 #: reaches a customer the same way every other part does: somebody presses
@@ -414,7 +427,27 @@ class PbTenants(models.AbstractModel):
             # second call after the screen has already drawn.
             'alerts': self._alert_head(),
             'capacity': self._capacity(),
+            # FLEET P4. The chip on the "Features" button: how many customers
+            # have been decided about by hand. Counted ONCE here rather than
+            # per row — the catalogue is one table read, and asking for it
+            # inside every customer's brief would turn the fleet screen into
+            # one query per customer for a number nobody reads there.
+            'features': self._features_head(live),
         }
+
+    def _features_head(self, live):
+        """"3 customers have their own settings" — and who has never been told."""
+        catalogue = self.env['pb.feature'].sudo().catalogue()
+        Row = self.env['pb.tenant.feature'].sudo()
+        custom, never = 0, 0
+        for tenant in live:
+            overrides = Row.overrides_for(tenant)
+            if custom_count(catalogue, overrides):
+                custom += 1
+            if not tenant.features_pushed_at:
+                never += 1
+        return {'total': len(catalogue), 'custom': custom,
+                'never_pushed': never}
 
     def _alert_head(self):
         """The chip in the fleet header: how many, how bad, and the one that
@@ -780,6 +813,24 @@ class PbTenants(models.AbstractModel):
                 env['ir.cron'].sudo().browse(ids).exists().write({'active': True})
                 icp.set_param('pb_tenants.template_active_crons', '')
                 say('Scheduled jobs re-enabled (%d crons).' % len(ids))
+            # FLEET P4. Which parts of the product this new customer gets —
+            # the catalogue's defaults, written in the same step that gives
+            # them their name and their currency. Inside this env, not through
+            # push_tenancy: the tenant is not `live` yet, and the customer's
+            # own registry is already open right here.
+            #
+            # It is still rail R1: this runs because somebody pressed "Create".
+            try:
+                icp.set_param(T_FEATURES, self._features_payload(tenant))
+                icp.set_param(T_PUSHED_AT,
+                              fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                tenant.sudo().write({'features_pushed_at': fields.Datetime.now()})
+                say('Feature switches set to the standard for a new customer.')
+            except Exception:                           # noqa: BLE001
+                _logger.warning("pb_tenants: could not seed the switches on %s",
+                                slug, exc_info=True)
+                say('Feature switches could not be set — the Features screen '
+                    'has a "Push again" button for this customer.', 'warn')
         return {}
 
     def _step_admin(self, tenant, say):
@@ -1634,7 +1685,41 @@ class PbTenants(models.AbstractModel):
                 _logger.warning("pb_tenants: health refresh after sync failed "
                                 "for %s", dbname, exc_info=True)
         self._push_release_stamp(target, plan, rel, say)
+        self._push_features_after_sync(tenant, plan, say)
         return plan
+
+    def _push_features_after_sync(self, tenant, plan, say):
+        """A customer who has just gained a part of the product is told about it.
+
+        THE REASON THIS EXISTS AT ALL. "Bring in step" can INSTALL something
+        new on a customer — a mission that did not exist on their database an
+        hour ago. Its rail entry arrives switched on unless somebody has said
+        otherwise, and its switch is meaningless until their database has been
+        told what the switch says. Without this line the new part would be
+        governed by whatever was pushed the last time, which does not mention
+        it, and the fail-open rule would quietly hand it to everybody.
+
+        Never fatal, exactly like the release stamp beside it: a message that
+        did not get through must not turn a good update into a failed one.
+        Only a real customer — the golden template and rehearsal copies have
+        nobody reading them.
+        """
+        if tenant is None:
+            return
+        plan['features_pushed'] = False
+        try:
+            res = self._push_features(tenant, _(
+                "Feature switches sent after this database was brought in step."))
+        except Exception:                               # noqa: BLE001
+            _logger.warning("pb_tenants: could not send the switches to %s "
+                            "after the update", plan.get('database'),
+                            exc_info=True)
+            return
+        plan['features_pushed'] = bool(res.get('ok'))
+        if res.get('ok'):
+            say(_("Told it which parts of the product are switched on for it."))
+        elif res.get('reason'):
+            say(res['reason'], 'warn')
 
     def _push_release_stamp(self, target, plan, rel, say):
         """Tell a database which release it is now on — but only if it IS.
@@ -2137,6 +2222,10 @@ class PbTenants(models.AbstractModel):
             # Whether there is anywhere to put a message on this customer at
             # all. Asked once, on opening one customer — never on the fleet.
             'tenancy_linked': self._tenancy_installed(t.slug),
+            # FLEET P4. "9 of 10 switched on · 1 decided by hand", with the
+            # never-pushed state carried honestly rather than shown as a green
+            # "everything on" that nobody has actually said.
+            'features': self._tenant_features_brief(t),
             'staging_db': '%s-staging' % t.slug,
             'staging_exists': self._db_exists('%s-staging' % t.slug),
             'staging_url': self._tenant_url('%s-staging' % t.slug),
@@ -2149,6 +2238,24 @@ class PbTenants(models.AbstractModel):
                 'id': d.id, 'hostname': d.hostname, 'state': d.state, 'message': d.message or '',
                 'last_check': d.last_check and d.last_check.isoformat(sep=' ', timespec='minutes') or None,
             } for d in t.domain_ids],
+        }
+
+    def _tenant_features_brief(self, tenant):
+        """One customer's switches in one sentence, for the Overview row."""
+        catalogue = self.env['pb.feature'].sudo().catalogue()
+        overrides = self.env['pb.tenant.feature'].sudo().overrides_for(tenant)
+        eff = effective_features(catalogue, overrides)
+        return {
+            'total': len(eff),
+            'on': sum(1 for v in eff.values() if v['on']),
+            'custom': custom_count(catalogue, overrides),
+            'sentence': features_sentence(eff),
+            'off_names': [r['name'] for r in catalogue
+                          if r['key'] in eff and not eff[r['key']]['on']],
+            'pushed_at': (tenant.features_pushed_at.isoformat(
+                sep=' ', timespec='minutes')
+                if tenant.features_pushed_at else ''),
+            'never_pushed': not tenant.features_pushed_at,
         }
 
     @api.model
