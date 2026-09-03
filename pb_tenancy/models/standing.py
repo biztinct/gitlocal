@@ -283,11 +283,20 @@ class PbTenancyStanding(models.AbstractModel):
         except Exception:                                    # noqa: BLE001
             _logger.warning("pb_tenancy: could not count this month's "
                             "payslips", exc_info=True)
-        seat = self.seat_state(fresh=True)
+        # THE COUNT IS TAKEN HERE, NOT READ OFF `seat_state`. That one skips
+        # counting altogether when the plan has no limit — which is right for
+        # a banner nobody will ever see, and wrong for THIS page, where the
+        # ring showed "0 employees" above a tile that said 153.
+        employees = self.seat_count(fresh=True)
+        try:
+            limit = int(self._icp().get_param(P_SEAT_LIMIT, '0') or 0)
+        except (TypeError, ValueError):
+            limit = 0
+        seat = seat_verdict(limit, employees)
         return {
             'plan_name': self.plan_name(),
             'seat': seat,
-            'employees': seat['count'] or self.seat_count(fresh=True),
+            'employees': employees,
             'payslips': payslips,
             'month': first.strftime('%B %Y'),
             'trial': self.trial_state(),

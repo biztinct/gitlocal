@@ -1218,9 +1218,19 @@ class PbTenantsBilling(models.AbstractModel):
         }
 
     def _month_strip(self, period, back=12):
-        """The last twelve months, each with what was invoiced in it."""
+        """The last twelve months, each with what was invoiced in it.
+
+        THE STRIP ALWAYS ENDS AT THIS MONTH, not at whatever is selected. The
+        screen opens on LAST month (the one there is a complete reading for),
+        and walking back from there left the current month off the end — so the
+        only way to raise an invoice early was to know it was possible and have
+        somewhere else to type the date. The selected month keeps its mark
+        wherever in the row it falls.
+        """
         Invoice = self.env['pb.tenant.invoice'].sudo()
-        out, cursor = [], period
+        today = fields.Date.context_today(self)
+        newest = max(period, month_start(today))
+        out, cursor = [], newest
         for _i in range(back):
             rows = Invoice.search([('period', '=', cursor),
                                    ('state', '!=', 'void')])

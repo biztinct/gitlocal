@@ -754,7 +754,7 @@
             </div>
             <div t-if="pl.tiers.length" class="tnx-plan-tiers">
               <span t-foreach="pl.tiers" t-as="ti" t-key="ti.id" class="tnx-plan-tier">
-                up to <b t-esc="ti.up_to"/> · <t t-esc="ti.price"/>
+                up to <b t-esc="ti.up_to_h"/> · <t t-esc="ti.price_h"/>
               </span>
             </div>
             <div t-if="pl.features.length" class="tnx-plan-feats">
@@ -2688,7 +2688,7 @@
          their reading, their lines and their total; every customer who would be
          skipped says why in a sentence somebody can act on. Create is the only
          thing on this screen that writes anything. -->
-    <div t-if="state.bill.preview" class="pbim-modal__scrim" t-on-click.self="closePreview">
+    <div t-if="state.bill.preview" class="pbim-modal-scrim" t-on-click.self="closePreview">
       <div class="pbim-modal tnx-previewbox">
         <div class="pbim-modal__head">
           <span class="pbim-modal__ic"><t t-out="ic('receipt',18)"/></span>
@@ -2763,7 +2763,7 @@
     </div>
 
     <!-- ============================================ MARK AN INVOICE PAID ======================================== -->
-    <div t-if="state.bill.paidFor" class="pbim-modal__scrim"
+    <div t-if="state.bill.paidFor" class="pbim-modal-scrim"
          t-on-click.self="() => state.bill.paidFor = null">
       <div class="pbim-modal tnx-smallbox">
         <div class="pbim-modal__head">
@@ -2793,7 +2793,7 @@
     </div>
 
     <!-- ============================================ CANCEL AN INVOICE =========================================== -->
-    <div t-if="state.bill.voidFor" class="pbim-modal__scrim"
+    <div t-if="state.bill.voidFor" class="pbim-modal-scrim"
          t-on-click.self="() => state.bill.voidFor = null">
       <div class="pbim-modal tnx-smallbox">
         <div class="pbim-modal__head">
@@ -2822,7 +2822,7 @@
     </div>
 
     <!-- ============================================== ONE PLAN, UP CLOSE ======================================== -->
-    <div t-if="state.bill.planEdit" class="pbim-modal__scrim" t-on-click.self="cancelPlanEdit">
+    <div t-if="state.bill.planEdit" class="pbim-modal-scrim" t-on-click.self="cancelPlanEdit">
       <div class="pbim-modal tnx-planbox">
         <div class="pbim-modal__head">
           <span class="pbim-modal__ic"><t t-out="ic('layers',18)"/></span>
@@ -2951,7 +2951,7 @@
          is OFF, by the owner's own ruling, and the sentence in red says exactly
          what turning it on means: a payroll office locked out of its own data at
          half past eight on a Monday because a bank transfer was slow. -->
-    <div t-if="state.bill.settingsOpen" class="pbim-modal__scrim" t-on-click.self="closeBillSettings">
+    <div t-if="state.bill.settingsOpen" class="pbim-modal-scrim" t-on-click.self="closeBillSettings">
       <div class="pbim-modal tnx-billsetbox">
         <div class="pbim-modal__head">
           <span class="pbim-modal__ic"><t t-out="ic('settings',18)"/></span>
@@ -2966,7 +2966,14 @@
 
         <div class="pbim-modal__body">
           <div t-attf-class="tnx-autosus {{ autoSuspendOn ? 'on' : '' }}">
-            <button class="tnx-switch" t-att-aria-pressed="autoSuspendOn"
+            <!-- THE STRING "true", NOT THE BOOLEAN. A `t-att-` bound to a
+                 JavaScript `true` renders the attribute with an EMPTY value,
+                 so `[aria-pressed="true"]` matches nothing and the switch
+                 never moves or turns red — while the paragraph beside it says
+                 it is on. A control that disagrees with its own explanation is
+                 worse than no control. -->
+            <button class="tnx-switch"
+                    t-att-aria-pressed="autoSuspendOn ? 'true' : 'false'"
                     t-on-click="toggleAutoSuspend"><i/></button>
             <div class="tnx-autosus-tx">
               <b>Pause a customer automatically when an invoice is very overdue</b>

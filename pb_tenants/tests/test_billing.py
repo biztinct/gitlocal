@@ -184,7 +184,7 @@ class TestRaising(BillingCase):
         # on the printed page or readable by anybody. What IS readable is the
         # document title (it becomes the PDF's, shown in every PDF viewer) and
         # everything inside the page itself — and neither may name it.
-        page = text[text.index('<div class="page"'):]
+        page = text[text.index('article page'):]
         self.assertNotIn('odoo', page.lower(),
                          "Not one mention of the framework on a document a "
                          "customer receives (rail R7).")

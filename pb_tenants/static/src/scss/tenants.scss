@@ -1012,10 +1012,19 @@
 .tnx .tnx-plan-acts { display: flex; gap: 7px; margin-top: 2px; }
 
 // ------------------------------------------------------- the preview dialog
-.tnx .tnx-previewbox { width: 860px; max-width: 94vw; }
-.tnx .tnx-planbox   { width: 780px; max-width: 94vw; }
-.tnx .tnx-billsetbox { width: 720px; max-width: 94vw; }
-.tnx .tnx-smallbox  { width: 470px; max-width: 94vw; }
+.tnx .tnx-previewbox { width: 880px; max-width: 94vw; }
+.tnx .tnx-planbox   { width: 800px; max-width: 94vw; }
+.tnx .tnx-billsetbox { width: 740px; max-width: 94vw; }
+.tnx .tnx-smallbox  { width: 480px; max-width: 94vw; }
+
+// THE KIT'S DIALOG BODY HAS NO PADDING OF ITS OWN — only the head and the
+// foot do (`pb_import_kit/static/src/scss/modal.scss`). Every dialog supplies
+// its own, and a dialog that forgets reads as broken: the content runs flush
+// to both edges while the title above it sits inset by 22 px.
+.tnx .tnx-previewbox > .pbim-modal__body,
+.tnx .tnx-planbox > .pbim-modal__body,
+.tnx .tnx-billsetbox > .pbim-modal__body,
+.tnx .tnx-smallbox > .pbim-modal__body { padding: 16px 22px 18px; }
 
 .tnx .tnx-prev-warn {
     display: flex; gap: 10px; align-items: flex-start;
@@ -1226,3 +1235,11 @@
     .tnx .tnx-prev-row { animation: none; }
     .tnx .tnx-month-bar i, .tnx .tnx-seatbar i, .tnx .tnx-switch i { transition: none; }
 }
+
+// THE SCRIM CLASS IS `pbim-modal-scrim`, WITH ONE HYPHEN, and this comment is
+// here because the rest of the kit's popup primitive is BEM with double
+// underscores — `__head`, `__body`, `__foot`, `__x`, `__sp`. Writing the
+// outermost one the same way (`pbim-modal__scrim`) matches no rule at all, so
+// the dialog renders INLINE, in the flow of the page, with no overlay, no
+// centring and no error anywhere. It looked like a layout bug in the dialog.
+// The five dialogs this phase adds all had it.
