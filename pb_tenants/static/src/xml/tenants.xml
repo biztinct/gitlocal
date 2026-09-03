@@ -30,6 +30,14 @@
           <button class="pbim-btn ghost" t-on-click="() => this.openNotice('all')">
             <t t-out="ic('megaphone',15)"/> Send a notice
           </button>
+          <!-- FLEET P4. The count is customers whose switches somebody has
+               decided by hand — not the number of features, which never
+               changes and would be a number nobody could act on. -->
+          <button class="pbim-btn outline" t-on-click="openFeatures">
+            <t t-out="ic('toggle',15)"/> Features
+            <span t-if="state.data.features and state.data.features.custom"
+                  class="tnx-count" t-esc="state.data.features.custom"/>
+          </button>
           <button class="pbim-btn outline tnx-sync-btn" t-on-click="openSync">
             <t t-out="ic('layers',15)"/> In step with master
             <span t-if="state.data.drift_total" class="tnx-count" t-esc="state.data.drift_total"/>
@@ -222,6 +230,265 @@
         <p>Create your first client workspace — its own database, its own subdomain, fully isolated. It takes about two minutes.</p>
         <button class="pbim-btn primary" t-on-click="openWizard"><t t-out="ic('rocket',15)"/> Create the first tenant</button>
       </div>
+    </div>
+
+    <!-- ================================================ FEATURES ==================================================
+         WHAT EACH CUSTOMER GETS.
+
+         Every part of the product is installed on every customer — that is
+         what "in step" means — and this is the screen that decides which of
+         them each customer can actually SEE. Customers down, parts of the
+         product across, every cell a switch.
+
+         THE HERO IS THE COLUMN ON THE RIGHT: the selected customer's own left
+         menu, built from their own switches. Flip a switch and the entry goes.
+         Nobody should have to log in as a customer to find out what they will
+         be looking at.
+
+         AND THE SENTENCE THAT HAS TO BE HERE, in these words: a switch takes
+         doors off a screen; it is not a security control. -->
+    <div t-elif="state.view === 'features'" class="pbim-wrap tnx-feat">
+      <div class="tnx-head">
+        <div>
+          <button class="pbim-btn ghost pbim-btn-sm tnx-back" t-on-click="backToFleet">
+            <t t-out="ic('back',14)"/> Fleet
+          </button>
+          <div class="pbim-eyebrow"><t t-out="ic('toggle',13)"/> Platform · Features</div>
+          <h1 class="pbim-h1">What each customer gets</h1>
+          <div class="pbim-sub">
+            Every part of Payobook is installed on every customer. This is where you
+            decide which of them each customer can see.
+          </div>
+        </div>
+        <div class="tnx-head-actions">
+          <div class="pbim-seg">
+            <button t-attf-class="pbim-segbtn {{ state.feat.tab === 'matrix' ? 'on' : '' }}"
+                    t-on-click="openFeatMatrix">Customers</button>
+            <button t-attf-class="pbim-segbtn {{ state.feat.tab === 'catalogue' ? 'on' : '' }}"
+                    t-on-click="openFeatCatalogue">Catalogue</button>
+          </div>
+          <button class="pbim-btn ghost" t-att-disabled="state.feat.busy"
+                  t-on-click="() => this.loadFeatures(false)">
+            <t t-out="ic('refresh',15)"/> Look again
+          </button>
+        </div>
+      </div>
+
+      <div t-if="!state.feat.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the switches…</span></div>
+
+      <t t-else="">
+        <!-- THE STANDING SENTENCE. Not a tooltip and not a help link: the one
+             thing somebody could get wrong about this screen is thinking it is
+             a lock, so it is on the screen, above the grid, every time. -->
+        <div class="tnx-fnote">
+          <span class="tnx-fnote-ic"><t t-out="ic('info',15)"/></span>
+          <span>
+            <b>A switch takes doors off a screen. It is not a security control.</b>
+            Switching something off removes its menu entry, its tiles and its search
+            rows for that customer. What their people may read is still decided by the
+            roles they hold on their own database.
+          </span>
+        </div>
+
+        <!-- ===================== the matrix ===================== -->
+        <div t-if="state.feat.tab === 'matrix'" class="tnx-fwrap">
+          <div class="pbim-card tnx-fgrid-card">
+            <div t-if="!featRows.length" class="tnx-empty">
+              <span class="tnx-empty-ic"><t t-out="ic('building',30)"/></span>
+              <h3>No customers yet</h3>
+              <p>Once you have a customer, this is where you choose which parts of Payobook they get.</p>
+            </div>
+
+            <div t-else="" class="tnx-fgrid-scroll">
+              <table class="tnx-fgrid">
+                <thead>
+                  <tr>
+                    <th class="tnx-fcorner">Customer</th>
+                    <th t-foreach="featCols" t-as="col" t-key="col.key" class="tnx-fhead">
+                      <div class="tnx-fhead-in" t-att-title="col.blurb">
+                        <span class="tnx-fhead-n" t-esc="col.name"/>
+                        <span class="tnx-fhead-m" t-esc="modeWord(col.mode)"/>
+                        <!-- The column bulk. Two buttons rather than a switch:
+                             "everybody on" and "everybody off" are two
+                             decisions, and a single control would make one of
+                             them an accident. -->
+                        <span class="tnx-fbulk">
+                          <button class="tnx-fbulk-b on" title="Switch on for the customers below"
+                                  t-on-click="() => this.askFeatBulk(col_index, true)">on</button>
+                          <button class="tnx-fbulk-b off" title="Switch off for the customers below"
+                                  t-on-click="() => this.askFeatBulk(col_index, false)">off</button>
+                        </span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- The golden template is not a customer and has no switches
+                       of its own: it is the shape a new customer is cut from,
+                       so what it shows is the catalogue's defaults. Read-only
+                       and first, because it answers "and what does the NEXT
+                       customer get?" before anybody has to ask. -->
+                  <tr class="tnx-frow ro">
+                    <th class="tnx-fname">
+                      <span class="tnx-fname-n" t-esc="state.feat.d.defaults.label"/>
+                      <span class="tnx-fname-s">read-only · what a new customer starts with</span>
+                    </th>
+                    <td t-foreach="featCols" t-as="col" t-key="col.key" class="tnx-fcellwrap">
+                      <span t-attf-class="tnx-fpill {{ state.feat.d.defaults.on[col.key] ? 'on' : 'off' }}"
+                            t-esc="state.feat.d.defaults.on[col.key] ? 'on' : 'off'"/>
+                    </td>
+                  </tr>
+                  <tr class="tnx-frow ro">
+                    <th class="tnx-fname">
+                      <span class="tnx-fname-n" t-esc="state.feat.d.master.label"/>
+                      <span class="tnx-fname-s" t-esc="state.feat.d.master.note"/>
+                    </th>
+                    <td t-foreach="featCols" t-as="col" t-key="col.key" class="tnx-fcellwrap">
+                      <span class="tnx-fpill on">on</span>
+                    </td>
+                  </tr>
+
+                  <tr t-foreach="featRows" t-as="row" t-key="row.id"
+                      t-attf-class="tnx-frow {{ state.feat.sel.r === row_index ? 'cur' : '' }}">
+                    <th class="tnx-fname" t-on-click="() => state.feat.sel.r = row_index">
+                      <span class="tnx-fname-n" t-esc="row.name"/>
+                      <span class="tnx-fname-s" t-esc="featRowNote(row)"/>
+                      <span t-if="row.never_pushed" class="tnx-fnever">
+                        never told —
+                        <a href="#" t-on-click.prevent.stop="() => this.pushFeatures(row.id)">send now</a>
+                      </span>
+                      <span t-else="" class="tnx-fpushed">told <t t-esc="row.pushed_at"/></span>
+                    </th>
+                    <td t-foreach="featCols" t-as="col" t-key="col.key" class="tnx-fcellwrap">
+                      <button t-attf-class="tnx-fcell {{ featCellClass(row, col, row_index, col_index) }}"
+                              t-att-data-r="row_index" t-att-data-c="col_index"
+                              t-att-disabled="state.feat.busy === row.id + ':' + col.key"
+                              t-attf-aria-label="{{ col.name }} for {{ row.name }}"
+                              t-att-aria-pressed="row.on[col.key] !== false"
+                              t-on-click="(ev) => this.onFeatCell(ev, row_index, col_index)">
+                        <span class="tnx-fknob"/>
+                      </button>
+                      <!-- The dot is the way to the reason, who changed it and
+                           when, and the way back to the standard setting. It
+                           is small and it is always there — a menu that only
+                           appears on hover is a menu a keyboard cannot reach. -->
+                      <button class="tnx-fdot" title="Why, who, and put it back"
+                              t-on-click.stop="() => this.openFeatMenu(row_index, col_index)">
+                        <t t-out="ic('moreVertical',12)"/>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tnx-fkeys">
+              <t t-out="ic('keyboard',13)"/>
+              <span>Arrows move · Space switches · Shift-click paints a column · Esc goes back</span>
+              <span t-if="state.feat.range" class="tnx-frangetag">
+                <t t-esc="featRangeCount"/> customers picked —
+                use the on/off buttons at the top of that column
+              </span>
+            </div>
+          </div>
+
+          <!-- ================= THE HERO: their own menu ================= -->
+          <aside class="pbim-card tnx-fpreview" t-if="featTenant">
+            <div class="tnx-fprev-h">
+              <span class="tnx-fprev-ic"><t t-out="ic('eye',15)"/></span>
+              <div>
+                <b>What <t t-esc="featTenant.name"/> sees</b>
+                <span class="tnx-fprev-s">their left menu, as their administrator gets it</span>
+              </div>
+            </div>
+            <div class="tnx-railprev">
+              <div t-foreach="featPreview" t-as="it" t-key="it.id"
+                   t-attf-class="tnx-railitem {{ it.locked ? 'locked' : '' }}">
+                <span class="tnx-railic" t-out="ic(railIcon(it.icon), 16)"/>
+                <span class="tnx-railtx" t-esc="it.name"/>
+                <span t-if="it.locked" class="tnx-raillock" t-out="ic('lock',11)"/>
+              </div>
+            </div>
+            <p class="tnx-fprev-f">
+              Entries for parts they have not got are gone, or shown with a padlock
+              and one line about how to get them — whichever the catalogue says.
+            </p>
+            <div t-if="featTenant.linked === false" class="tnx-fprev-warn">
+              <t t-out="ic('alert',14)"/>
+              <span>
+                This customer has not got the Platform Link yet, so nothing can be
+                sent to them. <a href="#" t-on-click.prevent="openSync">Bring them in step</a>
+                first.
+              </span>
+            </div>
+          </aside>
+        </div>
+
+        <!-- ===================== the catalogue ===================== -->
+        <div t-else="" class="tnx-fcat">
+          <div class="pbim-card tnx-fcat-list">
+            <div class="tnx-fcat-h">
+              <b>The catalogue</b>
+              <span>What can be sold on its own, what a new customer starts with, and
+                    how it looks to somebody who has not got it.</span>
+            </div>
+            <div t-foreach="featCols" t-as="col" t-key="col.key"
+                 t-attf-class="tnx-fcatrow {{ state.feat.edit and state.feat.edit.id === col.id ? 'cur' : '' }}"
+                 t-on-click="() => this.editFeature(col)">
+              <div class="tnx-fcatrow-n">
+                <b t-esc="col.name"/>
+                <span t-esc="col.blurb"/>
+              </div>
+              <span t-attf-class="pbim-badge {{ col.default_on ? 'ok' : 'muted' }}"
+                    t-esc="col.default_on ? 'on by default' : 'off by default'"/>
+              <span class="pbim-badge info" t-esc="modeWord(col.mode)"/>
+            </div>
+          </div>
+
+          <div class="pbim-card tnx-fcat-form" t-if="state.feat.edit">
+            <div class="tnx-fcat-h"><b t-esc="state.feat.edit.name"/><span>Changing any of this tells every live customer straight away.</span></div>
+            <label class="tnx-flab">Name<input t-model="state.feat.edit.name"/></label>
+            <label class="tnx-flab">One sentence about it<input t-model="state.feat.edit.blurb"/></label>
+            <label class="tnx-flab">A new customer gets it
+              <div class="pbim-seg">
+                <button t-attf-class="pbim-segbtn {{ state.feat.edit.default_on ? 'on' : '' }}"
+                        t-on-click="() => state.feat.edit.default_on = true">Yes</button>
+                <button t-attf-class="pbim-segbtn {{ state.feat.edit.default_on ? '' : 'on' }}"
+                        t-on-click="() => state.feat.edit.default_on = false">No</button>
+              </div>
+            </label>
+            <label class="tnx-flab">Somebody who has not got it sees
+              <div class="pbim-seg">
+                <button t-attf-class="pbim-segbtn {{ state.feat.edit.mode === 'hide' ? 'on' : '' }}"
+                        t-on-click="() => state.feat.edit.mode = 'hide'">Nothing at all</button>
+                <button t-attf-class="pbim-segbtn {{ state.feat.edit.mode === 'lock' ? 'on' : '' }}"
+                        t-on-click="() => state.feat.edit.mode = 'lock'">A padlock and a line</button>
+              </div>
+            </label>
+            <label class="tnx-flab">The line under the padlock
+              <textarea rows="3" t-model="state.feat.edit.lock_text"/>
+            </label>
+            <label class="tnx-flab">Where it sits in the list<input type="number" t-model="state.feat.edit.sequence"/></label>
+            <div class="tnx-fcat-actions">
+              <button class="pbim-btn ghost" t-on-click="cancelFeatEdit">Cancel</button>
+              <button class="pbim-btn primary" t-att-disabled="state.feat.busy === 'cat'"
+                      t-on-click="saveFeature">
+                <t t-if="state.feat.busy === 'cat'"><span class="pbim-spin tnx-minispin"/> Saving…</t>
+                <t t-else="">Save and tell everybody</t>
+              </button>
+            </div>
+          </div>
+          <div class="pbim-card tnx-fcat-form" t-else="">
+            <div class="tnx-empty">
+              <span class="tnx-empty-ic"><t t-out="ic('toggle',26)"/></span>
+              <h3>Pick a line to edit it</h3>
+              <p>Names, sentences and defaults are safe to change at any time. The short
+                 name a switch is stored under never changes — customers' databases are
+                 written in terms of it.</p>
+            </div>
+          </div>
+        </div>
+      </t>
     </div>
 
     <!-- ================================================== ALERTS ==================================================
@@ -1233,6 +1500,28 @@
                 </t>
               </b>
             </div>
+            <!-- FLEET P4. What this customer can actually see, in one line,
+                 with the way to change it. "Never told" is shown as itself and
+                 not as a green "everything on": their database does show
+                 everything, but because nobody has said otherwise, and the
+                 difference matters the day somebody switches something off. -->
+            <div class="tnx-rev-row"><span>Features</span>
+              <b t-if="d.features">
+                <t t-esc="d.features.on"/> of <t t-esc="d.features.total"/> switched on
+                <span t-if="d.features.custom" class="tnx-fsrc">
+                  · <t t-esc="d.features.custom"/> decided for this customer
+                </span>
+                <span t-if="d.features.off_names.length" class="tnx-fsrc">
+                  · off: <t t-esc="d.features.off_names.join(', ')"/>
+                </span>
+                <a href="#" class="tnx-more" t-on-click.prevent="openFeatures">change</a>
+                <span t-if="d.features.never_pushed" class="tnx-sync-err bad">
+                  never told —
+                  <a href="#" t-on-click.prevent="() => this.pushFeatures(d.id)">send now</a>
+                </span>
+              </b>
+              <b t-else="">—</b>
+            </div>
             <div class="tnx-rev-row"><span>Staging copy</span>
               <b t-if="d.staging_exists" class="tnx-staging-on">
                 <t t-esc="d.staging_db"/> — <a href="#" t-on-click.prevent="() => this.openUrl(d.staging_url)">open</a> ·
@@ -1469,6 +1758,92 @@
           <button class="pbim-btn danger"
                   t-att-disabled="(state.roll.skipFor.slug and state.roll.skipText !== state.roll.skipFor.slug) || !!state.roll.busy"
                   t-on-click="confirmSkip">Leave them behind</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ ONE SWITCH, UP CLOSE ========================================
+         FLEET P4. The three things a switch cannot say on a grid: why it is
+         the way it is, who decided, and how to undo the decision. "Put it
+         back" is not the same as flipping it the other way — it removes this
+         customer's own answer, so they follow the catalogue again and keep
+         following it if the catalogue changes. -->
+    <div t-if="state.feat.menu" class="pbim-modal-scrim" t-on-click="closeFeatMenu">
+      <div class="pbim-modal is-narrow" t-on-click.stop="() => {}">
+        <t t-set="row" t-value="featMenuRow"/>
+        <t t-set="col" t-value="featMenuCol"/>
+        <div t-if="row and col" class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('toggle',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl"><t t-esc="col.name"/> for <t t-esc="row.name"/></div>
+            <div class="pbim-modal__sub" t-esc="col.blurb"/>
+          </div>
+          <button class="pbim-modal__x" t-on-click="closeFeatMenu" title="Close"><t t-out="ic('x',15)"/></button>
+        </div>
+        <div t-if="row and col" class="pbim-modal__body">
+          <div class="tnx-rev-row"><span>Right now</span>
+            <b>
+              <span t-attf-class="pbim-badge {{ row.on[col.key] !== false ? 'ok' : 'muted' }}"
+                    t-esc="row.on[col.key] !== false ? 'switched on' : 'switched off'"/>
+              <span class="tnx-fsrc" t-esc="featSource(row, col) === 'default' ? 'the standard setting' : 'decided for this customer'"/>
+            </b>
+          </div>
+          <div class="tnx-rev-row"><span>Decided by</span>
+            <b t-if="row.who[col.key]">
+              <t t-esc="row.who[col.key]"/><t t-if="row.when[col.key]"> · <t t-esc="row.when[col.key]"/></t>
+            </b>
+            <b t-else="">nobody — it follows the catalogue</b>
+          </div>
+          <div class="tnx-rev-row"><span>They will see</span>
+            <b t-esc="row.on[col.key] !== false ? 'everything this part of the product offers' : (col.mode === 'lock' ? 'a padlock and one line about how to get it' : 'nothing at all — the entries are gone')"/>
+          </div>
+          <label class="pplw-label">Why (one line, for whoever asks later)</label>
+          <input class="pplw-in" t-model="state.feat.reason"
+                 placeholder="e.g. not part of what they signed for"/>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn outline" t-att-disabled="!!state.feat.busy"
+                  t-on-click="resetFeat">
+            <t t-out="ic('undo',14)"/> Put it back to the standard
+          </button>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeFeatMenu">Close</button>
+          <button class="pbim-btn primary" t-att-disabled="!!state.feat.busy"
+                  t-on-click="saveFeatReason">Save the reason</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================= ONE FEATURE, EVERY CUSTOMER ======================================
+         A column switch reaches every customer on the screen, so it names them
+         all before it does anything. -->
+    <div t-if="state.feat.confirm" class="pbim-modal-scrim" t-on-click="closeFeatBulk">
+      <div class="pbim-modal is-narrow" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('toggle',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">
+              <t t-esc="state.feat.confirm.on ? 'Switch on' : 'Switch off'"/>
+              <t t-esc="state.feat.confirm.name"/>
+            </div>
+            <div class="pbim-modal__sub">for <t t-esc="state.feat.confirm.ids.length"/> customer(s)</div>
+          </div>
+        </div>
+        <div class="pbim-modal__body">
+          <p class="tnx-plan-say" t-esc="featBulkSentence"/>
+          <p class="tnx-plan-say">
+            Each of them is told within seconds. Anybody with a page open sees their
+            menu change inside a minute, without reloading.
+          </p>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeFeatBulk">Cancel</button>
+          <button t-attf-class="pbim-btn {{ state.feat.confirm.on ? 'primary' : 'danger' }}"
+                  t-att-disabled="state.feat.busy === 'bulk'" t-on-click="confirmFeatBulk">
+            <t t-if="state.feat.busy === 'bulk'"><span class="pbim-spin tnx-minispin"/> Telling them…</t>
+            <t t-else="">Yes, do it</t>
+          </button>
         </div>
       </div>
     </div>

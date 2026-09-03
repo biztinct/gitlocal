@@ -648,3 +648,186 @@
     .tnx .tnx-capbar i { transition: none; }
     .tnx .tnx-chip.r .tnx-chip-dot, .tnx .tnx-ro-step.running .tnx-ro-step-dot { animation: none; }
 }
+
+// =====================================================================
+//  FLEET P4 — WHAT EACH CUSTOMER GETS.
+//
+//  ITS OWN ROOT SECTION, and that is not a stylistic choice. This file has
+//  TWO root blocks already (`.tnx` and the `.tnx-notice, .tnx-settings,
+//  .tnx-resolve` scrims), and a block appended "at the end" compiles inside
+//  whichever one happens to be last — which is how P3's capacity bar shipped
+//  0 px tall with no error anywhere (ledger F35). Everything below is scoped
+//  from the root on purpose, and the two dialogs are scrims, exactly like the
+//  notice composer.
+//
+//  `--pbim-*` tokens only, flat fills, no gradients, and the promoted
+//  semantics for on (green) and off (muted) — never an invented hex.
+// =====================================================================
+.tnx .tnx-fnote {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 12px 15px; margin-bottom: 16px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-left: 3px solid var(--pbim-primary, #5A4BB0);
+    border-radius: 12px;
+    background: var(--pbim-surface, #fff);
+    font-size: 12.5px; line-height: 1.55; color: var(--pbim-ink-2, #4a4a5a);
+    b { color: var(--pbim-ink, #1B1733); }
+}
+.tnx .tnx-fnote-ic { color: var(--pbim-primary, #5A4BB0); display: flex; padding-top: 1px; flex: none; }
+
+// The grid and the preview, side by side. The preview is fixed-width because
+// it is a REPLICA of a 76px-ish rail with labels; letting it stretch would
+// make it a diagram of nothing.
+.tnx .tnx-fwrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+@media (max-width: 1200px) { .tnx .tnx-fwrap { grid-template-columns: minmax(0, 1fr); } }
+
+.tnx .tnx-fgrid-card { padding: 0; overflow: hidden; }
+.tnx .tnx-fgrid-scroll { overflow-x: auto; }
+.tnx .tnx-fgrid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tnx .tnx-fcorner {
+    position: sticky; left: 0; z-index: 2;
+    background: var(--pbim-surface, #fff);
+    text-align: left; padding: 12px 16px; min-width: 230px;
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--pbim-muted, #64748B);
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.tnx .tnx-fhead {
+    padding: 10px 8px; vertical-align: bottom; min-width: 96px;
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.tnx .tnx-fhead-in { display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; }
+.tnx .tnx-fhead-n { font-size: 11.5px; font-weight: 800; color: var(--pbim-ink, #1B1733); line-height: 1.3; }
+.tnx .tnx-fhead-m { font-size: 10.5px; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fbulk { display: inline-flex; gap: 3px; margin-top: 2px; }
+.tnx .tnx-fbulk-b {
+    border: 1px solid var(--pbim-line, #E2E8F0); background: transparent;
+    border-radius: 7px; padding: 1px 7px; font: inherit; font-size: 10.5px; font-weight: 700;
+    color: var(--pbim-muted, #64748B); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
+    &.on:hover { background: var(--pbim-green, #2E7D4F); border-color: var(--pbim-green, #2E7D4F); color: #fff; }
+    &.off:hover { background: var(--pbim-muted, #64748B); border-color: var(--pbim-muted, #64748B); color: #fff; }
+}
+
+.tnx .tnx-frow { border-bottom: 1px solid var(--pbim-line-2, #F1F5F9); }
+.tnx .tnx-frow.cur { background: var(--pbim-soft, #EDEAF8); }
+.tnx .tnx-frow.ro { background: var(--pbim-bg, #F5F6FA); }
+.tnx .tnx-fname {
+    position: sticky; left: 0; z-index: 1;
+    background: inherit;
+    text-align: left; padding: 11px 16px; min-width: 230px; cursor: pointer;
+    display: table-cell;
+}
+.tnx .tnx-frow.ro .tnx-fname { background: var(--pbim-bg, #F5F6FA); }
+.tnx .tnx-fname-n { display: block; font-size: 13px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+.tnx .tnx-fname-s { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 1px; }
+.tnx .tnx-fnever { display: block; font-size: 11.5px; font-weight: 700; color: #D97706; margin-top: 2px;
+    a { color: inherit; text-decoration: underline; } }
+.tnx .tnx-fpushed { display: block; font-size: 11px; color: var(--pbim-muted, #64748B); margin-top: 2px; }
+
+.tnx .tnx-fcellwrap { position: relative; text-align: center; padding: 9px 8px; }
+
+// THE SWITCH. A real switch and not a tick: the reader is setting a state that
+// stays set, and the knob moving left to right is the only affordance that
+// says so without a word.
+.tnx .tnx-fcell {
+    width: 42px; height: 23px; border-radius: 12px; border: 1px solid transparent;
+    background: var(--pbim-line, #E2E8F0); position: relative; cursor: pointer; padding: 0;
+    transition: background .16s ease, box-shadow .12s;
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+    &.on { background: var(--pbim-green, #2E7D4F); }
+    &.cur { box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    &.rng { box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    &[disabled] { opacity: .5; cursor: default; }
+    // "Somebody decided this" versus "it follows the catalogue": a dotted ring
+    // rather than a second colour, because colour is already saying on/off and
+    // a screen that says two things with one channel says neither.
+    &.own { border-color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-fknob {
+    position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 2px rgba(16, 12, 40, .25);
+    transition: transform .16s ease;
+}
+.tnx .tnx-fcell.on .tnx-fknob { transform: translateX(19px); }
+.tnx .tnx-fdot {
+    position: absolute; top: 4px; right: 4px; border: 0; background: transparent; padding: 0;
+    color: var(--pbim-line, #E2E8F0); cursor: pointer; line-height: 0;
+    transition: color .12s;
+    &:hover, &:focus-visible { color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-fsrc { font-size: 11.5px; color: var(--pbim-muted, #64748B); font-weight: 600; }
+
+.tnx .tnx-fkeys {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+    font-size: 11.5px; color: var(--pbim-muted, #64748B);
+}
+.tnx .tnx-frangetag { color: var(--pbim-primary, #5A4BB0); font-weight: 700; }
+
+// ---------------------------------------------------------- the hero
+.tnx .tnx-fpreview { padding: 16px; position: sticky; top: 12px; }
+.tnx .tnx-fprev-h { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;
+    b { display: block; font-size: 13px; color: var(--pbim-ink, #1B1733); } }
+.tnx .tnx-fprev-ic { color: var(--pbim-primary, #5A4BB0); display: flex; padding-top: 1px; }
+.tnx .tnx-fprev-s { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-railprev {
+    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 12px; overflow: hidden;
+    background: var(--pbim-surface, #fff);
+}
+.tnx .tnx-railitem {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    font-size: 12.5px; font-weight: 700; color: var(--pbim-ink, #1B1733);
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    animation: tnxRise .22s ease both;
+    &:last-child { border-bottom: 0; }
+    &.locked { color: var(--pbim-muted, #64748B); background: var(--pbim-bg, #F5F6FA); }
+}
+.tnx .tnx-railic { display: flex; color: var(--pbim-primary, #5A4BB0); }
+.tnx .tnx-railitem.locked .tnx-railic { color: var(--pbim-muted, #64748B); }
+.tnx .tnx-railtx { flex: 1; min-width: 0; }
+.tnx .tnx-raillock { display: flex; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fprev-f { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fprev-warn {
+    display: flex; gap: 8px; align-items: flex-start; margin-top: 12px;
+    padding: 10px 12px; border-radius: 10px; background: #FEF3C7; color: #7c5109;
+    font-size: 11.5px; line-height: 1.5;
+    a { color: inherit; text-decoration: underline; }
+}
+
+// ------------------------------------------------------- the catalogue
+.tnx .tnx-fcat { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .tnx .tnx-fcat { grid-template-columns: minmax(0, 1fr); } }
+.tnx .tnx-fcat-list, .tnx .tnx-fcat-form { padding: 0; }
+.tnx .tnx-fcat-h {
+    padding: 14px 17px; border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    b { display: block; font-size: 13px; color: var(--pbim-ink, #1B1733); }
+    span { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 2px; line-height: 1.5; }
+}
+.tnx .tnx-fcatrow {
+    display: flex; align-items: center; gap: 10px; padding: 12px 17px; cursor: pointer;
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    transition: background .12s;
+    &:hover { background: var(--pbim-bg, #F5F6FA); }
+    &.cur { background: var(--pbim-soft, #EDEAF8); }
+    &:last-child { border-bottom: 0; }
+}
+.tnx .tnx-fcatrow-n { flex: 1; min-width: 0;
+    b { display: block; font-size: 12.5px; color: var(--pbim-ink, #1B1733); }
+    span { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 1px; line-height: 1.45; } }
+.tnx .tnx-fcat-form { padding: 0 0 16px; }
+.tnx .tnx-flab {
+    display: block; padding: 11px 17px 0; font-size: 11.5px; font-weight: 700;
+    color: var(--pbim-muted, #64748B);
+    .pbim-input, input, textarea { display: block; width: 100%; margin-top: 5px; font: inherit; font-size: 12.5px;
+        font-weight: 500; color: var(--pbim-ink, #1B1733);
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 9px; padding: 7px 10px;
+        background: var(--pbim-surface, #fff); }
+    .pbim-seg { margin-top: 5px; }
+}
+.tnx .tnx-fcat-actions { display: flex; gap: 8px; justify-content: flex-end; padding: 15px 17px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    // The menu still changes, it simply arrives already there.
+    .tnx .tnx-railitem { animation: none; }
+    .tnx .tnx-fcell, .tnx .tnx-fknob { transition: none; }
+}
