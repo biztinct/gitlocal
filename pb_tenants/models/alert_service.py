@@ -775,10 +775,22 @@ class PbTenantsAlerts(models.AbstractModel):
         get the old page rather than half of the new one — the whole promise of
         this file is that it is there when everything else is not.
         """
-        state = self._status_inputs()
-        page = render_status_page(state, fields.Datetime.now())
         folder = self._status_dir()
         path = os.path.join(folder, 'index.html')
+        # A FILE IS NOT ROLLED BACK. A test suite runs against a fabricated
+        # fleet inside a transaction that is thrown away — but this write is not
+        # in that transaction, so a run on the live platform PUBLISHED a page
+        # built from invented customers and invented problems. It was harmless
+        # the day it was noticed and one fabricated critical away from telling
+        # the world about an incident that never happened. Every caller is
+        # covered here rather than in each test, because the callers are
+        # `alert_ack`, `alert_resolve`, `notice_send`, `notice_clear` and two
+        # crons, and the next one will be written by somebody who has not read
+        # this comment.
+        if odoo.tools.config['test_enable']:
+            return {'ok': True, 'path': path, 'skipped': 'test run'}
+        state = self._status_inputs()
+        page = render_status_page(state, fields.Datetime.now())
         tmp = path + '.tmp'
         try:
             os.makedirs(folder, exist_ok=True)
