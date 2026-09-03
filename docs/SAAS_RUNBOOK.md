@@ -264,3 +264,74 @@ version diff per module against the reference DB; `pb_sidebar_item` joined to
 the RAIL, and it is where W121 showed up); a fresh registry load with zero
 skipped modules; a >=15 minute cron window with zero errors; and the apex plus
 every other tenant's log clean across the same window.
+
+---
+
+## Status page (FLEET P3, 2026-09-03)
+
+`https://payobook.com/status` is a **static file that nginx serves itself**. The
+application writes it; nginx hands it out. That is the whole point: it is
+readable on the day the application is not.
+
+### What the platform writes
+
+* `pb.tenants._write_status_page()` renders `alert_rules.render_status_page()`
+  into `/var/www/pb-status/index.html`, temp file plus `os.replace` so a reader
+  arriving mid-write gets the old page rather than half of the new one.
+* Driven by the cron **"Payobook Tenants: public status page"** every 5 minutes,
+  by the end of every alert sweep, and by every `notice_send` / `notice_clear`.
+* It contains NO customer name, slug or count — `alert_rules.status_state()` is
+  the only door between what the platform knows and what the page says, and a
+  test (`test_t6_status_page_never_names_a_customer`) feeds it names and asserts
+  none come out.
+* A public notice's window is printed in the platform's own zone with the zone
+  NAMED (`tonight 19:34–01:34 · Asia/Ho_Chi_Minh`), because a file has no reader
+  to ask. Setting: `pb_tenants.status_tz`, default the platform company's zone.
+
+### The nginx part (a deploy step, done once — already applied on this box)
+
+`/etc/nginx/sites-available/_`, immediately BEFORE `location / {`:
+
+```nginx
+  location = /status {
+    alias /var/www/pb-status/index.html;
+    default_type text/html;
+    add_header Cache-Control "no-cache";
+  }
+  location ^~ /status/ {
+    alias /var/www/pb-status/;
+    default_type text/html;
+    add_header Cache-Control "no-cache";
+  }
+```
+
+`^~` on the folder is load-bearing: the vhost has a regex location for
+`.(js|css|png|…)$`, and a regex beats a plain prefix. Without it anything with
+an extension under `/status/` would be proxied to the application instead.
+
+```bash
+sudo mkdir -p /var/www/pb-status
+sudo chown odoo:odoo /var/www/pb-status      # the application writes it
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+The odoo user cannot run nginx (sudoers grants exactly three scripts), so this
+is an SSH step, not something the cockpit can do.
+
+### Proving it is nginx and not the application
+
+```bash
+curl -sI https://payobook.com/status | head
+```
+
+`Last-Modified` and `ETag` are the proof: nginx stamps a file it serves off
+disk, and the application stamps neither. `pb.tenants._status_served()` asks the
+same question from the box (127.0.0.1:443 with SNI) and the cockpit's **Public
+status page** checklist row is green only when the file is under 15 minutes old
+AND that request answered 200 with the page in it.
+
+### If the page goes stale or missing
+
+The page checks its own age in the reader's browser and says so after 15
+minutes. On the platform side, a missing or unwritable folder raises the alert
+`status_page_unwritable`. Recreate the folder with the two commands above.
