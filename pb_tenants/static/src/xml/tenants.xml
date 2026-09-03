@@ -38,6 +38,15 @@
             <span t-if="state.data.features and state.data.features.custom"
                   class="tnx-count" t-esc="state.data.features.custom"/>
           </button>
+          <!-- FLEET P5. The chip counts INVOICES NOT PAID, not invoices — the
+               number somebody can do something about. It is rose the moment
+               one of them is past its due date. -->
+          <button t-attf-class="pbim-btn outline {{ (state.data.billing and state.data.billing.overdue) ? 'tnx-billchip bad' : '' }}"
+                  t-on-click="openBilling">
+            <t t-out="ic('receipt',15)"/> Billing
+            <span t-if="state.data.billing and state.data.billing.unpaid"
+                  class="tnx-count" t-esc="state.data.billing.unpaid"/>
+          </button>
           <button class="pbim-btn outline tnx-sync-btn" t-on-click="openSync">
             <t t-out="ic('layers',15)"/> In step with master
             <span t-if="state.data.drift_total" class="tnx-count" t-esc="state.data.drift_total"/>
@@ -212,11 +221,29 @@
           <div class="tnx-card-foot">
             <span class="tnx-foot-note">
               <t t-if="t.state === 'live'"><t t-out="ic('shieldCheck',12)"/> backup <t t-esc="t.last_backup || 'never'"/></t>
+              <!-- FLEET P5. A customer who is on trial, paused or on their way
+                   out says so HERE rather than only in a badge: the badge says
+                   what, this says by when and why, which is the half somebody
+                   acts on. -->
+              <t t-elif="t.state === 'trial'">
+                <t t-out="ic('clock',12)"/>
+                <t t-if="t.trial_days_left > 1">trial ends in <t t-esc="t.trial_days_left"/> days</t>
+                <t t-elif="t.trial_days_left === 1">trial ends tomorrow</t>
+                <t t-elif="t.trial_days_left === 0">trial ends today</t>
+                <t t-else="">trial ended <t t-esc="t.trial_ends"/></t>
+              </t>
+              <t t-elif="t.state === 'suspended'">
+                <span class="tnx-errtx"><t t-out="ic('lock',12)"/> paused
+                  <t t-if="t.suspend_reason">· <t t-esc="t.suspend_reason"/></t></span>
+              </t>
+              <t t-elif="t.state === 'pending_deletion'">
+                <t t-out="ic('trash',12)"/> deletes after <t t-esc="t.delete_after"/>
+              </t>
               <t t-elif="t.state === 'error'" ><span class="tnx-errtx" t-esc="t.error"/></t>
               <t t-elif="t.state === 'decommissioned'"><t t-out="ic('archive',12)"/> archived</t>
             </span>
             <span class="tnx-card-actions">
-              <button t-if="t.state === 'live'" class="pbim-btn ghost pbim-btn-sm" t-on-click.stop="() => this.openUrl(t.url)">
+              <button t-if="t.state === 'live' or t.state === 'trial' or t.state === 'pending_deletion'" class="pbim-btn ghost pbim-btn-sm" t-on-click.stop="() => this.openUrl(t.url)">
                 <t t-out="ic('external',13)"/> Open
               </button>
               <button class="pbim-btn outline pbim-btn-sm">Manage</button>
@@ -491,6 +518,265 @@
       </t>
     </div>
 
+
+    <!-- ================================================== BILLING =================================================
+         WHAT EVERY CUSTOMER PAYS, AND WHAT THEY OWE.
+
+         THE HERO IS THE PREVIEW. "Raise September" does not raise anything: it
+         opens a list of every invoice that would be created, every line on it
+         and every customer who would be skipped with the reason in a sentence.
+         Nothing exists until the owner has read that and pressed Create. An
+         invoice is a document sent to a customer; it is not something software
+         should be able to produce while nobody is looking.
+
+         THE MONTH STRIP is the second half of the same idea: twelve months of
+         invoicing at a glance, so "did we bill July?" is a look rather than a
+         search.
+
+         AND THE ONE SENTENCE THIS SCREEN HAS TO CARRY, in red, on the settings
+         dialog: pausing a customer automatically is off, and turning it on
+         means a payroll office can be locked out of its own data at half past
+         eight on a Monday morning because a bank transfer was slow. -->
+    <div t-elif="state.view === 'billing'" class="pbim-wrap tnx-bill">
+      <div class="tnx-head">
+        <div>
+          <button class="pbim-btn ghost pbim-btn-sm tnx-back" t-on-click="backToFleet">
+            <t t-out="ic('back',14)"/> Fleet
+          </button>
+          <div class="pbim-eyebrow"><t t-out="ic('receipt',13)"/> Platform · Billing</div>
+          <h1 class="pbim-h1">What every customer pays</h1>
+          <div class="pbim-sub">
+            One invoice a customer a month, raised from their plan and what they
+            actually used. You mark it paid when the transfer arrives.
+          </div>
+        </div>
+        <div class="tnx-head-actions">
+          <div class="pbim-seg">
+            <button t-attf-class="pbim-segbtn {{ state.bill.tab === 'customers' ? 'on' : '' }}"
+                    t-on-click="() => this.openBillTab('customers')">Customers</button>
+            <button t-attf-class="pbim-segbtn {{ state.bill.tab === 'plans' ? 'on' : '' }}"
+                    t-on-click="() => this.openBillTab('plans')">Plans</button>
+          </div>
+          <button class="pbim-btn ghost" t-att-disabled="state.bill.busy"
+                  t-on-click="openBillSettings">
+            <t t-out="ic('settings',15)"/> Settings
+          </button>
+          <button class="pbim-btn ghost" t-att-disabled="state.bill.busy === 'meter'"
+                  t-on-click="meterNow">
+            <t t-if="state.bill.busy === 'meter'"><span class="pbim-spin tnx-minispin"/> Reading…</t>
+            <t t-else=""><t t-out="ic('gauge',15)"/> Take a reading now</t>
+          </button>
+          <button t-if="state.bill.tab === 'customers'" class="pbim-btn primary"
+                  t-att-disabled="state.bill.previewBusy" t-on-click="openPreview">
+            <t t-out="ic('receipt',15)"/> Raise <t t-esc="bill.period_label"/>
+          </button>
+          <button t-else="" class="pbim-btn primary" t-on-click="newPlan">
+            <t t-out="ic('plus',15)"/> New plan
+          </button>
+        </div>
+      </div>
+
+      <div t-if="!state.bill.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the books…</span></div>
+
+      <div t-elif="state.bill.error" class="tnx-empty">
+        <span class="tnx-empty-ic"><t t-out="ic('alert',30)"/></span>
+        <h3>The billing screen could not be read</h3>
+        <p t-esc="state.bill.error"/>
+        <button class="pbim-btn outline" t-on-click="() => this.loadBilling(false)">
+          <t t-out="ic('refresh',15)"/> Try again
+        </button>
+      </div>
+
+      <t t-else="">
+        <!-- ===================== the month strip ===================== -->
+        <div t-if="state.bill.tab === 'customers'" class="pbim-card tnx-strip">
+          <div class="tnx-strip-months">
+            <button t-foreach="billMonths" t-as="m" t-key="m.period"
+                    t-attf-class="tnx-month {{ m.current ? 'on' : '' }} {{ m.overdue ? 'late' : '' }}"
+                    t-on-click="() => this.setBillPeriod(m.period)"
+                    t-att-title="m.label">
+              <span class="tnx-month-bar"><i t-attf-style="height:{{ m.pct }}%"/></span>
+              <span class="tnx-month-l" t-esc="m.short"/>
+              <span t-if="m.invoices" class="tnx-month-n" t-esc="m.invoices"/>
+            </button>
+          </div>
+          <div class="tnx-strip-now">
+            <div class="tnx-strip-tt">
+              <b t-esc="bill.period_label"/>
+              <span t-if="!bill.closed" class="pbim-badge warn">Month not finished</span>
+              <span t-else="" class="pbim-badge muted">Month closed</span>
+            </div>
+            <div class="tnx-strip-figs">
+              <span t-if="!bill.due.length" class="tnx-strip-clear">
+                <t t-out="ic('checkCircle',15)"/> Nothing outstanding
+              </span>
+              <span t-foreach="bill.due" t-as="dd" t-key="dd.currency" class="tnx-strip-due">
+                <b t-esc="dd.amount_h"/> due
+                <small><t t-esc="dd.count"/> invoice(s)</small>
+              </span>
+              <span t-if="bill.overdue_count" class="tnx-strip-late">
+                <t t-out="ic('alert',14)"/> <t t-esc="bill.overdue_count"/> overdue
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== the customer table ===================== -->
+        <div t-if="state.bill.tab === 'customers'" class="pbim-card tnx-billtbl">
+          <div t-if="!billRows.length" class="tnx-empty">
+            <span class="tnx-empty-ic"><t t-out="ic('receipt',30)"/></span>
+            <h3>No customers to bill yet</h3>
+            <p>Once you have a customer on a plan, this is where their month is
+               measured, invoiced and marked paid.</p>
+          </div>
+          <t t-else="">
+            <div class="tnx-billrow head">
+              <span>Customer</span><span>Plan</span><span>Employees</span>
+              <span>Payslips</span><span>Twelve months</span><span>Invoice</span>
+              <span class="tnx-billacts">What next</span>
+            </div>
+            <div t-foreach="billRows" t-as="row" t-key="row.id" class="tnx-billrow">
+              <span class="tnx-bill-cust">
+                <b t-esc="row.name"/>
+                <small>
+                  <span t-attf-class="pbim-badge {{ stateBadge[row.state][0] }}"
+                        t-esc="stateBadge[row.state][1]"/>
+                  <t t-if="row.state === 'trial' and row.trial_ends">
+                    until <t t-esc="row.trial_ends"/>
+                  </t>
+                </small>
+              </span>
+              <span class="tnx-bill-plan">
+                <t t-if="row.plan" t-esc="row.plan"/>
+                <a t-else="" class="tnx-bill-noplan"
+                   t-on-click="() => this.openDetail(row.id)">No plan — set one</a>
+              </span>
+              <span t-attf-class="tnx-bill-seat {{ seatTone(row.seat) }}">
+                <b t-esc="row.employees"/>
+                <small t-if="row.employee_limit">of <t t-esc="row.employee_limit"/></small>
+                <small t-else="">no limit</small>
+              </span>
+              <span class="tnx-bill-slips" t-esc="row.payslips"/>
+              <span class="tnx-bill-spark">
+                <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+                  <polyline t-att-points="sparkline(row.history)"/>
+                </svg>
+              </span>
+              <span class="tnx-bill-inv">
+                <t t-if="row.invoice">
+                  <b t-esc="row.invoice.total_h"/>
+                  <small>
+                    <span t-attf-class="pbim-badge {{ invoiceTone(row.invoice) }}"
+                          t-esc="row.invoice.state_label"/>
+                    <t t-if="row.invoice.days_overdue">
+                      · <t t-esc="row.invoice.days_overdue"/> days late
+                    </t>
+                  </small>
+                </t>
+                <small t-else="" class="tnx-bill-none">Not raised</small>
+              </span>
+              <span class="tnx-billacts">
+                <t t-if="row.invoice">
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.bill.busy === 'pdf' + row.invoice.id"
+                          t-on-click="() => this.downloadPdf(row.invoice)">
+                    <t t-out="ic('download',13)"/> PDF
+                  </button>
+                  <button t-if="row.invoice.state === 'draft'"
+                          class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="state.bill.busy === 'inv' + row.invoice.id"
+                          t-on-click="() => this.sendInvoice(row.invoice)">
+                    <t t-out="ic('send',13)"/> Send
+                  </button>
+                  <button t-if="row.invoice.state === 'sent' or row.invoice.state === 'overdue'"
+                          class="pbim-btn primary pbim-btn-sm"
+                          t-on-click="() => this.askPaid(row.invoice)">
+                    <t t-out="ic('check',13)"/> Mark paid
+                  </button>
+                  <button t-if="row.invoice.state !== 'void' and row.invoice.state !== 'paid'"
+                          class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.askVoid(row.invoice)">
+                    <t t-out="ic('x',13)"/>
+                  </button>
+                </t>
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openDetail(row.id)">Manage</button>
+              </span>
+            </div>
+          </t>
+        </div>
+
+        <!-- ======================== what was just raised ======================== -->
+        <div t-if="state.bill.raised" class="pbim-card tnx-raised">
+          <div class="tnx-raised-h">
+            <span class="tnx-raised-ic"><t t-out="ic('checkCircle',18)"/></span>
+            <b><t t-esc="state.bill.raised.created.length"/> invoice(s) raised for
+               <t t-esc="state.bill.raised.period_label"/></b>
+            <button class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => state.bill.raised = null">Hide</button>
+          </div>
+          <div t-foreach="state.bill.raised.created" t-as="c" t-key="c.number" class="tnx-raised-row">
+            <b t-esc="c.number"/> <span t-esc="c.tenant"/>
+            <span class="tnx-raised-amt" t-esc="c.total_h"/>
+            <span t-if="!c.pdf" class="pbim-badge warn">PDF not made — check the printer on the server</span>
+          </div>
+          <div t-foreach="state.bill.raised.skipped" t-as="sk" t-key="sk.tenant" class="tnx-raised-skip">
+            <b t-esc="sk.tenant"/> <span t-esc="sk.why"/>
+          </div>
+        </div>
+
+        <!-- ============================ the plans ============================ -->
+        <div t-if="state.bill.tab === 'plans'" class="tnx-plans">
+          <div t-if="!plans.length" class="pbim-card tnx-empty">
+            <span class="tnx-empty-ic"><t t-out="ic('layers',30)"/></span>
+            <h3>No plans yet</h3>
+            <p>A plan says how a customer is charged, how many employees they may
+               have, and which parts of Payobook they get.</p>
+            <button class="pbim-btn primary" t-on-click="newPlan">
+              <t t-out="ic('plus',15)"/> Make the first plan
+            </button>
+          </div>
+          <div t-foreach="plans" t-as="pl" t-key="pl.id"
+               t-attf-class="pbim-card tnx-plan {{ pl.active ? '' : 'off' }}">
+            <div class="tnx-plan-h">
+              <div>
+                <b t-esc="pl.name"/>
+                <span t-if="!pl.active" class="pbim-badge muted">Retired</span>
+                <span class="tnx-plan-blurb" t-esc="pl.blurb"/>
+              </div>
+              <span class="tnx-plan-price" t-esc="pl.headline"/>
+            </div>
+            <div class="tnx-plan-facts">
+              <span><t t-out="ic('users',13)"/> <t t-esc="pl.limit_text"/></span>
+              <span><t t-out="ic('percent',13)"/> Tax <t t-esc="pl.vat_pct"/>%</span>
+              <span><t t-out="ic('clock',13)"/> <t t-esc="pl.trial_days"/>-day trial</span>
+              <span><t t-out="ic('building',13)"/> <t t-esc="pl.tenants"/> customer(s)</span>
+            </div>
+            <div t-if="pl.tiers.length" class="tnx-plan-tiers">
+              <span t-foreach="pl.tiers" t-as="ti" t-key="ti.id" class="tnx-plan-tier">
+                up to <b t-esc="ti.up_to"/> · <t t-esc="ti.price"/>
+              </span>
+            </div>
+            <div t-if="pl.features.length" class="tnx-plan-feats">
+              <span t-foreach="pl.features" t-as="ft" t-key="ft.id"
+                    class="tnx-plan-feat" t-esc="ft.name"/>
+            </div>
+            <div t-else="" class="pbim-note">Everything in the catalogue's standard
+                 settings — this plan takes nothing away.</div>
+            <div class="tnx-plan-acts">
+              <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.editPlan(pl)">
+                <t t-out="ic('pencil',13)"/> Edit
+              </button>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.archivePlan(pl)">
+                <t t-if="pl.active"><t t-out="ic('archive',13)"/> Retire</t>
+                <t t-else=""><t t-out="ic('undo',13)"/> Bring back</t>
+              </button>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+
     <!-- ================================================== ALERTS ==================================================
          WHAT IS WRONG RIGHT NOW, IN THE ORDER SOMEBODY WOULD WORK THROUGH IT.
          Measured against a triage list, not a log: three groups, every row
@@ -703,6 +989,33 @@
               </div>
             </div>
           </div>
+
+          <!-- FLEET P5. A CUSTOMER IS CREATED ON A PLAN. A customer with no
+               plan cannot be invoiced, has no employee limit and gets whatever
+               the feature catalogue's defaults happen to be — and the month
+               end is the worst possible moment to discover it. -->
+          <div class="pplw-sec tnx-wizplan">
+            <h4>Their plan</h4>
+            <div t-if="!wizPlans.length" class="pplw-note">
+              There are no plans yet. Make one on the Billing screen first —
+              a customer without a plan cannot be invoiced.
+            </div>
+            <div t-else="" class="tnx-planpick">
+              <button t-foreach="wizPlans" t-as="wp" t-key="wp.id"
+                      t-attf-class="tnx-planopt {{ state.wiz.form.plan_id === wp.id ? 'on' : '' }}"
+                      t-on-click="() => this.pickWizPlan(wp.id)">
+                <b t-esc="wp.name"/>
+                <span t-esc="wp.headline"/>
+                <small t-esc="wp.limit_text"/>
+              </button>
+            </div>
+            <label t-if="wizPlan" class="tnx-trialtoggle">
+              <input type="checkbox" t-model="state.wiz.form.trial"/>
+              <span>Start as a <b t-esc="wizPlan.trial_days"/>-day trial —
+                    nothing is invoiced until you convert them, and their
+                    people see a quiet countdown in the last week.</span>
+            </label>
+          </div>
         </div>
         <div t-if="state.wiz.step === 1" class="pplw-foot">
           <button class="pbim-btn ghost" t-on-click="closeWizard">Cancel</button>
@@ -717,6 +1030,13 @@
             <div class="tnx-rev-row"><span>Address</span><b class="tnx-rev-url" t-esc="state.wiz.slug.url"/></div>
             <div class="tnx-rev-row"><span>Administrator</span><b><t t-esc="state.wiz.form.admin_name || '—'"/> · <t t-esc="state.wiz.form.admin_email"/></b></div>
             <div class="tnx-rev-row"><span>Country</span><b t-esc="state.wiz.form.country_code || 'set later'"/></div>
+            <div class="tnx-rev-row"><span>Plan</span>
+              <b><t t-esc="wizPlan ? wizPlan.name : '—'"/>
+                 <t t-if="wizPlan"> · <t t-esc="wizPlan.headline"/></t></b></div>
+            <div class="tnx-rev-row"><span>Starts as</span>
+              <b t-if="state.wiz.form.trial">A trial, for
+                 <t t-esc="wizPlan ? wizPlan.trial_days : 14"/> days</b>
+              <b t-else="">A paying customer</b></div>
             <div class="tnx-rev-row"><span>Starts from</span><b>Clean Payobook golden template — no data</b></div>
           </div>
           <div class="pplw-note">
@@ -1310,15 +1630,210 @@
           <span t-attf-class="pbim-badge {{ stateBadge[d.state][0] }}" t-esc="stateBadge[d.state][1]"/>
           <span class="pplw-sp"/>
           <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'health'" t-on-click="refreshTenantHealth"><t t-out="ic('activity',14)"/> Refresh health</button>
-          <button t-if="d.state === 'live'" class="pbim-btn primary" t-on-click="() => this.openUrl(d.url)"><t t-out="ic('external',14)"/> Open</button>
+          <button t-if="d.state !== 'draft' and d.state !== 'provisioning' and d.state !== 'decommissioned'" class="pbim-btn primary" t-on-click="() => this.openUrl(d.url)"><t t-out="ic('external',14)"/> Open</button>
         </div>
 
         <div class="pbim-seg tnx-tabs">
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'overview' ? 'on' : '' }}" t-on-click="() => this.openTab('overview')">Overview</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'updates' ? 'on' : '' }}" t-on-click="() => this.openTab('updates')">Updates</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'plan' ? 'on' : '' }}" t-on-click="() => this.openTab('plan')">Plan</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'backups' ? 'on' : '' }}" t-on-click="() => this.openTab('backups')">Backups</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'domains' ? 'on' : '' }}" t-on-click="() => this.openTab('domains')">Domains</button>
           <button t-attf-class="pbim-segbtn tnx-danger-tab {{ state.det.tab === 'danger' ? 'on' : '' }}" t-on-click="() => this.openTab('danger')">Danger zone</button>
+        </div>
+
+
+        <!-- ================================ plan ================================
+             FLEET P5. One customer's standing, in one place: what they pay for,
+             where they are, what they have used, and every way of changing it.
+
+             THE DANGEROUS BUTTONS ASK FOR THE NAME. Pausing a customer shuts
+             every one of their people out of their own payroll; scheduling a
+             deletion sets a date on their data. Both are typed confirmations.
+             Resuming is one click, because undoing harm is never made harder
+             than doing it. -->
+        <div t-if="state.det.tab === 'plan'">
+          <div t-if="!state.plan.d" class="pbim-busy"><div class="pbim-spin"/><span>Reading their plan…</span></div>
+          <t t-else="">
+            <t t-set="p" t-value="state.plan.d"/>
+
+            <!-- the standing, said in one line -->
+            <div t-attf-class="pbim-card tnx-standing {{ p.state }}">
+              <span class="tnx-standing-ic">
+                <t t-if="p.state === 'suspended'" t-out="ic('lock',20)"/>
+                <t t-elif="p.state === 'trial'" t-out="ic('clock',20)"/>
+                <t t-elif="p.state === 'pending_deletion'" t-out="ic('trash',20)"/>
+                <t t-else="" t-out="ic('checkCircle',20)"/>
+              </span>
+              <div class="tnx-standing-tx">
+                <b t-if="p.state === 'suspended'">Their access is paused</b>
+                <b t-elif="p.state === 'trial'">On trial until <t t-esc="p.trial_ends"/></b>
+                <b t-elif="p.state === 'pending_deletion'">Data may be deleted after <t t-esc="p.delete_after"/></b>
+                <b t-else="">Paying customer, running normally</b>
+                <span t-if="p.state === 'suspended'">
+                  <t t-esc="p.suspend_reason"/> · since <t t-esc="p.suspended_at"/>.
+                  Their data is untouched and Resume takes one click.
+                </span>
+                <span t-elif="p.state === 'trial'">
+                  <t t-if="p.trial.phase === 'ended'">The trial has ended. Nothing has happened to their data.</t>
+                  <t t-else=""><t t-esc="p.trial.days_left"/> day(s) left. Convert them when they are ready.</t>
+                </span>
+                <span t-elif="p.state === 'pending_deletion'">
+                  <t t-esc="p.deletion_reason"/> Nothing deletes it on its own —
+                  the deletion is still the Danger zone button, pressed by a person.
+                </span>
+                <span t-else="">Their people can sign in and everything is switched on for them.</span>
+              </div>
+              <span class="pplw-sp"/>
+              <button t-if="p.state === 'trial'" class="pbim-btn primary"
+                      t-att-disabled="state.plan.busy" t-on-click="convertTrial">
+                <t t-out="ic('checkCircle',14)"/> Convert to paying
+              </button>
+              <button t-if="p.state === 'suspended'" class="pbim-btn primary"
+                      t-att-disabled="state.plan.busy" t-on-click="resumeTenant">
+                <t t-out="ic('play',14)"/> Resume
+              </button>
+              <button t-if="p.state === 'pending_deletion'" class="pbim-btn primary"
+                      t-att-disabled="state.plan.busy" t-on-click="cancelDeletion">
+                <t t-out="ic('undo',14)"/> Do not delete
+              </button>
+              <span t-if="!p.linked" class="pbim-badge warn">
+                Their database has no Platform Link yet — bring it in step so it
+                can be told any of this
+              </span>
+            </div>
+
+            <div class="tnx-plangrid">
+              <!-- which plan -->
+              <div class="pbim-card tnx-plancard">
+                <h4><t t-out="ic('layers',15)"/> Their plan</h4>
+                <p class="pbim-note">A plan sets what they are charged, how many
+                   employees they may have, and which parts of Payobook they get.
+                   Changing it tells their database straight away.</p>
+                <div class="tnx-planpick">
+                  <button t-foreach="p.plans" t-as="pp" t-key="pp.id"
+                          t-attf-class="tnx-planopt {{ p.plan_id === pp.id ? 'on' : '' }}"
+                          t-att-disabled="state.plan.busy"
+                          t-on-click="() => this.setTenantPlan(pp.id)">
+                    <b t-esc="pp.name"/>
+                    <span t-esc="pp.headline"/>
+                    <small t-esc="pp.limit_text"/>
+                  </button>
+                </div>
+                <div class="tnx-planrow">
+                  <label>Where invoices go</label>
+                  <input type="email" class="pbim-input" t-model="state.plan.email"
+                         t-att-placeholder="p.admin_email"/>
+                </div>
+                <div class="tnx-planrow">
+                  <label>Trial ends</label>
+                  <input type="date" class="pbim-input" t-model="state.plan.trial"/>
+                </div>
+                <button class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.plan.busy === 'save'"
+                        t-on-click="savePlanTabDetails">
+                  <t t-out="ic('save',13)"/> Save these two
+                </button>
+                <div t-if="p.access_pushed_at" class="pbim-note tnx-pushed">
+                  Their database was last told about this on <t t-esc="p.access_pushed_at"/>.
+                </div>
+              </div>
+
+              <!-- what they have used -->
+              <div class="pbim-card tnx-plancard">
+                <h4><t t-out="ic('gauge',15)"/> What they have used</h4>
+                <div t-if="p.employee_limit" t-attf-class="tnx-seatbar {{ p.seat.verdict }}">
+                  <i t-attf-style="width:{{ p.seat.pct }}%"/>
+                </div>
+                <p class="pbim-note">
+                  <t t-if="p.employee_limit">
+                    <b t-esc="p.seat.count"/> of <b t-esc="p.employee_limit"/> employees.
+                    <t t-if="p.seat.verdict === 'full'"> They cannot add another until the plan changes.</t>
+                    <t t-elif="p.seat.verdict === 'near'"> Room for <t t-esc="p.seat.left"/> more.</t>
+                  </t>
+                  <t t-else="">This plan has no employee limit.</t>
+                </p>
+                <div t-if="p.usage.length" class="tnx-usagelist">
+                  <div t-foreach="p.usage" t-as="u" t-key="u.id" class="tnx-usagerow">
+                    <span t-esc="u.period_label"/>
+                    <b t-esc="u.employees"/> <small>employees</small>
+                    <b t-esc="u.payslips"/> <small>payslips</small>
+                    <span class="tnx-usagewhen" t-esc="u.measured_at"/>
+                  </div>
+                </div>
+                <div t-else="" class="pbim-note">No readings yet. The meter runs at
+                     23:50 every night, and "Take a reading now" is on the Billing
+                     screen.</div>
+              </div>
+            </div>
+
+            <!-- their invoices -->
+            <div class="pbim-card tnx-planinv">
+              <h4><t t-out="ic('receipt',15)"/> Their invoices</h4>
+              <div t-if="p.invoices.length">
+                <div t-foreach="p.invoices" t-as="inv" t-key="inv.id" class="tnx-planinvrow">
+                  <b t-esc="inv.number"/>
+                  <span t-esc="inv.period_label"/>
+                  <span class="tnx-planinvamt" t-esc="inv.total_h"/>
+                  <span t-attf-class="pbim-badge {{ invoiceTone(inv) }}" t-esc="inv.state_label"/>
+                  <span class="tnx-planinvwhen">
+                    <t t-if="inv.state === 'paid'">paid <t t-esc="inv.paid_at"/></t>
+                    <t t-elif="inv.due_date">due <t t-esc="inv.due_date"/></t>
+                  </span>
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.downloadPdf(inv)">
+                    <t t-out="ic('download',13)"/> PDF
+                  </button>
+                </div>
+              </div>
+              <div t-else="" class="pbim-note">Nothing invoiced yet.</div>
+            </div>
+
+            <!-- the two that need typing -->
+            <div class="pbim-card tnx-planrisk">
+              <h4><t t-out="ic('alert',15)"/> Pausing and deletion</h4>
+              <div class="tnx-planrisk-row">
+                <div>
+                  <b>Pause their access</b>
+                  <span>Every one of their people meets a calm page instead of
+                        their payroll. Nothing is deleted, nothing is archived,
+                        and Resume is one click. The platform's own recovery
+                        account still gets in.</span>
+                </div>
+                <div class="tnx-planrisk-form">
+                  <input class="pbim-input" placeholder="Why, in one line"
+                         t-model="state.plan.reason"/>
+                  <input class="pbim-input" t-attf-placeholder="Type {{ p.slug }} to confirm"
+                         t-model="state.plan.confirm"/>
+                  <button class="pbim-btn danger"
+                          t-att-disabled="state.plan.busy or state.plan.confirm !== p.slug or p.state === 'suspended'"
+                          t-on-click="suspendTenant">
+                    <t t-out="ic('lock',13)"/> Pause
+                  </button>
+                </div>
+              </div>
+              <div class="tnx-planrisk-row">
+                <div>
+                  <b>Set a deletion date</b>
+                  <span>A promise to the customer and a reminder to us. A final
+                        backup is taken first. NOTHING deletes their data when
+                        the date passes — that is still the Danger zone, pressed
+                        by a person.</span>
+                </div>
+                <div class="tnx-planrisk-form">
+                  <input type="number" min="1" class="pbim-input tnx-days"
+                         t-model="state.plan.days"/>
+                  <input class="pbim-input" t-attf-placeholder="Type {{ p.slug }} to confirm"
+                         t-model="state.plan.confirm"/>
+                  <button class="pbim-btn danger"
+                          t-att-disabled="state.plan.busy or state.plan.confirm !== p.slug or p.state === 'pending_deletion'"
+                          t-on-click="scheduleDeletion">
+                    <t t-out="ic('trash',13)"/> Schedule
+                  </button>
+                </div>
+              </div>
+            </div>
+          </t>
         </div>
 
         <!-- ================================ updates ================================
@@ -2164,6 +2679,382 @@
               <t t-else=""><t t-out="ic('send',15)"/> Send it</t>
             </button>
           </t>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================== THE HERO: EVERY INVOICE, BEFORE ANY OF THEM EXISTS ==================
+         Nothing has been created when this opens. Every customer is here with
+         their reading, their lines and their total; every customer who would be
+         skipped says why in a sentence somebody can act on. Create is the only
+         thing on this screen that writes anything. -->
+    <div t-if="state.bill.preview" class="pbim-modal__scrim" t-on-click.self="closePreview">
+      <div class="pbim-modal tnx-previewbox">
+        <div class="pbim-modal__head">
+          <span class="pbim-modal__ic"><t t-out="ic('receipt',18)"/></span>
+          <div>
+            <h3>Raise the invoices for <t t-esc="state.bill.preview.period_label"/></h3>
+            <span class="pbim-modal__sub">
+              Nothing has been created yet. This is exactly what pressing Create
+              will produce.
+            </span>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="closePreview"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbim-modal__body">
+          <div t-if="!state.bill.preview.closed" class="tnx-prev-warn">
+            <t t-out="ic('alert',16)"/>
+            <span><b><t t-esc="state.bill.preview.period_label"/> is not over yet.</b>
+              The employee count is today's and the payslip count only covers the
+              month so far, so both may go up before the month closes. Raise it
+              early only if that is what you mean to do.</span>
+          </div>
+
+          <div class="tnx-prev-sum">
+            <span><b t-esc="state.bill.preview.billable"/> invoice(s) to raise</span>
+            <span t-foreach="previewTotals" t-as="tt" t-key="tt.currency" class="tnx-prev-tot">
+              <b t-esc="tt.amount_h"/>
+            </span>
+            <span t-if="state.bill.preview.skipped" class="tnx-prev-skipn">
+              <t t-esc="state.bill.preview.skipped"/> skipped
+            </span>
+          </div>
+
+          <div t-foreach="state.bill.preview.rows" t-as="pr" t-key="pr.tenant_id"
+               t-attf-class="tnx-prev-row {{ pr.skip ? 'skipped' : '' }}">
+            <div class="tnx-prev-h">
+              <b t-esc="pr.tenant"/>
+              <span t-if="pr.plan" class="tnx-prev-plan" t-esc="pr.plan"/>
+              <span class="pplw-sp"/>
+              <b t-if="!pr.skip" class="tnx-prev-amt" t-esc="pr.total_h"/>
+              <span t-else="" class="tnx-prev-why" t-esc="pr.skip"/>
+            </div>
+            <div t-if="!pr.skip" class="tnx-prev-lines">
+              <div t-foreach="pr.lines" t-as="pline" t-key="pline_index" class="tnx-prev-line">
+                <span class="tnx-prev-lab">
+                  <t t-esc="pline.label"/>
+                  <small t-if="pline.detail" t-esc="pline.detail"/>
+                </span>
+                <span class="tnx-prev-q"><t t-esc="pline.qty_h"/> × <t t-esc="pline.unit_h"/></span>
+                <span class="tnx-prev-a" t-esc="pline.amount_h"/>
+              </div>
+              <div t-if="pr.vat_amount" class="tnx-prev-line vat">
+                <span class="tnx-prev-lab">Tax at <t t-esc="pr.vat_pct"/>%</span>
+                <span class="tnx-prev-q"/>
+                <span class="tnx-prev-a" t-esc="pr.vat_h"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closePreview">Not now</button>
+          <button class="pbim-btn primary" t-att-disabled="state.bill.previewBusy or !state.bill.preview.billable"
+                  t-on-click="confirmRaise">
+            <t t-if="state.bill.previewBusy"><span class="pbim-spin tnx-minispin"/> Creating…</t>
+            <t t-else=""><t t-out="ic('check',15)"/>
+              Create <t t-esc="state.bill.preview.billable"/> invoice(s)</t>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ MARK AN INVOICE PAID ======================================== -->
+    <div t-if="state.bill.paidFor" class="pbim-modal__scrim"
+         t-on-click.self="() => state.bill.paidFor = null">
+      <div class="pbim-modal tnx-smallbox">
+        <div class="pbim-modal__head">
+          <span class="pbim-modal__ic"><t t-out="ic('check',18)"/></span>
+          <div>
+            <h3>Mark <t t-esc="state.bill.paidFor.number"/> as paid</h3>
+            <span class="pbim-modal__sub">
+              <t t-esc="state.bill.paidFor.total_h"/> from
+              <t t-esc="state.bill.paidFor.tenant"/>. The customer's own screen
+              updates too.
+            </span>
+          </div>
+        </div>
+        <div class="pbim-modal__body">
+          <label class="pbim-label">How it was paid (optional, kept on the record)</label>
+          <input class="pbim-input" t-model="state.bill.paidNote"
+                 placeholder="Bank transfer, 14 Sept"/>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="() => state.bill.paidFor = null">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.bill.busy" t-on-click="confirmPaid">
+            <t t-out="ic('check',15)"/> Mark it paid
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ CANCEL AN INVOICE =========================================== -->
+    <div t-if="state.bill.voidFor" class="pbim-modal__scrim"
+         t-on-click.self="() => state.bill.voidFor = null">
+      <div class="pbim-modal tnx-smallbox">
+        <div class="pbim-modal__head">
+          <span class="pbim-modal__ic"><t t-out="ic('x',18)"/></span>
+          <div>
+            <h3>Cancel invoice <t t-esc="state.bill.voidFor.number"/></h3>
+            <span class="pbim-modal__sub">
+              It stays on the record as cancelled, with your reason on it. The
+              month can then be raised again.
+            </span>
+          </div>
+        </div>
+        <div class="pbim-modal__body">
+          <label class="pbim-label">Why is it being cancelled?</label>
+          <input class="pbim-input" t-model="state.bill.voidReason"
+                 placeholder="Raised against the wrong month"/>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="() => state.bill.voidFor = null">Keep it</button>
+          <button class="pbim-btn danger"
+                  t-att-disabled="state.bill.busy or !state.bill.voidReason.trim()"
+                  t-on-click="confirmVoid">Cancel the invoice</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== ONE PLAN, UP CLOSE ======================================== -->
+    <div t-if="state.bill.planEdit" class="pbim-modal__scrim" t-on-click.self="cancelPlanEdit">
+      <div class="pbim-modal tnx-planbox">
+        <div class="pbim-modal__head">
+          <span class="pbim-modal__ic"><t t-out="ic('layers',18)"/></span>
+          <div>
+            <h3 t-if="state.bill.planEdit.id">Edit the <t t-esc="state.bill.planEdit.name"/> plan</h3>
+            <h3 t-else="">A new plan</h3>
+            <span class="pbim-modal__sub">
+              How it charges, what it allows, and what it includes. Customers
+              already on it are told as soon as you save.
+            </span>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="cancelPlanEdit"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbim-modal__body">
+          <div class="tnx-planform">
+            <div class="tnx-planfield wide">
+              <label class="pbim-label">Name</label>
+              <input class="pbim-input" t-model="state.bill.planEdit.name"
+                     placeholder="Growth"/>
+            </div>
+            <div class="tnx-planfield wide">
+              <label class="pbim-label">One sentence: who it is for</label>
+              <input class="pbim-input" t-model="state.bill.planEdit.blurb"
+                     placeholder="For a company whose payroll changes every month."/>
+            </div>
+          </div>
+
+          <label class="pbim-label">How it charges</label>
+          <div class="pbim-seg tnx-priceseg">
+            <button t-foreach="bill.pricing" t-as="pk" t-key="pk.key"
+                    t-attf-class="pbim-segbtn {{ state.bill.planEdit.pricing === pk.key ? 'on' : '' }}"
+                    t-on-click="() => this.setPlanPricing(pk.key)"
+                    t-esc="pk.label"/>
+          </div>
+
+          <div t-if="state.bill.planEdit.pricing !== 'flat_tier'" class="tnx-planform">
+            <div class="tnx-planfield">
+              <label class="pbim-label">
+                <t t-if="state.bill.planEdit.pricing === 'per_employee'">Price per employee, per month</t>
+                <t t-else="">Price per payslip produced</t>
+              </label>
+              <input type="number" min="0" step="1" class="pbim-input"
+                     t-model="state.bill.planEdit.price"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Currency</label>
+              <select class="pbim-input" t-model="state.bill.planEdit.currency_id">
+                <option t-foreach="bill.currencies" t-as="cu" t-key="cu.id"
+                        t-att-value="cu.id" t-esc="cu.name"/>
+              </select>
+            </div>
+          </div>
+
+          <div t-else="" class="tnx-tiers">
+            <div class="pbim-note">Each band is "up to this many employees". The
+                 band with the highest number also covers anything bigger — a
+                 company that hires one more person is charged the top band
+                 rather than nothing at all.</div>
+            <div t-foreach="state.bill.planEdit.tiers" t-as="tr" t-key="tr_index" class="tnx-tier">
+              <span class="tnx-tier-l">up to</span>
+              <input type="number" min="1" class="pbim-input tnx-tier-n" t-model="tr.up_to"/>
+              <span class="tnx-tier-l">employees ·</span>
+              <input type="number" min="0" class="pbim-input tnx-tier-p" t-model="tr.price"/>
+              <span class="tnx-tier-l">a month</span>
+              <button class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.removeTier(tr_index)"><t t-out="ic('trash',13)"/></button>
+            </div>
+            <div class="tnx-tier-add">
+              <button class="pbim-btn outline pbim-btn-sm" t-on-click="addTier">
+                <t t-out="ic('plus',13)"/> Add a band
+              </button>
+              <select class="pbim-input tnx-tier-cur" t-model="state.bill.planEdit.currency_id">
+                <option t-foreach="bill.currencies" t-as="cu2" t-key="cu2.id"
+                        t-att-value="cu2.id" t-esc="cu2.name"/>
+              </select>
+            </div>
+          </div>
+
+          <div class="tnx-planform">
+            <div class="tnx-planfield">
+              <label class="pbim-label">Employee limit (0 = no limit)</label>
+              <input type="number" min="0" class="pbim-input"
+                     t-model="state.bill.planEdit.employee_limit"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Tax %</label>
+              <input type="number" min="0" step="0.5" class="pbim-input"
+                     t-model="state.bill.planEdit.vat_pct"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Trial length, in days</label>
+              <input type="number" min="0" class="pbim-input"
+                     t-model="state.bill.planEdit.trial_days"/>
+            </div>
+          </div>
+
+          <label class="pbim-label">What this plan includes</label>
+          <div class="pbim-note">Nothing ticked means the customer gets whatever
+               the feature catalogue's standard settings are. A switch somebody
+               set by hand on a customer always wins over the plan.</div>
+          <div class="tnx-planfeats">
+            <button t-foreach="bill.features" t-as="fk" t-key="fk.key"
+                    t-attf-class="tnx-planfeat {{ state.bill.planEdit.feature_keys.includes(fk.key) ? 'on' : '' }}"
+                    t-on-click="() => this.togglePlanFeature(fk.key)">
+              <t t-esc="fk.name"/>
+            </button>
+          </div>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="cancelPlanEdit">Cancel</button>
+          <button class="pbim-btn primary"
+                  t-att-disabled="!planEditValid or state.bill.busy === 'plan'"
+                  t-on-click="savePlan">
+            <t t-out="ic('save',15)"/> Save the plan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================= BILLING SETTINGS ===========================================
+         THE ONE SWITCH THAT NEEDS A PARAGRAPH. Pausing a customer automatically
+         is OFF, by the owner's own ruling, and the sentence in red says exactly
+         what turning it on means: a payroll office locked out of its own data at
+         half past eight on a Monday because a bank transfer was slow. -->
+    <div t-if="state.bill.settingsOpen" class="pbim-modal__scrim" t-on-click.self="closeBillSettings">
+      <div class="pbim-modal tnx-billsetbox">
+        <div class="pbim-modal__head">
+          <span class="pbim-modal__ic"><t t-out="ic('settings',18)"/></span>
+          <div>
+            <h3>Billing settings</h3>
+            <span class="pbim-modal__sub">The calendar, the wording and the bank
+                  details that print on every invoice.</span>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="closeBillSettings"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbim-modal__body">
+          <div t-attf-class="tnx-autosus {{ autoSuspendOn ? 'on' : '' }}">
+            <button class="tnx-switch" t-att-aria-pressed="autoSuspendOn"
+                    t-on-click="toggleAutoSuspend"><i/></button>
+            <div class="tnx-autosus-tx">
+              <b>Pause a customer automatically when an invoice is very overdue</b>
+              <span t-if="autoSuspendOn" class="tnx-autosus-red">
+                This is ON. Fourteen days after an invoice falls due, that
+                customer's people will be shut out of their own payroll by a
+                scheduled job, at half past eight in the morning, with nobody
+                having pressed anything. A slow bank transfer is enough to do it.
+                Their data is untouched and Resume is one click — but they will
+                not be able to run a pay run until somebody presses it.
+              </span>
+              <span t-else="">
+                Off, which is how it ships. The platform will still tell you when
+                a customer is fourteen days overdue, and pausing them stays a
+                button on their Plan tab that you press.
+              </span>
+            </div>
+          </div>
+
+          <div class="tnx-planform">
+            <div class="tnx-planfield">
+              <label class="pbim-label">Days to pay</label>
+              <input type="number" min="0" class="pbim-input"
+                     t-model="state.bill.settings.invoice_due_days"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Reminders after (days)</label>
+              <input class="pbim-input" t-model="state.bill.settings.invoice_reminder_days"
+                     placeholder="3,10"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Flag for pausing after (days)</label>
+              <input type="number" min="0" class="pbim-input"
+                     t-model="state.bill.settings.suspend_after_days"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Invoice number prefix</label>
+              <input class="pbim-input" t-model="state.bill.settings.invoice_prefix"/>
+            </div>
+          </div>
+
+          <h4 class="tnx-setsec">Who the invoice comes from</h4>
+          <div class="tnx-planform">
+            <div class="tnx-planfield">
+              <label class="pbim-label">Sender name</label>
+              <input class="pbim-input" t-model="state.bill.settings.billing_from_name"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Sender address (blank = the alert sender)</label>
+              <input class="pbim-input" t-model="state.bill.settings.billing_from_email"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Company name on the invoice</label>
+              <input class="pbim-input" t-model="state.bill.settings.billing_company"/>
+            </div>
+            <div class="tnx-planfield">
+              <label class="pbim-label">Your tax number</label>
+              <input class="pbim-input" t-model="state.bill.settings.billing_vat"
+                     placeholder="not set"/>
+            </div>
+            <div class="tnx-planfield wide">
+              <label class="pbim-label">Your address, as it should print</label>
+              <textarea class="pbim-input tnx-ta" rows="2"
+                        t-model="state.bill.settings.billing_address"
+                        placeholder="not set"/>
+            </div>
+          </div>
+
+          <h4 class="tnx-setsec">How to pay</h4>
+          <div class="pbim-note">This block prints on every invoice and goes into
+               every invoice email. Left empty, the invoice says the details will
+               be sent on request — which is a dead end nobody wants at month end.</div>
+          <textarea class="pbim-input tnx-ta" rows="4"
+                    t-model="state.bill.settings.bank_details"
+                    placeholder="Bank name&#10;Account name&#10;Account number&#10;SWIFT / branch"/>
+          <label class="pbim-label">Footer line (optional)</label>
+          <input class="pbim-input" t-model="state.bill.settings.invoice_footer"
+                 placeholder="Thank you for using Payobook."/>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeBillSettings">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.bill.busy === 'settings'"
+                  t-on-click="saveBillSettings">
+            <t t-if="state.bill.busy === 'settings'"><span class="pbim-spin tnx-minispin"/> Saving…</t>
+            <t t-else=""><t t-out="ic('save',15)"/> Save</t>
+          </button>
         </div>
       </div>
     </div>

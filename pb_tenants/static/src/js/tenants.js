@@ -23,6 +23,13 @@ const COUNTRIES = [
 const STATE_BADGE = {
     live: ["ok", _t("Live")], provisioning: ["info", _t("Provisioning")], draft: ["muted", _t("Draft")],
     error: ["err", _t("Error")], decommissioned: ["muted", _t("Decommissioned")],
+    // FLEET P5. Three standings a customer can be in that are not "paying and
+    // running", each with the colour that says how worried to be: a trial is
+    // information, a paused customer is a problem, and a customer with a
+    // deletion date on them is neither — it is a decision already taken.
+    trial: ["info", _t("On trial")],
+    suspended: ["err", _t("Paused")],
+    pending_deletion: ["muted", _t("Deleting")],
 };
 
 export class PbTenants extends Component {
@@ -65,6 +72,10 @@ export class PbTenants extends Component {
             alerts: this._freshAlerts(),
             // FLEET P4. Which parts of the product each customer gets.
             feat: this._freshFeat(),
+            // FLEET P5. What every customer pays, and what they have used.
+            bill: this._freshBill(),
+            // FLEET P5. One customer's plan, standing and invoice history.
+            plan: this._freshPlanTab(),
             settings: { open: false, busy: false, d: null, error: "" },
             mailTest: null,
         });
@@ -90,7 +101,11 @@ export class PbTenants extends Component {
     _freshWiz() {
         return {
             step: 1, running: false, finished: false, error: null,
-            form: { name: "", slug: "", admin_name: "", admin_email: "", country_code: "" },
+            // FLEET P5. A customer is created ON a plan, because a customer
+            // with no plan is a customer nobody can invoice — and the moment
+            // to notice that is now, not at the end of the month.
+            form: { name: "", slug: "", admin_name: "", admin_email: "",
+                    country_code: "", plan_id: false, trial: false },
             slugTouched: false,
             slug: { st: "idle", msg: "", url: "" },
             steps: [], console: [], tenantId: null, creds: null, doneUrl: null,
@@ -202,7 +217,25 @@ export class PbTenants extends Component {
 
     get wizValid() {
         const w = this.state.wiz;
-        return !!(w.form.name.trim() && w.slug.st === "ok" && /\S+@\S+\.\S+/.test(w.form.admin_email));
+        return !!(w.form.name.trim() && w.slug.st === "ok"
+                  && /\S+@\S+\.\S+/.test(w.form.admin_email) && w.form.plan_id);
+    }
+
+    /** The plans offered in the wizard: the ones still on sale. */
+    get wizPlans() {
+        return (this.state.data.plans || []).filter((p) => p.active);
+    }
+
+    get wizPlan() {
+        return this.wizPlans.find((p) => p.id === this.state.wiz.form.plan_id) || null;
+    }
+
+    pickWizPlan(planId) {
+        const w = this.state.wiz;
+        w.form.plan_id = planId;
+        // A plan's own trial length is what a trial on it lasts, so the toggle
+        // is only offered once a plan has been chosen.
+        if (!planId) { w.form.trial = false; }
     }
 
     toReview() { if (this.wizValid) { this.state.wiz.step = 2; } }
@@ -1480,6 +1513,11 @@ export class PbTenants extends Component {
             // The composer is a scrim over whatever view opened it, so it owns
             // Escape before that view does.
             if (this.state.settings.open) { this.closeSettings(); return; }
+            if (this.state.bill.settingsOpen) { this.closeBillSettings(); return; }
+            if (this.state.bill.preview) { this.closePreview(); return; }
+            if (this.state.bill.planEdit) { this.cancelPlanEdit(); return; }
+            if (this.state.bill.paidFor) { this.state.bill.paidFor = null; return; }
+            if (this.state.bill.voidFor) { this.state.bill.voidFor = null; return; }
             if (this.state.feat.confirm) { this.closeFeatBulk(); return; }
             if (this.state.feat.edit) { this.cancelFeatEdit(); return; }
             if (this.state.feat.menu) { this.closeFeatMenu(); return; }
@@ -1498,6 +1536,9 @@ export class PbTenants extends Component {
             } else if (this.state.view === "features") {
                 if (this.state.feat.range) { this.state.feat.range = null; }
                 else if (!this.state.feat.busy) { this.backToFleet(); }
+            } else if (this.state.view === "billing") {
+                if (this.state.bill.raised) { this.state.bill.raised = null; }
+                else if (!this.state.bill.busy) { this.backToFleet(); }
             } else if (this.state.view === "detail" || this.state.view === "alerts") {
                 this.backToFleet();
             }
@@ -1544,6 +1585,9 @@ export class PbTenants extends Component {
             } else if (this.state.view === "features" && !this.state.feat.busy) {
                 ev.preventDefault();
                 this.loadFeatures(false);
+            } else if (this.state.view === "billing" && !this.state.bill.busy) {
+                ev.preventDefault();
+                this.loadBilling(false);
             } else if (this.state.view === "sync" && !this.state.sync.busy) {
                 ev.preventDefault();
                 this.loadSync(false);
@@ -1555,10 +1599,528 @@ export class PbTenants extends Component {
         }
     }
 
+    // ================================================ WHAT A CUSTOMER PAYS
+    //
+    // FLEET P5. The month strip across the top, the customer table under it,
+    // and the one button that matters: "Raise September" — which shows every
+    // invoice and every line BEFORE a single one exists. Nothing on this screen
+    // creates, sends or pauses anything without somebody reading a preview
+    // first, and the two crons behind it read customers and write only here.
+
+    _freshBill() {
+        return {
+            loaded: false, busy: "", tab: "customers", d: null, period: null,
+            preview: null, previewBusy: false, raised: null,
+            planEdit: null, settingsOpen: false, settings: null, error: "",
+            paidFor: null, paidNote: "", voidFor: null, voidReason: "",
+        };
+    }
+
+    async openBilling() {
+        this.state.bill = this._freshBill();
+        this.state.view = "billing";
+        await this.loadBilling(false);
+    }
+
+    async loadBilling(quiet = true) {
+        const b = this.state.bill;
+        b.busy = "load";
+        try {
+            const call = quiet ? this.orm.silent : this.orm;
+            b.d = await call.call("pb.tenants", "billing_data", [b.period]);
+            b.period = b.d.period;
+            b.settings = { ...b.d.settings };
+            b.error = "";
+        } catch (e) {
+            b.error = this.errText(e, _t("The billing screen could not be read."));
+        } finally {
+            b.busy = "";
+            b.loaded = true;
+        }
+    }
+
+    openBillTab(tab) { this.state.bill.tab = tab; }
+
+    async setBillPeriod(period) {
+        this.state.bill.period = period;
+        this.state.bill.preview = null;
+        this.state.bill.raised = null;
+        await this.loadBilling();
+    }
+
+    get bill() { return this.state.bill.d || {}; }
+
+    get billRows() { return this.bill.rows || []; }
+
+    /** The twelve months across the top, tallest bar = most invoices. */
+    get billMonths() {
+        const months = this.bill.months || [];
+        const top = Math.max(1, ...months.map((m) => m.invoices || 0));
+        return months.map((m) => ({ ...m,
+            pct: Math.round(((m.invoices || 0) * 100) / top) }));
+    }
+
+    /**
+     * A customer's twelve readings as an SVG polyline. PURE-ish.
+     *
+     * Built here rather than in the template: JavaScript built-ins are not in
+     * scope inside an OWL template (ledger F16), and a sparkline that is
+     * arithmetic in markup is a sparkline nobody can read or test.
+     */
+    sparkline(history, key = "employees") {
+        const rows = history || [];
+        if (rows.length < 2) { return ""; }
+        const values = rows.map((r) => r[key] || 0);
+        const top = Math.max(1, ...values);
+        const step = 100 / (rows.length - 1);
+        return values
+            .map((v, i) => `${(i * step).toFixed(1)},${(20 - (v * 18) / top).toFixed(1)}`)
+            .join(" ");
+    }
+
+    seatTone(seat) {
+        return { full: "bad", near: "warn" }[(seat || {}).verdict] || "ok";
+    }
+
+    invoiceTone(inv) {
+        if (!inv) { return "muted"; }
+        return { paid: "ok", overdue: "err", sent: "info",
+                 draft: "muted", void: "muted" }[inv.state] || "muted";
+    }
+
+    // ------------------------------------------------------- the meter
+    async meterNow() {
+        const b = this.state.bill;
+        b.busy = "meter";
+        try {
+            const r = await this.orm.call("pb.tenants", "meter_run", []);
+            b.d = r.data;
+            b.settings = { ...b.d.settings };
+            this.notif.add(
+                r.failed && r.failed.length
+                    ? _t("Read %(n)s customer(s). Could not reach: %(who)s.",
+                         { n: r.measured, who: r.failed.join(", ") })
+                    : _t("Read %(n)s customer(s).", { n: r.measured }),
+                { type: r.failed && r.failed.length ? "warning" : "success" });
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The reading could not be taken.")),
+                           { type: "danger" });
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    // -------------------------------------- THE HERO: preview before create
+    async openPreview() {
+        const b = this.state.bill;
+        b.previewBusy = true;
+        b.raised = null;
+        try {
+            b.preview = await this.orm.call("pb.tenants", "billing_preview",
+                                            [b.period]);
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The preview could not be built.")),
+                           { type: "danger" });
+        } finally {
+            b.previewBusy = false;
+        }
+    }
+
+    closePreview() {
+        if (this.state.bill.previewBusy) { return; }
+        this.state.bill.preview = null;
+    }
+
+    get previewTotals() {
+        const p = this.state.bill.preview;
+        if (!p) { return []; }
+        return (p.totals || []).map((t) => ({
+            ...t, amount_h: this._money(t.amount, t.currency) }));
+    }
+
+    /** Thousands separators, and the currency's own decimals. */
+    _money(amount, currency) {
+        const cur = (this.bill.currencies || []).find((c) => c.name === currency);
+        const places = currency === "VND" ? 0 : 2;
+        const text = Number(amount || 0).toLocaleString(undefined, {
+            minimumFractionDigits: places, maximumFractionDigits: places });
+        return cur && cur.symbol ? `${text} ${cur.symbol}` : text;
+    }
+
+    async confirmRaise() {
+        const b = this.state.bill;
+        const p = b.preview;
+        if (!p || !p.billable) { return; }
+        b.previewBusy = true;
+        try {
+            const r = await this.orm.call("pb.tenants", "billing_raise",
+                                          [b.period, !p.closed]);
+            b.d = r.data;
+            b.settings = { ...b.d.settings };
+            b.preview = null;
+            b.raised = r;
+            this.notif.add(_t("%(n)s invoice(s) raised for %(month)s.",
+                              { n: r.created.length, month: r.period_label }),
+                           { type: "success" });
+            this.loadFleet();
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The invoices could not be raised.")),
+                           { type: "danger" });
+        } finally {
+            b.previewBusy = false;
+        }
+    }
+
+    // ------------------------------------------------- one invoice at a time
+    async _invCall(method, args, busy, okMsg) {
+        const b = this.state.bill;
+        b.busy = busy;
+        try {
+            const r = await this.orm.call("pb.tenants", method, args);
+            if (r && r.data) {
+                b.d = r.data;
+                b.settings = { ...b.d.settings };
+            }
+            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this.loadFleet();
+            return r;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")),
+                           { type: "danger" });
+            return null;
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    sendInvoice(inv) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Email invoice %(n)s", { n: inv.number }),
+            body: _t(
+                "The invoice and its PDF go to %(to)s, and a copy appears on the " +
+                "customer's own Plan & usage page. Nothing is charged — this is a " +
+                "request for a bank transfer.", { to: inv.sent_to || this._billTo(inv) }),
+            confirmLabel: _t("Send it"),
+            confirm: () => this._invCall("invoice_send", [inv.id], "inv" + inv.id,
+                                         _t("Sent.")),
+            cancel: () => {},
+        });
+    }
+
+    _billTo(inv) {
+        const row = this.billRows.find((r) => r.id === inv.tenant_id);
+        return (row && row.billing_email) || _t("their billing address");
+    }
+
+    askPaid(inv) {
+        this.state.bill.paidFor = inv;
+        this.state.bill.paidNote = "";
+    }
+
+    async confirmPaid() {
+        const b = this.state.bill;
+        const inv = b.paidFor;
+        if (!inv) { return; }
+        const ok = await this._invCall("invoice_mark_paid",
+                                       [inv.id, b.paidNote], "inv" + inv.id,
+                                       _t("Marked as paid."));
+        if (ok) { b.paidFor = null; b.paidNote = ""; }
+    }
+
+    askVoid(inv) {
+        this.state.bill.voidFor = inv;
+        this.state.bill.voidReason = "";
+    }
+
+    async confirmVoid() {
+        const b = this.state.bill;
+        const inv = b.voidFor;
+        if (!inv || !b.voidReason.trim()) { return; }
+        const ok = await this._invCall("invoice_void",
+                                       [inv.id, b.voidReason], "inv" + inv.id,
+                                       _t("Cancelled."));
+        if (ok) { b.voidFor = null; b.voidReason = ""; }
+    }
+
+    /**
+     * The PDF, in the browser, without a round trip through a download route.
+     *
+     * The bytes are already on the record; a blob URL hands them straight to
+     * whatever the reader opens PDFs with, and is revoked a moment later so the
+     * page does not hold a copy of every invoice it has ever shown.
+     */
+    async downloadPdf(inv) {
+        this.state.bill.busy = "pdf" + inv.id;
+        try {
+            const r = await this.orm.call("pb.tenants", "invoice_pdf", [inv.id]);
+            const bytes = Uint8Array.from(atob(r.data), (c) => c.charCodeAt(0));
+            const url = URL.createObjectURL(
+                new Blob([bytes], { type: "application/pdf" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = r.name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The PDF could not be made.")),
+                           { type: "danger" });
+        } finally {
+            this.state.bill.busy = "";
+        }
+    }
+
+    // ------------------------------------------------------------ the plans
+    get plans() { return this.bill.plans || []; }
+
+    newPlan() {
+        this.state.bill.planEdit = {
+            id: null, name: "", code: "", blurb: "", pricing: "per_employee",
+            price: 0, tiers: [], currency_id: (this.bill.currencies || [])
+                .map((c) => c.id)[0] || false,
+            employee_limit: 0, vat_pct: 0, trial_days: 14, feature_keys: [],
+            features: [], sequence: 50, active: true,
+        };
+    }
+
+    editPlan(plan) {
+        this.state.bill.planEdit = JSON.parse(JSON.stringify(plan));
+    }
+
+    cancelPlanEdit() { this.state.bill.planEdit = null; }
+
+    setPlanPricing(pricing) {
+        const p = this.state.bill.planEdit;
+        p.pricing = pricing;
+        if (pricing === "flat_tier" && !p.tiers.length) { this.addTier(); }
+    }
+
+    addTier() {
+        const p = this.state.bill.planEdit;
+        const last = p.tiers[p.tiers.length - 1];
+        p.tiers.push({ up_to: last ? (last.up_to || 0) * 2 || 100 : 100,
+                       price: last ? last.price : 0 });
+    }
+
+    removeTier(index) { this.state.bill.planEdit.tiers.splice(index, 1); }
+
+    togglePlanFeature(key) {
+        const p = this.state.bill.planEdit;
+        const at = p.feature_keys.indexOf(key);
+        if (at >= 0) { p.feature_keys.splice(at, 1); } else { p.feature_keys.push(key); }
+    }
+
+    get planEditValid() {
+        const p = this.state.bill.planEdit;
+        if (!p || !p.name.trim()) { return false; }
+        return p.pricing !== "flat_tier" || p.tiers.length > 0;
+    }
+
+    async savePlan() {
+        const b = this.state.bill;
+        const p = b.planEdit;
+        if (!this.planEditValid) { return; }
+        b.busy = "plan";
+        const ids = (this.bill.features || [])
+            .filter((f) => p.feature_keys.includes(f.key)).map((f) => f.id);
+        try {
+            await this.orm.call("pb.tenants", "plan_save", [p.id || false, {
+                name: p.name, code: p.code || undefined, blurb: p.blurb,
+                pricing: p.pricing, price: Number(p.price) || 0,
+                currency_id: p.currency_id,
+                employee_limit: parseInt(p.employee_limit, 10) || 0,
+                vat_pct: Number(p.vat_pct) || 0,
+                trial_days: parseInt(p.trial_days, 10) || 14,
+                sequence: parseInt(p.sequence, 10) || 50,
+                active: p.active,
+                tiers: p.tiers.map((t) => ({ up_to: parseInt(t.up_to, 10) || 0,
+                                             price: Number(t.price) || 0 })),
+                feature_ids: ids,
+            }]);
+            b.planEdit = null;
+            this.notif.add(_t("Saved."), { type: "success" });
+            await this.loadBilling();
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The plan could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    archivePlan(plan) {
+        this.dialog.add(ConfirmationDialog, {
+            title: plan.active ? _t("Retire the %(name)s plan", { name: plan.name })
+                               : _t("Bring the %(name)s plan back", { name: plan.name }),
+            body: plan.active
+                ? _t("It stops being offered to new customers. Nothing changes " +
+                     "for anybody already on it, and you can bring it back.")
+                : _t("It can be chosen for new customers again."),
+            confirmLabel: plan.active ? _t("Retire it") : _t("Bring it back"),
+            confirm: async () => {
+                try {
+                    await this.orm.call("pb.tenants", "plan_archive",
+                                        [plan.id, !!plan.active]);
+                    await this.loadBilling();
+                } catch (e) {
+                    this.notif.add(this.errText(e, _t("That did not work.")),
+                                   { type: "danger" });
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    // --------------------------------------------------------- the settings
+    openBillSettings() {
+        this.state.bill.settingsOpen = true;
+        this.state.bill.settings = { ...(this.bill.settings || {}) };
+    }
+
+    closeBillSettings() {
+        if (this.state.bill.busy === "settings") { return; }
+        this.state.bill.settingsOpen = false;
+    }
+
+    get autoSuspendOn() {
+        const raw = String((this.state.bill.settings || {}).auto_suspend || "0")
+            .trim().toLowerCase();
+        return !["", "0", "off", "false", "no", "none"].includes(raw);
+    }
+
+    toggleAutoSuspend() {
+        const s = this.state.bill.settings;
+        s.auto_suspend = this.autoSuspendOn ? "0" : "1";
+    }
+
+    async saveBillSettings() {
+        const b = this.state.bill;
+        b.busy = "settings";
+        try {
+            const r = await this.orm.call("pb.tenants", "billing_settings_save",
+                                          [{ ...b.settings }]);
+            b.settings = { ...r.settings };
+            if (b.d) { b.d.settings = { ...r.settings }; b.d.auto_suspend = r.auto_suspend; }
+            b.settingsOpen = false;
+            this.notif.add(_t("Saved."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    // ==================================================== one customer's plan
+    _freshPlanTab() {
+        return { d: null, busy: "", confirm: "", reason: "", days: 30,
+                 email: "", trial: "" };
+    }
+
+    async loadPlanTab() {
+        const p = this.state.plan;
+        p.busy = "load";
+        try {
+            p.d = await this.orm.silent.call("pb.tenants", "tenant_billing",
+                                             [this.state.det.id]);
+            p.email = p.d.billing_email_set || "";
+            p.trial = p.d.trial_ends || "";
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("This customer's plan could not be read.")),
+                           { type: "danger" });
+        } finally {
+            p.busy = "";
+        }
+    }
+
+    async _planCall(method, args, busy, okMsg) {
+        const p = this.state.plan;
+        p.busy = busy;
+        try {
+            const r = await this.orm.call("pb.tenants", method, args);
+            if (r && r.data) { p.d = r.data; }
+            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            p.confirm = "";
+            p.reason = "";
+            await this.openDetail(this.state.det.id);
+            this.state.det.tab = "plan";
+            this.loadFleet();
+            return r;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")),
+                           { type: "danger" });
+            return null;
+        } finally {
+            p.busy = "";
+        }
+    }
+
+    setTenantPlan(planId, trial = false) {
+        this._planCall("tenant_set_plan",
+                       [this.state.det.id, parseInt(planId, 10), trial],
+                       "plan", _t("Plan set, and their database has been told."));
+    }
+
+    convertTrial() {
+        this._planCall("tenant_convert", [this.state.det.id], "convert",
+                       _t("They are a paying customer now."));
+    }
+
+    resumeTenant() {
+        this._planCall("tenant_resume", [this.state.det.id], "resume",
+                       _t("Their people can get back in."));
+    }
+
+    cancelDeletion() {
+        this._planCall("tenant_cancel_deletion", [this.state.det.id], "undelete",
+                       _t("Deletion called off."));
+    }
+
+    suspendTenant() {
+        const p = this.state.plan;
+        this._planCall("tenant_suspend",
+                       [this.state.det.id, p.reason, p.confirm], "suspend",
+                       _t("Their access is paused. Their data is untouched."));
+    }
+
+    scheduleDeletion() {
+        const p = this.state.plan;
+        this._planCall("tenant_schedule_deletion",
+                       [this.state.det.id, parseInt(p.days, 10) || 30,
+                        p.reason, p.confirm], "delete",
+                       _t("A date is set, and a final backup was taken."));
+    }
+
+    askPlanAction(which) {
+        const p = this.state.plan;
+        p.confirm = "";
+        p.reason = "";
+        p.ask = which;
+    }
+
+    async savePlanTabDetails() {
+        const p = this.state.plan;
+        p.busy = "save";
+        try {
+            p.d = await this.orm.call("pb.tenants", "tenant_billing_save",
+                                      [this.state.det.id,
+                                       { billing_email: p.email,
+                                         trial_ends: p.trial || false }]);
+            this.notif.add(_t("Saved."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            p.busy = "";
+        }
+    }
+
     // ------------------------------------------------------------- detail
     async openDetail(id) {
         this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false };
         this.state.upd = { d: null, busy: "", openTask: null };
+        this.state.plan = this._freshPlanTab();
         this.state.view = "detail";
         this.state.det.d = await this.orm.silent.call("pb.tenants", "get_tenant", [id]);
     }
@@ -1573,6 +2135,7 @@ export class PbTenants extends Component {
     async openTab(tab) {
         this.state.det.tab = tab;
         if (tab === "updates" && !this.state.upd.d) { await this.loadUpdates(); }
+        if (tab === "plan" && !this.state.plan.d) { await this.loadPlanTab(); }
     }
 
     async loadUpdates() {
