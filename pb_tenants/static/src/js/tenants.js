@@ -63,6 +63,8 @@ export class PbTenants extends Component {
             notice: this._freshNotice(),
             // FLEET P3. What is wrong right now, and the settings behind it.
             alerts: this._freshAlerts(),
+            // FLEET P4. Which parts of the product each customer gets.
+            feat: this._freshFeat(),
             settings: { open: false, busy: false, d: null, error: "" },
             mailTest: null,
         });
@@ -1063,6 +1065,407 @@ export class PbTenants extends Component {
         return { pct, cls: c.level };
     }
 
+    // ============================================ WHAT EACH CUSTOMER GETS
+    //
+    // FLEET P4. Deploy is not release. Every part of the product is installed
+    // on every customer (that is what "in step" means), and THIS screen decides
+    // which of them each customer can actually see. One click, and within
+    // seconds their rail entry, their tiles and their search rows change.
+    //
+    // THE ONE SENTENCE THAT HAS TO BE ON THE SCREEN, and is: a switch takes
+    // doors off a screen. It is not a security control. What somebody may read
+    // on their own database is still decided by the roles they hold there.
+    //
+    // The hero is the preview beside the matrix: the customer's own left menu,
+    // built from their own switches, with the entry fading out as the switch is
+    // flipped. Nobody should have to log in as a customer to find out what they
+    // will see.
+
+    _freshFeat() {
+        return {
+            loaded: false, busy: "", d: null,
+            tab: "matrix",
+            // Which customer the preview is showing, and which cell the
+            // keyboard is on. Indices into `featRows` / `featCols`.
+            sel: { r: 0, c: 0 },
+            // The open cell menu: `{tid, key}` or null.
+            menu: null, reason: "",
+            // A shift-click range down one column, ready for a bulk switch.
+            range: null,
+            // A bulk about to happen, waiting for one confirmation.
+            confirm: null,
+            // The catalogue line being edited, as a working copy.
+            edit: null,
+        };
+    }
+
+    async openFeatures() {
+        this.state.view = "features";
+        this.state.feat = this._freshFeat();
+        await this.loadFeatures();
+    }
+
+    async loadFeatures(quiet = true) {
+        const f = this.state.feat;
+        try {
+            f.d = await this.orm.silent.call("pb.tenants", "features_data", []);
+            f.loaded = true;
+            if (!quiet) { this.notif.add(_t("Looked again."), { type: "info" }); }
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The feature switches could not be read.")),
+                           { type: "danger" });
+            this.state.view = "fleet";
+        }
+    }
+
+    /** The customers the matrix has rows for, in the order they are drawn. */
+    get featRows() {
+        const d = this.state.feat.d;
+        return d ? (d.tenants || []) : [];
+    }
+
+    /** The features the matrix has columns for. */
+    get featCols() {
+        const d = this.state.feat.d;
+        return d ? (d.catalogue || []) : [];
+    }
+
+    /** The customer the preview is showing. Never undefined while there are rows. */
+    get featTenant() {
+        const rows = this.featRows;
+        if (!rows.length) { return null; }
+        return rows[Math.min(this.state.feat.sel.r, rows.length - 1)] || null;
+    }
+
+    /**
+     * The customer's own left menu, as their administrator will see it.
+     *
+     * Built from THEIR switches and OUR rail records — the same nine entries
+     * this platform draws, because every customer runs the same product. An
+     * entry belonging to a part they have not got is dropped when the platform
+     * said hide, and kept with a padlock when it said locked. That is exactly
+     * what their database will decide; this is not a drawing of it.
+     */
+    get featPreview() {
+        const d = this.state.feat.d;
+        const row = this.featTenant;
+        if (!d || !row) { return []; }
+        const modes = {};
+        for (const c of d.catalogue || []) { modes[c.key] = c.mode; }
+        const out = [];
+        for (const item of d.rail || []) {
+            const key = item.feature;
+            const on = !key || row.on[key] !== false;
+            if (!on && modes[key] !== "lock") { continue; }
+            out.push({ ...item, locked: !on });
+        }
+        return out;
+    }
+
+    /**
+     * The rail stores Lucide's own hyphenated names (`book-open`); the kit's
+     * registry is keyed camelCase (`bookOpen`). Converted here rather than
+     * changing either side: the rail's names are DATA on nine databases, and
+     * the kit's keys are read by forty files.
+     *
+     * `refresh-cw` is the one that does not fall out of the rule — the kit
+     * calls it `refresh` — so it is named, not guessed.
+     */
+    railIcon(name) {
+        const alias = { "refresh-cw": "refresh" };
+        const raw = name || "circle";
+        if (alias[raw]) { return alias[raw]; }
+        return raw.replace(/-([a-z])/g, (_m, ch) => ch.toUpperCase());
+    }
+
+    /** "9 of 10 switched on · 2 decided by hand" for one row. */
+    featRowNote(row) {
+        const total = this.featCols.length;
+        const on = this.featCols.filter((c) => row.on[c.key] !== false).length;
+        const bits = [_t("%(on)s of %(total)s on", { on, total })];
+        if (row.custom) { bits.push(_t("%s decided by hand", row.custom)); }
+        return bits.join(" · ");
+    }
+
+    /** Where a cell's answer came from: the catalogue, or somebody. */
+    featSource(row, col) {
+        return (row.source && row.source[col.key]) || "default";
+    }
+
+    featCellClass(row, col, r, c) {
+        const on = row.on[col.key] !== false;
+        const sel = this.state.feat.sel;
+        const inRange = this._inRange(r, c);
+        return [
+            on ? "on" : "off",
+            this.featSource(row, col) === "default" ? "std" : "own",
+            (sel.r === r && sel.c === c) ? "cur" : "",
+            inRange ? "rng" : "",
+        ].filter(Boolean).join(" ");
+    }
+
+    /**
+     * How many customers the painted range covers.
+     *
+     * A GETTER AND NOT `Math.abs(...)` IN THE TEMPLATE. JavaScript built-ins
+     * are not in scope inside an OWL template — `Math.abs(x)` compiles to
+     * `ctx.Math.abs(x)` and throws the moment that branch first renders, which
+     * here would be the first shift-click somebody ever made (ledger F16).
+     */
+    get featRangeCount() {
+        const rg = this.state.feat.range;
+        return rg ? Math.abs(rg.to - rg.from) + 1 : 0;
+    }
+
+    _inRange(r, c) {
+        const rg = this.state.feat.range;
+        if (!rg || rg.col !== c) { return false; }
+        return r >= Math.min(rg.from, rg.to) && r <= Math.max(rg.from, rg.to);
+    }
+
+    /**
+     * A click on one cell.
+     *
+     * Plain click flips it. Shift-click paints a range down the column instead
+     * of flipping anything — the reader is choosing WHO before deciding WHAT,
+     * which is the order a spreadsheet trained everybody to expect.
+     */
+    onFeatCell(ev, r, c) {
+        const f = this.state.feat;
+        f.sel = { r, c };
+        f.menu = null;
+        if (ev && ev.shiftKey) {
+            const from = (f.range && f.range.col === c) ? f.range.from : r;
+            f.range = { col: c, from, to: r };
+            return;
+        }
+        f.range = null;
+        this.featToggle(r, c);
+    }
+
+    async featToggle(r, c) {
+        const row = this.featRows[r];
+        const col = this.featCols[c];
+        if (!row || !col || this.state.feat.busy) { return; }
+        const on = row.on[col.key] === false;
+        await this._featCall(
+            "features_set", [row.id, col.key, on, ""], `${row.id}:${col.key}`,
+            on ? _t("%(f)s is on for %(who)s.", { f: col.name, who: row.name })
+               : _t("%(f)s is off for %(who)s.", { f: col.name, who: row.name }));
+    }
+
+    async _featCall(method, args, busy, okMsg) {
+        const f = this.state.feat;
+        f.busy = busy;
+        try {
+            const res = await this.orm.call("pb.tenants", method, args);
+            // Every one of these methods hands back the WHOLE screen, so the
+            // matrix, the preview, the counts and the "last pushed" line move
+            // together. A partial update is how two numbers on one screen start
+            // disagreeing.
+            f.d = res.data || res;
+            const push = res.push;
+            if (push && push.ok === false) {
+                this.notif.add(push.reason || _t("That customer could not be reached."),
+                               { type: "warning" });
+            } else if (okMsg) {
+                this.notif.add(okMsg, { type: "success" });
+            }
+            this.loadFleet();
+            return true;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")), { type: "danger" });
+            return false;
+        } finally {
+            f.busy = "";
+        }
+    }
+
+    // ------------------------------------------------------- the cell menu
+    openFeatMenu(r, c) {
+        const f = this.state.feat;
+        const row = this.featRows[r];
+        const col = this.featCols[c];
+        if (!row || !col) { return; }
+        f.sel = { r, c };
+        f.menu = { tid: row.id, key: col.key, r, c };
+        f.reason = (row.reason && row.reason[col.key]) || "";
+    }
+
+    closeFeatMenu() { this.state.feat.menu = null; }
+
+    get featMenuRow() {
+        const m = this.state.feat.menu;
+        return m ? this.featRows.find((t) => t.id === m.tid) || null : null;
+    }
+
+    get featMenuCol() {
+        const m = this.state.feat.menu;
+        return m ? this.featCols.find((c) => c.key === m.key) || null : null;
+    }
+
+    /** Save the one line that says why this customer's answer is what it is. */
+    async saveFeatReason() {
+        const row = this.featMenuRow;
+        const col = this.featMenuCol;
+        if (!row || !col) { return; }
+        const on = row.on[col.key] !== false;
+        const ok = await this._featCall(
+            "features_set", [row.id, col.key, on, this.state.feat.reason],
+            "reason", _t("Noted."));
+        if (ok) { this.state.feat.menu = null; }
+    }
+
+    async resetFeat() {
+        const row = this.featMenuRow;
+        const col = this.featMenuCol;
+        if (!row || !col) { return; }
+        const ok = await this._featCall(
+            "features_reset", [row.id, col.key], "reset",
+            _t("%s is back to the standard setting.", col.name));
+        if (ok) { this.state.feat.menu = null; }
+    }
+
+    async pushFeatures(tenantId) {
+        await this._featCall("features_push", [tenantId], "push" + tenantId,
+                             _t("Sent."));
+    }
+
+    // ----------------------------------------------------- a whole column
+    /**
+     * One feature, every customer (or the range somebody painted), one
+     * confirmation that names the count and the names.
+     */
+    askFeatBulk(c, on) {
+        const col = this.featCols[c];
+        if (!col) { return; }
+        const rg = this.state.feat.range;
+        let rows = this.featRows;
+        if (rg && rg.col === c) {
+            const lo = Math.min(rg.from, rg.to), hi = Math.max(rg.from, rg.to);
+            rows = rows.slice(lo, hi + 1);
+        }
+        if (!rows.length) { return; }
+        this.state.feat.confirm = {
+            key: col.key, name: col.name, on,
+            ids: rows.map((t) => t.id),
+            names: rows.map((t) => t.name),
+        };
+    }
+
+    closeFeatBulk() { this.state.feat.confirm = null; }
+
+    get featBulkSentence() {
+        const cf = this.state.feat.confirm;
+        if (!cf) { return ""; }
+        const word = cf.on ? _t("switched on") : _t("switched off");
+        return _t("%(name)s will be %(word)s for %(n)s customer(s): %(who)s.",
+                  { name: cf.name, word, n: cf.ids.length,
+                    who: cf.names.join(", ") });
+    }
+
+    async confirmFeatBulk() {
+        const cf = this.state.feat.confirm;
+        if (!cf) { return; }
+        const f = this.state.feat;
+        f.busy = "bulk";
+        try {
+            const res = await this.orm.call(
+                "pb.tenants", "features_bulk", [cf.key, cf.on, cf.ids, ""]);
+            f.d = res.data || f.d;
+            f.confirm = null;
+            f.range = null;
+            this.notif.add(res.message || _t("Done."),
+                           { type: (res.failed || []).length ? "warning" : "success" });
+            this.loadFleet();
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")), { type: "danger" });
+        } finally {
+            f.busy = "";
+        }
+    }
+
+    // ---------------------------------------------------------- catalogue
+    openFeatCatalogue() {
+        this.state.feat.tab = "catalogue";
+        this.state.feat.menu = null;
+    }
+
+    openFeatMatrix() {
+        this.state.feat.tab = "matrix";
+        this.state.feat.edit = null;
+    }
+
+    editFeature(col) {
+        // A WORKING COPY, never the row itself: a form bound straight to the
+        // list would rewrite the screen while somebody was still typing, and
+        // Cancel would have nothing to go back to.
+        this.state.feat.edit = {
+            id: col.id, key: col.key, name: col.name, blurb: col.blurb || "",
+            area: col.area, default_on: col.default_on, mode: col.mode,
+            lock_text: col.lock_text || "", sequence: col.sequence,
+        };
+    }
+
+    cancelFeatEdit() { this.state.feat.edit = null; }
+
+    async saveFeature() {
+        const e = this.state.feat.edit;
+        if (!e) { return; }
+        const f = this.state.feat;
+        f.busy = "cat";
+        try {
+            f.d = await this.orm.call("pb.tenants", "feature_save", [e.id, {
+                name: e.name, blurb: e.blurb, area: e.area,
+                default_on: !!e.default_on, mode: e.mode,
+                lock_text: e.lock_text, sequence: parseInt(e.sequence, 10) || 10,
+            }]);
+            f.edit = null;
+            this.notif.add(_t("Saved, and every live customer has been told."),
+                           { type: "success" });
+            this.loadFleet();
+        } catch (err) {
+            this.notif.add(this.errText(err, _t("That could not be saved.")),
+                           { type: "danger" });
+        } finally {
+            f.busy = "";
+        }
+    }
+
+    /** The two words a mode is called on screen. Never "hide"/"lock" raw. */
+    modeWord(mode) {
+        return mode === "lock" ? _t("Shown locked") : _t("Hidden");
+    }
+
+    // --------------------------------------------------------- keyboard
+    /** Move the cursor around the matrix. Returns true when it handled the key. */
+    _featKey(ev) {
+        const f = this.state.feat;
+        if (f.tab !== "matrix" || f.confirm || f.edit) { return false; }
+        const rows = this.featRows.length, cols = this.featCols.length;
+        if (!rows || !cols) { return false; }
+        const step = { ArrowDown: [1, 0], ArrowUp: [-1, 0],
+                       ArrowRight: [0, 1], ArrowLeft: [0, -1] }[ev.key];
+        if (step) {
+            ev.preventDefault();
+            f.menu = null;
+            f.sel = {
+                r: Math.max(0, Math.min(rows - 1, f.sel.r + step[0])),
+                c: Math.max(0, Math.min(cols - 1, f.sel.c + step[1])),
+            };
+            const el = document.querySelector(
+                `.tnx-fcell[data-r="${f.sel.r}"][data-c="${f.sel.c}"]`);
+            if (el) { el.focus(); }
+            return true;
+        }
+        if (ev.key === " " || ev.key === "Spacebar") {
+            ev.preventDefault();
+            this.featToggle(f.sel.r, f.sel.c);
+            return true;
+        }
+        return false;
+    }
+
     // -------------------------------------------------------- keyboard
     //
     // Two keys, and they are the two a person presses forty times an hour on
@@ -1077,6 +1480,9 @@ export class PbTenants extends Component {
             // The composer is a scrim over whatever view opened it, so it owns
             // Escape before that view does.
             if (this.state.settings.open) { this.closeSettings(); return; }
+            if (this.state.feat.confirm) { this.closeFeatBulk(); return; }
+            if (this.state.feat.edit) { this.cancelFeatEdit(); return; }
+            if (this.state.feat.menu) { this.closeFeatMenu(); return; }
             if (this.state.alerts.resolveFor) { this.state.alerts.resolveFor = null; return; }
             if (this.state.notice.open) { this.closeNotice(); return; }
             if (this.state.roll.planOpen) { this.closeRolloutPlan(); return; }
@@ -1089,11 +1495,17 @@ export class PbTenants extends Component {
                 } else if (!this.state.sync.busy) {
                     this.backToFleet();
                 }
+            } else if (this.state.view === "features") {
+                if (this.state.feat.range) { this.state.feat.range = null; }
+                else if (!this.state.feat.busy) { this.backToFleet(); }
             } else if (this.state.view === "detail" || this.state.view === "alerts") {
                 this.backToFleet();
             }
             return;
         }
+        // The matrix is a grid, so it is walked and worked with the keys a grid
+        // has always been walked with.
+        if (this.state.view === "features" && this._featKey(ev)) { return; }
         // The alerts list is a list, so it is walked and worked with keys.
         if (this.state.view === "alerts" && !this.state.settings.open
             && !this.state.alerts.resolveFor) {
@@ -1129,6 +1541,9 @@ export class PbTenants extends Component {
             if (this.state.view === "alerts" && !this.state.alerts.busy) {
                 ev.preventDefault();
                 this.loadAlerts(false);
+            } else if (this.state.view === "features" && !this.state.feat.busy) {
+                ev.preventDefault();
+                this.loadFeatures(false);
             } else if (this.state.view === "sync" && !this.state.sync.busy) {
                 ev.preventDefault();
                 this.loadSync(false);
