@@ -12,3 +12,6 @@ from . import test_tenancy_push
 # FLEET P2B — rings, windows and the rollout job.
 from . import test_rollout_rules
 from . import test_rollout
+# FLEET P3 — alerts that reach a human, capacity, and the public page.
+from . import test_alert_rules
+from . import test_alerts

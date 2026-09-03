@@ -63,6 +63,48 @@
     </record>
     <!-- FLEET P2B. The evening-before warning. Only ever speaks to a customer
          with a queued task in a rollout a person started, and only once. -->
+    <!-- FLEET P3. The sweep. Fifteen minutes is the promise the phase makes —
+         "an email reaches you within fifteen minutes" — and it is the longest
+         a payroll customer's site should be down before somebody is told.
+         READS ONLY (rail R1): cached health, one HTTP probe per customer
+         through localhost, a count of scheduled jobs on the template, the
+         server's own log, /proc and the disk. -->
+    <record id="cron_alerts" model="ir.cron">
+        <field name="name">Payobook Tenants: platform alerts</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alerts()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P3. One short summary every morning, INCLUDING the mornings when
+         nothing is wrong. A channel that only speaks when something breaks
+         cannot be told apart from a channel that is broken. 08:00 on the
+         server's clock, which is UTC — the digest itself says the hour it was
+         sent, and the hour is a setting. -->
+    <record id="cron_alert_digest" model="ir.cron">
+        <field name="name">Payobook Tenants: morning summary</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alert_digest()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=0, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P3. The public page is a FILE, and a file goes stale silently.
+         Five minutes keeps it inside its own staleness warning (fifteen) with
+         room for two missed runs, so a busy box never accuses itself. -->
+    <record id="cron_status_page" model="ir.cron">
+        <field name="name">Payobook Tenants: public status page</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_status_page()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
     <record id="cron_rollout_notices" model="ir.cron">
         <field name="name">Payobook Tenants: rollout warnings</field>
         <field name="model_id" ref="model_pb_tenants"/>
