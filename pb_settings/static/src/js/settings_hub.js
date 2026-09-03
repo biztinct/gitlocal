@@ -326,8 +326,10 @@ export class PbSettingsHub extends Component {
         // platform reaches an open page within a minute, and a padlock that
         // needs a reload to appear is a padlock nobody trusts. Null when the
         // Platform Link is not installed, and then nothing is ever locked.
-        this._features = featuresState(this.env);
-        if (this._features) { useState(this._features); }
+        // The return value IS the subscription (a discarded `useState` watches
+        // nothing); `cardLock` touches it.
+        const feats = featuresState(this.env);
+        this._features = feats ? useState(feats) : null;
 
         // Read ONCE, from props, never written back (HubShell's rule).
         this.back = hubBack(this.props);
@@ -633,6 +635,8 @@ export class PbSettingsHub extends Component {
      * knowing anything about platforms or customers.
      */
     cardLock(card) {
+        // Watch the one value that moves when a switch is flipped.
+        if (this._features) { void this._features.features_sig; }
         const g = featureGate(this.env, card.feature || "");
         return g.locked ? (g.text || _t("This part of Payobook is not "
                                         + "switched on for your company.")) : "";
