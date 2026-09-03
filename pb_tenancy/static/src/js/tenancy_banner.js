@@ -41,6 +41,10 @@ export class PbTenancyBar extends Component {
         // "preview" softens the shadow and drops the fixed positioning so the
         // bar can sit inside a card.
         preview: { type: Boolean, optional: true },
+        // FLEET P5. The little word in front of the message. A platform notice
+        // works its own out from its kind; a bar this database composed about
+        // its own standing says what it is about ("Your trial", "Your plan").
+        label: { type: String, optional: true },
     };
 
     ic(name, size = 16) { return ic(name, size); }
@@ -60,6 +64,7 @@ export class PbTenancyBar extends Component {
     }
 
     get label() {
+        if (this.props.label) { return this.props.label; }
         if (this.props.notice.live) { return _t("Happening now"); }
         return this.kind === "maintenance"
             ? _t("Planned update") : _t("From Payobook");
@@ -79,10 +84,71 @@ export class PbTenancyBar extends Component {
     }
 }
 
+/**
+ * FLEET P5 — the company's own standing, said in one line.
+ *
+ * TWO THINGS AND NO MORE: a trial that is running out, and an employee limit
+ * that is nearly reached. Both are the SAME SHAPE as a platform notice and are
+ * drawn by the same bar, but neither of them was sent by anybody — they are
+ * composed here, from the answer this database already has, which is why they
+ * carry no id and are dismissed for the day rather than for ever.
+ *
+ * IT NEVER SPEAKS ABOUT A LIMIT THAT IS ALREADY FULL. At that point adding an
+ * employee is refused with a sentence of its own, and a bar repeating it at the
+ * top of every page for the rest of the month is noise, not help.
+ */
+export class PbTenancyStandingBar extends Component {
+    static template = "pb_tenancy.Standing";
+    static components = { PbTenancyBar };
+    static props = {};
+
+    setup() {
+        this.tenancy = useService("pb_tenancy");
+        // Subscribed, not merely fetched (ledger F47): the countdown moves.
+        this.state = useState(this.tenancy.state);
+    }
+
+    /** The notice to draw, or null. Trial first: it has a deadline on it. */
+    get notice() {
+        // Reading the signature registers this component against the ONE value
+        // that changes when an answer changes, rather than against objects the
+        // service rebuilds every minute.
+        void this.state.standing_sig;
+        if (this.today === this.state.standing_dismissed) { return null; }
+        const trial = this.state.trial || {};
+        if (trial.phase === "ending" || trial.phase === "ended") {
+            return {
+                kind: "maintenance",
+                title: trial.text || _t("Your Payobook trial is ending."),
+                text: _t("Everything you have entered stays exactly where it is. " +
+                         "Talk to us and we will move you onto a plan."),
+                label: _t("Your trial"),
+            };
+        }
+        const seat = this.state.seat || {};
+        if (seat.verdict === "near" && seat.limit) {
+            return {
+                kind: "info",
+                title: _t("You have %(count)s of the %(limit)s employees your plan allows.",
+                          { count: seat.count, limit: seat.limit }),
+                text: _t("You can add %(left)s more. Ask your Payobook administrator " +
+                         "for a larger plan before you run out.", { left: seat.left }),
+                label: _t("Your plan"),
+            };
+        }
+        return null;
+    }
+
+    get today() { return new Date().toISOString().slice(0, 10); }
+
+    /** A CLICK handler. */
+    dismiss() { this.tenancy.dismissStanding(); }
+}
+
 /** The one mounted in the web client. */
 export class PbTenancyBanner extends Component {
     static template = "pb_tenancy.Banner";
-    static components = { PbTenancyBar };
+    static components = { PbTenancyBar, PbTenancyStandingBar };
     static props = {};
 
     setup() {

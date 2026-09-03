@@ -33,6 +33,9 @@ export const POLL_MS = 60000;
 
 const LS_DISMISSED = "pb_tenancy.dismissed";
 const LS_SEEN_RELEASE = "pb_tenancy.seen_release";
+// FLEET P5. The trial countdown and the near-limit warning are closed for the
+// DAY, not for ever: they are counting down, so tomorrow's is new information.
+const LS_STANDING_DAY = "pb_tenancy.standing_day";
 
 const EMPTY = {
     release: "", release_date: "", releases: [], notice: null,
@@ -50,6 +53,18 @@ const EMPTY = {
     // with fresh objects on every read, and a screen watching one of them
     // would repaint once a minute for ever, whether or not anything had moved.
     features_sig: "",
+    // FLEET P5. Where this company stands: are they let in, are they on a
+    // trial, how close are they to their plan's employee limit. Every one of
+    // these fails OPEN — an empty answer means open, no trial and no limit.
+    access: "open", access_text: "", plan_name: "",
+    trial: { phase: "none", days_left: 0, ends: "", text: "" },
+    trial_ends: "",
+    seat: { verdict: "ok", limit: 0, count: 0, left: -1, pct: 0 },
+    seat_limit: 0, seat_count: 0,
+    // One string that moves only when one of the answers above moves. Screens
+    // watch THIS rather than the objects, which are rebuilt on every read
+    // (the same trick features_sig plays — ledger F47).
+    standing_sig: "",
 };
 
 /** The three maps as one comparable string. Order is fixed by the caller. */
@@ -92,6 +107,7 @@ export const tenancyService = {
             // Not from the server: this browser's own answer to "have I closed
             // this one?", recomputed whenever the notice changes.
             dismissed: lsGet(LS_DISMISSED),
+            standing_dismissed: lsGet(LS_STANDING_DAY),
         });
 
         let lastFetch = Date.now();
@@ -108,8 +124,17 @@ export const tenancyService = {
             // from the same answer a moment ago.
             const sig = featureSig(data);
             const moved = !!state.features_sig && state.features_sig !== sig;
+            // FLEET P5. THE DOOR CLOSES ON A TAB THAT IS ALREADY OPEN. The
+            // server redirects a fresh page load, but somebody who was already
+            // working when the platform paused them would carry on in the tab
+            // they had until they navigated. The poll is what finds out, and
+            // the poll is exempt from the door precisely so it can.
+            const wasOpen = state.access !== "suspended";
             Object.assign(state, EMPTY, data, { features_sig: sig });
             if (moved) { env.bus.trigger("PB_SIDEBAR:RELOAD"); }
+            if (wasOpen && state.access === "suspended") {
+                window.location.href = "/pb_tenancy/paused";
+            }
         }
 
         async function refresh() {
@@ -126,6 +151,19 @@ export const tenancyService = {
 
         function tick() {
             if (document.visibilityState === "visible") { refresh(); }
+        }
+
+        /**
+         * Hide the standing bar for the REST OF TODAY.
+         *
+         * Not for ever: "your trial ends in three days" becomes "in two days"
+         * tomorrow, and that is news. Not for the session either: somebody who
+         * closed it at nine should not meet it again at ten.
+         */
+        function dismissStanding() {
+            const day = new Date().toISOString().slice(0, 10);
+            state.standing_dismissed = day;
+            lsSet(LS_STANDING_DAY, day);
         }
 
         /** Hide this notice for this browser until a different one arrives. */
@@ -193,7 +231,8 @@ export const tenancyService = {
         timer = setInterval(tick, POLL_MS);
         // The service lives as long as the page does; the handle is kept only so
         // a test — or a future "pause polling" switch — has something to stop.
-        return { state, refresh, dismiss, visibleNotice, stop: () => clearInterval(timer) };
+        return { state, refresh, dismiss, dismissStanding, visibleNotice,
+                 stop: () => clearInterval(timer) };
     },
 };
 

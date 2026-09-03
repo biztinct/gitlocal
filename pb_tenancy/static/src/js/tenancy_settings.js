@@ -35,5 +35,21 @@ registry.category(SETTINGS_CATEGORIES).add("about", {
             label: _t("What's new"),
             sub: _t("Every update we have shipped, newest first, in plain words."),
         },
+        // FLEET P5. The second card, so the section page the comment above
+        // predicted comes back on its own with nothing to undo.
+        //
+        // STILL NO GATE. What your company pays for, how many people are on
+        // Payobook and last month's invoice are not privileged: the people who
+        // need them are the office manager and whoever is asked "why has the
+        // bill gone up". Gating it on the platform's own administrator group
+        // would put it behind a door nobody on a customer's database holds
+        // (the tenant-admin rails see to that).
+        {
+            id: "plan_usage",
+            tag: "pb_tenancy_plan_usage",
+            icon: "creditCard",
+            label: _t("Plan & usage"),
+            sub: _t("Your plan, how many employees it allows, and your invoices."),
+        },
     ],
 }, { sequence: 40 });

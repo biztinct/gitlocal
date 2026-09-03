@@ -274,3 +274,122 @@
     .pbtn .pbtn-rel { animation: none; }
     .pbtn .pbtn-now-dot { animation: none; }
 }
+
+// =============================================================================
+// FLEET P5 — Plan & usage.
+//
+// ITS OWN ROOT-SCOPED SECTION, appended at the very end of the file and NOT
+// inside the `.pbtn { … }` block above. Ledger F35: this stylesheet already has
+// more than one root block, and a rule appended "at the end, before the closing
+// brace" lands inside whichever one happens to be last and matches nothing —
+// silently, with the screen rendering at zero height and no error anywhere.
+// Everything below is written from `.pbtn` outwards so it cannot happen here.
+// =============================================================================
+
+.pbtn .pbtn-pu {
+    display: flex; flex-direction: column; gap: 18px;
+}
+
+// --------------------------------------------------------------- trial strip
+.pbtn .pbtn-pu-trial {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px; border-radius: 12px;
+    border: 1px solid var(--pbim-amber-soft, #F6E4C8);
+    background: var(--pbim-amber-bg, #FDF6EC);
+    animation: pbtn-rise .28s cubic-bezier(.2,.7,.3,1) both;
+
+    .pbtn-pu-trial-ic { color: #D97706; display: flex; padding-top: 1px; }
+    .pbtn-pu-trial-tx { display: flex; flex-direction: column; gap: 3px; }
+    b { font-size: 14px; }
+    span { font-size: 13px; color: var(--pbim-muted, #6B6880); }
+
+    &.ended {
+        border-color: #F3CBD6; background: #FDF1F5;
+        .pbtn-pu-trial-ic { color: #DC2668; }
+    }
+}
+
+// ------------------------------------------------------------------ the hero
+.pbtn .pbtn-pu-hero {
+    display: flex; align-items: center; gap: 30px; padding: 24px 26px;
+    flex-wrap: wrap;
+}
+
+.pbtn .pbtn-pu-ring {
+    position: relative; width: 118px; height: 118px; flex: 0 0 118px;
+
+    svg { transform: rotate(-90deg); }
+    .pbtn-pu-track {
+        fill: none; stroke: var(--pbim-line, #E6E4F0); stroke-width: 9;
+    }
+    .pbtn-pu-arc {
+        fill: none; stroke: var(--pbim-primary, #5A4BB0); stroke-width: 9;
+        stroke-linecap: round;
+        transition: stroke-dashoffset .7s cubic-bezier(.2,.7,.3,1);
+    }
+    &.warn .pbtn-pu-arc { stroke: #D97706; }
+    &.bad  .pbtn-pu-arc { stroke: #DC2668; }
+
+    .pbtn-pu-ring-tx {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 1px;
+        .n { font-size: 27px; font-weight: 800; letter-spacing: -.6px; }
+        .l { font-size: 11px; color: var(--pbim-muted, #6B6880); }
+    }
+}
+
+.pbtn .pbtn-pu-hero-tx {
+    flex: 1 1 300px; display: flex; flex-direction: column; gap: 12px;
+
+    .pbtn-pu-plan {
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 21px; letter-spacing: -.3px; }
+        .pbtn-pu-noplan { color: var(--pbim-muted, #6B6880); font-weight: 600; }
+    }
+    .pbtn-pu-seat { margin: 0; font-size: 14px; line-height: 1.5; }
+}
+
+.pbtn .pbtn-pu-stats {
+    display: flex; gap: 10px; flex-wrap: wrap;
+
+    .pbtn-pu-stat {
+        display: flex; align-items: center; gap: 9px;
+        padding: 10px 14px; border-radius: 11px;
+        border: 1px solid var(--pbim-line, #E6E4F0);
+        background: var(--pbim-surface, #fff);
+        .pbtn-pu-stat-ic { color: var(--pbim-primary, #5A4BB0); display: flex; }
+        .n { font-size: 19px; font-weight: 700; letter-spacing: -.3px; }
+        .l { font-size: 12px; color: var(--pbim-muted, #6B6880); }
+    }
+}
+
+// -------------------------------------------------------------- the invoices
+.pbtn .pbtn-pu-sec {
+    display: flex; flex-direction: column; gap: 2px; margin-top: 4px;
+}
+
+.pbtn .pbtn-pu-inv { padding: 4px 0; overflow-x: auto; }
+
+.pbtn .pbtn-pu-row {
+    display: grid;
+    grid-template-columns: 170px 1fr 140px 150px 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 12px 20px; min-width: 760px;
+    border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    &:last-child { border-bottom: 0; }
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+
+    .pbtn-pu-no { font-weight: 700; font-size: 13px; }
+    .pbtn-pu-per { font-size: 13px; }
+    .pbtn-pu-amt { font-weight: 700; font-size: 14px; }
+    .pbtn-pu-due { font-size: 12px; color: var(--pbim-muted, #6B6880); }
+}
+
+@media (max-width: 720px) {
+    .pbtn .pbtn-pu-hero { gap: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pbtn .pbtn-pu-trial { animation: none; }
+    .pbtn .pbtn-pu-ring .pbtn-pu-arc { transition: none; }
+}
