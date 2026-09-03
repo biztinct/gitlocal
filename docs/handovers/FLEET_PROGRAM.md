@@ -227,3 +227,70 @@ kit registry (shared). The phase report scores itself against this bar.
 - **F12** (P1) `pb.tenants.sync_bring_in_step` accepts three targets and nothing else: a tenant id,
   the string `template`, or `<slug>-staging` where `<slug>` is a real tenant (rail R4's rehearsal
   door). Every other name is refused by name. `sync_install` is now a thin wrapper over it.
+- **F13** (P2A, 2026-09-03) **`HttpCase` cannot reach a single route on this server without
+  `--db-filter=.*` on the command line.** The live configuration picks the database out of the
+  hostname (`dbfilter = ^%d$` in `/etc/odoo-server.conf`), and a test client calls itself on
+  `127.0.0.1`, which resolves to a database named `127`. Every route then answers **404 with an
+  HTML body**, so the failure looks like a broken controller rather than a routing mismatch — it
+  cost two full test cycles here. The full command is
+  `odoo-bin -c … -d payobook -u <mods> --test-enable --test-tags /<mods> --db-filter=.*
+  --http-port=8199 --gevent-port=8198 --max-cron-threads=0 --stop-after-init`.
+  Second half of the same gotcha: `self.authenticate('admin', 'admin')` fails on every live
+  database, because the administrator's password is not `admin`. An `HttpCase` here creates its own
+  user with a known password in `setUp` (see `pb_tenancy/tests/test_tenancy.py`).
+  Also: `odoo-bin`'s output does NOT go to the shell — `logfile = /var/log/odoo/odoo-server.log` is
+  set in the config, so a `> /tmp/x.log` redirect captures nothing but the sentinel. Read the
+  server log for `odoo.tests.result: N failed, M error(s) of K tests`.
+- **F14** (P2A) **The tenant-side poll runs on every visible tab, not only while a notice is
+  showing.** The P2A spec asked for the cheaper rule (poll only while a notice is up, plus on
+  becoming visible); that rule cannot satisfy the phase's own acceptance test, because a page with
+  no notice would never discover that one had been sent. `pb_tenancy`'s service therefore polls
+  `/pb_tenancy/state` every 60 s **while `document.visibilityState === "visible"`**, plus
+  immediately when a hidden tab comes back after more than 60 s. Measured consequence, and it is
+  the one to remember when validating: **a background tab does not update.** Chrome-MCP drives
+  several tabs, and the tenant tab is hidden while the cockpit tab is being driven — so "the bar
+  did not appear" during validation was the design working, not a failure. Bring the tenant tab to
+  the front (`select_page` with `bringToFront`) before timing anything.
+- **F15** (P2A) **An OWL `t-foreach` loop variable must never be called `lt`.** `t-as="lt"` compiles
+  to `<.id` / `<.name` in the generated JavaScript — the template compiler rewrites the name into a
+  literal `<` — and the WHOLE component then fails with
+  `Failed to compile template "…": Unexpected token '<'` and a blank screen with an "our side" error
+  dialog. Nothing points at the loop; the only clue is the generated source in the console. Assume
+  the same for any other HTML-entity name (`gt`, `amp`, `quot`). Name loop variables for what they
+  hold (`cust`, `row`, `mod`).
+- **F16** (P2A) **JavaScript built-ins are not in scope inside an OWL template.** A template
+  expression is compiled against the component, so `String(x)` becomes `ctx.String(x)` and throws
+  `TypeError: ctx.String is not a function` — but only when that branch is first rendered, which
+  here was the moment a `t-foreach` over an initially-empty list gained its first row. Coerce on the
+  component side; templates hold property access and comparisons only.
+- **F17** (P2A) **`<input type="datetime-local">` speaks the reader's wall clock; the server speaks
+  UTC.** Passing one straight to the other moves every window by the operator's offset (seven hours
+  on this box) with no error anywhere — the platform owner types "22:00 tonight" and the customer's
+  bar announces maintenance in the middle of their morning. `tenants.js` converts both ways
+  explicitly (`_forInput` UTC→local for the two boxes, `_toUtc` local→UTC for the preview AND the
+  send, so the preview cannot disagree with what is delivered). Verified end to end: 22:00–01:00
+  local typed on the cockpit stored as `12:00–15:00` UTC and rendered back as `tonight 22:00–01:00`
+  on the customer's screen.
+- **F18** (P2A) **Where the tenant banner mounts, and why not where P1's spec guessed.** Two modules
+  on this build (`biz_theme/static/src/xml/biz_sidebar_menu.xml:8` and
+  `pb_sidebar/static/src/xml/webclient_patch.xml:4`) already `position="replace"` the SAME
+  `//ActionContainer` node; a third would be a race between load orders. `pb_tenancy` inserts
+  `<PbTenancyBanner/>` **after `//NavBar`** instead, which nothing else touches. The server's own
+  `web.WebClient` is four lines (`NavBar` inside `t-if="!state.fullscreen"`, then `ActionContainer`,
+  then `MainComponentsContainer`), so the bar inherits the fullscreen guard — correct: a full-screen
+  surface is a surface with no chrome.
+- **F19** (P2A) **Only the `pb.tenants` facade's OWN cross-database writes go through `_tenant_env`;
+  the asset ritual on a tenant does not.** Purging `/web/assets/%` and bumping `web.assets.version`
+  with `psql` leaves the running tenant registry's ormcache holding the old version. The attachments
+  being gone makes the bundle rebuild anyway, so the visible result is right — but restart the
+  service after the SQL rather than relying on that.
+- **F20** (P2A) `ir.config_parameter.set_param(key, '')` **writes an empty string, it does not
+  delete the row** (`addons/base/models/ir_config_parameter.py:94` unlinks only on `False`/`None`).
+  So clearing a notice leaves `pb_tenancy.notice` present and empty, which is what the reader
+  expects. Related: `pb_tenants.template_active_crons` lives on the **template's** database, not the
+  master's — looking for it on `payobook` finds nothing and looks like data loss. On
+  `payobook_template` it holds 52 ids, and all 58 of that database's scheduled jobs are inactive
+  (rail R8, verified after this phase's install).
+- **F21** (P2A) `type='json'` is a **deprecated alias** on this framework — `odoo/http.py:788` logs
+  "Since 19.0, @route(type='json') is a deprecated alias to @route(type='jsonrpc')" on every boot.
+  New routes use `type='jsonrpc'`, and a read-only one adds `readonly=True`.
