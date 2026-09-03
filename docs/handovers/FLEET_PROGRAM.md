@@ -294,3 +294,62 @@ kit registry (shared). The phase report scores itself against this bar.
 - **F21** (P2A) `type='json'` is a **deprecated alias** on this framework — `odoo/http.py:788` logs
   "Since 19.0, @route(type='json') is a deprecated alias to @route(type='jsonrpc')" on every boot.
   New routes use `type='jsonrpc'`, and a read-only one adds `readonly=True`.
+- **F23** (P2B, 2026-09-03) **An unset Datetime reads as `False`, not `None`.** Every helper that
+  takes "a moment or nothing" must test falsiness, not identity: `if dt is None` lets the boolean
+  through and the next line asks it for its `tzinfo`. It broke the state machine the first time a
+  wave finished (`ring_done_at` empty). Same family as F20.
+- **F24** (P2B) **`ir.config_parameter.get_param` cannot express "deliberately empty", and lies
+  about "absent".** It answers **`False`** for a key that is not there — not `None` — and its body
+  ends in `or default`, so a value explicitly set to `''` also comes back as the default. A list
+  parsed from it therefore became `["False"]`, a filter that filters nothing and looks exactly like
+  a working one. Any setting where empty is a meaningful answer must `search` the
+  `ir.config_parameter` row and read `.value` (`pb.tenants._log_ignore` is the pattern).
+- **F25** (P2B) **The health gate needs an ignore list, because this box makes noise.**
+  `vendor_license_core` writes one `ERROR` on **every registry load of every database** ("License
+  check FAILED: missing — License file not found at /opt/vendor_license/license.json"). It stopped
+  the first rehearsal of the first rollout on a copy that was in perfect health. A gate that cries
+  wolf on every run is a gate the owner learns to click past. `rollout_rules.DEFAULT_LOG_IGNORE`
+  plus the setting `pb_tenants.health_ignore` (one substring per line, case-insensitive); ignored
+  lines are still RECORDED on the task and counted on screen, never deleted.
+- **F26** (P2B) **Restoring a database logs errors of its own**, so a health window that starts
+  before the restore blames the update for them: `odoo.sql_db: bad query … SELECT latest_version
+  FROM ir_module_module` ×2, because the framework asks a half-built database what version it is
+  on. The rehearsal's window starts when the UPDATE starts. Related, and rail R4: the restore call
+  belongs INSIDE the `try` whose `finally` drops the copy — outside it, a damaged backup leaves a
+  part-restored database on a box with 1.9 GB of RAM.
+- **F27** (P2B) **The health gate's exact log query.** `/var/log/odoo/odoo-server.log`, last
+  ≤ 20 MB only (the file is ~85 MB), lines matching
+  `^(<ts>),\d+ \d+ (\w+) (\S+) ([^:]+): (.*)$` where the level is `ERROR`/`CRITICAL`, the database
+  column equals the target database, and the timestamp is ≥ the moment the update started. **The
+  server's clock is UTC and the framework stores UTC, so the two compare as strings with no
+  arithmetic** — the day this box moves to a local zone, that comparison is what quietly stops
+  working. The logger name is kept in the stored line: it is the only part that says which piece of
+  the product complained.
+- **F28** (P2B) **A rollout is written down once and walked; the tests must stand down the real
+  fleet.** `TransactionCase` on `payobook` runs against real `pb.tenant` rows and real `pb.rollout`
+  rows, so a live customer joins every plan (`filtered()` stops being a singleton) and a genuinely
+  paused rollout makes every test fail with "one is already going out" — the guard working, against
+  the suite. `setUp` decommissions the tenants and aborts the rollouts inside the transaction,
+  which is rolled back and never reaches them.
+- **F29** (P2B) **A test cursor's `commit` refusal is bolted to the INSTANCE, not the class.**
+  `patch.object(type(self.env.cr), 'commit', …)` does nothing; `patch.object(self.env.cr, 'commit',
+  lambda: None)` is what lets a cron body that commits per customer be tested at all.
+- **F30** (P2B) **"Run now" skips the window, never the queue.** `advance()` only ever looks at the
+  CURRENT wave, so setting `run_now` on a customer in a later wave silently did nothing. That is
+  the right behaviour — the order of the waves is the safety argument — so it is now a refusal by
+  name pointing at "Continue now", and the button is only offered inside the active wave.
+- **F31** (P2B) **Rail R4 must be enforced, not hoped for.** With the only usable backup file moved
+  aside, `plan_tasks` shrugged, left the rehearsal out with a warning, and offered to update a real
+  customer with nobody having rehearsed anything. No backup + at least one live customer is now a
+  blocker on Start, naming the customer and the button that takes a backup.
+- **F32** (P2B) **A customer's window has to be SAID in the customer's clock.** `render_range`
+  formats whatever it is handed, so handing it UTC printed "today 15:00–18:00" on a screen whose
+  next line said "on their clock". `to_local(dt, tz)` converts first; the plan and the Updates tab
+  now read "tonight 22:00–01:00 · their time · Asia/Ho_Chi_Minh". F17 is the same trap pointing the
+  other way.
+- **F33** (P2B) **Measured: one customer task is seconds, not minutes, on this fleet.** abm
+  (1.2 GB, 153 employees) took **8 s** for a one-module version move and **1 s** with nothing to do;
+  the golden template 8 s and 1 s; the rehearsal **80–86 s**, of which ~60 s is the restore of a
+  219 MB backup. So the "being updated right now" bar is genuinely up for about a second here — a
+  fact to remember when validating, not a bug. The pre-notice, the in-progress notice and the clear
+  are all provable from `pb_tenant.provision_log` and the rollout's own trail.
