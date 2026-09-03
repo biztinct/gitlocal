@@ -316,6 +316,17 @@ class PbTenantsFeatures(models.AbstractModel):
         return self.features_data()
 
     # ==================================================== the master itself
+    #
+    # `@api.model` IS LOAD-BEARING AND IT IS NOT ABOUT `self`. The catalogue's
+    # data file ends with `<function model="pb.tenants"
+    # name="_push_features_here"/>` and no arguments, and this framework reads
+    # the FIRST argument of a `<function>` as the ids to call it on
+    # (`odoo/tools/convert.py:193`, `record_ids, *args = args`). With no
+    # arguments and no `@api.model`, that unpack fails and takes the whole
+    # upgrade with it — "not enough values to unpack (expected at least 1,
+    # got 0)", pointing at the XML rather than at the method it could not call.
+    # A method invoked from a data file with no arguments must carry this.
+    @api.model
     def _push_features_here(self):
         """The platform's own database, written straight rather than pushed.
 
