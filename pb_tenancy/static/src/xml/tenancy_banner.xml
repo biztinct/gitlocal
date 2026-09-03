@@ -2,6 +2,10 @@
 <templates xml:space="preserve">
 
 <t t-name="pb_tenancy.Banner">
+    <!-- FLEET P6. ABOVE everything else, and it draws nothing at all unless
+         this session came in through the support door. "You are in somebody
+         else's payroll" outranks any message we might also be showing. -->
+    <PbTenancySupportBar/>
     <PbTenancyBar t-if="notice" notice="notice" onDismiss.bind="dismiss"/>
     <!-- FLEET P5. The company's own standing, under anything the platform has
          to say. Two bars at once is the honest arrangement on the one morning

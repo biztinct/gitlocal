@@ -28,6 +28,10 @@ import { noticeKey } from "./tenancy_service";
 import { WebClient } from "@web/webclient/webclient";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { renderRange } from "./tenancy_range";
+// FLEET P6. The rose bar that says which company a Payobook engineer is
+// actually in. Mounted here rather than through a second `xpath` on the web
+// client: one insertion point is one load order to reason about (ledger F18).
+import { PbTenancySupportBar } from "./support_bar";
 import { _t } from "@web/core/l10n/translation";
 
 /** One notice, drawn. No state, no service, no decisions about visibility. */
@@ -148,7 +152,8 @@ export class PbTenancyStandingBar extends Component {
 /** The one mounted in the web client. */
 export class PbTenancyBanner extends Component {
     static template = "pb_tenancy.Banner";
-    static components = { PbTenancyBar, PbTenancyStandingBar };
+    static components = { PbTenancyBar, PbTenancyStandingBar,
+                          PbTenancySupportBar };
     static props = {};
 
     setup() {

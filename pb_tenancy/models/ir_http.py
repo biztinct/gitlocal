@@ -15,7 +15,7 @@ import logging
 
 import werkzeug.exceptions
 
-from odoo import models
+from odoo import _, fields, models
 from odoo.exceptions import AccessDenied
 from odoo.http import request
 
@@ -51,6 +51,21 @@ OPEN_PREFIXES = (
 )
 
 
+#: FLEET P6. Where the support clock is NOT read, for the same reason as
+#: OPEN_PREFIXES above: the page that says the session has finished, the way
+#: out, and the assets both are drawn from must all still be served to somebody
+#: whose session has just ended, or they meet a redirect loop instead of a
+#: sentence.
+SUPPORT_OPEN_PREFIXES = (
+    '/pb_tenancy/support/',
+    '/web/session/logout',
+    '/web/session/destroy',
+    '/web/assets',
+    '/web/static',
+    '/favicon.ico',
+)
+
+
 class IrHttp(models.AbstractModel):
     _inherit = 'ir.http'
 
@@ -73,6 +88,66 @@ class IrHttp(models.AbstractModel):
             # line has to be greppable on a live box.
             _logger.warning("pb_tenancy: could not read the access state (%r); "
                             "letting the request through", exc, exc_info=True)
+        try:
+            cls._pb_support_clock(rule)
+        except werkzeug.exceptions.HTTPException:
+            raise
+        except Exception as exc:                             # noqa: BLE001
+            # FAILS CLOSED IN SPIRIT, OPEN IN PRACTICE, and the difference is
+            # worth being clear about. If this check breaks, a support session
+            # runs past its finish time until somebody signs it out — it does
+            # not let ANYBODY IN who was not already in, because getting in is
+            # the login seam's job and that fails closed. The reason goes in the
+            # line, not only the traceback (the lesson of ledger F53).
+            _logger.warning("pb_tenancy: could not read the support session "
+                            "(%r); the session is left running", exc,
+                            exc_info=True)
+
+    # ============================================ FLEET P6 — the support clock
+    @classmethod
+    def _pb_support_clock(cls, rule):
+        """End a support session that is over, and remember the screens opened.
+
+        COSTS NOTHING FOR ANYBODY ELSE. The whole method is behind one lookup in
+        the session dictionary, which is already in memory: a person doing their
+        payroll has no `pb_support_id` on their session and leaves at the first
+        line. Only the one account that came through the support door pays for
+        the row read.
+        """
+        if not request:
+            return
+        sid = request.session.get('pb_support_id')
+        if not sid:
+            return
+        path = request.httprequest.path or ''
+        if path.startswith(SUPPORT_OPEN_PREFIXES):
+            return
+        env = request.env
+        if 'pb.support.access' not in env:
+            return
+        row = env['pb.support.access'].sudo().browse(int(sid)).exists()
+        if not row:
+            return
+        now = fields.Datetime.now()
+        over = (row.state != 'active'
+                or (row.session_expires_at and row.session_expires_at <= now))
+        if over:
+            if row.state == 'active':
+                row.expire()
+            # SIGNED OUT, NOT MERELY REDIRECTED. A session that is over has to
+            # stop being a session; leaving the cookie alive and only sending
+            # the page somewhere else would leave every RPC call still answering.
+            request.session.logout(keep_db=True)
+            if (rule.endpoint.routing.get('type') or 'http') == 'http':
+                werkzeug.exceptions.abort(
+                    request.redirect('/pb_tenancy/support/gone'))
+            raise AccessDenied(_("This support session has finished."))
+        # A BACKSTOP, NOT THE RECORD. Moving between screens in this product
+        # changes the address without asking the server for anything, so this
+        # sees the first page load and little else; the bar reports the rest
+        # through `/pb_tenancy/support/seen`.
+        if (rule.endpoint.routing.get('type') or 'http') == 'http':
+            row.note_route(path)
 
     @classmethod
     def _pb_paused_door(cls, rule):
@@ -136,4 +211,16 @@ class IrHttp(models.AbstractModel):
             # browser treats a missing key as "no notice, no release".
             _logger.warning("pb_tenancy: could not read the platform state for "
                             "this session", exc_info=True)
+        # FLEET P6. The support bar, on the first paint and for one account.
+        # The key is ABSENT for everybody else — not false, not an empty object
+        # — so nothing on any other person's page has to decide anything.
+        try:
+            sid = request.session.get('pb_support_id')
+            if sid:
+                sess = self.env['pb.tenancy'].sudo().support_session(sid)
+                if sess:
+                    info['pb_support_session'] = sess
+        except Exception:                                    # noqa: BLE001
+            _logger.warning("pb_tenancy: could not read the support session "
+                            "for this page", exc_info=True)
         return info

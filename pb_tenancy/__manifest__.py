@@ -5,7 +5,7 @@
     'name': 'Payobook Platform Link',
     'summary': "Tells this database which Payobook release it is on, shows notices "
                "from the platform, and lists what changed in each update.",
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -29,24 +29,34 @@
     # tells five existing menu entries which part of the product they belong
     # to. Still no scheduled job, still no rail item of its own.
     'data': [
+        # FLEET P6. The one table on a customer's database that only the
+        # platform writes and only the customer's administrator reads.
+        'security/ir.model.access.csv',
         'data/pb_sidebar_features.xml',
         # FLEET P5. The page a paused customer's people meet. Standalone
         # markup with no login form on it — see the file.
         'views/paused.xml',
+        # FLEET P6. The calm page at the end of a support link that did not
+        # work, and the customer's own "Support access" screen.
+        'views/support.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_tenancy/static/src/scss/tenancy.scss',
             'pb_tenancy/static/src/js/tenancy_range.js',
             'pb_tenancy/static/src/js/tenancy_service.js',
+            # FLEET P6. Before the banner, which mounts it.
+            'pb_tenancy/static/src/js/support_bar.js',
             'pb_tenancy/static/src/js/tenancy_features.js',
             'pb_tenancy/static/src/js/tenancy_banner.js',
             'pb_tenancy/static/src/js/whats_new.js',
             'pb_tenancy/static/src/js/tenancy_settings.js',
             'pb_tenancy/static/src/js/plan_usage.js',
+            'pb_tenancy/static/src/js/support_page.js',
             'pb_tenancy/static/src/xml/tenancy_banner.xml',
             'pb_tenancy/static/src/xml/whats_new.xml',
             'pb_tenancy/static/src/xml/plan_usage.xml',
+            'pb_tenancy/static/src/xml/support.xml',
             'pb_tenancy/static/src/xml/webclient_patch.xml',
         ],
     },
