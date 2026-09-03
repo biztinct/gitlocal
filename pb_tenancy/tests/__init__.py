@@ -3,3 +3,5 @@
 from . import test_tenancy
 # FLEET P4 — the feature switches, as this database reads them.
 from . import test_features
+# FLEET P5 — the plan, the employee limit and the paused door.
+from . import test_standing

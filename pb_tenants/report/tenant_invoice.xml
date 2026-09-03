@@ -23,6 +23,12 @@
     </record>
 
     <template id="report_tenant_invoice">
+        <!-- THE DOCUMENT'S OWN TITLE, set before the container is called.
+             `web.report_layout` renders `<title t-esc="title or 'Odoo Report'"/>`,
+             and that string becomes the PDF's document title — which a reader
+             sees in their PDF viewer's window and in the file's properties.
+             It is a user-visible string like any other (rail R7). -->
+        <t t-set="title">Payobook invoice</t>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="inv">
                 <t t-set="d" t-value="inv._render_data()"/>
