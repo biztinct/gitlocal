@@ -441,3 +441,61 @@ kit registry (shared). The phase report scores itself against this bar.
   across a full 238-test run, and moves again on the next five-minute job.
   Odoo 19 has no `registry.in_test_mode()`; `config['test_enable']` is the
   marker the framework itself uses.
+- **F45** (P4, 2026-09-03) **A `<function>` in a data file with no arguments
+  needs `@api.model` on the method.** `odoo/tools/convert.py:193` reads the
+  FIRST argument of a `<function model= name=/>` as the records to call it on
+  (`record_ids, *args = args`) unless the method carries the model-level
+  marker. With neither, the upgrade dies on **"not enough values to unpack
+  (expected at least 1, got 0)"** and the traceback names the XML line, not the
+  method it could not reach — `pb_tenants/data/pb_feature.xml`'s closing
+  `_push_features_here` cost a whole upgrade cycle. `_seed_feature_keys` in
+  `pb_tenancy` was written the same way and was fine, because it happened to
+  carry the decorator.
+- **F46** (P4) **`@api.model` IS NOT INHERITED, and forgetting it on an
+  override takes the whole left menu away from everybody.** The browser calls
+  `pb.sidebar.item.get_sidebar_data` with no ids; the framework decides how to
+  call it by reading the marker off the function it is about to invoke
+  (`odoo/service/model.py:86`). `pb_tenancy`'s override of it left the
+  decorator off, so every page in the product came back with no navigation and
+  a "Something went wrong on our side" dialog, one minute after the master was
+  upgraded. **No Python test can see this**: a test calls the method directly
+  and both shapes work. The gate is now an assertion on the MARKER
+  (`test_t3_03`), for `get_sidebar_data` and `visibility_for` both.
+- **F47** (P4) **`useState`'s return value IS the subscription.** A component is
+  registered against the reads it makes THROUGH the object `useState` hands
+  back; `useState(someReactive)` with the result discarded watches nothing at
+  all, silently. Three surfaces had it that way and would each have needed a
+  page reload to notice a switch. Second half of the same rule: watch a value
+  that only changes when the answer changes. `apply()` replaces the feature
+  maps with fresh objects on every read, so a component watching a map would
+  repaint once a minute for ever — `features_sig`, one string, is what they
+  watch.
+- **F48** (P4) **A browser-side reactive cannot update a menu the SERVER drew.**
+  The rail is fetched once per page load, so no amount of watching state in the
+  browser redraws it. `pb_tenancy` compares the answer it just polled with the
+  one it had and fires the rail's own `PB_SIDEBAR:RELOAD` bus event when they
+  differ — and deliberately not on the first read, which is the same answer the
+  page was painted from a moment ago.
+- **F49** (P4) **Python-style adjacent string literals blanked the whole backend
+  again — and the gate that catches them exists.** `_t("part one "\n "part
+  two")` in `pb_hub/static/src/js/hub_feature_off.js` produced an unparseable
+  `web.assets_backend`, an empty page and a completely clean server log. W74 all
+  over again, and `pb_hub/tests/test_static.py` has asserted against it since
+  the last time. It did not fire because the phase ran its tests scoped to the
+  two modules it was WRITING (`/pb_tenants,/pb_tenancy`). **The test scope must
+  name every module the phase edits**, which here was six.
+- **F50** (P4) **Two presses of "Start rollout" inside ninety seconds are two
+  rollouts, and they destroy each other's practice run.** The "already going
+  out" blocker is real, but `rollout_start` runs the whole rehearsal before it
+  commits, so a second call in that window sees no rollout at all. Both then
+  restore and drop `abm-staging` under each other: the first dies with
+  "connection already closed", the second with "could not serialize access due
+  to concurrent update", and both stop — correctly — with nothing having
+  reached a customer. `rollout_start` now takes
+  `pg_advisory_xact_lock(hashtext('pb_tenants.rollout_start'))` on entry, so the
+  second press waits and then gets the refusal it should have had.
+- **F51** (P4) **The rehearsal copy is a shared resource with one name.** Every
+  rollout's practice run is `<slug>-staging`, restored and dropped by whoever
+  is running. That is fine while exactly one rollout exists (F50 now enforces
+  it) and is the reason a paused rollout must be called off rather than left
+  lying about: a second one started later would restore the same copy again.
