@@ -169,6 +169,28 @@ class TestTenancyFeatures(TransactionCase):
             self.Item.visibility_for(self.admin)['sections'][self.section.id],
             'locked')
 
+    def test_t3_03_the_two_menu_calls_are_still_model_level_ones(self):
+        """THE ONE THING A PYTHON TEST CANNOT SEE BY CALLING THE METHOD.
+
+        The browser asks for the left menu with no records and no ids. The
+        framework decides how to call it by reading a marker off the function
+        itself (`odoo/service/model.py:86`), and that marker is NOT inherited —
+        an override that forgets `@api.model` turns the call into a
+        record-level one, the browser sends nothing to browse, and every page
+        in the product loses its navigation with "list index out of range".
+
+        It happened here, live, during this phase. Every test above still
+        passed, because Python calls the method directly and both shapes work
+        that way. So the assertion is about the marker, not the answer.
+        """
+        cls = type(self.env['pb.sidebar.item'])
+        for name in ('get_sidebar_data', 'visibility_for'):
+            self.assertTrue(
+                getattr(getattr(cls, name), '_api_model', False),
+                "pb.sidebar.item.%s is no longer a model-level method — the "
+                "browser calls it with no ids and the whole left menu dies"
+                % name)
+
     # =============================================== what the browser is given
     def test_t5_01_the_page_payload_carries_three_flat_maps(self):
         self._set(_payload(p4_thing=(False, 'lock')))
