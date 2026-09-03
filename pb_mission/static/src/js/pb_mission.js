@@ -36,6 +36,13 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+// FLEET P4. Workforce is sold on its own, so a company can be on Payobook
+// without it. Mission Control keeps its own shell (not refactoring it onto
+// the kit is a standing non-goal), so it borrows the ONE page the kit draws
+// for "your company has not got this" rather than growing a second one that
+// would drift from it.
+import { featureGate, featuresState } from "@pb_hub/js/hub_features";
+import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
 import { WfCommandPalette } from "@pb_wf_kit/js/wf_command_palette";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
@@ -191,7 +198,7 @@ export class PbMission extends Component {
     static components = {
         WfContextBar, WfDock, WfDrawer, WfPersonWeek,
         PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
-        PbCloseLens, HubBackChip,
+        PbCloseLens, HubBackChip, HubFeatureOff,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
 
@@ -204,6 +211,12 @@ export class PbMission extends Component {
         // useState() on the service's reactive is what subscribes the shell —
         // the command bar's chips follow a change made by any lens below.
         this.wf = useState(this.ctxSvc.state);
+        // FLEET P4. The same subscription, for the same reason: a switch
+        // flipped on the platform reaches an open page within a minute, and
+        // this shell has to repaint when it does. Null when the Platform Link
+        // is not installed here — and then Workforce is simply on.
+        this._features = featuresState(this.env);
+        if (this._features) { useState(this._features); }
 
         const arrival = this._arrival();
 
@@ -597,6 +610,18 @@ export class PbMission extends Component {
             target: "new",
         });
     }
+
+    // ------------------------------------------- is this company on Workforce
+    //
+    // Not a permission — a sale. Somebody who has not bought Workforce has
+    // no rail entry for it and no palette rows, but a bookmark still points
+    // here, and an empty workspace is the dead end this answers.
+    get workforceOff() {
+        const g = featureGate(this.env, "workforce");
+        return !g.shown || g.locked;
+    }
+
+    get workforceOffText() { return featureGate(this.env, "workforce").text; }
 
     // ------------------------------------------------------------ ⌘K palette
     /** "⌘K" on macOS, "Ctrl K" elsewhere — the label must match the key. */

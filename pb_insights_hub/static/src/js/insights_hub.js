@@ -107,6 +107,12 @@ export class PbInsightsHub extends Component {
         this.config = {
             key: "insights",                 // -> pbhub.insights.lens.v1
             brand: { label: _t("Insights"), icon: "activity" },
+            // FLEET P4. Insights is sold on its own, so a company can be on
+            // Payobook without it. The rail entry is the door people FIND;
+            // this is the door people already know about — a bookmark, a link
+            // from a colleague — and it is why the kit draws a sentence rather
+            // than an empty workspace.
+            feature: "insights",
             defaultLens: "pulse",
             // The cog, exactly as the pay hub carries it: a configuration
             // errand is a round trip, not a page you have to find your way

@@ -155,12 +155,14 @@ class PbSettings(models.AbstractModel):
             key = cat.get('key')
             if not isinstance(key, str) or not key:
                 continue
-            out_cats[key] = is_system or self._gate_category(key, cat)
+            out_cats[key] = ((is_system or self._gate_category(key, cat))
+                             and self._gate_feature(cat))
             for card in (cat.get('cards') or [])[:_MAX_CARDS]:
                 if not isinstance(card, dict) or not card.get('id'):
                     continue
                 out_cards['%s:%s' % (key, card['id'])] = (
-                    is_system or self._gate_card(card))
+                    (is_system or self._gate_card(card))
+                    and self._gate_feature(card))
         return {'is_system': is_system,
                 'categories': out_cats,
                 'cards': out_cards}
@@ -174,6 +176,43 @@ class PbSettings(models.AbstractModel):
         if not groups:
             return True
         return any(self._holds(g) for g in groups)
+
+    # ============================================ FLEET P4 — is it sold here?
+    #
+    # A FOURTH RULE, AND IT IS THE ONLY ONE AN ADMINISTRATOR DOES NOT ESCAPE.
+    # Rules 1-3 are about PERMISSION: who may use a screen, and a system
+    # administrator may use all of them. This one is about whether the company
+    # has the thing at all — and if they have not bought Insights, the person
+    # who administers their database has not bought it either. Offering it to
+    # them is offering a door into a product that is not there, and the one
+    # person who will then telephone about it.
+    #
+    # IT IS STILL NOT A SECURITY CONTROL. It takes a card off a screen. What
+    # somebody may read behind that card is decided by the roles they hold,
+    # exactly as before, and nothing here changes it.
+    #
+    # Asked of the SERVER because the browser's answer can be edited, and
+    # because a card that is switched off must not be offered by a hub whose
+    # descriptor somebody has rewritten in a console. FAILS OPEN in the two
+    # ways that matter: a database with no Platform Link has no answer and
+    # keeps every card, and a feature key nobody has defined is not a reason to
+    # hide anything.
+    def _gate_feature(self, descriptor):
+        key = descriptor.get('feature')
+        if not isinstance(key, str) or not key:
+            return True
+        if 'pb.tenancy' not in self.env:
+            return True
+        try:
+            on, mode, _text = self.env['pb.tenancy'].feature_state(key)
+        except Exception:                               # noqa: BLE001
+            _logger.warning('pb_settings: could not read the feature switches; '
+                            'every card stays visible', exc_info=True)
+            return True
+        # `lock` is the browser's job: the hub draws the padlock and answers the
+        # click. The server only refuses what should not be on the screen at
+        # all.
+        return bool(on) or mode == 'lock'
 
     def _gate_card(self, card):
         """Is this one door the platform's own? Never called for an administrator."""

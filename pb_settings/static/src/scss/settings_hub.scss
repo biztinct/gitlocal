@@ -221,6 +221,20 @@
         background: var(--pbim-surface, #ffffff);
         box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
     }
+    // FLEET P4 — a part of the product this company has not got, kept on
+    // screen as an offer. Quieter, never broken-looking: the border and the
+    // shadow stay, only the tones step back, so it reads as "there is more of
+    // this product" rather than "something has gone wrong here".
+    .pbst-card.is-locked {
+        background: var(--pbim-bg, #F5F6FA);
+        box-shadow: none;
+
+        .pbst-card__ic {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-muted, #64748B);
+        }
+        .pbst-card__l { color: var(--pbim-muted, #64748B); }
+    }
     .pbst-card__ic {
         flex: none;
         width: 36px;

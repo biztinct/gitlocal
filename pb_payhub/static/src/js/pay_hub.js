@@ -129,6 +129,10 @@ export class PbPayHub extends Component {
                     // reconciling a month reads them together.
                     key: "adjust", icon: "percent", label: _t("Adjust"),
                     Component: LedgerCockpit,
+                    // FLEET P4. Backdated changes and part-month pay are sold
+                    // separately; the Pay Run mission itself never is, because
+                    // a payroll product without a pay run is not a product.
+                    feature: "retro_proration",
                     props: {
                         tabs: [
                             { key: "retro", label: _t("Retro"), icon: "rotate",
@@ -141,6 +145,9 @@ export class PbPayHub extends Component {
                 {
                     key: "settle", icon: "file", label: _t("Settle"),
                     Component: LedgerCockpit,
+                    // FLEET P4. The last pay of somebody leaving is its own
+                    // part of the product.
+                    feature: "fullfinal",
                     // One descriptor, still declared as `tabs`: it is what
                     // routes the model, and the strip renders only past one tab.
                     props: {

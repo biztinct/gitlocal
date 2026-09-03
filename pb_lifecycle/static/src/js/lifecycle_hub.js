@@ -68,6 +68,8 @@ export class PbLifecycleHub extends Component {
         this.config = {
             key: "lifecycle",                 // -> pbhub.lifecycle.lens.v1
             brand: { label: _t("Lifecycle"), icon: "refresh" },
+            // FLEET P4. Journeys are sold on their own.
+            feature: "lifecycle",
             defaultLens: "journeys",
             cog: () => this.openSettings(),
             lenses: [

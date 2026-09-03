@@ -2,10 +2,18 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_mission.PbMission">
+    <!-- FLEET P4. Workforce is one of the parts of the product that is sold on
+         its own. A company that has not got it has no rail entry and no search
+         rows for it; this is the door they may still know the address of, and
+         it answers with one sentence instead of an empty workspace. The page
+         is the KIT's, not a second one written here, so the wording cannot
+         drift between Mission Control and every other workspace. -->
+    <HubFeatureOff t-if="workforceOff" label="'Workforce'" icon="'compass'"
+                   text="workforceOffText"/>
     <!-- position:relative — each lens's own drawer scrim is absolute and belongs
          to the LENS box, not the viewport; the shell root only has to be a
          positioned, definite-height column (W20). -->
-    <div class="pbim pbms">
+    <div t-else="" class="pbim pbms">
 
       <!-- ===================== command bar (mockup B) ===================== -->
       <header class="pbms-top">
