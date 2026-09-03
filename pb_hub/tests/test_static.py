@@ -36,8 +36,14 @@ _RE_ACTION_TAG = re.compile(
     r"""category\(\s*["']actions["']\s*\)\s*\.add\(\s*["']([\w.]+)["']""")
 
 # Class names pb_hub's own markup may use besides its `.pbhub-` prefix: the two
-# roots it shares with the rest of the design system.
-_ALLOWED_FOREIGN_CLASSES = {'pbim', 'pbhub'}
+# roots it shares with the rest of the design system, and — since FLEET P4 —
+# the shared kit's BUTTON, which is `pbim-btn` plus one variant word. The kit
+# now draws a page of its own ("this part of the product is not switched on for
+# your company") and that page offers a way onward; a button written in this
+# kit's own vocabulary would be a second button style for the same control.
+# The rule that matters is unchanged: nothing here paints itself with another
+# SURFACE's classes.
+_ALLOWED_FOREIGN_CLASSES = {'pbim', 'pbhub', 'pbim-btn', 'primary'}
 
 
 def _walk(module, suffixes, skip_tests=True):
