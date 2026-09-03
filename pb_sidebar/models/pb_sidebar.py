@@ -92,12 +92,30 @@ class PbSidebarItem(models.Model):
 
     def _state_for(self, item, is_admin, user_groups):
         """(visible, locked): items the user can't access are hidden, unless
-        flagged restricted — then shown locked (upsell) instead of hidden."""
+        flagged restricted — then shown locked (upsell) instead of hidden.
+
+        THE ONE HOOK. Anything that adds a new reason to hide or lock an entry
+        overrides THIS method and nothing else — `get_sidebar_data` and
+        `visibility_for` both come through here, so the menu somebody is drawn
+        and the menu the access board says they have cannot disagree. FLEET P4
+        adds the feature switches this way.
+        """
         if is_admin or not item.groups_id or bool(item.groups_id & user_groups):
             return True, False
         if item.restricted:
             return True, True
         return False, False
+
+    def _section_state_for(self, section, is_admin):
+        """(visible, locked, reason) for a whole block of the rail.
+
+        Extracted so a section has the same single hook an item has. It was
+        two identical expressions in two methods, which is a disagreement
+        waiting for its first extra condition — and FLEET P4 is that condition.
+        """
+        locked = bool(section.restricted) and not is_admin
+        return True, locked, (
+            (section.restriction_reason or self._DEFAULT_UPSELL) if locked else '')
 
     @api.model
     def visibility_for(self, user):
@@ -122,13 +140,12 @@ class PbSidebarItem(models.Model):
             visible, locked = self._state_for(item, is_admin, user_groups)
             out_items[item.id] = ('locked' if locked
                                   else ('on' if visible else 'hidden'))
-        return {
-            'items': out_items,
-            'sections': {
-                s.id: ('locked' if (s.restricted and not is_admin) else 'on')
-                for s in sections
-            },
-        }
+        out_sections = {}
+        for sec in sections:
+            visible, locked, _reason = self._section_state_for(sec, is_admin)
+            out_sections[sec.id] = ('locked' if locked
+                                    else ('on' if visible else 'hidden'))
+        return {'items': out_items, 'sections': out_sections}
 
     @api.model
     def get_sidebar_data(self):
@@ -181,7 +198,10 @@ class PbSidebarItem(models.Model):
                         kid_dicts.append(_item_dict(k, klocked))
                 d['children'] = kid_dicts
                 items.append(d)
-            sec_locked = bool(section.restricted) and not is_admin
+            sec_visible, sec_locked, sec_reason = self._section_state_for(
+                section, is_admin)
+            if not sec_visible:
+                continue
             if not items and not sec_locked:
                 continue
             result.append({
@@ -190,7 +210,7 @@ class PbSidebarItem(models.Model):
                 'key': section.technical_key,
                 'show_label': section.show_label,
                 'restricted': sec_locked,
-                'restriction_reason': (section.restriction_reason or self._DEFAULT_UPSELL) if sec_locked else False,
+                'restriction_reason': sec_reason or False,
                 'items': items,
             })
         return result
