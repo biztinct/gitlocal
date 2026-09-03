@@ -13,6 +13,7 @@ has been open for an hour when the platform sends something.
 """
 import logging
 
+import psycopg2
 import werkzeug.exceptions
 
 from odoo import _, fields, models
@@ -90,7 +91,15 @@ class IrHttp(models.AbstractModel):
                             "letting the request through", exc, exc_info=True)
         try:
             cls._pb_support_clock(rule)
-        except werkzeug.exceptions.HTTPException:
+        except (werkzeug.exceptions.HTTPException,
+                psycopg2.errors.ReadOnlySqlTransaction):
+            # THE READ-ONLY ERROR IS DELIBERATELY LET OUT. Most pages in this
+            # product are served on a read-only cursor (a route declared
+            # `auth='none'` is read-only by default on this framework), and both
+            # things this method does are writes. The framework's own answer to
+            # that is to run the request again on a read/write cursor
+            # (`odoo/http.py:2274`), which is exactly what should happen — so
+            # catching it here would silently lose the end of a session.
             raise
         except Exception as exc:                             # noqa: BLE001
             # FAILS CLOSED IN SPIRIT, OPEN IN PRACTICE, and the difference is

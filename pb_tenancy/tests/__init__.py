@@ -5,3 +5,5 @@ from . import test_tenancy
 from . import test_features
 # FLEET P5 — the plan, the employee limit and the paused door.
 from . import test_standing
+# FLEET P6 — support access, the door and the trail.
+from . import test_support
