@@ -103,8 +103,12 @@ export class HubShell extends Component {
         // once-a-minute read that already exists brings the change in, and a
         // tile fades out without anybody reloading anything. Null on a
         // database with no Platform Link, and then everything is simply on.
-        this._features = featuresState(this.env);
-        if (this._features) { useState(this._features); }
+        // The RETURN VALUE of `useState` is the subscription: a component is
+        // registered by the reads it makes through the object it was handed
+        // back, and a discarded `useState` watches nothing at all. So the proxy
+        // is kept, and `gate()` touches it.
+        const feats = featuresState(this.env);
+        this._features = feats ? useState(feats) : null;
 
         // Read ONCE, in setup, from props. Never written back anywhere.
         this.arrival = this._arrival();
@@ -218,7 +222,15 @@ export class HubShell extends Component {
     // the canvas.
 
     /** (shown, locked, text) for a feature key. Everything on when absent. */
-    gate(key) { return featureGate(this.env, key); }
+    gate(key) {
+        // One read, against the one value that moves when the platform flips a
+        // switch — which is what makes a tile fade out inside a minute with
+        // nobody reloading anything. Watching a map instead would repaint this
+        // hub once a minute for ever, because the maps are replaced on every
+        // read whether or not an answer changed.
+        if (this._features) { void this._features.features_sig; }
+        return featureGate(this.env, key);
+    }
 
     _featureOfLens(key) {
         const def = (this.config.lenses || []).find((l) => l.key === key);

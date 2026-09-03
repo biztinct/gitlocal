@@ -44,7 +44,20 @@ const EMPTY = {
     // sending goes back to "on" rather than lingering as a stale "off".
     features: {}, feature_mode: {}, feature_lock_text: {},
     features_known: false,
+    // The three maps above, as ONE string that changes only when an answer
+    // changes. Every screen that has to repaint when a switch is flipped
+    // watches THIS and reads the maps normally — because the maps are replaced
+    // with fresh objects on every read, and a screen watching one of them
+    // would repaint once a minute for ever, whether or not anything had moved.
+    features_sig: "",
 };
+
+/** The three maps as one comparable string. Order is fixed by the caller. */
+function featureSig(data) {
+    const d = data || {};
+    return JSON.stringify([d.features || {}, d.feature_mode || {},
+                           d.feature_lock_text || {}]);
+}
 
 /** localStorage, but a private window is not an error. */
 function lsGet(key) {
@@ -75,6 +88,7 @@ export const tenancyService = {
         const state = reactive({
             ...EMPTY,
             ...(session.pb_tenancy || {}),
+            features_sig: featureSig(session.pb_tenancy),
             // Not from the server: this browser's own answer to "have I closed
             // this one?", recomputed whenever the notice changes.
             dismissed: lsGet(LS_DISMISSED),
@@ -85,7 +99,17 @@ export const tenancyService = {
 
         function apply(data) {
             if (!data) { return; }
-            Object.assign(state, EMPTY, data);
+            // FLEET P4. The left menu is drawn by the SERVER, so a switch
+            // flipped on the platform cannot reach it the way the tiles are
+            // reached — a component watching this state repaints itself, but
+            // the rail is a list of rows that were fetched once. When the
+            // answer moves, the rail is asked again, on the seam it already
+            // has. Nothing happens on the first read: the page was painted
+            // from the same answer a moment ago.
+            const sig = featureSig(data);
+            const moved = !!state.features_sig && state.features_sig !== sig;
+            Object.assign(state, EMPTY, data, { features_sig: sig });
+            if (moved) { env.bus.trigger("PB_SIDEBAR:RELOAD"); }
         }
 
         async function refresh() {
