@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shipping to the Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Palette inherited from docs/SAAS_STRATEGY.html so the docs read as one set. */
+  :root {
+    --ink: #1E1B2E;
+    --paper: #FFFFFF;
+    --canvas: #F7F7FB;
+    --primary: #5A4BB0;
+    --primary-deep: #241F52;
+    --primary-soft: #EDEAF8;
+    --primary-line: #CBC2EE;
+    --border: #E2E8F0;
+    --muted: #64748B;
+    --ok: #2E7D4F;      --ok-soft: #E6F3EC;
+    --info: #2563EB;    --info-soft: #E8EFFD;
+    --warn: #B45309;    --warn-soft: #FBF0DE;
+    --bad: #C21E5A;     --bad-soft: #FCE8F0;
+    --code-bg: #F1F0F8;
+    --shadow: 0 1px 3px rgba(30,27,46,.06), 0 6px 22px rgba(30,27,46,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ECEAF6;
+      --paper: #1C192E;
+      --canvas: #131120;
+      --primary: #A798E8;
+      --primary-deep: #CBC2EE;
+      --primary-soft: #272242;
+      --primary-line: #453C6E;
+      --border: #2E2A45;
+      --muted: #9AA0B5;
+      --ok: #5CBB8A;     --ok-soft: #1B2E24;
+      --info: #7BA3F5;   --info-soft: #1B2438;
+      --warn: #E9A23B;   --warn-soft: #322715;
+      --bad: #EF6E9F;    --bad-soft: #351822;
+      --code-bg: #221F38;
+      --shadow: 0 1px 3px rgba(0,0,0,.35), 0 6px 22px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ECEAF6; --paper: #1C192E; --canvas: #131120;
+    --primary: #A798E8; --primary-deep: #CBC2EE; --primary-soft: #272242;
+    --primary-line: #453C6E; --border: #2E2A45; --muted: #9AA0B5;
+    --ok: #5CBB8A; --ok-soft: #1B2E24; --info: #7BA3F5; --info-soft: #1B2438;
+    --warn: #E9A23B; --warn-soft: #322715; --bad: #EF6E9F; --bad-soft: #351822;
+    --code-bg: #221F38;
+    --shadow: 0 1px 3px rgba(0,0,0,.35), 0 6px 22px rgba(0,0,0,.28);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.62;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px 96px; }
+  .col { max-width: 68ch; }
+
+  h1, h2, h3, h4, .eyebrow, .chip, th, .num, .rail a, .btn {
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+  }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); line-height: 1.06; font-weight: 700;
+       letter-spacing: -.022em; margin: 0 0 .5rem; text-wrap: balance; }
+  h2 { font-size: clamp(1.4rem, 2.6vw, 1.85rem); line-height: 1.15; font-weight: 700;
+       letter-spacing: -.015em; margin: 0 0 .35rem; text-wrap: balance; }
+  h3 { font-size: 1.12rem; font-weight: 600; letter-spacing: -.008em;
+       margin: 2.1rem 0 .5rem; text-wrap: balance; }
+  h4 { font-size: .95rem; font-weight: 600; margin: 1.4rem 0 .3rem; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--primary); }
+  a:focus-visible, .rail a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 3px; }
+
+  .eyebrow {
+    font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--primary); margin: 0 0 .55rem;
+  }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; }
+  code { background: var(--code-bg); border-radius: 4px; padding: .1em .35em; font-size: .85em; }
+
+  /* ── masthead ─────────────────────────────────────────── */
+  header.masthead {
+    background: var(--paper);
+    border-bottom: 1px solid var(--border);
+    padding: 68px 0 44px;
+    margin-bottom: 52px;
+  }
+  header.masthead .wrap { padding-bottom: 0; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font-family: Archivo, sans-serif; font-size: .72rem; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 1.4rem;
+  }
+  .kicker b { color: var(--primary); font-weight: 600; }
+  .dek { font-size: 1.2rem; color: var(--muted); max-width: 62ch; margin: .9rem 0 0; }
+  .meta {
+    margin-top: 2rem; padding-top: 1.1rem; border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 1.6rem;
+    font-family: Archivo, sans-serif; font-size: .78rem; color: var(--muted);
+  }
+  .meta b { display: block; color: var(--ink); font-weight: 600; font-size: .84rem; }
+
+  /* ── layout with contents rail ─────────────────────────── */
+  .body-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 1000px) {
+    .body-grid { grid-template-columns: 176px 1fr; gap: 56px; align-items: start; }
+    .rail { position: sticky; top: 28px; }
+  }
+  .rail { font-size: .8rem; }
+  .rail p { font-family: Archivo, sans-serif; font-size: .68rem; letter-spacing: .14em;
+            text-transform: uppercase; color: var(--muted); margin: 0 0 .7rem; }
+  .rail a { display: block; color: var(--muted); text-decoration: none;
+            padding: .28rem 0; font-size: .82rem; line-height: 1.3; border-left: 2px solid transparent;
+            padding-left: .7rem; margin-left: -.7rem; }
+  .rail a:hover { color: var(--primary); border-left-color: var(--primary-line); }
+  @media (max-width: 999px) { .rail { display: none; } }
+
+  section { margin: 0 0 64px; scroll-margin-top: 24px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: .8rem; margin-bottom: 1.7rem; }
+
+  /* ── cards & callouts ──────────────────────────────────── */
+  .card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .stack { display: grid; gap: 14px; }
+  .two { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .two { grid-template-columns: 1fr 1fr; } }
+
+  .note {
+    border-left: 3px solid var(--primary); background: var(--primary-soft);
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 1.4rem 0;
+  }
+  .note.warnish { border-left-color: var(--warn); background: var(--warn-soft); }
+  .note.badish  { border-left-color: var(--bad);  background: var(--bad-soft); }
+  .note p:last-child { margin-bottom: 0; }
+  .note .lbl { font-family: Archivo, sans-serif; font-size: .7rem; font-weight: 600;
+               letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: .3rem; }
+
+  .chip {
+    display: inline-block; font-size: .68rem; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; padding: .2rem .5rem; border-radius: 999px;
+    background: var(--primary-soft); color: var(--primary-deep); white-space: nowrap;
+  }
+  .chip.ok   { background: var(--ok-soft);   color: var(--ok); }
+  .chip.part { background: var(--warn-soft); color: var(--warn); }
+  .chip.gap  { background: var(--bad-soft);  color: var(--bad); }
+  .chip.auto { background: var(--bad-soft);  color: var(--bad); }
+  .chip.man  { background: var(--info-soft); color: var(--info); }
+
+  /* ── tables ────────────────────────────────────────────── */
+  .tablewrap { overflow-x: auto; margin: 1.3rem 0; border: 1px solid var(--border);
+               border-radius: 10px; background: var(--paper); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .9rem; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--muted); background: var(--canvas); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, td .mono { font-variant-numeric: tabular-nums; }
+  td strong { font-family: Archivo, sans-serif; font-weight: 600; font-size: .92rem; }
+
+  /* ── the three-layer diagram ───────────────────────────── */
+  .layers { display: grid; gap: 10px; margin: 1.4rem 0 .6rem; }
+  .layer {
+    display: grid; grid-template-columns: 1fr; gap: 4px;
+    border: 1px solid var(--border); border-left: 5px solid var(--info);
+    border-radius: 8px; background: var(--paper); padding: 14px 18px;
+  }
+  .layer.now { border-left-color: var(--bad); }
+  .layer .top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem; justify-content: space-between; }
+  .layer h4 { margin: 0; font-size: 1rem; }
+  .layer p { margin: 0; font-size: .89rem; color: var(--muted); }
+
+  /* ── ring stepper ──────────────────────────────────────── */
+  .rings { display: grid; gap: 2px; grid-template-columns: 1fr; margin: 1.4rem 0; }
+  @media (min-width: 820px) { .rings { grid-template-columns: repeat(5, 1fr); gap: 8px; } }
+  .ring {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+    padding: 13px 15px; display: grid; gap: 3px; align-content: start;
+  }
+  .ring .n { font-family: Archivo, sans-serif; font-size: .68rem; font-weight: 700;
+             letter-spacing: .1em; color: var(--primary); }
+  .ring b { font-family: Archivo, sans-serif; font-size: .92rem; font-weight: 600; }
+  .ring span { font-size: .82rem; color: var(--muted); line-height: 1.45; }
+
+  /* ── ordered rows ──────────────────────────────────────── */
+  ol.laws { list-style: none; counter-reset: law; padding: 0; margin: 1.2rem 0 0; display: grid; gap: 18px; }
+  ol.laws li { counter-increment: law; display: grid; grid-template-columns: 34px 1fr; gap: 14px; }
+  ol.laws li::before {
+    content: counter(law, decimal-leading-zero);
+    font-family: Archivo, sans-serif; font-size: .78rem; font-weight: 700; color: var(--primary);
+    padding-top: .28rem; letter-spacing: .04em;
+  }
+  ol.laws b { font-family: Archivo, sans-serif; font-size: 1rem; display: block; margin-bottom: .15rem; }
+  ol.laws p { margin: 0; font-size: .93rem; }
+
+  ul.tight { margin: .4rem 0 1rem; padding-left: 1.15rem; }
+  ul.tight li { margin-bottom: .35rem; }
+
+  .rank { display: grid; gap: 12px; margin-top: 1.2rem; }
+  .rank .card { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .rank .hd { display: flex; flex-wrap: wrap; gap: .6rem; align-items: baseline; justify-content: space-between; }
+  .rank h4 { margin: 0; font-size: 1.02rem; }
+  .rank p { margin: 0; font-size: .93rem; }
+  .rank .fix { font-size: .88rem; color: var(--muted); border-top: 1px dashed var(--border);
+               padding-top: .55rem; margin-top: .2rem; }
+  .rank .fix b { color: var(--ink); font-family: Archivo, sans-serif; font-weight: 600; }
+
+  footer.end { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 22px;
+               font-size: .85rem; color: var(--muted); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rail a { transition: color .15s ease, border-color .15s ease; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="kicker"><b>Payobook platform</b> · Fleet release strategy · 3 September 2026</div>
+    <h1>Shipping to the Fleet</h1>
+    <p class="dek">What happens today when the master changes, what the best SaaS companies
+      do instead, and the eleven things our tenant platform still needs before it is one.</p>
+    <div class="meta">
+      <div><b>Question asked</b>Does a change in master reach every customer at once?</div>
+      <div><b>Short answer</b>Half of it does — and it is the wrong half.</div>
+      <div><b>Companion docs</b>SAAS_STRATEGY.html · SAAS_RUNBOOK.md</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="body-grid">
+
+  <nav class="rail" aria-label="Contents">
+    <p>Contents</p>
+    <a href="#answer">The short answer</a>
+    <a href="#today">What happens today</a>
+    <a href="#laws">How the best do it</a>
+    <a href="#score">Where we stand</a>
+    <a href="#gaps">The gaps, ranked</a>
+    <a href="#plan">What to build, in order</a>
+    <a href="#rules">Rules to adopt now</a>
+    <a href="#appendix">Engineering appendix</a>
+  </nav>
+
+  <main>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="answer">
+    <div class="sechead"><p class="eyebrow">Start here</p><h2>The short answer</h2></div>
+    <div class="col">
+      <p><strong>No — a change in master should never land on every customer at once, and
+        world-class SaaS companies go to great lengths to make sure it doesn't.</strong>
+        They ship the code everywhere, then <em>turn it on</em> in small groups over days,
+        watching for damage between each group.</p>
+      <p>Our setup is architecturally right: one copy of the product on the server, one
+        database per customer, and a screen that decides who gets what. That is the same
+        shape the state of the art uses. What we are missing is the machinery around it —
+        version numbers, groups, a switch to hold a feature back, an alarm, and a way to
+        undo.</p>
+      <p>There is also one thing about our setup that is not what we think it is, and it
+        matters more than everything else on this page:</p>
+      <div class="note badish">
+        <span class="lbl">The finding</span>
+        <p>When we change the product's behaviour and deploy it, <strong>every customer gets
+          that new behaviour at the next restart, whether we chose it or not.</strong> Only the
+          new <em>screens and data</em> wait for someone to press a button per customer. So the
+          risky half travels automatically and the safe half is manual — the exact opposite
+          of what it should be. Today we have three customers and it is survivable. At thirty
+          it is a very bad night.</p>
+      </div>
+      <p>And the promise on our own Tenants screen — <em>"every customer gets what the
+        master gets"</em> — is currently only half kept. It gives a customer <strong>modules
+        they don't have</strong>. It never <strong>updates the ones they already have</strong>.
+        A customer can sit thirty versions behind on the payroll engine and the screen will
+        say they are in step.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="today">
+    <div class="sechead"><p class="eyebrow">Reality check</p><h2>What actually happens today</h2></div>
+    <div class="col">
+      <p>A change to the master is not one thing. It is three, and they travel at three
+        different speeds.</p>
+    </div>
+
+    <div class="layers">
+      <div class="layer now">
+        <div class="top"><h4>1 · Behaviour — the calculations, the buttons, the screens' logic</h4>
+          <span class="chip auto">Reaches everyone automatically</span></div>
+        <p>All customers share one copy of the product on disk. The moment we deploy and the
+          server restarts, every database is running the new logic. Nobody chose this per
+          customer. Nobody can hold it back for one customer. There is no version to point at.</p>
+      </div>
+      <div class="layer">
+        <div class="top"><h4>2 · Screens, settings and data structure</h4>
+          <span class="chip man">Only when we run the update, per customer</span></div>
+        <p>New fields, new menus, new default records. These wait until someone runs the
+          update command against that specific database. Until then that customer runs
+          <em>new logic against an old shape</em> — which is the single most common way a
+          fleet breaks.</p>
+      </div>
+      <div class="layer">
+        <div class="top"><h4>3 · Whole new modules</h4>
+          <span class="chip man">Only when someone presses Sync on that customer</span></div>
+        <p>This is the part we built and it works well: the screen lists what a customer is
+          missing, holds back the four platform-only parts with a reason, and installs the
+          rest on one press.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="note warnish">
+        <span class="lbl">This has already bitten us once</span>
+        <p>On 19 August, twenty-seven modules quietly stopped loading on the customer
+          databases. Cause: master gained two new modules, other modules were changed to
+          depend on them, and that dependency change travelled instantly (layer 1) to
+          databases that had never been told the new modules existed (layer 3). Nothing
+          showed as broken — the module list still said "installed" — until two background
+          jobs started failing every five minutes. That is the hybrid failing, exactly as
+          described above.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="laws">
+    <div class="sechead"><p class="eyebrow">The benchmark</p><h2>How world-class SaaS actually ship</h2></div>
+    <div class="col">
+      <p>Salesforce, Shopify, Atlassian, GitHub, Workday and every serious payroll vendor
+        differ enormously in their plumbing, but they all obey the same six rules. None of
+        them is exotic; all six are missing from our platform today.</p>
+    </div>
+
+    <ol class="laws">
+      <li><div>
+        <b>Deploying is not releasing</b>
+        <p>Code goes out to everyone, switched off. A feature is opened to customers
+          afterwards — by flipping a switch per customer or per group, with no deploy
+          involved. This is why a big company can ship fifty times a day and still control
+          what customers see. We have no switch, so installing a module <em>is</em> our
+          release, and it is all-or-nothing.</p>
+      </div></li>
+      <li><div>
+        <b>Every customer has a version number, and we know it without looking</b>
+        <p>"Acme is on release 2026.09.1" is a field on the customer record, not something
+          you find out by logging into a server. Support, sales and engineering all read the
+          same number. Ours does not exist.</p>
+      </div></li>
+      <li><div>
+        <b>Changes move in waves, never in one go</b>
+        <p>Internal first, then one willing customer, then a small slice, then the rest —
+          with a pause between each wave and a rule for stopping. Salesforce famously
+          upgrades its customers in scheduled waves and gives them a preview environment
+          weeks beforehand. Shopify and GitHub call them rings. Nobody flips 100% at once.</p>
+      </div></li>
+      <li><div>
+        <b>New code must work on the old data shape</b>
+        <p>This is the discipline that makes waves possible at all. Add the new column, keep
+          the old one working, migrate, then remove the old one in a later release — never in
+          the same one. Without it, the gap between "code deployed" and "this customer
+          updated" is a broken customer. Right now every one of our deploys opens that gap
+          and we simply close it fast by hand.</p>
+      </div></li>
+      <li><div>
+        <b>Updating a customer is a queued job, not a person at a terminal</b>
+        <p>It can be retried, it holds a lock so it can't run twice, it puts a banner up for
+          that customer's users, it records how long it took, and it reports success or
+          failure to a dashboard. Ours is an SSH loop in a runbook, run by whoever is awake.</p>
+      </div></li>
+      <li><div>
+        <b>Undo is rehearsed, not hoped for</b>
+        <p>Before a wave, a real customer's backup is restored to a scratch copy and the
+          update is run there first. If the wave goes wrong, the restore path is one that
+          somebody has actually walked this quarter. We built the scratch-restore button —
+          good — but we have never proved a restore end to end, and the backups sit on the
+          same machine as the thing they protect.</p>
+      </div></li>
+    </ol>
+
+    <h3>Where our shape is genuinely fine</h3>
+    <div class="col">
+      <p>One database per customer is not second-best. It is what payroll, health and finance
+        vendors choose deliberately: a customer's data cannot leak into another's through a
+        forgotten filter, one customer can be restored to yesterday without touching anyone
+        else, and a big customer can be moved to their own machine later without a rewrite.
+        The trade is that upgrades are per-customer work — which is precisely why the
+        machinery above exists.</p>
+    </div>
+
+    <div class="rings" aria-label="Release wave plan">
+      <div class="ring"><span class="n">WAVE 0</span><b>Internal</b><span>Master + the demo world. Same day as the deploy.</span></div>
+      <div class="ring"><span class="n">WAVE 1</span><b>Rehearsal</b><span>A scratch copy restored from a real customer's backup.</span></div>
+      <div class="ring"><span class="n">WAVE 2</span><b>Canary</b><span>One customer who knows they are first. Watch 24 hours.</span></div>
+      <div class="ring"><span class="n">WAVE 3</span><b>Early</b><span>A quarter of the fleet. Watch 48 hours.</span></div>
+      <div class="ring"><span class="n">WAVE 4</span><b>Everyone</b><span>The rest, in their own night-time window.</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="score">
+    <div class="sechead"><p class="eyebrow">Scorecard</p><h2>Where our platform stands</h2></div>
+    <div class="col">
+      <p>Everything a SaaS platform is expected to do with customers, and what we have.
+        This is not a wish list — it is the standard checklist any buyer's IT department,
+        and eventually any auditor, will walk us through.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:26%">Area</th><th style="width:14%">Status</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Create a customer</strong></td><td><span class="chip ok">Strong</span></td>
+              <td>Five guided steps, name check, clone from a golden template, admin login, HTTPS, verify. Genuinely good — most competitors take days to do this by hand.</td></tr>
+          <tr><td><strong>Custom domains</strong></td><td><span class="chip ok">Strong</span></td>
+              <td>Add, DNS check, activate, own auto-renewing certificate, expiry warnings.</td></tr>
+          <tr><td><strong>Backups</strong></td><td><span class="chip part">Partly</span></td>
+              <td>Nightly per customer, last 14 kept, manual and final kinds. But they live on the same machine, are not encrypted, and no restore has ever been proved.</td></tr>
+          <tr><td><strong>Health monitoring</strong></td><td><span class="chip part">Partly</span></td>
+              <td>Size, users, staff, last login, ping, certificate — refreshed on a schedule. But it is a screen someone has to open. Nothing wakes a human at 3am.</td></tr>
+          <tr><td><strong>Give customers new modules</strong></td><td><span class="chip part">Partly</span></td>
+              <td>Works, with a dry run and a protected list. Installs only. Never updates what they already have.</td></tr>
+          <tr><td><strong>Keep customers up to date</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>No version per customer, no drift alarm, no queued update, no waves, no maintenance banner, no changelog. It is an SSH loop in a runbook.</td></tr>
+          <tr><td><strong>Hold a feature back</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>No feature switches. We cannot ship something and open it to one customer, or to paying plans only.</td></tr>
+          <tr><td><strong>Suspend a customer</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>States are draft, provisioning, live, error, decommissioned. There is no "suspended for non-payment" that keeps the data and closes the door.</td></tr>
+          <tr><td><strong>Trials and self sign-up</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>A demo world exists; a real 14-day trial that becomes a paying customer does not. Every customer is created by us, by hand.</td></tr>
+          <tr><td><strong>Plans, seats, billing</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>No plan, no staff-count limit, no usage meter, no invoice, no card, no dunning. We have infrastructure, not yet a business system.</td></tr>
+          <tr><td><strong>Support access to a customer</strong></td><td><span class="chip part">Partly</span></td>
+              <td>A break-glass admin exists and tenant admins are correctly fenced. But there is no "view as this customer, with their permission, recorded" — so it will get done ad hoc.</td></tr>
+          <tr><td><strong>Customer self-service</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>A customer cannot see their own invoices, download their own backup, add their own domain, or read what changed this month.</td></tr>
+          <tr><td><strong>Status &amp; incident comms</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>No status page, no planned-maintenance notice, no in-product banner. When we restart the server, customers find out by being logged out.</td></tr>
+          <tr><td><strong>Data export &amp; deletion</strong></td><td><span class="chip part">Partly</span></td>
+              <td>Offboarding takes a final backup. There is no "here is your data in a format you can read" and no written retention clock before deletion.</td></tr>
+          <tr><td><strong>Enterprise asks</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>No company sign-on (SSO), no forced two-factor, no audit-log export, no sandbox copy per customer, no choice of region. The first serious buyer will ask for at least three of these.</td></tr>
+          <tr><td><strong>Capacity</strong></td><td><span class="chip gap">Missing</span></td>
+              <td>One machine with 1.9&nbsp;GB of memory holds a working set for every active customer. No limits per customer, so one heavy payroll run slows everyone. This is a hard wall, not a slope.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="gaps">
+    <div class="sechead"><p class="eyebrow">Priorities</p><h2>The gaps, ranked by what they cost us</h2></div>
+    <div class="col"><p>Ranked by damage if ignored, not by effort.</p></div>
+
+    <div class="rank">
+      <div class="card">
+        <div class="hd"><h4>1 · Backups are on the same machine as the thing they protect</h4><span class="chip gap">Existential</span></div>
+        <p>If that machine is lost — hardware, a bad command, a compromised account — we lose
+          every customer's payroll history <em>and</em> every backup of it in the same second.
+          There is no second copy anywhere.</p>
+        <p class="fix"><b>Fix:</b> copy each nightly backup off the box to object storage
+          (S3 or equivalent) with encryption and a lock that prevents deletion for 30 days.
+          Half a day of work. Do it this week.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>2 · No restore has ever been proved</h4><span class="chip gap">Existential</span></div>
+        <p>An untested backup is a belief, not a backup. We do not know how long a restore
+          takes, whether the attached files come back with it, or whether the result actually
+          starts.</p>
+        <p class="fix"><b>Fix:</b> restore one customer to the scratch copy, log in, open a
+          pay run, and write down the elapsed time. Repeat quarterly, recorded on the
+          customer's record. Half a day.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>3 · Sync adds modules but never updates them</h4><span class="chip gap">High</span></div>
+        <p>The screen compares <em>names</em> only. A customer running last quarter's payroll
+          engine shows as "in step". We have already seen one customer thirty-eight versions
+          behind while the screen was green.</p>
+        <p class="fix"><b>Fix:</b> compare versions too, show "behind by", and add an
+          <em>Update</em> action beside <em>Install</em>. Two to three days, and it makes the
+          promise on the screen true.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>4 · No version number per customer</h4><span class="chip gap">High</span></div>
+        <p>Nobody can answer "what is Acme running?" without logging into a server. Support
+          cannot reproduce a bug. We cannot say what a fix will reach.</p>
+        <p class="fix"><b>Fix:</b> a release stamp on the customer record, written by the
+          update job. One day, and it unlocks everything in the next section.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>5 · Nothing wakes a human</h4><span class="chip gap">High</span></div>
+        <p>A customer's site can be down, a backup can fail every night, a background job can
+          error every five minutes — and we find out when we open the screen or a customer
+          calls. That is the difference between an incident and an embarrassment.</p>
+        <p class="fix"><b>Fix:</b> send failures to email and one phone (any paging service,
+          or just a Telegram bot to start). One day.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>6 · No way to hold a feature back</h4><span class="chip gap">Medium-high</span></div>
+        <p>Everything we build reaches everyone the moment it is deployed. We cannot pilot a
+          feature with one customer, cannot sell a premium tier, cannot turn something off
+          when it misbehaves without a code deploy.</p>
+        <p class="fix"><b>Fix:</b> a simple switch table per customer, read by the screens.
+          Three to four days, and it is the single highest-leverage thing on this page.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>7 · No plan, no seats, no billing, no suspend</h4><span class="chip gap">Medium-high</span></div>
+        <p>Today growth means more manual work and no automatic money. A customer who stops
+          paying cannot be closed without deleting them.</p>
+        <p class="fix"><b>Fix:</b> plans and staff limits first, then a suspend state, then
+          card payment. Two to three weeks, and it is the difference between a platform and
+          a product.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>8 · The memory ceiling</h4><span class="chip part">Medium</span></div>
+        <p>1.9&nbsp;GB holds a working copy of the product for every customer being used at
+          that moment. Somewhere around five to eight active customers this stops being a
+          slowdown and starts being outages.</p>
+        <p class="fix"><b>Fix:</b> move to a 8&nbsp;GB machine before the fourth paying
+          customer, and separate the database onto its own service when we pass ten. Planned,
+          not reactive.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>9 · No customer-visible communication</h4><span class="chip part">Medium</span></div>
+        <p>No maintenance notice, no status page, no "what's new". Restarts look like faults
+          to the people using the product.</p>
+        <p class="fix"><b>Fix:</b> a banner triggered from the Tenants screen and a one-page
+          public status page. Two days.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>10 · Support access without a trail</h4><span class="chip part">Medium</span></div>
+        <p>We will need to look at a customer's data to help them. Doing it through the
+          break-glass admin leaves no record of who looked at what, which is the first
+          question a payroll buyer's security review asks.</p>
+        <p class="fix"><b>Fix:</b> a "view as customer" action from the Tenants screen that
+          writes an entry the customer can see. Two to three days.</p>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h4>11 · No sandbox per customer</h4><span class="chip part">Lower</span></div>
+        <p>Payroll customers want to try a change against their own real data before running
+          it for real. Every serious payroll vendor offers this, and we are one button away
+          from it — the clone and restore machinery already exists.</p>
+        <p class="fix"><b>Fix:</b> "Create sandbox" = restore last night's backup to
+          <code>&lt;slug&gt;-sandbox</code>, with a coloured banner. Two days, and it is a
+          genuine selling point.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="plan">
+    <div class="sechead"><p class="eyebrow">Roadmap</p><h2>What to build, in order</h2></div>
+    <div class="col">
+      <p>Four waves. Each one is useful on its own; each one makes the next cheaper. Sizes
+        are rough working days, assuming the same build rhythm as the recent programmes.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:16%">Wave</th><th style="width:34%">What gets built</th><th style="width:12%">Size</th><th>Why it comes here</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>A · Don't lose anything</strong><br><span class="chip gap">Do now</span></td>
+            <td>Off-box encrypted backups · a proved restore, recorded · alerts that reach a phone · a version stamp per customer · version drift on the Sync screen</td>
+            <td class="num">4–6 days</td>
+            <td>These are the only items where the downside is losing a customer's payroll history or their trust. Nothing else should start first.</td>
+          </tr>
+          <tr>
+            <td><strong>B · Ship safely</strong></td>
+            <td>A Release record (what is in it, who has it) · customers grouped into waves · an update job with a lock, a retry and a banner · a stop rule when a wave goes bad · a "what changed" note per release</td>
+            <td class="num">10–14 days</td>
+            <td>This is the answer to the question that started this document. After it, "roll out to everyone" is a plan with a pause button rather than an SSH loop.</td>
+          </tr>
+          <tr>
+            <td><strong>C · Make it a business</strong></td>
+            <td>Plans and staff limits · feature switches tied to the plan · trial with an expiry · suspend and resume · card payment and invoices · a self-service page for the customer</td>
+            <td class="num">15–20 days</td>
+            <td>Everything here needs the version stamp and the switches from A and B. Built earlier it would be rebuilt.</td>
+          </tr>
+          <tr>
+            <td><strong>D · Win bigger customers</strong></td>
+            <td>Sandbox per customer · view-as with an audit trail · company sign-on and two-factor · audit-log export · status page · region choice</td>
+            <td class="num">15–20 days</td>
+            <td>Demand-driven. Build each item when a real deal asks for it — but know the list now so nothing in A–C blocks it.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col">
+      <h3>The one structural idea to adopt</h3>
+      <p>Introduce a <strong>Release</strong>: a dated, named set of module versions that
+        customers move onto as a unit. Once a release exists as a record, everything else in
+        wave B falls out of it naturally — a customer's version is which release they are on,
+        a wave is which customers move next, a rollback is the previous release, and a
+        changelog is what the release contains. Without it, every one of those has to be
+        invented separately.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="rules">
+    <div class="sechead"><p class="eyebrow">Free wins</p><h2>Rules to adopt now, before any code</h2></div>
+    <div class="col">
+      <p>These cost nothing and prevent most of what goes wrong on a fleet.</p>
+      <ul class="tight">
+        <li><strong>New code must work on the old data shape.</strong> Add, don't replace;
+          remove the old thing a release later. This is what makes staged rollout possible.</li>
+        <li><strong>Never make one module depend on another without touching every
+          database.</strong> Our 19 August incident was exactly this. Adding a dependency is a
+          fleet-wide job, not a single-database change.</li>
+        <li><strong>The golden template is upgraded first, never last.</strong> A template
+          behind the master silently creates every new customer already out of date.</li>
+        <li><strong>Rehearse on a scratch restore of a real customer before the first real
+          one.</strong> We have the button. Use it every time, not when it feels risky.</li>
+        <li><strong>One named canary customer, who knows they are first,</strong> and a fixed
+          watch period before anyone else moves.</li>
+        <li><strong>After every deploy, check three things per database:</strong> the module
+          versions match, no modules were skipped at startup, and no background job errored in
+          the following fifteen minutes. All three are in the runbook already.</li>
+        <li><strong>Never deploy on a Friday or on a customer's pay day.</strong> Payroll has
+          a calendar; use it as the release calendar.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="appendix">
+    <div class="sechead"><p class="eyebrow">For engineers</p><h2>Appendix — the technical facts behind this</h2></div>
+    <div class="col">
+      <p>Verified against the working tree on 3 September 2026, branch <code>19.1</code>.</p>
+
+      <h4>Why layer 1 travels automatically</h4>
+      <p><code>addons_path</code> is a single shared tree (<code>/odoo/odoo-server/addons</code>)
+        and one server process serves all databases via <code>dbfilter = ^%d$</code>. Python
+        and JS are loaded from that tree at registry build, so any restart picks up new code
+        for every database at once. Only XML/data/schema and <code>ir_module_module</code>
+        state are per-database, requiring <code>-u</code>. True per-cohort code versions would
+        need separate worker processes with their own <code>addons_path</code>, routed by
+        nginx upstream — worth costing when the fleet passes ~10 tenants, not before.</p>
+
+      <h4>The sync gap, precisely</h4>
+      <p><code>sync_split()</code> in <a href="../pb_tenants/models/service.py">pb_tenants/models/service.py:196</a>
+        computes <code>set(master) - set(tenant)</code> over module <em>names</em>;
+        <code>_installed_on()</code> (line 1102) selects <code>name FROM ir_module_module
+        WHERE state='installed'</code>. Neither reads <code>latest_version</code>. There is no
+        call to <code>button_immediate_upgrade</code> anywhere in the module. Adding drift
+        detection means selecting <code>(name, latest_version)</code>, normalising the
+        <code>19.0.</code> series prefix as the deploy contract already requires, and adding an
+        upgrade action beside <code>sync_install</code>.</p>
+
+      <h4>State machine gaps</h4>
+      <p><code>pb.tenant.state</code> is
+        <code>draft/provisioning/live/error/decommissioned</code>. A commercial platform needs
+        at least <code>trial</code>, <code>suspended</code> and <code>pending_deletion</code>
+        with a retention clock, plus <code>release_id</code>, <code>plan_id</code>,
+        <code>seat_limit</code> and <code>sandbox_of</code>.</p>
+
+      <h4>Known constraints already documented</h4>
+      <p>Memory ceiling (1.9&nbsp;GB, registry per served DB), the manual DNS-01 wildcard
+        certificate that does not auto-renew, the <code>pb_explorer</code> fact builder that
+        cannot run without <code>pb_demo</code>'s column, and the analytics cleanup job with the
+        <code>fields</code> NameError — all in <code>docs/SAAS_RUNBOOK.md</code> under
+        <em>Known debt</em>. The first two are fleet-wide risks and belong in wave A.</p>
+    </div>
+
+    <footer class="end">
+      Payobook platform · <span class="mono">docs/SAAS_RELEASE_STRATEGY.html</span> ·
+      companion to <span class="mono">docs/SAAS_STRATEGY.html</span> (architecture) and
+      <span class="mono">docs/SAAS_RUNBOOK.md</span> (operations).
+    </footer>
+  </section>
+
+  </main>
+</div>
+</div>
+
+</body>
+</html>
