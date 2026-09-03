@@ -6,3 +6,5 @@ access_pb_release_admin,pb.release admin,model_pb_release,base.group_system,1,1,
 access_pb_rollout_admin,pb.rollout admin,model_pb_rollout,base.group_system,1,1,1,1
 access_pb_rollout_task_admin,pb.rollout.task admin,model_pb_rollout_task,base.group_system,1,1,1,1
 access_pb_alert_admin,pb.alert admin,model_pb_alert,base.group_system,1,1,1,1
+access_pb_feature_admin,pb.feature admin,model_pb_feature,base.group_system,1,1,1,1
+access_pb_tenant_feature_admin,pb.tenant.feature admin,model_pb_tenant_feature,base.group_system,1,1,1,1
