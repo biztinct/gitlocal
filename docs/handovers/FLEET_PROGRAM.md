@@ -428,3 +428,16 @@ kit registry (shared). The phase report scores itself against this bar.
   a screen: it is now "…and let the application write to it". The test that
   caught it asserts `'odoo' not in a['text'].lower()` for every alert kind and is
   worth copying into any phase that writes operator-facing sentences.
+- **F44** (P3) **A file written by a model is not rolled back by a test.** The
+  suite runs against a fabricated fleet inside a transaction that is thrown
+  away — but `alert_ack`, `alert_resolve` and P2A's `notice_send` all rewrite
+  `/var/www/pb-status/index.html`, which is not in that transaction. A test run
+  on the live platform therefore PUBLISHED a page built from invented customers.
+  It was harmless the day it was found and one fabricated critical away from
+  telling the world about an incident that never happened. `_write_status_page`
+  now returns early when `odoo.tools.config['test_enable']` is set — at the
+  writer, not in each test, because the next caller will be written by somebody
+  who has not read the comment. Proved: the page's timestamp does not move
+  across a full 238-test run, and moves again on the next five-minute job.
+  Odoo 19 has no `registry.in_test_mode()`; `config['test_enable']` is the
+  marker the framework itself uses.

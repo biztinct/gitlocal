@@ -45,6 +45,18 @@ class TestAlerts(TransactionCase):
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_tenants.alert_emails', 'fleet.test@example.com')
         self.sent = []
+        # THE PUBLIC PAGE IS A FILE, AND A FILE IS NOT ROLLED BACK. `alert_ack`
+        # and `alert_resolve` rewrite it, so a suite run on the live platform
+        # published a page built from the fabricated fleet inside this
+        # transaction — harmless the day it was noticed, and one fabricated
+        # critical away from advertising an incident that never happened to
+        # anybody who opened payobook.com/status. Stood down for the whole
+        # class, not just inside `_patches`.
+        page = patch.object(type(self.env['pb.tenants']), '_write_status_page',
+                            lambda _self: {'ok': True, 'path': '(not written '
+                                                               'during tests)'})
+        page.start()
+        self.addCleanup(page.stop)
 
     # ------------------------------------------------------------- harness
     def _readings(self, **over):
