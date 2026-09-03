@@ -32,6 +32,10 @@ KIND_LABEL = {
     'master_behind_files': 'Platform has not applied its own update',
     'template_hot_cron': 'Template has live scheduled jobs',
     'status_page_unwritable': 'Public status page not writable',
+    # FLEET P5 — money and standing.
+    'invoice_overdue': 'Invoice not paid',
+    'suspend_candidate': 'Customer paused, or ready to be',
+    'trial_ending': 'Trial running out',
 }
 
 #: Which icon the cockpit draws for each kind. Named from the shared Lucide
@@ -51,6 +55,9 @@ KIND_ICON = {
     'master_behind_files': 'layers',
     'template_hot_cron': 'clock',
     'status_page_unwritable': 'globe',
+    'invoice_overdue': 'receipt',
+    'suspend_candidate': 'pause',
+    'trial_ending': 'hourglass',
 }
 
 

@@ -8,3 +8,8 @@ access_pb_rollout_task_admin,pb.rollout.task admin,model_pb_rollout_task,base.gr
 access_pb_alert_admin,pb.alert admin,model_pb_alert,base.group_system,1,1,1,1
 access_pb_feature_admin,pb.feature admin,model_pb_feature,base.group_system,1,1,1,1
 access_pb_tenant_feature_admin,pb.tenant.feature admin,model_pb_tenant_feature,base.group_system,1,1,1,1
+access_pb_plan_admin,pb.plan admin,model_pb_plan,base.group_system,1,1,1,1
+access_pb_plan_tier_admin,pb.plan.tier admin,model_pb_plan_tier,base.group_system,1,1,1,1
+access_pb_tenant_usage_admin,pb.tenant.usage admin,model_pb_tenant_usage,base.group_system,1,1,1,1
+access_pb_tenant_invoice_admin,pb.tenant.invoice admin,model_pb_tenant_invoice,base.group_system,1,1,1,1
+access_pb_tenant_invoice_line_admin,pb.tenant.invoice.line admin,model_pb_tenant_invoice_line,base.group_system,1,1,1,1

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
+from .billing_rules import trial_phase
+
 
 class PbTenant(models.Model):
     _name = 'pb.tenant'
@@ -9,10 +11,17 @@ class PbTenant(models.Model):
 
     name = fields.Char(required=True)
     slug = fields.Char(required=True, help="Subdomain label and database name (acme -> acme.payobook.com)")
+    # FLEET P5 adds the last three. `trial`, `suspended` and `pending_deletion`
+    # are all states in which the customer still HAS a database — it is backed
+    # up, kept in step and measured exactly as a live one is. Only
+    # `decommissioned` means the database is gone (see SERVING_STATES).
     state = fields.Selection([
         ('draft', 'Draft'),
         ('provisioning', 'Provisioning'),
         ('live', 'Live'),
+        ('trial', 'On trial'),
+        ('suspended', 'Paused'),
+        ('pending_deletion', 'Scheduled for deletion'),
         ('error', 'Error'),
         ('decommissioned', 'Decommissioned'),
     ], default='draft', required=True, index=True)
@@ -88,9 +97,50 @@ class PbTenant(models.Model):
     features_pushed_at = fields.Datetime()
     feature_ids = fields.One2many('pb.tenant.feature', 'tenant_id')
 
+    # FLEET P5 — what they pay for, where they stand, and what they have used.
+    plan_id = fields.Many2one('pb.plan', ondelete='set null', index=True,
+                              help="What this customer pays for.")
+    #: Where the invoice goes. Defaults to the administrator's address, and is
+    #: separate from it because the person who signs in is very often not the
+    #: person in accounts who pays.
+    billing_email = fields.Char(
+        help="Where invoices are sent. Empty means the administrator's own "
+             "address.")
+    trial_ends = fields.Date(
+        help="The last day of the trial. Nothing happens by itself when it "
+             "passes: the platform raises a flag and a person decides.")
+    #: Which trial reminders have already gone out, as a comma-separated list
+    #: of milestone names (`seven`, `tomorrow`, `ended`). A LIST rather than a
+    #: date, so a cron that misses a day still sends each message exactly once.
+    trial_notified = fields.Char(default='')
+    suspended_at = fields.Datetime()
+    suspend_reason = fields.Char(
+        help="Why their access is paused, in the words their people will read.")
+    delete_after = fields.Date(
+        help="The day their data may be deleted. Nothing deletes it — this is "
+             "the promise made to the customer and the reminder to us.")
+    deletion_reason = fields.Char()
+    usage_ids = fields.One2many('pb.tenant.usage', 'tenant_id')
+    invoice_ids = fields.One2many('pb.tenant.invoice', 'tenant_id')
+    #: What their database was last told about their standing (mirror, same
+    #: idea as `notice`): the cockpit can answer "what are they seeing" without
+    #: opening their registry.
+    access_pushed_at = fields.Datetime()
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')
+
+    def trial_state(self, today=None):
+        """Where this customer's trial stands, for the screen and the cron."""
+        self.ensure_one()
+        today = today or fields.Date.context_today(self)
+        return trial_phase(self.trial_ends, today)
+
+    def billing_to(self):
+        """The address an invoice is sent to. Never empty by accident."""
+        self.ensure_one()
+        return (self.billing_email or '').strip() or (self.admin_email or '').strip()
 
     _sql_constraints = [
         ('slug_unique', 'unique(slug)', 'A tenant with this subdomain already exists.'),

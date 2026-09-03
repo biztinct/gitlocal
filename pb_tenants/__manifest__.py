@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Tenant Mission Control',
     'summary': 'Create and manage Payobook SaaS tenants: provisioning, backups, custom domains, health.',
-    'version': '19.0.1.9.2',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -22,6 +22,11 @@
         'views/pb_tenants_action.xml',
         'data/pb_sidebar.xml',
         'data/pb_feature.xml',
+        # FLEET P5. The plans come BEFORE the crons because the billing job
+        # reads them, and after the feature catalogue because a plan may
+        # include features.
+        'data/pb_plan.xml',
+        'report/tenant_invoice.xml',
         'data/cron.xml',
     ],
     'assets': {

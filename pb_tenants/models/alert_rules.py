@@ -48,6 +48,12 @@ ALERT_KINDS = (
     'master_behind_files',
     'template_hot_cron',
     'status_page_unwritable',
+    # FLEET P5. Money and standing. None of these can be seen by a reading —
+    # they come out of our own invoice table on the morning job — so all three
+    # are self-managed below.
+    'invoice_overdue',
+    'suspend_candidate',
+    'trial_ending',
 )
 
 SEVERITIES = ('critical', 'warning', 'info')
@@ -57,7 +63,15 @@ SEVERITY_ORDER = {'info': 0, 'warning': 1, 'critical': 2}
 #: `alert_channel_down` is raised by the sender when a send fails and cleared by
 #: the sender when one succeeds — the one alert that cannot email itself, and
 #: therefore the one that has to be visible on screen instead.
-SELF_MANAGED_KINDS = ('alert_channel_down',)
+#:
+#: FLEET P5 adds three more for the same reason turned the other way round:
+#: the sweep takes no reading that could ever see an unpaid invoice or a trial
+#: running out, so if it were allowed to reconcile them it would close every
+#: one of them fifteen minutes after the morning job raised it. They are
+#: raised and cleared by `billing_service.py` — when the invoice is paid, when
+#: the customer is resumed, when the trial is converted.
+SELF_MANAGED_KINDS = ('alert_channel_down', 'invoice_overdue',
+                      'suspend_candidate', 'trial_ending')
 
 #: Every number this file judges by, in one dict, all overridable as settings.
 #: They are ARGUMENTS and not constants so a test can sit exactly on the edge of
