@@ -9,3 +9,6 @@ from . import test_release
 # FLEET P2A — notices, the release history, and the one door out.
 from . import test_tenancy_rules
 from . import test_tenancy_push
+# FLEET P2B — rings, windows and the rollout job.
+from . import test_rollout_rules
+from . import test_rollout
