@@ -45,6 +45,28 @@ class PbTenant(models.Model):
         help="True when the tenant has its own auto-renewing certificate; False means it is "
              "falling back to the wildcard, which does NOT auto-renew.")
 
+    # Where this customer stands against the release the fleet is aiming at.
+    # Written by the "in step with master" screen and by the nightly drift
+    # check, which only ever READS the customer's database (rail R1).
+    release_id = fields.Many2one('pb.release', ondelete='set null',
+                                 help="The release this database is on.")
+    release_state = fields.Selection([
+        ('on', 'In step'),
+        ('behind', 'Behind'),
+        ('none', 'Not on a release'),
+        ('unknown', 'Not checked'),
+    ], default='unknown', index=True)
+    behind_count = fields.Integer(help="Parts of the product it does not have yet.")
+    stale_count = fields.Integer(help="Parts it has at an older version.")
+    skipped_count = fields.Integer(
+        help="Parts it says it has but which did not load. -1 when it could "
+             "not be determined.", default=0)
+    drift_checked = fields.Datetime()
+    last_sync_at = fields.Datetime()
+    #: JSON of the last plan + outcome, shown on the detail screen so the
+    #: question "what did that button actually do" has an answer afterwards.
+    last_sync_result = fields.Text()
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')

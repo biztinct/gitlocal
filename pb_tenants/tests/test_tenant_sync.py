@@ -30,6 +30,11 @@ from ..models.service import (TENANT_SYNC_NEVER, TENANT_SYNC_NEVER_PREFIXES,
                               sync_never_reason, sync_split)
 
 SERVICE = 'models/service.py'
+#: FLEET P1 moved the deny-list, the split and every other judgement into a pure
+#: module of their own (rail R6), so the source-text assertions below follow them
+#: there. `service.py` still re-exports the names, which is why the import above
+#: is unchanged and why nothing that reads them had to move.
+RULES = 'models/sync_rules.py'
 
 #: The rule this whole feature exists to carry out, in the owner's own words.
 #: Asserted verbatim against the file, because a comment that drifts from the
@@ -41,10 +46,18 @@ OWNER_RULE = (
     "functions.")
 
 
-def _service_source():
-    path = os.path.join(get_module_path('pb_tenants'), SERVICE)
+def _read(relative):
+    path = os.path.join(get_module_path('pb_tenants'), relative)
     with open(path, encoding='utf-8') as fh:
         return fh.read()
+
+
+def _service_source():
+    return _read(SERVICE)
+
+
+def _rules_source():
+    return _read(RULES)
 
 
 @tagged('post_install', '-at_install')
@@ -144,7 +157,7 @@ class TestTenantSyncSource(TransactionCase):
     """What the file has to keep saying."""
 
     def test_13_the_owners_rule_is_quoted_verbatim(self):
-        src = _service_source()
+        src = _rules_source()
         # The quote is a COMMENT, so the comment markers come out before the
         # words are read — otherwise this only ever tests the line wrapping.
         stripped = '\n'.join(re.sub(r'^\s*#', '', line)
@@ -157,25 +170,38 @@ class TestTenantSyncSource(TransactionCase):
     def test_14_the_install_re_checks_the_list_it_is_about_to_write(self):
         """The report's split is not the guard. The list that runs is."""
         src = _service_source()
-        body = src.split('def _sync_install(self, dbname, dry_run=True):')[1]
+        body = src.split('def sync_bring_in_step(self, target, dry_run=True):')[1]
         body = body.split('\n    def ')[0]
         self.assertIn('TENANT_SYNC_NEVER', body,
-                      "_sync_install trusts the earlier split instead of "
-                      "re-asking about the exact list it is about to install")
+                      "sync_bring_in_step trusts the earlier split instead of "
+                      "re-asking about the exact lists it is about to write")
         self.assertIn('button_immediate_install', body)
-        # And the re-check has to happen BEFORE anything is installed.
+        self.assertIn('button_immediate_upgrade', body)
+        # And the re-check has to happen BEFORE anything is written.
         self.assertLess(body.index('TENANT_SYNC_NEVER'),
                         body.index('button_immediate_install'))
+        self.assertLess(body.index('TENANT_SYNC_NEVER'),
+                        body.index('button_immediate_upgrade'))
+
+    def test_14b_the_update_list_never_becomes_an_upgrade_of_base(self):
+        """The runbook's own warning: `-u base` once took a tenant's rail apart."""
+        body = _service_source().split(
+            'def sync_bring_in_step(self, target, dry_run=True):')[1]
+        body = body.split('\n    def ')[0]
+        self.assertIn('update_list()', body)
+        self.assertNotIn("'base'", body)
 
     def test_15_nothing_installs_without_somebody_asking_for_it(self):
         """No cron, no upgrade hook, no auto-install path reaches the install."""
         src = _service_source()
         for cron in ('_cron_nightly_backups', '_cron_health', '_cron_certs',
-                     '_warn_cert_expiry'):
+                     '_warn_cert_expiry', '_cron_drift'):
             body = src.split('def %s(self' % cron)[1].split('\n    def ')[0]
-            self.assertNotIn('sync_install', body,
-                             "%s can install parts of the product on a "
-                             "customer's database on its own" % cron)
+            for verb in ('sync_install', 'sync_bring_in_step',
+                         'button_immediate_install', 'button_immediate_upgrade'):
+                self.assertNotIn(verb, body,
+                                  "%s can install parts of the product on a "
+                                  "customer's database on its own" % cron)
         self.assertNotIn('sync_install', _manifest_source(),
                          "a hook in the manifest reaches the installer")
 
@@ -183,18 +209,27 @@ class TestTenantSyncSource(TransactionCase):
         src = _service_source()
         body = src.split('def sync_report(self):')[1].split('\n    def ')[0]
         for verb in ('.write(', '.create(', '.unlink(',
-                     'button_immediate_install'):
+                     'button_immediate_install', 'button_immediate_upgrade'):
             self.assertNotIn(verb, body,
                              'sync_report is supposed to only read, and it '
                              'contains "%s"' % verb)
 
     def test_17_the_master_is_never_a_target(self):
         src = _service_source()
-        body = src.split('def _sync_install(self, dbname, dry_run=True):')[1]
+        body = src.split('def sync_bring_in_step(self, target, dry_run=True):')[1]
         body = body.split('\n    def ')[0]
         self.assertIn('self.env.cr.dbname', body,
-                      "_sync_install does not refuse the database it is "
+                      "sync_bring_in_step does not refuse the database it is "
                       "running on")
+
+    def test_17b_the_nightly_drift_check_only_looks(self):
+        """Rail R1: a cron may read a customer's database and nothing else."""
+        body = _service_source().split('def _cron_drift(self):')[1]
+        body = body.split('\n    def ')[0]
+        self.assertIn('_measure', body)
+        self.assertNotIn('_tenant_env', body,
+                         "the nightly check opens a customer's database for "
+                         "writing")
 
 
 def _manifest_source():
