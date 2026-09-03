@@ -7,8 +7,41 @@
        inside an XML comment is a PARSE ERROR that takes the whole template
        file down, and every t-name in it with it (W22). It also means a comment
        may not spell the pbim custom-property prefix, which is two dashes. -->
+  <!-- ================================= not switched on =================
+       FLEET P4. Somebody has arrived at a whole hub their company has not got
+       — a bookmark, a typed address, a link from a colleague somewhere else.
+       Taking the entry off the rail stops people FINDING the door; it does
+       nothing for the people who already know where it is, and an empty
+       workspace or an error page is the dead end this design does not allow.
+       One sentence, one padlock, and the rest of the product one click away. -->
+  <t t-name="pb_hub.HubFeatureOff">
+    <div class="pbim pbhub pbhub-off">
+      <header class="pbhub-top">
+        <span class="pbhub-brand">
+          <span class="pbhub-brand__ic" t-out="ic(props.icon or 'compass', 15)"/>
+          <span class="pbhub-brand__tx" t-esc="props.label"/>
+        </span>
+      </header>
+      <div class="pbhub-offbox">
+        <div class="pbhub-offcard">
+          <span class="pbhub-offic" t-out="ic('lock', 26)"/>
+          <h2 class="pbhub-offt" t-esc="title"/>
+          <p class="pbhub-offs" t-esc="sentence"/>
+          <p class="pbhub-offh" t-esc="hint"/>
+          <button t-if="hasSearch" class="pbim-btn primary"
+                  t-on-click="() => this.search()">
+            <span t-out="ic('search', 14)"/>
+            <span>Find what you were looking for</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
   <t t-name="pb_hub.HubShell">
-    <div class="pbim pbhub">
+    <HubFeatureOff t-if="hubOff" label="brand.label" icon="brand.icon"
+                   text="hubOffText" onSearch.bind="openPalette"/>
+    <div t-else="" class="pbim pbhub">
 
       <!-- ===================== command bar ===================== -->
       <header class="pbhub-top">
@@ -56,12 +89,18 @@
                to `class` and the last one written wins (W23). -->
           <button t-foreach="lenses" t-as="l" t-key="l.key"
                   class="pbhub-rail__b"
-                  t-att-class="{ 'is-on': state.lens === l.key }"
+                  t-att-class="{ 'is-on': state.lens === l.key,
+                                 'is-locked': isLocked(l) }"
                   t-att-aria-current="state.lens === l.key ? 'page' : false"
                   t-att-title="l.label"
                   t-on-click="() => this.setLens(l.key)">
             <span class="pbhub-rail__ic" t-out="ic(l.icon, 17)"/>
             <span class="pbhub-rail__l" t-esc="l.label"/>
+            <!-- FLEET P4. A part of the product this company has not got, that
+                 the platform chose to keep on screen rather than take away.
+                 The padlock is the whole difference, and clicking it says why
+                 in one sentence — never nothing. -->
+            <span t-if="isLocked(l)" class="pbhub-rail__lock" t-out="ic('lock', 10)"/>
           </button>
         </nav>
 
@@ -76,7 +115,20 @@
              `t-key` on the lens key remounts on every switch: the kit keeps no
              lens state cache, exactly like Mission Control. -->
         <main class="pbhub-canvas">
-          <div class="pbhub-lens" t-if="lensDef and lensDef.Component">
+          <!-- FLEET P4. The lens on screen belongs to a part of the product
+               this company has not got, and the platform asked for a padlock
+               rather than for it to vanish. The rail button stays; the canvas
+               says what it is and how to get it. Checked FIRST, so a locked
+               lens never mounts the surface behind it. -->
+          <div class="pbhub-lens" t-if="lensDef and lensLocked">
+            <div class="pbhub-empty pbhub-lockpane">
+              <span class="pbhub-empty__ic" t-out="ic('lock', 22)"/>
+              <span class="pbhub-empty__t" t-esc="lensDef.label"/>
+              <span class="pbhub-empty__s" t-esc="lensLockText"/>
+            </div>
+          </div>
+
+          <div class="pbhub-lens" t-elif="lensDef and lensDef.Component">
             <t t-component="lensDef.Component" t-key="'lens-' + state.lens"
                t-props="lensProps"/>
           </div>
@@ -84,7 +136,7 @@
           <!-- A lens with no component yet is the kit's honest placeholder, and
                it says so. It is not a door: nothing here navigates, so it cannot
                be a door that only produces an error (W29). -->
-          <div class="pbhub-lens" t-if="lensDef and !lensDef.Component">
+          <div class="pbhub-lens" t-elif="lensDef and !lensDef.Component">
             <div class="pbhub-empty">
               <span class="pbhub-empty__ic" t-out="ic(lensDef.icon, 22)"/>
               <span class="pbhub-empty__t" t-esc="lensDef.label"/>
@@ -92,7 +144,7 @@
             </div>
           </div>
 
-          <div class="pbhub-lens" t-if="!lensDef">
+          <div class="pbhub-lens" t-else="">
             <div class="pbhub-empty">
               <span class="pbhub-empty__ic" t-out="ic('lock', 22)"/>
               <span class="pbhub-empty__s">No lens here is available to you.</span>

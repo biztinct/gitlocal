@@ -46,6 +46,11 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
+// FLEET P4. Which parts of the product this company has. The kit owns the
+// answer (and its fail-open rules) so this hub, the workspace rail and the
+// command palette cannot each decide it differently.
+import { featureGate, featuresState } from "@pb_hub/js/hub_features";
+import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 /** localStorage: which category was open last. Namespaced and versioned. */
 const STORAGE_KEY = "pbst.cat.v1";
@@ -316,6 +321,13 @@ export class PbSettingsHub extends Component {
         this.orm = useService("orm");
         this.actionService = useService("action");
         this.palette = useService("pb_hub_palette");
+        this.dialog = useService("dialog");
+        // FLEET P4. Subscribed rather than read: a switch flipped on the
+        // platform reaches an open page within a minute, and a padlock that
+        // needs a reload to appear is a padlock nobody trusts. Null when the
+        // Platform Link is not installed, and then nothing is ever locked.
+        this._features = featuresState(this.env);
+        if (this._features) { useState(this._features); }
 
         // Read ONCE, from props, never written back (HubShell's rule).
         this.back = hubBack(this.props);
@@ -402,8 +414,17 @@ export class PbSettingsHub extends Component {
         const payload = this.all.map((c) => ({
             key: c.key,
             groups: c.groups || [],
+            // FLEET P4. Which part of the product a category or a card belongs
+            // to, when it belongs to one that is sold on its own. Sent to the
+            // server rather than decided here, for the same reason the
+            // platform-only set is: the browser is editable. The server
+            // refuses a card whose feature is switched off and HIDDEN; a
+            // feature the platform asked to be shown locked comes back allowed
+            // and is drawn with a padlock below.
+            feature: c.feature || "",
             cards: (c.cards || []).map(
-                (k) => ({ id: k.id, tag: k.tag, xmlid: k.xmlid })),
+                (k) => ({ id: k.id, tag: k.tag, xmlid: k.xmlid,
+                          feature: k.feature || "" })),
         }));
         try {
             const res = await this.orm.call(
@@ -603,7 +624,33 @@ export class PbSettingsHub extends Component {
      * replaced, so there is no second click to serve — and if the navigation
      * FAILS, the catch puts it back so the card is not left dead.
      */
+    /**
+     * (locked, sentence) for a card whose part of the product is switched off
+     * and shown locked rather than taken away.
+     *
+     * Read through the KIT's helper, so a database with no Platform Link — and
+     * a card that names no feature — answers "not locked" without this file
+     * knowing anything about platforms or customers.
+     */
+    cardLock(card) {
+        const g = featureGate(this.env, card.feature || "");
+        return g.locked ? (g.text || _t("This part of Payobook is not "
+                                        + "switched on for your company.")) : "";
+    }
+
     openCard(card) {
+        // A padlock is a door that says why. The click is answered with the
+        // sentence and NEVER navigates — a card for something the company has
+        // not got must not open a screen the product does not have here.
+        const lock = this.cardLock(card);
+        if (lock) {
+            this.dialog.add(AlertDialog, {
+                title: _t("Not switched on for your company"),
+                body: lock,
+                confirmLabel: _t("Got it"),
+            });
+            return;
+        }
         if (this._opening) { return; }
         this._opening = true;
         try {

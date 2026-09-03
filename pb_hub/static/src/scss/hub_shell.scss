@@ -254,6 +254,38 @@
     .pbhub-rail__ic { display: inline-flex; }
     .pbhub-rail__l { display: block; }
 
+    // FLEET P4 — a part of the product this company has not bought, kept on
+    // screen on purpose. It has to read as an OFFER and not as a fault: muted
+    // rather than greyed to the point of looking broken, with a small padlock
+    // in the corner of the icon. It still hovers and it still answers a click
+    // (with the sentence), so it never feels like a dead control.
+    .pbhub-rail__b.is-locked {
+        position: relative;
+        color: var(--pbim-muted, #64748B);
+        opacity: .72;
+
+        .pbhub-rail__ic { color: var(--pbim-muted, #64748B); }
+        &:hover { opacity: 1; }
+    }
+    .pbhub-rail__lock {
+        position: absolute;
+        top: 6px;
+        right: 9px;
+        display: inline-flex;
+        color: var(--pbim-muted, #64748B);
+        svg { display: block; }
+    }
+
+    // The canvas of a locked lens: the same empty primitive, one tone quieter,
+    // and the sentence rather than a placeholder line.
+    .pbhub-lockpane {
+        .pbhub-empty__ic {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-muted, #64748B);
+        }
+        .pbhub-empty__s { max-width: 420px; line-height: 1.5; }
+    }
+
     // W20/W39: the lens box is DEFINITE-HEIGHT and hands that height straight
     // to the guest. `min-height: 0` + `min-width: 0` + `width: 100%` on the
     // guest are the belt and braces — a flex child's min-size resolves against
@@ -311,6 +343,67 @@
         color: var(--pbim-ink, #1B1733);
     }
     .pbhub-empty__s { font-size: 12px; }
+
+    // ============================================ FLEET P4 — not switched on
+    //
+    // The whole hub, for a company that has not got it. Written INSIDE this
+    // root block on purpose: `.pbhub-off` is a second class on the same element
+    // as `.pbhub`, so everything under it is a descendant of this selector.
+    // A block appended at the end of the file would compile against whatever
+    // root happened to be last there, which is how a 0px-tall bar shipped on
+    // another cockpit (ledger F35).
+    &.pbhub-off .pbhub-top { border-bottom: 1px solid var(--pbim-line, #E2E8F0); }
+
+    .pbhub-offbox {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+        overflow: auto;
+    }
+    .pbhub-offcard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 460px;
+        padding: 34px 32px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-lg, 18px);
+        background: var(--pbim-surface, #ffffff);
+        text-align: center;
+    }
+    .pbhub-offic {
+        display: inline-flex;
+        width: 58px;
+        height: 58px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+        svg { display: block; }
+    }
+    .pbhub-offt {
+        margin: 4px 0 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-offs {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-offh {
+        margin: 0 0 6px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
 
     // ---------------------------------------------------------- right dock
     // The pb_mission dock's width, so a dock built for one hub fits the next.

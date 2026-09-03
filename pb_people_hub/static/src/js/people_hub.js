@@ -103,8 +103,11 @@ export class PbPeopleHub extends Component {
                 // launcher — after the records a person IS, before the plan for
                 // the people they will be.
                 ...this.extraLenses(),
+                // FLEET P4. Headcount planning is sold on its own; Employees
+                // and Contracts never are.
                 { key: "plan", icon: "trendingUp", label: _t("Plan"),
-                  Component: PlanLauncher, groups: PLAN_GATE },
+                  Component: PlanLauncher, groups: PLAN_GATE,
+                  feature: "people_plan" },
             ],
         };
     }

@@ -49,6 +49,7 @@ import { user } from "@web/core/user";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { HubPalette } from "@pb_hub/js/hub_palette";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { featureForAction, featureGate } from "@pb_hub/js/hub_features";
 
 /**
  * CSS selectors for surfaces that own ⌘K themselves. Seeded with the two that
@@ -176,6 +177,32 @@ export const hubPaletteService = {
             return lockedRefs.get(a.tag) || lockedRefs.get(a.xmlid) || "";
         }
 
+        // ------------------------------------------------ parts of the product
+        //
+        // FLEET P4. A company can be sold Payobook without Insights, without
+        // Workforce, without Learn. The rail already knows (its entries carry
+        // the feature and the server decides); the palette is the SECOND
+        // entrance to every one of those surfaces and would otherwise walk
+        // straight past the decision — the same gap Cycle 5 left with the demo
+        // lock, found again for a different reason.
+        //
+        // The entry says which part of the product it belongs to if it wants
+        // to; otherwise the surface it opens does, through the kit's one map.
+        // A row for a part that is switched OFF is either dropped (the platform
+        // said hide) or shown with a padlock and answered with the sentence
+        // (the platform said lock) — the same two answers the rail and the hub
+        // rail give, so the product does not change its mind between three
+        // entrances to the same door.
+        //
+        // Everything on when the Platform Link is not installed, when nothing
+        // has been pushed, or when the key is unknown (hub_features.js).
+
+        /** (shown, locked, text) for the part of the product behind a row. */
+        function featureOf(entry) {
+            const key = entry.feature || featureForAction(entry.action);
+            return featureGate(env, key);
+        }
+
         /**
          * Is the surface behind this entry actually on this database?
          *
@@ -198,7 +225,10 @@ export const hubPaletteService = {
         async function resolveEntries() {
             if (lockedRefs === null) { await loadRestrictions(); }
             const all = registry.category("pb_hub_palette").getAll()
-                .filter(isPresent);
+                .filter(isPresent)
+                // A part of the product this company has not got, that the
+                // platform asked to be taken away rather than shown locked.
+                .filter((e) => featureOf(e).shown);
             const flags = await Promise.all(all.map(async (e) => {
                 const groups = e.groups || [];
                 if (!groups.length) { return true; }
@@ -212,7 +242,13 @@ export const hubPaletteService = {
                 icon: e.icon || "chevron",
                 // "" on every unrestricted database, which is every database
                 // except a demo one — the row then renders exactly as before.
-                restricted: restrictionFor(e),
+                // A part of the product that is switched off and shown locked
+                // uses the SAME field: the palette already knows how to draw a
+                // padlock and how to answer a click on one, and giving the two
+                // reasons two mechanisms would be two things to keep in step.
+                // The demo lock wins where both apply — it is the older and the
+                // stricter of the two.
+                restricted: restrictionFor(e) || featureOf(e).text,
                 // Passed through UNCHANGED, including undefined: the palette
                 // groups its rows into a Map keyed by this value, and `_t()`
                 // returns a new String subclass every call — defaulting here to
@@ -235,11 +271,16 @@ export const hubPaletteService = {
             // on one surface and absent on the other — which is exactly the gap
             // Cycle 5 left when it moved pb_demo's lock up to the SYSTEM
             // section and the four Setup cockpits stayed reachable by ⌘K.
-            const lock = restrictionFor(entry);
-            if (lock) {
+            const demoLock = restrictionFor(entry);
+            const feature = featureOf(entry);
+            // A row for a part of the product that is switched off must not
+            // navigate even if somebody reaches it — hidden rows are already
+            // gone, and a locked one is answered, never opened.
+            if (demoLock || feature.locked || !feature.shown) {
                 dialog.add(AlertDialog, {
-                    title: _t("Available in the full platform"),
-                    body: lock,
+                    title: demoLock ? _t("Available in the full platform")
+                        : _t("Not switched on for your company"),
+                    body: demoLock || feature.text,
                     confirmLabel: _t("Got it"),
                 });
                 return;

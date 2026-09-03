@@ -90,6 +90,11 @@ export class PbComplianceHub extends Component {
         this.config = {
             key: "compliance",               // -> pbhub.compliance.lens.v1
             brand: { label: _t("Compliance"), icon: "shield" },
+            // FLEET P4. The whole mission is one part of the product; two of
+            // its four lenses are ALSO sold on their own, so a company can
+            // have Compliance without bank statement scanning. The narrower
+            // switch is the one on the lens.
+            feature: "compliance",
             defaultLens: "filings",
             cog: () => this.openSettings(),
             lenses: [
@@ -108,9 +113,11 @@ export class PbComplianceHub extends Component {
                       } } },
                   } },
                 { key: "bank", icon: "scan", label: _t("Bank"),
-                  Component: PbBankOcr, groups: BANK_GATE },
+                  Component: PbBankOcr, groups: BANK_GATE,
+                  feature: "bank_ocr" },
                 { key: "young", icon: "shield", label: _t("Young workers"),
-                  Component: PbYoungWorker, groups: YOUNG_GATE },
+                  Component: PbYoungWorker, groups: YOUNG_GATE,
+                  feature: "young_workers" },
                 { key: "audit", icon: "scrollText", label: _t("Audit"),
                   Component: PbAudit, groups: AUDIT_GATE },
             ],

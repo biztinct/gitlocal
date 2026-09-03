@@ -74,15 +74,24 @@
             <p class="pbst-blurb" t-esc="current.blurb"/>
 
             <div class="pbst-cards">
-              <div t-foreach="currentCards" t-as="k" t-key="k.id" class="pbst-card">
-                <span class="pbst-card__ic" t-out="ic(k.icon, 17)"/>
+              <div t-foreach="currentCards" t-as="k" t-key="k.id"
+                   class="pbst-card" t-att-class="{ 'is-locked': !!cardLock(k) }">
+                <span class="pbst-card__ic" t-out="ic(cardLock(k) ? 'lock' : k.icon, 17)"/>
                 <span class="pbst-card__tx">
                   <span class="pbst-card__l" t-esc="k.label"/>
-                  <span class="pbst-card__s" t-esc="k.sub"/>
+                  <!-- FLEET P4. A part of the product this company has not got,
+                       kept on screen because the platform asked for a padlock
+                       rather than for it to vanish. The card says what it is
+                       and how to get it, in the platform's own words. -->
+                  <span class="pbst-card__s"
+                        t-esc="cardLock(k) or k.sub"/>
                 </span>
-                <button class="pbim-btn primary pbst-go"
+                <button t-if="!cardLock(k)" class="pbim-btn primary pbst-go"
                         t-att-title="k.label"
                         t-on-click="() => this.openCard(k)">Open</button>
+                <button t-else="" class="pbim-btn outline pbst-go"
+                        t-att-title="k.label"
+                        t-on-click="() => this.openCard(k)">Ask Payobook</button>
               </div>
             </div>
           </main>
