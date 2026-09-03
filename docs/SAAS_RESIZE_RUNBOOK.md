@@ -45,19 +45,13 @@ page**).
    **Back up now**. The snapshot below covers everything, but a snapshot is a
    whole machine and a per-customer backup is the thing you can actually restore
    one customer from.
-3. **Write down the current address**: `3.25.57.42` (this is what
+3. **Write down the current address**: `3.104.113.197` (this is what
    `payobook.com` and every `*.payobook.com` resolves to today).
-4. **OWNER TO CONFIRM before anything else — is that address a Lightsail *static
-   IP*?** In the Lightsail console → **Networking** → the address should be listed
-   under *Static IPs* and attached to this instance. This machine's own credentials
-   are not allowed to ask, so it could not be checked from here.
-   * **If it IS static** — good. You detach it from the old instance and attach it
-     to the new one, and no DNS changes at all.
-   * **If it is NOT static** — the address is released the moment the instance
-     stops, and every name breaks. In that case: create a static IP first, attach
-     it to the CURRENT instance (this changes the public address), update the DNS
-     records at Mat Bao (`@`, `*`, and every customer's own name), wait for them to
-     take, and only then do the resize. Add a day for that.
+4. **It is a Lightsail static IP** — confirmed by the owner on 2026-09-04, when the
+   address moved from `3.25.57.42` to `3.104.113.197` and the Mat Bao records (`@`,
+   `*`) were repointed. Nothing on the box names the address (nginx routes by
+   `server_name`; the cockpit resolves the domain), so a resize is: detach the
+   static IP from the old instance, attach it to the new one, no DNS changes.
 
 ---
 
@@ -92,7 +86,7 @@ in place: you take a snapshot and build a bigger instance from it.
    (HTTP), 443 (HTTPS)** — copy exactly what the old instance has.
 6. **Boot and check it came up:**
    ```bash
-   ssh ubuntu@3.25.57.42          # the same key as before
+   ssh ubuntu@3.104.113.197       # the same key as before
    free -m                        # MemTotal should now be ~3900 or ~7900
    sudo systemctl status odoo-server nginx
    sudo journalctl -u odoo-server -n 40 | grep -i "registry loaded"
