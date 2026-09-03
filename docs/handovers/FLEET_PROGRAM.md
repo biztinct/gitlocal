@@ -353,3 +353,78 @@ kit registry (shared). The phase report scores itself against this bar.
   219 MB backup. So the "being updated right now" bar is genuinely up for about a second here — a
   fact to remember when validating, not a bug. The pre-notice, the in-progress notice and the clear
   are all provable from `pb_tenant.provision_log` and the rollout's own trail.
+- **F34** (P3, 2026-09-03) **Measured: a second customer's registry costs about
+  5 MB of resident memory on this box, and that number is far too small to be the
+  capacity guard.** RSS before and after `_tenant_env()` on `payobook_template`:
+  219.4 → 224.0 MB (**+4.6 MB**, 0.8 s); a second call on the same database
+  **+0.0 MB** (registries are cached); `abm` after it **+3.9 MB** (0.9 s); with a
+  real read workload on top of each (all users, all modules, all field
+  definitions, 500 employees, a view count) **+5.6 MB** and **+4.9 MB**. Repeated
+  in a second process: identical. Odoo's own comment sizing the registry LRU says
+  "a registry takes 10MB of memory on average", so the measurement is in the
+  expected place. But a per-customer cost of 5 MB puts "room for 54 more
+  customers" on a 1.9 GB box, which is a guard that can never fire. The resident
+  registry is not what a customer costs: sessions, asset caches and the working
+  set of a pay run are, and they are transient and unmeasurable at rest. So
+  `pb_tenants.tenant_cost_mb` is set to **60** — the measured 5 MB plus a
+  deliberate allowance — and it is a setting, on the Alert-settings dialog, to be
+  re-weighed as customers are added. With 870 MB free and 400 MB reserved that
+  reads "room for 7 more customers". **The number in the setting is a policy, not
+  a measurement; the measurement is the 5 MB above.**
+- **F35** (P3) **The cockpit's own stylesheet has TWO root blocks, and the second
+  one is not `.tnx`.** `tenants.scss` is `.tnx { … }` (lines 2–292) and then
+  `.tnx-notice { … }` (300+), and the detail/updates/timeline rules live inside
+  the SECOND. A block appended "at the end of the file, before the closing brace"
+  therefore compiles to `.tnx-notice .tnx-capbar` and matches nothing — the
+  capacity bar shipped 0 px tall with no error anywhere. P3's styles are now their
+  own root-scoped section (the two dialogs are scrims, exactly like the notice
+  composer, which is why that block is root-scoped in the first place).
+- **F36** (P3) **`min()` in SCSS is the compiler's own function and it refuses to
+  mix units.** `max-height: min(64vh, 640px)` fails the WHOLE bundle, and the
+  failure is not local: the cockpit renders as unstyled HTML under a red banner
+  reading "A css error occured, using an old style to render this page". Use a
+  single unit, or `#{}` interpolation.
+- **F37** (P3) **The shared kit out-specifies a bare class.** Kit buttons are
+  styled `.pbim .pbim-btn.outline` (three classes); a state rule written
+  `.tnx-alertchip.bad` (two) loses, silently. The alerts chip stayed indigo while
+  a customer was unreachable. Any state colour on a kit control needs `.pbim` on
+  the front.
+- **F38** (P3) **A static page has no reader to ask what time it is.** F17 and F32
+  are about converting to a KNOWN clock — the operator's browser, the customer's
+  zone. A file on disk has neither, so a window rendered straight from the stored
+  UTC printed "today 12:34–18:34" for a maintenance slot the owner typed as 22:34.
+  The public page now converts to the platform's own zone and NAMES it
+  ("tonight 19:34–01:34 · Asia/Ho_Chi_Minh"), which is the only honest form.
+  Verified live against the customer's own bar showing 22:34–04:34 in the reader's
+  browser clock at the same moment: two different sentences, both correct.
+- **F39** (P3) **The 15-minute sweep must read the log ONCE, not once per
+  customer.** P2B's `_log_errors_since` reads a 20 MB tail for one database; the
+  sweep asks about every live customer plus the master every quarter of an hour.
+  `_log_error_counts(dbnames, since)` does the same regex, tail and ignore list
+  (F25) in a single walk. The master's own error count is gathered and is
+  deliberately NOT alerted on — this box logs its own test runs and the licence
+  line, and a rule for it would have to be written against that noise first.
+- **F40** (P3) **The stamp that says "we told you" is only written when the
+  message actually left.** If a send fails and the alert is stamped anyway, the
+  problem goes quiet for two hours on the strength of an email nobody received —
+  the exact failure this phase exists to end. `_speak()` stamps per record after
+  `_send_alert_mail` returns ok, and a failed send raises `alert_channel_down`,
+  which is the one kind `reconcile()` never resolves on its own (no reading can
+  see it) and the one kind that is rendered as a banner at the top of the fleet.
+- **F41** (P3) **Validation alerts must be DELETED, not left to resolve.** A
+  resolved critical becomes an incident on the PUBLIC page for seven days. The
+  three alerts raised by moving thresholds during live validation
+  (`backup_stale:abm`, `cert_expiring:abm`, `disk_low`) were unlinked afterwards
+  so the page does not advertise incidents that never happened. Any future live
+  test of the alert path has to end the same way.
+- **F42** (P3) **The go-live checklist used to hide itself the moment the five
+  provisioning checks were green**, which would have hidden P3's two new rows —
+  including the "Send a test email" button, which is wanted on a good day too.
+  The card now shows while ANY check is unfinished and is one click away from the
+  live strip ("Platform checks") when they are all green.
+- **F43** (P3) **The word "odoo" reached a user-visible string through a system
+  ACCOUNT name.** "create /var/www/pb-status and give it to the odoo user" is a
+  technical instruction, and the standing rule is still absolute for anything on
+  a screen: it is now "…and let the application write to it". The test that
+  caught it asserts `'odoo' not in a['text'].lower()` for every alert kind and is
+  worth copying into any phase that writes operator-facing sentences.
