@@ -362,6 +362,204 @@
           </button>
         </div>
 
+        <!-- ===================== THE HERO: the waves lighting up =====================
+             A release does not land on the fleet, it walks across it. Five
+             cards, left to right, each holding the databases that wave
+             touches; the dot on a chip is the whole status. The active wave is
+             raised, a finished one settles back, and the only thing that moves
+             is the one that is actually happening. -->
+        <div t-if="state.roll.loaded and rollout" class="pbim-card tnx-ro">
+          <div class="tnx-ro-head">
+            <span t-attf-class="tnx-ro-ic {{ rollout.state }}"><t t-out="ic('waves',18)"/></span>
+            <div class="tnx-ro-tt">
+              <b>Release <t t-esc="rollout.release"/> is going out</b>
+              <span t-esc="rolloutHeadline"/>
+            </div>
+            <span t-attf-class="pbim-badge {{ rollout.state === 'done' ? 'ok' : (rollout.state === 'paused' ? 'err' : (rollout.state === 'waiting' ? 'warn' : 'info')) }}"
+                  t-esc="rollout.state_label"/>
+            <span class="pplw-sp"/>
+            <button t-if="rollout.state === 'running' || rollout.state === 'waiting'"
+                    class="pbim-btn ghost pbim-btn-sm" t-att-disabled="!!state.roll.busy"
+                    t-on-click="rolloutTick" title="Look for the next step now">
+              <t t-out="ic('refresh',13)"/> Check now
+            </button>
+            <button t-if="rollout.state === 'running' || rollout.state === 'waiting'"
+                    class="pbim-btn ghost pbim-btn-sm" t-att-disabled="!!state.roll.busy" t-on-click="rolloutPause">
+              <t t-out="ic('pause',13)"/> Pause
+            </button>
+          </div>
+
+          <!-- ===== stopped: the reason, and every way out of it ===== -->
+          <div t-if="rollout.state === 'paused'" class="tnx-ro-stop">
+            <t t-out="ic('alert',16)"/>
+            <div class="tnx-ro-stop-tx">
+              <b t-esc="rollout.reason"/>
+              <span class="tnx-next">Nothing after this ran, and nobody else has been touched.
+                Put it right and try that step again, or leave that one behind and carry on.</span>
+            </div>
+            <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="!!state.roll.busy" t-on-click="rolloutResume">
+              <t t-out="ic('play',13)"/> Carry on
+            </button>
+          </div>
+
+          <!-- ===== watching ===== -->
+          <div t-if="rollout.state === 'waiting' and rollout.watch_left_h" class="tnx-ro-watch">
+            <span class="tnx-ro-hg"><t t-out="ic('hourglass',15)"/></span>
+            <div class="tnx-ro-stop-tx">
+              <b>Watching the <t t-esc="rollout.current_ring_label.toLowerCase()"/> —
+                 <t t-esc="rollout.watch_left_h"/> h left</b>
+              <span class="tnx-next">If nothing goes wrong here, the next wave starts on its own.
+                That is what the wait is for.</span>
+            </div>
+            <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="!!state.roll.busy" t-on-click="continueNow">
+              <t t-out="ic('skipForward',13)"/> Continue now
+            </button>
+          </div>
+          <div t-elif="rollout.state === 'waiting' and rollout.next_at" class="tnx-ro-watch">
+            <span class="tnx-ro-hg"><t t-out="ic('moon',15)"/></span>
+            <div class="tnx-ro-stop-tx">
+              <b>Waiting for the next customer's window — <t t-esc="rollout.next_at"/></b>
+              <span class="tnx-next">Each customer is updated inside their own quiet hours,
+                on their own clock. Nobody is woken up for this.</span>
+            </div>
+          </div>
+
+          <!-- ===== the rings ===== -->
+          <div class="tnx-rings" role="list">
+            <t t-foreach="rollout.rings" t-as="ring" t-key="ring.ring">
+              <div t-attf-class="tnx-ring {{ ring.active ? 'on' : '' }} {{ ring.passed ? 'past' : '' }}"
+                   role="listitem" tabindex="0" t-att-title="ring.meaning">
+                <div class="tnx-ring-h">
+                  <span class="tnx-ring-lab" t-esc="ring.label"/>
+                  <span class="tnx-ring-count"><t t-esc="ring.tasks.length"/></span>
+                </div>
+                <div class="tnx-ring-chips">
+                  <t t-foreach="ring.tasks" t-as="task" t-key="task.id">
+                    <span t-attf-class="tnx-chip {{ taskDot(task) }}" t-att-title="taskTitle(task)">
+                      <span class="tnx-chip-dot"/>
+                      <span class="tnx-chip-av" t-esc="task.initial"/>
+                      <span class="tnx-chip-nm" t-esc="task.label"/>
+                      <span t-if="task.run_now and task.state === 'queued'" class="tnx-chip-now">now</span>
+                    </span>
+                  </t>
+                </div>
+                <div t-if="ring.tasks.length === 1 and ring.tasks[0].state === 'done'" class="tnx-ring-foot"
+                     t-esc="'took ' + secs(ring.tasks[0].duration_s)"/>
+              </div>
+              <span t-if="!ring_last" class="tnx-ring-arrow"><t t-out="ic('arrow',14)"/></span>
+            </t>
+          </div>
+
+          <!-- ===== every step, with its own way out ===== -->
+          <div class="tnx-ro-steps">
+            <t t-foreach="rollout.rings" t-as="ring" t-key="'s' + ring.ring">
+              <t t-foreach="ring.tasks" t-as="task" t-key="task.id">
+                <div t-if="task.state !== 'queued' or ring.active" t-attf-class="tnx-ro-step {{ task.state }}">
+                  <span class="tnx-ro-step-dot"/>
+                  <span class="tnx-ro-step-nm">
+                    <b t-esc="task.label"/>
+                    <code t-esc="task.target_db"/>
+                  </span>
+                  <span class="tnx-ro-step-mid">
+                    <t t-if="task.state === 'done'">
+                      <t t-esc="task.added"/> added, <t t-esc="task.updated"/> brought up to date ·
+                      <t t-esc="secs(task.duration_s)"/>
+                      <t t-if="task.health_reason"> · <span class="tnx-sync-when" t-esc="task.health_reason"/></t>
+                    </t>
+                    <t t-elif="task.state === 'failed'"><span class="tnx-sync-err bad" t-esc="task.error"/></t>
+                    <t t-elif="task.state === 'running'"><span class="pbim-spin tnx-minispin"/> updating…</t>
+                    <t t-elif="task.state === 'skipped'">left behind on the old release</t>
+                    <t t-else="">
+                      <t t-if="task.scheduled_for">their window opens <t t-esc="task.scheduled_for"/></t>
+                      <t t-else="">waiting</t>
+                      <t t-if="task.notified_at"> · their users have been told</t>
+                    </t>
+                  </span>
+                  <span class="tnx-ro-step-act">
+                    <button t-if="task.state === 'failed'" class="pbim-btn outline pbim-btn-sm"
+                            t-att-disabled="!!state.roll.busy" t-on-click="() => this.taskRetry(task)">
+                      <t t-out="ic('rotate',13)"/> Try again
+                    </button>
+                    <button t-if="task.state === 'failed' or task.state === 'queued'"
+                            class="pbim-btn ghost pbim-btn-sm"
+                            t-att-disabled="!!state.roll.busy" t-on-click="() => this.askSkip(task)">
+                      <t t-out="ic('skipForward',13)"/> Skip
+                    </button>
+                    <!-- Only in the wave that is actually happening. The waves
+                         go in order, and offering a button that would be
+                         refused is a dead end with a nice icon. -->
+                    <button t-if="task.state === 'queued' and !task.run_now and task.tenant_id and ring.active"
+                            class="pbim-btn ghost pbim-btn-sm"
+                            t-att-disabled="!!state.roll.busy" t-on-click="() => this.taskRunNow(task)"
+                            title="Do not wait for their window — update them at the next check">
+                      <t t-out="ic('zap',13)"/> Run now
+                    </button>
+                  </span>
+                </div>
+              </t>
+            </t>
+          </div>
+
+          <!-- ===== finished ===== -->
+          <div t-if="rollout.state === 'done'" class="tnx-ro-done">
+            <t t-out="ic('checkCircle',16)"/>
+            <span><b t-esc="rolloutHeadline"/>
+              <t t-if="rollout.started_by"> Started by <t t-esc="rollout.started_by"/>.</t></span>
+          </div>
+
+          <div class="tnx-ro-foot">
+            <a href="#" class="tnx-more" t-on-click.prevent="() => state.roll.logOpen = !state.roll.logOpen">
+              <t t-esc="state.roll.logOpen ? 'hide what it has done' : 'what it has done'"/>
+            </a>
+            <span class="pplw-sp"/>
+            <t t-if="rollout.state !== 'done' and rollout.state !== 'aborted'">
+              <input class="pplw-in tnx-ro-abort-in" t-model="state.roll.abortText"
+                     t-att-placeholder="'type ' + rollout.release + ' to call it off'"/>
+              <button class="pbim-btn danger pbim-btn-sm"
+                      t-att-disabled="state.roll.abortText !== rollout.release || !!state.roll.busy"
+                      t-on-click="abortRollout">Call it off</button>
+            </t>
+          </div>
+          <div t-if="state.roll.logOpen" class="tnx-result-log tnx-ro-log">
+            <div t-foreach="rollout.log" t-as="l" t-key="l_index" t-attf-class="tnx-cline {{ l.level }}">
+              <span class="tnx-cline-ts" t-esc="l.ts.slice(11,16)"/> <t t-esc="l.line"/>
+            </div>
+            <div t-if="!rollout.log.length" class="pbim-empty">Nothing yet.</div>
+          </div>
+        </div>
+
+        <!-- No rollout yet: the invitation, only once a release exists.
+             Written as its own `t-if` rather than a `t-elif` on the block
+             above, because the two are separated by this comment and an
+             `elif` has to be the next thing the compiler sees. -->
+        <div t-if="state.roll.loaded and !rollout and s.release" class="pbim-card tnx-ro none">
+          <span class="tnx-ro-ic"><t t-out="ic('waves',18)"/></span>
+          <div class="tnx-ro-tt">
+            <b>Release <t t-esc="s.release.name"/> has not been sent out yet</b>
+            <span>Sending it out is a separate decision from cutting it. When you are ready it goes
+              in waves — a practice run on a throwaway copy, the new-customer template, then one
+              customer, then the rest — stopping at the first thing that goes wrong.</span>
+          </div>
+          <button class="pbim-btn primary" t-att-disabled="syncBlocked || !!state.roll.busy"
+                  t-on-click="openRolloutPlan">
+            <t t-if="state.roll.busy === 'plan'"><span class="pbim-spin tnx-minispin"/> Working it out…</t>
+            <t t-else=""><t t-out="ic('waves',15)"/> Roll out release <t t-esc="s.release.name"/></t>
+          </button>
+        </div>
+
+        <!-- ===================== rollouts that are over ===================== -->
+        <div t-if="state.roll.d and state.roll.d.past.length" class="pbim-card tnx-ro-past">
+          <h3><t t-out="ic('history',15)"/> Earlier rollouts</h3>
+          <div t-foreach="state.roll.d.past" t-as="p" t-key="p.id" class="tnx-ro-past-row">
+            <b t-esc="p.release"/>
+            <span t-attf-class="pbim-badge {{ p.state === 'done' ? 'ok' : 'muted' }}"
+                  t-esc="p.state === 'done' ? 'finished' : 'called off'"/>
+            <span class="tnx-sync-when"><t t-esc="p.when"/></span>
+            <span class="pplw-sp"/>
+            <span class="tnx-sync-when"><t t-esc="p.done"/> of <t t-esc="p.total"/> steps · <t t-esc="p.minutes"/> min</span>
+          </div>
+        </div>
+
         <!-- ===================== the one thing that stops everything ===================== -->
         <div t-if="s.master_behind_files.length" class="pbim-card tnx-blocked">
           <h3><t t-out="ic('alert',16)"/> The master has not caught up with its own files</h3>
@@ -578,6 +776,14 @@
               <t t-if="state.sync.busy === 'release'"><span class="pbim-spin tnx-minispin"/> Cutting…</t>
               <t t-else=""><t t-out="ic('scissors',15)"/> Cut a release</t>
             </button>
+            <!-- Cutting a release and sending it out are two decisions, and
+                 they are two buttons. Nothing goes to a customer because
+                 somebody took a photograph of the master. -->
+            <button t-if="s.release" class="pbim-btn outline"
+                    t-att-disabled="syncBlocked || !!state.roll.busy" t-on-click="openRolloutPlan">
+              <t t-if="state.roll.busy === 'plan'"><span class="pbim-spin tnx-minispin"/> Working it out…</t>
+              <t t-else=""><t t-out="ic('waves',15)"/> Roll out <t t-esc="s.release.name"/></t>
+            </button>
             <span t-if="syncBlocked" class="tnx-cut-blocked">Not while the master is behind its own files.</span>
           </div>
         </div>
@@ -614,10 +820,126 @@
         </div>
 
         <div class="pbim-seg tnx-tabs">
-          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'overview' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'overview'">Overview</button>
-          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'backups' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'backups'">Backups</button>
-          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'domains' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'domains'">Domains</button>
-          <button t-attf-class="pbim-segbtn tnx-danger-tab {{ state.det.tab === 'danger' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'danger'">Danger zone</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'overview' ? 'on' : '' }}" t-on-click="() => this.openTab('overview')">Overview</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'updates' ? 'on' : '' }}" t-on-click="() => this.openTab('updates')">Updates</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'backups' ? 'on' : '' }}" t-on-click="() => this.openTab('backups')">Backups</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'domains' ? 'on' : '' }}" t-on-click="() => this.openTab('domains')">Domains</button>
+          <button t-attf-class="pbim-segbtn tnx-danger-tab {{ state.det.tab === 'danger' ? 'on' : '' }}" t-on-click="() => this.openTab('danger')">Danger zone</button>
+        </div>
+
+        <!-- ================================ updates ================================
+             Three questions this customer's record should be able to answer on
+             its own: which wave am I in, when is my night, and what has
+             actually been done to me. -->
+        <div t-if="state.det.tab === 'updates'">
+          <div t-if="!state.upd.d" class="pbim-busy"><div class="pbim-spin"/><span>Reading this customer's updates…</span></div>
+          <t t-else="">
+            <t t-set="u" t-value="state.upd.d"/>
+            <div class="pbim-card tnx-upd">
+              <div class="tnx-upd-col">
+                <h4><t t-out="ic('waves',15)"/> Which wave</h4>
+                <p class="pbim-note">When a release goes out it walks across the fleet in waves.
+                  This is the one <b t-esc="u.name"/> is in.</p>
+                <div class="pbim-seg tnx-upd-seg">
+                  <button t-foreach="u.rings" t-as="r" t-key="r.key"
+                          t-attf-class="pbim-segbtn {{ u.ring === r.key ? 'on' : '' }}"
+                          t-att-disabled="!!state.upd.busy"
+                          t-att-title="r.meaning" t-on-click="() => this.setRing(r.key)"
+                          t-esc="r.label"/>
+                </div>
+                <div class="tnx-upd-mean" t-esc="u.ring_meaning[u.ring]"/>
+              </div>
+              <div class="tnx-upd-col">
+                <h4><t t-out="ic('moon',15)"/> Their quiet hours</h4>
+                <p class="pbim-note">Updates happen inside this window, on <b>their</b> clock —
+                  read from their own company record.</p>
+                <div class="tnx-upd-win">
+                  <label>From
+                    <input class="pplw-in" type="number" min="0" max="23"
+                           t-att-value="u.maintenance_start" t-att-disabled="!!state.upd.busy"
+                           t-on-change="(ev) => this.onWindowInput('start', ev)"/>
+                    :00
+                  </label>
+                  <label>for
+                    <input class="pplw-in" type="number" min="1" max="12"
+                           t-att-value="u.maintenance_hours" t-att-disabled="!!state.upd.busy"
+                           t-on-change="(ev) => this.onWindowInput('hours', ev)"/>
+                    hours
+                  </label>
+                  <span class="tnx-upd-tz"><t t-out="ic('clock',12)"/> <t t-esc="u.tz"/></span>
+                </div>
+                <div class="tnx-upd-next">Next window: <b t-esc="u.next_window"/>
+                  <span class="tnx-sync-when">(<t t-esc="u.next_window_at"/> here)</span></div>
+              </div>
+              <div class="tnx-upd-col">
+                <h4><t t-out="ic('tag',15)"/> Where they are</h4>
+                <p class="pbim-note">
+                  <span t-attf-class="pbim-badge {{ fleetReleaseChip(u).cls }}" t-esc="fleetReleaseChip(u).label"/>
+                </p>
+                <button class="pbim-btn outline" t-att-disabled="!!state.upd.busy" t-on-click="updateNow">
+                  <t t-if="state.upd.busy === 'run'"><span class="pbim-spin tnx-minispin"/> Updating…</t>
+                  <t t-else=""><t t-out="ic('download',15)"/> Update them now</t>
+                </button>
+                <div class="tnx-upd-mean">Outside any rollout, and without warning their users first.
+                  For a release going to everybody, use the rollout — it practises on a copy first.</div>
+                <div t-if="!u.tenancy_linked" class="tnx-sync-err bad">
+                  This customer cannot be told anything yet — bring them in step once first.
+                </div>
+              </div>
+            </div>
+
+            <div class="pbim-card tnx-tl">
+              <h3><t t-out="ic('history',16)"/> Every update this customer has had</h3>
+              <div t-if="!u.history.length" class="pbim-empty">
+                Nothing yet. When a release is rolled out, each step lands here with what it did.
+              </div>
+              <t t-foreach="u.history" t-as="h" t-key="h.id">
+                <div t-attf-class="tnx-tl-row {{ h.state }}">
+                  <span class="tnx-tl-dot"/>
+                  <span class="tnx-tl-main">
+                    <b>Release <t t-esc="h.release"/></b>
+                    <span t-attf-class="pbim-badge {{ h.state === 'done' ? 'ok' : (h.state === 'failed' ? 'err' : 'muted') }}"
+                          t-esc="h.state === 'done' ? 'done' : (h.state === 'failed' ? 'failed' : (h.state === 'skipped' ? 'left behind' : h.state))"/>
+                    <span class="tnx-sync-when" t-esc="h.finished_at || h.started_at || ''"/>
+                  </span>
+                  <span class="tnx-tl-mid">
+                    <t t-if="h.state === 'done'">
+                      <t t-esc="h.added"/> added · <t t-esc="h.updated"/> brought up to date ·
+                      <t t-esc="secs(h.duration_s)"/>
+                    </t>
+                    <t t-elif="h.error"><span class="tnx-sync-err bad" t-esc="h.error"/></t>
+                    <t t-else="">—</t>
+                  </span>
+                  <a href="#" class="tnx-more" t-on-click.prevent="() => this.toggleTask(h.id)">
+                    <t t-esc="state.upd.openTask === h.id ? 'hide the detail' : 'show the detail'"/>
+                  </a>
+                </div>
+                <div t-if="state.upd.openTask === h.id" class="tnx-tl-detail">
+                  <div class="tnx-result-grid">
+                    <div class="tnx-result-cell"><span class="n" t-esc="h.added"/><span class="l">added</span></div>
+                    <div class="tnx-result-cell"><span class="n" t-esc="h.updated"/><span class="l">brought up to date</span></div>
+                    <div t-attf-class="tnx-result-cell {{ h.skipped_count > 0 ? 'bad' : (h.skipped_count === 0 ? 'good' : '') }}">
+                      <span class="n"><t t-if="h.skipped_count >= 0" t-esc="h.skipped_count"/><t t-else="">?</t></span>
+                      <span class="l">did not load</span>
+                    </div>
+                    <div class="tnx-result-cell"><span class="n" t-esc="secs(h.duration_s)"/><span class="l">took</span></div>
+                    <div class="tnx-result-cell"><span class="n" t-esc="h.attempts"/><span class="l">attempt(s)</span></div>
+                  </div>
+                  <div class="tnx-tl-health">
+                    <b>Checks afterwards:</b>
+                    <t t-if="h.health.probe_code"> the site answered <t t-esc="h.health.probe_code"/>
+                      in <t t-esc="h.health.probe_ms"/> ms.</t>
+                    <t t-if="h.health.error_count >= 0"> <t t-esc="h.health.error_count"/> error line(s)
+                      in the log while it ran.</t>
+                    <t t-if="h.health_reason"> <span t-esc="h.health_reason"/></t>
+                  </div>
+                  <div t-if="h.health.errors and h.health.errors.length" class="tnx-result-log">
+                    <div t-foreach="h.health.errors" t-as="e" t-key="e_index" class="tnx-cline error" t-esc="e"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </t>
         </div>
 
         <!-- overview -->
@@ -794,6 +1116,132 @@
           </div>
         </div>
       </t>
+    </div>
+
+    <!-- ============================================== ROLL IT OUT ==============================================
+         The plan, in the order it will happen, with when each customer would
+         be touched said in their own words. NOTHING HAS STARTED while this is
+         open, and the paragraph at the bottom says so before the button does. -->
+    <div t-if="state.roll.planOpen and state.roll.plan" class="pbim-modal-scrim" t-on-click="closeRolloutPlan">
+      <div class="pbim-modal tnx-plan" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('waves',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Roll out release <t t-esc="state.roll.plan.release.name"/></div>
+            <div class="pbim-modal__sub">In waves, one database at a time, stopping at the first problem.</div>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="closeRolloutPlan" title="Close"><t t-out="ic('x',15)"/></button>
+        </div>
+
+        <div class="pbim-modal__body tnx-plan-body">
+          <div t-if="state.roll.plan.release.notes" class="tnx-plan-notes">
+            <span class="tnx-plan-notes-h">What customers will read</span>
+            <span t-esc="state.roll.plan.release.notes"/>
+          </div>
+
+          <div t-if="state.roll.plan.blockers.length" class="tnx-notice-err tnx-plan-block">
+            <t t-out="ic('alert',15)"/>
+            <div>
+              <b>This cannot go out yet.</b>
+              <div t-foreach="state.roll.plan.blockers" t-as="b" t-key="b_index" class="tnx-plan-block-row" t-esc="b"/>
+            </div>
+          </div>
+
+          <div class="tnx-plan-steps">
+            <t t-foreach="state.roll.plan.tasks" t-as="task" t-key="task.sequence">
+              <div class="tnx-plan-step">
+                <span class="tnx-plan-n" t-esc="task_index + 1"/>
+                <span class="tnx-plan-tx">
+                  <b t-esc="task.label"/>
+                  <span class="tnx-plan-ring" t-att-title="state.roll.plan.ring_meaning[task.ring]"
+                        t-esc="task.ring_label"/>
+                  <code t-esc="task.target_db"/>
+                </span>
+                <span class="tnx-plan-when">
+                  <t t-esc="task.when"/>
+                  <small t-if="task.tz" t-esc="'their time · ' + task.tz"/>
+                </span>
+              </div>
+            </t>
+          </div>
+
+          <div t-if="state.roll.plan.excluded.length" class="tnx-plan-out">
+            <span class="tnx-plan-notes-h">Not included</span>
+            <div t-foreach="state.roll.plan.excluded" t-as="x" t-key="x.id" class="tnx-plan-out-row">
+              <b t-esc="x.name"/><span t-esc="x.reason"/>
+            </div>
+          </div>
+          <div t-foreach="state.roll.plan.warnings" t-as="w" t-key="w_index" class="pbim-note tnx-plan-warn" t-esc="w"/>
+
+          <div class="tnx-plan-watch">
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Watch the canary customer for</span>
+              <span class="tnx-plan-num"><input class="pplw-in" type="number" min="0" max="168" t-model="state.roll.watch"/> hours</span>
+            </label>
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Watch the early group for</span>
+              <span class="tnx-plan-num"><input class="pplw-in" type="number" min="0" max="168" t-model="state.roll.early"/> hours</span>
+            </label>
+          </div>
+
+          <p class="tnx-plan-say">
+            Pressing <b>Start rollout</b> writes this list down and nothing else. The practice run
+            happens straight away, on a throwaway copy that is deleted afterwards whatever happens.
+            After that each customer is updated inside their own quiet hours, one at a time; their
+            users are told the evening before and again while it is happening. If anything goes
+            wrong it stops there and waits for you. <b>You can pause, skip a customer or call the
+            whole thing off at any point.</b>
+          </p>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <span class="tnx-notice-reach">
+            <t t-esc="state.roll.plan.tasks.length"/> steps · practice run first
+          </span>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeRolloutPlan">Not yet</button>
+          <button class="pbim-btn primary"
+                  t-att-disabled="state.roll.plan.blockers.length || !!state.roll.busy"
+                  t-on-click="startRollout">
+            <t t-if="state.roll.busy === 'start'"><span class="pbim-spin tnx-minispin"/> Starting…</t>
+            <t t-else=""><t t-out="ic('play',15)"/> Start rollout</t>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== LEAVE ONE BEHIND ==========================================
+         Skipping a customer means they stay on the old release until somebody
+         remembers them, so the name has to be typed. -->
+    <div t-if="state.roll.skipFor" class="pbim-modal-scrim" t-on-click="() => state.roll.skipFor = null">
+      <div class="pbim-modal is-narrow" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('skipForward',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Leave <t t-esc="state.roll.skipFor.label"/> behind</div>
+            <div class="pbim-modal__sub">They stay on the release they are on now.</div>
+          </div>
+        </div>
+        <div class="pbim-modal__body">
+          <p class="tnx-plan-say">
+            The rollout carries on without them. Nothing is undone on their database and nothing
+            breaks — they simply do not get this release until somebody brings them in step, which
+            is the button on the table below.
+          </p>
+          <t t-if="state.roll.skipFor.slug">
+            <label class="pplw-label">Type <code t-esc="state.roll.skipFor.slug"/> to confirm</label>
+            <input class="pplw-in" t-model="state.roll.skipText" t-att-placeholder="state.roll.skipFor.slug"/>
+          </t>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="() => state.roll.skipFor = null">Cancel</button>
+          <button class="pbim-btn danger"
+                  t-att-disabled="(state.roll.skipFor.slug and state.roll.skipText !== state.roll.skipFor.slug) || !!state.roll.busy"
+                  t-on-click="confirmSkip">Leave them behind</button>
+        </div>
+      </div>
     </div>
 
     <!-- ============================================== SEND A NOTICE ==============================================

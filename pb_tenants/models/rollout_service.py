@@ -776,11 +776,26 @@ class PbTenantsRollout(models.AbstractModel):
 
     @api.model
     def task_run_now(self, task_id):
-        """Do not wait for their night. Recorded, because somebody chose it."""
+        """Do not wait for their night. Recorded, because somebody chose it.
+
+        IT SKIPS THE WINDOW, NOT THE QUEUE. The order of the waves is the whole
+        safety argument of a rollout, so a customer in a later wave cannot be
+        pulled forward with this — the way to move a wave along is to end its
+        watch period on purpose, which is a different button with a different
+        confirmation.
+        """
         self._require_admin()
         task = self._get_task(task_id)
         if task.state != 'queued':
             raise UserError(_("That step is not waiting."))
+        if task.ring != task.rollout_id.current_ring:
+            raise UserError(_(
+                "%(who)s is in a later wave (%(ring)s), and the waves happen "
+                "in order — that is what makes a rollout safe. To get there "
+                "sooner, end the watch period on the %(now)s with "
+                "\"Continue now\".",
+                who=task.label, ring=RING_LABEL.get(task.ring, task.ring),
+                now=RING_LABEL.get(task.rollout_id.current_ring, '').lower()))
         task.write({'run_now': True, 'run_now_by': self.env.user.id})
         task.rollout_id.log_line(
             _("%(who)s asked for %(what)s to be updated now rather than in "
