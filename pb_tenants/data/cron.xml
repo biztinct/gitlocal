@@ -31,4 +31,19 @@
         <field name="interval_type">hours</field>
         <field name="active" eval="True"/>
     </record>
+    <!-- FLEET P1. How far has each customer drifted from the release? READS
+         every customer's database and writes only our own record of what it
+         found (rail R1): nothing is installed or upgraded on a customer while
+         everybody is asleep. 02:30, ahead of the working day and clear of the
+         nightly backups at 19:30. -->
+    <record id="cron_drift" model="ir.cron">
+        <field name="name">Payobook Tenants: drift from the release</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_drift()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=30, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>
