@@ -3,6 +3,7 @@ from . import rollout_rules
 from . import alert_rules
 from . import feature_rules
 from . import billing_rules
+from . import support_rules
 from . import tenant
 from . import feature
 from . import plan
@@ -15,3 +16,4 @@ from . import rollout_service
 from . import alert_service
 from . import feature_service
 from . import billing_service
+from . import support_service

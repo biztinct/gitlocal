@@ -54,6 +54,11 @@ ALERT_KINDS = (
     'invoice_overdue',
     'suspend_candidate',
     'trial_ending',
+    # FLEET P6. Somebody at Payobook opened a customer's data. It is INFO and
+    # it is not a fault — it is here because access to a customer's payroll is
+    # never allowed to be quiet, and this is what puts it in the daily summary
+    # the owner already reads. Self-managed below: no reading can see it.
+    'support_session',
 )
 
 SEVERITIES = ('critical', 'warning', 'info')
@@ -71,7 +76,7 @@ SEVERITY_ORDER = {'info': 0, 'warning': 1, 'critical': 2}
 #: raised and cleared by `billing_service.py` — when the invoice is paid, when
 #: the customer is resumed, when the trial is converted.
 SELF_MANAGED_KINDS = ('alert_channel_down', 'invoice_overdue',
-                      'suspend_candidate', 'trial_ending')
+                      'suspend_candidate', 'trial_ending', 'support_session')
 
 #: Every number this file judges by, in one dict, all overridable as settings.
 #: They are ARGUMENTS and not constants so a test can sit exactly on the edge of

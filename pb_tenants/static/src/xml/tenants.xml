@@ -2037,6 +2037,38 @@
               </b>
               <b t-else="">—</b>
             </div>
+            <!-- FLEET P6. Whether we may open this customer's data at all, and
+                 the button that does it. The customer's own switch is read from
+                 THEIR database every time this page loads, and when it is off
+                 the button is disabled with their answer written beside it —
+                 there is no override here and none on the server. -->
+            <div class="tnx-rev-row"><span>Support access</span>
+              <b>
+                <t t-if="state.sup.busy === 'load' and !state.sup.d">
+                  <span class="tnx-sync-when">reading their record…</span>
+                </t>
+                <t t-elif="sup.live">
+                  <span class="pbim-badge warn">a session is open right now</span>
+                  <span class="tnx-sync-when">
+                    <t t-esc="sup.live.who"/> · ends <t t-esc="supLiveEnds"/>
+                  </span>
+                  <a href="#" class="tnx-danger-link"
+                     t-on-click.prevent="() => this.endSupport(sup.live.id)">end it now</a>
+                </t>
+                <t t-elif="sup.blocked">
+                  <span class="pbim-badge err" t-esc="supBlockedChip"/>
+                  <span class="tnx-sup-blocked" t-esc="sup.blocked"/>
+                </t>
+                <t t-else="">
+                  <span class="pbim-badge ok">allowed</span>
+                  <a href="#" class="tnx-more" t-on-click.prevent="openSupportDialog">open as support</a>
+                  <span t-if="supRows.length" class="tnx-sync-when">
+                    · <t t-esc="supRows.length"/> session(s) on record
+                  </span>
+                  <span t-else="" class="tnx-sync-when">· we have never been in</span>
+                </t>
+              </b>
+            </div>
             <div class="tnx-rev-row"><span>Staging copy</span>
               <b t-if="d.staging_exists" class="tnx-staging-on">
                 <t t-esc="d.staging_db"/> — <a href="#" t-on-click.prevent="() => this.openUrl(d.staging_url)">open</a> ·
@@ -2058,6 +2090,45 @@
             </div>
             <div class="tnx-result-log">
               <div t-foreach="lastSync.log || []" t-as="l" t-key="l_index" t-attf-class="tnx-cline {{ l.level }}" t-esc="l.line"/>
+            </div>
+          </div>
+
+          <!-- FLEET P6. The same record the customer reads, on our screen —
+               so nobody here has to wonder what they can see. -->
+          <div t-if="supRows.length" class="pbim-card tnx-suphist">
+            <div class="tnx-lastsync-h">
+              <b>Every time we have opened their data</b>
+              <span class="tnx-sync-when">Their administrator reads this same
+                    list under Settings → About Payobook → Support access.</span>
+            </div>
+            <div t-foreach="supRows" t-as="sr" t-key="sr.id"
+                 t-attf-class="tnx-suprow {{ state.sup.openRow === sr.id ? 'open' : '' }}">
+              <div class="tnx-supline" t-on-click="() => this.toggleSupRow(sr.id)">
+                <span t-attf-class="pbim-badge {{ sr.tone }}" t-esc="sr.label"/>
+                <span class="tnx-supwhen" t-esc="sr.when"/>
+                <span class="tnx-supwho" t-esc="sr.who"/>
+                <span class="tnx-supwhy" t-esc="sr.reason"/>
+                <span class="tnx-supscr">
+                  <t t-if="sr.screens.length"><t t-esc="sr.screens.length"/> screen(s)</t>
+                  <t t-else="">—</t>
+                </span>
+                <span class="tnx-supcar"><t t-out="ic('chevronDown',14)"/></span>
+              </div>
+              <div t-if="state.sup.openRow === sr.id" class="tnx-supdet">
+                <div class="tnx-supfacts">
+                  <span>allowed for <b t-esc="sr.minutes"/> minutes</span>
+                  <span t-if="sr.ended_at">ended <b t-esc="sr.ended_at.slice(0,16)"/></span>
+                  <span t-if="sr.ended_by">because <b t-esc="sr.ended_by"/></span>
+                  <span t-if="sr.refused_reason">refused: <b t-esc="sr.refused_reason"/></span>
+                  <span t-if="sr.source_ip">from <b t-esc="sr.source_ip"/></span>
+                </div>
+                <div t-if="sr.screens.length" class="tnx-supchips">
+                  <span t-foreach="sr.screens" t-as="scr" t-key="scr_index"
+                        class="tnx-supchip" t-att-title="scr.ts"
+                        t-esc="supScreenLabel(scr)"/>
+                </div>
+                <div t-else="" class="tnx-supnone">No screens were opened.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -2273,6 +2344,62 @@
           <button class="pbim-btn danger"
                   t-att-disabled="(state.roll.skipFor.slug and state.roll.skipText !== state.roll.skipFor.slug) || !!state.roll.busy"
                   t-on-click="confirmSkip">Leave them behind</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ OPEN AS SUPPORT ============================================
+         FLEET P6. The only button on this cockpit that reaches into a
+         customer's DATA, so it is the only one that asks why — and says, on the
+         dialog itself, that what you type is read by them. -->
+    <div t-if="state.sup.open" class="pbim-modal-scrim" t-on-click="closeSupportDialog">
+      <!-- `tnx-notice` as well as the kit's own classes: that is where this
+           cockpit's dialog field, label and help styles live (see the SCSS
+           block that names the three dialogs sharing them). -->
+      <div class="pbim-modal is-narrow tnx-notice tnx-support" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic rose"><t t-out="ic('shield',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Open <t t-esc="state.det.d and state.det.d.name"/> as support</div>
+            <div class="pbim-modal__sub">You will be signed in as Payobook's own recovery account, never as one of their people.</div>
+          </div>
+          <button class="pbim-modal__x" t-on-click="closeSupportDialog" title="Close"><t t-out="ic('x',15)"/></button>
+        </div>
+        <div class="pbim-modal__body tnx-notice-body">
+          <label class="pplw-label">Why do you need to be in there?</label>
+          <textarea class="pplw-in tnx-supreason" rows="2"
+                    t-model="state.sup.reason"
+                    placeholder="e.g. their October pay run is showing a zero on the overtime line"/>
+          <p class="tnx-plan-say">
+            <b>They will read this.</b> The reason, your name, the time, how long
+            you had and every screen you open are written on their own database,
+            where anyone who manages permissions for their company can see it.
+            It is also in tomorrow morning's summary email.
+          </p>
+
+          <label class="pplw-label">How long do you need?</label>
+          <div class="pbim-seg tnx-supseg">
+            <button t-foreach="supDurations" t-as="dur" t-key="dur.minutes"
+                    t-attf-class="pbim-segbtn {{ state.sup.minutes === dur.minutes ? 'on' : '' }}"
+                    t-on-click="() => this.setSupMinutes(dur.minutes)"
+                    t-esc="dur.label"/>
+          </div>
+          <div class="tnx-supblurb" t-esc="supDurationBlurb"/>
+          <p class="tnx-plan-say">
+            The session ends by itself when the time is up — there is nothing to
+            remember to switch off. You can end it early from the bar at the top
+            of their screen, or from here.
+          </p>
+        </div>
+        <div class="pbim-modal__foot">
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="closeSupportDialog">Cancel</button>
+          <button class="pbim-btn primary"
+                  t-att-disabled="!supValid || !!state.sup.busy"
+                  t-on-click="openAsSupport">
+            <t t-if="state.sup.busy === 'open'"><span class="pbim-spin tnx-minispin"/> Opening…</t>
+            <t t-else=""><t t-out="ic('shield',14)"/> Open a session</t>
+          </button>
         </div>
       </div>
     </div>
