@@ -3,6 +3,16 @@
 
 <t t-name="pb_tenancy.Banner">
     <PbTenancyBar t-if="notice" notice="notice" onDismiss.bind="dismiss"/>
+    <!-- FLEET P5. The company's own standing, under anything the platform has
+         to say. Two bars at once is the honest arrangement on the one morning
+         it happens: "we are updating tonight" and "your trial ends tomorrow"
+         are different pieces of news and neither should hide the other. -->
+    <PbTenancyStandingBar/>
+</t>
+
+<t t-name="pb_tenancy.Standing">
+    <PbTenancyBar t-if="notice" notice="notice" label="notice.label"
+                  onDismiss.bind="dismiss"/>
 </t>
 
 <t t-name="pb_tenancy.Bar">
