@@ -30,6 +30,7 @@ KIND_LABEL = {
     'rollout_paused': 'Release rollout stopped',
     'drift': 'Customer behind the release',
     'master_behind_files': 'Platform has not applied its own update',
+    'support_session': 'Payobook support opened a customer\'s data',
     'template_hot_cron': 'Template has live scheduled jobs',
     'status_page_unwritable': 'Public status page not writable',
     # FLEET P5 — money and standing.
@@ -58,6 +59,8 @@ KIND_ICON = {
     'invoice_overdue': 'receipt',
     'suspend_candidate': 'pause',
     'trial_ending': 'hourglass',
+    # FLEET P6.
+    'support_session': 'shield',
 }
 
 

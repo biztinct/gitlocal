@@ -76,6 +76,9 @@ export class PbTenants extends Component {
             bill: this._freshBill(),
             // FLEET P5. One customer's plan, standing and invoice history.
             plan: this._freshPlanTab(),
+            // FLEET P6. Whether we may open this customer's data, and every
+            // time we have.
+            sup: this._freshSup(),
             settings: { open: false, busy: false, d: null, error: "" },
             mailTest: null,
         });
@@ -2121,8 +2124,14 @@ export class PbTenants extends Component {
         this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false };
         this.state.upd = { d: null, busy: "", openTask: null };
         this.state.plan = this._freshPlanTab();
+        this.state.sup = this._freshSup();
         this.state.view = "detail";
         this.state.det.d = await this.orm.silent.call("pb.tenants", "get_tenant", [id]);
+        // FLEET P6. After the page is drawn, never before it: this one reads
+        // two things off ANOTHER database and the customer's page must not wait
+        // for it. The row renders its own "reading…" state meanwhile.
+        // Deliberately not awaited, and its own failure is its own toast.
+        this.loadSupport();
     }
 
     // -------------------------------------------------------- Updates tab
@@ -2136,6 +2145,11 @@ export class PbTenants extends Component {
         this.state.det.tab = tab;
         if (tab === "updates" && !this.state.upd.d) { await this.loadUpdates(); }
         if (tab === "plan" && !this.state.plan.d) { await this.loadPlanTab(); }
+        // FLEET P6. The support record lives on the Overview, beside the row
+        // that offers the button — asked for when that tab is opened rather
+        // than on every fleet load, because it is two queries on ANOTHER
+        // database.
+        if (tab === "overview" && !this.state.sup.d) { await this.loadSupport(); }
     }
 
     async loadUpdates() {
@@ -2233,6 +2247,160 @@ export class PbTenants extends Component {
         } catch {
             return null;
         }
+    }
+
+    // ============================================ FLEET P6 — support access
+    //
+    // THE ONE BUTTON ON THIS COCKPIT THAT REACHES INTO SOMEBODY'S DATA rather
+    // than into their configuration, so it is the one with a reason box, a
+    // fixed set of lengths, and a sentence saying where what you type ends up.
+    //
+    // The customer's switch is read from THEIR database every time this loads,
+    // and when it is off the button is disabled with their own answer written
+    // beside it. There is no override here and there is none on the server —
+    // that is the product, not an oversight, and the dialog says so.
+
+    _freshSup() {
+        return { d: null, busy: "", open: false, reason: "", minutes: 120,
+                 openRow: null };
+    }
+
+    async loadSupport(quiet = true) {
+        const s = this.state.sup;
+        s.busy = "load";
+        try {
+            const call = quiet ? this.orm.silent : this.orm;
+            s.d = await call.call("pb.tenants", "support_history",
+                                  [this.state.det.id]);
+        } catch (e) {
+            this.notif.add(this.errText(
+                e, _t("This customer's support record could not be read.")),
+                { type: "danger" });
+        } finally {
+            s.busy = "";
+        }
+    }
+
+    get sup() { return this.state.sup.d || {}; }
+
+    get supRows() {
+        return (this.sup.rows || []).map((r) => ({
+            ...r,
+            tone: { active: "warn", ended: "ok", expired: "ok",
+                    refused: "muted", issued: "info" }[r.state] || "muted",
+            label: { active: _t("In progress"), ended: _t("Finished"),
+                     expired: _t("Finished — time ran out"),
+                     refused: _t("Refused"),
+                     issued: _t("Link sent, not used") }[r.state] || r.state,
+            when: (r.used_at || r.issued_at || "").slice(0, 16),
+            screens: r.screens || [],
+        }));
+    }
+
+    /** "16:02 UTC", precomputed: a template holds no arithmetic (ledger F16). */
+    get supLiveEnds() {
+        const live = this.sup.live;
+        if (!live || !live.session_expires_at) { return ""; }
+        return `${String(live.session_expires_at).slice(11, 16)} UTC`;
+    }
+
+    /**
+     * The chip beside the row when we cannot open this customer.
+     *
+     * THE REASONS ARE DIFFERENT AND MUST NOT WEAR THE SAME WORDS. "They
+     * switched us off" is a decision to respect; "they have not been brought in
+     * step" is a job for us to do; "there is no database" is neither.
+     */
+    get supBlockedChip() {
+        const s = this.sup;
+        if (!s.linked) { return _t("not linked yet"); }
+        if (!s.allowed) { return _t("switched off by the customer"); }
+        return _t("not available");
+    }
+
+    get supDurations() {
+        return this.sup.durations || [
+            { minutes: 30, label: _t("30 minutes"), blurb: "" },
+            { minutes: 120, label: _t("2 hours"), blurb: "" },
+            { minutes: 480, label: _t("8 hours"), blurb: "" },
+        ];
+    }
+
+    get supDurationBlurb() {
+        const row = this.supDurations.find(
+            (d) => d.minutes === this.state.sup.minutes);
+        return row ? row.blurb : "";
+    }
+
+    openSupportDialog() {
+        const s = this.state.sup;
+        s.open = true;
+        s.reason = "";
+        s.minutes = 120;
+    }
+
+    closeSupportDialog() { this.state.sup.open = false; }
+
+    setSupMinutes(minutes) { this.state.sup.minutes = minutes; }
+
+    get supValid() { return (this.state.sup.reason || "").trim().length >= 6; }
+
+    /**
+     * Open the session and the tab, in that order and without a gap.
+     *
+     * THE LINK IS GOOD FOR SIXTY SECONDS, so it is never shown, copied or
+     * stored: the browser that asked for it is the browser that spends it.
+     */
+    async openAsSupport() {
+        const s = this.state.sup;
+        if (!this.supValid || s.busy) { return; }
+        s.busy = "open";
+        try {
+            const r = await this.orm.call(
+                "pb.tenants", "support_open",
+                [this.state.det.id, s.reason, s.minutes]);
+            if (r && r.data) { s.d = r.data; }
+            s.open = false;
+            s.reason = "";
+            if (r && r.url) { window.open(r.url, "_blank"); }
+            this.notif.add(
+                _t("A support session is open. It ends by itself, and the "
+                   + "customer can read every screen you visit."),
+                { type: "success" });
+            await this.loadSupport();
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The session was not opened.")),
+                           { type: "danger" });
+        } finally {
+            s.busy = "";
+        }
+    }
+
+    async endSupport(accessId) {
+        const s = this.state.sup;
+        s.busy = "end";
+        try {
+            const r = await this.orm.call("pb.tenants", "support_end",
+                                          [this.state.det.id, accessId || null]);
+            if (r && r.data) { s.d = r.data; }
+            this.notif.add(_t("The session is over. Their next click lands on "
+                              + "a page saying so."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That could not be ended.")),
+                           { type: "danger" });
+        } finally {
+            s.busy = "";
+        }
+    }
+
+    toggleSupRow(id) {
+        this.state.sup.openRow = this.state.sup.openRow === id ? null : id;
+    }
+
+    supScreenLabel(screen) {
+        const title = (screen.title || "")
+            .replace(/\s*[|·-]\s*Payobook\s*$/i, "");
+        return title || screen.action || "";
     }
 
     backToFleet() {
