@@ -1,6 +1,7 @@
 # FLEET program — shipping to the fleet, and running it like a SaaS
 
-Status: ACTIVE (started 2026-09-03). Source of the gap list: `docs/SAAS_RELEASE_STRATEGY.html`
+Status: **COMPLETE 2026-09-04** — all six phases live; read `FLEET_CLOSEOUT.md` first (owner
+decisions, debts). Started 2026-09-03. Source of the gap list: `docs/SAAS_RELEASE_STRATEGY.html`
 ("Shipping to the Fleet"). Owner picked the phased Fable-designs / Opus-builds cycle for the whole
 stream and excluded three gaps (1 off-box backups, 2 restore drill, 11 sandbox). Everything else
 in that document's PRIORITIES section is in scope here.
