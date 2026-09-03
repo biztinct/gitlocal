@@ -18,6 +18,9 @@
           <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'platform'" t-on-click="refreshFleetHealth">
             <t t-out="ic('refresh',15)"/> Refresh health
           </button>
+          <button class="pbim-btn ghost" t-on-click="() => this.openNotice('all')">
+            <t t-out="ic('megaphone',15)"/> Send a notice
+          </button>
           <button class="pbim-btn outline tnx-sync-btn" t-on-click="openSync">
             <t t-out="ic('layers',15)"/> In step with master
             <span t-if="state.data.drift_total" class="tnx-count" t-esc="state.data.drift_total"/>
@@ -657,6 +660,28 @@
                 <t t-else="">never — the button is on the "In step with master" screen</t>
               </b>
             </div>
+            <!-- FLEET P2A. Zero dead ends: three states, each with its own
+                 next step, and a customer that cannot be reached says why. -->
+            <div class="tnx-rev-row"><span>Notice</span>
+              <b>
+                <t t-if="d.notice">
+                  <span t-attf-class="pbim-badge {{ d.notice.expired ? 'muted' : (d.notice.kind === 'maintenance' ? 'warn' : 'info') }}"
+                        t-esc="d.notice.expired ? 'finished' : (d.notice.kind === 'maintenance' ? 'planned update' : 'information')"/>
+                  <span class="tnx-notice-ttl" t-esc="d.notice.title"/>
+                  <span t-if="d.notice.range" class="tnx-sync-when" t-esc="d.notice.range"/>
+                  <a href="#" class="tnx-more" t-on-click.prevent="() => this.openNotice(d.id)">replace</a>
+                  <a href="#" class="tnx-danger-link" t-on-click.prevent="() => this.clearNotice(d.id)">take it down</a>
+                </t>
+                <t t-elif="d.tenancy_linked === false">
+                  <span class="tnx-sync-err bad">This customer cannot be sent messages yet.</span>
+                  <a href="#" class="tnx-more" t-on-click.prevent="openSync">bring it in step</a>
+                </t>
+                <t t-else="">
+                  nothing showing —
+                  <a href="#" class="tnx-more" t-on-click.prevent="() => this.openNotice(d.id)">send a notice to this customer</a>
+                </t>
+              </b>
+            </div>
             <div class="tnx-rev-row"><span>Staging copy</span>
               <b t-if="d.staging_exists" class="tnx-staging-on">
                 <t t-esc="d.staging_db"/> — <a href="#" t-on-click.prevent="() => this.openUrl(d.staging_url)">open</a> ·
@@ -769,6 +794,154 @@
           </div>
         </div>
       </t>
+    </div>
+
+    <!-- ============================================== SEND A NOTICE ==============================================
+         A scrim over whatever view opened it, because a message is composed
+         ABOUT something the owner is looking at — a customer's page, or the
+         whole fleet — and leaving that screen to write it loses the context.
+
+         THE HERO IS THE PREVIEW. It is not a rendering of the bar, it IS the
+         bar: <PbTenancyBar/> straight out of the module the customer runs, so
+         the sentence approved here is the sentence delivered. -->
+    <div t-if="state.notice.open" class="pbim-modal-scrim" t-on-click="closeNotice">
+      <div class="pbim-modal is-narrow tnx-notice" t-on-click.stop="() => {}">
+        <div class="pbim-modal__head">
+          <span class="tnx-notice-ic"><t t-out="ic('megaphone',18)"/></span>
+          <div>
+            <div class="pbim-modal__ttl">Send a notice</div>
+            <div class="pbim-modal__sub">It appears at the top of every page, for everybody logged in.</div>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="closeNotice" title="Close"><t t-out="ic('x',15)"/></button>
+        </div>
+
+        <div class="pbim-modal__body tnx-notice-body">
+
+          <!-- ===== it went ===== -->
+          <div t-if="state.notice.result" class="tnx-notice-done">
+            <span class="tnx-notice-done-ic"><t t-out="ic('checkCircle',30)"/></span>
+            <b t-esc="state.notice.result.message"/>
+            <span t-if="state.notice.result.sent.length" class="tnx-notice-done-who">
+              <t t-esc="state.notice.result.sent.join(', ')"/>
+            </span>
+            <span class="tnx-notice-done-sub">
+              Anyone with a page already open sees it within a minute. It comes
+              down on its own when the window closes.
+            </span>
+            <div t-if="state.notice.result.skipped.length" class="tnx-notice-skip">
+              <b>Not delivered to:</b>
+              <div t-foreach="state.notice.result.skipped" t-as="sk" t-key="sk.name" class="tnx-notice-skip-row">
+                <span t-esc="sk.name"/><small t-esc="sk.reason"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== the form ===== -->
+          <t t-else="">
+            <div t-if="state.notice.error" class="tnx-notice-err">
+              <t t-out="ic('alert',15)"/> <span t-esc="state.notice.error"/>
+            </div>
+
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Who reads it</span>
+              <select class="pplw-in" t-model="state.notice.target">
+                <option value="all">Every live customer</option>
+                <!-- The loop variable is NOT called `lt`. OWL's template
+                     compiler rewrites that name to a literal `<` in the code it
+                     generates (ledger F15), and the whole cockpit then fails to
+                     compile with "Unexpected token" and a blank screen.
+
+                     And there is no `String(...)` anywhere in this file: a
+                     template expression is compiled against the COMPONENT, not
+                     against the window, so a built-in reads as `ctx.String` and
+                     throws the moment the branch is first rendered (F16). The
+                     value is coerced on the component side instead. -->
+                <option t-foreach="state.notice.live" t-as="cust" t-key="cust.id"
+                        t-att-value="cust.id">
+                  <t t-esc="cust.name"/><t t-if="!cust.linked"> — cannot be reached yet</t>
+                </option>
+              </select>
+              <small class="tnx-notice-help">
+                Your own platform database is never sent one — this is where they go out from.
+              </small>
+            </label>
+
+            <div class="tnx-notice-f">
+              <span class="pplw-label">What kind of message</span>
+              <div class="pbim-seg tnx-notice-seg">
+                <button t-attf-class="pbim-segbtn {{ state.notice.kind === 'maintenance' ? 'on' : '' }}"
+                        t-on-click="() => state.notice.kind = 'maintenance'">
+                  <t t-out="ic('wrench',14)"/> Planned update
+                </button>
+                <button t-attf-class="pbim-segbtn {{ state.notice.kind === 'info' ? 'on' : '' }}"
+                        t-on-click="() => state.notice.kind = 'info'">
+                  <t t-out="ic('info',14)"/> Information
+                </button>
+              </div>
+            </div>
+
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Title <small>— the line people read</small></span>
+              <input class="pplw-in" maxlength="90" t-model="state.notice.title"
+                     placeholder="Payobook will be updated tonight"/>
+            </label>
+
+            <label class="tnx-notice-f">
+              <span class="pplw-label">Message <small>— optional, one short sentence</small></span>
+              <textarea class="pplw-in tnx-notice-ta" rows="2" maxlength="400"
+                        t-model="state.notice.text"
+                        placeholder="You may notice a short pause."/>
+            </label>
+
+            <div class="tnx-notice-when">
+              <label class="tnx-notice-f">
+                <span class="pplw-label">From</span>
+                <input class="pplw-in" type="datetime-local" t-model="state.notice.starts_at"/>
+              </label>
+              <label class="tnx-notice-f">
+                <span class="pplw-label">Until <small>— it disappears on its own</small></span>
+                <input class="pplw-in" type="datetime-local" t-model="state.notice.ends_at"/>
+              </label>
+            </div>
+
+            <!-- ===== the hero: exactly what they will see ===== -->
+            <div class="tnx-notice-prev">
+              <div class="tnx-notice-prev-h"><t t-out="ic('eye',13)"/> Exactly what they will see</div>
+              <div class="tnx-notice-prev-frame">
+                <PbTenancyBar notice="previewNotice" preview="true"/>
+              </div>
+              <div class="tnx-notice-prev-note">
+                The time is shown in each reader's own clock, so somebody in a
+                different country sees their own hour, not yours.
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <t t-if="state.notice.result">
+            <span class="pbim-modal__sp"/>
+            <button class="pbim-btn primary" t-on-click="closeNotice">Done</button>
+          </t>
+          <t t-else="">
+            <span class="tnx-notice-reach">
+              <t t-if="noticeAudience.count">
+                Reaches <b t-esc="noticeAudience.count"/> customer<t t-if="noticeAudience.count > 1">s</t>:
+                <t t-esc="noticeAudience.names.join(', ')"/>
+              </t>
+              <t t-else=""><span class="tnx-sync-err bad" t-esc="noticeBlocker"/></t>
+            </span>
+            <span class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="closeNotice">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!noticeValid"
+                    t-att-title="noticeBlocker" t-on-click="sendNotice">
+              <t t-if="state.notice.busy"><span class="pbim-spin tnx-minispin"/> Sending…</t>
+              <t t-else=""><t t-out="ic('send',15)"/> Send it</t>
+            </button>
+          </t>
+        </div>
+      </div>
     </div>
   </div>
 </t>

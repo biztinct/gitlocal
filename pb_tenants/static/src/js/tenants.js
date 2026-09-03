@@ -7,6 +7,13 @@ import { ConnectionLostError } from "@web/core/network/rpc";
 import { ic as kitIc } from "@pb_import_kit/js/import_icons";
 import { TIC, tic } from "@pb_tenants/js/pbtn_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+// THE PREVIEW IS THE BAR. Not a drawing of it, not a lookalike styled to
+// match — the same component the customer's web client mounts, with the same
+// stylesheet and the same time-phrase renderer. A preview that is a separate
+// implementation is a preview that goes quietly out of date the first time
+// somebody changes a padding, and the owner then approves a sentence nobody
+// will ever see.
+import { PbTenancyBar } from "@pb_tenancy/js/tenancy_banner";
 import { _t } from "@web/core/l10n/translation";
 
 const COUNTRIES = [
@@ -20,7 +27,7 @@ const STATE_BADGE = {
 
 export class PbTenants extends Component {
     static template = "pb_tenants.PbTenants";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbTenancyBar };
     static props = ["*"];
 
     setup() {
@@ -45,6 +52,8 @@ export class PbTenants extends Component {
             det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false },
             // "In step with master": read-only until somebody presses the button.
             sync: this._freshSync(),
+            // The notice composer. Closed until somebody opens it.
+            notice: this._freshNotice(),
         });
         this._tick = null;
         // DOCUMENT, IN THE CAPTURE PHASE, AND BOTH HALVES ARE LOAD-BEARING.
@@ -432,6 +441,200 @@ export class PbTenants extends Component {
         });
     }
 
+    // ------------------------------------------------- telling a customer
+    //
+    // THE ONE PLACE THE PLATFORM SPEAKS TO PEOPLE WHO ARE NOT ITS OWNER. Every
+    // word typed here lands at the top of every page of a payroll office that
+    // is trying to get paid this week, so the composer is built around one
+    // idea: nothing is sent that the sender has not already seen exactly as it
+    // will look. The preview below the form IS the bar.
+
+    _freshNotice() {
+        return {
+            open: false, busy: false, target: "all",
+            kind: "maintenance", title: "", text: "",
+            starts_at: "", ends_at: "",
+            live: [], result: null, error: "",
+        };
+    }
+
+    /**
+     * Open the composer, pointed at everybody or at one customer.
+     *
+     * `target` is "all" or a customer id as a string — the same two shapes the
+     * server takes, so nothing is translated between here and there.
+     */
+    async openNotice(target = "all") {
+        // A tenant id arrives as a number from the detail screen and as the
+        // string "all" from the fleet head; the server takes either, and the
+        // `<select>` only ever hands back strings — so everything is a string
+        // from here on, coerced HERE rather than in the template (F16).
+        target = String(target);
+        const fresh = this._freshNotice();
+        fresh.open = true;
+        fresh.target = String(target);
+        this.state.notice = fresh;
+        // EVERYTHING AFTER THIS POINT WRITES THROUGH `this.state.notice`, NOT
+        // through `fresh`. The two are the same data, but only the one read
+        // back off the state is the reactive proxy: mutating the raw object
+        // changes the value and tells nobody, so the two date boxes stayed
+        // visibly empty while holding the defaults the server had just sent.
+        try {
+            const d = await this.orm.silent.call("pb.tenants", "notice_compose_defaults", []);
+            const n = this.state.notice;
+            if (!n.open || n.target !== String(target)) { return; }  // closed meanwhile
+            n.starts_at = this._forInput(d.starts_at);
+            n.ends_at = this._forInput(d.ends_at);
+            n.live = d.live || [];
+        } catch (e) {
+            this.state.notice.error = this.errText(
+                e, _t("The composer could not be set up."));
+        }
+    }
+
+    closeNotice() {
+        if (this.state.notice.busy) { return; }
+        this.state.notice = this._freshNotice();
+    }
+
+    /**
+     * A stamp the server sent, as the WALL CLOCK IN FRONT OF THE PERSON TYPING.
+     *
+     * THE TIME ZONE IS THE WHOLE POINT OF THESE TWO METHODS. The server keeps
+     * every moment in UTC, and `<input type="datetime-local">` shows and
+     * returns the reader's own local time with no zone attached at all. Pass
+     * one straight into the other and the window silently moves by the
+     * offset — seven hours, here — and nobody sees it until a customer's bar
+     * announces maintenance in the middle of their morning (F17).
+     */
+    _forInput(stamp) {
+        if (!stamp) { return ""; }
+        const d = new Date(String(stamp).replace(" ", "T") + "Z");
+        if (isNaN(d.getTime())) { return ""; }
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+             + `T${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    /** The reverse: what the person typed, as the UTC stamp the server stores. */
+    _toUtc(local) {
+        if (!local) { return ""; }
+        const d = new Date(local);          // no zone suffix -> read as LOCAL
+        if (isNaN(d.getTime())) { return ""; }
+        return d.toISOString().slice(0, 19).replace("T", " ");
+    }
+
+    /**
+     * The notice as the customer will receive it, rebuilt on every keystroke.
+     *
+     * A getter and NOT stored state: it is derived from three inputs and OWL
+     * recomputes it when they change. Its `id` is a constant, because the
+     * preview is never dismissed and the real id is minted by the server at the
+     * moment of sending.
+     */
+    get previewNotice() {
+        const n = this.state.notice;
+        return {
+            id: "preview",
+            kind: n.kind,
+            title: n.title.trim() || _t("Your message goes here"),
+            text: n.text.trim(),
+            // Converted to UTC exactly as the send will convert them, so the
+            // phrase under the form is the phrase the customer will read.
+            starts_at: this._toUtc(n.starts_at),
+            ends_at: this._toUtc(n.ends_at),
+        };
+    }
+
+    /** Who this send reaches, in a sentence — checked before the button, not after. */
+    get noticeAudience() {
+        const n = this.state.notice;
+        if (n.target === "all") {
+            const linked = n.live.filter((t) => t.linked);
+            const cold = n.live.filter((t) => !t.linked);
+            return {
+                count: linked.length,
+                names: linked.map((t) => t.name),
+                cold: cold.map((t) => t.name),
+            };
+        }
+        const one = n.live.find((t) => String(t.id) === n.target);
+        return {
+            count: one && one.linked ? 1 : 0,
+            names: one ? [one.name] : [],
+            cold: one && !one.linked ? [one.name] : [],
+        };
+    }
+
+    get noticeValid() {
+        const n = this.state.notice;
+        if (!n.title.trim() || n.busy) { return false; }
+        if (n.starts_at && n.ends_at && n.ends_at <= n.starts_at) { return false; }
+        return this.noticeAudience.count > 0;
+    }
+
+    /** Why the send button is off — never a disabled control with no reason. */
+    get noticeBlocker() {
+        const n = this.state.notice;
+        if (!n.title.trim()) { return _t("Give the message a title."); }
+        if (n.starts_at && n.ends_at && n.ends_at <= n.starts_at) {
+            return _t("The message has to finish after it starts.");
+        }
+        if (this.noticeAudience.count === 0) {
+            return this.noticeAudience.cold.length
+                ? _t("Nobody here can receive it yet — bring them in step first.")
+                : _t("There are no live customers to send it to.");
+        }
+        return "";
+    }
+
+    async sendNotice() {
+        const n = this.state.notice;
+        if (!this.noticeValid) { return; }
+        n.busy = true;
+        n.error = "";
+        try {
+            n.result = await this.orm.call("pb.tenants", "notice_send", [
+                n.target === "all" ? "all" : parseInt(n.target, 10),
+                n.kind, n.title, n.text,
+                this._toUtc(n.starts_at), this._toUtc(n.ends_at),
+            ]);
+            this.notif.add(n.result.message, { type: "success" });
+            await this.loadFleet();
+            if (this.state.view === "detail" && this.state.det.id) {
+                await this._detCall("get_tenant", [this.state.det.id], "notice");
+            }
+        } catch (e) {
+            n.error = this.errText(e, _t("The message was not sent."));
+        } finally {
+            n.busy = false;
+        }
+    }
+
+    clearNotice(target) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Take the message down"),
+            body: _t("The bar disappears from their pages within a minute. " +
+                     "Nothing else changes."),
+            confirmLabel: _t("Take it down"),
+            confirm: async () => {
+                try {
+                    const r = await this.orm.call("pb.tenants", "notice_clear",
+                        [target === "all" ? "all" : parseInt(target, 10)]);
+                    this.notif.add(r.message, { type: "success" });
+                    await this.loadFleet();
+                    if (this.state.view === "detail" && this.state.det.id) {
+                        await this._detCall("get_tenant", [this.state.det.id], "notice");
+                    }
+                } catch (e) {
+                    this.notif.add(this.errText(e, _t("It could not be taken down.")),
+                                   { type: "danger" });
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
     // -------------------------------------------------------- keyboard
     //
     // Two keys, and they are the two a person presses forty times an hour on
@@ -443,6 +646,9 @@ export class PbTenants extends Component {
         // A dialog owns the keyboard while it is open — Escape belongs to it.
         if (document.querySelector(".o_dialog, .modal.show")) { return; }
         if (ev.key === "Escape") {
+            // The composer is a scrim over whatever view opened it, so it owns
+            // Escape before that view does.
+            if (this.state.notice.open) { this.closeNotice(); return; }
             if (this.state.view === "sync") {
                 if (this.state.sync.result || this.state.sync.dry || this.state.sync.run) {
                     this.dismissResult();
@@ -457,6 +663,7 @@ export class PbTenants extends Component {
             return;
         }
         if (ev.key === "r" || ev.key === "R") {
+            if (this.state.notice.open) { return; }
             if (this.state.view === "sync" && !this.state.sync.busy) {
                 ev.preventDefault();
                 this.loadSync(false);
