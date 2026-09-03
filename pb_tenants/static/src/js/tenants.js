@@ -441,6 +441,10 @@ export class PbTenants extends Component {
                         _t("Release %(name)s cut.", { name: s.d.release ? s.d.release.name : "" }),
                         { type: "success" });
                     this.loadFleet();
+                    // The rings belong to a release, so a new release means the
+                    // panel above them is talking about the wrong one until it
+                    // is asked again.
+                    this.loadRollout();
                 } catch (e) {
                     this.notif.add(this.errText(e, _t("The release could not be cut.")), { type: "danger" });
                 } finally {
@@ -509,6 +513,15 @@ export class PbTenants extends Component {
     }
 
     get rollout() { return (this.state.roll.d && this.state.roll.d.current) || null; }
+
+    /** The heading over the rings. Past tense once it is over. */
+    get rolloutTitle() {
+        const r = this.rollout;
+        if (!r) { return ""; }
+        if (r.state === "done") { return _t("Release %(name)s went out", { name: r.release }); }
+        if (r.state === "aborted") { return _t("Release %(name)s was called off", { name: r.release }); }
+        return _t("Release %(name)s is going out", { name: r.release });
+    }
 
     /** The one sentence at the top of the rings: where this release has got to. */
     get rolloutHeadline() {

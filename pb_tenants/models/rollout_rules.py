@@ -174,6 +174,20 @@ def next_window(now_utc, tz, start_hour, hours):
     return _naive(todays)
 
 
+def to_local(dt, tz):
+    """A UTC moment as the naive wall clock in `tz`.
+
+    For SAYING a window out loud. The phrase on the platform owner's screen is
+    "tonight 22:00–01:00 (their time)", and the only way to get 22:00 out of a
+    renderer that formats whatever it is handed is to hand it the customer's
+    own clock rather than the server's.
+    """
+    aware = _aware(dt)
+    if aware is None:
+        return None
+    return aware.astimezone(_zone(tz)).replace(tzinfo=None)
+
+
 def window_bounds(now_utc, tz, start_hour, hours):
     """`(opens, closes)` for the next window, as naive UTC — for the notice."""
     start, span = _clean_window(start_hour, hours)
@@ -278,6 +292,45 @@ def eligible(task, now_utc):
     return window_open(now_utc, task.get('tz'),
                        task.get('maintenance_start'),
                        task.get('maintenance_hours'))
+
+
+#: Log lines that are always there and never mean the update went wrong. Each
+#: one is a substring, matched case-insensitively, and each one is here because
+#: somebody looked at it and decided it was noise — not because it was
+#: convenient. They are still RECORDED on the task; they simply do not stop a
+#: rollout.
+#:
+#: The first entry is the reason this list exists. A vendor module on this
+#: build writes one ERROR every time any database loads its registry, saying it
+#: cannot find a licence file that has never been installed. It fired on the
+#: very first rehearsal of the very first rollout and stopped it, on a copy that
+#: was in perfect health. A gate that cries wolf on every run is a gate the
+#: owner learns to click past, which is worse than no gate.
+DEFAULT_LOG_IGNORE = (
+    'License check FAILED',
+)
+
+
+def filter_errors(lines, ignore=None):
+    """Split log lines into the ones that matter and the ones that always fire.
+
+    Returns `(kept, ignored)`. `ignore` is an iterable of substrings; empty or
+    None means nothing is ignored, so the strict behaviour is always one empty
+    setting away.
+    """
+    patterns = [str(p).strip().lower() for p in (ignore or ()) if str(p).strip()]
+    kept, skipped = [], []
+    for line in (lines or ()):
+        text = str(line).lower()
+        (skipped if any(p in text for p in patterns) else kept).append(line)
+    return kept, skipped
+
+
+def parse_ignore(raw):
+    """The ignore list as the setting holds it: one substring per line."""
+    if raw is None:
+        return list(DEFAULT_LOG_IGNORE)
+    return [p.strip() for p in str(raw).splitlines() if p.strip()]
 
 
 def health_verdict(probe_code, skipped, error_lines):
@@ -444,7 +497,16 @@ def notice_for(phase, starts_at=None, ends_at=None, notice_id='preview'):
         text = "A minute or two. This page will keep working when it is done."
     else:
         raise ValueError("A rollout only sends two kinds of message.")
-    return notice_payload('maintenance', title, text,
-                          fmt_stamp(parse_stamp(starts_at)) if starts_at else '',
-                          fmt_stamp(parse_stamp(ends_at)) if ends_at else '',
-                          notice_id or 'preview')
+    payload = notice_payload('maintenance', title, text,
+                             fmt_stamp(parse_stamp(starts_at)) if starts_at else '',
+                             fmt_stamp(parse_stamp(ends_at)) if ends_at else '',
+                             notice_id or 'preview')
+    if phase == 'now':
+        # THE ONE MESSAGE A READER MAY NOT HIDE. Everything else on that bar is
+        # information they can take or leave; this one is the explanation for a
+        # pause they are about to experience. Somebody who closes it and then
+        # watches their payslip screen stall for a minute has been left with a
+        # fault instead of a notice. Read by the customer's own bar, which
+        # swaps the close button for a live dot.
+        payload['live'] = True
+    return payload

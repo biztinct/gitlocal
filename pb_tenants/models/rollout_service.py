@@ -27,7 +27,8 @@ from odoo.exceptions import UserError
 from .rollout_rules import (
     CUSTOMER_RINGS, DEFAULT_HOURS, DEFAULT_START_HOUR, DEFAULT_TZ, PRE_NOTICE_HOURS,
     RING_LABEL, RING_MEANING, RING_ORDER, advance, health_verdict, next_window,
-    notice_for, plan_tasks, watch_hours_for, window_bounds,
+    filter_errors, notice_for, parse_ignore, plan_tasks, to_local,
+    watch_hours_for, window_bounds,
 )
 from .tenancy_rules import render_range
 
@@ -141,12 +142,16 @@ class PbTenantsRollout(models.AbstractModel):
                     m = LOG_RE.match(line)
                     if not m:
                         continue
-                    ts, level, db, _logger_name, msg = m.groups()
+                    ts, level, db, logger_name, msg = m.groups()
                     if db != dbname or level not in LOG_BAD_LEVELS:
                         continue
                     if ts < stamp:
                         continue
-                    out.append('%s %s %s' % (ts, level, msg[:220]))
+                    # The logger's name is kept because it is the only thing on
+                    # the line that says WHICH part of the product complained,
+                    # which is the first question anybody reading it asks.
+                    out.append('%s %s %s: %s'
+                               % (ts, level, logger_name.strip(), msg[:200]))
         except Exception:                            # noqa: BLE001
             _logger.warning("pb_tenants: could not read %s", path, exc_info=True)
             return None
@@ -161,20 +166,46 @@ class PbTenantsRollout(models.AbstractModel):
         code, ms = (None, -1)
         if host:
             code, ms = self._probe(host)
-        errors = self._log_errors_since(dbname, since)
+        raw = self._log_errors_since(dbname, since)
+        # Lines that are always there are set aside rather than deleted: they
+        # stay on the task where somebody can read them, they simply do not
+        # stop a rollout. Emptying the setting restores the strict behaviour.
+        errors, ignored = filter_errors(raw or [], self._log_ignore())
         ok, reason = health_verdict(code, skipped,
-                                    errors if errors is not None else [])
-        if errors is None and ok:
+                                    errors if raw is not None else [])
+        if raw is None and ok:
             reason = reason or _("The server log could not be read, so nothing "
                                  "could be checked in it.")
         return {
             'ok': bool(ok), 'reason': reason,
             'probe_code': code, 'probe_ms': ms, 'host': host or '',
             'skipped': -1 if skipped is None else int(skipped),
-            'errors': (errors or [])[:LOG_KEEP],
-            'error_count': -1 if errors is None else len(errors),
+            'errors': errors[:LOG_KEEP],
+            'error_count': -1 if raw is None else len(errors),
+            'ignored': ignored[:LOG_KEEP],
+            'ignored_count': len(ignored),
             'checked_at': fields.Datetime.now().isoformat(sep=' ', timespec='seconds'),
         }
+
+    def _log_ignore(self):
+        """Log lines that are always there. A setting, so it needs no deploy.
+
+        `pb_tenants.health_ignore` — one substring per line. Absent means the
+        list that ships with the product; present and empty means ignore
+        nothing, which is the setting to use when something is being chased.
+        """
+        # READ THE ROW, NOT `get_param`, AND BOTH HALVES OF THAT COST A LIVE
+        # REHEARSAL. `get_param` answers **False** for a key that is not there,
+        # which `parse_ignore` reads as the one-line list ["False"] — a list
+        # that ignores nothing while looking exactly like a working one. And
+        # `get_param` ends in `or default`, so a value deliberately set to
+        # empty comes back as the default as well: through that method "ignore
+        # nothing" cannot be said at all. The row itself can say both.
+        row = self.env['ir.config_parameter'].sudo().search(
+            [('key', '=', 'pb_tenants.health_ignore')], limit=1)
+        if not row:
+            return parse_ignore(None)
+        return parse_ignore(row.value or '')
 
     # ============================================================ planning
     def _rehearsal_source(self):
@@ -233,7 +264,14 @@ class PbTenantsRollout(models.AbstractModel):
                 opens, closes = window_bounds(
                     now, tz, t.maintenance_start or DEFAULT_START_HOUR,
                     t.maintenance_hours or DEFAULT_HOURS)
-                row['when'] = render_range(opens, closes, now)
+                # SAID IN THEIR CLOCK, not the platform's. "Tonight
+                # 22:00-01:00" is the sentence the customer's own bar will
+                # show them; the owner reading this plan has to be looking at
+                # the same window they are, or the two screens disagree about
+                # what was scheduled (ledger F17, the other direction).
+                row['when'] = render_range(to_local(opens, tz),
+                                           to_local(closes, tz),
+                                           to_local(now, tz))
                 row['tz'] = tz
                 if not self._tenancy_installed(t.slug):
                     missing_link.append(t.name)
@@ -247,14 +285,30 @@ class PbTenantsRollout(models.AbstractModel):
             'tasks': rows,
             'excluded': plan['excluded'],
             'warnings': plan['warnings'],
-            'blockers': self._rollout_blockers(rel, missing_link),
+            'blockers': self._rollout_blockers(rel, missing_link, plan),
             'watch_canary': 24, 'watch_early': 48,
             'ring_meaning': RING_MEANING,
         }
 
-    def _rollout_blockers(self, rel, missing_link=None):
+    def _rollout_blockers(self, rel, missing_link=None, plan=None):
         """Everything that stops Start, each with the next step in the sentence."""
         out = []
+        # RAIL R4, ENFORCED RATHER THAN HOPED FOR. Found in live validation:
+        # with the only usable backup file moved aside, the planner shrugged,
+        # left the practice run out and offered to update a real customer with
+        # nobody having rehearsed anything. A warning is not enough for this
+        # one — the practice run is the reason the first customer is not the
+        # experiment.
+        if plan is not None:
+            customers = [t for t in plan['tasks'] if t['ring'] in CUSTOMER_RINGS]
+            rehearsal = any(t['ring'] == 'rehearsal' for t in plan['tasks'])
+            if customers and not rehearsal:
+                out.append(_(
+                    "There is no backup to practise on, and a release never "
+                    "reaches a customer without a practice run first. Take a "
+                    "backup of %(who)s (their page, Backups, \"Backup now\") "
+                    "and start again.",
+                    who=customers[0]['label']))
         if not (rel.notes or '').strip():
             out.append(_("Write what changed on this release first — the "
                          "customers read it. The notes box is just above."))
@@ -299,7 +353,7 @@ class PbTenantsRollout(models.AbstractModel):
                 t = self.env['pb.tenant'].sudo().browse(task['tenant_id'])
                 if not self._tenancy_installed(t.slug):
                     missing.append(t.name)
-        blockers = self._rollout_blockers(rel, missing)
+        blockers = self._rollout_blockers(rel, missing, plan)
         if blockers:
             raise UserError('\n\n'.join(blockers))
 
@@ -521,14 +575,42 @@ class PbTenantsRollout(models.AbstractModel):
         src = task.source_tenant_id
         if not src:
             raise UserError(_("There is no customer to practise on."))
-        rollout.log_line(_("Restoring a throwaway copy of %s…") % src.name)
-        restored = self.restore_staging(src.id)
-        rollout.log_line(_("Copy restored from %s.") % restored.get('from_backup', '?'))
         res, health = {}, {}
+        # THE RESTORE IS INSIDE THE `try`, and that is rail R4 rather than
+        # tidiness: a restore that falls over half way leaves a part-built
+        # database behind, and the `finally` below is the only thing that takes
+        # it away again. With the restore outside, a broken backup left a
+        # multi-gigabyte corpse on a box with 1.9 GB of memory.
         try:
+            rollout.log_line(_("Restoring a throwaway copy of %s…") % src.name)
+            try:
+                restored = self.restore_staging(src.id)
+            except Exception as exc:                 # noqa: BLE001
+                # The framework's own words here are "Couldn't restore
+                # database", which tells the owner nothing about what to do
+                # next. The backup file is the thing to look at, and there is
+                # a button that makes a fresh one.
+                _logger.exception("pb_tenants: rehearsal restore failed")
+                raise UserError(_(
+                    "The practice copy of %(who)s could not be made from "
+                    "their last backup — the file may be damaged or "
+                    "half-written. Take a fresh backup of %(who)s (their "
+                    "page, Backups, \"Backup now\") and try this step again. "
+                    "Nothing has been done to %(who)s themselves.",
+                    who=src.name)) from exc
+            rollout.log_line(_("Copy restored from %s.")
+                             % restored.get('from_backup', '?'))
+            # THE CLOCK STARTS AFTER THE RESTORE, NOT BEFORE IT — and this cost
+            # a rehearsal to learn. Restoring a database writes an ERROR of its
+            # own ("bad query … FROM ir_module_module") because the framework
+            # asks a half-built database what version it is on. That is the
+            # restore talking, not the update, and counting it failed a
+            # practice run whose copy was in perfect health. What is being
+            # judged here is what the UPDATE did.
+            since = fields.Datetime.now()
             res = self._run_unit(task.target_db)
             host = '%s.%s' % (task.target_db, self._base_domain())
-            health = self._health_gate(task.target_db, started,
+            health = self._health_gate(task.target_db, since,
                                        res.get('skipped_count'), host)
         finally:
             # THE COPY GOES, WHATEVER HAPPENED. A failed rehearsal that left
@@ -621,7 +703,8 @@ class PbTenantsRollout(models.AbstractModel):
         try:
             payload = notice_for('now', notice_id='ro%s-%s' % (task.rollout_id.id, task.id))
             self.notice_send(t.id, payload['kind'], payload['title'],
-                             payload['text'], '', '')
+                             payload['text'], '', '',
+                             live=bool(payload.get('live')))
         except Exception:                            # noqa: BLE001
             _logger.warning("pb_tenants: could not put the bar up on %s",
                             t.slug, exc_info=True)
@@ -828,10 +911,23 @@ class PbTenantsRollout(models.AbstractModel):
         """Everything the rings need. Read-only, and cheap enough to poll."""
         self._require_admin()
         R = self.env['pb.rollout'].sudo()
-        current = R.search([('state', 'in', ('running', 'waiting', 'paused', 'draft'))],
-                           order='id desc', limit=1)
-        past = R.search([('state', 'in', ('done', 'aborted'))], limit=8)
         rel = self.env['pb.release'].sudo().current()
+        # WHAT "CURRENT" MEANS, AND WHY IT IS NOT "STILL RUNNING". A rollout
+        # that has just finished is the thing the person watching it most wants
+        # to see: "Release X is on 1 of 1 customers, took 14 minutes." Scoping
+        # this to unfinished rollouts made the whole panel vanish the second
+        # the last wave landed, and the screen went back to inviting them to
+        # roll out a release they had just rolled out. So: whatever is still
+        # going anywhere, else the last rollout OF THE CURRENT RELEASE, which
+        # stays up until a new release is cut.
+        current = R.search(
+            [('state', 'in', ('running', 'waiting', 'paused', 'draft'))],
+            order='id desc', limit=1)
+        if not current and rel:
+            current = R.search([('release_id', '=', rel.id)],
+                               order='id desc', limit=1)
+        past = R.search([('id', '!=', current.id or 0),
+                         ('state', 'in', ('done', 'aborted'))], limit=8)
         return {
             'current': self._rollout_brief(current) if current else None,
             'past': [{
@@ -950,7 +1046,9 @@ class PbTenantsRollout(models.AbstractModel):
             'maintenance_start': t.maintenance_start or DEFAULT_START_HOUR,
             'maintenance_hours': t.maintenance_hours or DEFAULT_HOURS,
             'tz': tz,
-            'next_window': render_range(opens, closes, now),
+            'next_window': render_range(to_local(opens, tz),
+                                        to_local(closes, tz),
+                                        to_local(now, tz)),
             'next_window_at': opens.isoformat(sep=' ', timespec='minutes'),
             'release': t.release_id.name or '',
             'release_state': t.release_state,

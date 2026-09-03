@@ -60,8 +60,22 @@ export class PbTenancyBar extends Component {
     }
 
     get label() {
+        if (this.props.notice.live) { return _t("Happening now"); }
         return this.kind === "maintenance"
             ? _t("Planned update") : _t("From Payobook");
+    }
+
+    /**
+     * An update that is happening RIGHT NOW cannot be hidden.
+     *
+     * Every other message on this bar is something the reader may take or
+     * leave. This one is the explanation for a pause they are about to sit
+     * through, so somebody who closes it is left looking at a fault instead of
+     * a notice. It carries `live` and comes down on its own the moment the
+     * work is finished — which is a minute or two, not a day.
+     */
+    get dismissable() {
+        return !!this.props.onDismiss && !this.props.notice.live;
     }
 }
 
