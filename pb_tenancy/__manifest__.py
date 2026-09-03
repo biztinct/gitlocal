@@ -5,7 +5,7 @@
     'name': 'Payobook Platform Link',
     'summary': "Tells this database which Payobook release it is on, shows notices "
                "from the platform, and lists what changed in each update.",
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -16,16 +16,22 @@
     # `pb_hub` is named explicitly although `pb_settings` already pulls it in:
     # What's new imports its back chip, and a module should declare what it
     # imports rather than leaning on somebody else's graph.
-    'depends': ['web', 'pb_import_kit', 'pb_hub', 'pb_settings'],
-    # NO data files on purpose. This module seeds nothing, creates no scheduled
-    # job and adds no rail item — everything it shows comes from five settings
-    # the platform writes and it reads.
-    'data': [],
+    # `pb_sidebar` is named explicitly although `pb_settings` already pulls it
+    # in: FLEET P4 adds a column to the menu's records and a condition to its
+    # one visibility rule, and a module that extends a model should say so.
+    'depends': ['web', 'pb_import_kit', 'pb_hub', 'pb_settings', 'pb_sidebar'],
+    # ONE data file, and it seeds no records of its own: it calls a method that
+    # tells five existing menu entries which part of the product they belong
+    # to. Still no scheduled job, still no rail item of its own.
+    'data': [
+        'data/pb_sidebar_features.xml',
+    ],
     'assets': {
         'web.assets_backend': [
             'pb_tenancy/static/src/scss/tenancy.scss',
             'pb_tenancy/static/src/js/tenancy_range.js',
             'pb_tenancy/static/src/js/tenancy_service.js',
+            'pb_tenancy/static/src/js/tenancy_features.js',
             'pb_tenancy/static/src/js/tenancy_banner.js',
             'pb_tenancy/static/src/js/whats_new.js',
             'pb_tenancy/static/src/js/tenancy_settings.js',

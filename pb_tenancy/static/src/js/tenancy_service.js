@@ -37,6 +37,13 @@ const LS_SEEN_RELEASE = "pb_tenancy.seen_release";
 const EMPTY = {
     release: "", release_date: "", releases: [], notice: null,
     pushed_at: "", is_master: false,
+    // FLEET P4. EMPTY MAPS MEAN EVERYTHING IS SWITCHED ON, and they are the
+    // starting point on purpose — a page painted before the first answer
+    // arrives must show the whole product, not none of it. `apply()` overwrites
+    // the whole object from EMPTY on every read, so a key the server stops
+    // sending goes back to "on" rather than lingering as a stale "off".
+    features: {}, feature_mode: {}, feature_lock_text: {},
+    features_known: false,
 };
 
 /** localStorage, but a private window is not an error. */

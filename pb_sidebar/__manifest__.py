@@ -21,7 +21,7 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
     # says this is not an increment: the rail a user opens tomorrow is not the
     # rail they closed today.
     # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes.
-    'version': '19.0.3.1.0',
+    'version': '19.0.3.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
