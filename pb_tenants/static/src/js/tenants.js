@@ -2262,7 +2262,7 @@ export class PbTenants extends Component {
 
     _freshSup() {
         return { d: null, busy: "", open: false, reason: "", minutes: 120,
-                 openRow: null };
+                 openRow: null, staging: false };
     }
 
     async loadSupport(quiet = true) {
@@ -2337,6 +2337,17 @@ export class PbTenants extends Component {
         s.open = true;
         s.reason = "";
         s.minutes = 120;
+        // RAIL R4. When a practice copy exists, that is what the dialog offers
+        // FIRST — the whole programme rehearses before it touches a real
+        // customer, and a default that has to be remembered is a default that
+        // will not be.
+        s.staging = !!(this.state.det.d && this.state.det.d.staging_exists);
+    }
+
+    setSupStaging(on) { this.state.sup.staging = !!on; }
+
+    get supStagingAvailable() {
+        return !!(this.state.det.d && this.state.det.d.staging_exists);
     }
 
     closeSupportDialog() { this.state.sup.open = false; }
@@ -2358,14 +2369,17 @@ export class PbTenants extends Component {
         try {
             const r = await this.orm.call(
                 "pb.tenants", "support_open",
-                [this.state.det.id, s.reason, s.minutes]);
+                [this.state.det.id, s.reason, s.minutes, s.staging]);
             if (r && r.data) { s.d = r.data; }
             s.open = false;
             s.reason = "";
             if (r && r.url) { window.open(r.url, "_blank"); }
             this.notif.add(
-                _t("A support session is open. It ends by itself, and the "
-                   + "customer can read every screen you visit."),
+                r && r.staging
+                    ? _t("A practice session is open on the throwaway copy. "
+                         + "Nothing here touches the customer's own data.")
+                    : _t("A support session is open. It ends by itself, and "
+                         + "the customer can read every screen you visit."),
                 { type: "success" });
             await this.loadSupport();
         } catch (e) {
@@ -2397,10 +2411,14 @@ export class PbTenants extends Component {
         this.state.sup.openRow = this.state.sup.openRow === id ? null : id;
     }
 
+    /** The same rule the customer's own page uses, so both read alike. */
     supScreenLabel(screen) {
         const title = (screen.title || "")
-            .replace(/\s*[|·-]\s*Payobook\s*$/i, "");
-        return title || screen.action || "";
+            .replace(/^\s*Payobook\s*[-|·]\s*/i, "")
+            .replace(/\s*[-|·]\s*Payobook\s*$/i, "")
+            .trim();
+        if (title && title.toLowerCase() !== "payobook") { return title; }
+        return screen.action || "";
     }
 
     backToFleet() {

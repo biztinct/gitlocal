@@ -75,6 +75,7 @@ export class PbTenancySupportBar extends Component {
         this.state = useState({ left: this._secondsLeft(), pulsed: false,
                                 leaving: false });
         this._path = "";
+        this._title = "";
         if (this.sess) {
             this._timer = setInterval(() => this.tick(), TICK_MS);
             // The first screen, reported straight away: the landing page is a
@@ -105,13 +106,22 @@ export class PbTenancySupportBar extends Component {
         this.report();
     }
 
-    /** Tell the customer's own record which screen this is, when it changes. */
+    /**
+     * Tell the customer's own record which screen this is, when it changes.
+     *
+     * THE TITLE IS WATCHED AS WELL AS THE ADDRESS, and that is not fussiness.
+     * The address changes the instant somebody clicks; the NAME of the screen
+     * arrives a moment later, when the page has drawn itself. Reporting only on
+     * the address left the customer's trail reading "Payobook" against every
+     * line, which is a record of nothing.
+     */
     report() {
         const here = window.location.pathname + window.location.search;
-        if (here === this._path) { return; }
+        const title = document.title || "";
+        if (here === this._path && title === this._title) { return; }
         this._path = here;
-        rpc("/pb_tenancy/support/seen",
-            { path: here, title: document.title || "" }, { silent: true })
+        this._title = title;
+        rpc("/pb_tenancy/support/seen", { path: here, title }, { silent: true })
             .catch((e) => console.debug("pb_tenancy: screen not recorded", e));
     }
 

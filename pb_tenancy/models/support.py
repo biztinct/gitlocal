@@ -243,6 +243,16 @@ class PbSupportAccess(models.Model):
             log = []
         title = (title or '').strip()[:120]
         if log and log[-1].get('action') == path:
+            # THE SAME SCREEN TWICE RUNNING IS ONE VISIT — and the second
+            # telling is usually the one that knows its NAME. The request seam
+            # sees the address the instant it is asked for; the bar can only say
+            # what the screen is called once the page has drawn itself. So a
+            # repeat fills in the name rather than being thrown away, and the
+            # customer reads "Employees" instead of "/bizapp/action-1078".
+            if title and log[-1].get('title') != title:
+                log[-1]['title'] = title
+                row.write({'route_log': json.dumps(log[-MAX_ROUTES:])})
+                return True
             return False
         log.append({'ts': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     'action': path, 'title': title})

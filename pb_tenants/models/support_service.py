@@ -18,8 +18,10 @@ customer's own page says so in as many words.
 
 RAIL R1 — never a silent write to a customer's database. Every one of the three
 is a person pressing a button; each writes a line into the customer's own
-provisioning log; and opening one raises an alert that lands in the daily
-summary the owner already reads. Access to somebody's payroll is never quiet.
+provisioning log; and opening one raises an alert AND emails it at once, rather
+than waiting for the fifteen-minute sweep — a session can be over before the
+sweep next looks, and the owner would then never hear about it at all. Access to
+somebody's payroll is never quiet.
 
 RAIL R5 — the write goes through `_tenant_env`, so the customer's running
 registry is told about it and the login seam sees the row on the very next
@@ -30,7 +32,9 @@ import json
 import logging
 import secrets
 
-from odoo import _, api, models
+import odoo
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.pb_tenancy.models.support import token_digest
@@ -135,6 +139,7 @@ class PbTenantsSupport(models.AbstractModel):
         """
         if tenant.state in ('decommissioned', 'draft', 'provisioning', 'error'):
             return {'allowed': False, 'linked': False, 'live': None,
+                    'pending': False,
                     'rows': [], 'blocked': _(
                         "This customer has no live database to open."),
                     'durations': _durations()}
@@ -146,6 +151,13 @@ class PbTenantsSupport(models.AbstractModel):
             'allowed': bool(allowed),
             'linked': bool(linked),
             'live': live,
+            # A LINK THAT HAS BEEN SENT BUT NOT YET FOLLOWED IS STILL SOMETHING
+            # IN FLIGHT. Reading it as "nothing is happening" closed the alert
+            # about a session in the second between the button and the tab
+            # opening — so the owner's own screen said a session had finished
+            # before it had begun.
+            'pending': bool([r for r in rows
+                             if r['state'] in ('issued', 'active')]),
             'rows': rows,
             'blocked': customer_blocker(tenant.state, linked, allowed) or '',
             'durations': _durations(),
@@ -163,14 +175,15 @@ class PbTenantsSupport(models.AbstractModel):
         self._require_admin()
         tenant = self._tenant(tenant_id)
         brief = self._support_brief(tenant)
-        if not brief['live']:
+        if not brief.get('pending'):
             self._clear_alert('support_session:%s' % tenant.slug,
                               _("The support session finished."))
         return brief
 
     # ============================================================ opening one
     @api.model
-    def support_open(self, tenant_id, reason, minutes=DEFAULT_MINUTES):
+    def support_open(self, tenant_id, reason, minutes=DEFAULT_MINUTES,
+                     on_staging=False):
         """Write a one-time row on the customer's database and return the link.
 
         THE LINK IS GOOD FOR SIXTY SECONDS, so the cockpit opens it itself, in a
@@ -181,6 +194,13 @@ class PbTenantsSupport(models.AbstractModel):
         THE TOKEN IS NOT KEPT HERE EITHER. It exists in this method's local
         variable and in the URL that goes back to the browser. What is stored,
         on their side only, is its SHA-256.
+
+        `on_staging` OPENS THE PRACTICE COPY INSTEAD (rail R4). Every phase in
+        this programme rehearses on `<slug>-staging` before it touches a real
+        customer, and `sync_bring_in_step` has taken that target since P1
+        (ledger F12). This is the same door for this button: same code, same
+        row, same login seam, on a throwaway copy of their data — and nobody is
+        alerted, because nobody's real data was opened.
         """
         self._require_admin()
         tenant = self._tenant(tenant_id)
@@ -189,8 +209,16 @@ class PbTenantsSupport(models.AbstractModel):
             minutes = int(minutes or DEFAULT_MINUTES)
         except (TypeError, ValueError):
             minutes = DEFAULT_MINUTES
-        linked = self._tenancy_installed(tenant.slug)
-        allowed = linked and self._support_allowed_on(tenant.slug)
+        dbname = tenant.slug
+        if on_staging:
+            dbname = '%s-staging' % tenant.slug
+            if not self._db_exists(dbname):
+                raise UserError(_(
+                    "There is no practice copy of this customer to open. Make "
+                    "one on the Backups tab first — \"Restore latest → "
+                    "staging\"."))
+        linked = self._tenancy_installed(dbname)
+        allowed = linked and self._support_allowed_on(dbname)
         refusal = support_refusal(tenant.state, linked, allowed, reason, minutes)
         if refusal:
             raise UserError(refusal)
@@ -198,7 +226,7 @@ class PbTenantsSupport(models.AbstractModel):
         # Belt and braces on top of the customer row (rail R2): the literal
         # database about to be written is re-asked the never question, because
         # that list is what actually runs.
-        if tenant.slug == self.env.cr.dbname or is_never(tenant.slug):
+        if dbname == self.env.cr.dbname or is_never(dbname):
             raise UserError(_(
                 "This is the platform's own database. Support sessions are "
                 "opened ON customers, not on it."))
@@ -210,7 +238,7 @@ class PbTenantsSupport(models.AbstractModel):
         def say(line, level='info'):
             notes.append(line)
 
-        with self._tenant_env(tenant.slug) as env:
+        with self._tenant_env(dbname) as env:
             # THE RECOVERY ACCOUNT IS MADE SURE OF FIRST, and it is not a
             # formality: `abm` was adopted rather than provisioned, so the rails
             # never ran there and the account genuinely was not present on the
@@ -221,30 +249,87 @@ class PbTenantsSupport(models.AbstractModel):
                 token_digest(token), reason, name, minutes)
         for note in notes:
             self._log_line(tenant, 'support', note)
-        sentence = session_sentence(name, tenant.name, minutes)
+        label = (_("%s (practice copy)") % tenant.name) if on_staging \
+            else tenant.name
+        sentence = session_sentence(name, label, minutes)
         self._log_line(tenant, 'support', '%s Reason: %s' % (sentence, reason))
-        self._raise_alert(
-            'support_session:%s' % tenant.slug, 'support_session', 'info',
-            _("Payobook support opened %s") % tenant.name,
-            _('%s Reason given: "%s". It is written on their own screen under '
-              'Settings > About Payobook > Support access, where their '
-              'administrator can read it.') % (sentence, reason),
-            tenant=tenant)
-        url = '%s/pb_tenancy/support/%s' % (self._tenant_url(tenant.slug), token)
+        # NO ALERT FOR A PRACTICE RUN. The alert exists because access to a
+        # customer's real payroll is never allowed to be quiet; a throwaway copy
+        # is not their payroll, and an alert about one would teach the owner to
+        # scroll past the ones that matter.
+        if not on_staging:
+            alert = self._raise_alert(
+                'support_session:%s' % tenant.slug, 'support_session', 'info',
+                _("Payobook support opened %s") % tenant.name,
+                _('%s Reason given: "%s". It is written on their own screen '
+                  'under Settings > About Payobook > Support access, where '
+                  'their administrator can read it.') % (sentence, reason),
+                tenant=tenant)
+            self._support_speak_now(alert)
+        url = '%s/pb_tenancy/support/%s' % (self._tenant_url(dbname), token)
         _logger.info("pb_tenants: %s", sentence)
         return {'ok': True, 'url': url, 'minutes': minutes,
+                'staging': bool(on_staging),
                 'data': self._support_brief(tenant)}
+
+    def _support_speak_now(self, alert):
+        """Say it AT ONCE, not on the next sweep.
+
+        THE FIFTEEN-MINUTE SWEEP IS THE WRONG CHANNEL FOR THIS ONE. Everything
+        else it mails is a fault that will still be a fault in a quarter of an
+        hour; a support session is a THING THAT JUST HAPPENED, and it may well
+        be over before the sweep next looks — which is exactly what happened the
+        first time this was tried, and the owner heard nothing at all about a
+        session on a live customer. So the mail goes out here, on the press of
+        the button, and the row is stamped as told so the sweep does not repeat
+        it.
+
+        THE STAMP IS WRITTEN ONLY IF THE MESSAGE WENT (ledger F40): a failed
+        send leaves the row un-stamped, so the sweep chases it fifteen minutes
+        later rather than the whole thing falling silent.
+
+        AND IT NEVER STOPS THE SESSION. A mail server that is down is not a
+        reason to refuse somebody help with their payroll — the record on the
+        customer's own database is written either way, and that is the part
+        that matters.
+        """
+        if not alert:
+            return False
+        # NOT DURING A TEST RUN. The suite opens sessions against a fabricated
+        # customer inside a transaction that is thrown away — but an email is
+        # not in that transaction, and every one of those attempts wrote an
+        # ERROR line into the server log on a live box. That log is what the
+        # rollout health gate reads (ledger F25), so a suite that fills it with
+        # its own noise is a suite that stops the next release. Guarded at the
+        # SENDER rather than in each test, exactly as F44 guards the status page.
+        if odoo.tools.config['test_enable']:
+            return False
+        try:
+            made = self._mail_new_alerts(alert)
+            if not made:
+                return False
+            res = self._send_alert_mail(made[0], made[1], kind='alert')
+            if res.get('ok'):
+                alert.write({'notified_at': fields.Datetime.now(),
+                             'notified_severity': alert.severity})
+                return True
+        except Exception:                                    # noqa: BLE001
+            _logger.warning("pb_tenants: the support session was opened but "
+                            "the note about it could not be sent",
+                            exc_info=True)
+        return False
 
     # ============================================================ ending one
     @api.model
-    def support_end(self, tenant_id, access_id=None):
+    def support_end(self, tenant_id, access_id=None, on_staging=False):
         """End a session from here. Their next click meets the finished page."""
         self._require_admin()
         tenant = self._tenant(tenant_id)
-        if not self._tenancy_installed(tenant.slug):
+        dbname = ('%s-staging' % tenant.slug) if on_staging else tenant.slug
+        if not self._tenancy_installed(dbname):
             raise UserError(_("There is nothing to end on this customer."))
         ended = 0
-        with self._tenant_env(tenant.slug) as env:
+        with self._tenant_env(dbname) as env:
             Row = env['pb.support.access'].sudo()
             rows = (Row.browse(int(access_id)).exists() if access_id
                     else Row.search([('state', '=', 'active')]))

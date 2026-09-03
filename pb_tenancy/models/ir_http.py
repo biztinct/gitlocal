@@ -66,6 +66,19 @@ SUPPORT_OPEN_PREFIXES = (
     '/favicon.ico',
 )
 
+#: The two addresses a SCREEN lives at on this build: the backend prefix
+#: (`/bizapp`, renamed by `biz_deroute`) and the one it replaced. Everything
+#: else a page load asks for is machinery.
+SCREEN_PREFIXES = ('/bizapp', '/odoo')
+
+
+def _is_screen(path):
+    """Is this address a screen somebody opened, or a piece of a page? PURE."""
+    for prefix in SCREEN_PREFIXES:
+        if path == prefix or path.startswith(prefix + '/'):
+            return True
+    return False
+
 
 class IrHttp(models.AbstractModel):
     _inherit = 'ir.http'
@@ -155,7 +168,15 @@ class IrHttp(models.AbstractModel):
         # changes the address without asking the server for anything, so this
         # sees the first page load and little else; the bar reports the rest
         # through `/pb_tenancy/support/seen`.
-        if (rule.endpoint.routing.get('type') or 'http') == 'http':
+        #
+        # AND IT RECORDS SCREENS, NOT REQUESTS. A page load is thirty requests —
+        # a stylesheet, a translations bundle, eleven avatars, a websocket — and
+        # the first version of this recorded every one of them, which turned the
+        # customer's trust page into a list of `/web/image` and made the two
+        # screens somebody actually opened impossible to find. Only the backend
+        # address counts, and only the bar can name it.
+        if (rule.endpoint.routing.get('type') or 'http') == 'http' \
+                and _is_screen(path):
             row.note_route(path)
 
     @classmethod
