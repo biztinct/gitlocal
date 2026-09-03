@@ -66,8 +66,13 @@ class TestPaletteRestrictions(TransactionCase):
 
     def test_02_a_locked_row_opens_a_dialog_and_does_not_navigate(self):
         """The whole point. The `return` has to come BEFORE the openHub call."""
+        # FLEET P4 renamed this one variable, because there are now TWO reasons
+        # a row may be locked and the older one needed a name of its own: the
+        # demo lock, and a part of the product this company has not bought.
+        # Amended at the site rather than loosened into a regex — the rule is
+        # still "the check happens, and it returns, before openHub".
         body = self.code
-        lock_at = body.find('const lock = restrictionFor(entry);')
+        lock_at = body.find('const demoLock = restrictionFor(entry);')
         open_at = body.find('openHub(actionService, {', lock_at)
         self.assertNotEqual(lock_at, -1, 'the restriction check is gone from run()')
         self.assertNotEqual(open_at, -1)
@@ -175,7 +180,12 @@ class TestPaletteRestrictions(TransactionCase):
             body = fh.read()
         self.assertIn('row.row.restricted', body)
         self.assertRegex(body, r'pbhub-pal-row__lock')
-        self.assertIn('restricted: restrictionFor(e),', self.service,
+        # FLEET P4 feeds a SECOND reason into the same field on purpose: the
+        # palette already knows how to draw a padlock and how to answer a click
+        # on one, and two mechanisms for two reasons would be two things to
+        # keep in step. The demo lock still wins where both apply.
+        self.assertIn('restricted: restrictionFor(e) || featureOf(e).text,',
+                      self.service,
                       'the row no longer carries the flag the template reads')
         self.assertFalse(
             re.search(r'restricted:\s*(true|false)\b', self.service),
