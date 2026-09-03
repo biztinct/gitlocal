@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
@@ -42,10 +42,20 @@ export class PbTenants extends Component {
             data: { platform: { checks: [], registrar_records: [] }, kpis: {}, tenants: [], steps: [] },
             checklistOpen: true,
             wiz: this._freshWiz(),
-            det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null },
-            // "In step with master": read-only until somebody presses install.
-            sync: { loaded: false, busy: "", d: null, open: {}, result: null },
+            det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false },
+            // "In step with master": read-only until somebody presses the button.
+            sync: this._freshSync(),
         });
+        this._tick = null;
+        // DOCUMENT, IN THE CAPTURE PHASE, AND BOTH HALVES ARE LOAD-BEARING.
+        // Something in the shared web client already listens for keydown on
+        // <body> and stops the event there, so a listener on `window` — the
+        // obvious place, and where this started — never heard a single key.
+        // Capturing on the document runs before anything can swallow it.
+        // The cost is that this now sees keys meant for other people, so the
+        // handler bows out for text fields and for any open dialog.
+        useExternalListener(document, "keydown", this.onKeydown.bind(this), { capture: true });
+        onWillUnmount(() => { if (this._tick) { clearInterval(this._tick); } });
         onWillStart(async () => { await this.loadFleet(); });
     }
 
@@ -226,52 +236,194 @@ export class PbTenants extends Component {
     // The whole view is READ-ONLY until somebody presses the one button, and
     // the copy says so in those words. Nothing on this screen runs on a timer,
     // on an upgrade or on a deploy: a customer's database does not gain a part
-    // of the product because something else was upgraded.
+    // of the product because something else was upgraded. The nightly check
+    // that keeps these numbers fresh only ever LOOKS.
+
+    _freshSync() {
+        return {
+            loaded: false, busy: "", d: null, open: {}, result: null,
+            notes: "", run: null, dry: null,
+        };
+    }
 
     async openSync() {
         this.state.view = "sync";
-        this.state.sync = { loaded: false, busy: "", d: null, open: {}, result: null };
+        this.state.sync = this._freshSync();
         await this.loadSync();
     }
 
-    async loadSync() {
+    async loadSync(quiet = true) {
         const s = this.state.sync;
         try {
             s.d = await this.orm.silent.call("pb.tenants", "sync_report", []);
             s.loaded = true;
+            if (!quiet) { this.notif.add(_t("Re-checked."), { type: "info" }); }
         } catch (e) {
             this.notif.add(this.errText(e, _t("The report could not be read.")), { type: "danger" });
             this.state.view = "fleet";
         }
     }
 
-    toggleSyncRow(id) {
-        this.state.sync.open[id] = !this.state.sync.open[id];
+    toggleSyncRow(key) {
+        this.state.sync.open[key] = !this.state.sync.open[key];
     }
 
-    syncInstall(t) {
+    /** The one-word standing of a database, and the colour that goes with it. */
+    releaseChip(row) {
+        const rel = this.state.sync.d && this.state.sync.d.release;
+        const name = rel ? rel.name : "";
+        if (row.state === "decommissioned") { return { cls: "muted", label: _t("closed down") }; }
+        // With no release cut there is nothing to be "on", and repeating the
+        // status word in two neighbouring columns tells the reader nothing.
+        if (!name) { return { cls: "muted", label: _t("no release yet") }; }
+        switch (row.release_state) {
+            case "on":     return { cls: "ok",    label: name || _t("in step") };
+            case "behind": return { cls: "warn",  label: name ? _t("behind %(release)s", { release: name }) : _t("behind") };
+            case "none":   return { cls: "muted", label: _t("no release yet") };
+            default:       return { cls: "muted", label: _t("not checked") };
+        }
+    }
+
+    /** How full the ring on the release banner is drawn. */
+    get releaseRing() {
+        const r = this.state.sync.d && this.state.sync.d.release;
+        const total = (this.state.sync.d && this.state.sync.d.measured) || 0;
+        const on = (this.state.sync.d && this.state.sync.d.on_release) || 0;
+        const pct = r && total ? Math.round((on / total) * 100) : 0;
+        // r=26 circle: circumference 163.4
+        return { pct, dash: `${(163.4 * pct) / 100} 163.4`, on, total };
+    }
+
+    get syncBlocked() {
+        const d = this.state.sync.d;
+        return !!(d && d.master_behind_files && d.master_behind_files.length);
+    }
+
+    /** Plain-English names for what the one call is doing, ticked on a timer. */
+    get syncStepLabels() {
+        return [
+            _t("Refreshing its list of parts"),
+            _t("Adding what is missing"),
+            _t("Bringing versions up to the master"),
+            _t("Re-reading who can do what"),
+            _t("Checking nothing was skipped"),
+            _t("Recording where it now stands"),
+        ];
+    }
+
+    async syncDryRun(row) {
         const s = this.state.sync;
-        const n = t.behind.length;
+        s.busy = row.key;
+        s.dry = null;
+        s.result = null;
+        try {
+            s.dry = await this.orm.call("pb.tenants", "sync_bring_in_step", [row.key, true]);
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The preview could not be made.")), { type: "danger" });
+        } finally {
+            s.busy = "";
+        }
+    }
+
+    syncBringInStep(row) {
+        const s = this.state.sync;
+        const add = row.to_install.length;
+        const up = row.to_update.length;
+        const bits = [];
+        if (add) { bits.push(_t("%(n)s to add", { n: add })); }
+        if (up) { bits.push(_t("%(n)s to move to the master's version (and anything that depends on them)", { n: up })); }
+        let body = _t(
+            "%(what)s, then a check that nothing was skipped. Their own data is not touched and nothing is taken away. " +
+            "This takes a minute or two.",
+            { what: bits.join(_t(" and ")) }
+        );
+        if (row.is_template) {
+            body += " " + _t("Afterwards the template's scheduled jobs are switched back off, the way a template should sit.");
+        }
         this.dialog.add(ConfirmationDialog, {
-            title: _t("Install on %(tenant)s", { tenant: t.name }),
+            title: _t("Bring %(name)s in step", { name: row.name }),
+            body,
+            confirmLabel: _t("Bring it in step"),
+            confirm: () => this._runBringInStep(row),
+            cancel: () => {},
+        });
+    }
+
+    /**
+     * One RPC, six named steps.
+     *
+     * The server does the whole unit in a single call — it has to, because the
+     * database it is working on rebuilds itself halfway through and cannot be
+     * asked questions in the meantime. So the stepper below is honest about
+     * what it is: the step names in the order they happen, ticked on a patient
+     * cadence, snapping to the real answer the moment it arrives. The copy says
+     * "a minute or two" rather than showing a percentage nobody measured.
+     */
+    async _runBringInStep(row) {
+        const s = this.state.sync;
+        s.busy = row.key;
+        s.result = null;
+        s.dry = null;
+        s.run = {
+            key: row.key, name: row.name,
+            steps: this.syncStepLabels.map((label) => ({ label, state: "pending" })),
+            idx: 0,
+        };
+        s.run.steps[0].state = "run";
+        this._tick = setInterval(() => {
+            const run = this.state.sync.run;
+            if (!run || run.idx >= run.steps.length - 1) { return; }
+            run.steps[run.idx].state = "done";
+            run.idx += 1;
+            run.steps[run.idx].state = "run";
+        }, 7000);
+        try {
+            const r = await this.orm.call("pb.tenants", "sync_bring_in_step", [row.key, false]);
+            s.result = r;
+            this.notif.add(r.message || _t("Done."), { type: r.skipped_count > 0 ? "warning" : "success" });
+        } catch (e) {
+            const msg = this.errText(e, _t("It did not finish."));
+            if (s.run) {
+                s.run.steps[s.run.idx].state = "fail";
+                s.run.error = msg;
+            }
+            this.notif.add(msg, { type: "danger" });
+        } finally {
+            clearInterval(this._tick);
+            this._tick = null;
+            if (s.run && !s.run.error) { s.run = null; }
+            s.busy = "";
+            await this.loadSync();
+            this.loadFleet();
+        }
+    }
+
+    dismissResult() {
+        this.state.sync.result = null;
+        this.state.sync.dry = null;
+        this.state.sync.run = null;
+    }
+
+    cutRelease() {
+        const s = this.state.sync;
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Cut a release"),
             body: _t(
-                "This installs %(count)s part(s) of the product on the live database " +
-                "'%(database)s'. Their data is not touched and nothing is removed. " +
-                "The platform cockpit, the demonstration data and the public site are " +
-                "never installed on a customer's database.",
-                { count: n, database: t.slug }
+                "This writes down exactly what the master runs right now and names it after today. " +
+                "From then on every customer is measured against that list instead of against a moving target."
             ),
-            confirmLabel: _t("Install %(count)s", { count: n }),
+            confirmLabel: _t("Cut it"),
             confirm: async () => {
-                s.busy = t.id;
-                s.result = null;
+                s.busy = "release";
                 try {
-                    const r = await this.orm.call("pb.tenants", "sync_install", [t.id, false]);
-                    s.result = r;
-                    this.notif.add(r.message || _t("Done."), { type: "success" });
-                    await this.loadSync();
+                    s.d = await this.orm.call("pb.tenants", "release_cut", [s.notes || ""]);
+                    s.notes = "";
+                    this.notif.add(
+                        _t("Release %(name)s cut.", { name: s.d.release ? s.d.release.name : "" }),
+                        { type: "success" });
+                    this.loadFleet();
                 } catch (e) {
-                    this.notif.add(this.errText(e, _t("The install did not finish.")), { type: "danger" });
+                    this.notif.add(this.errText(e, _t("The release could not be cut.")), { type: "danger" });
                 } finally {
                     s.busy = "";
                 }
@@ -280,11 +432,63 @@ export class PbTenants extends Component {
         });
     }
 
+    // -------------------------------------------------------- keyboard
+    //
+    // Two keys, and they are the two a person presses forty times an hour on
+    // this screen: look again, and get out of whatever is open.
+    onKeydown(ev) {
+        const el = ev.target;
+        const typing = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+        if (typing || ev.ctrlKey || ev.metaKey || ev.altKey) { return; }
+        // A dialog owns the keyboard while it is open — Escape belongs to it.
+        if (document.querySelector(".o_dialog, .modal.show")) { return; }
+        if (ev.key === "Escape") {
+            if (this.state.view === "sync") {
+                if (this.state.sync.result || this.state.sync.dry || this.state.sync.run) {
+                    this.dismissResult();
+                } else if (Object.values(this.state.sync.open).some(Boolean)) {
+                    this.state.sync.open = {};
+                } else if (!this.state.sync.busy) {
+                    this.backToFleet();
+                }
+            } else if (this.state.view === "detail") {
+                this.backToFleet();
+            }
+            return;
+        }
+        if (ev.key === "r" || ev.key === "R") {
+            if (this.state.view === "sync" && !this.state.sync.busy) {
+                ev.preventDefault();
+                this.loadSync(false);
+            } else if (this.state.view === "fleet") {
+                ev.preventDefault();
+                this.refreshFleetHealth();
+            }
+        }
+    }
+
     // ------------------------------------------------------------- detail
     async openDetail(id) {
-        this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null };
+        this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false };
         this.state.view = "detail";
         this.state.det.d = await this.orm.silent.call("pb.tenants", "get_tenant", [id]);
+    }
+
+    /**
+     * The last "bring in step" on this customer, unpacked for reading.
+     *
+     * Stored as one blob at the moment it happened, so the question "what did
+     * that button actually do" has an answer weeks later — which it did not
+     * before, when the only trace was a line in a log nobody opens.
+     */
+    get lastSync() {
+        const raw = this.state.det.d && this.state.det.d.last_sync_result;
+        if (!raw) { return null; }
+        try {
+            return JSON.parse(raw);
+        } catch {
+            return null;
+        }
     }
 
     backToFleet() {
@@ -377,6 +581,22 @@ export class PbTenants extends Component {
             this.notif.add((e && e.data && e.data.message) || _t("Offboarding failed."), { type: "danger" });
         } finally {
             det.busy = "";
+        }
+    }
+
+    /** "Assets, Employees, Contracts" — a list of parts, for a sentence. */
+    labelList(rows) {
+        return (rows || []).map((r) => r.label || r.module).join(", ");
+    }
+
+    /** The release chip on a fleet card and on the detail screen. */
+    fleetReleaseChip(t) {
+        const rel = this.state.data.release;
+        switch (t.release_state) {
+            case "on":     return { cls: "ok",    label: t.release || (rel ? rel.name : _t("in step")) };
+            case "behind": return { cls: "warn",  label: rel ? _t("behind %(release)s", { release: rel.name }) : _t("behind") };
+            case "none":   return { cls: "muted", label: _t("no release") };
+            default:       return { cls: "muted", label: _t("not checked") };
         }
     }
 

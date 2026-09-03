@@ -18,8 +18,9 @@
           <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'platform'" t-on-click="refreshFleetHealth">
             <t t-out="ic('refresh',15)"/> Refresh health
           </button>
-          <button class="pbim-btn outline" t-on-click="openSync">
+          <button class="pbim-btn outline tnx-sync-btn" t-on-click="openSync">
             <t t-out="ic('layers',15)"/> In step with master
+            <span t-if="state.data.drift_total" class="tnx-count" t-esc="state.data.drift_total"/>
           </button>
           <button class="pbim-btn primary tnx-new" t-on-click="openWizard">
             <t t-out="ic('rocket',16)"/> New tenant
@@ -118,6 +119,9 @@
             <span><t t-out="ic('briefcase',13)"/> <t t-esc="t.employees"/> employees</span>
             <span><t t-out="ic('database',13)"/> <t t-esc="t.db_size_h"/></span>
             <span class="tnx-ping"><span t-attf-class="tnx-hd {{ healthDot(t) }}"/> <t t-if="t.ping_ms >= 0"><t t-esc="t.ping_ms"/> ms</t><t t-else="">—</t></span>
+            <span t-if="t.state === 'live'" t-attf-class="tnx-relchip {{ fleetReleaseChip(t).cls }}">
+              <t t-out="ic('tag',11)"/> <t t-esc="fleetReleaseChip(t).label"/>
+            </span>
           </div>
           <div class="tnx-card-foot">
             <span class="tnx-foot-note">
@@ -297,78 +301,285 @@
           <h1 class="pbim-h1">In step with master</h1>
           <div class="pbim-sub">
             Every customer should have what the master has — except the parts that run the platform itself.
-            <b>Nothing is installed on its own.</b> This page only reports; somebody has to press the button.
+            <b>Nothing moves on its own.</b> This page reports; somebody has to press the button.
           </div>
         </div>
         <div class="tnx-head-actions">
-          <button class="pbim-btn ghost" t-on-click="loadSync"><t t-out="ic('refresh',15)"/> Re-check</button>
+          <span class="tnx-kbd"><t t-out="ic('keyboard',13)"/> <kbd>r</kbd> look again · <kbd>Esc</kbd> close</span>
+          <button class="pbim-btn ghost" t-att-disabled="!!state.sync.busy" t-on-click="() => this.loadSync(false)">
+            <t t-out="ic('refresh',15)"/> Re-check
+          </button>
         </div>
       </div>
 
       <div t-if="!state.sync.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading every database…</span></div>
       <t t-else="">
         <t t-set="s" t-value="state.sync.d"/>
-        <div class="pbim-note tnx-sync-master">
-          <t t-out="ic('database',14)"/> The master (<code t-esc="s.master_db"/>) has
-          <b><t t-esc="s.master_count"/></b> parts installed.
+
+        <!-- ===================== the hero: one sentence about the whole fleet ===================== -->
+        <div t-if="s.release" class="tnx-rel">
+          <div class="tnx-rel-ring">
+            <svg viewBox="0 0 60 60" width="66" height="66" aria-hidden="true">
+              <circle class="tnx-ring-bg" cx="30" cy="30" r="26"/>
+              <circle class="tnx-ring-fg" cx="30" cy="30" r="26" t-att-stroke-dasharray="releaseRing.dash"/>
+            </svg>
+            <span class="tnx-ring-n"><t t-esc="releaseRing.pct"/><small>%</small></span>
+          </div>
+          <div class="tnx-rel-tx">
+            <div class="tnx-rel-eyebrow"><t t-out="ic('tag',13)"/> Current release</div>
+            <h2 class="tnx-rel-name"><t t-esc="s.release.name"/></h2>
+            <div class="tnx-rel-line">
+              cut <t t-esc="s.release.captured_at"/> · <t t-esc="s.release.module_count"/> parts —
+              <b><t t-esc="s.on_release"/> of <t t-esc="s.measured"/></b>
+              <t t-if="s.measured === 1"> database is</t><t t-else=""> databases are</t> on it
+            </div>
+            <div t-if="s.release.notes" class="tnx-rel-notes" t-esc="s.release.notes"/>
+            <div t-if="s.master_ahead_of_release.length" class="tnx-rel-moved">
+              <t t-out="ic('arrowUpCircle',14)"/>
+              The master has moved on since this release —
+              <b><t t-esc="s.master_ahead_of_release.length"/></b> part(s) are newer than the photograph.
+              Cut a new one when you are ready.
+            </div>
+          </div>
+          <div class="tnx-rel-side">
+            <span class="tnx-rel-master"><t t-out="ic('database',13)"/> master <code t-esc="s.master_db"/> · <t t-esc="s.master_count"/> parts</span>
+          </div>
+        </div>
+        <div t-else="" class="tnx-rel none">
+          <span class="tnx-rel-invite-ic"><t t-out="ic('tag',22)"/></span>
+          <div class="tnx-rel-tx">
+            <h2 class="tnx-rel-name">No release has been cut yet</h2>
+            <div class="tnx-rel-line">
+              You are comparing every customer against the master exactly as it is right now — a target that moves
+              every time somebody fixes something. Cut a release and the whole fleet aims at one list.
+            </div>
+          </div>
+          <button class="pbim-btn primary" t-att-disabled="syncBlocked || state.sync.busy === 'release'" t-on-click="cutRelease">
+            <t t-out="ic('scissors',15)"/> Cut the first release
+          </button>
         </div>
 
+        <!-- ===================== the one thing that stops everything ===================== -->
+        <div t-if="s.master_behind_files.length" class="pbim-card tnx-blocked">
+          <h3><t t-out="ic('alert',16)"/> The master has not caught up with its own files</h3>
+          <p>
+            <b><t t-esc="s.master_behind_files.length"/></b> part(s) on this server are newer than what the master
+            has actually applied. Until the master runs what it is holding, nothing can be sent out from it and no
+            release can be cut — a customer must never be given a version the master has not run itself.
+          </p>
+          <div class="tnx-blocked-list">
+            <span t-foreach="s.master_behind_files" t-as="m" t-key="m.module" class="tnx-blocked-item">
+              <b t-esc="m.label"/><code t-esc="m.module"/>
+            </span>
+          </div>
+          <div class="tnx-blocked-cmd">
+            <span>Apply them on the master, then come back:</span>
+            <code t-esc="s.master_behind_command"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.copy(s.master_behind_command, 'Copied')">
+              <t t-out="ic('copy',13)"/>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================== what the button is doing right now ===================== -->
+        <div t-if="state.sync.run" class="pbim-card tnx-runpanel">
+          <div class="tnx-runpanel-h">
+            <span t-if="!state.sync.run.error" class="pbim-spin tnx-minispin"/>
+            <span>Bringing <b t-esc="state.sync.run.name"/> in step — this takes a minute or two.</span>
+          </div>
+          <div class="tnx-prov">
+            <div t-foreach="state.sync.run.steps" t-as="st" t-key="st_index" t-attf-class="tnx-pstep {{ st.state }}">
+              <span class="tnx-pdot">
+                <t t-if="st.state === 'done'" t-out="ic('check',13)"/>
+                <t t-elif="st.state === 'fail'" t-out="ic('x',13)"/>
+                <t t-elif="st.state === 'run'"><span class="tnx-pulse"/></t>
+                <t t-else="" t-esc="st_index + 1"/>
+              </span>
+              <span class="tnx-plab" t-esc="st.label"/>
+            </div>
+          </div>
+          <div t-if="state.sync.run.error" class="tnx-proverr">
+            <t t-out="ic('alert',15)"/>
+            <span>
+              <b t-esc="state.sync.run.error"/>
+              <span class="tnx-next">Nothing after the failed step ran. Re-check, then try again — the parts that did
+                go on stay on, so a second attempt only does what is left.</span>
+            </span>
+          </div>
+          <div t-if="state.sync.run.error" class="tnx-runpanel-f">
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="dismissResult">Close</button>
+          </div>
+        </div>
+
+        <!-- ===================== the preview ===================== -->
+        <div t-if="state.sync.dry" class="pbim-card tnx-result dry">
+          <div class="tnx-result-h">
+            <span class="tnx-result-ic dry"><t t-out="ic('search',18)"/></span>
+            <div class="tnx-result-tt">
+              <b>Preview — <t t-esc="state.sync.dry.label"/></b>
+              <span t-esc="state.sync.dry.message"/>
+            </div>
+            <button class="pplw-x" t-on-click="dismissResult" title="Close"><t t-out="ic('x',15)"/></button>
+          </div>
+          <div class="pbim-note">Nothing was changed on any database. This is what the button would do.</div>
+        </div>
+
+        <!-- ===================== what the button did ===================== -->
+        <div t-if="state.sync.result" class="pbim-card tnx-result">
+          <div class="tnx-result-h">
+            <span t-attf-class="tnx-result-ic {{ state.sync.result.skipped_count > 0 ? 'bad' : 'good' }}">
+              <t t-if="state.sync.result.skipped_count > 0" t-out="ic('alert',18)"/>
+              <t t-else="" t-out="ic('check',18)"/>
+            </span>
+            <div class="tnx-result-tt">
+              <b t-esc="state.sync.result.label"/>
+              <span t-esc="state.sync.result.message"/>
+            </div>
+            <button class="pplw-x" t-on-click="dismissResult" title="Close"><t t-out="ic('x',15)"/></button>
+          </div>
+          <div class="tnx-result-grid">
+            <div class="tnx-result-cell"><span class="n" t-esc="state.sync.result.installed.length"/><span class="l">added</span></div>
+            <div class="tnx-result-cell"><span class="n" t-esc="state.sync.result.updated.length"/><span class="l">brought up to date</span></div>
+            <div t-attf-class="tnx-result-cell {{ state.sync.result.skipped_count > 0 ? 'bad' : (state.sync.result.skipped_count === 0 ? 'good' : '') }}">
+              <span class="n"><t t-if="state.sync.result.skipped_count >= 0" t-esc="state.sync.result.skipped_count"/><t t-else="">?</t></span>
+              <span class="l">did not load</span>
+            </div>
+            <div class="tnx-result-cell"><span class="n" t-esc="state.sync.result.installed_after"/><span class="l">parts now</span></div>
+            <div t-if="state.sync.result.is_template" class="tnx-result-cell"><span class="n" t-esc="state.sync.result.crons_disabled"/><span class="l">jobs switched off</span></div>
+            <div class="tnx-result-cell"><span class="n" t-esc="state.sync.result.release_state === 'on' ? 'yes' : 'not yet'"/><span class="l">on the release</span></div>
+          </div>
+          <div t-if="state.sync.result.skipped_count > 0" class="tnx-result-bad">
+            <b>These say they are installed but did not load:</b>
+            <t t-esc="state.sync.result.skipped.join(', ')"/>.
+            <span class="tnx-next">What to do: open the server log, search for the database name
+              <code t-esc="state.sync.result.database"/> beside the words <code>some depends are not loaded</code>,
+              and it will name what each one was waiting for.</span>
+          </div>
+          <div t-if="state.sync.result.still_stale.length" class="tnx-result-bad">
+            <b>Still on an older version:</b>
+            <t t-esc="labelList(state.sync.result.still_stale)"/>. Run it again, or say so.
+          </div>
+          <div class="tnx-result-log">
+            <div t-foreach="state.sync.result.log" t-as="l" t-key="l_index" t-attf-class="tnx-cline {{ l.level }}" t-esc="l.line"/>
+          </div>
+        </div>
+
+        <!-- ===================== the fleet, row by row ===================== -->
         <div class="pbim-tablewrap">
           <table class="pbim-table tnx-sync-table">
-            <thead><tr><th>Customer</th><th>Status</th><th>Has</th><th>Behind</th><th/></tr></thead>
+            <thead>
+              <tr>
+                <th>Database</th><th>Release</th><th>Status</th>
+                <th class="tnx-n">Has</th><th class="tnx-n">To add</th><th class="tnx-n">To update</th><th/>
+              </tr>
+            </thead>
             <tbody>
-              <t t-foreach="s.tenants" t-as="t" t-key="t.id">
-                <tr>
+              <t t-foreach="s.rows" t-as="t" t-key="t.key">
+                <tr t-attf-class="{{ t.is_template ? 'tnx-tpl-row' : '' }} {{ state.sync.open[t.key] ? 'open' : '' }}">
                   <td>
+                    <div t-if="t.is_template" class="tnx-tpl-eyebrow"><t t-out="ic('sparkles',11)"/> Every new customer starts here</div>
                     <b t-esc="t.name"/>
                     <span class="tnx-sync-slug"><code t-esc="t.slug"/></span>
                   </td>
                   <td>
-                    <span t-if="!t.checked" class="pbim-badge muted">not checked</span>
+                    <span t-attf-class="pbim-badge {{ releaseChip(t).cls }}" t-esc="releaseChip(t).label"/>
+                    <span t-if="t.drift_checked" class="tnx-sync-when">looked at <t t-esc="t.drift_checked"/></span>
+                  </td>
+                  <td>
+                    <span t-if="t.state === 'decommissioned'" class="pbim-badge muted">closed down</span>
+                    <span t-elif="!t.checked" class="pbim-badge muted">not checked</span>
                     <span t-elif="t.in_step" class="pbim-badge ok">in step</span>
                     <span t-else="" class="pbim-badge warn">behind</span>
                     <span t-if="t.error" class="tnx-sync-err" t-esc="t.error"/>
+                    <span t-if="t.skipped_count > 0" class="tnx-sync-err bad"><t t-esc="t.skipped_count"/> did not load</span>
                   </td>
-                  <td><t t-if="t.checked"><t t-esc="t.installed"/></t><t t-else="">—</t></td>
-                  <td><t t-if="t.checked"><t t-esc="t.behind.length"/></t><t t-else="">—</t></td>
+                  <td class="tnx-n"><t t-if="t.checked" t-esc="t.installed"/><t t-else="">—</t></td>
+                  <td class="tnx-n"><span t-if="t.checked" t-attf-class="{{ t.to_install.length ? 'tnx-hot' : 'tnx-zero' }}" t-esc="t.to_install.length"/><t t-if="!t.checked">—</t></td>
+                  <td class="tnx-n"><span t-if="t.checked" t-attf-class="{{ t.to_update.length ? 'tnx-hot' : 'tnx-zero' }}" t-esc="t.to_update.length"/><t t-if="!t.checked">—</t></td>
                   <td class="tnx-row-actions">
-                    <button t-if="t.checked" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.toggleSyncRow(t.id)">
-                      <t t-out="ic('list',13)"/> <t t-esc="state.sync.open[t.id] ? 'Hide' : 'Show'"/> the detail
+                    <button t-if="t.checked" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.toggleSyncRow(t.key)">
+                      <t t-out="ic('list',13)"/> <t t-esc="state.sync.open[t.key] ? 'Hide' : 'Show'"/> the detail
+                    </button>
+                    <button t-if="t.checked and !t.in_step" class="pbim-btn outline pbim-btn-sm"
+                            t-att-disabled="!!state.sync.busy" t-on-click="() => this.syncDryRun(t)">
+                      <t t-out="ic('search',13)"/> Preview
                     </button>
                     <button t-if="t.checked and !t.in_step" class="pbim-btn primary pbim-btn-sm"
-                            t-att-disabled="state.sync.busy === t.id" t-on-click="() => this.syncInstall(t)">
-                      <t t-if="state.sync.busy === t.id"><span class="pbim-spin tnx-minispin"/> Installing…</t>
-                      <t t-else=""><t t-out="ic('download',13)"/> Install the <t t-esc="t.behind.length"/> missing</t>
+                            t-att-disabled="!!state.sync.busy || syncBlocked" t-on-click="() => this.syncBringInStep(t)">
+                      <t t-if="state.sync.busy === t.key"><span class="pbim-spin tnx-minispin"/> Working…</t>
+                      <t t-else=""><t t-out="ic('download',13)"/> Bring in step</t>
                     </button>
                   </td>
                 </tr>
-                <tr t-if="state.sync.open[t.id]" class="tnx-sync-detail">
-                  <td colspan="5">
+                <tr t-if="state.sync.open[t.key]" class="tnx-sync-detail">
+                  <td colspan="7">
                     <div class="tnx-sync-cols">
                       <div class="tnx-sync-col">
-                        <h4><t t-out="ic('download',14)"/> Should be installed (<t t-esc="t.behind.length"/>)</h4>
-                        <div t-if="!t.behind.length" class="pbim-empty">Nothing is behind.</div>
-                        <div t-foreach="t.behind" t-as="m" t-key="m.module" class="tnx-sync-item">
+                        <h4><t t-out="ic('download',14)"/> To add (<t t-esc="t.to_install.length"/>)</h4>
+                        <div t-if="!t.to_install.length" class="pbim-empty">It has everything the master has.</div>
+                        <div t-foreach="t.to_install" t-as="m" t-key="m.module" class="tnx-sync-item">
                           <b t-esc="m.label"/><code t-esc="m.module"/>
                         </div>
                       </div>
                       <div class="tnx-sync-col">
-                        <h4><t t-out="ic('lock',14)"/> Never installed here (<t t-esc="t.held_back.length"/>)</h4>
+                        <h4><t t-out="ic('arrowUpCircle',14)"/> To update (<t t-esc="t.to_update.length"/>)</h4>
+                        <div t-if="!t.to_update.length" class="pbim-empty">Every version matches the master.</div>
+                        <div t-foreach="t.to_update" t-as="m" t-key="m.module" class="tnx-sync-item">
+                          <b t-esc="m.label"/><code t-esc="m.module"/>
+                          <span class="tnx-vdelta"><span class="old" t-esc="m.have"/> <t t-out="ic('arrow',11)"/> <span class="new" t-esc="m.want"/></span>
+                        </div>
+                      </div>
+                      <div class="tnx-sync-col">
+                        <h4><t t-out="ic('lock',14)"/> Never here (<t t-esc="t.held_back.length"/>)</h4>
                         <div t-if="!t.held_back.length" class="pbim-empty">The master has none of these to give.</div>
                         <div t-foreach="t.held_back" t-as="m" t-key="m.module" class="tnx-sync-item held">
                           <b t-esc="m.label"/><code t-esc="m.module"/>
                           <span class="tnx-sync-why" t-esc="m.reason"/>
                         </div>
                       </div>
+                      <div class="tnx-sync-col">
+                        <h4><t t-out="ic('arrowUp',14)"/> Ahead (<t t-esc="t.ahead.length"/>)</h4>
+                        <div t-if="!t.ahead.length" class="pbim-empty">Nothing here is newer than the master.</div>
+                        <div t-foreach="t.ahead" t-as="m" t-key="m.module" class="tnx-sync-item ahead">
+                          <b t-esc="m.label"/><code t-esc="m.module"/>
+                          <span class="tnx-vdelta"><span class="new" t-esc="m.have"/> vs master <span class="old" t-esc="m.want"/></span>
+                          <span class="tnx-sync-why">Newer than the master — left alone. Taking a part of the product back is never a sync.</span>
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>
               </t>
-              <tr t-if="!s.tenants.length"><td colspan="5" class="pbim-empty">No customers yet.</td></tr>
+              <tr t-if="!s.rows.length"><td colspan="7" class="pbim-empty">Nothing to compare yet.</td></tr>
             </tbody>
           </table>
         </div>
 
+        <!-- ===================== cut a release ===================== -->
+        <div class="pbim-card tnx-cut">
+          <div class="tnx-cut-tx">
+            <h3><t t-out="ic('scissors',16)"/> Cut a release</h3>
+            <p>
+              A release is a photograph of exactly what the master runs at this moment, with a date for a name.
+              Every customer is then measured against it, instead of against a master that changes every afternoon.
+            </p>
+            <label class="pplw-label">What changed? Customers will read this in a later version of the product.</label>
+            <textarea class="pplw-in tnx-cut-notes" rows="3" t-model="state.sync.notes"
+                      placeholder="Leave passes and contracts now show who approved them, and the payslip screen loads faster."/>
+            <div t-if="s.release and !s.master_ahead_of_release.length and !syncBlocked" class="pbim-note tnx-cut-note">
+              The master is identical to release <b t-esc="s.release.name"/>. Cutting another one now would only change the date.
+            </div>
+          </div>
+          <div class="tnx-cut-act">
+            <button class="pbim-btn primary" t-att-disabled="syncBlocked || state.sync.busy === 'release'" t-on-click="cutRelease">
+              <t t-if="state.sync.busy === 'release'"><span class="pbim-spin tnx-minispin"/> Cutting…</t>
+              <t t-else=""><t t-out="ic('scissors',15)"/> Cut a release</t>
+            </button>
+            <span t-if="syncBlocked" class="tnx-cut-blocked">Not while the master is behind its own files.</span>
+          </div>
+        </div>
+
+        <!-- ===================== the never-list ===================== -->
         <div class="pbim-card tnx-sync-never">
           <h3><t t-out="ic('shield',16)"/> Never installed on a customer's database</h3>
           <p>Whatever else the master gains, these stay here. They run the platform, or they would
@@ -425,12 +636,48 @@
             <div class="tnx-rev-row"><span>Administrator</span><b t-esc="d.admin_email || '—'"/></div>
             <div class="tnx-rev-row"><span>Last user login</span><b t-esc="d.last_login || 'never'"/></div>
             <div class="tnx-rev-row"><span>Health checked</span><b t-esc="d.health_checked || 'not yet'"/></div>
+            <div class="tnx-rev-row"><span>Release</span>
+              <b>
+                <span t-attf-class="pbim-badge {{ fleetReleaseChip(d).cls }}" t-esc="fleetReleaseChip(d).label"/>
+                <span t-if="d.drift_checked" class="tnx-sync-when">looked at <t t-esc="d.drift_checked"/></span>
+                <span t-if="d.behind_count or d.stale_count" class="tnx-sync-when">
+                  · <t t-esc="d.behind_count"/> to add, <t t-esc="d.stale_count"/> to update
+                </span>
+                <span t-if="d.skipped_count > 0" class="tnx-sync-err bad"><t t-esc="d.skipped_count"/> did not load</span>
+              </b>
+            </div>
+            <div class="tnx-rev-row"><span>Last brought in step</span>
+              <b>
+                <t t-if="d.last_sync_at">
+                  <t t-esc="d.last_sync_at"/>
+                  <a t-if="lastSync" href="#" class="tnx-more" t-on-click.prevent="() => state.det.syncOpen = !state.det.syncOpen">
+                    <t t-esc="state.det.syncOpen ? 'hide what it did' : 'what it did'"/>
+                  </a>
+                </t>
+                <t t-else="">never — the button is on the "In step with master" screen</t>
+              </b>
+            </div>
             <div class="tnx-rev-row"><span>Staging copy</span>
               <b t-if="d.staging_exists" class="tnx-staging-on">
                 <t t-esc="d.staging_db"/> — <a href="#" t-on-click.prevent="() => this.openUrl(d.staging_url)">open</a> ·
                 <a href="#" class="tnx-danger-link" t-on-click.prevent="dropStaging">drop</a>
               </b>
               <b t-else="">none</b>
+            </div>
+          </div>
+          <div t-if="state.det.syncOpen and lastSync" class="pbim-card tnx-lastsync">
+            <div class="tnx-lastsync-h">
+              <b>What the last "bring in step" did</b>
+              <button class="pplw-x" t-on-click="() => state.det.syncOpen = false" title="Close"><t t-out="ic('x',14)"/></button>
+            </div>
+            <div class="tnx-result-grid">
+              <div class="tnx-result-cell"><span class="n" t-esc="(lastSync.installed || []).length"/><span class="l">added</span></div>
+              <div class="tnx-result-cell"><span class="n" t-esc="(lastSync.updated || []).length"/><span class="l">brought up to date</span></div>
+              <div class="tnx-result-cell"><span class="n"><t t-if="lastSync.skipped_count >= 0" t-esc="lastSync.skipped_count"/><t t-else="">?</t></span><span class="l">did not load</span></div>
+              <div class="tnx-result-cell"><span class="n" t-esc="lastSync.installed_after"/><span class="l">parts after</span></div>
+            </div>
+            <div class="tnx-result-log">
+              <div t-foreach="lastSync.log || []" t-as="l" t-key="l_index" t-attf-class="tnx-cline {{ l.level }}" t-esc="l.line"/>
             </div>
           </div>
         </div>
