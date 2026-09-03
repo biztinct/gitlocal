@@ -52,10 +52,15 @@ export class PbTenants extends Component {
             det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false },
             // "In step with master": read-only until somebody presses the button.
             sync: this._freshSync(),
+            // The waves a release goes out in. Read-only until Start.
+            roll: this._freshRoll(),
+            // One customer's wave, window and history of updates.
+            upd: { d: null, busy: "", openTask: null },
             // The notice composer. Closed until somebody opens it.
             notice: this._freshNotice(),
         });
         this._tick = null;
+        this._rollPoll = null;
         // DOCUMENT, IN THE CAPTURE PHASE, AND BOTH HALVES ARE LOAD-BEARING.
         // Something in the shared web client already listens for keydown on
         // <body> and stops the event there, so a listener on `window` — the
@@ -64,7 +69,10 @@ export class PbTenants extends Component {
         // The cost is that this now sees keys meant for other people, so the
         // handler bows out for text fields and for any open dialog.
         useExternalListener(document, "keydown", this.onKeydown.bind(this), { capture: true });
-        onWillUnmount(() => { if (this._tick) { clearInterval(this._tick); } });
+        onWillUnmount(() => {
+            if (this._tick) { clearInterval(this._tick); }
+            if (this._rollPoll) { clearInterval(this._rollPoll); }
+        });
         onWillStart(async () => { await this.loadFleet(); });
     }
 
@@ -258,7 +266,9 @@ export class PbTenants extends Component {
     async openSync() {
         this.state.view = "sync";
         this.state.sync = this._freshSync();
+        this.state.roll = this._freshRoll();
         await this.loadSync();
+        this.loadRollout();
     }
 
     async loadSync(quiet = true) {
@@ -439,6 +449,227 @@ export class PbTenants extends Component {
             },
             cancel: () => {},
         });
+    }
+
+    // ---------------------------------------------------------- rollouts
+    //
+    // THE HERO OF THIS SCREEN IS THE ROW OF RINGS. A release does not land on
+    // the fleet; it walks across it, one wave at a time — a practice run on a
+    // copy nobody sees, the blank database new customers are made from, one
+    // customer on their own, the customers who volunteered to be early, then
+    // everybody. Each wave is a card, each customer a chip with a dot, and the
+    // dot is the whole status: waiting, updating, done, failed, left behind.
+    //
+    // NOTHING ON THIS SCREEN STARTS ANYTHING. The plan dialog says so in those
+    // words, and the button that starts it is the only one that does.
+
+    _freshRoll() {
+        return {
+            loaded: false, d: null, busy: "",
+            plan: null, planOpen: false, watch: 24, early: 48,
+            abortText: "", skipFor: null, skipText: "",
+            logOpen: false, ringIdx: 0,
+        };
+    }
+
+    async loadRollout(quiet = true) {
+        const r = this.state.roll;
+        try {
+            r.d = await this.orm.silent.call("pb.tenants", "rollout_state", []);
+            r.loaded = true;
+            this._syncPoll();
+        } catch (e) {
+            if (!quiet) {
+                this.notif.add(this.errText(e, _t("The rollout could not be read.")),
+                               { type: "danger" });
+            }
+        }
+    }
+
+    /**
+     * Watch a rollout that is actually moving, and only then.
+     *
+     * A rollout spends most of its life waiting for somebody's night, and
+     * polling through that would be a request every eight seconds for a day to
+     * be told nothing has changed. The poll runs while a task is in flight and
+     * stops the moment it is not.
+     */
+    _syncPoll() {
+        const cur = this.state.roll.d && this.state.roll.d.current;
+        const live = !!cur && cur.state === "running";
+        if (live && !this._rollPoll) {
+            this._rollPoll = setInterval(() => {
+                if (this.state.view !== "sync") { return; }
+                this.loadRollout();
+            }, 8000);
+        } else if (!live && this._rollPoll) {
+            clearInterval(this._rollPoll);
+            this._rollPoll = null;
+        }
+    }
+
+    get rollout() { return (this.state.roll.d && this.state.roll.d.current) || null; }
+
+    /** The one sentence at the top of the rings: where this release has got to. */
+    get rolloutHeadline() {
+        const r = this.rollout;
+        if (!r) { return ""; }
+        switch (r.state) {
+            case "done":
+                return _t(
+                    "Release %(name)s is on %(done)s of %(total)s customers. Took %(mins)s minutes.",
+                    { name: r.release, done: r.customer_done, total: r.customer_total, mins: r.minutes });
+            case "paused":
+                return _t("Stopped at the %(ring)s.", { ring: r.current_ring_label.toLowerCase() });
+            case "waiting":
+                return r.watch_left_h
+                    ? _t("Watching the %(ring)s — %(hours)s h left.",
+                         { ring: r.current_ring_label.toLowerCase(), hours: r.watch_left_h })
+                    : _t("Waiting for the next customer's window to open.");
+            case "aborted":
+                return _t("Called off. %(done)s of %(total)s customers got it.",
+                          { done: r.customer_done, total: r.customer_total });
+            default:
+                return _t("%(ring)s — %(done)s of %(total)s steps done.",
+                          { ring: r.current_ring_label, done: r.done_count, total: r.task_count });
+        }
+    }
+
+    taskDot(t) {
+        return { queued: "q", running: "r", done: "d", failed: "f", skipped: "s" }[t.state] || "q";
+    }
+
+    /** What a chip says when you rest on it — never a bare state word. */
+    taskTitle(t) {
+        switch (t.state) {
+            case "queued":
+                return t.run_now
+                    ? _t("%(who)s — next in line, not waiting for their window.", { who: t.label })
+                    : _t("%(who)s — waiting for their window%(when)s.",
+                         { who: t.label, when: t.scheduled_for ? " (" + t.scheduled_for + ")" : "" });
+            case "running": return _t("%(who)s — being updated now.", { who: t.label });
+            case "done": return _t("%(who)s — done in %(secs)s seconds.", { who: t.label, secs: t.duration_s });
+            case "failed": return _t("%(who)s — %(why)s", { who: t.label, why: t.error });
+            case "skipped": return _t("%(who)s — left behind on the old release.", { who: t.label });
+            default: return t.label;
+        }
+    }
+
+    async openRolloutPlan() {
+        const r = this.state.roll;
+        r.busy = "plan";
+        try {
+            r.plan = await this.orm.call("pb.tenants", "rollout_plan", []);
+            r.watch = r.plan.watch_canary;
+            r.early = r.plan.watch_early;
+            r.planOpen = true;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The plan could not be worked out.")),
+                           { type: "danger" });
+        } finally {
+            r.busy = "";
+        }
+    }
+
+    closeRolloutPlan() {
+        if (this.state.roll.busy) { return; }
+        this.state.roll.planOpen = false;
+        this.state.roll.plan = null;
+    }
+
+    async startRollout() {
+        const r = this.state.roll;
+        if (r.plan && r.plan.blockers.length) { return; }
+        r.busy = "start";
+        try {
+            r.d = await this.orm.call("pb.tenants", "rollout_start",
+                                      [null, parseInt(r.watch, 10) || 0, parseInt(r.early, 10) || 0]);
+            r.planOpen = false;
+            r.plan = null;
+            this._syncPoll();
+            this.notif.add(_t("The rollout has started — the practice run goes first."),
+                           { type: "success" });
+            this.loadSync();
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("It could not be started.")), { type: "danger" });
+        } finally {
+            r.busy = "";
+        }
+    }
+
+    async _rollCall(method, args, busy, okMsg) {
+        const r = this.state.roll;
+        r.busy = busy;
+        try {
+            r.d = await this.orm.call("pb.tenants", method, args);
+            this._syncPoll();
+            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this.loadSync();
+            return true;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")), { type: "danger" });
+            return false;
+        } finally {
+            r.busy = "";
+        }
+    }
+
+    rolloutPause() { this._rollCall("rollout_pause", [this.rollout.id, ""], "pause", _t("Paused.")); }
+    rolloutResume() { this._rollCall("rollout_resume", [this.rollout.id], "resume"); }
+    rolloutTick() { this._rollCall("rollout_tick", [this.rollout.id], "tick"); }
+
+    continueNow() {
+        const r = this.rollout;
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Continue now"),
+            body: _t(
+                "The watch period on the %(ring)s ends here and the next wave starts. " +
+                "The point of waiting is that a problem shows up on one customer before it " +
+                "reaches the rest — so only do this if you have looked.",
+                { ring: r.current_ring_label.toLowerCase() }),
+            confirmLabel: _t("Continue now"),
+            confirm: () => this._rollCall("rollout_continue_now", [r.id], "continue"),
+            cancel: () => {},
+        });
+    }
+
+    taskRetry(t) { this._rollCall("task_retry", [t.id], "task" + t.id, _t("Back in the queue.")); }
+    taskRunNow(t) { this._rollCall("task_run_now", [t.id], "task" + t.id); }
+
+    askSkip(t) {
+        this.state.roll.skipFor = t;
+        this.state.roll.skipText = "";
+    }
+
+    confirmSkip() {
+        const r = this.state.roll;
+        const t = r.skipFor;
+        this._rollCall("task_skip", [t.id, r.skipText], "task" + t.id).then((ok) => {
+            if (ok) { r.skipFor = null; r.skipText = ""; }
+        });
+    }
+
+    abortRollout() {
+        const r = this.state.roll;
+        if (r.abortText !== this.rollout.release) { return; }
+        this._rollCall("rollout_abort", [this.rollout.id, r.abortText], "abort",
+                       _t("Called off.")).then(() => { r.abortText = ""; });
+    }
+
+    /**
+     * Arrow keys walk the row of waves.
+     *
+     * Bound from the component's one keydown handler (F10: `document`, capture
+     * phase) rather than on the row, so it works whether or not a card happens
+     * to hold focus — the row is the thing being read, not a form field.
+     */
+    _ringKey(dir) {
+        const r = this.rollout;
+        if (!r || !r.rings.length) { return; }
+        const next = Math.max(0, Math.min(r.rings.length - 1, this.state.roll.ringIdx + dir));
+        this.state.roll.ringIdx = next;
+        const el = document.querySelectorAll(".tnx-ring")[next];
+        if (el) { el.focus(); }
     }
 
     // ------------------------------------------------- telling a customer
@@ -649,6 +880,8 @@ export class PbTenants extends Component {
             // The composer is a scrim over whatever view opened it, so it owns
             // Escape before that view does.
             if (this.state.notice.open) { this.closeNotice(); return; }
+            if (this.state.roll.planOpen) { this.closeRolloutPlan(); return; }
+            if (this.state.roll.skipFor) { this.state.roll.skipFor = null; return; }
             if (this.state.view === "sync") {
                 if (this.state.sync.result || this.state.sync.dry || this.state.sync.run) {
                     this.dismissResult();
@@ -662,11 +895,20 @@ export class PbTenants extends Component {
             }
             return;
         }
+        // The row of waves reads left to right, so the arrow keys walk it.
+        if (this.state.view === "sync" && !this.state.roll.planOpen
+            && (ev.key === "ArrowRight" || ev.key === "ArrowLeft")) {
+            if (!this.rollout) { return; }
+            ev.preventDefault();
+            this._ringKey(ev.key === "ArrowRight" ? 1 : -1);
+            return;
+        }
         if (ev.key === "r" || ev.key === "R") {
-            if (this.state.notice.open) { return; }
+            if (this.state.notice.open || this.state.roll.planOpen) { return; }
             if (this.state.view === "sync" && !this.state.sync.busy) {
                 ev.preventDefault();
                 this.loadSync(false);
+                this.loadRollout(false);
             } else if (this.state.view === "fleet") {
                 ev.preventDefault();
                 this.refreshFleetHealth();
@@ -677,8 +919,101 @@ export class PbTenants extends Component {
     // ------------------------------------------------------------- detail
     async openDetail(id) {
         this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false };
+        this.state.upd = { d: null, busy: "", openTask: null };
         this.state.view = "detail";
         this.state.det.d = await this.orm.silent.call("pb.tenants", "get_tenant", [id]);
+    }
+
+    // -------------------------------------------------------- Updates tab
+    //
+    // One customer's answer to three questions: which wave am I in, when is my
+    // night, and what has actually been done to me. The last one is a timeline
+    // rather than a log, because the reader is asking "when did this customer
+    // last change", not "what did line 400 say".
+
+    async openTab(tab) {
+        this.state.det.tab = tab;
+        if (tab === "updates" && !this.state.upd.d) { await this.loadUpdates(); }
+    }
+
+    async loadUpdates() {
+        const u = this.state.upd;
+        u.busy = "load";
+        try {
+            u.d = await this.orm.silent.call("pb.tenants", "tenant_updates",
+                                             [this.state.det.id]);
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("This customer's updates could not be read.")),
+                           { type: "danger" });
+        } finally {
+            u.busy = "";
+        }
+    }
+
+    async setWindow(vals) {
+        const u = this.state.upd;
+        u.busy = "save";
+        try {
+            u.d = await this.orm.call("pb.tenants", "tenant_set_window",
+                                      [this.state.det.id, vals.ring ?? null,
+                                       vals.start ?? null, vals.hours ?? null]);
+            this.notif.add(_t("Saved — %(window)s.", { window: u.d.next_window }),
+                           { type: "success" });
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That could not be saved.")), { type: "danger" });
+            await this.loadUpdates();
+        } finally {
+            u.busy = "";
+        }
+    }
+
+    setRing(ring) { this.setWindow({ ring }); }
+    onWindowInput(which, ev) {
+        const v = parseInt(ev.target.value, 10);
+        if (isNaN(v)) { return; }
+        this.setWindow(which === "start" ? { start: v } : { hours: v });
+    }
+
+    /** Update this one customer now, outside any rollout. Same unit, same guards. */
+    updateNow() {
+        const u = this.state.upd;
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Update %(name)s now", { name: u.d.name }),
+            body: _t(
+                "This runs the same update a rollout would run, on this customer alone, " +
+                "right now rather than inside their window. Their users are not warned first. " +
+                "For a release going to everybody, use the rollout — it practises on a copy " +
+                "before it touches anybody."),
+            confirmLabel: _t("Update them now"),
+            confirm: async () => {
+                u.busy = "run";
+                try {
+                    const r = await this.orm.call("pb.tenants", "tenant_update_now",
+                                                  [this.state.det.id, false]);
+                    this.notif.add(r.message || _t("Done."),
+                                   { type: r.skipped_count > 0 ? "warning" : "success" });
+                    await this.loadUpdates();
+                    this.state.det.d = await this.orm.silent.call(
+                        "pb.tenants", "get_tenant", [this.state.det.id]);
+                } catch (e) {
+                    this.notif.add(this.errText(e, _t("It did not finish.")), { type: "danger" });
+                } finally {
+                    u.busy = "";
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    toggleTask(id) {
+        this.state.upd.openTask = this.state.upd.openTask === id ? null : id;
+    }
+
+    /** Seconds as something a person says out loud. */
+    secs(n) {
+        n = n || 0;
+        if (n < 90) { return _t("%(n)ss", { n }); }
+        return _t("%(n)s min", { n: Math.round(n / 60) });
     }
 
     /**

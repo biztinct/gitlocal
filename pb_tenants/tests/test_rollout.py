@@ -41,6 +41,13 @@ class TestRollout(TransactionCase):
             'snapshot': '{"web": "19.0.1.0"}', 'module_count': 1,
         })
         self.rel.make_current()
+        # THIS SUITE RUNS ON A LIVE PLATFORM DATABASE, which already has real
+        # customers on it. Left alone they would join every plan and turn
+        # "the customer in the last wave" into two records, so they are stood
+        # down inside the transaction (which is rolled back at the end and
+        # never reaches them). What is being argued with here is the machine,
+        # not whatever the fleet happens to look like today.
+        self.env['pb.tenant'].sudo().search([]).write({'state': 'decommissioned'})
         self.canary = self.env['pb.tenant'].sudo().create({
             'name': 'Canary Co', 'slug': 'canaryco2026', 'state': 'live',
             'ring': 'canary'})
@@ -97,6 +104,9 @@ class TestRollout(TransactionCase):
     def _rollout(self):
         return self.env['pb.rollout'].sudo().search(
             [('release_id', '=', self.rel.id)], limit=1)
+
+    def _task_for(self, rollout, tenant):
+        return rollout.task_ids.filtered(lambda t: t.tenant_id == tenant)
 
     # ================================================================== T7
     def test_t7_01_a_release_with_no_notes_is_refused(self):
@@ -158,7 +168,8 @@ class TestRollout(TransactionCase):
         self.assertTrue(r.finished_at)
         self.assertEqual(r.failed_count, 0)
         self.assertEqual(r.done_count, r.task_count)
-        self.assertEqual(r.customer_done, 2)
+        self.assertEqual(r.customer_done, r.customer_total)
+        self.assertEqual(r.customer_total, 2)
         for t in r.task_ids:
             self.assertEqual(t.state, 'done')
             self.assertEqual(t.attempts, 1)
@@ -171,7 +182,7 @@ class TestRollout(TransactionCase):
         self.assertEqual(r.state, 'waiting')
         self.assertEqual(r.current_ring, 'canary')
         self.assertTrue(r.ring_done_at)
-        rest = r.task_ids.filtered(lambda t: t.ring == 'everyone')
+        rest = self._task_for(r, self.rest)
         self.assertEqual(rest.state, 'queued')
 
     def test_t7_08_continue_now_ends_the_watch_and_finishes_it(self):
@@ -237,7 +248,7 @@ class TestRollout(TransactionCase):
     def test_t7_13_skipping_a_customer_needs_their_name_typed(self):
         self._run(lambda: self.svc.rollout_start(self.rel.id, 24, 48))
         r = self._rollout()
-        rest = r.task_ids.filtered(lambda t: t.ring == 'everyone')
+        rest = self._task_for(r, self.rest)
         with self.assertRaises(UserError) as e:
             self._run(lambda: self.svc.task_skip(rest.id, ''))
         self.assertIn('restco2026', str(e.exception))
@@ -253,16 +264,31 @@ class TestRollout(TransactionCase):
         self.assertEqual(r.state, 'aborted')
         self.assertFalse(r.task_ids.filtered(lambda t: t.state == 'queued'))
 
-    def test_t7_15_run_now_is_recorded_against_the_person_who_asked(self):
+    def test_t7_15_run_now_skips_the_window_but_never_the_queue(self):
+        """A later wave cannot be pulled forward — that is the safety argument."""
         self._run(lambda: self.svc.rollout_start(self.rel.id, 24, 48))
         r = self._rollout()
-        rest = r.task_ids.filtered(lambda t: t.ring == 'everyone')
+        rest = self._task_for(r, self.rest)
         self.assertEqual(rest.state, 'queued')
-        self._run(lambda: self.svc.task_run_now(rest.id))
-        self.assertTrue(rest.run_now)
-        self.assertEqual(rest.run_now_by, self.env.user)
-        # It jumped the watch period because somebody asked it to.
-        self.assertEqual(rest.state, 'done')
+        with self.assertRaises(UserError) as e:
+            self._run(lambda: self.svc.task_run_now(rest.id))
+        self.assertIn('later wave', str(e.exception))
+        self.assertIn('Continue now', str(e.exception))
+        self.assertFalse(rest.run_now)
+
+    def test_t7_15b_run_now_in_the_current_wave_ignores_the_window(self):
+        # A window that will not open for hours, in the wave being worked on.
+        self.canary.write({'maintenance_start': (fields.Datetime.now().hour + 6) % 24,
+                           'maintenance_hours': 1})
+        self._run(lambda: self.svc.rollout_start(self.rel.id, 24, 48))
+        r = self._rollout()
+        task = self._task_for(r, self.canary)
+        self.assertEqual(task.state, 'queued')
+        self.assertEqual(r.state, 'waiting')
+        self._run(lambda: self.svc.task_run_now(task.id))
+        self.assertTrue(task.run_now)
+        self.assertEqual(task.run_now_by, self.env.user)
+        self.assertEqual(task.state, 'done')
 
     def test_t7_16_the_plan_is_a_dry_run_and_writes_nothing(self):
         before = self.env['pb.rollout'].sudo().search_count([])
@@ -279,7 +305,7 @@ class TestRollout(TransactionCase):
     def test_t7_18_the_pre_notice_only_reaches_a_queued_task_and_only_once(self):
         self._run(lambda: self.svc.rollout_start(self.rel.id, 24, 48))
         r = self._rollout()
-        rest = r.task_ids.filtered(lambda t: t.ring == 'everyone')
+        rest = self._task_for(r, self.rest)
         told = []
 
         def fake_send(self_, target, kind, title, text, starts, ends):
@@ -289,8 +315,14 @@ class TestRollout(TransactionCase):
         for p in ps:
             p.start()
         try:
+            # The job commits after each customer it warns, so that a failure
+            # on the fifth does not un-warn the first four. A test cursor
+            # refuses to commit at all — and the refusal is bolted to the
+            # INSTANCE, not the class, so that is where it has to be stood
+            # down for the duration.
             with patch.object(self.cls, 'notice_send', fake_send), \
-                 patch.object(self.cls, '_log_line', lambda *a, **kw: ''):
+                 patch.object(self.cls, '_log_line', lambda *a, **kw: ''), \
+                 patch.object(self.env.cr, 'commit', lambda: None):
                 self.assertEqual(self.svc._cron_rollout_notices(), 1)
                 self.assertEqual(self.svc._cron_rollout_notices(), 0)
         finally:

@@ -101,11 +101,19 @@ def _zone(tz):
 
 
 def _aware(dt):
-    """A datetime as UTC-aware. The framework hands out naive UTC."""
-    if dt is None:
+    """A datetime as UTC-aware. The framework hands out naive UTC.
+
+    AN EMPTY DATE FIELD READS AS `False`, NOT `None`. Every unset Datetime the
+    ORM hands over is the boolean, so a plain `if dt is None` lets it through
+    and the next line asks a boolean for its `tzinfo`. Falsy of any shape means
+    "there is no such moment".
+    """
+    if not dt:
         return None
     if isinstance(dt, str):
         dt = parse_stamp(dt)
+    if not dt:
+        return None
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
@@ -113,9 +121,10 @@ def _aware(dt):
 
 def _naive(dt):
     """Back to the naive UTC the framework stores."""
-    if dt is None:
+    aware = _aware(dt)
+    if aware is None:
         return None
-    return _aware(dt).astimezone(timezone.utc).replace(tzinfo=None)
+    return aware.astimezone(timezone.utc).replace(tzinfo=None)
 
 
 def _clean_window(start_hour, hours):
