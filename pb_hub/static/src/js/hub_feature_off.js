@@ -50,8 +50,11 @@ export class HubFeatureOff extends Component {
     }
 
     get hint() {
-        return _t("Ask Payobook to switch it on. Everything else you use is "
-                  "unaffected.");
+        // ONE STRING, NOT TWO NEXT TO EACH OTHER. Two adjacent literals are a
+        // sentence in Python and a SyntaxError in JavaScript, and the asset
+        // pipeline concatenates without ever parsing — so the whole backend
+        // goes blank with a clean server log (W74).
+        return _t("Ask Payobook to switch it on. Everything else you use is unaffected.");
     }
 
     get hasSearch() { return typeof this.props.onSearch === "function"; }
