@@ -131,7 +131,7 @@
     .tnx-tab-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .tnx-inline-note { flex: 1; min-width: 240px; }
     .tnx-restored { margin-bottom: 12px; a { font-weight: 700; color: var(--pbim-primary-strong); } }
-    .tnx-row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .tnx-row-actions { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
     .tnx-bnote { display: block; font-size: 11px; color: var(--pbim-muted); }
     .tnx-dom-in { max-width: 280px; }
     .tnx-dom-note { margin-bottom: 14px; code { background: #fff; border: 1px solid var(--pbim-line); border-radius: 5px; padding: 1px 6px; } }
@@ -149,7 +149,7 @@
     .tnx-sync-slug { display: block; code { font-size: 11.5px; color: var(--pbim-muted); } }
     .tnx-sync-err { display: block; font-size: 11.5px; color: var(--pbim-muted); margin-top: 3px; }
     .tnx-sync-detail > td { background: var(--pbim-bg); }
-    .tnx-sync-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 6px 2px 10px; }
+    .tnx-sync-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 18px; padding: 6px 2px 10px; }
     .tnx-sync-col h4 { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 800; text-transform: uppercase;
         letter-spacing: .05em; color: var(--pbim-muted); margin: 0 0 9px; }
     .tnx-sync-item { background: #fff; border: 1px solid var(--pbim-line); border-radius: 9px; padding: 8px 12px; margin-bottom: 7px;
@@ -160,11 +160,136 @@
     .tnx-sync-never { margin-top: 20px; padding: 18px 22px;
         h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; margin-bottom: 6px; }
         p { font-size: 13px; color: var(--pbim-muted); margin-bottom: 12px; } }
+
+    // ---------------- FLEET P1: drift, versions and the release stamp
+    .tnx-sync-btn { position: relative; }
+    .tnx-count { min-width: 19px; height: 19px; padding: 0 6px; border-radius: 999px; background: var(--pbim-amber, #D97706);
+        color: #fff; font-size: 11px; font-weight: 800; display: inline-grid; place-items: center; margin-left: 2px; }
+    .tnx-kbd { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--pbim-muted); align-self: center;
+        kbd { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 10.5px; background: #fff; border: 1px solid var(--pbim-line);
+              border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; } }
+
+    // the hero
+    .tnx-rel { display: flex; align-items: center; gap: 20px; background: var(--pbim-ink, #1B1733); color: #fff;
+        border-radius: 18px; padding: 20px 24px; margin-bottom: 18px; box-shadow: var(--pbim-sh-lg);
+        animation: tnxRise .34s cubic-bezier(.2,.9,.3,1);
+        &.none { background: #fff; color: var(--pbim-text); border: 1px dashed var(--pbim-line); box-shadow: none; } }
+    .tnx-rel-ring { position: relative; width: 66px; height: 66px; flex: none;
+        svg { transform: rotate(-90deg); }
+        .tnx-ring-bg { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 6; }
+        .tnx-ring-fg { fill: none; stroke: #7BD8A5; stroke-width: 6; stroke-linecap: round;
+            transition: stroke-dasharray .7s cubic-bezier(.2,.9,.3,1); }
+        .tnx-ring-n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 15px; font-weight: 800;
+            small { font-size: 9px; font-weight: 700; opacity: .7; } } }
+    .tnx-rel-tx { min-width: 0; flex: 1; }
+    .tnx-rel-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .12em; text-transform: uppercase; color: #B9B3D6; margin-bottom: 3px; }
+    // `color` is stated on the heading itself: the page's own h2 rule is more
+    // specific than the panel's inherited colour, and without this the release
+    // name renders indigo-on-indigo — invisible, which is the one thing the
+    // hero must never be.
+    .tnx-rel .tnx-rel-name { color: #fff; font-size: 24px; font-weight: 800; margin: 0 0 4px;
+        letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+    .tnx-rel.none .tnx-rel-name { color: var(--pbim-text); font-size: 19px; }
+    .tnx-rel .tnx-rel-line { font-size: 13.5px; color: #D6D2EA; b { color: #fff; } }
+    .tnx-rel.none .tnx-rel-line { color: var(--pbim-muted); max-width: 640px; }
+    .tnx-rel-notes { margin-top: 8px; font-size: 13px; color: #EFEDF7; background: rgba(255,255,255,.08);
+        border-radius: 10px; padding: 8px 12px; max-width: 720px; }
+    .tnx-rel-moved { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600;
+        color: #F5C77B; background: rgba(217,119,6,.16); border-radius: 999px; padding: 5px 13px; }
+    .tnx-rel-side { margin-left: auto; align-self: flex-start; }
+    .tnx-rel-master { font-size: 11.5px; color: #B9B3D6; display: inline-flex; align-items: center; gap: 6px;
+        code { background: rgba(255,255,255,.1); border-radius: 5px; padding: 1px 6px; font-size: 11px; color: #fff; } }
+    .tnx-rel-invite-ic { width: 52px; height: 52px; border-radius: 14px; background: var(--pbim-soft);
+        color: var(--pbim-primary-strong); display: grid; place-items: center; flex: none; }
+
+    // the master is behind its own files — the one card that stops everything
+    .tnx-blocked { border-color: rgba(220,38,104,.45); background: #FFF6F9; padding: 18px 22px; margin-bottom: 18px;
+        h3 { display: flex; align-items: center; gap: 8px; color: #B3164F; font-size: 15.5px; font-weight: 800; margin-bottom: 7px; }
+        p { font-size: 13.5px; max-width: 780px; margin-bottom: 12px; } }
+    .tnx-blocked-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    .tnx-blocked-item { background: #fff; border: 1px solid rgba(220,38,104,.28); border-radius: 8px; padding: 5px 10px;
+        b { font-size: 12.5px; } code { font-size: 11px; color: var(--pbim-muted); margin-left: 6px; } }
+    .tnx-blocked-cmd { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 12.5px; color: var(--pbim-muted);
+        code { background: var(--pbim-ink, #1B1733); color: #D6D2EA; border-radius: 8px; padding: 7px 12px;
+               font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 12.5px; } }
+
+    // what the button is doing, and what it did
+    .tnx-runpanel { padding: 16px 20px; margin-bottom: 16px; animation: tnxRise .3s cubic-bezier(.2,.9,.3,1); }
+    .tnx-runpanel-h { display: flex; align-items: center; gap: 10px; font-size: 13.5px; margin-bottom: 10px; }
+    .tnx-runpanel-f { margin-top: 8px; }
+    .tnx-result { padding: 0; margin-bottom: 18px; overflow: hidden; animation: tnxRise .3s cubic-bezier(.2,.9,.3,1); }
+    .tnx-result-h { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--pbim-line-2); }
+    .tnx-result-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        &.good { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.bad { background: #FCE7EF; color: #B3164F; } }
+    .tnx-result-tt { display: flex; flex-direction: column; min-width: 0;
+        b { font-size: 14.5px; } span { font-size: 12.5px; color: var(--pbim-muted); } }
+    .tnx-result-h .pplw-x { margin-left: auto; }
+    .tnx-result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px;
+        background: var(--pbim-line-2); border-bottom: 1px solid var(--pbim-line-2); }
+    .tnx-result-cell { background: #fff; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px;
+        .n { font-size: 21px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .l { font-size: 11.5px; color: var(--pbim-muted); font-weight: 600; }
+        &.good .n { color: var(--pbim-green, #2E7D4F); }
+        &.bad { background: #FFF6F9; .n { color: #B3164F; } } }
+    .tnx-result-bad { padding: 12px 18px; font-size: 13px; background: #FFF6F9; color: #B3164F;
+        border-bottom: 1px solid var(--pbim-line-2);
+        code { background: #fff; border: 1px solid rgba(220,38,104,.25); border-radius: 5px; padding: 1px 6px; } }
+    .tnx-next { display: block; margin-top: 5px; font-weight: 500; color: var(--pbim-text); }
+    .tnx-result-log { background: var(--pbim-ink, #1B1733); padding: 11px 16px; max-height: 200px; overflow-y: auto;
+        font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.75; }
+
+    // the table
+    .tnx-sync-table .tnx-n { text-align: right; font-variant-numeric: tabular-nums; }
+    .tnx-hot { font-weight: 800; color: var(--pbim-amber, #D97706); }
+    .tnx-zero { color: var(--pbim-muted); opacity: .55; }
+    // The tint is on the ROW, not only on its cells: the actions cell is a flex
+    // container, so its own background paints only as tall as the button inside
+    // it and left a white notch across the template's row.
+    .tnx-tpl-row, .tnx-tpl-row > td { background: var(--pbim-soft); }
+    .tnx-tpl-row > td:first-child { border-left: 3px solid var(--pbim-primary); }
+    .tnx-tpl-eyebrow { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800;
+        letter-spacing: .1em; text-transform: uppercase; color: var(--pbim-primary-strong); margin-bottom: 3px; }
+    .tnx-sync-when { display: block; font-size: 11px; color: var(--pbim-muted); margin-top: 3px; }
+    .tnx-sync-err.bad { color: #B3164F; font-weight: 700; }
+    .tnx-sync-item.ahead { border-color: rgba(37,99,235,.28); }
+    .tnx-vdelta { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 11.5px;
+        font-variant-numeric: tabular-nums; font-family: "SF Mono", ui-monospace, Menlo, monospace;
+        .old { color: var(--pbim-muted); text-decoration: line-through; }
+        .new { color: var(--pbim-green, #2E7D4F); font-weight: 700; } }
+
+    // cut a release
+    .tnx-cut { display: flex; gap: 24px; align-items: flex-start; padding: 18px 22px; margin-top: 20px; flex-wrap: wrap;
+        h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+        p { font-size: 13px; color: var(--pbim-muted); margin-bottom: 12px; max-width: 640px; } }
+    .tnx-cut-tx { flex: 1; min-width: 300px; }
+    .tnx-cut-notes { width: 100%; max-width: 640px; resize: vertical; }
+    .tnx-cut-note { margin-top: 10px; }
+    .tnx-cut-act { display: flex; flex-direction: column; gap: 7px; align-items: flex-end; padding-top: 26px; }
+    .tnx-cut-blocked { font-size: 11.5px; color: #B3164F; max-width: 200px; text-align: right; }
+
+    // the release chip on a fleet card
+    .tnx-relchip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+        border-radius: 999px; padding: 2px 9px; font-variant-numeric: tabular-nums;
+        &.ok { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.warn { background: #FEF3C7; color: #B45309; }
+        &.muted { background: var(--pbim-bg); color: var(--pbim-muted); } }
+
+    // "what did that button do", weeks later
+    .tnx-lastsync { margin-top: 14px; padding: 0; overflow: hidden; }
+    .tnx-lastsync-h { display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--pbim-line-2);
+        b { font-size: 13.5px; } .pplw-x { margin-left: auto; } }
+    .tnx-more { margin-left: 8px; font-size: 12px; font-weight: 700; color: var(--pbim-primary-strong); }
 }
 
 @keyframes tnxPulse { 0%, 100% { transform: scale(.7); opacity: .6; } 50% { transform: scale(1.15); opacity: 1; } }
 @keyframes tnxPop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes tnxRise { 0% { transform: translateY(8px); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
     .tnx .tnx-card { transition: none; }
     .tnx .tnx-pulse, .tnx .tnx-done-ic { animation: none; }
+    .tnx .tnx-rel, .tnx .tnx-result, .tnx .tnx-runpanel { animation: none; }
+    .tnx .tnx-ring-fg { transition: none; }
 }
