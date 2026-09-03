@@ -331,7 +331,9 @@ export class PbSidebar extends Component {
     toggleSection(section) {
         if (section.restricted) {
             this.dialog.add(AlertDialog, {
-                title: _t("Available in the full platform"),
+                // Same two headings as an entry: see `onItemClick`.
+                title: section.restriction_title
+                    || _t("Available in the full platform"),
                 body: section.restriction_reason ||
                     _t("This functionality is available in the full Payobook platform. Please contact Payobook to arrange a personalised demonstration."),
                 confirmLabel: _t("Got it"),
@@ -372,7 +374,15 @@ export class PbSidebar extends Component {
     onItemClick(item) {
         if (item.restricted) {
             this.dialog.add(AlertDialog, {
-                title: _t("Available in the full platform"),
+                // TWO REASONS, TWO HEADINGS. A padlock on a demonstration
+                // database means "there is more product than this"; a padlock
+                // on a real customer means "your company has not got this one
+                // part". Telling a paying customer that something is
+                // "available in the full platform" reads as though they are on
+                // a cut-down version of the product, which they are not — so
+                // whoever put the padlock there may say what it is called.
+                title: item.restriction_title
+                    || _t("Available in the full platform"),
                 body: item.restriction_reason ||
                     _t("This functionality is available in the full Payobook platform. Please contact Payobook to arrange a personalised demonstration."),
                 confirmLabel: _t("Got it"),

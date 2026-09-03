@@ -24,7 +24,7 @@ ring up and ask why it does not work.
 """
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -160,6 +160,13 @@ class PbSidebarItem(models.Model):
             return result
         by_id = {i.id: i for i in self.sudo().search([('active', '=', True)])}
 
+        # THE HEADING MATTERS AS MUCH AS THE SENTENCE. The rail's own padlock
+        # says "Available in the full platform", which is right for a
+        # demonstration database and wrong for a paying customer — they ARE on
+        # the full platform; they have not bought this one part of it. So a
+        # padlock this module put there names itself.
+        title = _("Not switched on for your company")
+
         def walk(entries):
             for entry in entries:
                 item = by_id.get(entry.get('id'))
@@ -167,8 +174,17 @@ class PbSidebarItem(models.Model):
                     text = self._feature_lock_text(item)
                     if text:
                         entry['restriction_reason'] = text
+                        entry['restriction_title'] = title
                 walk(entry.get('children') or [])
 
+        secs = {s.id: s for s in self.env['pb.sidebar.section'].sudo().search([])}
         for section in result:
+            sec = secs.get(section.get('id'))
+            if sec is not None and section.get('restricted'):
+                on, mode, text = self.env['pb.tenancy'].feature_state(
+                    sec.feature_key)
+                if not on and mode == 'lock':
+                    section['restriction_reason'] = text
+                    section['restriction_title'] = title
             walk(section.get('items') or [])
         return result
