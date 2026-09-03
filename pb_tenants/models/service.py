@@ -153,6 +153,35 @@ from .sync_rules import (  # noqa: E402  (re-export, kept beside its call sites)
     sync_never_reason, sync_split, template_cron_plan,
 )
 
+# =============================================================================
+# TELLING A CUSTOMER SOMETHING (FLEET P2A).
+#
+# The platform now has one channel into a customer's screen, and it is five
+# settings written through that customer's own ORM. `pb_tenancy` on their side
+# reads them; nothing on their side calls back. The judgements — is this message
+# sendable, what does its window say in words, which ten releases does a
+# customer's "What's new" page carry — are pure and live next door.
+# =============================================================================
+from .tenancy_rules import (  # noqa: E402
+    NOTICE_KINDS, RELEASE_HISTORY, default_window, notice_payload,
+    parse_stamp, releases_list, render_range,
+)
+
+#: The module a customer's database needs before the platform can say anything
+#: to it. Not on the never-list (rail R2) — it is a part of the product, and it
+#: reaches a customer the same way every other part does: somebody presses
+#: "Bring in step".
+TENANCY_MODULE = 'pb_tenancy'
+
+#: The settings that carry the whole contract. Written here, read there. Kept
+#: as literals rather than imported from `pb_tenancy`, because this module must
+#: keep working on a master where that one is not installed yet.
+T_RELEASE = 'pb_tenancy.release'
+T_RELEASE_DATE = 'pb_tenancy.release_date'
+T_RELEASES = 'pb_tenancy.releases'
+T_NOTICE = 'pb_tenancy.notice'
+T_PUSHED_AT = 'pb_tenancy.pushed_at'
+
 PROVISION_STEPS = [
     ('clone', 'Clone golden template'),
     ('configure', 'Configure tenant'),
@@ -415,6 +444,39 @@ class PbTenants(models.AbstractModel):
             'last_login': t.last_login and t.last_login.isoformat(sep=' ', timespec='minutes') or None,
             'domains': len(t.domain_ids.filtered(lambda d: d.state == 'active')),
             'error': t.last_error or '',
+            # What this customer's users are being shown right now, mirrored off
+            # our own record — reading it back out of their database on every
+            # fleet load would open a registry per customer for one string.
+            'notice': self._notice_brief(t),
+        }
+
+    def _notice_brief(self, t):
+        """The message a customer is showing, unpacked for the cockpit.
+
+        `expired` is computed HERE rather than left to the reader, because the
+        mirror on our side has no way of knowing the customer's page has already
+        stopped drawing it — their database drops it on its own at `ends_at`.
+        """
+        if not t.notice:
+            return None
+        try:
+            data = json.loads(t.notice)
+        except ValueError:
+            return None
+        if not isinstance(data, dict) or not data.get('title'):
+            return None
+        return {
+            'id': data.get('id', ''),
+            'kind': data.get('kind', 'info'),
+            'title': data.get('title', ''),
+            'text': data.get('text', ''),
+            'starts_at': data.get('starts_at', ''),
+            'ends_at': data.get('ends_at', ''),
+            'range': render_range(data.get('starts_at'), data.get('ends_at')),
+            'expired': bool(t.notice_until
+                            and t.notice_until <= fields.Datetime.now()),
+            'sent_at': (t.notice_sent_at.isoformat(sep=' ', timespec='minutes')
+                        if t.notice_sent_at else None),
         }
 
     def _platform_status(self):
@@ -1412,8 +1474,10 @@ class PbTenants(models.AbstractModel):
                 (-1, []) if dry_run else self._skipped_on(dbname))
             plan['message'] = _("This database already has everything the "
                                 "master has, at the same versions.")
-            if not dry_run and tenant is not None:
-                self._stamp(tenant, dbname, master, target_versions, rel, plan)
+            if not dry_run:
+                if tenant is not None:
+                    self._stamp(tenant, dbname, master, target_versions, rel, plan)
+                self._push_release_stamp(target, plan, rel, say)
             return plan
 
         if dry_run:
@@ -1535,7 +1599,40 @@ class PbTenants(models.AbstractModel):
             except Exception:                           # noqa: BLE001
                 _logger.warning("pb_tenants: health refresh after sync failed "
                                 "for %s", dbname, exc_info=True)
+        self._push_release_stamp(target, plan, rel, say)
         return plan
+
+    def _push_release_stamp(self, target, plan, rel, say):
+        """Tell a database which release it is now on — but only if it IS.
+
+        THE ONE MOMENT A CUSTOMER IS TOLD ABOUT A RELEASE. Cutting one does not
+        announce it to anybody: a changelog for software somebody does not have
+        yet is worse than no changelog. The announcement happens here, at the
+        end of the run that actually put them on it, and only when the run
+        SUCCEEDED — a database that came out `behind` is left saying whatever it
+        said before.
+
+        Never fatal. A message that could not be delivered must not turn a
+        successful update into a failed one; it becomes a line in the log.
+        """
+        plan['release_pushed'] = False
+        if plan.get('release_state') != 'on' or not rel:
+            return
+        try:
+            res = self.push_tenancy(target, self._release_params(rel))
+        except Exception:                               # noqa: BLE001
+            _logger.warning("pb_tenants: could not stamp the release on %s",
+                            plan.get('database'), exc_info=True)
+            say(_("This database is on the release, but could not be told so — "
+                  "its \"What's new\" page will catch up next time."), 'warn')
+            return
+        plan['release_pushed'] = bool(res.get('ok'))
+        if res.get('ok'):
+            say(_("Told it that it is now on release %s — its users get one "
+                  "note about it and a page saying what changed.") % rel.name)
+        else:
+            say(res.get('reason') or _("The release stamp was not delivered."),
+                'warn')
 
     def _stamp(self, tenant, dbname, master, target_versions, rel, plan):
         """Write where this customer now stands. On OUR database, never theirs."""
@@ -1598,6 +1695,15 @@ class PbTenants(models.AbstractModel):
         })
         rel.make_current()
         _logger.info("pb_tenants: release %s cut with %s parts", name, len(snapshot))
+        # The master's own What's new page. NOT the tenants': a customer is told
+        # about a release when they are actually MOVED onto it, which happens in
+        # `sync_bring_in_step`. Announcing a release to somebody still running
+        # the previous one would be a changelog for software they do not have.
+        try:
+            self._push_release_here(rel)
+        except Exception:                               # noqa: BLE001
+            _logger.warning("pb_tenants: the release was cut but the master's "
+                            "own What's new could not be updated", exc_info=True)
         # Re-measure everybody against the new photograph. READ ONLY on their
         # databases: the only thing written is our own record of where they are.
         for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
@@ -1649,6 +1755,213 @@ class PbTenants(models.AbstractModel):
             except Exception as e:                      # noqa: BLE001
                 _logger.warning("Drift check failed for %s: %s", t.slug, e)
             self.env.cr.commit()
+
+    # ================================================ talking to a customer
+    #
+    # ONE DOOR, AND IT IS `push_tenancy`. Every later phase — feature switches,
+    # plan limits, the support-access switch — writes through this method and
+    # nothing else, so there is exactly one place where the platform touches a
+    # customer's settings, one place that refuses the databases it must never
+    # touch, and one place that leaves a line in that customer's own log.
+    #
+    # AND IT IS ALWAYS SOMEBODY PRESSING SOMETHING (rail R1). Nothing below runs
+    # on a cron, on a deploy or on an upgrade. The nightly drift check reads;
+    # this writes; they are different methods on purpose.
+
+    def _tenancy_installed(self, dbname):
+        """Has this database got the part that can be talked to?"""
+        try:
+            return TENANCY_MODULE in self._installed_on(dbname)
+        except Exception:                                # noqa: BLE001
+            _logger.warning("pb_tenants: could not read the module list of %s",
+                            dbname, exc_info=True)
+            return False
+
+    def push_tenancy(self, target, values):
+        """Write what the platform has to say onto ONE database.
+
+        `target` is the same three things the "bring in step" button takes — a
+        customer id, `template`, or a `<customer>-staging` rehearsal copy — and
+        nothing else. `values` is a plain `{setting: string}` dict.
+
+        THROUGH THE ORM, NEVER SQL (rail R5). A settings row changed behind the
+        running registry's back stays cached there until something happens to
+        clear it, which on a database nobody restarts is "never". The ORM path
+        invalidates it, so a notice sent at 14:00 is readable at 14:00.
+
+        Returns `{'ok', 'database', 'reason'}`. A database without the Platform
+        Link is a SKIP with a sentence saying what to do about it, not an error:
+        the platform owner sending one message to eleven customers must not have
+        the whole send fail because the twelfth has not been brought in step.
+        """
+        self._require_admin()
+        dbname, label, tenant, is_template = self._resolve_sync_target(target)
+        # Belt and braces on top of the resolver, which already refuses the
+        # master by name: the literal database about to be written is re-asked
+        # the never question (rail R2), because that list is what actually runs.
+        if dbname == self.env.cr.dbname or is_never(dbname):
+            raise UserError(_(
+                "This is the platform's own database. Messages go OUT from "
+                "here — they are not sent to it."))
+        if not self._db_exists(dbname):
+            return {'ok': False, 'database': dbname, 'label': label,
+                    'reason': _('There is no database called "%s".') % dbname}
+        if not self._tenancy_installed(dbname):
+            return {'ok': False, 'database': dbname, 'label': label,
+                    'reason': _(
+                        "%s does not have the Platform Link yet, so there is "
+                        "nowhere to put the message. Bring it in step first — "
+                        "the button is on the \"In step with master\" screen.")
+                    % label}
+        vals = dict(values or {})
+        vals[T_PUSHED_AT] = fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        with self._tenant_env(dbname) as env:
+            icp = env['ir.config_parameter'].sudo()
+            for key, value in vals.items():
+                icp.set_param(key, value or '')
+        _logger.info("pb_tenants: pushed %s setting(s) to %s",
+                     len(vals), dbname)
+        return {'ok': True, 'database': dbname, 'label': label,
+                'reason': '', 'keys': sorted(vals)}
+
+    def _release_params(self, rel=None):
+        """The release settings a database is given when it lands on a release."""
+        Release = self.env['pb.release'].sudo()
+        rel = rel if rel is not None else Release.current()
+        history = releases_list([{
+            'name': r.name,
+            'date': r.captured_at and r.captured_at.date().isoformat() or '',
+            'notes': r.notes or '',
+        } for r in Release.search([], limit=RELEASE_HISTORY * 3)])
+        return {
+            T_RELEASE: rel.name if rel else '',
+            T_RELEASE_DATE: (rel.captured_at.date().isoformat()
+                             if rel and rel.captured_at else ''),
+            T_RELEASES: json.dumps(history),
+        }
+
+    def _push_release_here(self, rel=None):
+        """The master reads its own What's new page too.
+
+        Written straight onto this database rather than through `push_tenancy`,
+        which refuses the master by design: the owner is a user of the product,
+        and a changelog he cannot see on his own screen is a changelog nobody
+        proof-reads.
+        """
+        icp = self.env['ir.config_parameter'].sudo()
+        vals = dict(self._release_params(rel))
+        vals[T_PUSHED_AT] = fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        for key, value in vals.items():
+            icp.set_param(key, value or '')
+        return vals
+
+    # ---------------------------------------------------------------- notices
+    def _notice_recipients(self, target):
+        """Which databases one send reaches.
+
+        `'all'` is EVERY LIVE CUSTOMER AND NOT THE MASTER. A platform-wide
+        maintenance message is addressed to the people whose service is about
+        to pause; the owner's own database is where it is being sent FROM, and
+        putting the bar on his screen would make him the only person who cannot
+        tell whether it went out. The dialog says this in those words.
+        """
+        Tenant = self.env['pb.tenant'].sudo()
+        if isinstance(target, str) and target.strip() == 'all':
+            return Tenant.search([('state', '=', 'live')])
+        _dbname, _label, tenant, is_template = self._resolve_sync_target(target)
+        if tenant is None:
+            raise UserError(_(
+                "A message goes to a customer. The golden template and "
+                "rehearsal copies have nobody reading them."))
+        return tenant
+
+    @api.model
+    def notice_compose_defaults(self):
+        """What the composer opens holding. Read-only."""
+        self._require_admin()
+        starts, ends = default_window()
+        live = self.env['pb.tenant'].sudo().search([('state', '=', 'live')])
+        return {
+            'kinds': list(NOTICE_KINDS),
+            'starts_at': starts,
+            'ends_at': ends,
+            'live': [{'id': t.id, 'name': t.name, 'slug': t.slug,
+                      'linked': self._tenancy_installed(t.slug)} for t in live],
+        }
+
+    @api.model
+    def notice_send(self, target, kind, title, text, starts_at, ends_at):
+        """Put a message at the top of every page on one customer, or on all.
+
+        The message is composed ONCE — one id, one wording, one window — and the
+        same dict is written on every recipient, so two customers can never be
+        looking at two different versions of the same announcement.
+        """
+        self._require_admin()
+        try:
+            payload = notice_payload(kind, title, text, starts_at, ends_at,
+                                     uuid.uuid4().hex[:12])
+        except ValueError as exc:
+            raise UserError(str(exc)) from exc
+        tenants = self._notice_recipients(target)
+        if not tenants:
+            raise UserError(_(
+                "There are no live customers to send this to yet."))
+        blob = json.dumps(payload)
+        until = parse_stamp(payload['ends_at']) or None
+        sent, skipped = [], []
+        for t in tenants:
+            res = self.push_tenancy(t.id, {T_NOTICE: blob})
+            if res['ok']:
+                t.write({'notice': blob,
+                         'notice_until': until,
+                         'notice_sent_at': fields.Datetime.now()})
+                self._log_line(t, 'notice', _(
+                    'Message sent to this customer\'s users: "%(title)s"%(when)s',
+                    title=payload['title'],
+                    when=(' — %s' % render_range(payload['starts_at'],
+                                                 payload['ends_at']))
+                    if payload['ends_at'] or payload['starts_at'] else ''))
+                sent.append(t.name)
+            else:
+                skipped.append({'name': t.name, 'reason': res['reason']})
+                self._log_line(t, 'notice', res['reason'], 'warn')
+        return {
+            'notice': payload,
+            'sent': sent, 'skipped': skipped,
+            'range': render_range(payload['starts_at'], payload['ends_at']),
+            # Counted in words a person uses. "1 customer(s)" is the shape a
+            # developer writes when the plural is somebody else's problem.
+            'message': self._reach_sentence(len(sent), len(skipped)),
+        }
+
+    @api.model
+    def notice_clear(self, target):
+        """Take the message down. Same door, empty value."""
+        self._require_admin()
+        tenants = self._notice_recipients(target)
+        cleared, skipped = [], []
+        for t in tenants:
+            res = self.push_tenancy(t.id, {T_NOTICE: ''})
+            if res['ok']:
+                t.write({'notice': False, 'notice_until': False})
+                self._log_line(t, 'notice', _("Message taken down."))
+                cleared.append(t.name)
+            else:
+                skipped.append({'name': t.name, 'reason': res['reason']})
+        return {'cleared': cleared, 'skipped': skipped,
+                'message': (_("Taken down for 1 customer.") if len(cleared) == 1
+                            else _("Taken down for %(n)s customers.", n=len(cleared)))}
+
+    @staticmethod
+    def _reach_sentence(sent, skipped):
+        """"3 customers will see it; 1 could not be reached." Plain counting."""
+        who = (_("1 customer will see it.") if sent == 1
+               else _("%(n)s customers will see it.", n=sent))
+        if not skipped:
+            return who
+        return "%s %s" % (who, _("1 could not be reached.") if skipped == 1
+                          else _("%(m)s could not be reached.", m=skipped))
 
     def _tenant_cert_vals(self, tenant):
         """What certificate is this tenant's subdomain actually being served?
@@ -1752,6 +2065,9 @@ class PbTenants(models.AbstractModel):
             'created': t.create_date and t.create_date.isoformat(sep=' ', timespec='minutes') or None,
             'notes': t.notes or '',
             'last_sync_result': t.last_sync_result or '',
+            # Whether there is anywhere to put a message on this customer at
+            # all. Asked once, on opening one customer — never on the fleet.
+            'tenancy_linked': self._tenancy_installed(t.slug),
             'staging_db': '%s-staging' % t.slug,
             'staging_exists': self._db_exists('%s-staging' % t.slug),
             'staging_url': self._tenant_url('%s-staging' % t.slug),

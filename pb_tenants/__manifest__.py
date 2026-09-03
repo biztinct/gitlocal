@@ -2,13 +2,21 @@
 {
     'name': 'Payobook Tenant Mission Control',
     'summary': 'Create and manage Payobook SaaS tenants: provisioning, backups, custom domains, health.',
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'depends': ['web', 'pb_import_kit', 'pb_sidebar',
                 # C3: the back chip the Settings hub hands over
-                'pb_hub'],
+                'pb_hub',
+                # FLEET P2A. The cockpit's notice composer previews the message
+                # by rendering the CUSTOMER'S OWN bar component — so the
+                # sentence the owner approves is the sentence delivered, not a
+                # lookalike that drifts. That makes the tenant-side module a
+                # real dependency of this one, on the master only: `pb_tenancy`
+                # is a product module every database gets, and this cockpit is
+                # the one module no customer ever gets.
+                'pb_tenancy'],
     'data': [
         'security/ir.model.access.csv',
         'views/pb_tenants_action.xml',

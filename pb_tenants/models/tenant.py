@@ -67,6 +67,17 @@ class PbTenant(models.Model):
     #: question "what did that button actually do" has an answer afterwards.
     last_sync_result = fields.Text()
 
+    # What this customer's users are currently being shown at the top of every
+    # page. A MIRROR of what was pushed onto their database, kept here so the
+    # cockpit can answer "what are they seeing right now" without opening their
+    # registry. Their copy is the one that counts; this one is for the screen.
+    notice = fields.Text(help="The message this customer's users are shown, as "
+                              "it was sent. Empty when there is none.")
+    notice_until = fields.Datetime(
+        help="When the message stops showing. Their database drops it on its "
+             "own at this moment — nobody has to come back and clear it.")
+    notice_sent_at = fields.Datetime()
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')

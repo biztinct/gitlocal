@@ -282,6 +282,73 @@
     .tnx-lastsync-h { display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--pbim-line-2);
         b { font-size: 13.5px; } .pplw-x { margin-left: auto; } }
     .tnx-more { margin-left: 8px; font-size: 12px; font-weight: 700; color: var(--pbim-primary-strong); }
+
+    // ---------------- FLEET P2A: the notice on a customer's overview row
+    .tnx-notice-ttl { margin-left: 8px; font-weight: 700; }
+    // Two links side by side need a gap of their own: `.tnx-more` carries one
+    // and `.tnx-danger-link` did not, so "replace" and "take it down" ran
+    // together into one unreadable word.
+    .tnx-rev-row .tnx-danger-link { margin-left: 10px; }
+}
+
+// =============================================================================
+// FLEET P2A — the notice composer.
+//
+// Root-scoped rather than nested in `.tnx`, because the scrim is portalled to
+// the top of the page and never matches a selector rooted at the cockpit.
+// =============================================================================
+.tnx-notice {
+    .tnx-notice-ic { width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0); }
+
+    .tnx-notice-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .tnx-notice-f { display: flex; flex-direction: column; gap: 5px;
+        .pplw-label small { font-weight: 500; color: var(--pbim-muted, #64748B); } }
+    .tnx-notice-help { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+    .tnx-notice-ta { resize: vertical; min-height: 54px; font-family: inherit; }
+    .tnx-notice-when { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tnx-notice-seg { align-self: flex-start; }
+
+    .tnx-notice-err { display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+        font-weight: 600; color: var(--pbim-rose, #DC2668);
+        background: var(--pbim-rose-soft, #FCE7EF); border-radius: 10px; padding: 9px 12px; }
+
+    // ---- the hero. A window frame around the live bar, so it reads as
+    // "somebody else's screen" rather than as a control on this one.
+    .tnx-notice-prev { margin-top: 4px; }
+    .tnx-notice-prev-h { display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+        font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); }
+    .tnx-notice-prev-frame { border-radius: 12px; padding: 10px;
+        background: var(--pbim-bg, #F5F6FA); border: 1px solid var(--pbim-line, #E2E8F0); }
+    .tnx-notice-prev-note { margin-top: 8px; font-size: 11.5px;
+        color: var(--pbim-muted, #64748B); }
+
+    .tnx-notice-reach { font-size: 12.5px; color: var(--pbim-muted, #64748B);
+        b { color: var(--pbim-ink, #1B1733); } }
+
+    // ---- it went
+    .tnx-notice-done { display: flex; flex-direction: column; align-items: center;
+        text-align: center; gap: 7px; padding: 26px 10px;
+        b { font-size: 15.5px; }
+        animation: tnxRise .32s cubic-bezier(.2,.8,.3,1) both; }
+    .tnx-notice-done-ic { color: var(--pbim-green, #2E7D4F); animation: tnxPop .34s cubic-bezier(.2,.8,.3,1) both; }
+    .tnx-notice-done-who { font-size: 13px; font-weight: 600; }
+    .tnx-notice-done-sub { font-size: 12.5px; color: var(--pbim-muted, #64748B); max-width: 44ch; }
+    .tnx-notice-skip { width: 100%; margin-top: 12px; text-align: left;
+        background: var(--pbim-amber-soft, #FEF3C7); border-radius: 10px; padding: 11px 13px;
+        b { font-size: 12.5px; color: #92400E; } }
+    .tnx-notice-skip-row { display: flex; flex-direction: column; margin-top: 6px; font-size: 12.5px;
+        small { color: #92400E; opacity: .85; } }
+
+    @media (max-width: 640px) {
+        .tnx-notice-when { grid-template-columns: 1fr; }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tnx-notice .tnx-notice-done, .tnx-notice .tnx-notice-done-ic { animation: none; }
 }
 
 @keyframes tnxPulse { 0%, 100% { transform: scale(.7); opacity: .6; } 50% { transform: scale(1.15); opacity: 1; } }
