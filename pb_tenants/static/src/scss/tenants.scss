@@ -296,8 +296,13 @@
 //
 // Root-scoped rather than nested in `.tnx`, because the scrim is portalled to
 // the top of the page and never matches a selector rooted at the cockpit.
+//
+// FLEET P3 added two more dialogs to the same list. They share the field, help
+// and error styles below — a label above its box, help underneath it — and the
+// first cut of the settings dialog shipped without them: every label sat on the
+// same line as its input and the whole form read as a paragraph.
 // =============================================================================
-.tnx-notice {
+.tnx-notice, .tnx-settings, .tnx-resolve {
     .tnx-notice-ic { width: 34px; height: 34px; border-radius: 10px; flex: none;
         display: grid; place-items: center;
         background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0); }
@@ -487,7 +492,139 @@
     .tnx-tl-mid { flex: 1; color: var(--pbim-muted); min-width: 0; }
     .tnx-tl-detail { padding: 4px 0 14px 20px; animation: tnxRise .22s ease both; }
     .tnx-tl-health { margin-top: 10px; font-size: 12px; color: var(--pbim-muted); }
+
 }
+
+
+
+// ============================================================================
+// FLEET P3 — alerts, the capacity gauge, the settings dialog.
+//
+// ROOT-SCOPED, NOT NESTED IN `.tnx`, and that is not a style choice: the two
+// dialogs are scrims that sit outside the cockpit's own wrapper, exactly like
+// the notice composer above. Nesting these under `.tnx` is how the capacity
+// bar shipped four pixels tall and invisible the first time.
+// ============================================================================
+
+// ---------------- the chip in the fleet header
+//
+// `.pbim` on the front is load-bearing. The shared kit styles its buttons as
+// `.pbim .pbim-btn.outline`, which out-specifies a bare `.tnx-alertchip.bad`
+// — so the first cut of this chip stayed indigo with a rose number on it while
+// a customer was unreachable.
+.pbim .tnx-alertchip {
+    &.warn { border-color: #D9760699; color: #B45309; background: #FEF3C7; }
+    &.bad { border-color: #DC266899; color: #B4184C; background: #FDE7EF;
+        .tnx-count { background: #DC2668; color: #fff; } }
+}
+
+// ---------------- the alert that cannot email itself
+.tnx-channeldown { display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    background: #FDE7EF; border: 1px solid #DC266840; border-left: 3px solid #DC2668;
+    border-radius: var(--pbim-radius, 14px); padding: 13px 16px; animation: tnxRise .24s ease both; }
+.tnx-cd-ic { color: #DC2668; display: flex; }
+.tnx-cd-tx { display: flex; flex-direction: column; flex: 1; min-width: 0;
+    b { font-size: 13.5px; color: #8C1039; }
+    span { font-size: 12px; color: #8C1039CC; line-height: 1.5; } }
+
+// ---------------- checklist rows that can be proven
+.tnx-check-act { display: flex; gap: 8px; margin-top: 6px; }
+.tnx-check-res { margin-top: 6px; font-size: 12px; font-weight: 600;
+    &.ok { color: var(--pbim-green, #2E7D4F); }
+    &.bad { color: #DC2668; } }
+
+// ---------------- the capacity gauge
+.tnx-cap { position: relative;
+    .tnx-capbar { display: block; height: 4px; border-radius: 999px; background: var(--pbim-line-2);
+        margin-top: 7px; overflow: hidden;
+        i { display: block; height: 100%; border-radius: 999px; background: var(--pbim-green, #2E7D4F);
+            transition: width .5s cubic-bezier(.4,0,.2,1); } }
+    &.warn .tnx-capbar i { background: #D97706; }
+    &.full .tnx-capbar i { background: #DC2668; } }
+
+// The wizard's own warning, before a form is filled in that would be refused.
+.tnx-caproom { display: flex; gap: 12px; padding: 13px 16px; border-radius: 12px; margin-bottom: 16px;
+    background: #FEF3C7; border: 1px solid #D9760640;
+    div { display: flex; flex-direction: column; gap: 3px; }
+    b { font-size: 13.5px; color: #92400E; }
+    span { font-size: 12px; color: #92400ECC; line-height: 1.5; }
+    &.full { background: #FDE7EF; border-color: #DC266840;
+        b { color: #8C1039; } span { color: #8C1039CC; } } }
+.tnx-caproom-ic { color: #D97706; display: flex; align-items: flex-start; padding-top: 2px; }
+.tnx-caproom.full .tnx-caproom-ic { color: #DC2668; }
+.tnx-caproom-run { opacity: .85; }
+
+// ---------------- the alerts view
+.tnx-back { align-self: flex-start; margin-bottom: 8px; }
+.tnx-alert-tabs { margin-bottom: 16px; }
+.tnx-alert-grp { margin-bottom: 22px; }
+.tnx-alert-h { display: flex; align-items: center; gap: 9px; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted); margin: 0 0 10px;
+    &.critical { color: #DC2668; }
+    &.warning { color: #D97706; } }
+.tnx-alert { display: flex; gap: 13px; align-items: flex-start; padding: 15px 17px; margin-bottom: 10px;
+    background: var(--pbim-card, #fff); border: 1px solid var(--pbim-line-2);
+    border-left: 3px solid var(--pbim-line-2); border-radius: 13px;
+    animation: tnxRise .22s ease both; outline: none;
+    &:focus-visible, &:focus { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    &.critical { border-left-color: #DC2668; }
+    &.warning { border-left-color: #D97706; }
+    &.info { border-left-color: #2563EB; }
+    &.ack { opacity: .72; } }
+.tnx-alert-ic { width: 34px; height: 34px; border-radius: 10px; flex: none; display: grid; place-items: center;
+    background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+.tnx-alert.critical .tnx-alert-ic { background: #FDE7EF; color: #DC2668; }
+.tnx-alert.warning .tnx-alert-ic { background: #FEF3C7; color: #D97706; }
+.tnx-alert-tx { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;
+    b { font-size: 14px; } }
+.tnx-alert-meta { font-size: 11.5px; color: var(--pbim-muted); }
+.tnx-alert-next { font-size: 12.5px; line-height: 1.55; color: var(--pbim-ink-2, #4a4a5a); }
+.tnx-alert-btns { display: flex; gap: 7px; align-items: center; flex: none; flex-wrap: wrap;
+    justify-content: flex-end; max-width: 320px; }
+.tnx-alert-keys { font-size: 11.5px; display: flex; align-items: center; gap: 7px; }
+.tnx-alert-none { text-align: center; padding: 54px 20px; display: flex; flex-direction: column;
+    align-items: center; gap: 7px;
+    h3 { margin: 4px 0 0; font-size: 17px; }
+    p { margin: 0; color: var(--pbim-muted); font-size: 13.5px; max-width: 460px; } }
+.tnx-alert-none-ic { color: var(--pbim-green, #2E7D4F); animation: tnxPop .3s ease both; }
+.tnx-alert-none-sub { font-size: 12px; color: var(--pbim-muted); max-width: 430px; margin-top: 8px; }
+.tnx-hist { border: 1px solid var(--pbim-line-2); border-radius: 13px; overflow: hidden;
+    background: var(--pbim-card, #fff); }
+.tnx-hist-row { display: flex; gap: 11px; align-items: flex-start; padding: 12px 16px;
+    border-top: 1px solid var(--pbim-line-2); &:first-child { border-top: 0; } }
+.tnx-hist-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none;
+    background: var(--pbim-line-2);
+    &.critical { background: #DC2668; } &.warning { background: #D97706; } }
+.tnx-hist-tx { display: flex; flex-direction: column; gap: 2px;
+    b { font-size: 13px; } span { font-size: 11.5px; color: var(--pbim-muted); } }
+
+// ---------------- alert settings
+.tnx-settings { max-width: 720px; }
+.tnx-set-body { display: flex; flex-direction: column; gap: 13px; padding: 18px 22px;
+    // NOT `min(64vh, 640px)`: the stylesheet compiler reads `min()` as its own
+    // function and refuses to mix vh with px, which fails the WHOLE bundle and
+    // paints the cockpit as unstyled HTML with a red banner.
+    max-height: 64vh; overflow-y: auto; }
+.tnx-set-h { margin: 8px 0 0; font-size: 11.5px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--pbim-muted); }
+// `align-items: end` and not a fixed label height: two of these labels wrap
+// onto a second line at this width, and without it every box in the row sat
+// at a different height, which reads as a broken form rather than a dense one.
+.tnx-set-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    align-items: end; }
+@media (max-width: 700px) { .tnx-set-grid { grid-template-columns: 1fr 1fr; } }
+.tnx-set-cap { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 11px 14px;
+    border-radius: 11px; background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F);
+    &.warn { background: #FEF3C7; color: #92400E; }
+    &.full { background: #FDE7EF; color: #8C1039; } }
+
+// ---------------- the public tick on the notice composer
+.tnx-notice-pub { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+    border: 1px solid var(--pbim-line-2); border-radius: 11px; cursor: pointer;
+    input { margin-top: 2px; }
+    b { display: block; font-size: 13px; }
+    small { display: block; font-size: 11.5px; color: var(--pbim-muted); line-height: 1.5; margin-top: 2px; }
+    &:hover { border-color: var(--pbim-primary); } }
 
 @media (prefers-reduced-motion: reduce) {
     .tnx-notice .tnx-notice-done, .tnx-notice .tnx-notice-done-ic { animation: none; }
@@ -505,5 +642,9 @@
     // not animate their way there.
     .tnx .tnx-ro, .tnx .tnx-tl-detail { animation: none; }
     .tnx .tnx-ring { transition: none; }
+    // FLEET P3: a new alert still enters, it simply does not slide in, and the
+    // capacity bar still moves, it simply arrives already there.
+    .tnx .tnx-alert, .tnx .tnx-channeldown, .tnx .tnx-alert-none-ic { animation: none; }
+    .tnx .tnx-capbar i { transition: none; }
     .tnx .tnx-chip.r .tnx-chip-dot, .tnx .tnx-ro-step.running .tnx-ro-step-dot { animation: none; }
 }

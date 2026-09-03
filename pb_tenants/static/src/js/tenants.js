@@ -48,6 +48,9 @@ export class PbTenants extends Component {
             view: "fleet",
             data: { platform: { checks: [], registrar_records: [] }, kpis: {}, tenants: [], steps: [] },
             checklistOpen: true,
+            // The checks card once everything is green: hidden, but one click
+            // away — "Send a test email" is wanted on a good day too.
+            checksOpen: false,
             wiz: this._freshWiz(),
             det: { id: null, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false },
             // "In step with master": read-only until somebody presses the button.
@@ -58,6 +61,10 @@ export class PbTenants extends Component {
             upd: { d: null, busy: "", openTask: null },
             // The notice composer. Closed until somebody opens it.
             notice: this._freshNotice(),
+            // FLEET P3. What is wrong right now, and the settings behind it.
+            alerts: this._freshAlerts(),
+            settings: { open: false, busy: false, d: null, error: "" },
+            mailTest: null,
         });
         this._tick = null;
         this._rollPoll = null;
@@ -698,6 +705,10 @@ export class PbTenants extends Component {
             open: false, busy: false, target: "all",
             kind: "maintenance", title: "", text: "",
             starts_at: "", ends_at: "",
+            // FLEET P3. Off unless somebody ticks it: most messages are about
+            // one customer's own database and have no business on a page the
+            // whole world can read.
+            public: false,
             live: [], result: null, error: "",
         };
     }
@@ -842,7 +853,7 @@ export class PbTenants extends Component {
                 n.target === "all" ? "all" : parseInt(n.target, 10),
                 n.kind, n.title, n.text,
                 this._toUtc(n.starts_at), this._toUtc(n.ends_at),
-            ]);
+            ], { public: !!n.public });
             this.notif.add(n.result.message, { type: "success" });
             await this.loadFleet();
             if (this.state.view === "detail" && this.state.det.id) {
@@ -879,6 +890,179 @@ export class PbTenants extends Component {
         });
     }
 
+    // ------------------------------------------------------------- alerts
+    //
+    // WHAT IS WRONG RIGHT NOW, AND WHAT TO DO ABOUT IT. Measured against a
+    // triage list rather than against a log: three groups in the order a person
+    // works through them, every row carrying its own next step, and two buttons
+    // that mean two different things — "I know about this" and "this is over".
+    //
+    // Nothing here polls. The sweep behind it runs every fifteen minutes and
+    // emails; a screen that re-asks every eight seconds would be pretending to
+    // be faster than the thing it is watching.
+
+    _freshAlerts() {
+        return { loaded: false, busy: "", d: null, tab: "open", idx: 0, resolveFor: null, resolveText: "" };
+    }
+
+    async openAlerts() {
+        this.state.view = "alerts";
+        this.state.alerts = this._freshAlerts();
+        await this.loadAlerts();
+    }
+
+    async loadAlerts(quiet = true) {
+        const a = this.state.alerts;
+        try {
+            a.d = await this.orm.silent.call("pb.tenants", "alerts_data", []);
+            a.loaded = true;
+            if (!quiet) { this.notif.add(_t("Looked again."), { type: "info" }); }
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("The alerts could not be read.")), { type: "danger" });
+            this.state.view = "fleet";
+        }
+    }
+
+    /** Every open row in the order they are drawn — what the arrow keys walk. */
+    get alertRows() {
+        const d = this.state.alerts.d;
+        if (!d) { return []; }
+        return [...d.critical, ...d.warning, ...d.acknowledged];
+    }
+
+    get alertEmpty() {
+        const d = this.state.alerts.d;
+        return !!d && !this.alertRows.length;
+    }
+
+    severityWord(sev) {
+        return { critical: _t("Needs attention now"), warning: _t("Worth a look"), info: _t("For information") }[sev] || _t("Worth a look");
+    }
+
+    async _alertCall(method, args, busy, okMsg) {
+        const a = this.state.alerts;
+        a.busy = busy;
+        try {
+            a.d = await this.orm.call("pb.tenants", method, args);
+            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this.loadFleet();
+            return true;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")), { type: "danger" });
+            return false;
+        } finally {
+            a.busy = "";
+        }
+    }
+
+    ackAlert(row) {
+        this._alertCall("alert_ack", [row.id], "a" + row.id,
+                        _t("Acknowledged — you will not be reminded about it again."));
+    }
+
+    askResolve(row) {
+        this.state.alerts.resolveFor = row;
+        this.state.alerts.resolveText = "";
+    }
+
+    confirmResolve() {
+        const a = this.state.alerts;
+        const row = a.resolveFor;
+        this._alertCall("alert_resolve", [row.id, a.resolveText], "a" + row.id,
+                        _t("Closed.")).then((ok) => {
+            if (ok) { a.resolveFor = null; a.resolveText = ""; }
+        });
+    }
+
+    checkNow() {
+        this._alertCall("alert_check_now", [], "check", _t("Checked everything."));
+    }
+
+    openAlertTenant(row) {
+        if (row.tenant_id) { this.openDetail(row.tenant_id); }
+    }
+
+    // ------------------------------------------------------- alert settings
+    async openSettings() {
+        const s = this.state.settings;
+        s.open = true; s.error = ""; s.busy = true;
+        try {
+            s.d = await this.orm.silent.call("pb.tenants", "alert_settings", []);
+        } catch (e) {
+            s.error = this.errText(e, _t("The settings could not be read."));
+        } finally {
+            s.busy = false;
+        }
+    }
+
+    closeSettings() {
+        if (this.state.settings.busy) { return; }
+        this.state.settings = { open: false, busy: false, d: null, error: "" };
+    }
+
+    async saveSettings() {
+        const s = this.state.settings;
+        s.busy = true; s.error = "";
+        try {
+            // The dialog edits the same dict the server sent back, so what is
+            // saved is what is on screen — no second shape to keep in step.
+            s.d = await this.orm.call("pb.tenants", "alert_settings_save", [{
+                emails: s.d.emails,
+                from: s.d.from,
+                interval_critical: s.d.interval_critical,
+                interval_warning: s.d.interval_warning,
+                digest_hour: s.d.digest_hour,
+                tenant_cost_mb: s.d.tenant_cost_mb,
+                reserve_mb: s.d.reserve_mb,
+                thresholds: { ...s.d.thresholds },
+            }]);
+            this.notif.add(_t("Saved."), { type: "success" });
+            this.loadFleet();
+            if (this.state.view === "alerts") { this.loadAlerts(); }
+        } catch (e) {
+            s.error = this.errText(e, _t("That could not be saved."));
+        } finally {
+            s.busy = false;
+        }
+    }
+
+    /** Prove the channel. There is no other way to know it works. */
+    async sendTestEmail() {
+        this.state.det.busy = "mailtest";
+        this.state.mailTest = null;
+        try {
+            const r = await this.orm.call("pb.tenants", "mail_test", []);
+            this.state.mailTest = r;
+            this.notif.add(r.message || (r.ok ? _t("Sent.") : _t("It did not go.")),
+                           { type: r.ok ? "success" : "danger" });
+            await this.loadFleet();
+        } catch (e) {
+            const msg = this.errText(e, _t("The test message could not be sent."));
+            this.state.mailTest = { ok: false, message: msg };
+            this.notif.add(msg, { type: "danger" });
+        } finally {
+            this.state.det.busy = "";
+        }
+    }
+
+    /** How many platform checks are still unfinished. Drives the checklist. */
+    get platformIssues() {
+        const checks = (this.state.data.platform && this.state.data.platform.checks) || [];
+        return checks.filter((c) => !c.ok).length;
+    }
+
+    /** The capacity bar: how many more customers this machine can hold. */
+    get capacity() {
+        return this.state.data.capacity || { level: "ok", headroom: 0, reason: "" };
+    }
+
+    get capacityBar() {
+        const c = this.capacity;
+        const used = Math.max(0, (c.mem_total_mb || 0) - (c.mem_available_mb || 0));
+        const pct = c.mem_total_mb ? Math.min(100, Math.round((used * 100) / c.mem_total_mb)) : 0;
+        return { pct, cls: c.level };
+    }
+
     // -------------------------------------------------------- keyboard
     //
     // Two keys, and they are the two a person presses forty times an hour on
@@ -892,6 +1076,8 @@ export class PbTenants extends Component {
         if (ev.key === "Escape") {
             // The composer is a scrim over whatever view opened it, so it owns
             // Escape before that view does.
+            if (this.state.settings.open) { this.closeSettings(); return; }
+            if (this.state.alerts.resolveFor) { this.state.alerts.resolveFor = null; return; }
             if (this.state.notice.open) { this.closeNotice(); return; }
             if (this.state.roll.planOpen) { this.closeRolloutPlan(); return; }
             if (this.state.roll.skipFor) { this.state.roll.skipFor = null; return; }
@@ -903,10 +1089,31 @@ export class PbTenants extends Component {
                 } else if (!this.state.sync.busy) {
                     this.backToFleet();
                 }
-            } else if (this.state.view === "detail") {
+            } else if (this.state.view === "detail" || this.state.view === "alerts") {
                 this.backToFleet();
             }
             return;
+        }
+        // The alerts list is a list, so it is walked and worked with keys.
+        if (this.state.view === "alerts" && !this.state.settings.open
+            && !this.state.alerts.resolveFor) {
+            const rows = this.alertRows;
+            if ((ev.key === "ArrowDown" || ev.key === "ArrowUp") && rows.length) {
+                ev.preventDefault();
+                const next = this.state.alerts.idx + (ev.key === "ArrowDown" ? 1 : -1);
+                this.state.alerts.idx = Math.max(0, Math.min(rows.length - 1, next));
+                const el = document.querySelectorAll(".tnx-alert")[this.state.alerts.idx];
+                if (el) { el.focus(); }
+                return;
+            }
+            if ((ev.key === "a" || ev.key === "A") && rows.length) {
+                const row = rows[Math.min(this.state.alerts.idx, rows.length - 1)];
+                if (row && row.state === "open") {
+                    ev.preventDefault();
+                    this.ackAlert(row);
+                }
+                return;
+            }
         }
         // The row of waves reads left to right, so the arrow keys walk it.
         if (this.state.view === "sync" && !this.state.roll.planOpen
@@ -917,8 +1124,12 @@ export class PbTenants extends Component {
             return;
         }
         if (ev.key === "r" || ev.key === "R") {
-            if (this.state.notice.open || this.state.roll.planOpen) { return; }
-            if (this.state.view === "sync" && !this.state.sync.busy) {
+            if (this.state.notice.open || this.state.roll.planOpen
+                || this.state.settings.open) { return; }
+            if (this.state.view === "alerts" && !this.state.alerts.busy) {
+                ev.preventDefault();
+                this.loadAlerts(false);
+            } else if (this.state.view === "sync" && !this.state.sync.busy) {
                 ev.preventDefault();
                 this.loadSync(false);
                 this.loadRollout(false);
