@@ -215,8 +215,10 @@ export class PbMission extends Component {
         // flipped on the platform reaches an open page within a minute, and
         // this shell has to repaint when it does. Null when the Platform Link
         // is not installed here — and then Workforce is simply on.
-        this._features = featuresState(this.env);
-        if (this._features) { useState(this._features); }
+        // The return value IS the subscription (a discarded `useState` watches
+        // nothing), and `workforceOff` touches it below.
+        const feats = featuresState(this.env);
+        this._features = feats ? useState(feats) : null;
 
         const arrival = this._arrival();
 
@@ -617,6 +619,9 @@ export class PbMission extends Component {
     // no rail entry for it and no palette rows, but a bookmark still points
     // here, and an empty workspace is the dead end this answers.
     get workforceOff() {
+        // Watch the one value that moves when a switch is flipped, so this
+        // shell repaints without a reload.
+        if (this._features) { void this._features.features_sig; }
         const g = featureGate(this.env, "workforce");
         return !g.shown || g.locked;
     }
