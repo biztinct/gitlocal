@@ -203,6 +203,22 @@ Enumerate `pg_database` and refresh each module list.
 
 ## Bringing a tenant DB up to the apex's module set (abm, 2026-08-19, IA Cycle 7)
 
+> **2026-09-03 (FLEET P1): this is now a button.** Tenants cockpit → *In step with master* →
+> *Bring in step*, on any customer OR on the golden template (which has its own row). It runs the
+> four-step unit below in order — `update_list()`, install the missing, upgrade the stale, re-seed
+> the access catalogue — then checks that nothing was skipped
+> (`Registry(db)._init_modules`, ledger F7), switches the template's scheduled jobs back off
+> (rail R8, ledger F9) and stamps the customer with the release it is now on. *Preview* is a dry
+> run that writes nothing. The facade also accepts `<slug>-staging` so the rehearsal on a restore
+> (rail R4) goes through exactly the same code. Read the section below anyway before you press it:
+> it is the reasoning the button implements, and W120/W121 still apply.
+>
+> **Releases.** `pb.release` is a photograph of what the master runs, cut from the same screen. A
+> customer is measured against the current release rather than against a moving master, and the
+> nightly job *Payobook Tenants: drift from the release* (02:30) re-reads every customer — READ
+> ONLY — so the fleet screen is honest in the morning. Nothing installs on a schedule, ever.
+
+
 The repair above stops the crons failing. It does **not** give the tenant the
 product: `abm` was 18 custom modules and 38 stale module versions behind
 `payobook`. The owner authorised the catch-up for `abm` specifically ("ABM is
