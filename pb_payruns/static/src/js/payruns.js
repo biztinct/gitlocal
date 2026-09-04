@@ -62,6 +62,8 @@ export class PbPayruns extends Component {
             loaded: false,
             busy: 0,
             confirming: 0,          // run id whose Reject is awaiting confirmation
+            sendingBack: 0,         // run id whose Send back is open for a reason
+            sendBackNote: "",
             currency: "",
             columns: [],
             batches: [],
@@ -165,11 +167,12 @@ export class PbPayruns extends Component {
     }
 
     // ---- workflow actions ----
-    async _run(method, id, okMsg) {
+    async _run(method, id, okMsg, ctx) {
         if (!id || this.state.busy) return;
         this.state.busy = id;
         try {
-            const res = await this.orm.call("hr.payslip.run", method, [[id]]);
+            const res = await this.orm.call("hr.payslip.run", method, [[id]],
+                ctx ? { context: ctx } : {});
             if (res && typeof res === "object" && res.type) {
                 // act_url / client action → run it; notifications → toast
                 await this.action.doAction(res);
@@ -189,11 +192,35 @@ export class PbPayruns extends Component {
     }
 
     // ---- reject: an in-card confirm, never a native dialog ----
-    askReject(b) { this.state.confirming = b.id; }
+    askReject(b) { this.state.sendingBack = 0; this.state.confirming = b.id; }
     cancelReject() { this.state.confirming = 0; }
     confirmReject(b) {
         this.state.confirming = 0;
         this._run("action_payslip_run_cancel", b.id, _t("Pay run rejected"));
+    }
+
+    // ---- send back: the same in-card panel, plus an optional reason ----
+    // Rejecting kills the run; sending it back returns it one stage with its
+    // payslips intact, which is what an approver looking at a wrong number
+    // almost always wants. On a finished run the same panel is the final
+    // approver's undo.
+    askSendBack(b) {
+        this.state.confirming = 0;
+        this.state.sendingBack = b.id;
+        this.state.sendBackNote = "";
+    }
+    cancelSendBack() { this.state.sendingBack = 0; }
+    onSendBackNote(ev) { this.state.sendBackNote = ev.target.value; }
+    confirmSendBack(b) {
+        const note = (this.state.sendBackNote || "").trim();
+        this.state.sendingBack = 0;
+        const msg = b.state === "done"
+            ? _t("Approval undone — the run is back at %s.", b.send_back_label)
+            : _t("Pay run sent back to %s.", b.send_back_label);
+        this._run("action_pb_send_back", b.id, msg, { pb_sendback_note: note });
+    }
+    sendBackLabel(b) {
+        return b.state === "done" ? _t("Undo approval") : _t("Send back");
     }
 
     report(b) { this._run("action_open_payroll_report", b.id); }

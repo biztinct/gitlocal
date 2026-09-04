@@ -106,10 +106,22 @@
                                 </t>
                             </div>
 
+                            <!-- Why this run is here. Cleared server-side the
+                                 moment it moves forward again, so it always
+                                 reads as an instruction, not as history. -->
+                            <div class="c-sentback" t-if="run.sendback_note">
+                                <span class="hd">Sent back<t t-if="run.sendback_from"> from <t t-esc="run.sendback_from"/></t><t t-if="run.sendback_by"> by <t t-esc="run.sendback_by"/></t></span>
+                                <span class="why" t-esc="run.sendback_note"/>
+                            </div>
+
                             <div class="c-foot">
                                 <t t-if="run.mine">
                                     <button class="pba-btn primary" t-on-click="() => this.approve(run)">
                                         <span t-out="ic('check',15)"/><span>Approve</span>
+                                    </button>
+                                    <button t-if="run.can_send_back" class="pba-btn ghost warn"
+                                            t-on-click="() => this.openSendBack(run)">
+                                        Send back
                                     </button>
                                     <button class="pba-btn ghost danger" t-on-click="() => this.openReject(run)">
                                         Reject
@@ -141,6 +153,18 @@
                               t-attf-title="{{ run.reject_by }}: {{ run.reject_note }}"
                               t-esc="run.reject_note"/>
                         <span class="rec-net" t-esc="vnd(run.net)"/>
+                        <!-- Approved by mistake? This is the way back, and it is
+                             here because "recently decided" is where you look
+                             the moment you realise. The server withdraws it once
+                             the payslips have been emailed out.
+                             The slot is ALWAYS rendered so every row keeps the
+                             same grid and the net column stays aligned. -->
+                        <span class="rec-undo-slot">
+                            <button t-if="run.can_send_back" class="pba-btn ghost warn rec-undo"
+                                    t-on-click.stop="() => this.openSendBack(run)">
+                                Undo approval
+                            </button>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -161,6 +185,32 @@
                     <div class="pop-f">
                         <button class="pba-btn ghost" t-on-click="closeReject">Cancel</button>
                         <button class="pba-btn danger" t-on-click="confirmReject">Reject run</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================= send-back popover ======================= -->
+            <div class="pba-scrim" t-if="state.sendBackRun" t-on-click="closeSendBack">
+                <div class="pba-pop sendback" data-coach="pa-sendback" t-on-click="(ev) => ev.stopPropagation()">
+                    <div class="pop-h">
+                        <span t-out="ic('undo',18)"/>
+                        <span><t t-esc="sendBackLabel(state.sendBackRun)"/>: <t t-esc="state.sendBackRun.name"/></span>
+                    </div>
+                    <div class="pop-b">
+                        <label>Reason (required)</label>
+                        <textarea class="pop-ta" rows="3" t-on-input="onSendBackNote"
+                                  placeholder="What needs fixing before this can be approved?"/>
+                        <div class="pop-note" t-if="isUndo(state.sendBackRun)">
+                            The run goes back to <b t-esc="state.sendBackRun.send_back_label"/> for you to decide again. Its payslips are kept.
+                        </div>
+                        <div class="pop-note" t-else="">
+                            The run goes back to <b t-esc="state.sendBackRun.send_back_label"/>. Its payslips are kept as they are, so the numbers can be corrected and resubmitted.
+                        </div>
+                    </div>
+                    <div class="pop-f">
+                        <button class="pba-btn ghost" t-on-click="closeSendBack">Cancel</button>
+                        <button class="pba-btn warn" t-on-click="confirmSendBack"
+                                t-esc="sendBackLabel(state.sendBackRun)"/>
                     </div>
                 </div>
             </div>

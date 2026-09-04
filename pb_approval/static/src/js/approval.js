@@ -31,6 +31,11 @@ export class PbApproval extends Component {
             data: null,
             rejectRun: null,
             rejectNote: "",
+            // Send back = the softer refusal: the run drops one stage with its
+            // payslips intact. On a finished run the same popover is the final
+            // approver's undo of a mistaken Approve.
+            sendBackRun: null,
+            sendBackNote: "",
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -87,6 +92,7 @@ export class PbApproval extends Component {
     }
 
     openReject(run) {
+        this.state.sendBackRun = null;
         this.state.rejectRun = run;
         this.state.rejectNote = "";
     }
@@ -107,6 +113,50 @@ export class PbApproval extends Component {
             if (res.ok) {
                 this.notif.add(_t("%s rejected.", run.name), { type: "success" });
                 this.state.rejectRun = null;
+            } else {
+                this.notif.add(res.msg || _t("Action failed."), { type: "warning" });
+            }
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = 0;
+        }
+        await this.load();
+    }
+
+    // ------------------------------------------------------------ send back
+    openSendBack(run) {
+        this.state.rejectRun = null;
+        this.state.sendBackRun = run;
+        this.state.sendBackNote = "";
+    }
+    closeSendBack() { this.state.sendBackRun = null; }
+    onSendBackNote(ev) { this.state.sendBackNote = ev.target.value; }
+    isUndo(run) { return !!run && run.state === "done"; }
+    sendBackLabel(run) {
+        return this.isUndo(run) ? _t("Undo approval") : _t("Send back");
+    }
+
+    async confirmSendBack() {
+        const run = this.state.sendBackRun;
+        const note = (this.state.sendBackNote || "").trim();
+        if (!run || !note) {
+            this.notif.add(_t("Please say what needs fixing before sending this pay run back."),
+                { type: "warning" });
+            return;
+        }
+        this.state.busy = run.id;
+        try {
+            const res = await this.orm.call(MODEL, "send_back_run", [run.id, note]);
+            if (res.ok) {
+                this.notif.add(
+                    this.isUndo(run)
+                        ? _t("%(name)s is back at %(stage)s.",
+                            { name: run.name, stage: run.send_back_label })
+                        : _t("%(name)s sent back to %(stage)s.",
+                            { name: run.name, stage: run.send_back_label }),
+                    { type: "success" });
+                this.state.sendBackRun = null;
             } else {
                 this.notif.add(res.msg || _t("Action failed."), { type: "warning" });
             }

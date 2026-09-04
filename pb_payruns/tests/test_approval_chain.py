@@ -363,6 +363,140 @@ class TestApprovalChain(TransactionCase):
         with self.assertRaises(AccessError):
             sealed_run.with_user(u_demo).write({'state': 'done'})
 
+    # -------------------------------------------------- send back one stage
+    # Rejecting used to be the ONLY way to refuse a run, and it was terminal:
+    # 'cancel', every payslip cancelled, nothing walked it back. Send back
+    # returns the run to the stage before it with the payslips intact, and on a
+    # finished run it is the final approver's undo of a mistaken Approve.
+    def test_16_send_back_lands_on_the_previous_stage(self):
+        for state, target, user in (('level0', 'draft', self.u_officer),
+                                    ('level1', 'level0', self.u_hr),
+                                    ('level2', 'level1', self.u_fin)):
+            payrun = self._payrun(state)
+            payrun.with_user(user).with_context(
+                pb_sendback_note='Overtime is wrong (%s)' % state
+            ).action_pb_send_back()
+            self.assertEqual(payrun.state, target,
+                             "%s must send back to %s, not to 'cancel'" % (state, target))
+            self.assertEqual(payrun.pb_sendback_note, 'Overtime is wrong (%s)' % state)
+            self.assertEqual(payrun.pb_sendback_uid, user,
+                             "the actor is forced server-side, never client-supplied")
+            self.assertEqual(payrun.pb_sendback_from, state)
+            self.assertTrue(payrun.pb_sendback_date)
+
+    def test_16b_send_back_keeps_the_payslips(self):
+        """The whole point: the officer opens the SAME slips and fixes them."""
+        payrun = self._payrun('level2')
+        payrun.slip_ids.write({'state': 'level2'})
+        payrun.with_user(self.u_fin).action_pb_send_back()
+        self.assertEqual(payrun.state, 'level1')
+        self.assertFalse(payrun.slip_ids.filtered(lambda s: s.state == 'cancel'),
+                         "sending back must never cancel a payslip — that is Reject")
+        self.assertEqual(payrun.slip_ids.mapped('state'), ['level1'],
+                         "the slips must walk back with the run, or the bank "
+                         "export (which filters on slip state) would still see "
+                         "them as approved")
+
+    def test_16c_send_back_to_draft_returns_the_slips_to_draft(self):
+        payrun = self._payrun('level0')
+        payrun.slip_ids.write({'state': 'level1'})
+        payrun.with_user(self.u_officer).action_pb_send_back()
+        self.assertEqual(payrun.state, 'draft')
+        self.assertEqual(payrun.slip_ids.mapped('state'), ['draft'])
+
+    def test_16d_send_back_is_tier_gated_like_every_other_decision(self):
+        for state, wrong in (('level0', self.u_none), ('level1', self.u_officer),
+                             ('level2', self.u_hr)):
+            payrun = self._payrun(state)
+            with self.assertRaises(AccessError):
+                payrun.with_user(wrong).action_pb_send_back()
+            self.assertEqual(payrun.state, state)
+
+    def test_16e_draft_has_nowhere_to_go_back_to(self):
+        payrun = self._payrun()
+        with self.assertRaises(UserError):
+            payrun.with_user(self.u_officer).action_pb_send_back()
+        self.assertEqual(payrun.state, 'draft')
+
+    def test_16f_moving_forward_again_clears_the_note(self):
+        """The note answers "why is this run sitting here" — it must not follow
+        the run around once it has been fixed."""
+        payrun = self._payrun('level1')
+        payrun.with_user(self.u_hr).with_context(
+            pb_sendback_note='Missing allowances').action_pb_send_back()
+        self.assertEqual(payrun.state, 'level0')
+        self.assertEqual(payrun.pb_sendback_note, 'Missing allowances')
+        payrun.with_user(self.u_officer).action_payslip_run_level0_done()
+        self.assertEqual(payrun.state, 'level1')
+        self.assertFalse(payrun.pb_sendback_note)
+        self.assertFalse(payrun.pb_sendback_uid)
+        self.assertFalse(payrun.pb_sendback_from)
+
+    def test_16g_resubmitting_from_draft_clears_the_note_too(self):
+        payrun = self._payrun('level0')
+        payrun.with_user(self.u_officer).with_context(
+            pb_sendback_note='Wrong period').action_pb_send_back()
+        self.assertEqual(payrun.state, 'draft')
+        payrun.with_user(self.u_officer).done_payslip_run()
+        self.assertEqual(payrun.state, 'level0')
+        self.assertFalse(payrun.pb_sendback_note)
+
+    # ------------------------------------------- the final approver's undo
+    def test_17_finance_can_undo_a_mistaken_approval(self):
+        payrun = self._payrun('done')
+        payrun.slip_ids.write({'state': 'done'})
+        payrun.with_user(self.u_fin).with_context(
+            pb_sendback_note='Approved by mistake').action_pb_send_back()
+        self.assertEqual(payrun.state, 'level2',
+                         "an undo returns the run to the final approver's own "
+                         "queue, not to a re-opened chain")
+        self.assertEqual(payrun.slip_ids.mapped('state'), ['level2'])
+        self.assertEqual(payrun.pb_sendback_from, 'done')
+
+    def test_17b_only_finance_may_undo_an_approval(self):
+        for wrong in (self.u_none, self.u_officer, self.u_hr):
+            payrun = self._payrun('done')
+            with self.assertRaises(AccessError):
+                payrun.with_user(wrong).action_pb_send_back()
+            self.assertEqual(payrun.state, 'done')
+
+    def test_17c_undo_closes_once_the_payslips_have_gone_out(self):
+        """Un-approving is a safe correction right up to the moment something
+        has left the building. After that it tells everyone a lie."""
+        if 'pb.payslip.delivery.batch' not in self.env:
+            self.skipTest('pb_pay_delivery is not installed')
+        payrun = self._payrun('done')
+        payrun.slip_ids.write({'state': 'done'})
+        self.assertTrue(payrun.with_user(self.u_fin).pb_can_undo_approval)
+        batch = self.env['pb.payslip.delivery.batch'].create({'run_id': payrun.id})
+        self.env['pb.payslip.delivery'].create({
+            'batch_id': batch.id, 'slip_id': payrun.slip_ids[0].id, 'state': 'sent'})
+        payrun.invalidate_recordset()
+        self.assertFalse(payrun.with_user(self.u_fin).pb_can_undo_approval)
+        with self.assertRaises(UserError):
+            payrun.with_user(self.u_fin).action_pb_send_back()
+        self.assertEqual(payrun.state, 'done')
+
+    def test_18_reject_still_kills_the_run(self):
+        """Send back is an ADDITION — the harder action is untouched."""
+        payrun = self._payrun('level1')
+        payrun.with_user(self.u_hr).action_payslip_run_cancel()
+        self.assertEqual(payrun.state, 'cancel')
+        self.assertEqual(payrun.slip_ids.mapped('state'), ['cancel'])
+
+    def test_18b_send_back_flags_match_the_gate(self):
+        for state, allowed in (('level0', self.u_officer), ('level1', self.u_hr),
+                               ('level2', self.u_fin)):
+            payrun = self._payrun(state)
+            self.assertTrue(payrun.with_user(allowed).pb_can_send_back)
+            self.assertFalse(payrun.with_user(self.u_none).pb_can_send_back)
+        draft = self._payrun()
+        self.assertFalse(draft.with_user(self.u_officer).pb_can_send_back,
+                         "there is no stage before draft")
+        done = self._payrun('done')
+        self.assertFalse(done.with_user(self.u_hr).pb_can_undo_approval)
+        self.assertTrue(done.with_user(self.u_fin).pb_can_undo_approval)
+
     def test_15_vi_translations_load(self):
         """Review L-7: the pb_approval loader assert existed; pb_payruns' own
         python strings were never load-asserted (the C18.74 failure mode)."""

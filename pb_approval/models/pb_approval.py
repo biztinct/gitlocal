@@ -31,6 +31,14 @@ STAGE = {
 }
 STAGE_ORDER = ('level0', 'level1', 'level2')
 
+# Where a refused run goes back to. Read off hr.payslip.run so this cockpit can
+# never name a destination the model would not actually use.
+try:
+    from odoo.addons.pb_payruns.models.hr_payslip_run import PB_SEND_BACK
+except ImportError:  # pragma: no cover - pb_payruns is a hard dependency
+    PB_SEND_BACK = {'level0': 'draft', 'level1': 'level0',
+                    'level2': 'level1', 'done': 'level2'}
+
 # Any of these may OPEN the cockpit; what each may DO is decided per tier by the
 # model (C18.17 — one permission world, the facade gate is only the front door).
 _APPROVAL_GROUPS = (
@@ -75,6 +83,15 @@ class PbApproval(models.AbstractModel):
             'level2': (_('Finance approval'), _('Finance / GM')),
         }
 
+    @api.model
+    def _stage_name(self, state):
+        """Any state's screen name, including the two the lanes never show."""
+        info = self._stage_labels().get(state)
+        if info:
+            return info[0]
+        return {'draft': _('Draft'), 'done': _('Done'),
+                'cancel': _('Rejected')}.get(state, state or '')
+
     # ------------------------------------------------------------- payload
     @api.model
     def _run_dict(self, run, labels=None):
@@ -99,6 +116,18 @@ class PbApproval(models.AbstractModel):
             'mine': bool(info) and run._pb_tier_ok(run.state),
             'reject_note': run.pb_reject_note or '',
             'reject_by': run.pb_reject_uid.name or '',
+            # Send back one stage — the softer refusal, offered to whoever may
+            # approve here. On a FINISHED run it is the final approver's undo,
+            # and the model decides whether that door is still open (payslips
+            # already emailed close it).
+            'can_send_back': (bool(info) and run._pb_tier_ok(run.state)
+                              if run.state != 'done'
+                              else bool(run.pb_can_undo_approval)),
+            'send_back_to': PB_SEND_BACK.get(run.state, ''),
+            'send_back_label': self._stage_name(PB_SEND_BACK.get(run.state, '')),
+            'sendback_note': run.pb_sendback_note or '',
+            'sendback_by': run.pb_sendback_uid.name or '',
+            'sendback_from': self._stage_name(run.pb_sendback_from or ''),
         }
 
     @api.model
@@ -178,3 +207,22 @@ class PbApproval(models.AbstractModel):
                     'msg': _('Please give a reason for rejecting this pay run.')}
         return self._decide(run_id, 'action_payslip_run_cancel',
                             ctx={'pb_reject_note': note})
+
+    @api.model
+    def send_back_run(self, run_id, note):
+        """Return a run to the stage before the one it is sitting in.
+
+        The reason is REQUIRED here even though the model accepts an empty one:
+        a run that reappears in somebody's lane with no explanation is a
+        message they cannot act on, and this cockpit is where the sending
+        happens. (The plain view buttons, which have nowhere to type, keep the
+        model's optional-note behaviour.)
+        """
+        self._require_access()
+        note = (note or '').strip()
+        if not note:
+            return {'ok': False, 'state': False,
+                    'msg': _('Please say what needs fixing before sending this '
+                             'pay run back.')}
+        return self._decide(run_id, 'action_pb_send_back',
+                            ctx={'pb_sendback_note': note})

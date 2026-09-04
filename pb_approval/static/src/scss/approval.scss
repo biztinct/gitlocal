@@ -139,6 +139,13 @@
             .waits { display: inline-flex; align-items: center; gap: 6px; color: var(--muted);
                 background: var(--slate-s); border-radius: 999px; padding: 5px 11px;
                 font-size: 11.5px; font-weight: 600; } }
+
+        // why a run came back — an instruction to whoever holds it now
+        .c-sentback { display: flex; flex-direction: column; gap: 2px;
+            background: var(--amber-s); border: 1px solid #FDE68A;
+            border-radius: var(--r-sm); padding: 8px 10px;
+            .hd { font-size: 10.5px; font-weight: 800; letter-spacing: .02em; color: var(--amber); }
+            .why { font-size: 11.5px; line-height: 1.4; color: var(--ink); } }
     }
 
     // ------------------------------------------------------------ buttons
@@ -156,6 +163,12 @@
             &:hover { filter: brightness(.94); } }
         &.ghost.danger { background: #fff; color: var(--rose);
             &:hover { border-color: var(--rose); background: var(--rose-s); } }
+        // Send back is amber, not rose: it returns a run to the people who can
+        // fix it. Same :not(.ghost) split as .danger above, for the same reason.
+        &.warn:not(.ghost) { background: var(--amber-s); color: var(--amber);
+            border-color: #FCD34D; &:hover { filter: brightness(.96); } }
+        &.ghost.warn { background: #fff; color: var(--amber);
+            &:hover { border-color: var(--amber); background: var(--amber-s); } }
     }
 
     // ------------------------------------------------------------- recent
@@ -163,7 +176,9 @@
         margin-top: 22px; background: var(--surface); border: 1px solid var(--line);
         border-radius: var(--r); box-shadow: var(--sh); overflow: hidden;
         .rec-h { font-size: 13px; font-weight: 800; padding: 13px 16px; border-bottom: 1px solid var(--line); }
-        .rec-row { display: grid; grid-template-columns: 128px 1fr auto minmax(0, 1.2fr) auto;
+        // 6th column = the Undo approval slot; always present (even empty) so
+        // every row keeps the same track sizes and the net figures line up.
+        .rec-row { display: grid; grid-template-columns: 128px 1fr auto minmax(0, 1.2fr) auto auto;
             align-items: center; gap: 14px; padding: 11px 16px; cursor: pointer;
             border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
             &:last-child { border-bottom: none; }
@@ -172,7 +187,9 @@
             .rec-pd { color: var(--muted); font-size: 11.5px; }
             .rec-why { color: var(--rose); font-size: 11.5px; font-style: italic;
                 overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-            .rec-net { font-weight: 800; font-size: 13px; } }
+            .rec-net { font-weight: 800; font-size: 13px; }
+            .rec-undo-slot { justify-self: end; }
+            .rec-undo { padding: 5px 10px; font-size: 11.5px; } }
         .rec-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
             padding: 4px 11px; font-size: 11px; font-weight: 800;
             &.ok { background: var(--green-s); color: var(--green); }
@@ -199,6 +216,9 @@
             .pop-note { margin-top: 9px; font-size: 11.5px; color: var(--muted); } }
         .pop-f { display: flex; justify-content: flex-end; gap: 9px; padding: 13px 18px;
             border-top: 1px solid var(--line); background: var(--pbim-bg, #F5F6FA); }
+        // send-back reuses the reject popover's shape but not its alarm: this
+        // returns a run for correction, it does not kill it
+        &.sendback .pop-h { color: var(--amber); }
     }
 
     // -------------------------------------------------------- responsive

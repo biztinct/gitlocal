@@ -71,6 +71,13 @@
                     <span t-if="b.division_label" class="pbr-tag" t-esc="b.division_label"/>
                     <span t-if="b.journal" class="pbr-card-jnl" t-esc="b.journal"/>
                   </div>
+                  <!-- Why this run is sitting here. Only ever set while the run
+                       is waiting to be fixed: the note is cleared the moment it
+                       moves forward again. -->
+                  <div class="pbr-sentback" t-if="b.sendback_note">
+                    <span class="hd">Sent back<t t-if="b.sendback_from_label"> from <t t-esc="b.sendback_from_label"/></t><t t-if="b.sendback_by"> by <t t-esc="b.sendback_by"/></t></span>
+                    <span class="why" t-esc="b.sendback_note"/>
+                  </div>
                 </div>
 
                 <!-- The reject confirm lives IN the card. A window.confirm is a
@@ -84,10 +91,31 @@
                   </div>
                 </div>
 
+                <!-- Send back: the softer refusal. Same in-card shape as the
+                     reject confirm, plus a reason box — the reason is what the
+                     next person needs to act on, so it is asked for here rather
+                     than left to a follow-up message. -->
+                <div t-elif="state.sendingBack === b.id" class="pbr-confirm sendback">
+                  <div class="q" t-if="b.state === 'done'">
+                    Undo the approval of “<t t-esc="b.name"/>”? It goes back to <t t-esc="b.send_back_label"/> for you to decide again.
+                  </div>
+                  <div class="q" t-else="">
+                    Send “<t t-esc="b.name"/>” back to <t t-esc="b.send_back_label"/>? The payslips are kept as they are.
+                  </div>
+                  <textarea class="pbr-note" rows="2" t-on-input="onSendBackNote"
+                            placeholder="Reason (optional) — what needs fixing?"/>
+                  <div class="a">
+                    <button class="pbr-btn ghost" t-on-click="cancelSendBack">Keep it here</button>
+                    <button class="pbr-btn warn" t-on-click="() => this.confirmSendBack(b)"
+                            t-esc="sendBackLabel(b)"/>
+                  </div>
+                </div>
+
                 <div t-else="" class="pbr-card-foot">
                   <!-- context-aware primary action -->
                   <t t-if="b.next_action and b.can_act">
                     <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
+                    <button t-if="b.can_send_back" class="pbr-btn ghost" t-on-click="() => this.askSendBack(b)">Send back</button>
                     <button class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
                   </t>
                   <t t-elif="b.next_action and !b.can_act">
@@ -100,6 +128,9 @@
                     <button class="pbr-btn ghost" t-on-click="() => this.excel(b)">Excel</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.journals(b)">Journals</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.payments(b)">Payments</button>
+                    <!-- The mistaken-click escape hatch. Finance only, and the
+                         server withdraws it once the payslips have gone out. -->
+                    <button t-if="b.can_send_back" class="pbr-btn ghost" t-on-click="() => this.askSendBack(b)">Undo approval</button>
                   </t>
                 </div>
               </div>
