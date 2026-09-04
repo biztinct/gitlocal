@@ -677,6 +677,21 @@ class HrFormulaConfig(models.Model):
                 result.add(rule_id)
         return result
 
+    #: value_kind -> how the printed payslip must format it. ``money`` is absent
+    #: on purpose: it defers to number_format, so money keeps today's output
+    #: byte-for-byte. Every other kind is NOT an amount, so none of them may
+    #: carry a currency symbol however the column was once formatted.
+    _PB_KIND_FORMAT = {
+        'quantity': 'number',
+        'decimal': 'number',
+        'integer': 'integer',
+        'rate': 'percentage',
+        'identifier': 'number',
+        'text': 'number',
+        'date': 'number',
+        'boolean': 'integer',
+    }
+
     @staticmethod
     def _payslip_token_value(rule, value, currency):
         if value is None:
@@ -685,7 +700,15 @@ class HrFormulaConfig(models.Model):
             number = float(value)
         except (TypeError, ValueError):
             return str(value)
-        number_format = rule.number_format or 'currency'
+        # What the value IS outranks how its column was once formatted.
+        # `value_kind` is the setting the Treatment screen shows and the one an
+        # owner actually sets; `number_format` is an older per-column display
+        # flag that still defaults to 'currency'. Reading only the latter
+        # printed "₫62" and "₫151" in the Hours column of a live customer
+        # payslip (2026-09-04) for two components plainly declared
+        # "Quantity (hours, days)". A quantity is not money.
+        number_format = (HrFormulaConfig._PB_KIND_FORMAT.get(rule.value_kind)
+                         or rule.number_format or 'currency')
         if number_format == 'percentage':
             return ('{:,.2f}'.format(number * 100).rstrip('0').rstrip('.') + '%')
         if number_format == 'integer':

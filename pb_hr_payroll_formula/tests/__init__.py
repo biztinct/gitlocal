@@ -134,3 +134,6 @@ from . import test_sc3_source_lanes
 # SC-5 — a status word from outside lands in the box; the coercion matches a
 # label as well as a value, so vendor capitalisation cannot silence a mapping.
 from . import test_sc5_status_words
+
+# Printed-payslip formatting: value_kind decides, not the legacy number_format.
+from . import test_payslip_token_format
