@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Four countries to start from, and a catch-all under them.
+
+         COMPANY-LESS, every one of them (R8). `company_id` defaults to the
+         company of whoever ran the install, and a seeded row that lands on
+         one company is then hidden from every other by the standard rule —
+         so the screen says "no policy covers this person" on a database
+         that has five.
+
+         Read from the top: the first policy whose country matches is used,
+         and the last row matches everybody. The durations are the ordinary
+         statutory or customary ones and are meant to be edited — this is a
+         starting point, not the law.
+         ================================================================== -->
+
+    <record id="policy_vn" model="pb.probation.policy">
+        <field name="name">Vietnam — two months</field>
+        <field name="sequence">10</field>
+        <field name="country_id" ref="base.vn"/>
+        <field name="duration_months">2</field>
+        <field name="evaluation_lead_days">21</field>
+        <field name="feedback_window_days">3</field>
+        <field name="extension_grace_days">1</field>
+        <field name="default_extension_months">1</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">The usual trial period for a permanent role in Vietnam.</field>
+    </record>
+
+    <record id="policy_in" model="pb.probation.policy">
+        <field name="name">India — three months</field>
+        <field name="sequence">20</field>
+        <field name="country_id" ref="base.in"/>
+        <field name="duration_months">3</field>
+        <field name="evaluation_lead_days">21</field>
+        <field name="feedback_window_days">3</field>
+        <field name="extension_grace_days">1</field>
+        <field name="default_extension_months">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="policy_sg" model="pb.probation.policy">
+        <field name="name">Singapore — three months</field>
+        <field name="sequence">30</field>
+        <field name="country_id" ref="base.sg"/>
+        <field name="duration_months">3</field>
+        <field name="evaluation_lead_days">21</field>
+        <field name="feedback_window_days">3</field>
+        <field name="extension_grace_days">1</field>
+        <field name="default_extension_months">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="policy_id" model="pb.probation.policy">
+        <field name="name">Indonesia — three months</field>
+        <field name="sequence">40</field>
+        <field name="country_id" ref="base.id"/>
+        <field name="duration_months">3</field>
+        <field name="evaluation_lead_days">21</field>
+        <field name="feedback_window_days">3</field>
+        <field name="extension_grace_days">1</field>
+        <field name="default_extension_months">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- The catch-all. Without it a joiner in a country nobody has written a
+         row for gets no trial end date at all, and the journey posts a note
+         asking somebody to add a policy — which is honest but is a dead end
+         on day one. Last in the order, so any country row beats it. -->
+    <record id="policy_default" model="pb.probation.policy">
+        <field name="name">Everywhere else — two months</field>
+        <field name="sequence">90</field>
+        <field name="country_id" eval="False"/>
+        <field name="duration_months">2</field>
+        <field name="evaluation_lead_days">21</field>
+        <field name="feedback_window_days">3</field>
+        <field name="extension_grace_days">1</field>
+        <field name="default_extension_months">1</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Used when no country policy above fits.</field>
+    </record>
+
+</odoo>

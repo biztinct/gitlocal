@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_approval.PbApproval">
+        <div class="pba pbim" t-att-class="{ 'pba--embedded': props.embedded }">
+
+            <!-- ============================ loading ============================ -->
+            <div t-if="!state.loaded" class="pba-loading">
+                <div class="pba-spin"/><span>Loading approvals…</span>
+            </div>
+
+            <div t-else="" class="pba-wrap">
+
+                <!-- ============================= hero ============================= -->
+                <div class="pba-hero" data-coach="pa-hero">
+                    <!-- The identity block, and only the identity block. In a
+                         hub the command bar already says Home > Approvals, so
+                         this is the one element the host owns (W17); the right
+                         half of the hero keeps its "awaiting you" count and its
+                         Refresh, because those are the cockpit's own controls
+                         and an embedded mode that removed a figure would be a
+                         fork rather than a suppression. -->
+                    <div class="hero-l" t-if="!props.embedded">
+                        <div class="eyebrow"><span t-out="ic('stamp',15)"/> Payroll</div>
+                        <h1>Approval Pipeline</h1>
+                        <div class="sub">Officer review → HR review → Finance approval</div>
+                    </div>
+                    <div class="hero-r">
+                        <div class="mine-chip" t-if="summary.mine">
+                            <span t-out="ic('inbox',15)"/>
+                            <span><t t-esc="summary.mine"/> awaiting you</span>
+                        </div>
+                        <button class="pba-btn ghost" t-on-click="load" title="Refresh">
+                            <span t-out="ic('refresh',15)"/><span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================= KPIs ============================= -->
+                <div class="pba-kpis" data-coach="pa-kpis">
+                    <div class="kpi l0">
+                        <span class="ico" t-out="ic('clock',18)"/>
+                        <span class="n" t-esc="summary.officer or 0"/>
+                        <span class="l">at Officer review</span>
+                    </div>
+                    <div class="kpi l1">
+                        <span class="ico" t-out="ic('users',18)"/>
+                        <span class="n" t-esc="summary.hr or 0"/>
+                        <span class="l">at HR review</span>
+                    </div>
+                    <div class="kpi l2">
+                        <span class="ico" t-out="ic('shield',18)"/>
+                        <span class="n" t-esc="summary.fin or 0"/>
+                        <span class="l">at Finance approval</span>
+                    </div>
+                    <div class="kpi net">
+                        <span class="ico" t-out="ic('wallet',18)"/>
+                        <span class="n" t-esc="vnd(summary.net or 0)"/>
+                        <span class="l">net at stake</span>
+                    </div>
+                </div>
+
+                <!-- =========================== empty state ======================== -->
+                <div t-if="isEmpty" class="pba-empty">
+                    <span class="i" t-out="ic('checkCircle',30)"/>
+                    <div class="t">Nothing awaiting approval.</div>
+                    <div class="s">Submitted pay runs land here for Officer, HR and Finance sign-off.</div>
+                </div>
+
+                <!-- ============================= lanes ============================ -->
+                <div t-else="" class="pba-lanes" data-coach="pa-lanes">
+                    <section t-foreach="lanes" t-as="lane" t-key="lane.key"
+                             t-attf-class="pba-lane {{ laneCls(lane.key) }}">
+                        <div class="lane-h">
+                            <span class="dot"/>
+                            <span class="nm" t-esc="lane.label"/>
+                            <span class="ct" t-esc="lane.runs.length"/>
+                        </div>
+
+                        <div t-if="!lane.runs.length" class="lane-empty">No runs here.</div>
+
+                        <div t-foreach="lane.runs" t-as="run" t-key="run.id"
+                             t-attf-class="pba-card {{ run.mine ? 'mine' : '' }} {{ state.busy === run.id ? 'busy' : '' }}">
+                            <div class="c-head" t-on-click="() => this.openRun(run.id)">
+                                <span class="c-nm" t-esc="run.name"/>
+                                <span class="c-open" t-out="ic('external',13)"/>
+                            </div>
+                            <div class="c-period" t-esc="run.period"/>
+
+                            <div class="c-metrics">
+                                <div class="m">
+                                    <span class="mv" t-esc="run.count"/>
+                                    <span class="ml">payslips</span>
+                                </div>
+                                <div class="m net">
+                                    <span class="mv" t-esc="vnd(run.net)"/>
+                                    <span class="ml">net total</span>
+                                </div>
+                            </div>
+
+                            <!-- 3-dot chain stepper: filled = tiers already cleared -->
+                            <div class="c-chain">
+                                <t t-foreach="[0,1,2]" t-as="i" t-key="i">
+                                    <span t-attf-class="cd {{ dotCls(run, i) }}"/>
+                                    <span t-if="i &lt; 2" t-attf-class="cl {{ i &lt; run.step ? 'done' : '' }}"/>
+                                </t>
+                            </div>
+
+                            <div class="c-foot">
+                                <t t-if="run.mine">
+                                    <button class="pba-btn primary" t-on-click="() => this.approve(run)">
+                                        <span t-out="ic('check',15)"/><span>Approve</span>
+                                    </button>
+                                    <button class="pba-btn ghost danger" t-on-click="() => this.openReject(run)">
+                                        Reject
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <span class="waits">
+                                        <span t-out="ic('lock',13)"/>
+                                        <span t-esc="waitsOn(run)"/>
+                                    </span>
+                                </t>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ========================= recently decided ===================== -->
+                <div class="pba-recent" t-if="recent.length" data-coach="pa-recent">
+                    <div class="rec-h">Recently decided</div>
+                    <div t-foreach="recent" t-as="run" t-key="run.id"
+                         class="rec-row" t-on-click="() => this.openRun(run.id)">
+                        <span t-attf-class="rec-badge {{ run.state === 'done' ? 'ok' : 'no' }}">
+                            <span t-out="run.state === 'done' ? ic('checkCircle',13) : ic('xCircle',13)"/>
+                            <span t-esc="run.stage"/>
+                        </span>
+                        <span class="rec-nm" t-esc="run.name"/>
+                        <span class="rec-pd" t-esc="run.period"/>
+                        <span class="rec-why" t-if="run.reject_note"
+                              t-attf-title="{{ run.reject_by }}: {{ run.reject_note }}"
+                              t-esc="run.reject_note"/>
+                        <span class="rec-net" t-esc="vnd(run.net)"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================== reject popover ========================= -->
+            <div class="pba-scrim" t-if="state.rejectRun" t-on-click="closeReject">
+                <div class="pba-pop" data-coach="pa-reject" t-on-click="(ev) => ev.stopPropagation()">
+                    <div class="pop-h">
+                        <span t-out="ic('xCircle',18)"/>
+                        <span>Reject <t t-esc="state.rejectRun.name"/></span>
+                    </div>
+                    <div class="pop-b">
+                        <label>Reason (required)</label>
+                        <textarea class="pop-ta" rows="3" t-on-input="onRejectNote"
+                                  placeholder="Why is this pay run being sent back?"/>
+                        <div class="pop-note">All payslips in this run will be cancelled.</div>
+                    </div>
+                    <div class="pop-f">
+                        <button class="pba-btn ghost" t-on-click="closeReject">Cancel</button>
+                        <button class="pba-btn danger" t-on-click="confirmReject">Reject run</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

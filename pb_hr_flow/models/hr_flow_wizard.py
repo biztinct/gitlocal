@@ -114,7 +114,7 @@ class HRFlowWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': _('Employees'),
             'res_model': 'hr.employee',
-            'view_mode': 'kanban,tree,form',
+            'view_mode': 'kanban,list,form',
             'target': 'current',
             'context': {'create': True},
         }
@@ -177,6 +177,36 @@ class HRFlowWizard(models.TransientModel):
         """
         # Map keys to action xmlid and optional menu xmlid
         mapping = {
+            # Workforce (Attendance tile actions).
+            #
+            # P7 REMAP. Five of these keys used to name the Gen-0 cockpits —
+            # the Workforce Dashboard, Live Attendance, Timecards, the Shift
+            # Roster grid and the Overtime Rules board. Every one of them was
+            # replaced surface by surface during the Workforce redesign, and P7
+            # deleted their JS/CSS and their `ir.actions.client` records.
+            #
+            # An unknown key here is NOT an error: `mapping.get(key, (False,
+            # False))` below falls through to `act_window_close`, so a stale
+            # tile renders normally and then does nothing at all when clicked.
+            # That is the worst of the three possible outcomes — worse than a
+            # traceback, which someone would at least report. So each key is
+            # pointed at the surface that ABSORBED it rather than deleted:
+            #   dashboard + live attendance -> Today (the live board)
+            #   timecards                   -> the Time hub (its Timeline lens
+            #                                   reads the same
+            #                                   `hr.attendance.timecard` facade)
+            #   shift roster                -> Schedule (built on the same
+            #                                   `hr.shift.planning.grid` facade)
+            #   overtime rules              -> the Overtime Desk
+            # `wf-payroll-report` is untouched: that cockpit is alive and on the
+            # Pay Run rail.
+            'wf-dashboard': ('pb_today.action_pb_today', False),
+            'wf-live-attendance': ('pb_today.action_pb_today', False),
+            'wf-timecards': ('pb_time_hub.action_pb_time_hub', False),
+            'wf-shift-roster': ('pb_schedule.action_pb_schedule', False),
+            'wf-payroll-report': ('pb_hr_workforce.action_payroll_report_dashboard', False),
+            'wf-overtime-rules': ('pb_hr_workforce.action_pb_ot_desk', False),
+            'wf-shift-templates': ('pb_hr_workforce.action_shift_template', False),
             # Overtime
             'overtime-request': ('ohrms_overtime.hr_overtime_action', False),
             'overtime-approve': ('_overtime_approve', False),  # Custom action with domain filter
@@ -240,6 +270,13 @@ class HRFlowWizard(models.TransientModel):
             'govt-monthly-tang': ('pb_hr_govt.action_govt_monthly_tang_ld', False),
             # Analytics - Uses server action to prepare dashboard
             'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_formula_config_analytics', False),
+            # Workforce Planning
+            'wfp-scenarios': ('pb_hr_workforce_planning.action_wfp_scenario', False),
+            'wfp-forecasts': ('pb_hr_workforce_planning.action_wfp_forecast', False),
+            'wfp-tagging': ('pb_hr_workforce_planning.action_wfp_tagging_wizard', False),
+            'wfp-pay-grades': ('pb_hr_workforce_planning.action_wfp_grade', False),
+            'wfp-merit-matrix': ('pb_hr_workforce_planning.action_wfp_merit_matrix', False),
+            'wfp-comp-cycles': ('pb_hr_workforce_planning.action_wfp_cycle', False),
             # Vietnam Insurance & Tax Settings
             'vietnam-insurance-policies': ('pb_hr_payroll_vietnam.action_vietnam_insurance_policy', False),
             'vietnam-insurance-adjustments': ('pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment', False),
@@ -344,8 +381,8 @@ class HRFlowWizard(models.TransientModel):
             'name': _('Overtime Approval Queue'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.overtime',
-            'view_mode': 'tree,form',
-            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'view_mode': 'list,form',
+            'views': [(tree_view_id, 'list'), (form_view_id, 'form')],
             'domain': [('state', '=', 'f_approve')],
             'target': 'current',
             'context': {},

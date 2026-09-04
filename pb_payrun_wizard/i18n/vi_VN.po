@@ -1,0 +1,474 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid ""
+"A draft run will be created and computed — fully reversible. Only the selected "
+"division is affected."
+msgstr ""
+"Một lần chạy nháp sẽ được tạo và tính toán - hoàn toàn có thể đảo ngược. Chỉ bộ phận "
+"đã chọn bị ảnh hưởng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Batch name"
+msgstr "Tên lô"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Compute payslips"
+msgstr "Tính toán phiếu lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Computed"
+msgstr "Đã tính toán"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,field_description:pb_payrun_wizard.field_pb_payrun_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Eligible employees"
+msgstr "Nhân viên đủ điều kiện"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,field_description:pb_payrun_wizard.field_pb_payrun_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Need review"
+msgstr "Cần xem xét"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Net is zero"
+msgstr "Mạng bằng không"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "No exceptions"
+msgstr "Không có ngoại lệ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Open Payroll"
+msgstr "Mở bảng lương"
+
+#. module: pb_payrun_wizard
+#: model:ir.model,name:pb_payrun_wizard.model_pb_payrun_wizard
+msgid "Payobook Run Payroll wizard orchestration"
+msgstr "Payobook Run Payroll Wizard điều phối"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Payobook · Pay run"
+msgstr "Payobook · Chạy lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Review exceptions"
+msgstr "Xem xét các trường hợp ngoại lệ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+#: model:ir.actions.client,name:pb_payrun_wizard.action_pb_payrun_wizard
+msgid "Run Payroll"
+msgstr "Chạy bảng lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Scope"
+msgstr "Phạm vi"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid ""
+"The submit failed on the server — the run was left unchanged. Ask an administrator to "
+"check the log."
+msgstr ""
+"Việc gửi không thành công trên máy chủ - quá trình chạy không thay đổi. Yêu cầu quản "
+"trị viên kiểm tra nhật ký."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "These items need a look before approval:"
+msgstr "Những mục này cần được xem xét trước khi phê duyệt:"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This pay run is already in the approval chain."
+msgstr "kỳ lương này đã có trong chuỗi phê duyệt."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This pay run no longer exists."
+msgstr "Đợt lương này không còn tồn tại."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "To"
+msgstr "Để"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid ""
+"payslip(s) for this period already existed and were\n"
+"                            added to this run as they are, rather than computed again."
+msgstr ""
+"(các) phiếu lương cho kỳ này đã tồn tại và đã được\n"
+"                            được thêm vào lần chạy này như hiện tại, thay vì tính toán lại."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "payslips"
+msgstr "phiếu lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "payslips look clean."
+msgstr "phiếu lương trông sạch sẽ."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "· net total"
+msgstr "· tổng ròng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "← Back"
+msgstr "← Quay lại"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:540
+msgid "This database cannot read pay data files."
+msgstr "Cơ sở dữ liệu này không thể đọc các tập tin dữ liệu trả tiền."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:546
+msgid "That payroll scheme no longer exists."
+msgstr "Chương trình trả lương đó không còn tồn tại nữa."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:555
+msgid "This file arrived empty — nothing was read."
+msgstr "Tập tin này trống rỗng - không có gì được đọc."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:564
+msgid ""
+"No column headings were found in this file. Check that the headings are on the first "
+"row."
+msgstr ""
+"Không tìm thấy tiêu đề cột nào trong tập tin này. Kiểm tra xem các tiêu đề có ở hàng "
+"đầu tiên không."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:630
+msgid "No file was received."
+msgstr "Không có tập tin nào được nhận."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:661
+msgid ""
+"The pay data file could not be loaded — the run was left unchanged. Ask an "
+"administrator to check the log."
+msgstr ""
+"Không thể tải tệp dữ liệu thanh toán - lượt chạy không thay đổi. Yêu cầu quản trị viên"
+" kiểm tra nhật ký."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:561
+msgid "This file could not be read as a spreadsheet: %s"
+msgstr "Không thể đọc tệp này dưới dạng bảng tính: %s"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:669
+msgid "This row could not be processed."
+msgstr "Không thể xử lý hàng này."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:636
+msgid "%s — pay data"
+msgstr "%s — trả dữ liệu"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:668
+msgid "Row %s"
+msgstr "Hàng %s"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:636
+msgid "Payroll run"
+msgstr "Tính lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "This month's pay data"
+msgstr "Dữ liệu lương tháng này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "reads"
+msgstr "sử dụng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "pay component"
+msgstr "thành phần lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "s"
+msgstr "s"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "from a spreadsheet. Load the file for this period."
+msgstr "lấy từ bảng tính. Hãy tải tệp của kỳ này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Drop the file here, or click to choose — .xlsx, .xls or .csv"
+msgstr "Thả tệp vào đây hoặc nhấp để chọn — .xlsx, .xls hoặc .csv"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Last time this scheme read"
+msgstr "Lần trước đọc kế hoạch này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Choose a different file"
+msgstr "Chọn một tập tin khác"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Coverage"
+msgstr "Mức độ bao phủ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Reading the column headings…"
+msgstr "Đọc tiêu đề cột…"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "spreadsheet component"
+msgstr "thành phần bảng tính"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "are fed by this file ("
+msgstr "được cấp dữ liệu từ tệp này ("
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "column"
+msgstr "cột"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "read)."
+msgstr "được đọc)."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "No employee code, name or email column was recognised — rows may match nobody."
+msgstr ""
+"Không có mã nhân viên, tên hoặc cột email nào được nhận dạng - các hàng có thể không "
+"khớp với ai."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "The missing components will use their fallback values for this run."
+msgstr "Các thành phần bị thiếu sẽ sử dụng giá trị dự phòng của chúng cho lần chạy này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid ""
+"Choose a file and its columns will be checked against the components below before "
+"anything is computed."
+msgstr ""
+"Chọn một tệp và các cột của nó sẽ được kiểm tra theo các thành phần bên dưới trước khi"
+" mọi thứ được tính toán."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid ""
+"payslip(s) for this period already existed and were added to this run as they are, "
+"rather than computed again."
+msgstr ""
+"(các) phiếu lương cho kỳ này đã tồn tại và được thêm vào lần chạy này như hiện tại, "
+"thay vì được tính toán lại."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "fed"
+msgstr "đã cấp dữ liệu cho"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "component(s) across"
+msgstr "thành phần trên"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "row(s) and produced"
+msgstr "dòng và tạo ra"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "payslip(s) in this run."
+msgstr "phiếu lương trong kỳ lương này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "component(s) used fallback values — no spreadsheet was loaded:"
+msgstr "thành phần đã dùng giá trị dự phòng vì chưa tải bảng tính:"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Add pay data"
+msgstr "Thêm dữ liệu lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Run without a spreadsheet"
+msgstr "Chạy mà không cần bảng tính"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
+msgid "Continue with this file"
+msgstr "Tiếp tục với tập tin này"

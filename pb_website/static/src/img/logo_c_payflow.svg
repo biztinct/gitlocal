@@ -1,0 +1,9 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Payobook">
+  <!-- Concept C — Pay-flow glyph: ledger/payslip lines stepping upward into a chevron -->
+  <rect x="6"  y="30" width="20" height="6" rx="3" fill="currentColor"/>
+  <rect x="6"  y="20" width="14" height="6" rx="3" fill="currentColor" opacity="0.78"/>
+  <rect x="6"  y="10" width="9"  height="6" rx="3" fill="currentColor" opacity="0.55"/>
+  <!-- chevron flag pointing up-right (momentum) -->
+  <path d="M26 33 L37 22 L42 27" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M37 22 L37 31" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+</svg>

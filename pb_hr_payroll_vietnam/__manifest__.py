@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Vietnam Payroll',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Vietnam-specific Payroll Implementation',
     'description': """
@@ -42,7 +42,7 @@ Vietnam Labor Law Compliance:
 Supported Features:
 ===================
 • Multi-region minimum wage support
-• Zoho CRM integration for employee data
+• Formula-based payroll calculation engine
 • Bank transfer export formats
 • Payslip templates in Vietnamese/English
 • Analytics and reporting dashboards
@@ -51,6 +51,7 @@ Supported Features:
     'website': 'https://www.yourcompany.com',
     'depends': [
         'pb_hr_payroll_base',
+        'pb_hr_payroll_formula',
         'hr_holidays',
         'payroll_analytics_approval',
         'pb_hr_payroll_analytics',
@@ -59,11 +60,10 @@ Supported Features:
         # Security
         'security/ir.model.access.csv',
         
-        # Data files - Vietnam-specific dashboard and spreadsheet
+        # Data files - Vietnam-specific dashboard
         'data/payroll_dashboard_data.xml',
-        'data/spreadsheet_data.xml',                     # Vietnam spreadsheet template
         'data/vietnam_sequence_data.xml',                # IR sequences for INS/TAX
-        'data/vietnam_demo_data.xml',                    # Sample Insurance Policies & Tax Tables
+        # 'data/vietnam_demo_data.xml',                    # DISABLED - Requires specific employees to exist
         
         # Views - Server Actions first, then Dashboard (references actions), then Menu Structure (references view)
         'views/vietnam_server_actions.xml',           # Server actions (must load first)
@@ -81,6 +81,11 @@ Supported Features:
         'views/vietnam_employee_form_extension.xml',     # INS02/TAX02: Employee form tabs
         'views/vietnam_menu_structure.xml',              # Menu structure for INS/TAX
         
+        # Reports - Vietnam payslip template and action
+        'views/report_payslip_vietnam_template.xml',
+        'views/hr_payroll_report_vietnam.xml',
+        'views/hr_payslip_form_override.xml',
+
         # Wizards
         'wizards/govt_report_selector_views.xml',     # Government report selector
         
@@ -106,7 +111,8 @@ Supported Features:
     ],
     'assets': {
         'web.assets_backend': [
-            'pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js',
         ],
     },
     'external_dependencies': {

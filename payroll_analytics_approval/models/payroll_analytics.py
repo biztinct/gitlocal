@@ -2,6 +2,11 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 import json
 import logging
 from datetime import datetime, timedelta
@@ -95,9 +100,16 @@ class PayrollAnalytics(models.Model):
                         record.variance_percentage = round(variance, 2)
                         _logger.info(f"Calculated variance: {variance}%")
                     elif current_total > 0 and prev_total == 0:
-                        # Current data exists but no previous data - new period
-                        record.variance_percentage = 100.0
-                        _logger.info("New period - variance set to 100%")
+                        # No prior period to compare against. This used to store
+                        # the sentinel 100.0 meaning "100%", which the form then
+                        # rendered through widget="percentage" — multiplying by
+                        # 100 a second time and printing "10000%". There is no
+                        # variance to report against nothing: report zero and
+                        # say why in the log.
+                        record.variance_percentage = 0.0
+                        _logger.info(
+                            "No previous period for record %s — variance not "
+                            "computed (was reported as 100%%).", record.id)
                     elif current_total == prev_total and current_total > 0:
                         # Same values - no change
                         record.variance_percentage = 0.0
@@ -188,7 +200,7 @@ class PayrollAnalytics(models.Model):
         self.write(analytics_data)
         
         # Force computation of stored fields
-        self.invalidate_cache()
+        self.invalidate_recordset()
         self._compute_analytics()
         
         _logger.info(f"Updated analytics: {self.total_employees} employees, {self.total_payroll} total payroll")
@@ -241,7 +253,7 @@ class PayrollAnalytics(models.Model):
             
             # Update the existing record with fresh data
             existing.write(analytics_data)
-            existing.invalidate_cache()  # Force refresh
+            existing.invalidate_recordset()  # Force refresh
             existing._compute_analytics()  # Recalculate stored fields
             _logger.info(f"Updated existing analytics record {existing.id} for {country}")
             return existing
@@ -849,6 +861,7 @@ class PayrollAnalytics(models.Model):
             ['date_to:month'],
         )
     
+    @require_license
     def action_approve_payroll(self):
         """Final approval action"""
         self.ensure_one()
@@ -937,6 +950,7 @@ class PayrollAnalytics(models.Model):
             }
         }
     
+    @require_license
     def action_export_bank_file(self):
         """Export bank file for approved payroll"""
         self.ensure_one()
@@ -976,7 +990,7 @@ class PayrollAnalytics(models.Model):
         return {'type': 'ir.actions.client', 'tag': 'reload'}
     
     @api.model
-    def search(self, domain, offset=0, limit=None, order=None, count=False):
+    def search(self, domain, offset=0, limit=None, order=None):
         """Override search to auto-refresh analytics when accessed via Approval Queue"""
         # Check if this search is from the Approval Queue (has auto_refresh_analytics context)
         if self.env.context.get('auto_refresh_analytics'):
@@ -985,7 +999,7 @@ class PayrollAnalytics(models.Model):
             _logger.info("Approval Queue accessed - skipping auto-refresh for performance")
         
         # Always use standard search for best performance
-        return super().search(domain, offset=offset, limit=limit, order=order, count=count)
+        return super().search(domain, offset=offset, limit=limit, order=order)
     
     @api.model
     def get_analytics_stats(self, country):

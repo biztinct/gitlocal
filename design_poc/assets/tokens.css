@@ -1,0 +1,107 @@
+/* ============================================================
+   Payobook POC — Design Tokens  ("Aurora" palette)
+   Fresh, modern payroll identity:
+   - Violet brand (evolves Payobook's current purple heritage)
+   - Emerald accent for money / positive states
+   - Deep plum sidebar, soft neutral surfaces
+   - Inter / system typeface
+   ============================================================ */
+:root {
+  /* Brand */
+  --pb-brand:        #6D28D9;   /* violet-700 — primary */
+  --pb-brand-600:    #7C3AED;
+  --pb-brand-500:    #8B5CF6;
+  --pb-brand-400:    #A78BFA;
+  --pb-brand-tint:   #F4F0FE;   /* light violet wash */
+  --pb-brand-tint-2: #ECE6FC;
+
+  /* Money / positive accent */
+  --pb-accent:       #10B981;   /* emerald-500 */
+  --pb-accent-600:   #059669;
+  --pb-accent-tint:  #E7F8F1;
+
+  /* Semantic */
+  --pb-success:  #10B981;  --pb-success-tint:#E7F8F1;
+  --pb-warn:     #F59E0B;  --pb-warn-tint:   #FEF3E2;
+  --pb-danger:   #EF4444;  --pb-danger-tint: #FDECEC;
+  --pb-info:     #3B82F6;  --pb-info-tint:   #E8F0FE;
+
+  /* Workflow state colors (payslip: draft→level1→level2→done ; formula: draft→testing→validated→active) */
+  --pb-state-draft:     #94A3B8;  /* slate  */
+  --pb-state-level1:    #F59E0B;  /* amber  — HR Manager pending / Testing */
+  --pb-state-level2:    #6366F1;  /* indigo — GM pending / Validated */
+  --pb-state-done:      #10B981;  /* emerald— Done / Active */
+  --pb-state-cancel:    #EF4444;  /* red */
+
+  /* Neutrals / surfaces */
+  --pb-bg:          #F5F4FB;   /* app background */
+  --pb-surface:     #FFFFFF;   /* cards */
+  --pb-surface-2:   #FAF9FE;   /* subtle panel */
+  --pb-border:      #E7E5F2;
+  --pb-border-soft: #F0EFF7;
+  --pb-ink:         #1B1733;   /* strongest text */
+  --pb-ink-2:       #3F3A57;
+  --pb-muted:       #6E6A85;
+  --pb-muted-2:     #9B97AE;
+
+  /* Sidebar (deep plum) */
+  --pb-side-bg-1:   #1C1733;
+  --pb-side-bg-2:   #261C42;
+  --pb-side-ink:    #E9E5F6;
+  --pb-side-muted:  #9C95BE;
+  --pb-side-active: rgba(139,92,246,.20);
+  --pb-side-hover:  rgba(255,255,255,.06);
+
+  /* Topbar */
+  --pb-top-bg:      #FFFFFF;
+  --pb-top-border:  #ECEAF5;
+
+  /* Hero fills — SOLID (no gradients) */
+  --pb-hero:        #241A47;
+  --pb-hero-blue:   #6D28D9;
+  --pb-hero-detail: #241A47;
+  --pb-chart-line:  #6D28D9;
+  --pb-chart-dot:   #10B981;
+
+  /* Spacing scale (4px base) */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px;
+  --sp-6:24px; --sp-7:32px; --sp-8:40px; --sp-9:48px; --sp-10:64px;
+
+  /* Radii */
+  --r-xs:6px; --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+
+  /* Shadows */
+  --sh-xs: 0 1px 2px rgba(27,23,51,.05);
+  --sh-sm: 0 2px 6px rgba(27,23,51,.06);
+  --sh-md: 0 6px 18px rgba(27,23,51,.08);
+  --sh-lg: 0 18px 44px rgba(27,23,51,.14);
+  --sh-brand: 0 10px 26px rgba(109,40,217,.28);
+
+  /* Motion */
+  --t-fast:120ms; --t-med:200ms; --t-slow:320ms;
+  --ease: cubic-bezier(.16,1,.3,1);
+
+  /* Type */
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--pb-ink);
+  background: var(--pb-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-size: 14px;
+  line-height: 1.45;
+}
+a { color: var(--pb-brand); text-decoration: none; }
+h1,h2,h3,h4 { margin: 0; color: var(--pb-ink); font-weight: 700; letter-spacing: -.01em; }
+button { font-family: inherit; }
+::selection { background: var(--pb-brand-tint-2); }
+/* thin scrollbars */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: #d8d5e8; border-radius: 999px; border:2px solid transparent; background-clip: padding-box; }
+*::-webkit-scrollbar-thumb:hover { background: #c4c0db; background-clip: padding-box; }

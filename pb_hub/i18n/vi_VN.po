@@ -1,0 +1,638 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:255
+msgid "%s could not be opened."
+msgstr "Không thể mở được %s."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid ""
+"268px, mounted once beside every lens and never keyed to it — an ambient\n"
+"        column must not reload when the lens changes."
+msgstr ""
+"268px, được gắn một lần bên cạnh mọi ống kính và không bao giờ khóa nó - môi trường xung quanh\n"
+"        cột không được tải lại khi ống kính thay đổi."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+msgid ""
+"A second lens, mounted with embedded=true — exactly how a real cockpit joins a hub."
+msgstr ""
+"Ống kính thứ hai, được gắn với embed=true - chính xác là cách một buồng lái thực sự "
+"kết nối với một trung tâm."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:74
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:83
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:206
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:208
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:210
+msgid "Admin"
+msgstr "Quản trị viên"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:166
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:168
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:171
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:104
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid "Arrived with pb_lens ="
+msgstr "Đã đến với pb_lens ="
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:206
+msgid "Audit Trail"
+msgstr "Dấu vết kiểm toán"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:78
+msgid "Aug cycle"
+msgstr "chu kỳ tháng 8"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:241
+msgid "Available in the full platform"
+msgstr "Có sẵn trong nền tảng đầy đủ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_nav.js:0
+#: code:addons/pb_hub/static/src/js/hub_nav.js:137
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_nav.js:0
+#: code:addons/pb_hub/static/src/js/hub_nav.js:140
+msgid "Back to %s"
+msgstr "Quay lại %s"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:177
+msgid "Bank Verification"
+msgstr "Xác minh ngân hàng"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid "Clicked"
+msgstr "Đã nhấp vào"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:161
+msgid "Close the week"
+msgstr "Đóng tuần"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "Command palette"
+msgstr "Bảng lệnh"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:175
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:177
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:179
+msgid "Compliance"
+msgstr "Tuân thủ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:135
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:82
+msgid "Cycle 2 wires this chip to the real period."
+msgstr "Chu kỳ 2 nối chip này với chu kỳ thực."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:102
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid "Deep-link to Records with a back door"
+msgstr "Liên kết sâu tới các bản ghi bằng cửa sau"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid "Dock"
+msgstr "bến tàu"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "ESC"
+msgstr "ESC"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:133
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:168
+msgid "Explorer"
+msgstr "Nhà thám hiểm"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:183
+msgid "Formula Engine"
+msgstr "Bộ máy công thức"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:125
+msgid "Full & Final"
+msgstr "Quyết toán thôi việc"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_service.js:243
+msgid "Got it"
+msgstr "Hiểu rồi"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:175
+msgid "Government Reports"
+msgstr "Báo cáo chính phủ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:202
+msgid "Guides"
+msgstr "Hướng dẫn"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:75
+#: code:addons/pb_hub/static/src/js/hub_demo.js:162
+msgid "Hub Demo"
+msgstr "Bản giới thiệu trung tâm"
+
+#. module: pb_hub
+#: model:ir.actions.client,name:pb_hub.action_pb_hub_demo
+msgid "Hub Kit Demo"
+msgstr "Bản trình diễn bộ công cụ trung tâm"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:118
+msgid "Import Data"
+msgstr "Nhập Dữ liệu"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:166
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:189
+msgid "Integrations"
+msgstr "Tích hợp"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:112
+msgid "Later"
+msgstr "Sau đó"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:202
+msgid "Learn"
+msgstr "Học cùng Payobook"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:195
+msgid "Mapping"
+msgstr "Ánh xạ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:142
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:144
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:146
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:149
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:151
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:154
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:156
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:158
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:161
+msgid "Mission Control"
+msgstr "Kiểm soát nhiệm vụ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
+msgid "No lens here is available to you."
+msgstr "Không có ống kính nào ở đây có sẵn cho bạn."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "Nothing matches that."
+msgstr "Không có gì phù hợp với điều đó."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:154
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:89
+#: code:addons/pb_hub/static/src/js/hub_demo.js:93
+#: code:addons/pb_hub/static/src/js/hub_demo.js:137
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:102
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:104
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:121
+msgid "Pay & Deliver"
+msgstr "Thanh toán và giao hàng"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:109
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:111
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:114
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:116
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:118
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:121
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:125
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:127
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:129
+msgid "Pay Run"
+msgstr "Đợt lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:111
+msgid "Pay Runs"
+msgstr "kỳ lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:114
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:133
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:135
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:117
+#: code:addons/pb_hub/static/src/js/hub_demo.js:120
+msgid "Portal"
+msgstr "Cổng thông tin"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:127
+msgid "Proration Audit"
+msgstr "Kiểm tra phân bổ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette.js:34
+msgid "Recent"
+msgstr "Gần đây"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:100
+#: code:addons/pb_hub/static/src/js/hub_demo.js:103
+msgid "Records"
+msgstr "Bản ghi"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:116
+msgid "Results Grid"
+msgstr "Lưới kết quả"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:129
+msgid "Retro Adjustments"
+msgstr "Điều chỉnh hồi tố"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:210
+msgid "Roles & Access"
+msgstr "Vai trò & Quyền truy cập"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:109
+msgid "Run Payroll"
+msgstr "Chạy bảng lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:185
+msgid "Salary Structures"
+msgstr "Cấu trúc lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:146
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+#: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
+msgid "Search surfaces and actions"
+msgstr "Tìm kiếm bề mặt và hành động"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "Search surfaces and actions…"
+msgstr "Tìm kiếm bề mặt và hành động…"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
+msgid "Search surfaces, actions…"
+msgstr "Giao diện tìm kiếm, hành động…"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:183
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:185
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:187
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:189
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:195
+msgid "Setup"
+msgstr "Thiết lập"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:187
+msgid "Statutory"
+msgstr "Biên chế"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette.js:40
+#: code:addons/pb_hub/static/src/js/hub_palette.js:47
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:80
+msgid "Surfaces"
+msgstr "Bề mặt"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+msgid "Switch lens, reload the page: the shell remembers it in pbhub.demo.lens.v1."
+msgstr "Chuyển ống kính, tải lại trang: shell ghi nhớ nó trong pbhub.demo.lens.v1."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:158
+msgid "Team Approvals"
+msgstr "Phê duyệt nhóm"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:208
+msgid "Tenants"
+msgstr "Người thuê nhà"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:153
+msgid "The Settings hub is not installed on this database."
+msgstr "Trung tâm Cài đặt chưa được cài đặt trên cơ sở dữ liệu này."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_shell.js:0
+#: code:addons/pb_hub/static/src/js/hub_shell.js:265
+msgid "This lens has no surface yet."
+msgstr "Ống kính này chưa có bề mặt."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:149
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:151
+msgid "Time Off"
+msgstr "Nghỉ Phép"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:144
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:156
+msgid "Trips"
+msgstr "Chuyến đi"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:142
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:170
+msgid "Workforce Analytics"
+msgstr "Phân tích lực lượng lao động"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:0
+#: code:addons/pb_hub/static/src/js/hub_demo.js:120
+msgid "You should never see this."
+msgstr "Bạn không bao giờ nên nhìn thấy điều này."
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:179
+msgid "Young Workers"
+msgstr "Lao động Chưa thành niên"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "close"
+msgstr "đóng"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "esc"
+msgstr "thoát"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "move"
+msgstr "di chuyển"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_demo.xml:0
+msgid "times"
+msgstr "lần"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
+msgid "· Stage"
+msgstr "· Sân khấu"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:94
+msgid "Switch lens, reload the page: the shell"
+msgstr "Chuyển ống kính, tải lại trang: shell"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_demo.js:104
+msgid "A second lens, mounted with embedded=true —"
+msgstr "Ống kính thứ hai, được gắn với embed=true —"

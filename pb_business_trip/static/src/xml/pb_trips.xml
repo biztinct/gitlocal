@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_business_trip.PbTrips">
+    <div class="pbim pbtr" t-att-class="{ 'pbtr--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">Loading…</div>
+
+      <t t-else="">
+        <!-- toolbar -->
+        <div class="pbtr-top">
+          <!-- W17: the shell's rail already says "TRIPS"; the New-trip door
+               beside this title is not chrome and stays. -->
+          <div class="pbtr-title" t-if="!props.embedded">
+            <svg class="pbtr-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+            </svg>
+            <span>Business Trips</span>
+          </div>
+          <div class="pbtr-spacer"/>
+          <button class="pbtr-btn pbtr-btn--primary" t-on-click="() => this.newTrip()">New trip</button>
+        </div>
+
+        <!-- KPI band -->
+        <div class="pbtr-kpis">
+          <div class="pbtr-stat">
+            <span class="n" t-esc="state.kpis.open"/>
+            <span class="l">Open trips</span>
+          </div>
+          <div class="pbtr-stat" t-att-class="{ 'is-hot': state.kpis.awaiting_me > 0 }">
+            <span class="n" t-esc="state.kpis.awaiting_me"/>
+            <span class="l">Awaiting my approval</span>
+          </div>
+          <div class="pbtr-stat">
+            <span class="n" t-esc="state.kpis.days_mtd"/>
+            <span class="l">Days travelled (MTD)</span>
+          </div>
+          <div class="pbtr-stat">
+            <span class="n" t-esc="money(state.kpis.advance_outstanding)"/>
+            <span class="l">Advance outstanding</span>
+          </div>
+        </div>
+
+        <!-- kanban lanes -->
+        <div class="pbtr-board">
+          <t t-foreach="state.lanes" t-as="lane" t-key="lane.key">
+            <div class="pbtr-lane">
+              <div class="pbtr-lane__head">
+                <span class="pbtr-lane__name" t-esc="lane.label"/>
+                <span class="pbtr-lane__count" t-esc="lane.count"/>
+              </div>
+              <div class="pbtr-lane__exposure" t-if="lane.advance">
+                <t t-esc="money(lane.advance)"/> advance
+              </div>
+              <div class="pbtr-lane__body">
+                <t t-foreach="lane.cards" t-as="card" t-key="card.id">
+                  <div class="pbtr-card" t-on-click="() => this.openTrip(card)">
+                    <div class="pbtr-card__top">
+                      <span class="pbtr-card__dest" t-esc="card.destination"/>
+                      <span class="pbtr-card__flag" t-if="card.country" t-esc="card.country"/>
+                    </div>
+                    <div class="pbtr-card__dates">
+                      <t t-esc="card.date_from"/> → <t t-esc="card.date_to"/>
+                      <span class="pbtr-card__days" t-esc="card.days + 'd'"/>
+                    </div>
+                    <div class="pbtr-card__chips">
+                      <span class="pbtr-chip" t-if="card.per_diem_total">PD <t t-esc="money(card.per_diem_total)"/></span>
+                      <span class="pbtr-chip pbtr-chip--adv" t-if="card.advance">Adv <t t-esc="money(card.advance)"/></span>
+                    </div>
+                    <div class="pbtr-card__foot">
+                      <div class="pbtr-emp">
+                        <img class="pbtr-emp__avatar" t-att-src="card.avatar" alt=""/>
+                        <span class="pbtr-emp__name" t-esc="card.employee"/>
+                      </div>
+                      <span t-attf-class="pbtr-aging pbtr-aging--{{ agingTone(card) }}"
+                            t-if="card.waiting_days">
+                        <t t-esc="card.waiting_days"/>d waiting
+                      </span>
+                    </div>
+                    <div class="pbtr-card__actions" t-if="card.can_act" t-on-click.stop="() => {}">
+                      <button class="pbtr-btn pbtr-btn--approve"
+                              t-on-click.stop="() => this.approve(card)"
+                              t-esc="laneAdvanceLabel(card)"/>
+                      <button class="pbtr-btn pbtr-btn--refuse"
+                              t-on-click.stop="() => this.askRefuse(card)">Refuse</button>
+                    </div>
+                  </div>
+                </t>
+                <div class="pbtr-lane__empty" t-if="!lane.cards.length">—</div>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <!-- refused/cancelled footer -->
+        <div class="pbtr-closed" t-if="state.closed.length">
+          <button class="pbtr-closed__toggle" t-on-click="() => this.toggleClosed()">
+            <t t-esc="state.showClosed ? 'Hide' : 'Show'"/> refused / cancelled (<t t-esc="state.closed.length"/>)
+          </button>
+          <div class="pbtr-closed__list" t-if="state.showClosed">
+            <t t-foreach="state.closed" t-as="card" t-key="card.id">
+              <div class="pbtr-closed__row" t-on-click="() => this.openTrip(card)">
+                <span t-esc="card.name"/> · <span t-esc="card.employee"/> ·
+                <span t-esc="card.destination"/> ·
+                <span t-attf-class="pbtr-state pbtr-state--{{ card.state }}" t-esc="card.state"/>
+              </div>
+            </t>
+          </div>
+        </div>
+      </t>
+
+      <!-- refuse-with-note modal -->
+      <div class="pbtr-modal" t-if="state.refuseCard" t-on-click="() => this.cancelRefuse()">
+        <div class="pbtr-modal__box" t-on-click.stop="() => {}">
+          <div class="pbtr-modal__title">Refuse trip <t t-esc="state.refuseCard.name"/></div>
+          <textarea class="pbtr-modal__note" placeholder="Reason (optional)…"
+                    t-on-input="(ev) => this.onRefuseNote(ev)"/>
+          <div class="pbtr-modal__actions">
+            <button class="pbtr-btn" t-on-click="() => this.cancelRefuse()">Cancel</button>
+            <button class="pbtr-btn pbtr-btn--refuse" t-on-click="() => this.confirmRefuse()">Refuse</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrPayrollProrationLine(models.Model):
@@ -8,11 +8,24 @@ class HrPayrollProrationLine(models.Model):
     _description = 'Payroll Proration Line'
     _order = 'date_from desc, employee_id'
 
+    @api.depends('employee_id', 'component_id', 'date_from')
+    def _compute_display_name(self):
+        for rec in self:
+            emp = rec.employee_id.name or 'Proration'
+            comp = rec.component_id.name or rec.component_code or ''
+            period = rec.date_from.strftime('%b %Y') if rec.date_from else ''
+            label = emp
+            if comp:
+                label += ' — ' + comp
+            if period:
+                label += ' · prorated ' + period
+            rec.display_name = label
+
     formula_config_id = fields.Many2one(
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade',
+        ondelete='restrict',
     )
     import_batch_id = fields.Many2one(
         'hr.payroll.import.batch',
@@ -83,10 +96,9 @@ class HrPayrollProrationLine(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'proration_unique_batch',
-            'unique(import_batch_id, employee_id, component_id, effective_date)',
-            'A proration line already exists for this batch, employee, component and date.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _proration_unique_batch = models.Constraint(
+        'unique(import_batch_id, employee_id, component_id, effective_date)',
+        'A proration line already exists for this batch, employee, component and date.')

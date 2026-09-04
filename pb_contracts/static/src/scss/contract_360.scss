@@ -1,0 +1,551 @@
+// =====================================================================
+//  CD-2 — the contract drawer.
+//
+//  Teal is a person, indigo is a contract: this slide-over takes the design
+//  system's own indigo (--pbim-primary / --pbim-soft) where the employee
+//  drawer takes a teal that is a hardcoded fallback pair. NO hex is invented
+//  here (W1) — every colour is a --pbim-* token with the token file's own
+//  value as the fallback, so the drawer still paints if it is ever mounted
+//  outside a .pbim root.
+//
+//  Mixed-unit min()/max() is avoided (C2 SCSS trap): the width is a px value
+//  plus `max-width`, never `min(680px, 96vw)`.
+//
+//  Motion is three movements and no more: the panel slides, the scrim fades,
+//  the tab underline travels. `prefers-reduced-motion` turns all three off.
+// =====================================================================
+
+.pbc {
+    // ---- tokens ----
+    --p:    var(--pbim-primary, #5A4BB0);
+    --p-s:  var(--pbim-soft, #EDEAF8);
+    --p-d:  var(--pbim-primary-dark, #241F52);
+    --ink:  var(--pbim-text, #1B1733);
+    --mut:  var(--pbim-muted, #64748B);
+    --line: var(--pbim-line, #E2E8F0);
+    --line2: var(--pbim-line-2, #F1F5F9);
+    --surf: var(--pbim-surface, #fff);
+    --bg:   var(--pbim-bg, #F5F6FA);
+    --green: var(--pbim-green, #2E7D4F);     --green-s: var(--pbim-green-soft, #E3F2E9);
+    --amber: var(--pbim-amber, #D97706);     --amber-s: var(--pbim-amber-soft, #FEF3C7);
+    --rose:  var(--pbim-rose, #DC2668);      --rose-s:  var(--pbim-rose-soft, #FCE7EF);
+    --cyan:  var(--pbim-cyan, #2563EB);      --cyan-s:  var(--pbim-cyan-soft, #E5EDFD);
+    --slate: var(--pbim-slate, #64748B);     --slate-s: var(--pbim-slate-soft, #EEF1F5);
+    --r:    var(--pbim-r, 14px);
+    --r-sm: var(--pbim-r-sm, 10px);
+    --sh:   0 18px 50px rgba(16, 12, 40, .18);
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // ---- scrim ----
+    .pbc-scrim {
+        position: fixed; inset: 0; z-index: 1040;
+        background: rgba(16, 12, 40, 0);
+        transition: background .18s ease;
+        pointer-events: none;
+        &.shown { background: rgba(16, 12, 40, .34); pointer-events: auto; }
+    }
+
+    // ---- drawer shell ----
+    // 680px, not the employee drawer's 580: a component row carries a code
+    // chip, a name, a source chip, a value and a bounds hint.
+    .pbc-drawer {
+        position: fixed; top: 0; right: 0; bottom: 0; z-index: 1041;
+        width: 680px; max-width: 96vw;
+        background: var(--surf); color: var(--ink);
+        box-shadow: var(--sh);
+        display: flex; flex-direction: column;
+        transform: translateX(102%);
+        transition: transform .22s cubic-bezier(.22, .61, .36, 1);
+        font-size: 14px; -webkit-font-smoothing: antialiased;
+        &.shown { transform: translateX(0); }
+    }
+
+    // ---- loading / empty ----
+    .pbc-busy, .pbc-empty {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 12px; color: var(--mut);
+        padding: 40px; text-align: center;
+        p { margin: 0; font-weight: 600; color: var(--ink); }
+        small { color: var(--mut); max-width: 340px; }
+        svg { color: var(--line); }
+    }
+    .pbc-spin {
+        width: 30px; height: 30px; border-radius: 50%;
+        border: 3px solid var(--p-s); border-top-color: var(--p);
+        animation: pbc-spin .8s linear infinite;
+    }
+    @keyframes pbc-spin { to { transform: rotate(360deg); } }
+
+    // ---- header ----
+    .pbc-head {
+        padding: 20px 22px 16px; border-bottom: 1px solid var(--line);
+        background: var(--p-s); flex: none;
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+    }
+    .pbc-head-id { display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+    .pbc-ava {
+        width: 56px; height: 56px; border-radius: 16px; flex: none;
+        background: var(--p) center/cover no-repeat; color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 19px; box-shadow: 0 4px 12px rgba(36, 31, 82, .22);
+    }
+    .pbc-head-tx { min-width: 0; }
+    .pbc-head-tx h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+    .pbc-ref { font-size: 12px; color: var(--mut); margin: 2px 0 7px; word-break: break-word; }
+    .pbc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pbc-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600;
+        background: var(--surf); border: 1px solid var(--line); color: var(--mut);
+        svg { color: var(--p); }
+        &.tone-ok    { color: var(--green); border-color: var(--green-s); svg { color: var(--green); } }
+        &.tone-warn  { color: var(--amber); border-color: var(--amber-s); svg { color: var(--amber); } }
+        &.tone-err   { color: var(--rose);  border-color: var(--rose-s);  svg { color: var(--rose); } }
+        &.tone-info  { color: var(--cyan);  border-color: var(--cyan-s);  svg { color: var(--cyan); } }
+        &.tone-muted { color: var(--mut); }
+    }
+    .pbc-head-side { display: flex; align-items: center; gap: 12px; flex: none; }
+    .pbc-wage {
+        text-align: right; line-height: 1.15;
+        .l { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); }
+        .v { display: block; font-size: 18px; font-weight: 800; color: var(--p-d); font-variant-numeric: tabular-nums; }
+        .v.masked { color: var(--mut); letter-spacing: 2px; font-size: 16px; }
+    }
+    .pbc-x {
+        background: var(--surf); border: 1px solid var(--line);
+        width: 34px; height: 34px; border-radius: 10px; cursor: pointer; color: var(--mut);
+        display: flex; align-items: center; justify-content: center;
+        &:hover { color: var(--ink); border-color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    // ---- tabs ----
+    // One underline TRAVELS between three equal-width tabs. Equal widths make
+    // the offset pure arithmetic, so nothing is measured in JS and nothing is
+    // written back into reactive state on patch (W148).
+    .pbc-tabs {
+        display: flex; padding: 10px 16px 0; border-bottom: 1px solid var(--line);
+        background: var(--surf); flex: none; position: relative;
+    }
+    .pbc-tab {
+        flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        border: none; background: none; cursor: pointer;
+        padding: 10px 12px 12px; font-size: 13px; font-weight: 700; color: var(--mut);
+        font-family: inherit;
+        svg { color: currentColor; }
+        &:hover { color: var(--ink); }
+        &.on { color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: -3px; border-radius: 8px; }
+    }
+    .pbc-tab-c {
+        background: var(--p-s); color: var(--p); font-size: 11px; font-weight: 800;
+        padding: 1px 7px; border-radius: 999px;
+    }
+    .pbc-tab-ink {
+        position: absolute; left: 16px; bottom: -1px; height: 2.5px;
+        width: calc((100% - 32px) / 3);
+        background: var(--p); border-radius: 2px;
+        transition: transform .22s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    // ---- body: the ONLY scrolling element ----
+    .pbc-body { flex: 1; overflow-y: auto; padding: 20px 22px 32px; }
+
+    // ---- terms: lifecycle rail ----
+    .pbc-rail {
+        display: flex; align-items: center; margin-bottom: 18px;
+        .pbc-rail-step {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            position: relative; color: var(--mut); font-size: 12px; font-weight: 600;
+            .pbc-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); border: 2px solid var(--line); z-index: 1; }
+            &:not(:last-child)::after {
+                content: ""; position: absolute; top: 6px; left: 50%; width: 100%; height: 2px; background: var(--line);
+            }
+            &.done { color: var(--p); .pbc-dot { background: var(--p); border-color: var(--p); } &::after { background: var(--p); } }
+            &.current { color: var(--p); .pbc-dot { background: var(--surf); border-color: var(--p); box-shadow: 0 0 0 4px var(--p-s); } }
+        }
+    }
+
+    .pbc-acts {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+        .pbc-acts-l { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); }
+    }
+
+    // ---- terms: sections and cells ----
+    .pbc-sec { margin-bottom: 20px; }
+    .pbc-sec-h {
+        display: flex; align-items: center; gap: 7px; margin-bottom: 9px;
+        font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--mut);
+        svg { color: var(--p); }
+    }
+    .pbc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pbc-cell {
+        background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);
+        padding: 11px 13px; display: flex; flex-direction: column; gap: 3px; min-width: 0;
+        .k { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .03em; svg { color: var(--p); flex: none; } }
+        .v { font-size: 14.5px; font-weight: 600; word-break: break-word; }
+        &.tone-warn { border-color: var(--amber-s); background: var(--amber-s); .v { color: var(--amber); } }
+    }
+    .pbc-hint { font-size: 11.5px; color: var(--mut); }
+
+    // ---- terms: readiness chips ----
+    .pbc-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .pbc-stat {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--line);
+        &.ok  { background: var(--green-s); color: var(--green); border-color: transparent; }
+        &.off { background: var(--bg); color: var(--mut); }
+    }
+
+    // ---- components ----
+    // The calm sentence above a grid of zeroes. Not an error: it says WHY.
+    .pbc-explain {
+        display: flex; align-items: flex-start; gap: 9px; margin-bottom: 14px;
+        background: var(--p-s); border: 1px solid var(--line); border-radius: var(--r-sm);
+        padding: 11px 13px; font-size: 12.5px; font-weight: 600; color: var(--p-d); line-height: 1.45;
+        svg { color: var(--p); flex: none; margin-top: 1px; }
+    }
+    .pbc-comps { display: flex; flex-direction: column; gap: 6px; }
+    .pbc-comp {
+        display: grid; grid-template-columns: 108px minmax(0, 1fr) auto; gap: 12px; align-items: center;
+        border: 1px solid var(--line); border-radius: var(--r-sm); padding: 9px 12px;
+        background: var(--surf);
+        &:hover { border-color: var(--p); background: var(--line2); }
+    }
+    .pbc-comp-code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11px; font-weight: 700; letter-spacing: .02em;
+        color: var(--p); background: var(--p-s); border-radius: 6px;
+        padding: 3px 7px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbc-comp-id { min-width: 0; display: flex; flex-direction: column; gap: 3px;
+        .n { font-size: 13.5px; font-weight: 600; word-break: break-word; }
+    }
+    .pbc-comp-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .pbc-comp-from {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--slate-s); color: var(--slate);
+        &.tone-indigo { background: var(--p-s);     color: var(--p); }
+        &.tone-cyan   { background: var(--cyan-s);  color: var(--cyan); }
+        &.tone-green  { background: var(--green-s); color: var(--green); }
+        &.tone-slate  { background: var(--slate-s); color: var(--slate); }
+        &.tone-muted  { background: var(--bg);      color: var(--mut); }
+    }
+    .pbc-comp-warn {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--amber-s); color: var(--amber);
+    }
+    .pbc-comp-r { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+    .pbc-comp-v { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pbc-comp-b { font-size: 11px; color: var(--mut); white-space: nowrap; }
+    .pbc-comp-add { margin-top: 14px; }
+
+    // ---- history ----
+    .pbc-tl { display: flex; flex-direction: column; gap: 6px; }
+    .pbc-tl-sep {
+        margin: 12px 0 4px; font-size: 11px; font-weight: 800; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--mut);
+        &:first-child { margin-top: 0; }
+    }
+    .pbc-tl-item {
+        display: flex; gap: 11px; align-items: flex-start;
+        border: 1px solid var(--line); border-left: 3px solid var(--line);
+        border-radius: var(--r-sm); padding: 10px 12px; background: var(--surf);
+        .pbc-tl-ic { flex: none; margin-top: 1px; color: var(--mut); }
+        &.tone-indigo { border-left-color: var(--p);     .pbc-tl-ic { color: var(--p); } }
+        &.tone-teal   { border-left-color: var(--cyan);  .pbc-tl-ic { color: var(--cyan); } }
+        &.tone-amber  { border-left-color: var(--amber); .pbc-tl-ic { color: var(--amber); } }
+    }
+    .pbc-tl-body { min-width: 0; flex: 1; }
+    .pbc-tl-l1 {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+        .t { font-size: 13.5px; font-weight: 700; word-break: break-word; }
+        .when { font-size: 11.5px; color: var(--mut); white-space: nowrap; flex: none; }
+    }
+    .pbc-tl-d {
+        display: flex; align-items: center; gap: 7px; margin-top: 3px;
+        font-size: 12.5px; font-variant-numeric: tabular-nums;
+        .from { color: var(--mut); text-decoration: line-through; }
+        .arr { color: var(--mut); display: inline-flex; }
+        .to { font-weight: 700; }
+    }
+    .pbc-tl-a {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; font-size: 11.5px; color: var(--mut);
+        .src { background: var(--bg); border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+        .who { padding: 1px 0; }
+    }
+    .pbc-tl-more { margin-top: 14px; text-align: center; font-size: 12px; color: var(--mut); }
+
+    // =================================================================
+    //  CD-3 — editing in place
+    // =================================================================
+
+    // ---- "you may look, not change" ----
+    // ONE honest sentence at the top of Terms, instead of a panel full of
+    // disabled controls that each have to be discovered and dismissed.
+    .pbc-locked {
+        display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
+        border: 1px solid var(--line); border-radius: var(--r-sm);
+        background: var(--bg); padding: 10px 13px;
+        font-size: 12.5px; font-weight: 600; color: var(--mut);
+        svg { color: var(--mut); flex: none; }
+    }
+
+    // ---- the editable cell ----
+    // A cell that can be changed lifts a faint indigo tint and shows a pencil.
+    // A cell that cannot does neither and is not tab-reachable: it has to look
+    // inert, not merely fail to respond.
+    .pbc-cell {
+        position: relative; transition: background .12s ease, border-color .12s ease;
+        .k .pen { margin-left: auto; opacity: 0; transition: opacity .12s ease;
+                  svg { color: var(--p); } }
+        &.editable {
+            cursor: pointer;
+            &:hover { background: var(--p-s); border-color: var(--p); }
+            &:hover .k .pen, &:focus-visible .k .pen, &.editing .k .pen { opacity: 1; }
+            &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        }
+        &.staged {
+            border-color: var(--p); background: var(--p-s);
+            .v { color: var(--p-d); }
+        }
+        &.refused { border-color: var(--rose); background: var(--rose-s); }
+        .v { min-height: 21px; line-height: 21px; }
+    }
+    // "what it will become" is the thing being decided; "what it was" is the
+    // thing being checked, so both are on screen at once.
+    .pbc-was {
+        font-size: 11px; color: var(--mut); text-decoration: line-through;
+        font-variant-numeric: tabular-nums;
+    }
+    // A refusal is a red dot with a sentence under its own cell, never a modal
+    // (`pb_records/static/src/js/records_desk.js:412`).
+    // The modifier is `full`, NOT `row`: `.row` is Bootstrap's grid class and
+    // `.row > * { width: 100% }` inflated the 6px dot into a 32px bar. The dot
+    // is namespaced for the same reason — six other cockpits style a `.dot`.
+    .pbc-refuse {
+        display: flex; align-items: flex-start; gap: 6px; margin-top: 3px;
+        font-size: 11.5px; font-weight: 600; color: var(--rose); line-height: 1.35;
+        .pbc-dot { width: 6px; height: 6px; border-radius: 50%;
+                   background: var(--rose); flex: none; margin-top: 5px; }
+        &.full { padding: 4px 12px 8px; }
+    }
+    // Amber, and never a blocker: information about what the next pay run does.
+    .pbc-note {
+        display: flex; align-items: flex-start; gap: 6px; padding: 2px 12px 6px;
+        font-size: 11.5px; font-weight: 600; color: var(--amber); line-height: 1.35;
+        svg { flex: none; margin-top: 2px; }
+        &:last-child { padding-bottom: 9px; }
+    }
+
+    // ---- the editor itself ----
+    // It replaces the value in the SAME box at the SAME height: the underline
+    // is drawn with a negative margin so turning a cell into an input moves
+    // nothing else on the panel.
+    .pbc-ed {
+        display: flex; align-items: center; gap: 5px; min-width: 0;
+        // The wrapper is only focusable so a kind with no input of its own has
+        // somewhere for Escape to land; the control inside shows the focus.
+        &:focus { outline: none; }
+        &.pop { display: block; height: 21px; }
+        &.num { justify-content: flex-end; }
+    }
+    .pbc-in {
+        // `* { box-sizing: border-box }` is set at the top of this file, so
+        // `height: 21px` ALREADY contains the 2px underline. An extra
+        // `margin-bottom: -2px` to "pay for the border" subtracted it twice
+        // and shifted everything below the cell up by 2px the moment it
+        // became an editor. Measured on the live walk.
+        flex: 1; min-width: 0; height: 21px; line-height: 21px;
+        border: none; border-bottom: 2px solid var(--p);
+        padding: 0; background: transparent; outline: none;
+        font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink);
+        font-family: inherit;
+        &.num { text-align: right; font-variant-numeric: tabular-nums; }
+        &:focus { border-bottom-color: var(--p-d); }
+    }
+    .pbc-cur { font-size: 12px; font-weight: 700; color: var(--mut); flex: none; }
+    // The cell keeps showing what it holds while the list floats over it, so
+    // opening a picker never reads as "the value was cleared".
+    .pbc-resting {
+        display: block; font-size: 14.5px; font-weight: 600; color: var(--p);
+        line-height: 21px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    // YES / NO as two buttons, not a checkbox: a checkbox says nothing about
+    // which of the two words is the current one.
+    .pbc-bool { display: flex; gap: 5px; height: 21px; }
+    .pbc-bool-b {
+        flex: 1; height: 21px; padding: 0 9px; border-radius: 6px; cursor: pointer;
+        border: 1px solid var(--line); background: var(--surf);
+        font: inherit; font-family: inherit; font-size: 11px; font-weight: 800;
+        color: var(--mut); line-height: 1;
+        &:hover { border-color: var(--p); color: var(--p); background: var(--p-s); }
+        &.on { border-color: var(--p); background: var(--p); color: #fff; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+
+    // ---- the picker ----
+    // `position: fixed`, because the drawer body scrolls and would otherwise
+    // clip the list against its own edge. Its coordinates are corrected for a
+    // transformed ancestor in `CdPicker.place()`.
+    .pbc-pick {
+        &:focus { outline: none; }
+        position: fixed; z-index: 60; display: flex; flex-direction: column;
+        max-height: 292px; background: var(--surf);
+        border: 1px solid var(--p); border-radius: var(--r-sm);
+        box-shadow: 0 12px 32px rgba(16, 12, 40, .18);
+        overflow: hidden; text-align: left;
+    }
+    .pbc-pick-s {
+        display: flex; align-items: center; gap: 7px; padding: 8px 10px;
+        border-bottom: 1px solid var(--line2);
+        .ic { color: var(--mut); display: inline-flex; }
+        input {
+            flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+            font: inherit; font-family: inherit; font-size: 12.5px; color: var(--ink);
+        }
+    }
+    .pbc-pick-spin {
+        width: 13px; height: 13px; border-radius: 50%; flex: none;
+        border: 2px solid var(--p-s); border-top-color: var(--p);
+        animation: pbc-spin .8s linear infinite;
+    }
+    .pbc-pick-l { overflow-y: auto; padding: 4px; }
+    .pbc-pick-r {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        width: 100%; border: none; background: none; cursor: pointer;
+        padding: 7px 9px; border-radius: 7px; text-align: left;
+        font: inherit; font-family: inherit; font-size: 12.5px; font-weight: 600;
+        color: var(--ink);
+        .lb { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ck { opacity: 0; color: var(--p); display: inline-flex; flex: none; }
+        &.on { background: var(--p-s); color: var(--p-d); .ck { opacity: 1; } }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+    .pbc-pick-e { padding: 12px 10px; font-size: 12px; color: var(--mut); }
+    // Only ever rendered for an optional field: offering "leave empty" on a
+    // required one is an offer the server declines (W29).
+    .pbc-pick-c {
+        border: none; border-top: 1px solid var(--line2); background: var(--bg);
+        padding: 8px 12px; cursor: pointer; text-align: left;
+        font: inherit; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--mut);
+        &:hover { color: var(--rose); background: var(--rose-s); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+
+    // ---- components, being changed ----
+    .pbc-comp-w {
+        border: 1px solid var(--line); border-radius: var(--r-sm);
+        background: var(--surf); overflow: hidden;
+        transition: border-color .12s ease, background .12s ease;
+        .pbc-comp { border: none; border-radius: 0; background: none; }
+        &.editable .pbc-comp { cursor: pointer; }
+        &.editable:hover { border-color: var(--p); }
+        &.editable:hover .pbc-comp-x { opacity: 1; }
+        &.staged { border-color: var(--p); background: var(--p-s); }
+        &.refused { border-color: var(--rose); background: var(--rose-s); }
+        // A staged removal greys the row and offers Undo; it does NOT vanish,
+        // because a row that disappears before it is saved cannot be put back.
+        &.removed {
+            background: var(--bg); opacity: .62;
+            .pbc-comp-v, .n { text-decoration: line-through; }
+        }
+        .pbc-comp:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+    .pbc-comps { .pbc-comp-w:hover .pbc-comp { background: none; } }
+    .pbc-comps.new { margin-top: 8px; }
+    .pbc-comp {
+        grid-template-columns: 108px minmax(0, 1fr) auto auto;
+    }
+    .pbc-comp-x {
+        border: 1px solid transparent; background: none; cursor: pointer;
+        width: 28px; height: 28px; border-radius: 8px; color: var(--mut);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity .12s ease;
+        &:hover { color: var(--rose); background: var(--rose-s); border-color: var(--rose-s); }
+        &:focus-visible { opacity: 1; outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+    .pbc-comp-u {
+        border: 1px solid var(--line); background: var(--surf); cursor: pointer;
+        border-radius: 8px; padding: 4px 9px; color: var(--p);
+        display: inline-flex; align-items: center; gap: 5px;
+        font: inherit; font-family: inherit; font-size: 11.5px; font-weight: 800;
+        &:hover { border-color: var(--p); background: var(--p-s); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+    .pbc-comp-new {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--p-s); color: var(--p);
+    }
+
+    // ---- footer ----
+    .pbc-foot {
+        flex: none; border-top: 1px solid var(--line); background: var(--surf);
+        position: relative; min-height: 58px;
+        // LEFT-aligned on purpose: the app's floating assistant pill sits over
+        // the bottom-right corner of every screen, and a right-aligned button
+        // here disappears under it. CD-3's Save bar takes the right-hand side
+        // and must keep clear of the pill with padding, not by hoping.
+        display: flex; align-items: center;
+    }
+    .pbc-foot-rest {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 22px; width: 100%;
+        transition: opacity .12s ease;
+        &.off { opacity: 0; pointer-events: none; }
+    }
+    // The Save bar lies OVER the resting row rather than replacing it, so
+    // staging the first change slides a bar up without changing the panel's
+    // height by a single pixel.
+    //
+    // The right padding is the assistant pill's real footprint, measured, not
+    // guessed: it rests as a 56px circle (a 36px avatar in 10px of padding)
+    // at `right: 24px`, so it owns the rightmost 80px of every screen. 96px
+    // leaves the Save button a 16px gap from it (ledger CD9).
+    .pbc-savebar {
+        position: absolute; inset: 0; z-index: 2;
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 96px 12px 22px; background: var(--surf);
+        transform: translateY(100%); opacity: 0; pointer-events: none;
+        transition: transform .12s cubic-bezier(.22, .61, .36, 1), opacity .12s ease;
+        &.on { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    }
+    .pbc-grow { flex: 1; }
+    // "Full form" is demoted to a text link the moment there is work to save:
+    // it is still there, it is simply no longer the thing to press.
+    .pbc-link {
+        border: none; background: none; cursor: pointer; padding: 4px 0;
+        font: inherit; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--mut); text-decoration: underline; text-underline-offset: 3px;
+        &:hover { color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; border-radius: 4px; }
+    }
+    .pbc-wage .v.staged { color: var(--p); }
+
+    // ---- narrow ----
+    @media (max-width: 620px) {
+        .pbc-grid { grid-template-columns: 1fr; }
+        .pbc-comp { grid-template-columns: 86px minmax(0, 1fr); }
+        .pbc-comp-r { grid-column: 2; text-align: left; }
+    }
+}
+
+// A person who asked for less motion gets an instant panel: the drawer is
+// still exactly where it was, it simply stops travelling to get there.
+@media (prefers-reduced-motion: reduce) {
+    .pbc {
+        .pbc-drawer { transition: none; }
+        .pbc-scrim { transition: none; }
+        .pbc-tab-ink { transition: none; }
+        .pbc-spin { animation: none; }
+        // CD-3: the Save bar still arrives, it simply stops travelling to get
+        // there — and the same for every hover tint and the pencil.
+        .pbc-savebar, .pbc-foot-rest { transition: none; }
+        .pbc-cell, .pbc-comp-w, .pbc-comp-x, .pbc-cell .k .pen { transition: none; }
+        .pbc-pick-spin { animation: none; }
+    }
+}

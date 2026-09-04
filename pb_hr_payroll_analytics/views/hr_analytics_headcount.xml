@@ -41,21 +41,21 @@
         <field name="name">Headcount Analysis List</field>
         <field name="model">hr.analytics.headcount</field>
         <field name="arch" type="xml">
-            <tree string="Headcount Analysis">
+            <list string="Headcount Analysis">
                 <field name="period_name"/>
                 <field name="date_from"/>
                 <field name="total_headcount"/>
                 <field name="total_fte"/>
                 <field name="fte_percentage"/>
                 <field name="attrition_rate"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_view_hr_analytics_headcount" model="ir.actions.act_window">
         <field name="name">Headcount Analysis</field>
         <field name="res_model">hr.analytics.headcount</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

@@ -14,7 +14,7 @@
                     <field name="department_id"/>
                     <field name="contract_type_id"/>
                 </group>
-                <group string="BHXH630 - Ốm đau/Thai sản" attrs="{'invisible': [('report_type', '!=', 'bhxh630')]}">
+                <group string="BHXH630 - Ốm đau/Thai sản" invisible="report_type != 'bhxh630'">
                     <field name="bhxh630_benefit_group"/>
                     <field name="bhxh630_certificate_serial"/>
                     <field name="bhxh630_supplement_batch"/>
@@ -25,12 +25,12 @@
                     <field name="bhxh630_route_code"/>
                     <field name="bhxh630_long_illness_code"/>
                 </group>
-                <group string="BHXHDSTK01-DV_595" attrs="{'invisible': [('report_type', '!=', 'bhxhdstk01')]}">
+                <group string="BHXHDSTK01-DV_595" invisible="report_type != 'bhxhdstk01'">
                     <field name="bhxhdstk_contribution_method"/>
                     <field name="bhxhdstk_change_content"/>
                     <field name="bhxhdstk_hospital_code"/>
                 </group>
-                <group string="BangKeHS D01-TS" attrs="{'invisible': [('report_type', '!=', 'bangke_d01')]}">
+                <group string="BangKeHS D01-TS" invisible="report_type != 'bangke_d01'">
                     <field name="d01_doc_name"/>
                     <field name="d01_doc_number"/>
                     <field name="d01_issue_date"/>
@@ -39,12 +39,12 @@
                     <field name="d01_summary"/>
                     <field name="d01_appraisal"/>
                 </group>
-                <group string="Báo giảm lao động" attrs="{'invisible': [('report_type', '!=', 'giam_ld')]}">
+                <group string="Báo giảm lao động" invisible="report_type != 'giam_ld'">
                     <field name="giam_reason"/>
                     <field name="giam_effective_date"/>
                     <field name="giam_region_code"/>
                 </group>
-                <group string="Báo tăng lao động" attrs="{'invisible': [('report_type', '!=', 'tang_ld')]}">
+                <group string="Báo tăng lao động" invisible="report_type != 'tang_ld'">
                     <field name="tang_reason"/>
                     <field name="tang_effective_date"/>
                     <field name="tang_region_code"/>

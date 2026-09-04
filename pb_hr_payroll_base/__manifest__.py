@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Base Framework - Enhanced',
-    'version': '16.0.2.0.0',
+    # 19.0.1.1.0 — Sudima Phase M: removed the CDN Chart.js entry from the
+    # web.assets_backend list (asset-list change: needs a full service
+    # RESTART, not an in-process upgrade — C18.53).
+    # 19.0.1.2.0 — W105: hr.payslip.line record rules mirroring the payslip
+    # rules in security/payroll_base_security_enhanced.xml.
+    'version': '19.0.1.3.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """
@@ -79,7 +84,7 @@ for all country-specific modules while maintaining clean separation of concerns.
         'wizards/payroll_import_wizard_views.xml',
         
         # Views
-        'views/payroll_dashboard_enhanced_views.xml',           # Enhanced dashboard with actions used by menus
+        # 'views/payroll_dashboard_enhanced_views.xml',           # TEMP DISABLED - Odoo 19 migration issue
         'views/payroll_menu_base.xml',                          # Base menu structure - Load after actions are defined
         'views/payroll_setup_guide.xml',                        # Setup guide for all countries
         'views/hr_payroll_structure_base_views.xml',            # HR payroll structure base views
@@ -87,21 +92,29 @@ for all country-specific modules while maintaining clean separation of concerns.
         'views/payroll_base_dashboard.xml',                     # Base dashboard views
         'views/payroll_country_selector_enhanced.xml',          # Enhanced country selector
         'views/salary_configuration_workflow.xml',              # Salary configuration workflow dashboard
-        'views/payroll_analytics_views.xml',                    # Analytics views
-        'views/zoho_base_views.xml',                            # Zoho base views
-        'views/zoho_staging_views.xml',                         # Zoho staging views
-        'views/zoho_menu_integration.xml',                      # Zoho menu integration - Load after base menus
+        # 'views/payroll_analytics_views.xml',                    # DISABLED - Search view errors need investigation
+        # ZOHO VIEWS DISABLED - Models are disabled
+        # 'views/zoho_base_views.xml',                            # Zoho base views
+        # 'views/zoho_staging_views.xml',                         # Zoho staging views
+        # 'views/zoho_menu_integration.xml',                      # Zoho menu integration - Load after base menus
     ],
     'assets': {
         'web.assets_backend': [
-            # NEW Enhanced CSS and JS - Create these 2 files
-            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # CREATE THIS FILE
-            'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',    # CREATE THIS FILE
+            # NEW Enhanced CSS and JS - DISABLED pending Odoo 19 migration
+            # 'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # OLD OWL syntax
+            # 'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',    # OLD OWL syntax
             'pb_hr_payroll_base/static/src/js/breadcrumb_override.js',           # Breadcrumb override for country selector
             'pb_hr_payroll_base/static/src/js/control_panel_home_icon.js',       # Control panel home icon
 
-            # Chart.js for analytics
-            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
+            # Chart.js: NO CDN. This asset list used to carry
+            # 'https://cdnjs.cloudflare.com/.../Chart.js/3.9.1/chart.min.js',
+            # which made EVERY backend page issue a cross-origin request (and
+            # broke charts entirely on an offline/air-gapped install). Odoo
+            # already bundles Chart.js locally in web.assets_backend
+            # (web/static/lib/Chart) — verified live: window.Chart.version is
+            # 4.4.6, i.e. Odoo's copy already wins over the CDN's 3.9.1, so the
+            # entry was pure waste. Removed in Sudima Phase M. Never re-add a
+            # remote URL to an asset list; vendor under static/lib/ instead.
             
             # OLD FILES REMOVED - Delete these files if they exist:
             # ❌ 'pb_hr_payroll_base/static/src/css/payroll_dashboard.css'
@@ -113,7 +126,7 @@ for all country-specific modules while maintaining clean separation of concerns.
         ],
         'web.assets_frontend': [
             # Frontend styling
-            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',
+            # 'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # DISABLED
         ],
         # Remove QWeb section for now - can add later if needed
         # 'web.assets_qweb': [

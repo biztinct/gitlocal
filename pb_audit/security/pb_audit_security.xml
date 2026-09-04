@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- The compliance console is gated to the Payroll Manager + System tier
+         (handover §3). Granting the manager the biz_audit_trail reader group
+         lets the console's entry deep-links resolve natively and makes the
+         off-menu biz.audit views usable as an admin fallback. The console
+         facade still reads every source uniformly via sudo behind its
+         _require_manager gate (one permission world, C18.17) and masks PII
+         (safety rail 3) — the reader grant is belt-and-braces, not the auth. -->
+    <record id="om_hr_payroll.group_hr_payroll_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('biz_audit_trail.group_audit_reader'))]"/>
+    </record>
+</odoo>

@@ -1,0 +1,654 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_employee__pb_performance_rating__1
+msgid "1 - Needs Improvement"
+msgstr "1 - Cần cải thiện"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_employee__pb_performance_rating__2
+msgid "2 - Developing"
+msgstr "2 - Đang phát triển"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_employee__pb_performance_rating__3
+msgid "3 - Meets Expectations"
+msgstr "3 - Đáp ứng mong đợi"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_employee__pb_performance_rating__4
+msgid "4 - Exceeds Expectations"
+msgstr "4 - Vượt quá mong đợi"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_employee__pb_performance_rating__5
+msgid "5 - Outstanding"
+msgstr "5 - Xuất sắc"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Age bands"
+msgstr "Nhóm tuổi"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Avg cost / head"
+msgstr "Chi phí trung bình/con"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Bonuses"
+msgstr "Thưởng"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Build Foundation Only"
+msgstr "Chỉ xây dựng nền tảng"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid ""
+"Build a complete, regenerable demo world: multilingual component\n"
+"                           library, division schemes, thousands of realistic employees and\n"
+"                           months of payroll history. Regeneration replaces prior demo data."
+msgstr ""
+"Xây dựng một thế giới demo hoàn chỉnh, có thể tái tạo: thành phần đa ngôn ngữ\n"
+"                           thư viện, sơ đồ bộ phận, hàng nghìn nhân viên thực tế và\n"
+"                           tháng của lịch sử bảng lương. Tái tạo thay thế dữ liệu demo trước đó."
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Clean Demo Data"
+msgstr "Làm sạch dữ liệu demo"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Cost composition"
+msgstr "Thành phần chi phí"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Cost-centre payroll (top)"
+msgstr "Bảng lương trung tâm chi phí (trên cùng)"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__create_uid
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__create_date
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_demo
+#: model:ir.model.fields,help:pb_demo.field_res_company__presentation_currency_id
+msgid ""
+"Currency cross-entity payroll analytics are consolidated into. Defaults to the parent "
+"company's functional currency."
+msgstr ""
+"Phân tích bảng lương giữa các thực thể bằng tiền tệ được hợp nhất thành. Mặc định là "
+"đồng tiền chức năng của công ty mẹ."
+
+#. module: pb_demo
+#: model:ir.actions.act_window,name:pb_demo.action_pb_demo_generator
+#: model:ir.ui.menu,name:pb_demo.menu_pb_demo_generator
+msgid "Demo Generator"
+msgstr "Trình tạo bản demo"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_employee__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_config__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_rule__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_connector__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_endpoint__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_field_mapping__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_carryover__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_component_mapping__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_structure__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_line__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_line_analytics__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_run__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule__is_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule_category__is_demo
+msgid "Demo Record"
+msgstr "Bản ghi demo"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_res_users__pb_demo_division
+msgid "Demo division"
+msgstr "Phân chia demo"
+
+#. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_generator.py:0
+msgid "Demo employees and payroll history cleared."
+msgstr "Nhân viên demo và lịch sử bảng lương đã bị xóa."
+
+#. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_generator.py:0
+msgid "Demo environment generated successfully."
+msgstr "Môi trường demo được tạo thành công."
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_chrome.xml:0
+msgid "Dismiss"
+msgstr "Bỏ qua"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_rule__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_connector__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_endpoint__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_carryover__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_component_mapping__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_structure__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule_category__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_analytics__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_pb_payrun_wizard__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_pb_sidebar_item__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_demo.field_res_users__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_config__pb_division
+msgid "Division"
+msgstr "Phép chia"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__loan_type__education
+msgid "Education Loan"
+msgstr "Khoản vay giáo dục"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__loan_type__emergency
+msgid "Emergency Advance"
+msgstr "Ứng trước khẩn cấp"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_employee
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_loan
+msgid "Employee Loan"
+msgstr "Khoản vay dành cho nhân viên"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Employee insurance"
+msgstr "Bảo hiểm nhân viên"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Employer contributions"
+msgstr "Đóng góp của người sử dụng lao động"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Employer cost"
+msgstr "Chi phí của người sử dụng lao động"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_payroll_structure__pb_cycle__end
+msgid "End-Month"
+msgstr "Cuối Tháng"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Cấu hình công thức Excel"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_formula_rule
+msgid "Excel Formula Salary Rule"
+msgstr "Excel Công thức Quy tắc lương"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Gender split"
+msgstr "Phân chia giới tính"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Generate Everything"
+msgstr "Tạo mọi thứ"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_employee__pb_grade
+msgid "Grade"
+msgstr "Cấp"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Gross"
+msgstr "Tổng thu nhập"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Gross payroll"
+msgstr "Tổng lương"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Gross vs net — monthly trend (Jan–Jul)"
+msgstr "Tổng so với ròng - xu hướng hàng tháng (tháng 1–tháng 7)"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_res_company__presentation_currency_id
+msgid "Group Presentation Currency"
+msgstr "Nhóm trình bày loại tiền tệ"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_integration_endpoint
+msgid "HR Integration Endpoint"
+msgstr "Điểm cuối tích hợp nhân sự"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_integration_connector
+msgid "HR System Integration Connector"
+msgstr "HR Hệ thống Trình kết nối tích hợp"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__headcount_factor
+msgid "Headcount Factor"
+msgstr "Yếu tố số lượng nhân viên"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Headcount by division"
+msgstr "Số lượng nhân viên theo bộ phận"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid ""
+"Headcount factor 1.0 builds ~4,560 employees across 6 divisions\n"
+"                                plus a Singapore entity. Use a small factor (e.g. 0.05) for a\n"
+"                                quick smoke test."
+msgstr ""
+"Hệ số nhân sự 1.0 xây dựng ~4.560 nhân viên trên 6 bộ phận\n"
+"                                cộng với một thực thể Singapore. Sử dụng hệ số nhỏ (ví dụ: 0,05) cho\n"
+"                                kiểm tra khói nhanh."
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__months
+msgid "History Months"
+msgstr "Tháng lịch sử"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__loan_type__housing
+msgid "Housing Loan"
+msgstr "Cho vay mua nhà"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_formula_rule__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_connector__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_endpoint__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_integration_field_mapping__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_carryover__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_cycle_component_mapping__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_structure__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule__id
+#: model:ir.model.fields,field_description:pb_demo.field_hr_salary_rule_category__id
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_analytics__id
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__id
+#: model:ir.model.fields,field_description:pb_demo.field_pb_payrun_wizard__id
+#: model:ir.model.fields,field_description:pb_demo.field_pb_sidebar_item__id
+#: model:ir.model.fields,field_description:pb_demo.field_res_company__id
+#: model:ir.model.fields,field_description:pb_demo.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__include_history
+msgid "Include Payroll History"
+msgstr "Bao gồm Lịch sử Bảng lương"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_integration_field_mapping
+msgid "Integration Field Mapping"
+msgstr "Ánh xạ trường tích hợp"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__write_uid
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__write_date
+#: model:ir.model.fields,field_description:pb_demo.field_pb_demo_generator__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Loading analytics…"
+msgstr "Đang tải phân tích…"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__loan_type
+msgid "Loan Type"
+msgstr "Loại khoản vay"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payslip_run__locked
+msgid "Locked"
+msgstr "Đã khoá"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_payroll_cycle_component_mapping
+msgid "Mid-Cycle to End-Cycle Component Mapping"
+msgstr "Giữa kỳ để Cuối kỳ Thành phần Ánh xạ"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_payroll_structure__pb_cycle__mid
+msgid "Mid-Month"
+msgstr "Giữa tháng"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__installment_amount
+msgid "Monthly Installment"
+msgstr "Trả góp hàng tháng"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__paid_months
+msgid "Months Paid"
+msgstr "Số tháng được trả"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Net"
+msgstr "Thực lãnh"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Net pay"
+msgstr "Lương thực nhận"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__balance_amount
+msgid "Outstanding Balance"
+msgstr "Số dư chưa thanh toán"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Overtime & bonuses by division"
+msgstr "Làm thêm giờ & tiền thưởng theo bộ phận"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "PAYOBOOK · WORKFORCE ANALYTICS"
+msgstr "SỔ TRẢ TIỀN · PHÂN TÍCH LỰC LƯỢNG LAO ĐỘNG"
+
+#. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_generator.py:0
+#: model:ir.ui.menu,name:pb_demo.menu_pb_demo_root
+msgid "Payobook Demo"
+msgstr "Demo Payobook"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_pb_demo_analytics
+msgid "Payobook Demo Analytics"
+msgstr "Phân tích demo Payobook"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Payobook Demo Environment"
+msgstr "Môi trường demo Payobook"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_pb_demo_generator
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Payobook Demo Generator"
+msgstr "Trình tạo demo Payobook"
+
+#. module: pb_demo
+#: model:res.groups,name:pb_demo.group_payobook_demo
+msgid "Payobook Demo User"
+msgstr "Người dùng thử Payobook"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_pb_payrun_wizard
+msgid "Payobook Run Payroll wizard orchestration"
+msgstr "Payobook Run Payroll Wizard điều phối"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_pb_sidebar_item
+msgid "Payobook Sidebar Item"
+msgstr "Mục thanh bên Payobook"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_payroll_cycle_carryover
+msgid "Payroll Cycle Carryover"
+msgstr "Bảng lương Chu kỳ Bảo lưu"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Payroll cost by division"
+msgstr "Chi phí tiền lương theo bộ phận"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_structure__pb_cycle
+msgid "Pb Cycle"
+msgstr "Chu trình Pb"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_payroll_structure__pb_division
+msgid "Pb Division"
+msgstr "Phòng Pb"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_employee__pb_performance_rating
+msgid "Performance Rating"
+msgstr "Đánh giá hiệu suất"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__loan_type__personal
+msgid "Personal Loan"
+msgstr "Khoản vay cá nhân"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Personal income tax"
+msgstr "Thuế thu nhập cá nhân"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__principal_amount
+msgid "Principal"
+msgstr "Hiệu trưởng"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_demo
+#: model_terms:ir.ui.view,arch_db:pb_demo.view_pb_demo_generator_form
+msgid "Remove all demo employees, contracts and payroll history?"
+msgstr "Xóa tất cả nhân viên demo, hợp đồng và lịch sử bảng lương?"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__state__running
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_salary_rule
+msgid "Salary Rule"
+msgstr "Lương Quy tắc"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_salary_rule_category
+msgid "Salary Rule Category"
+msgstr "Danh mục quy tắc lương"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_hr_payroll_structure
+msgid "Salary Structure"
+msgstr "Cấu trúc lương"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Salary distribution (monthly basic)"
+msgstr "Phân phối lương (cơ bản hàng tháng)"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_chrome.xml:0
+msgid ""
+"Shared demo — pay slips you generate are temporary and may be cleaned or overwritten\n"
+"          by another demo user."
+msgstr ""
+"Bản demo được chia sẻ — phiếu lương bạn tạo là tạm thời và có thể được xóa hoặc ghi đè\n"
+"          bởi một người dùng demo khác."
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__date_start
+msgid "Start Date"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_demo
+#: model:ir.model.fields,field_description:pb_demo.field_hr_loan__total_months
+msgid "Tenure (months)"
+msgstr "Nhiệm kỳ (tháng)"
+
+#. module: pb_demo
+#: model:ir.model,name:pb_demo.model_res_users
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_demo
+#: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__loan_type__vehicle
+msgid "Vehicle Loan"
+msgstr "Cho vay mua xe"
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_chrome.xml:0
+msgid "Want a private demo?"
+msgstr "Muốn có một bản demo riêng tư?"
+
+#. module: pb_demo
+#: model:ir.model.fields,help:pb_demo.field_res_users__pb_demo_division
+msgid ""
+"Which of the six demo divisions this user's live capstone mission runs against. Set at"
+" signup and never changed: the prospect's own June run is the one thing in the shared "
+"demo world that is theirs."
+msgstr ""
+"Nhiệm vụ capstone trực tiếp của người dùng này sẽ gặp phải phân khúc nào trong số sáu "
+"phân khúc demo. Được thiết lập khi đăng ký và không bao giờ thay đổi: hoạt động tháng "
+"6 của chính khách hàng tiềm năng là điều duy nhất trong thế giới demo được chia sẻ là "
+"của họ."
+
+#. module: pb_demo
+#. odoo-javascript
+#: code:addons/pb_demo/static/src/xml/demo_analytics.xml:0
+msgid "Workforce & Payroll Insights"
+msgstr "Thông tin chi tiết về lực lượng lao động và tiền lương"
+
+#. module: pb_demo
+#: model:ir.actions.client,name:pb_demo.action_pb_demo_analytics
+msgid "Workforce Analytics"
+msgstr "Phân tích lực lượng lao động"

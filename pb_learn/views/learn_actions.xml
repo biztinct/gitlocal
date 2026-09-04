@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Guided Journey. An OWL client action, following the same shape as
+         Channel Center and the CRM dashboard: an ir.actions.client whose tag is
+         registered in JS. -->
+    <record id="action_learn_journey" model="ir.actions.client">
+        <field name="name">Training</field>
+        <field name="tag">learn_journey</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

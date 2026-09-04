@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F113 / T113.2b — Indonesia 2026 statutory pack (B4). Published so the
+         Indonesia template resolves values at both real seed time and
+         certification (pinned 2026.1). ⚠ See item notes + report for VERIFY items. -->
+    <data noupdate="1">
+        <record id="legis_pack_id_2026" model="hr.formula.legislation.pack">
+            <field name="name">Indonesia Statutory Parameters 2026</field>
+            <field name="country_code">ID</field>
+            <field name="version">2026.1</field>
+            <field name="effective_date">2026-01-01</field>
+            <field name="authority">UU Cipta Kerja / PP 44&amp;45/2015 (BPJS TK) · Perpres 82/2018 (Kesehatan) · UU HPP (PPh21)</field>
+            <field name="state">published</field>
+            <field name="sequence">5</field>
+            <field name="description">Indonesia BPJS Ketenagakerjaan &amp; Kesehatan rates/caps, PTKP and occupational-cost parameters, 2026.</field>
+        </record>
+
+        <record id="legis_pack_id_2026_jhtee" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JHTEE</field><field name="label">JHT Rate (EE)</field>
+            <field name="value">0.02</field><field name="number_format">percentage</field><field name="sequence">10</field>
+        </record>
+        <record id="legis_pack_id_2026_jhter" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JHTER</field><field name="label">JHT Rate (ER)</field>
+            <field name="value">0.037</field><field name="number_format">percentage</field><field name="sequence">20</field>
+        </record>
+        <record id="legis_pack_id_2026_jpee" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JPEE</field><field name="label">Pension Rate (EE)</field>
+            <field name="value">0.01</field><field name="number_format">percentage</field><field name="sequence">30</field>
+        </record>
+        <record id="legis_pack_id_2026_jper" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JPER</field><field name="label">Pension Rate (ER)</field>
+            <field name="value">0.02</field><field name="number_format">percentage</field><field name="sequence">40</field>
+        </record>
+        <record id="legis_pack_id_2026_jpcap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JPCAP</field><field name="label">Pension Salary Cap</field>
+            <field name="value">10042300</field><field name="number_format">currency</field><field name="note">⚠ VERIFY 2026 ceiling (adjusted yearly)</field><field name="sequence">50</field>
+        </record>
+        <record id="legis_pack_id_2026_jkker" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JKKER</field><field name="label">Accident Rate (ER)</field>
+            <field name="value">0.0024</field><field name="number_format">percentage</field><field name="note">Low-risk class default; ⚠ VERIFY by industry risk</field><field name="sequence">60</field>
+        </record>
+        <record id="legis_pack_id_2026_jkmer" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">JKMER</field><field name="label">Death Rate (ER)</field>
+            <field name="value">0.003</field><field name="number_format">percentage</field><field name="sequence">70</field>
+        </record>
+        <record id="legis_pack_id_2026_kesee" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">KESEE</field><field name="label">Health Rate (EE)</field>
+            <field name="value">0.01</field><field name="number_format">percentage</field><field name="sequence">80</field>
+        </record>
+        <record id="legis_pack_id_2026_keser" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">KESER</field><field name="label">Health Rate (ER)</field>
+            <field name="value">0.04</field><field name="number_format">percentage</field><field name="sequence">90</field>
+        </record>
+        <record id="legis_pack_id_2026_kescap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">KESCAP</field><field name="label">Health Salary Cap</field>
+            <field name="value">12000000</field><field name="number_format">currency</field><field name="sequence">100</field>
+        </record>
+        <record id="legis_pack_id_2026_ptkpbase" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">PTKPBASE</field><field name="label">PTKP Base (TK/0)</field>
+            <field name="value">54000000</field><field name="number_format">currency</field><field name="sequence">110</field>
+        </record>
+        <record id="legis_pack_id_2026_ptkpadd" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">PTKPADD</field><field name="label">PTKP per Status/Dependent</field>
+            <field name="value">4500000</field><field name="number_format">currency</field><field name="sequence">120</field>
+        </record>
+        <record id="legis_pack_id_2026_biayarate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">BIAYARATE</field><field name="label">Occupational Cost Rate</field>
+            <field name="value">0.05</field><field name="number_format">percentage</field><field name="sequence">130</field>
+        </record>
+        <record id="legis_pack_id_2026_biayacap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_id_2026"/>
+            <field name="code">BIAYACAP</field><field name="label">Occupational Cost Cap (monthly)</field>
+            <field name="value">500000</field><field name="number_format">currency</field><field name="sequence">140</field>
+        </record>
+    </data>
+</odoo>

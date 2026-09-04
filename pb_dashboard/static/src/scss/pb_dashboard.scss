@@ -1,0 +1,193 @@
+// Payobook Dashboard cockpit — Indigo, solid (no gradients)
+.pbd-root {
+    --pbd-brand: #4F46E5;
+    --pbd-ink: #1B1733;
+    --pbd-muted: #6E6A85;
+    --pbd-border: #E7E5F2;
+    --pbd-surface: #FFFFFF;
+    --pbd-bg: #F4F5FB;
+    padding: 22px 26px 60px;
+    background: var(--pbd-bg);
+    min-height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    .pbd-loading { padding: 60px; color: var(--pbd-muted); }
+
+    // Hero — solid indigo
+    .pbd-hero {
+        background: #312E81;
+        border-radius: 18px;
+        padding: 26px 30px;
+        color: #fff;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 18px; flex-wrap: wrap;
+        box-shadow: 0 18px 44px rgba(27,23,51,.14);
+        margin-bottom: 20px;
+    }
+    .pbd-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #C7CBF5; }
+    .pbd-hero h1 { font-size: 28px; font-weight: 800; margin: 8px 0 6px; color: #fff; letter-spacing: -.02em; }
+    .pbd-sub { color: #C7CBF5; font-size: 14px; }
+    .pbd-hero-r { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pbd-btn-glass {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2);
+        padding: 9px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+        &:hover { background: rgba(255,255,255,.22); }
+        svg { vertical-align: -.18em; }
+    }
+
+    // Activation checklist — white surface, left rail accent, solid indigo.
+    // Same vocabulary as .pbd-kpi, one step warmer. Solid colours only, no
+    // gradient, Lucide strokes, and the only animation is the tick drawing
+    // itself.
+    .pbd-act {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        padding: 20px 22px; margin-bottom: 20px; position: relative; overflow: hidden;
+        box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
+    }
+    .pbd-act-head { display: flex; align-items: flex-start; gap: 12px; }
+    .pbd-act-hic {
+        display: inline-grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
+        border-radius: 10px; background: #EEF0FE; color: var(--pbd-brand);
+    }
+    .pbd-act-hx { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-act-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
+    .pbd-act-count {
+        flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: var(--pbd-muted);
+        background: #F4F5FB; border: 1px solid var(--pbd-border);
+        padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .pbd-acts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid #F0EFF7; }
+    .pbd-act-i {
+        display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px 0;
+        border-bottom: 1px solid #F0EFF7; position: relative;
+        &:last-child { border-bottom: none; padding-bottom: 2px; }
+
+        // The step being asked for. A rail rather than a fill: the row still
+        // has to read as one of a list, and a filled row would compete with
+        // the hero above it.
+        &.is-next {
+            padding-left: 12px;
+            &::before {
+                content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
+                width: 3px; border-radius: 3px; background: var(--pbd-brand);
+            }
+            .pbd-act-mark { background: #EEF0FE; border-color: #C7CBF5; }
+        }
+        // Behind you. Dimmed, never struck through — a finished step is still
+        // a place somebody may want to go back to.
+        &.is-done {
+            .pbd-act-n { color: var(--pbd-muted); }
+            .pbd-act-mark { background: #E7F8F1; border-color: #A7E4CD; color: #0F8A63; }
+        }
+    }
+    .pbd-act-mark {
+        display: inline-grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand);
+        border: 1px solid var(--pbd-border);
+    }
+    .pbd-act-x { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-n { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .pbd-act-d { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
+    .pbd-btn {
+        flex: 0 0 auto; background: var(--pbd-brand); color: #fff; border: 1px solid var(--pbd-brand);
+        padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+        &:hover { background: #4338CA; border-color: #4338CA; }
+        // Every step is reachable; only one is being asked for. A ghost button
+        // is still a button, which is the point — somebody who wants to import
+        // first is not wrong.
+        &.ghost {
+            background: transparent; color: var(--pbd-brand); border-color: var(--pbd-border);
+            font-weight: 600;
+            &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+        }
+    }
+
+    // THE TICK DRAWS ITSELF. CSS only — no library, no sprite, no emoji: the
+    // Lucide check is a single stroked path, so dashing it and animating the
+    // offset draws it left to right exactly once, when the row first appears
+    // with its state already decided by the server.
+    .pbd-act-i.is-done .pbd-act-mark svg path {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        animation: pbd-tick .42s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    @keyframes pbd-tick { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .pbd-act-i.is-done .pbd-act-mark svg path { animation: none; stroke-dashoffset: 0; }
+    }
+
+    @media (max-width: 640px) {
+        .pbd-act-i { flex-wrap: wrap; }
+        .pbd-btn { width: 100%; }
+    }
+
+    // KPI strip
+    .pbd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .pbd-kpi {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 16px;
+        padding: 16px 18px; box-shadow: 0 2px 6px rgba(27,23,51,.06); position: relative; overflow: hidden;
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
+        &.k-green::before { background: #10B981; } &.k-amber::before { background: #B7791F; }
+        &.k-cyan::before { background: #0891B2; } &.k-indigo::before { background: #4F46E5; }
+        .kl { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--pbd-muted);
+              display: flex; align-items: center; justify-content: space-between; }
+        .kl svg { opacity: .6; }
+        .kv { font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+        .ks { font-size: 12px; color: var(--pbd-muted); margin-top: 4px; }
+    }
+
+    // Cockpit cards
+    .pbd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; }
+    .pbd-card {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        padding: 20px 22px; box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        transition: transform .2s, box-shadow .2s;
+        &:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(27,23,51,.14); }
+    }
+    .pbd-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .pbd-card-t { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-card-m { color: var(--pbd-muted); font-size: 12.5px; margin-top: 3px; }
+    .pbd-ring { position: relative; display: inline-grid; place-items: center; }
+    .pbd-ring-n { position: absolute; font-weight: 800; }
+    // Stands where the dial would: nothing measured yet, and the card keeps
+    // its shape rather than jumping when the first figure arrives.
+    .pbd-ring-none {
+        display: inline-grid; place-items: center; width: 66px; height: 66px;
+        color: var(--pbd-muted); font-size: 20px; font-weight: 800; flex: 0 0 66px;
+    }
+
+    .pbd-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .pbd-pill { font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; }
+    .pbd-pill.ok { background: #E7F8F1; color: #0F8A63; }
+    .pbd-pill.warn { background: #FEF3E2; color: #B7791F; }
+    .pbd-pill.cyan { background: #E0F4F9; color: #0E7490; }
+    .pbd-pill.muted { background: #EEF1F5; color: #64748B; }
+
+    .pbd-mini { display: flex; gap: 22px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #F0EFF7; flex-wrap: wrap;
+        .mv { font-size: 17px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+        .ml { font-size: 11px; color: var(--pbd-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+    }
+    .pbd-link { margin-top: 16px; background: none; border: none; color: var(--pbd-brand); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0;
+        &:hover { text-decoration: underline; } }
+}
+
+// ------------------------------------------------------------------ embedded
+// The Dashboard as the PULSE lens of the Home hub (W17).
+//
+// Two things change and nothing else. The padding tightens, because the hub
+// owns the outer frame. And the root becomes its own SCROLLPORT: standalone it
+// is `min-height: 100%` inside the web client's scrolling action host, but
+// `.pbhub-lens` is a definite-height flex box, so a child that only flows grows
+// past the bottom of the workspace with nothing to scroll it (W20 — the failure
+// has no error and simply looks like a page that ends early).
+.pbd-root.pbd-root--embedded {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 18px 22px 40px;
+}

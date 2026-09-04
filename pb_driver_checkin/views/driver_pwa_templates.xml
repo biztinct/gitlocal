@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Standalone driver PWA page. Deliberately does NOT extend the webclient
+         or website layout, and does NOT use t-call-assets: an Odoo asset bundle
+         is wrapped in module-loader code that needs the `odoo` global, which a
+         bare page doesn't load (ReferenceError: odoo is not defined). Instead we
+         serve the plain Leaflet lib + IIFE app as direct static tags. Bump the
+         ?v= query on any driver_app.js/.css change (C2 cache discipline). -->
+    <template id="driver_app_page" name="Payobook Driver">&lt;!DOCTYPE html&gt;
+        <html t-att-lang="lang">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport"
+                      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+                <meta name="theme-color" content="#5A4BB0"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+                <title>Payobook Driver</title>
+                <link rel="manifest" href="/driver/manifest.webmanifest"/>
+                <link rel="apple-touch-icon" href="/pb_driver_checkin/static/description/icon-192.png"/>
+                <link rel="stylesheet" href="/biz_geo_tracking/static/lib/leaflet/leaflet.css?v=1002"/>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
+            </head>
+            <body class="pbdrv-body">
+                <div id="pbdrv-root" t-att-data-user-name="user_name"/>
+                <script type="text/javascript" src="/biz_geo_tracking/static/lib/leaflet/leaflet.js?v=1002"></script>
+                <script type="text/javascript" src="/pb_driver_checkin/static/src/js/driver_app.js?v=1002"></script>
+                <script type="text/javascript">
+                    if ('serviceWorker' in navigator) {
+                        window.addEventListener('load', function () {
+                            navigator.serviceWorker.register('/driver/service-worker.js', { scope: '/driver' })
+                                .catch(function (e) { console.warn('SW registration failed', e); });
+                        });
+                    }
+                </script>
+            </body>
+        </html>
+    </template>
+
+    <!-- Friendly gates -->
+    <template id="driver_no_access" name="Driver — no access">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Payobook Driver</title>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
+            </head>
+            <body class="pbdrv-body">
+                <div class="pbdrv-gate">
+                    <div class="pbdrv-gate__card">
+                        <h1>Driver access required</h1>
+                        <p>Your account is not set up as a driver. Please contact your
+                           payroll administrator to enable driver check-in.</p>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <template id="driver_no_employee" name="Driver — no employee">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Payobook Driver</title>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
+            </head>
+            <body class="pbdrv-body">
+                <div class="pbdrv-gate">
+                    <div class="pbdrv-gate__card">
+                        <h1>No employee profile</h1>
+                        <p>No employee record is linked to your user account, so check-in
+                           is unavailable. Please contact your payroll administrator.</p>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+</odoo>

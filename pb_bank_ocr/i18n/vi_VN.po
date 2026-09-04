@@ -1,0 +1,1358 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "A decided bank change request is immutable."
+msgstr "Yêu cầu thay đổi ngân hàng đã được quyết định thì không thể thay đổi."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "A decided request cannot be re-scanned."
+msgstr "Một yêu cầu đã quyết định không thể được quét lại."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "AI-assisted bank-document validation with human approval."
+msgstr "Xác thực tài liệu ngân hàng được AI hỗ trợ với sự chấp thuận của con người."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "Account"
+msgstr "Tài khoản"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_name
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:28
+msgid "Account Holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_number
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:29
+msgid "Account Number"
+msgstr "Số tài khoản"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Account number must be 6-19 digits."
+msgstr "Số tài khoản phải có 6-19 chữ số."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:227
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động Ngoại lệ Trang trí"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_state
+msgid "Activity State"
+msgstr "Hoạt động Trạng thái"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Hoạt động Loại Biểu tượng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__aliases
+msgid "Aliases"
+msgstr "Bí danh"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "All format checks passed."
+msgstr "Tất cả kiểm tra định dạng đều đạt."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_abbank
+msgid "An Binh Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP An Bình"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "An account number is required to submit."
+msgstr "Cần có số tài khoản để gửi."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__approval_widget_json
+msgid "Approval Widget Json"
+msgstr "Tiện ích phê duyệt Json"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Approve as Finance"
+msgstr "Duyệt (Tài chính)"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Approve as HR"
+msgstr "Phê duyệt với tư cách nhân sự"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__approved
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:223
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:159
+msgid "Approved — the employee bank master has been updated."
+msgstr "Đã phê duyệt - chủ ngân hàng nhân viên đã được cập nhật."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_acb
+msgid "Asia Commercial Bank"
+msgstr "Ngân hàng TMCP Á Châu"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_bacabank
+msgid "Bac A Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Bắc Á"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_name
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:26
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_change_request
+msgid "Bank Account Change Request"
+msgstr "Yêu cầu thay đổi tài khoản ngân hàng"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Bank Change Request"
+msgstr "Yêu cầu thay đổi ngân hàng"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_list
+msgid "Bank Change Requests"
+msgstr "Yêu cầu thay đổi ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__doc_kind__confirmation_letter
+msgid "Bank Confirmation Letter"
+msgstr "Thư xác nhận của ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__name
+msgid "Bank Name"
+msgstr "Ngân hàng Tên"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__doc_kind__statement
+msgid "Bank Statement"
+msgstr "Sao kê ngân hàng"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model:ir.actions.client,name:pb_bank_ocr.action_pb_bank_ocr
+#: model:pb.sidebar.item,name:pb_bank_ocr.item_bank_verification
+msgid "Bank Verification"
+msgstr "Xác minh ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_ocr
+msgid "Bank Verification Cockpit"
+msgstr "Buồng xác minh ngân hàng"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Bank change history"
+msgstr "Lịch sử thay đổi ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_bidv
+msgid "Bank for Investment and Development of Vietnam"
+msgstr "Ngân hàng Đầu tư và Phát triển Việt Nam"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Bank master updated from this request."
+msgstr "Chủ ngân hàng được cập nhật từ yêu cầu này."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Bank not recognised in the registry."
+msgstr "Ngân hàng không có trong danh mục."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_baovietbank
+msgid "Bao Viet Joint Stock Commercial Bank"
+msgstr "Ngân hàng TMCP Bảo Việt"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_branch
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:27
+msgid "Branch"
+msgstr "Chi nhánh"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_cimb
+msgid "CIMB Bank Vietnam"
+msgstr "Ngân hàng CIMB Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__can_finance_approve
+msgid "Can Finance Approve"
+msgstr "Tài chính có thể phê duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__can_hr_approve
+msgid "Can Hr Approve"
+msgstr "Nhân sự có thể phê duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__can_refuse
+msgid "Can Refuse"
+msgstr "Có thể từ chối"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__can_submit
+msgid "Can Submit"
+msgstr "có thể gửi"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__doc_kind__cheque
+msgid "Cancelled Cheque"
+msgstr "Séc đã hủy"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__changed_at
+msgid "Changed At"
+msgstr "Thay đổi lúc"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__changed_by
+msgid "Changed By"
+msgstr "Thay đổi bởi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__aliases
+msgid "Comma-separated alternate names/abbreviations used for matching."
+msgstr ""
+"Tên/chữ viết tắt thay thế được phân tách bằng dấu phẩy được sử dụng để đối sánh."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__company_id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__company_id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_cbbank
+msgid "Construction Commercial One Member Limited Liability Bank"
+msgstr "Ngân hàng trách nhiệm hữu hạn một thành viên Thương mại Xây dựng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__create_uid
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__create_uid
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__create_date
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__create_date
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__cur_account_number
+msgid "Current Account"
+msgstr "Tài khoản vãng lai"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__cur_bank_name
+msgid "Current Bank"
+msgstr "Ngân hàng hiện tại"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__cur_bank_branch
+msgid "Current Branch"
+msgstr "Chi nhánh hiện tại"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__cur_account_name
+msgid "Current Holder"
+msgstr "Người giữ hiện tại"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Current on file → Extracted"
+msgstr "Hiện tại trong tệp → Đã trích xuất"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Deterministic fallback is always on."
+msgstr "Dự phòng xác định luôn được bật."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__display_name
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_ocr__display_name
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__display_name
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__attachment_id
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__doc_kind
+msgid "Document Kind"
+msgstr "Loại tài liệu"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__ocr_state__done
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:160
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_dongabank
+msgid "Dong A Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Đông Á"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__draft
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:222
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__duplicate_ack
+msgid "Duplicate Verified"
+msgstr "Đã xác minh trùng lặp"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+#: model:ir.model,name:pb_bank_ocr.model_hr_employee
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__employee_id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_employee_bank_history
+msgid "Employee Bank Change History"
+msgstr "Lịch sử thay đổi ngân hàng nhân viên"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Extracted"
+msgstr "Đã trích xuất"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Extracted fields"
+msgstr "Các trường được trích xuất"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__ocr_state__failed
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__confidence_json
+msgid "Field Confidences"
+msgstr "Độ tin cậy hiện trường"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Finance"
+msgstr "Tài chính"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__finance_review
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:223
+msgid "Finance Review"
+msgstr "Tài chính xét duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__swift_prefix
+msgid "First 4 letters of the BIC."
+msgstr "4 chữ cái đầu tiên của BIC."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__v_format_msg
+msgid "Format Notes"
+msgstr "Định dạng ghi chú"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__v_format_ok
+msgid "Format OK"
+msgstr "Định dạng được"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_gpbank
+msgid "Global Petro Commercial One Member Limited Liability Bank"
+msgstr "Ngân hàng TNHH MTV Thương mại Dầu Khí Toàn Cầu"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__hr_review
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:222
+msgid "HR Review"
+msgstr "Nhân sự xét duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__duplicate_ack
+msgid "HR confirms this is not a duplicate payment target."
+msgstr "HR xác nhận đây không phải là mục tiêu thanh toán trùng lặp."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "HR review"
+msgstr "Nhân sự duyệt"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_hsbc
+msgid "HSBC Bank Vietnam"
+msgstr "Ngân hàng HSBC Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_hdbank
+msgid "Ho Chi Minh City Development Joint Stock Commercial Bank"
+msgstr "Ngân hàng TMCP Phát triển Thành phố Hồ Chí Minh"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "Holder"
+msgstr "Người giữ"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "I have verified this is not a duplicate payment target."
+msgstr "Tôi đã xác minh đây không phải là mục tiêu thanh toán trùng lặp."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_iban
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:30
+msgid "IBAN"
+msgstr "IBAN"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_ocr__id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__id
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để cho biết ngoại lệ hoạt động."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__message_has_error
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_vcb
+msgid "Joint Stock Commercial Bank for Foreign Trade of Vietnam"
+msgstr "Ngân hàng TMCP Ngoại thương Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_kienlongbank
+msgid "Kien Long Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Kiên Long"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__write_uid
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__write_uid
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__write_date
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__write_date
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_lpbank
+msgid "Loc Phat Vietnam Joint Stock Commercial Bank"
+msgstr "Ngân hàng TMCP Lộc Phát Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_employee_bank_history__change_source__manual
+msgid "Manual Edit"
+msgstr "Chỉnh sửa thủ công"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Master Updated"
+msgstr "Cập nhật chính"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_mb
+msgid "Military Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Quân Đội"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__name_match_band__red
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
+msgid "Mismatch"
+msgstr "Không khớp"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "My Hoạt động Hạn chót"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "My open"
+msgstr "mở của tôi"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_namabank
+msgid "Nam A Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Nam Á"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__name_match_band
+msgid "Name Match"
+msgstr "Tên trùng khớp"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__name_match_score
+msgid "Name Match %"
+msgstr "Độ khớp tên %"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_ncb
+msgid "National Citizen Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Quốc Dân"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__new_account_number
+msgid "New Account"
+msgstr "Tài khoản mới"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__new_bank_name
+msgid "New Bank"
+msgstr "Ngân hàng mới"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__new_bank_branch
+msgid "New Branch"
+msgstr "Chi nhánh mới"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__new_account_name
+msgid "New Holder"
+msgstr "Người giữ mới"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "New bank-change request"
+msgstr "Yêu cầu thay đổi ngân hàng mới"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Tiếp theo Hoạt động Calendar Sự kiện"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tiếp theo Hoạt động Hạn chót"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tiếp theo Hoạt động Tóm tắt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tiếp theo Hoạt động Loại"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "No OCR provider configured."
+msgstr "Không có nhà cung cấp OCR nào được định cấu hình."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "No document-OCR provider configured."
+msgstr "Chưa cấu hình nhà cung cấp OCR tài liệu."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "No employee is linked to your user."
+msgstr "Không có nhân viên nào được liên kết với người dùng của bạn."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "No prior changes."
+msgstr "Không có thay đổi trước đó."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__ocr_provider
+msgid "OCR Provider"
+msgstr "Nhà cung cấp OCR"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__ocr_raw
+msgid "OCR Raw Text"
+msgstr "Văn bản thô OCR"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_employee_bank_history__change_source__ocr_request
+msgid "OCR Request"
+msgstr "Yêu cầu OCR"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__ocr_state
+msgid "OCR Status"
+msgstr "Trạng thái OCR"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_oceanbank
+msgid "Ocean Commercial One Member Limited Liability Bank"
+msgstr "Ngân hàng trách nhiệm hữu hạn một thành viên Thương mại Đại Dương"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__old_account_number
+msgid "Old Account"
+msgstr "Tài khoản cũ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__old_bank_name
+msgid "Old Bank"
+msgstr "Ngân hàng cũ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__old_bank_branch
+msgid "Old Branch"
+msgstr "Chi nhánh cũ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__old_account_name
+msgid "Old Holder"
+msgstr "Giá đỡ cũ"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR can re-target a bank change request."
+msgstr "Chỉ Nhân sự mới có thể chuyển yêu cầu thay đổi ngân hàng sang nhân viên khác."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR or Finance can confirm a duplicate account."
+msgstr "Chỉ Nhân sự hoặc Tài chính mới có thể xác nhận tài khoản trùng lặp."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "Only HR or Finance can test the OCR provider."
+msgstr "Chỉ Nhân sự hoặc Tài chính mới có thể kiểm tra nhà cung cấp OCR."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "Only JPG, PNG or PDF documents are accepted."
+msgstr "Chỉ các tài liệu JPG, PNG hoặc PDF được chấp nhận."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_ocb
+msgid "Orient Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Phương Đông"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__doc_kind__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__doc_kind__passbook
+msgid "Passbook"
+msgstr "Sổ tiết kiệm"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__ocr_state__pending
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__duplicate_ids
+msgid "Possible Duplicates"
+msgstr "Có thể trùng lặp"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_pgbank
+msgid "Prosperity and Growth Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Thịnh vượng và Tăng trưởng"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:199
+msgid "Provider OK"
+msgstr "Nhà cung cấp ổn"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:199
+msgid "Provider error"
+msgstr "Lỗi nhà cung cấp"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_publicbank
+msgid "Public Bank Vietnam"
+msgstr "Ngân hàng đại chúng Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Re-scan"
+msgstr "Quét lại"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Reason (optional)…"
+msgstr "Lý do (tùy chọn)…"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Refuse request"
+msgstr "Từ chối yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__refused
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:224
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__request_id
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:176
+msgid "Request refused."
+msgstr "Yêu cầu bị từ chối."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__resolved_bank_id
+msgid "Resolved Bank"
+msgstr "Ngân hàng đã giải quyết"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__activity_user_id
+msgid "Responsible User"
+msgstr "Phụ trách Người dùng"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__name_match_band__amber
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
+msgid "Review"
+msgstr "Xem lại"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Run OCR"
+msgstr "Chạy OCR"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__ocr_state__running
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_swift
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:31
+msgid "SWIFT / BIC"
+msgstr "SWIFT / BIC"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__swift_prefix
+msgid "SWIFT Prefix"
+msgstr "Tiền tố SWIFT"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "SWIFT/BIC format looks invalid."
+msgstr "Định dạng SWIFT/BIC có vẻ không hợp lệ."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_saigonbank
+msgid "Saigon Bank for Industry and Trade"
+msgstr "Ngân hàng Công thương Sài Gòn"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_scb
+msgid "Saigon Commercial Bank"
+msgstr "Ngân hàng TMCP Sài Gòn"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_shb
+msgid "Saigon Hanoi Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Sài Gòn Hà Nội"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_sacombank
+msgid "Saigon Thuong Tin Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Sài Gòn Thương Tín"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Save & validate"
+msgstr "Lưu và xác thực"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_shinhan
+msgid "Shinhan Bank Vietnam"
+msgstr "Ngân hàng Shinhan Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__short_name
+msgid "Short Name"
+msgstr "Tên viết tắt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_employee_bank_history__change_source
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_seabank
+msgid "Southeast Asia Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Đông Nam Á"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên trên hoạt động\n"
+"Quá hạn: Đến hạn ngày là đã đã vượt\n"
+"Hôm nay: Hoạt động ngày là hôm nay\n"
+"Planned: Tương lai hoạt động."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__name_match_band__green
+msgid "Strong"
+msgstr "mạnh mẽ"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
+msgid "Strong match"
+msgstr "Trận đấu mạnh mẽ"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Submit"
+msgstr "Gửi"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Test connection"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "The account number must be 6-19 digits before approval."
+msgstr "Số tài khoản phải có 6-19 chữ số trước khi duyệt."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"The verification results of a bank change request are system-computed and cannot be "
+"edited: %s."
+msgstr ""
+"Kết quả xác minh của yêu cầu thay đổi ngân hàng do hệ thống tính toán và không thể "
+"chỉnh sửa: %s."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This account collides with another employee. HR must tick 'Duplicate Verified' before "
+"approval."
+msgstr ""
+"Tài khoản này trùng với một nhân viên khác. Nhân sự phải tích 'Đã xác minh trùng lặp' "
+"trước khi duyệt."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This account collides with another employee. HR must tick 'Duplicate Verified' before "
+"this request can be submitted."
+msgstr ""
+"Tài khoản này trùng với một nhân viên khác. Nhân sự phải tích 'Đã xác minh trùng lặp' "
+"trước khi gửi yêu cầu này."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "This account matches other employees"
+msgstr "Tài khoản này khớp với các nhân viên khác"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This request is under review — only HR or Finance may edit the submitted details now."
+msgstr ""
+"Yêu cầu này đang được xét duyệt — chỉ Nhân sự hoặc Tài chính mới có thể chỉnh sửa "
+"thông tin đã gửi lúc này."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_tpbank
+msgid "Tien Phong Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Tiên Phong"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_uob
+msgid "United Overseas Bank Vietnam"
+msgstr "Ngân hàng United Oversea Việt Nam"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "Unknown action."
+msgstr "Hành động không xác định."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Upload a document first."
+msgstr "Tải lên một tài liệu đầu tiên."
+
+#. module: pb_bank_ocr
+#: model:ir.actions.act_window,name:pb_bank_ocr.action_pb_bank_registry
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_registry_list
+msgid "VN Bank Registry"
+msgstr "Cơ quan đăng ký ngân hàng VN"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Validate"
+msgstr "Xác thực"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:137
+msgid "Validated."
+msgstr "Đã xác thực."
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_pb_bank_change_request_form
+msgid "Validation"
+msgstr "Xác thực"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_vietabank
+msgid "Vietnam Asia Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Việt Á"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_registry
+msgid "Vietnam Bank Registry"
+msgstr "Cơ quan đăng ký ngân hàng Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_agribank
+msgid "Vietnam Bank for Agriculture and Rural Development"
+msgstr "Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_eximbank
+msgid "Vietnam Export Import Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Xuất Nhập Khẩu Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_vib
+msgid "Vietnam International Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Quốc Tế Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_ctg
+msgid "Vietnam Joint Stock Commercial Bank for Industry and Trade"
+msgstr "Ngân hàng TMCP Công Thương Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_msb
+msgid "Vietnam Maritime Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Hàng Hải Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_vpbank
+msgid "Vietnam Prosperity Joint Stock Commercial Bank"
+msgstr "Ngân hàng TMCP Việt Nam Thịnh Vượng"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_pvcombank
+msgid "Vietnam Public Joint Stock Commercial Bank"
+msgstr "Ngân hàng TMCP Đại Chúng Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_tcb
+msgid "Vietnam Technological and Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Kỹ thương Việt Nam"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_vietbank
+msgid "Vietnam Thuong Tin Commercial Joint Stock Bank"
+msgstr "Ngân hàng TMCP Việt Nam Thương Tín"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_bank_ocr
+#: model:pb.bank.registry,name:pb_bank_ocr.bank_woori
+msgid "Woori Bank Vietnam"
+msgstr "Ngân hàng Woori Việt Nam"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Working…"
+msgstr "Đang làm việc…"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "document"
+msgstr "tài liệu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "edited"
+msgstr "đã chỉnh sửa"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "from document"
+msgstr "từ tài liệu"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "none"
+msgstr "không"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "via"
+msgstr "qua"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "x_account_name"
+msgstr "x_tên_tài khoản"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "x_account_number"
+msgstr "x_số_tài khoản"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+msgid "x_bank_branch"
+msgstr "x_bank_branch"

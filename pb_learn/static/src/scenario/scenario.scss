@@ -1,0 +1,270 @@
+/* =============================================================================
+   Scenario chrome — the overlay on the real product, and the Journey's cards.
+
+   TWO RULES, both of them behavioural rather than decorative:
+
+     1. THE OVERLAY MUST NOT TAKE A CLICK. In Do mode the learner presses the
+        real control the spotlight is drawn around, so the root is
+        `pointer-events: none` and only the card opts back in. A backdrop that
+        swallowed the press would make the one mode that matters impossible.
+     2. NO `min()`/`max()` WRAPPING A `calc()` in an ordinary property. Sass
+        intercepts those and fails the WHOLE bundle silently — Odoo then keeps
+        serving the previous stylesheet and the only symptom is a screen that
+        looks unstyled. Custom properties pass through verbatim, so the two
+        widths below are declared as properties. (Ledger; caught this module
+        twice already, once in the file whose comment warned about it.)
+   ========================================================================== */
+
+.lrn-scoverlay {
+    position: fixed;
+    inset: 0;
+    /* Above the app, below Odoo's own dialogs and below the Coach drawer, which
+       a learner may legitimately open while a scenario is running. */
+    z-index: 1035;
+    pointer-events: none;
+}
+
+/* The hole. Dimming is a spread shadow around the target rather than a panel
+   over the app, so the control being explained is never covered — the binding
+   rule the Journey's spotlight already follows. */
+.lrn-scspot {
+    position: fixed;
+    border-radius: var(--vuf-r-sm, 10px);
+    box-shadow: 0 0 0 9999px rgba(10, 14, 30, .5),
+                var(--vuf-sh-ring, 0 0 0 3px rgba(21, 101, 192, .35));
+    transition: top .22s, left .22s, width .22s, height .22s;
+    pointer-events: none;
+}
+
+.lrn-sccard {
+    --lrn-scw: 372px;
+    --lrn-scmax: min(372px, calc(100vw - 32px));
+
+    position: fixed;
+    pointer-events: auto;
+    width: var(--lrn-scw);
+    max-width: var(--lrn-scmax);
+    max-height: 78vh;
+    overflow-y: auto;
+    padding: var(--vuf-sp-4, 16px);
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    color: var(--vuf-ink, #101728);
+    font-size: 13px;
+    line-height: 1.5;
+
+    /* No anchor on this step — the card centres and says so in words rather
+       than pointing a spotlight at nothing. */
+    &.centred {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    h3 { margin: 0 0 8px; font-size: 15px; font-weight: 800; }
+    .lrn-kicker {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--vuf-primary, #1565C0);
+        margin-bottom: 5px;
+    }
+    .lrn-cbody { font-size: 13px; }
+    .lrn-tip {
+        display: flex;
+        gap: 7px;
+        margin-top: var(--vuf-sp-3, 12px);
+        padding: 8px 10px;
+        border-radius: var(--vuf-r-sm, 10px);
+        background: var(--vuf-info-bg, #E8F0FB);
+        color: var(--vuf-info, #1565C0);
+        font-size: 12px;
+    }
+    .lrn-ctools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: var(--vuf-sp-4, 16px);
+    }
+}
+
+.lrn-schead {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.lrn-scstep {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-ink-soft, #6B7280);
+}
+
+.lrn-scmeter {
+    height: 3px;
+    margin-bottom: var(--vuf-sp-3, 12px);
+    border-radius: 999px;
+    background: var(--vuf-line-soft, #F1F0F7);
+    overflow: hidden;
+
+    i { display: block; height: 100%; background: var(--vuf-primary, #1565C0); }
+}
+
+/* A guarded control the engine will not press (Watch), and a guarded control
+   the engine is waiting on (Do). Two states, one visual family: warning, not
+   danger — nothing has gone wrong, something is simply the learner's to do. */
+.lrn-scguard,
+.lrn-scwait {
+    margin-top: var(--vuf-sp-3, 12px);
+    padding: 10px 12px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-warn-bg, #FDF3E2);
+    color: var(--vuf-warn, #B45309);
+
+    h4 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 0 5px;
+        font-size: 11.5px;
+        font-weight: 800;
+    }
+    p { margin: 0; font-size: 12px; }
+}
+
+/* Watch mode types a value into the CARD, never into the real field. */
+.lrn-sctype {
+    margin-top: var(--vuf-sp-3, 12px);
+    padding: 8px 10px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-line-soft, #F1F0F7);
+
+    code {
+        display: block;
+        margin-top: 3px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--vuf-ink, #101728);
+    }
+    code::after {
+        content: "\007C";
+        margin-left: 1px;
+        opacity: .55;
+    }
+}
+
+/* ------------------------------------------------ the Journey's scenario row
+   Drawn under each line's station cards. A scenario is not a station and must
+   not look like one: it is wider, it names its modes as separate buttons, and
+   the buttons are the affordance rather than the card. */
+/* The row's lead-in (LEARNOS Phase 2). The three mode buttons are a promise
+   about who presses; without a sentence above them a learner has to infer that
+   from three verbs. `scenariosLead` was authored in Phase 1b and rendered
+   nowhere until now. */
+.lrn-screnhead {
+    margin: 18px 0 8px;
+
+    .lrn-screnheadtitle {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--vuf-text, #1f2430);
+    }
+
+    .lrn-screnlead {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: var(--vuf-text-muted, #6b7280);
+        max-width: 62ch;
+    }
+}
+
+.lrn-screnrow {
+    display: grid;
+    gap: var(--vuf-sp-3, 12px);
+    margin-top: var(--vuf-sp-3, 12px);
+}
+
+.lrn-scren {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vuf-sp-3, 12px);
+    padding: var(--vuf-sp-3, 12px) var(--vuf-sp-4, 16px);
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #1565C0);
+    border-radius: var(--vuf-r-md, 12px);
+
+    &.done { border-left-color: var(--vuf-ok, #1B8A5A); }
+
+    .lrn-screnico {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 auto;
+        border-radius: var(--vuf-r-sm, 10px);
+        background: var(--vuf-primary-soft, #E8F0FB);
+        color: var(--vuf-primary, #1565C0);
+    }
+    .lrn-screnmain { flex: 1 1 auto; min-width: 0; }
+    .lrn-screntitle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13.5px;
+        font-weight: 750;
+    }
+    .lrn-screndesc {
+        margin: 2px 0 8px;
+        font-size: 12px;
+        color: var(--vuf-ink-soft, #6B7280);
+    }
+    .lrn-screnmodes { display: flex; flex-wrap: wrap; gap: 6px; }
+}
+
+/* ------------------------------------------------- Try mode, in the Journey */
+.lrn-scnudge {
+    margin-top: var(--vuf-sp-3, 12px);
+    padding: 8px 10px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-warn-bg, #FDF3E2);
+    color: var(--vuf-warn, #B45309);
+    font-size: 12px;
+}
+
+/* The control a Try step is waiting for. A steady ring, not a flash: the
+   learner is being asked to find it, so it has to still be marked when they
+   look back after reading the card. Reduced motion keeps the ring and drops
+   the breathing. */
+.lrn-scwant {
+    position: relative;
+    z-index: 3;
+    border-radius: var(--vuf-r-sm, 10px);
+    box-shadow: var(--vuf-sh-ring, 0 0 0 3px rgba(21, 101, 192, .35));
+    animation: lrn-scbreathe 2.4s ease-in-out infinite;
+}
+
+@keyframes lrn-scbreathe {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(21, 101, 192, .35); }
+    50% { box-shadow: 0 0 0 6px rgba(21, 101, 192, .18); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-scwant { animation: none; }
+    .lrn-scspot { transition: none; }
+}
+
+@media (max-width: 640px) {
+    .lrn-sccard {
+        --lrn-scw: calc(100vw - 24px);
+        left: 12px !important;
+    }
+    .lrn-scren { flex-wrap: wrap; }
+}

@@ -1,0 +1,1670 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+msgid ""
+"%(applied)s field(s) mapped automatically, %(suggested)s need review before they are "
+"used."
+msgstr ""
+"(Các) trường %(applied)s được ánh xạ tự động, %(suggested)s cần xem xét trước khi sử "
+"dụng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:204
+msgid "%(feeds)s feeds · %(staged)s staged · %(synced)s synced"
+msgstr ""
+"Nguồn cấp dữ liệu %(feeds)s · %(staged)s được dàn dựng · %(synced)s đã được đồng bộ "
+"hóa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:413
+msgid "%(key)s on %(connector)s"
+msgstr "%(key)s trên %(connector)s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:762
+msgid "%(label)s — %(rows)s records"
+msgstr "Bản ghi %(label)s — %(rows)s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:795
+msgid "%(label)s — %(rows)s rows in the sample"
+msgstr "%(label)s - Các hàng %(rows)s trong mẫu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:763
+msgid "%(label)s — never synced"
+msgstr "%(label)s - không bao giờ được đồng bộ hóa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:201
+msgid "%(staged)s staged · %(synced)s synced"
+msgstr "%(staged)s được dàn dựng · %(synced)s đã được đồng bộ hóa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:223
+msgid "%s is connected and active."
+msgstr "%s đã được kết nối và hoạt động."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:222
+msgid "%s mappings"
+msgstr "Ánh xạ %s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:986
+msgid "%s match"
+msgstr "Trận đấu %s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:983
+msgid "%s records in"
+msgstr "Bản ghi %s trong"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:989
+msgid "%s with a value"
+msgstr "%s có giá trị"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "A %s step has no field chosen."
+msgstr "Bước %s không có trường nào được chọn."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "A condition list joins with all or with any."
+msgstr "Danh sách điều kiện kết hợp với tất cả hoặc với bất kỳ."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid ""
+"A credential is already stored for this connection. Leave the box empty to keep it."
+msgstr "A credential is already stored for this connection. Để trống hộp để giữ nó."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "API endpoint"
+msgstr "điểm cuối API"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "API key"
+msgstr "Khóa API"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:221
+msgid "Activating the connector…"
+msgstr "Đang kích hoạt trình kết nối…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid ""
+"Activating turns this connection on for payroll\n"
+"                  imports. Suggested field mappings stay excluded until you confirm them."
+msgstr ""
+"Kích hoạt sẽ bật kết nối này cho bảng lương\n"
+"                  nhập khẩu. Ánh xạ trường được đề xuất vẫn bị loại trừ cho đến khi bạn xác nhận chúng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Add up Actual Pay Hour where OT Type is 150% and Approval Status is Approved"
+msgstr ""
+"Cộng Số giờ trả lương thực tế trong đó Loại OT là 150% and Trạng thái phê duyệt được "
+"phê duyệt"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Advanced rules are edited in the backend form, not in the composer."
+msgstr ""
+"Các quy tắc nâng cao được chỉnh sửa ở dạng phụ trợ, không phải trong trình soạn thảo."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:40
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:217
+msgid "Almost there…"
+msgstr "Hầu như ở đó…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Already on this connector"
+msgstr "Đã có trên đầu nối này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "An advanced rule is not tried out here."
+msgstr "Một quy tắc nâng cao chưa được thử ở đây."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Authentication"
+msgstr "Xác thực"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Back to the steps"
+msgstr "Quay lại các bước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Call it"
+msgstr "Gọi nó"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid ""
+"Capital letters and digits only, and no underscore — this is the name a pay component "
+"reads it by."
+msgstr ""
+"Chỉ chữ cái và chữ số viết hoa và không có dấu gạch dưới - đây là tên mà thành phần "
+"thanh toán đọc nó."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:699
+msgid "Choose a field"
+msgstr "Chọn một trường"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_onboarding.py:0
+msgid "Choose the HR system you are connecting to."
+msgstr "Chọn hệ thống nhân sự mà bạn đang kết nối."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Choose the field this rule works out its number from."
+msgstr "Chọn trường mà quy tắc này tính ra số của nó."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:46
+msgid "Choose the system"
+msgstr "Chọn hệ thống"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Choose the table"
+msgstr "Chọn bảng"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Chosen sources that produced nothing"
+msgstr "Các nguồn được chọn mà không tạo ra gì"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Client ID"
+msgstr "ID ứng dụng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Client secret"
+msgstr "Bí mật của khách hàng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:49
+msgid "Confirm & test"
+msgstr "Xác nhận và kiểm tra"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:47
+msgid "Connect"
+msgstr "Kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Connect a system"
+msgstr "Kết nối một hệ thống"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid ""
+"Connect a system first — a transformation rule reads the records one of them has "
+"pulled."
+msgstr ""
+"Trước tiên, hãy kết nối hệ thống - quy tắc chuyển đổi sẽ đọc các bản ghi mà một trong "
+"số chúng đã lấy."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+#: model:ir.actions.client,name:pb_integrations.action_pb_integration_onboarding
+msgid "Connect an HR system"
+msgstr "Kết nối hệ thống nhân sự"
+
+#. module: pb_integrations
+#: model:ir.model,name:pb_integrations.model_pb_integration_onboarding
+msgid "Connect an HR system — stepped flow"
+msgstr "Kết nối hệ thống nhân sự - quy trình từng bước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:40
+msgid "Connected"
+msgstr "Đã kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Connection"
+msgstr "Kết nối"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_onboarding.py:0
+msgid "Connection test failed."
+msgstr "Kiểm tra kết nối không thành công."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Connectors"
+msgstr "Bộ kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:419
+msgid "Could not load this row's detail."
+msgstr "Không thể tải chi tiết của hàng này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:310
+msgid "Could not load this table."
+msgstr "Không thể tải bảng này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"Counting needs no field: the answer is how many records are left after the conditions "
+"above."
+msgstr ""
+"Đếm không cần trường: câu trả lời là có bao nhiêu bản ghi còn lại sau các điều kiện "
+"trên."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Credentials"
+msgstr "Thông tin xác thực"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Credentials are written to the connector and never shown again."
+msgstr "Thông tin xác thực được ghi vào trình kết nối và không bao giờ hiển thị lại."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Data"
+msgstr "Dữ liệu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:54
+msgid "Data store"
+msgstr "Kho dữ liệu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Derive"
+msgstr "Xuất phát"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Describe it in words"
+msgstr "Hãy miêu tả nó bằng lời"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Discard it"
+msgstr "Bỏ nó đi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Dismiss"
+msgstr "Bỏ qua"
+
+#. module: pb_integrations
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Draft it"
+msgstr "phác thảo nó"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:580
+msgid "Drafted for review — check each step."
+msgstr "Được soạn thảo để xem xét - kiểm tra từng bước."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Each record"
+msgstr "Mỗi bản ghi"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Each remembers the component it used to feed. Reconnect puts them back."
+msgstr ""
+"Mỗi cái đều nhớ thành phần mà nó sử dụng để nuôi. Kết nối lại sẽ đặt chúng trở lại."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Errors"
+msgstr "Lỗi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Every feed"
+msgstr "Mỗi nguồn cấp dữ liệu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid ""
+"External HR / payroll connectors, their sync status and everything they have pulled."
+msgstr ""
+"Trình kết nối nhân sự / bảng lương bên ngoài, trạng thái đồng bộ hóa của chúng và mọi "
+"thứ chúng đã lấy."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:364
+msgid "Feed: %s"
+msgstr "Nguồn cấp dữ liệu: %s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:252
+msgid "Feeds"
+msgstr "Nguồn cấp dữ liệu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:252
+msgid "Feeds · %s stale"
+msgstr "Nguồn cấp dữ liệu · %s cũ"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:48
+msgid "Field mapping"
+msgstr "Lập bản đồ trường"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:53
+msgid "Field mappings"
+msgstr "Ánh xạ trường"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Finish & activate"
+msgstr "Kết thúc và kích hoạt"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "From this vendor's catalogue"
+msgstr "Từ danh mục của nhà cung cấp này"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Give the rule a name."
+msgstr "Đặt tên cho quy tắc."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Give the rule an output key — that is the name a pay component will read it by."
+msgstr ""
+"Cung cấp cho quy tắc một khóa đầu ra - đó là tên mà thành phần trả tiền sẽ đọc nó."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:203
+msgid "Going back…"
+msgstr "Trở lại…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "How this rule was written before"
+msgstr "Quy tắc này được viết như thế nào trước đây"
+
+#. module: pb_integrations
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "If nothing matches, use"
+msgstr "Nếu không có gì phù hợp, hãy sử dụng"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Inputs with no source chosen"
+msgstr "Đầu vào không có nguồn được chọn"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Insert a field"
+msgstr "Chèn một trường"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+#: model:ir.actions.client,name:pb_integrations.action_pb_integrations
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:291
+#: code:addons/pb_integrations/static/src/js/integrations.js:241
+#: code:addons/pb_integrations/static/src/js/integrations.js:494
+#: code:addons/pb_integrations/static/src/js/integrations.js:514
+msgid "Integrations"
+msgstr "Tích hợp"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Keep"
+msgstr "Giữ"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục chỉnh sửa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Keeps records where"
+msgstr "Lưu giữ hồ sơ ở đâu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Load field template"
+msgstr "Tải mẫu trường"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Loading integrations…"
+msgstr "Đang tải tích hợp…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:210
+msgid "Loading the field template…"
+msgstr "Đang tải mẫu trường…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Map this connector's fields onto a payroll scheme"
+msgstr "Ánh xạ các trường của trình kết nối này vào sơ đồ bảng lương"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Mappings that lost their component"
+msgstr "Ánh xạ bị mất thành phần"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "New rule"
+msgstr "Quy tắc mới"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:405
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:406
+msgid "New transformation rule"
+msgstr "Quy tắc chuyển đổi mới"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "No connectors match these filters."
+msgstr "Không có trình kết nối nào phù hợp với các bộ lọc này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "No field mappings were created."
+msgstr "Không có ánh xạ trường nào được tạo."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "No field matches that."
+msgstr "Không có trường nào phù hợp với điều đó."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:246
+msgid "No field template matched this system yet."
+msgstr "Chưa có mẫu trường nào phù hợp với hệ thống này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "No rows to run this against yet."
+msgstr "Chưa có hàng nào để chạy cái này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "No table inside a record was found in this feed's sample."
+msgstr "Không tìm thấy bảng nào bên trong bản ghi trong mẫu của nguồn cấp dữ liệu này."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Nothing reads this rule's output."
+msgstr "Không có gì đọc đầu ra của quy tắc này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "OTHRS150"
+msgstr "OTHRS150"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Only payroll managers can change transformation rules."
+msgstr "Chỉ người quản lý tiền lương mới có thể thay đổi quy tắc chuyển đổi."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Open the connector"
+msgstr "Mở đầu nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Or start from one of these"
+msgstr "Hoặc bắt đầu từ một trong số này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Output key"
+msgstr "Phím đầu ra"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Overtime 150% — hours"
+msgstr "Làm thêm giờ 150% — giờ"
+
+#. module: pb_integrations
+#: model:ir.model,name:pb_integrations.model_pb_integrations
+msgid "Payobook integrations cockpit"
+msgstr "Buồng lái tích hợp Payobook"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Payobook · Integrations"
+msgstr "Payobook · Tích hợp"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Payroll configuration these fields will feed"
+msgstr "Cấu hình bảng lương các trường này sẽ cung cấp"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid ""
+"Pick the system payroll should read from. Every\n"
+"                one of these ships a field template, so the mapping starts filled in."
+msgstr ""
+"Chọn hệ thống bảng lương nên đọc từ. Mỗi\n"
+"                một trong những mẫu này gửi mẫu trường để ánh xạ bắt đầu được điền vào."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Pick whether the rule reads records or the rows inside them."
+msgstr "Chọn xem quy tắc sẽ đọc bản ghi hay các hàng bên trong chúng."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Pick which records this rule reads."
+msgstr "Chọn bản ghi mà quy tắc này sẽ đọc."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Ready to go"
+msgstr "Sẵn sàng để đi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Remove this condition"
+msgstr "Loại bỏ điều kiện này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Remove this field"
+msgstr "Xóa trường này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Result"
+msgstr "Kết quả"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Rows inside a table"
+msgstr "Các hàng bên trong một bảng"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Rule outputs nothing reads"
+msgstr "Quy tắc đầu ra không có gì đọc"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:1026
+msgid "Rule saved."
+msgstr "Đã lưu quy tắc."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Save rule"
+msgstr "Lưu quy tắc"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Say which table inside each record holds the rows."
+msgstr "Cho biết bảng nào bên trong mỗi bản ghi chứa các hàng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Search connectors…"
+msgstr "Tìm kiếm kết nối…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Search fields…"
+msgstr "Các trường tìm kiếm…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:201
+msgid "Setting up…"
+msgstr "Đang thiết lập…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Show all"
+msgstr "Hiển thị tất cả"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Show every connector"
+msgstr "Hiển thị mọi đầu nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Show every feed"
+msgstr "Hiển thị mọi nguồn cấp dữ liệu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:382
+msgid "Showing %(shown)s of %(total)s"
+msgstr "Đang hiển thị %(shown)s của %(total)s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid ""
+"Showing %(shown)s of %(total)s · the newest %(loaded)s are loaded, so narrow the "
+"search to reach the rest."
+msgstr ""
+"Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất đã được tải, vì vậy hãy thu hẹp"
+" tìm kiếm để tiếp cận phần còn lại."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:359
+msgid "Showing only %s"
+msgstr "Chỉ hiển thị %s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Source field"
+msgstr "Trường nguồn"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Staged records"
+msgstr "Hồ sơ dàn dựng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Starting…"
+msgstr "Bắt đầu…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid ""
+"Suggested rows are excluded from sync until they\n"
+"                resolve against your real payload — that is what “Test mappings” does."
+msgstr ""
+"Các hàng được đề xuất sẽ bị loại trừ khỏi quá trình đồng bộ hóa cho đến khi chúng\n"
+"                giải quyết dựa trên tải trọng thực của bạn - đó là chức năng của “Ánh xạ thử nghiệm”."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Switch to a formula"
+msgstr "Chuyển sang một công thức"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Synced records"
+msgstr "Bản ghi được đồng bộ hóa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Take"
+msgstr "lấy"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:417
+msgid "Take some records, keep some, derive one number — on %s"
+msgstr "Lấy một số bản ghi, giữ một số bản ghi, lấy một số - trên %s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:420
+msgid "Take some records, keep some, derive one number."
+msgstr "Lấy một số hồ sơ, giữ một số, rút ra một số."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Target code"
+msgstr "Mã mục tiêu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Test connection"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "Test mappings"
+msgstr "Kiểm tra ánh xạ"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:206
+msgid "Testing the connection…"
+msgstr "Đang kiểm tra kết nối…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:214
+msgid "Testing the mappings against a real payload…"
+msgstr "Kiểm tra ánh xạ với tải trọng thực…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:572
+msgid "That could not be turned into steps."
+msgstr "Điều đó không thể biến thành các bước."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "That could not be turned into steps. Build it with the steps instead."
+msgstr ""
+"Điều đó không thể biến thành các bước. Thay vào đó, hãy xây dựng nó bằng các bước."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "That is not a kind of rule the composer can build."
+msgstr "Đó không phải là một loại quy tắc mà nhà soạn nhạc có thể xây dựng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:453
+msgid "That rule is no longer on this connector."
+msgstr "Quy tắc đó không còn có trên trình kết nối này nữa."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "That rule is not available to you."
+msgstr "Quy tắc đó không có sẵn cho bạn."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "That rule is not on this connector."
+msgstr "Quy tắc đó không có trên đầu nối này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:148
+msgid "That step could not be completed."
+msgstr "Bước đó không thể hoàn thành được."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"The assistant is not configured, so these steps were matched from the words you used."
+msgstr ""
+"Trợ lý chưa được định cấu hình nên các bước này khớp với những từ bạn đã sử dụng."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid ""
+"The composer can only write guided rules and formulas. Advanced rules are edited in "
+"the backend form."
+msgstr ""
+"Người soạn nhạc chỉ có thể viết các quy tắc và công thức được hướng dẫn. Các quy tắc "
+"nâng cao được chỉnh sửa ở dạng phụ trợ."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:224
+msgid "The connector"
+msgstr "Đầu nối"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid ""
+"The draft could not be checked against this connector (%s). Build it with the steps "
+"instead."
+msgstr ""
+"Không thể kiểm tra bản nháp dựa trên đầu nối này (%s). Thay vào đó, hãy xây dựng nó "
+"bằng các bước."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "The expression this rule runs"
+msgstr "Biểu thức mà quy tắc này chạy"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "The fallback value has to be a number."
+msgstr "Giá trị dự phòng phải là một số."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid ""
+"The last run found nothing under the key these components are set to read, so they "
+"fell back or used their default."
+msgstr ""
+"Lần chạy cuối cùng không tìm thấy gì dưới khóa mà các thành phần này được đặt để đọc, "
+"vì vậy chúng đã quay lại hoặc sử dụng mặc định của chúng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:1007
+msgid "The last time this rule ran it failed: %s"
+msgstr "Lần cuối cùng quy tắc này chạy không thành công: %s"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid ""
+"These components are matched by name when a run imports them, which works until a "
+"column is renamed."
+msgstr ""
+"Các thành phần này được khớp theo tên khi một lần chạy nhập chúng, hoạt động này hoạt "
+"động cho đến khi một cột được đổi tên."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"These rows are illustrations of what this source will send. They are not records that "
+"were received."
+msgstr ""
+"Những hàng này là minh họa về những gì nguồn này sẽ gửi. Chúng không phải là hồ sơ đã "
+"được nhận."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "These rules compute a value that no pay component takes: %s"
+msgstr "Các quy tắc này tính toán một giá trị mà không thành phần trả lương nào lấy: %s"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_onboarding.py:0
+msgid "This connection setup has expired. Start it again."
+msgstr "Thiết lập kết nối này đã hết hạn. Bắt đầu lại."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "This connector is not available to you."
+msgstr "Trình kết nối này không có sẵn cho bạn."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"This feed has not sent anything yet, so there is nothing to pick from — type the field"
+" name exactly as the source spells it."
+msgstr ""
+"Nguồn cấp dữ liệu này chưa gửi bất kỳ thứ gì nên không có gì để chọn - hãy nhập tên "
+"trường chính xác như nguồn đánh vần."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:107
+msgid "This flow could not be started."
+msgstr "Không thể bắt đầu luồng này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:439
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:458
+msgid "This rule could not be opened."
+msgstr "Quy tắc này không thể được mở."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:313
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:951
+msgid "This rule could not be tried out."
+msgstr "Quy tắc này không thể được thử."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "This rule could not be tried out. The details are in the server log."
+msgstr "Quy tắc này không thể được thử. Các chi tiết có trong nhật ký máy chủ."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "This rule has not been saved."
+msgstr "Quy tắc này chưa được lưu."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"This rule is maintained in the backend form by an administrator, so it opens here as a"
+" summary you can read but not change."
+msgstr ""
+"Quy tắc này được quản trị viên duy trì ở dạng phụ trợ nên nó sẽ mở ra ở đây dưới dạng "
+"bản tóm tắt mà bạn có thể đọc nhưng không thể thay đổi."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "This rule is maintained in the backend form by an administrator."
+msgstr "Quy tắc này được quản trị viên duy trì ở dạng phụ trợ."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:1021
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:1031
+msgid "This rule was not saved."
+msgstr "Quy tắc này chưa được lưu."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "This source does not have a field called “%s”."
+msgstr "Nguồn này không có trường có tên “%s”."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "This table could not be loaded."
+msgstr "Không thể tải bảng này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:55
+msgid "Transformation rules"
+msgstr "Quy tắc chuyển đổi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:672
+msgid "Use “%s”"
+msgstr "Sử dụng “%s”"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "What the data says"
+msgstr "Dữ liệu nói gì"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "What this rule does"
+msgstr "Quy tắc này làm gì"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Which system's data does this rule read?"
+msgstr "Quy tắc này đọc dữ liệu của hệ thống nào?"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "With no condition every record is kept."
+msgstr "Không có điều kiện, mọi hồ sơ đều được lưu giữ."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:135
+msgid "Working…"
+msgstr "Đang làm việc…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Works out its number from"
+msgstr "Tính ra số của nó từ"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Write the formula, or switch back to the steps."
+msgstr "Viết công thức hoặc quay lại các bước."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/pb_integrations.py:0
+msgid "Yes — remembers “%s”"
+msgstr "Có - ghi nhớ “%s”"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid ""
+"You can read every step of this rule. Changing a transformation rule is a payroll "
+"manager's job."
+msgstr ""
+"Bạn có thể đọc từng bước của quy tắc này. Thay đổi quy tắc chuyển đổi là công việc của"
+" người quản lý tiền lương."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "You do not have permission to change transformation rules."
+msgstr "Bạn không có quyền thay đổi quy tắc chuyển đổi."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "You do not have permission to save transformation rules."
+msgstr "Bạn không có quyền lưu quy tắc chuyển đổi."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "[totalWorkedHours]/3600 + HOURS([paidLeaveHours])"
+msgstr "[totalWorkedHours]/3600 + GIỜ([payLeaveHours])"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:71
+msgid "a fixed date"
+msgstr "một ngày cố định"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "add condition"
+msgstr "thêm điều kiện"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "all of these"
+msgstr "tất cả những thứ này"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "any of these"
+msgstr "bất kỳ cái nào trong số này"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "condition"
+msgstr "tình trạng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:74
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "https://…"
+msgstr "https://…"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:80
+msgid "is after"
+msgstr "là sau"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:79
+msgid "is before"
+msgstr "là trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:81
+msgid "is within N months"
+msgstr "trong vòng N tháng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:75
+msgid "months"
+msgstr "tháng"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "no test"
+msgstr "không có bài kiểm tra"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "plus"
+msgstr "cộng thêm"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "plus another field"
+msgstr "cộng với một lĩnh vực khác"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:69
+msgid "the end of the pay period"
+msgstr "cuối kỳ trả lương"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:68
+msgid "the start of the pay period"
+msgstr "bắt đầu kỳ trả lương"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+#: code:addons/pb_integrations/static/src/js/integrations.js:359
+msgid "this connector"
+msgstr "đầu nối này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "this field contains"
+msgstr "trường này chứa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:70
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_integrations
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "value"
+msgstr "giá trị"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:76
+msgid "years"
+msgstr "năm"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integration_onboarding.xml:0
+msgid "— pick later —"
+msgstr "— chọn sau —"
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid ""
+"“%(given)s” has to be capital letters and digits, starting with a letter — try "
+"“%(fixed)s”."
+msgstr ""
+"“%(given)s” phải là chữ in hoa và chữ số, bắt đầu bằng một chữ cái — hãy thử "
+"“%(fixed)s”."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid ""
+"“%(new)s” and the existing “%(old)s” contain one another. A formula would rewrite the "
+"shorter inside the longer and work out 0 — rename one so neither contains the other."
+msgstr ""
+"“%(new)s” và “%(old)s” hiện có chứa nhau. Một công thức sẽ viết lại cái ngắn hơn bên "
+"trong cái dài hơn và tính ra 0 - đổi tên cái này sao cho cái kia không chứa cái kia."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid ""
+"“%s” contains an underscore. Formulas cannot read an underscored name — try “%s”."
+msgstr "“%s” chứa dấu gạch dưới. Formulas cannot read an underscored name — try “%s”."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "“%s” has to be capital letters and digits, starting with a letter."
+msgstr "“%s” phải là chữ in hoa và chữ số, bắt đầu bằng một chữ cái."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "“%s” is already used by the rule “%s” on this connector."
+msgstr "“%s” đã được sử dụng bởi quy tắc “%s” trên đầu nối này."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "“%s” is not a comparison this rule can make."
+msgstr "“%s” không phải là sự so sánh mà quy tắc này có thể thực hiện."
+
+#. module: pb_integrations
+#. odoo-python
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "“%s” is not something a field can contain."
+msgstr "“%s” không phải là thứ mà một trường có thể chứa."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:0
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:255
+msgid "…and %s more on the connector."
+msgstr "…và %s thêm trên đầu nối."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integration_onboarding.js:247
+msgid "%(applied)s field(s) mapped automatically, %(suggested)s need"
+msgstr "(Các) trường %(applied)s được ánh xạ tự động, cần có %(suggested)s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:41
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:41
+msgid "Disconnected"
+msgstr "Đã ngắt kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:44
+msgid "Any time"
+msgstr "Bất cứ lúc nào"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:44
+msgid "Synced ≤1h"
+msgstr "Đã đồng bộ hóa 1h"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:45
+msgid "Synced ≤1d"
+msgstr "Đã đồng bộ hóa 1d"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:45
+msgid "Older"
+msgstr "Cũ hơn"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:45
+msgid "Never"
+msgstr "Không bao giờ"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:150
+msgid "Never synced"
+msgstr "Chưa bao giờ được đồng bộ hóa"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:151
+msgid "Synced <1h ago"
+msgstr "Đã đồng bộ hóa <1 giờ trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:152
+msgid "Synced %(hours)s hours ago"
+msgstr "Đã đồng bộ hóa %(hours)s vài giờ trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:153
+msgid "Synced %(days)s days ago"
+msgstr "Đã đồng bộ hóa %(days)s ngày trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:378
+msgid "Showing %(shown)s of %(total)s · the newest %(loaded)s are"
+msgstr "Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất là"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:258
+msgid "This rule is maintained in the backend form by an"
+msgstr "Quy tắc này được duy trì ở dạng phụ trợ bởi một"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:263
+msgid "You can read every step of this rule. Changing a"
+msgstr "Bạn có thể đọc từng bước của quy tắc này. Thay đổi một"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:559
+msgid "That could not be turned into steps. Build it with"
+msgstr "Điều đó không thể biến thành các bước. Xây dựng nó với"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:582
+msgid "The assistant is not configured, so these steps were matched"
+msgstr "Trợ lý chưa được định cấu hình nên các bước này khớp với nhau"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:660
+msgid "This feed has not sent anything yet, so there is nothing to"
+msgstr "Nguồn cấp dữ liệu này chưa gửi bất cứ điều gì, vì vậy không có gì để"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:844
+msgid "Counting needs no field: the answer is how many records are"
+msgstr "Đếm không cần trường: câu trả lời là có bao nhiêu bản ghi"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:1000
+msgid "These rows are illustrations of what this source will send."
+msgstr "Những hàng này là minh họa về những gì nguồn này sẽ gửi."

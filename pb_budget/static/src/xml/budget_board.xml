@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Budget lens.
+
+       Comments ruled with `=`, never a doubled hyphen (R35/W22). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       function loop is `fn`, the month loop is `mo`, the department loop is
+       `dp`, the expense loop is `xp`, the row loop is `ln`, the year option
+       loop is `yr`, the type chip loop is `tp`, the picker loop is `pp`.
+
+       THE STAGGER IS A CSS CUSTOM PROPERTY set per tile from the loop index
+       and read by an animation that lives entirely inside a
+       `prefers-reduced-motion: no-preference` block. Nothing in JavaScript
+       decides whether the board moves.
+       ==================================================================== -->
+  <t t-name="pb_budget.PbBudgetBoard">
+    <div class="pbim pbim-page bdg"
+         t-att-class="{ 'bdg--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the budgets…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty bdg-empty">
+          <div class="bdg-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>The budgets could not be read</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="reload">Try again</button>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap bdg-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="bdg-head">
+          <div class="bdg-head-id">
+            <h2 t-if="!props.embedded" class="bdg-h">Budget</h2>
+            <p class="bdg-s" t-esc="board.headline"/>
+          </div>
+          <div class="bdg-head-actions">
+            <button class="pbim-btn ghost" t-on-click="reload"
+                    title="Read the budgets again">
+              <t t-out="ic('refresh',15)"/>
+            </button>
+            <button class="pbim-btn ghost" t-on-click="() => this.exportFile('xlsx')"
+                    t-att-disabled="state.busy" title="Download the whole matrix">
+              <t t-out="ic('download',15)"/> Spreadsheet
+            </button>
+            <button class="pbim-btn ghost" t-on-click="() => this.exportFile('pdf')"
+                    t-att-disabled="state.busy" title="One page for a meeting">
+              <t t-out="ic('fileText',15)"/> Summary
+            </button>
+            <button t-if="board.can_edit" class="pbim-btn ghost"
+                    t-on-click="refreshActuals" t-att-disabled="state.busy"
+                    t-att-title="syncLine">
+              <t t-out="ic('rotate',15)"/> Read the pay figures
+            </button>
+            <button t-if="board.can_edit" class="pbim-btn ghost"
+                    t-on-click="openExpense">
+              <t t-out="ic('receipt',15)"/> Add an expense
+            </button>
+            <button t-if="board.can_edit" class="pbim-btn primary" t-on-click="openUpload">
+              <t t-out="ic('upload',15)"/> Upload a budget
+            </button>
+          </div>
+        </div>
+
+        <!-- ======================== the context bar ======================== -->
+        <div class="bdg-bar">
+          <label class="bdg-field">
+            <span class="bdg-field-l">Year</span>
+            <select class="bdg-in" t-on-change="setYear">
+              <option t-foreach="board.fy_options" t-as="yr" t-key="yr.key"
+                      t-att-value="yr.key" t-att-selected="yr.key === state.fy"
+                      t-esc="yr.label"/>
+            </select>
+          </label>
+
+          <div class="bdg-chips">
+            <button t-foreach="board.type_options" t-as="tp" t-key="tp.key"
+                    t-attf-class="bdg-chip {{ state.type === tp.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setType(tp.key)"
+                    t-esc="tp.label"/>
+          </div>
+
+          <div class="bdg-chips bdg-chips--cur" t-if="showCurrencyToggle">
+            <button t-attf-class="bdg-chip {{ state.currency === 'local' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setCurrency('local')"
+                    t-esc="cur.local_code"/>
+            <button t-attf-class="bdg-chip {{ state.currency === 'report' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setCurrency('report')"
+                    t-esc="cur.report_code"/>
+          </div>
+
+          <div class="bdg-spacer"/>
+
+          <div class="bdg-views">
+            <button t-attf-class="bdg-view {{ state.view === 'heat' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setView('heat')" title="The heat view">
+              <t t-out="ic('layers',15)"/> Heat
+            </button>
+            <button t-attf-class="bdg-view {{ state.view === 'table' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setView('table')" title="The numbers">
+              <t t-out="ic('table',15)"/> Table
+            </button>
+          </div>
+        </div>
+
+        <!-- ====================== what is not certain ====================== -->
+        <div t-if="board.forced_currency_note" class="bdg-note">
+          <t t-out="ic('info',15)"/> <span t-esc="board.forced_currency_note"/>
+        </div>
+        <div t-if="board.fx_unknown" class="bdg-note bdg-note--warn">
+          <t t-out="ic('alert',15)"/>
+          <span t-esc="board.fx_note"/>
+        </div>
+        <div t-if="board.truncated" class="bdg-note bdg-note--warn">
+          <t t-out="ic('alert',15)"/>
+          <span>There is more here than one board can hold, so this is the first
+                part of it. Narrow the year or the budget to see the rest.</span>
+        </div>
+
+        <!-- =========================== the numbers =========================== -->
+        <div class="pbim-stats bdg-kpis">
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('landmark',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="short(kpis.budget)"/>
+              <div class="l">budget for the year</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic blue"><t t-out="ic('banknote',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="short(kpis.spent)"/>
+              <div class="l">spent so far</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic green"><t t-out="ic('checkCircle',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="short(kpis.left)"/>
+              <div class="l">left</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('percent',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="pct(kpis.burn) + ' vs ' + pct(kpis.pace)"/>
+              <div class="l">money gone, year gone</div>
+            </div>
+          </div>
+          <div t-attf-class="pbim-stat {{ kpis.hot ? 'err' : '' }}">
+            <div t-attf-class="pbim-stat-ic {{ kpis.hot ? 'rose' : 'green' }}">
+              <t t-out="ic('alert',18)"/>
+            </div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.hot"/>
+              <div class="l">functions running warm or worse</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ the heat ============================ -->
+        <div t-if="state.view === 'heat'" class="bdg-body">
+
+          <div t-if="!functions.length" class="pbim-empty bdg-empty">
+            <div class="bdg-empty-ic"><t t-out="ic('landmark',30)"/></div>
+            <h3>Nothing budgeted for this year yet</h3>
+            <p>
+              Start with a spreadsheet: press "Upload a budget" and you get one
+              with every department down the side and the twelve months across
+              the top. Fill in what you can, drop it back, and the pay figures
+              fill themselves in beside it every night.
+            </p>
+            <button t-if="board.can_edit" class="pbim-btn primary" t-on-click="openUpload">
+              Upload a budget
+            </button>
+          </div>
+
+          <div t-else="" class="bdg-heat">
+            <div t-foreach="functions" t-as="fn" t-key="fn.id"
+                 t-attf-class="bdg-tile bdg-tile--{{fn.tone}} {{ state.open === fn.id ? 'is-open' : '' }}"
+                 t-attf-style="--bdg-i: {{fn_index}}"
+                 t-on-click="() => this.openFunction(fn)">
+
+              <div class="bdg-tile-h">
+                <span class="bdg-tile-n" t-esc="fn.name"/>
+                <span class="bdg-tone" t-esc="fn.tone_label"/>
+              </div>
+
+              <!-- THE ONE COMPARISON: the fill is the money, the notch is the
+                   year. A fill past the notch is a function that will run out
+                   early, and that is readable without any colour at all. -->
+              <div class="bdg-bar-wrap">
+                <div class="bdg-track">
+                  <div class="bdg-fill"
+                       t-attf-style="width: {{barWidth(fn.burn)}}%"/>
+                  <div class="bdg-pace"
+                       t-attf-style="left: {{barWidth(fn.pace)}}%"
+                       t-attf-title="The year is {{pct(fn.pace)}} gone"/>
+                </div>
+                <div class="bdg-bar-l">
+                  <span class="bdg-burn" t-esc="pct(fn.burn)"/>
+                  <span class="bdg-of">spent of the budget</span>
+                </div>
+              </div>
+
+              <div class="bdg-tile-f">
+                <div>
+                  <div class="bdg-num" t-esc="short(fn.spent)"/>
+                  <div class="bdg-cap">spent</div>
+                </div>
+                <div>
+                  <div class="bdg-num" t-esc="short(fn.budget)"/>
+                  <div class="bdg-cap">budget</div>
+                </div>
+                <div>
+                  <div class="bdg-num" t-esc="short(fn.left)"/>
+                  <div class="bdg-cap">left</div>
+                </div>
+              </div>
+
+              <div class="bdg-spark">
+                <div t-foreach="fn.months" t-as="mo" t-key="mo.key"
+                     class="bdg-spark-c" t-att-title="mo.key">
+                  <div class="bdg-spark-b"
+                       t-attf-style="height: {{monthHeight(fn, mo)}}%"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================== the drill ========================== -->
+          <div t-if="state.open" class="bdg-drill">
+            <div t-if="state.drillBusy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Opening…</span>
+            </div>
+            <div t-elif="state.drill and state.drill.ok" class="bdg-drill-in">
+              <div class="bdg-drill-h">
+                <h3 t-esc="state.drill.function.name"/>
+                <button class="pbim-btn ghost" t-on-click="closeDrill">
+                  <t t-out="ic('x',15)"/>
+                </button>
+              </div>
+
+              <div class="bdg-months">
+                <div t-foreach="state.drill.function.months" t-as="mo"
+                     t-key="mo.key" class="bdg-mcol">
+                  <div class="bdg-mbars">
+                    <div class="bdg-mbar bdg-mbar--budget"
+                         t-attf-style="height: {{mBar(state.drill.function, mo.budget)}}%"
+                         t-attf-title="Budget {{money(mo.budget)}}"/>
+                    <div class="bdg-mbar bdg-mbar--spent"
+                         t-attf-style="height: {{mBar(state.drill.function, mo.spent)}}%"
+                         t-attf-title="Spent {{money(mo.spent)}}"/>
+                  </div>
+                  <div class="bdg-mlabel" t-esc="mo.key.slice(5)"/>
+                </div>
+              </div>
+              <div class="bdg-legend">
+                <span class="bdg-key bdg-key--budget"/> budget
+                <span class="bdg-key bdg-key--spent"/> spent
+              </div>
+
+              <h4 class="bdg-sub">The departments inside it</h4>
+              <table class="bdg-table">
+                <thead>
+                  <tr>
+                    <th>Department</th><th class="num">Budget</th>
+                    <th class="num">Spent</th><th class="num">Left</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.drill.function.departments" t-as="dp"
+                      t-key="dp.id">
+                    <td>
+                      <span t-esc="dp.name"/>
+                      <span t-if="dp.unbudgeted" class="bdg-flag">no budget set</span>
+                    </td>
+                    <td class="num" t-esc="money(dp.budget)"/>
+                    <td class="num" t-esc="money(dp.spent)"/>
+                    <td class="num" t-esc="money(dp.budget - dp.spent)"/>
+                  </tr>
+                </tbody>
+              </table>
+
+              <t t-if="state.drill.expenses.length">
+                <h4 class="bdg-sub">What was spent on</h4>
+                <table class="bdg-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th><th>What</th><th>Paid to</th>
+                      <th class="num">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="state.drill.expenses" t-as="xp" t-key="xp.id">
+                      <td t-esc="xp.date"/>
+                      <td t-esc="xp.name"/>
+                      <td t-esc="xp.supplier"/>
+                      <td class="num"
+                          t-esc="Math.round(xp.amount).toLocaleString() + ' ' + xp.currency"/>
+                    </tr>
+                  </tbody>
+                </table>
+              </t>
+            </div>
+            <div t-elif="state.drill" class="pbim-empty">
+              <p t-esc="state.drill.message"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== the table =========================== -->
+        <div t-if="state.view === 'table'" class="bdg-body">
+          <div t-if="!functions.length" class="pbim-empty bdg-empty">
+            <h3>Nothing budgeted for this year yet</h3>
+            <p>Upload one and it appears here.</p>
+          </div>
+          <table t-else="" class="bdg-table bdg-matrix">
+            <thead>
+              <tr>
+                <th>Function</th>
+                <th class="num">Budget</th>
+                <th class="num">Spent</th>
+                <th class="num">Left</th>
+                <th class="num">Used</th>
+                <th>Reading</th>
+                <th/>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="functions" t-as="fn" t-key="fn.id">
+                <tr t-attf-class="bdg-row bdg-row--{{fn.tone}}">
+                  <td>
+                    <button class="bdg-expand" t-on-click="() => this.toggleRow(fn.id)">
+                      <t t-out="ic(state.expanded[fn.id] ? 'chevronDown' : 'chevron',14)"/>
+                    </button>
+                    <span t-esc="fn.name"/>
+                  </td>
+                  <td class="num" t-esc="money(fn.budget)"/>
+                  <td class="num" t-esc="money(fn.spent)"/>
+                  <td class="num" t-esc="money(fn.left)"/>
+                  <td class="num">
+                    <span class="bdg-vchip" t-esc="pct(fn.burn)"/>
+                  </td>
+                  <td t-esc="fn.tone_label"/>
+                  <td class="num">
+                    <span class="bdg-of" t-esc="'year ' + pct(fn.pace)"/>
+                  </td>
+                </tr>
+                <tr t-if="state.expanded[fn.id]" class="bdg-sub-row">
+                  <td colspan="7">
+                    <table class="bdg-table bdg-inner">
+                      <thead>
+                        <tr>
+                          <th>Month</th>
+                          <th t-foreach="board.months" t-as="mo" t-key="mo.key"
+                              class="num" t-esc="mo.label"/>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Budget</td>
+                          <td t-foreach="fn.months" t-as="mo" t-key="mo.key"
+                              class="num" t-esc="short(mo.budget)"/>
+                        </tr>
+                        <tr>
+                          <td>Spent</td>
+                          <td t-foreach="fn.months" t-as="mo" t-key="mo.key"
+                              class="num" t-esc="short(mo.spent)"/>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+            <tfoot>
+              <tr class="bdg-total">
+                <td>Everything</td>
+                <td class="num" t-esc="money(kpis.budget)"/>
+                <td class="num" t-esc="money(kpis.spent)"/>
+                <td class="num" t-esc="money(kpis.left)"/>
+                <td class="num" t-esc="pct(kpis.burn)"/>
+                <td/>
+                <td class="num">
+                  <span class="bdg-of" t-esc="'year ' + pct(kpis.pace)"/>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="bdg-foot">
+            <button class="pbim-btn ghost" t-on-click="openRowList">
+              <t t-out="ic('list',15)"/> Every budget row
+            </button>
+            <button class="pbim-btn ghost" t-on-click="openExpenseList">
+              <t t-out="ic('receipt',15)"/> Every expense
+            </button>
+            <span class="bdg-of" t-esc="syncLine"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== the upload ========================== -->
+      <div t-if="state.uploading" class="pbim-modal-scrim" t-on-click="closeUpload">
+        <div class="pbim-modal bdg-modal" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <h3>Upload a budget</h3>
+            <button class="pbim-btn ghost" t-on-click="closeUpload">
+              <t t-out="ic('x',15)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body">
+            <p class="bdg-s">
+              Take the template, fill in a number for each month you want to set,
+              and drop it back here. Nothing is written until you press Apply.
+            </p>
+            <div class="bdg-steps">
+              <div class="bdg-step">
+                <div class="bdg-step-n">1</div>
+                <div>
+                  <div class="bdg-step-t">Get the template</div>
+                  <div class="bdg-step-s">
+                    Every department down the side, the twelve months across.
+                  </div>
+                  <button class="pbim-btn ghost" t-on-click="getTemplate"
+                          t-att-disabled="state.upload.busy">
+                    <t t-out="ic('download',15)"/> Download it
+                  </button>
+                </div>
+              </div>
+              <div class="bdg-step">
+                <div class="bdg-step-n">2</div>
+                <div>
+                  <div class="bdg-step-t">Drop the filled-in file back</div>
+                  <div class="bdg-step-s">
+                    A month you leave empty stays exactly as it is; type 0 to say
+                    nothing is budgeted.
+                  </div>
+                  <input type="file" class="bdg-file"
+                         accept=".xlsx" t-on-change="onUploadFile"/>
+                  <div t-if="state.upload.name" class="bdg-fname"
+                       t-esc="state.upload.name"/>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="state.upload.busy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Reading the file…</span>
+            </div>
+
+            <div t-if="state.upload.plan" class="bdg-plan">
+              <div class="bdg-plan-h">What this file would do</div>
+              <p class="bdg-plan-s" t-esc="state.upload.plan.message"/>
+              <div t-if="state.upload.plan.unknown.length" class="bdg-plan-bad">
+                <div class="bdg-plan-h">Departments this system does not have</div>
+                <div t-foreach="state.upload.plan.unknown" t-as="uk"
+                     t-key="uk_index" class="bdg-plan-row" t-esc="uk"/>
+                <p class="bdg-of">
+                  These are left out. Nothing here creates a department — if one
+                  is genuinely missing, add it first and upload again.
+                </p>
+              </div>
+              <table t-if="state.upload.plan.preview.length"
+                     class="bdg-table bdg-plan-t">
+                <thead>
+                  <tr>
+                    <th>Department</th><th>Month</th>
+                    <th class="num">Amount</th><th/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.upload.plan.preview" t-as="ln"
+                      t-key="ln_index">
+                    <td t-esc="ln.department"/>
+                    <td t-esc="ln.month_key"/>
+                    <td class="num"
+                        t-esc="Math.round(ln.amount).toLocaleString() + ' ' + ln.currency"/>
+                    <td>
+                      <span t-if="ln.exists" class="bdg-flag bdg-flag--ok">updates</span>
+                      <span t-else="" class="bdg-flag">new</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="closeUpload">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="applyUpload"
+                    t-att-disabled="state.upload.busy or !state.upload.plan">
+              Apply it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= the expense ========================= -->
+      <div t-if="state.spending" class="pbim-modal-scrim" t-on-click="closeExpense">
+        <div class="pbim-modal bdg-modal" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <h3>Add an expense</h3>
+            <button class="pbim-btn ghost" t-on-click="closeExpense">
+              <t t-out="ic('x',15)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body">
+            <p class="bdg-s">
+              What people are paid comes from the pay runs themselves. This is
+              for everything else a budget covers.
+            </p>
+            <label class="bdg-field bdg-field--full">
+              <span class="bdg-field-l">What it was for</span>
+              <input class="bdg-in" t-att-value="state.expense.name"
+                     placeholder="Leadership course for four team leads"
+                     t-on-input="(ev) => this.onExpense('name', ev)"/>
+            </label>
+            <div class="bdg-grid2">
+              <label class="bdg-field">
+                <span class="bdg-field-l">Date</span>
+                <input class="bdg-in" type="date"
+                       t-att-value="state.expense.spend_date"
+                       t-on-input="(ev) => this.onExpense('spend_date', ev)"/>
+              </label>
+              <label class="bdg-field">
+                <span class="bdg-field-l">Amount</span>
+                <input class="bdg-in" type="number" min="0"
+                       t-att-value="state.expense.amount"
+                       t-on-input="(ev) => this.onExpense('amount', ev)"/>
+              </label>
+              <label class="bdg-field">
+                <span class="bdg-field-l">Which budget</span>
+                <select class="bdg-in"
+                        t-on-change="(ev) => this.onExpense('budget_type', ev)">
+                  <option value="hr_ops"
+                          t-att-selected="state.expense.budget_type === 'hr_ops'">
+                    HR operations
+                  </option>
+                  <option value="admin"
+                          t-att-selected="state.expense.budget_type === 'admin'">
+                    Admin
+                  </option>
+                </select>
+              </label>
+              <label class="bdg-field">
+                <span class="bdg-field-l">Paid to</span>
+                <input class="bdg-in" t-att-value="state.expense.supplier"
+                       placeholder="Who was paid"
+                       t-on-input="(ev) => this.onExpense('supplier', ev)"/>
+              </label>
+            </div>
+            <label class="bdg-field bdg-field--full">
+              <span class="bdg-field-l">Department</span>
+              <input class="bdg-in" t-att-value="state.expense.department"
+                     placeholder="Leave empty for something the whole company shares"
+                     t-on-input="onDeptSearch"/>
+            </label>
+            <div t-if="state.people.length" class="bdg-picker">
+              <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                      class="bdg-pick" t-on-click="() => this.pickDept(pp)">
+                <span t-esc="pp.name"/>
+              </button>
+            </div>
+            <label class="bdg-field bdg-field--full">
+              <span class="bdg-field-l">Note</span>
+              <textarea class="bdg-in bdg-ta" rows="2"
+                        t-att-value="state.expense.note"
+                        t-on-input="(ev) => this.onExpense('note', ev)"/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="closeExpense">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveExpense"
+                    t-att-disabled="state.busy">Add it</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,611 @@
+// =====================================================================
+//  Insights — executive analytics cockpit (Sudima Phase M)
+//  Root is `.pbin.pbim`: the shared kit supplies the --pbim-* tokens
+//  (pb_import_kit/import_tokens.scss); everything below is namespaced under
+//  .pbin so nothing leaks. White surfaces, ONE indigo primary, Lucide SVG
+//  icons, NO gradients, NO emoji (C11). Mixed-unit min()/max() avoided (C2).
+// =====================================================================
+
+.pbin {
+    position: relative;
+    height: 100%;
+    overflow: auto;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // ---- local aliases (fall back when the kit is not in the bundle) ----
+    --p:        var(--pbim-primary, #5A4BB0);
+    --p-hover:  var(--pbim-primary-hover, #4A3D96);
+    --p-deep:   var(--pbim-primary-dark, #241F52);
+    --p-light:  var(--pbim-primary-light, #CBC2EE);
+    --soft:     var(--pbim-soft, #EDEAF8);
+    --line:     var(--pbim-line, #E2E8F0);
+    --line-2:   var(--pbim-line-2, #F1F5F9);
+    --muted:    var(--pbim-muted, #64748B);
+    --ink:      var(--pbim-ink, #1B1733);
+    --surface:  #fff;
+    --green:    var(--pbim-green, #2E7D4F);
+    --green-s:  var(--pbim-green-soft, #E3F2E9);
+    --amber:    var(--pbim-amber, #D97706);
+    --amber-s:  var(--pbim-amber-soft, #FEF3C7);
+    --rose:     var(--pbim-rose, #DC2668);
+    --rose-s:   var(--pbim-rose-soft, #FCE7EF);
+    --blue:     var(--pbim-cyan, #2563EB);
+    --blue-s:   var(--pbim-cyan-soft, #E5EDFD);
+    --teal:     #0D9488;
+    --teal-s:   #D5F5F1;
+    --r:        14px;
+    --r-sm:     10px;
+    --sh:       0 8px 24px rgba(16, 12, 40, .07);
+    --draw:     380ms cubic-bezier(.22, .8, .3, 1);
+
+    // ------------------------------------------------------------ loading
+    .pbin-loading {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; gap: 14px;
+        align-items: center; justify-content: center; color: var(--muted);
+    }
+    .pbin-spin {
+        width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--soft); border-top-color: var(--p);
+        animation: pbin-spin .8s linear infinite;
+    }
+    @keyframes pbin-spin { to { transform: rotate(360deg); } }
+
+    .pbin-wrap { padding: 22px 26px 60px; max-width: 1360px; margin: 0 auto; }
+
+    .pbin-alert {
+        display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
+        background: var(--rose-s); color: var(--rose);
+        border: 1px solid rgba(220, 38, 104, .22);
+        border-radius: var(--r-sm); padding: 10px 14px;
+        font-size: 13px; font-weight: 600;
+    }
+
+    // ------------------------------------------------------------- shared
+    .pbin-panel {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh);
+        padding: 18px 20px; margin-bottom: 18px;
+    }
+    .pbin-panel-h {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 14px; margin-bottom: 14px;
+        h2 { margin: 0; font-size: 15.5px; font-weight: 800; color: var(--ink); }
+        .hint { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
+    }
+    .pbin-tools { display: flex; align-items: center; gap: 10px; flex: none; }
+    .pbin-chips {
+        display: inline-flex; gap: 4px; background: var(--line-2);
+        border-radius: 999px; padding: 3px;
+        .chip {
+            border: 0; background: transparent; color: var(--muted);
+            font-size: 12px; font-weight: 700; border-radius: 999px;
+            padding: 5px 12px; cursor: pointer; transition: background 140ms, color 140ms;
+            &:hover { color: var(--p); }
+            &.on { background: var(--p); color: #fff; }
+        }
+    }
+    .pbin-icobtn {
+        width: 32px; height: 32px; border-radius: 9px; flex: none;
+        border: 1px solid var(--line); background: #fff; color: var(--muted);
+        display: grid; place-items: center; cursor: pointer;
+        transition: color 140ms, border-color 140ms;
+        &:hover { color: var(--p); border-color: var(--p-light); }
+    }
+    .pbin-badge {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
+        text-transform: uppercase; border-radius: 999px; padding: 3px 9px;
+        &.warn { background: var(--amber-s); color: var(--amber); }
+    }
+    .pbin-empty {
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+        padding: 34px 20px; color: var(--muted); font-size: 13px; text-align: center;
+        svg { color: var(--p-light); }
+        &.small { padding: 22px 14px; }
+    }
+    .pbin-more { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+    .pbin-foot { margin: 6px 2px 0; font-size: 11.5px; color: var(--muted); }
+
+    // state pill (shared by hero, readout, snapshots)
+    .pbin-state {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11.5px; font-weight: 700; border-radius: 999px;
+        padding: 3px 10px; background: var(--line-2); color: var(--muted);
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        &.st-done, &.st-approved { background: var(--green-s); color: var(--green); }
+        &.st-level2, &.st-exported { background: var(--blue-s); color: var(--blue); }
+        &.st-level1, &.st-ready { background: var(--amber-s); color: var(--amber); }
+        &.st-level0 { background: var(--soft); color: var(--p); }
+        &.st-cancel { background: var(--rose-s); color: var(--rose); }
+    }
+
+    // -------------------------------------------------------------- hero
+    .pbin-hero {
+        display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-left: 4px solid var(--p); border-radius: 18px;
+        padding: 20px 24px; box-shadow: var(--sh); margin-bottom: 18px;
+    }
+    .pbin-hero-main {
+        min-width: 0;
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 6px; color: var(--p);
+            font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        }
+        h1 { margin: 5px 0 2px; font-size: 27px; font-weight: 800; color: var(--ink); letter-spacing: -.015em; }
+        .sub { margin: 0; font-size: 13px; color: var(--muted); b { margin-left: 5px; } }
+    }
+    .pbin-headline {
+        display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+        .v {
+            font-size: 40px; line-height: 1; font-weight: 800; color: var(--p-deep);
+            font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+        }
+        .k { font-size: 12px; font-weight: 700; text-transform: uppercase;
+             letter-spacing: .06em; color: var(--muted); }
+        .delta {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 12.5px; font-weight: 800; border-radius: 999px; padding: 4px 10px;
+            &.up { background: var(--green-s); color: var(--green); }
+            &.down { background: var(--rose-s); color: var(--rose); }
+        }
+    }
+    .pbin-headline-mt {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+        margin-top: 9px; font-size: 12.5px; color: var(--muted);
+    }
+    .pbin-spark {
+        position: relative; margin-top: 16px;
+        svg { display: block; width: 100%; height: 46px; }
+        .ar { fill: rgba(90, 75, 176, .10); stroke: none; }
+        .ln {
+            fill: none; stroke: var(--p); stroke-width: 1.6;
+            vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round;
+        }
+        .cap { position: absolute; right: 0; top: -4px; font-size: 11px; color: var(--muted); font-weight: 600; }
+    }
+    .pbin-hero-kpis { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+    .pbin-kpi {
+        display: flex; align-items: center; gap: 12px;
+        border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px;
+        .ico {
+            width: 40px; height: 40px; border-radius: 11px; flex: none;
+            display: grid; place-items: center; background: var(--soft); color: var(--p);
+            &.green { background: var(--green-s); color: var(--green); }
+            &.blue  { background: var(--blue-s);  color: var(--blue); }
+            &.amber { background: var(--amber-s); color: var(--amber); }
+            &.rose  { background: var(--rose-s);  color: var(--rose); }
+            &.teal  { background: var(--teal-s);  color: var(--teal); }
+        }
+        .tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+        .n { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15; }
+        .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+    }
+
+    // -------------------------------------------------------- cost story
+    .pbin-readout {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px;
+        background: var(--line-2); border-radius: var(--r-sm);
+        padding: 10px 14px; margin-bottom: 14px; font-size: 12.5px;
+        .rl { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; }
+        .rv { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600;
+              b { color: var(--ink); font-variant-numeric: tabular-nums; } }
+        .muted b { color: var(--muted); }
+    }
+    .sw {
+        width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none;
+        &.net { background: var(--p); }
+        &.gross { background: var(--p-light); }
+        &.cost { background: var(--soft); border: 1px solid var(--p-light); }
+        &.emp { background: var(--p); }
+        &.er { background: var(--blue); }
+        &.tx { background: var(--amber); }
+    }
+    .pbin-cols {
+        display: flex; align-items: flex-end; gap: 6px;
+        overflow-x: auto; overflow-y: hidden; padding: 4px 2px 0;
+        scrollbar-width: thin;
+    }
+    .pbin-col {
+        flex: 0 0 auto; width: 46px; cursor: pointer; text-align: center;
+        .track {
+            position: relative; height: 190px; border-radius: 7px 7px 0 0;
+            background: var(--line-2); overflow: hidden;
+        }
+        .lay {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            border-radius: 5px 5px 0 0; transition: height var(--draw);
+            &.gross { width: 100%; background: var(--p-light); }
+            &.net { width: 46%; background: var(--p); }
+        }
+        .cs {
+            height: 3px; margin-top: 4px; border-radius: 3px; background: var(--line);
+            &.st-done { background: var(--green); }
+            &.st-level2 { background: var(--blue); }
+            &.st-level1 { background: var(--amber); }
+            &.st-level0 { background: var(--p-light); }
+            &.st-cancel { background: var(--rose); }
+        }
+        .cl { margin-top: 5px; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+        &:hover .track, &.on .track { background: var(--soft); }
+        &.on .cl { color: var(--p); font-weight: 700; }
+    }
+    .pbin-legend {
+        display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px;
+        font-size: 12px; color: var(--muted);
+        span { display: inline-flex; align-items: center; gap: 7px; }
+    }
+
+    // ------------------------------------------------ departments + donut
+    .pbin-duo { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
+
+    .pbin-deps {
+        display: flex; flex-direction: column; gap: 12px;
+        .dep { cursor: pointer; }
+        .dh { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+        .nm { font-size: 13px; font-weight: 700; color: var(--ink); }
+        .am { font-size: 12.5px; font-weight: 700; color: var(--p-deep); font-variant-numeric: tabular-nums; }
+        .hc { color: var(--muted); font-weight: 600; }
+        .tr { height: 9px; border-radius: 999px; background: var(--line-2); overflow: hidden; }
+        .fl { height: 100%; border-radius: 999px; background: var(--p); transition: width var(--draw); }
+        .dep:hover .fl { background: var(--p-hover); }
+    }
+
+    .pbin-stat {
+        display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+        .ring { position: relative; width: 140px; height: 140px; flex: none; }
+        .ring svg { width: 140px; height: 140px; }
+        .ring circle { fill: none; stroke-width: 16; }
+        .ring .bg { stroke: var(--line-2); }
+        .ring .emp { stroke: var(--p); transition: stroke-dasharray var(--draw); }
+        .ring .er { stroke: var(--blue); transition: stroke-dasharray var(--draw), stroke-dashoffset var(--draw); }
+        .mid {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 2px; pointer-events: none;
+            .v { font-size: 15px; font-weight: 800; color: var(--p-deep); font-variant-numeric: tabular-nums; }
+            .k { font-size: 10px; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .05em; color: var(--muted); }
+        }
+        .lg { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 9px; }
+        .lgrow {
+            display: flex; align-items: center; gap: 9px; font-size: 12.5px;
+            .nm { flex: 1; color: var(--muted); font-weight: 600; }
+            b { font-variant-numeric: tabular-nums; }
+            .pc { color: var(--muted); font-size: 11.5px; font-weight: 700; }
+            &.tax { padding-top: 8px; border-top: 1px dashed var(--line); }
+        }
+        .codes { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+        .code {
+            font-size: 10.5px; font-weight: 700; border-radius: 6px; padding: 3px 7px;
+            background: var(--line-2); color: var(--muted);
+            &.lg-employee { background: var(--soft); color: var(--p); }
+            &.lg-employer { background: var(--blue-s); color: var(--blue); }
+            &.lg-tax { background: var(--amber-s); color: var(--amber); }
+        }
+    }
+
+    // -------------------------------------------------------------- pulse
+    .pbin-pulse { margin: 4px 0 18px; }
+    .pbin-pulse-h {
+        display: flex; align-items: baseline; gap: 10px; margin: 0 2px 10px;
+        h2 { margin: 0; font-size: 15.5px; font-weight: 800; color: var(--ink); }
+        .hint { font-size: 12.5px; color: var(--muted); }
+    }
+    .pbin-pulse-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .ptile {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); padding: 14px 16px; box-shadow: var(--sh);
+        display: flex; flex-direction: column; gap: 6px;
+        .ph { display: flex; align-items: center; gap: 9px; }
+        .ico {
+            width: 32px; height: 32px; border-radius: 9px; flex: none;
+            display: grid; place-items: center; background: var(--soft); color: var(--p);
+            &.rose { background: var(--rose-s); color: var(--rose); }
+            &.blue { background: var(--blue-s); color: var(--blue); }
+            &.amber { background: var(--amber-s); color: var(--amber); }
+            &.teal { background: var(--teal-s); color: var(--teal); }
+        }
+        .tt { font-size: 12px; font-weight: 700; color: var(--muted); }
+        .pn { font-size: 26px; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+        .pk {
+            display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--muted);
+            b { color: var(--ink); font-weight: 700; }
+        }
+        .pf { font-size: 11px; color: var(--muted); }
+        .avs { display: flex; align-items: center; gap: 4px; margin-top: 4px; flex-wrap: wrap;
+            .av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); }
+            .ov { font-size: 11px; font-weight: 700; color: var(--muted); } }
+        .cap { margin-top: 4px;
+            .tr { height: 6px; border-radius: 999px; background: var(--line-2); overflow: hidden; }
+            .fl { height: 100%; border-radius: 999px; background: var(--amber); transition: width var(--draw); } }
+        &.ghost { background: var(--line-2); box-shadow: none; border-style: dashed; }
+        .pghost { font-size: 12px; color: var(--muted); padding: 6px 0 2px; }
+    }
+
+    // ---------------------------------------------------------- snapshots
+    .pbin-snaps { display: grid; grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); gap: 12px; }
+    .snap {
+        border: 1px solid var(--line); border-radius: var(--r); padding: 13px 15px;
+        cursor: pointer; transition: border-color 140ms, box-shadow 140ms;
+        &:hover { border-color: var(--p-light); box-shadow: var(--sh); }
+        .sh { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .pd { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+        .sv { margin-top: 8px; font-size: 19px; font-weight: 800; color: var(--p-deep);
+              font-variant-numeric: tabular-nums; }
+        .sm { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 5px;
+              font-size: 11.5px; color: var(--muted); }
+        .cc { font-weight: 800; letter-spacing: .04em; }
+        .an { display: inline-flex; align-items: center; gap: 4px; color: var(--amber); font-weight: 700; }
+        .sf { margin-top: 7px; font-size: 11px; color: var(--muted);
+              white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+
+    // ------------------------------------------------------------ gallery
+    // ============================================================ Phase O
+    //  Every number is a door. `.pbin-door` is the shared affordance: it must
+    //  be obvious that a figure can be opened, without turning the board into
+    //  a wall of buttons.
+    // =====================================================================
+    .pbin-door {
+        cursor: pointer;
+        border: 0; background: none; font: inherit; color: inherit;
+        text-align: left;
+        transition: color 140ms, background-color 140ms, transform 140ms;
+        &:hover { color: var(--p); }
+        // No Explorer installed -> no door. Say nothing, promise nothing.
+        &.off { cursor: default; pointer-events: none; }
+    }
+    .pbin-headline .v.pbin-door:hover { text-decoration: underline;
+                                        text-underline-offset: 4px; }
+
+    .pbin-kpi.pbin-door {
+        position: relative; width: 100%;
+        .go { position: absolute; right: 12px; top: 50%; margin-top: -7px;
+              color: var(--p-light); opacity: 0; transition: all 140ms; }
+        &:hover { border-color: var(--p-light); box-shadow: var(--sh);
+                  transform: translateY(-1px); }
+        &:hover .go { opacity: 1; transform: translateX(2px); color: var(--p); }
+        &.off .go { display: none; }
+    }
+
+    // statutory: arcs and legend rows are live
+    .pbin-arc {
+        cursor: pointer; transition: opacity 160ms, stroke-width 160ms;
+        &:hover { stroke-width: 20; }
+        &.dim { opacity: .35; }
+    }
+    .lgrow.pbin-door {
+        width: 100%; border-radius: 8px; padding: 5px 7px; margin: 0 -7px;
+        &:hover { background: var(--line-2); }
+    }
+    .codes .code {
+        cursor: pointer; border: 0; font: inherit;
+        transition: background-color 140ms, color 140ms;
+        &:hover { background: var(--p); color: #fff; }
+        &.more { cursor: default; background: var(--line-2); color: var(--muted);
+                 &:hover { background: var(--line-2); color: var(--muted); } }
+    }
+
+    // department rows: an undrillable row must LOOK undrillable
+    .dep.inert, .snap.inert {
+        cursor: default; opacity: .72;
+        &:hover { border-color: var(--line); box-shadow: none;
+                  transform: none; background: transparent; }
+    }
+
+    .pbin-openrun {
+        display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+        padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+        background: #fff; color: var(--muted); font-size: 11.5px;
+        font-weight: 600; cursor: pointer; transition: all 140ms;
+        &:hover { border-color: var(--p-light); color: var(--p); }
+    }
+
+    // ---- pulse micro-charts --------------------------------------------
+    .pspark {
+        display: flex; align-items: flex-end; gap: 3px; height: 34px;
+        margin: 8px 0 2px;
+        .sb {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-end; height: 100%; gap: 2px;
+            i { display: block; width: 100%; border-radius: 3px 3px 1px 1px;
+                background: var(--rose); opacity: .78; transition: opacity 140ms; }
+            em { font-style: normal; font-size: 8.5px; color: var(--muted);
+                 line-height: 1; }
+            &:hover i { opacity: 1; }
+        }
+    }
+    .pdens {
+        display: flex; gap: 2px; margin-top: 8px;
+        .dc { flex: 1; height: 14px; border-radius: 3px; background: var(--blue); }
+    }
+    .pkind {
+        border: 0; background: none; font: inherit; color: inherit;
+        padding: 0; cursor: pointer; text-align: left;
+        border-bottom: 1px dashed transparent;
+        &:hover { color: var(--p); border-bottom-color: var(--p-light); }
+        &.off { cursor: default; pointer-events: none; opacity: .62; }
+    }
+    .pn.pbin-door:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .pcap { color: var(--amber); font-weight: 700; }
+
+    // ---- the explore band (replaces the retired gallery) ---------------
+    .pbin-explore {
+        display: flex; align-items: center; gap: 14px; cursor: pointer;
+        padding: 15px 18px; border-radius: var(--r);
+        border: 1px dashed var(--p-light); background: var(--soft);
+        transition: all 160ms;
+        &:hover { background: #fff; border-style: solid;
+                  border-color: var(--p); box-shadow: var(--sh); }
+        .ei { width: 40px; height: 40px; border-radius: 12px; flex: none;
+              display: grid; place-items: center; background: #fff; color: var(--p); }
+        .et { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        b { font-size: 14px; font-weight: 700; color: var(--ink); }
+        i { font-style: normal; font-size: 12px; color: var(--muted); line-height: 1.45; }
+        .ea { color: var(--p); flex: none; transition: transform 140ms; }
+        &:hover .ea { transform: translateX(3px); }
+    }
+
+    .pbin-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(262px, 1fr)); gap: 12px; }
+    .gcard {
+        display: flex; align-items: center; gap: 12px; text-align: left;
+        border: 1px solid var(--line); border-radius: var(--r); background: #fff;
+        padding: 13px 15px; cursor: pointer;
+        transition: border-color 140ms, box-shadow 140ms, transform 140ms;
+        &:hover { border-color: var(--p-light); box-shadow: var(--sh); transform: translateY(-1px); }
+        .gi { width: 38px; height: 38px; border-radius: 11px; flex: none;
+              display: grid; place-items: center; background: var(--soft); color: var(--p); }
+        .gt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+        .gl { font-size: 13px; font-weight: 700; color: var(--ink); }
+        .gd { font-size: 11.5px; color: var(--muted); }
+        .ga { color: var(--p-light); flex: none; transition: color 140ms, transform 140ms; }
+        &:hover .ga { color: var(--p); transform: translateX(2px); }
+    }
+
+    // -------------------------------------------------------- responsive
+    @media (max-width: 1100px) {
+        .pbin-hero { grid-template-columns: 1fr; }
+        .pbin-hero-kpis { flex-direction: row; flex-wrap: wrap; .pbin-kpi { flex: 1 1 200px; } }
+        .pbin-duo { grid-template-columns: 1fr; }
+        .pbin-pulse-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .pbin-wrap { padding: 16px 14px 48px; }
+        .pbin-hero { padding: 16px; border-radius: 14px; }
+        .pbin-headline .v { font-size: 32px; }
+        // back to a column — and RESET the <=1100px `flex: 1 1 200px`, whose
+        // 200px basis becomes a 200px HEIGHT once the axis flips (found in the
+        // 390px screenshot: three KPI tiles each half a phone tall).
+        .pbin-hero-kpis { flex-direction: column; .pbin-kpi { flex: 0 0 auto; } }
+        .pbin-pulse-row { grid-template-columns: 1fr; }
+        .pbin-snaps, .pbin-gallery { grid-template-columns: 1fr; }
+        .pbin-panel { padding: 15px 14px; }
+        // stack the panel header: side-by-side title + chips squeezes the
+        // hint into a 4-line column on a phone
+        .pbin-panel-h { flex-direction: column; align-items: stretch; }
+        .pbin-tools { justify-content: space-between; }
+        .pbin-pulse-h { flex-direction: column; align-items: flex-start; gap: 2px; }
+        .pbin-col { width: 40px; .track { height: 150px; } }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        --draw: 1ms;
+        .gcard, .snap, .pbin-chips .chip { transition: none; }
+    }
+}
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbin` is already `height: 100%; overflow: auto`, so it needs
+   no scrollport surgery (W20) — the hub's canvas hands it a definite height and
+   it keeps owning its own scrolling. What it needs is its page padding tuned
+   for a lens box that is already inset by the rail, and the hero's top gap
+   closed now that the eyebrow and the title are gone. */
+.pbin.pbin--embedded {
+    .pbin-wrap { padding: 18px 22px 40px; }
+    .pbin-hero-main .sub { margin-top: 0; }
+}
+
+/* --------------------------------------------------- the people ledger
+   IA Cycle 6. Two pulse drills — the attendance-exception cohort and the
+   near-ceiling overtime list — are filtered subsets no hub lens carries, so
+   they open INWARDS instead of replacing the cockpit with a native list (W5).
+
+   The overlay is `position: absolute` inside `.pbin`, which is the surface's
+   own scrollport, so it covers the board and nothing else — it deliberately
+   does NOT try to be a modal. A `position: fixed` layer here would have to win
+   a z-index argument with the hub shell's chrome, and W37 exists to stop
+   surfaces having that argument. No z-index above 20 anywhere in this block.
+
+   The grid itself is the kit's `pbim-table` / `pbim-chips` / `pbim-fchip`,
+   imported by class rather than restyled (W6); only the panel geometry and the
+   two bits of chrome the kit has no opinion about live here. */
+.pbin {
+    position: relative;
+
+    .pbin-people {
+        position: absolute;
+        inset: 0;
+        /* The kit's own drawer scrim value (pb_wf_kit `.wfdr-scrim`), copied
+           deliberately: the ledger and the drawer that opens over it are two
+           layers of the same interaction and two different greys would read as
+           a rendering bug. Not a token — the kit does not export one. */
+        background: rgba(16, 12, 40, .28);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 28px 18px;
+        z-index: 20;
+        overflow: auto;
+    }
+    .pbin-people__panel {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        /* W39: a centred max-width wrap inside a flex parent sizes to its CAP
+           unless it is also told to fill. `width: 100%` clamps on wide screens
+           and the flex centring still works. */
+        min-width: 0;
+    }
+    .pbin-people__head {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+        p { margin: 3px 0 0; font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    }
+    .pbin-people__x {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        border-radius: 10px; padding: 6px; line-height: 0; cursor: pointer;
+        color: var(--pbim-muted, #64748B);
+        &:hover { background: var(--pbim-bg, #F5F6FA); color: var(--pbim-ink, #1B1733); }
+    }
+    .pbin-people__filters {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .pbin-people__search {
+        position: relative; min-width: 0; flex: 0 1 260px;
+        .ic {
+            position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+            line-height: 0; color: var(--pbim-muted, #64748B); pointer-events: none;
+        }
+        input {
+            width: 100%; padding: 7px 10px 7px 30px; font-size: 13px;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: 10px; background: var(--pbim-surface, #fff);
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbin-people__sel {
+        padding: 6px 10px; font-size: 12.5px; border-radius: 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff); color: var(--pbim-ink, #1B1733);
+    }
+    .pbin-people__tw { max-height: 52vh; }
+    .pbin-th-wide { width: 38%; }
+    .pbin-people__foot {
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+    }
+
+    /* the drawer body — the drawer itself is pb_wf_kit's, never forked (W6) */
+    .pbin-dr {
+        display: flex; flex-direction: column; gap: 2px;
+        &__load { display: flex; align-items: center; gap: 8px; padding: 10px 0;
+                  font-size: 13px; color: var(--pbim-muted, #64748B); }
+        &__av { width: 56px; height: 56px; border-radius: 14px; object-fit: cover;
+                margin-bottom: 10px; }
+        &__kv {
+            display: flex; justify-content: space-between; gap: 12px;
+            padding: 8px 0; border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            font-size: 13px;
+            .k { color: var(--pbim-muted, #64748B); }
+            .v { font-weight: 700; text-align: right; color: var(--pbim-ink, #1B1733); }
+        }
+    }
+}

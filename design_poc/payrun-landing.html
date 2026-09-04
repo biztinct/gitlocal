@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pay Runs — kanban landing · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  .kpis { grid-template-columns:repeat(5,1fr); }
+  .board { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; align-items:start; }
+  .col { background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px; box-shadow:var(--shadow); }
+  .col-h { display:flex; align-items:center; gap:9px; padding:4px 6px 12px; }
+  .col-h .dot { width:9px; height:9px; border-radius:50%; }
+  .col-h .nm { font-size:13px; font-weight:800; flex:1; }
+  .col-h .ct { font-size:11px; font-weight:800; color:var(--muted); background:var(--bg); border-radius:999px; padding:2px 9px; }
+  .col-h .fold { color:var(--i-border); cursor:pointer; display:inline-flex; }
+  .col-net { font-size:11px; color:var(--muted); font-weight:700; padding:0 6px 10px; }
+  .col-net b { color:var(--ink); }
+  .c-draft .dot{background:var(--slate);} .c-l1 .dot{background:var(--amber);} .c-l2 .dot{background:var(--i);} .c-done .dot{background:var(--green);}
+  .col-body { display:flex; flex-direction:column; gap:10px; }
+  .pcard { border:1px solid var(--line); border-radius:13px; overflow:hidden; background:#fff; border-left:3px solid var(--slate); transition:.14s; }
+  .pcard:hover { box-shadow:var(--shadow-lg); transform:translateY(-2px); border-color:var(--i-border); }
+  .c-l1 .pcard{border-left-color:var(--amber);} .c-l2 .pcard{border-left-color:var(--i);} .c-done .pcard{border-left-color:var(--green);}
+  .pcard-main { padding:13px 14px 11px; cursor:pointer; }
+  .pcard-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pcard-top .nm { font-size:13.5px; font-weight:800; }
+  .pcard-period { font-size:11.5px; color:var(--muted); font-weight:600; margin-top:3px; }
+  .pcard-stats { display:flex; gap:10px; margin-top:11px; }
+  .pcard-stats .st { flex:1; display:flex; flex-direction:column; gap:1px; background:var(--bg); border-radius:9px; padding:7px 10px; }
+  .pcard-stats .st .k { font-size:9.5px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+  .pcard-stats .st .vv { font-size:14px; font-weight:800; }
+  .pcard-jnl { margin-top:9px; font-size:11px; color:var(--slate); font-weight:600; }
+  .pcard-foot { display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 13px; }
+  .pcard-foot .btn.primary { flex:1; }
+  .rej-bar { margin-top:20px; display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12.5px; font-weight:700; cursor:pointer; }
+  .rej-bar .ct { background:var(--rose-soft); color:var(--rose); border-radius:999px; padding:1px 9px; font-weight:800; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html" class="on">① Pay Runs landing</a>
+  <a href="payslip-statement.html">② Payslip statement</a>
+  <a href="payrun-batch.html">③ Batch form</a>
+  <a href="payrun-wizard.html">④ Run wizard</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">native kanban · enhanced</span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">P</div><div><div class="bt">Payobook</div><div class="bs">Payroll Suite</div></div></div>
+    <div class="nav"><svg class="ic nav"><use href="#i-grid"/></svg> Dashboard</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-checksquare"/></svg> Approvals</div>
+    <div class="sec">Pay Run</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-zap"/></svg> Run Payroll</div>
+    <div class="nav on"><svg class="ic nav"><use href="#i-calendar"/></svg> Pay Runs</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-receipt"/></svg> Payslips</div>
+    <div class="sec">People</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-users"/></svg> Employees</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-filetext"/></svg> Contracts</div>
+    <div class="sec">Insights</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-trending"/></svg> Insights</div>
+    <div class="sec">Setup</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-calculator"/></svg> Formula Engine</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-shield"/></svg> Statutory</div>
+  </aside>
+
+  <main class="main">
+    <div class="cp">
+      <div class="cp-row">
+        <div class="cp-bc"><svg class="ic sm" style="color:var(--muted)"><use href="#i-home"/></svg><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="cur">Pay Runs</span></div>
+        <div class="cp-search">
+          <svg class="ic sm"><use href="#i-search"/></svg>
+          <span class="chip">Awaiting me <svg class="ic" style="width:11px;height:11px"><use href="#i-x"/></svg></span>
+          <input placeholder="Search pay runs…"/>
+        </div>
+        <div class="cp-drops">
+          <span class="cp-drop"><svg class="ic sm"><use href="#i-sliders"/></svg> Filters <span class="ca">▾</span></span>
+          <span class="cp-drop"><svg class="ic sm"><use href="#i-columns"/></svg> Group By: Stage <span class="ca">▾</span></span>
+          <span class="cp-drop"><svg class="ic sm"><use href="#i-star"/></svg> Favorites <span class="ca">▾</span></span>
+        </div>
+        <div class="cp-right">
+          <span class="cp-pager"><span>1-12 / 12</span><span class="pg"><svg class="ic sm"><use href="#i-chevronl"/></svg></span><span class="pg"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></span>
+          <span class="cp-views"><button class="on"><svg class="ic sm"><use href="#i-grid"/></svg></button><button><svg class="ic sm"><use href="#i-list"/></svg></button></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px;">
+        <div>
+          <h1 class="h1">Pay Runs</h1>
+          <p class="sub">Every batch from draft to paid — approve, report and export without leaving the board.</p>
+        </div>
+        <button class="btn primary lg"><svg class="ic lg"><use href="#i-zap"/></svg> Run payroll</button>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><span class="v num">12</span><span class="l">Pay runs</span></div>
+        <div class="kpi indigo"><span class="v num">3</span><span class="l">In pipeline</span></div>
+        <div class="kpi hot"><span class="v num">2</span><span class="l">Awaiting your approval</span><span class="m">1 HR · 1 GM</span></div>
+        <div class="kpi green"><span class="v num">7</span><span class="l">Completed</span></div>
+        <div class="kpi"><span class="v money">₫1.34B</span><span class="l">Net paid (done)</span></div>
+      </div>
+
+      <div class="board">
+        <div class="col c-draft">
+          <div class="col-h"><span class="dot"></span><span class="nm">Draft</span><span class="ct">1</span><span class="fold"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></div>
+          <div class="col-net">Net <b>₫192M</b> · 7 employees</div>
+          <div class="col-body">
+            <div class="pcard">
+              <div class="pcard-main">
+                <div class="pcard-top"><span class="nm">Jun-2026 — Payslips</span></div>
+                <div class="pcard-period">01 Jun – 30 Jun 2026</div>
+                <div class="pcard-stats"><div class="st"><span class="k">Employees</span><span class="vv num">7</span></div><div class="st"><span class="k">Net</span><span class="vv money">₫192M</span></div></div>
+                <div class="pcard-jnl">Miscellaneous Operations</div>
+              </div>
+              <div class="pcard-foot"><button class="btn primary sm">Submit for review</button><button class="btn ghost sm">Open</button><button class="btn ghost danger sm">Reject</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col c-l1">
+          <div class="col-h"><span class="dot"></span><span class="nm">HR review</span><span class="ct">1</span><span class="fold"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></div>
+          <div class="col-net">Net <b>₫188M</b> · 7 employees</div>
+          <div class="col-body">
+            <div class="pcard">
+              <div class="pcard-main">
+                <div class="pcard-top"><span class="nm">May-2026 — Adj</span><span class="badge warn"><span class="d"></span>HR</span></div>
+                <div class="pcard-period">01 May – 31 May 2026</div>
+                <div class="pcard-stats"><div class="st"><span class="k">Employees</span><span class="vv num">7</span></div><div class="st"><span class="k">Net</span><span class="vv money">₫188M</span></div></div>
+                <div class="pcard-jnl">Miscellaneous Operations</div>
+              </div>
+              <div class="pcard-foot"><button class="btn primary sm">Approve (HR)</button><button class="btn ghost danger sm">Reject</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col c-l2">
+          <div class="col-h"><span class="dot"></span><span class="nm">GM review</span><span class="ct">1</span><span class="fold"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></div>
+          <div class="col-net">Net <b>₫205M</b> · 8 employees</div>
+          <div class="col-body">
+            <div class="pcard">
+              <div class="pcard-main">
+                <div class="pcard-top"><span class="nm">Apr-2026 — Payslips</span><span class="badge info"><span class="d"></span>GM</span></div>
+                <div class="pcard-period">01 Apr – 30 Apr 2026</div>
+                <div class="pcard-stats"><div class="st"><span class="k">Employees</span><span class="vv num">8</span></div><div class="st"><span class="k">Net</span><span class="vv money">₫205M</span></div></div>
+                <div class="pcard-jnl">Miscellaneous Operations</div>
+              </div>
+              <div class="pcard-foot"><button class="btn primary sm">Approve (GM)</button><button class="btn ghost danger sm">Reject</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col c-done">
+          <div class="col-h"><span class="dot"></span><span class="nm">Done</span><span class="ct">2</span><span class="fold"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></div>
+          <div class="col-net">Net <b>₫396M</b> · 14 employees</div>
+          <div class="col-body">
+            <div class="pcard">
+              <div class="pcard-main">
+                <div class="pcard-top"><span class="nm">VPTQ Mid Oct 25</span><span class="badge done"><span class="d"></span>Done</span></div>
+                <div class="pcard-period">01 Oct – 15 Oct 2025</div>
+                <div class="pcard-stats"><div class="st"><span class="k">Employees</span><span class="vv num">7</span></div><div class="st"><span class="k">Net</span><span class="vv money">₫198M</span></div></div>
+                <div class="pcard-jnl">Miscellaneous Operations</div>
+              </div>
+              <div class="pcard-foot"><button class="btn primary sm"><svg class="ic sm"><use href="#i-barchart"/></svg> Report</button><button class="btn ghost sm"><svg class="ic sm"><use href="#i-download"/></svg> Excel</button><button class="btn ghost sm"><svg class="ic sm"><use href="#i-mail"/></svg> Email</button></div>
+            </div>
+            <div class="pcard">
+              <div class="pcard-main">
+                <div class="pcard-top"><span class="nm">Mar-2026 — Payslips</span><span class="badge done"><span class="d"></span>Done</span></div>
+                <div class="pcard-period">01 Mar – 31 Mar 2026</div>
+                <div class="pcard-stats"><div class="st"><span class="k">Employees</span><span class="vv num">7</span></div><div class="st"><span class="k">Net</span><span class="vv money">₫198M</span></div></div>
+                <div class="pcard-jnl">Miscellaneous Operations</div>
+              </div>
+              <div class="pcard-foot"><button class="btn primary sm"><svg class="ic sm"><use href="#i-barchart"/></svg> Report</button><button class="btn ghost sm"><svg class="ic sm"><use href="#i-download"/></svg> Excel</button><button class="btn ghost sm"><svg class="ic sm"><use href="#i-mail"/></svg> Email</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rej-bar"><svg class="ic sm"><use href="#i-chevronr"/></svg> Rejected pay runs <span class="ct">1</span></div>
+    </div>
+  </main>
+</div>
+<script src="payrun-icons.js"></script>
+</body>
+</html>

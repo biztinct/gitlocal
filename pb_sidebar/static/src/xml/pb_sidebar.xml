@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_sidebar.PbSidebar">
+    <aside class="pb-sidebar biz-sidebar" t-if="state.visible">
+        <div class="pb-sidebar-brand biz-sidebar-brand" t-on-click="navigateHome">
+            <div class="pb-sidebar-logo">P</div>
+            <div class="pb-brand-tx biz-sidebar-label">
+                <div class="pb-brand-nm">Payobook</div>
+                <div class="pb-brand-sub">Payroll Suite</div>
+            </div>
+            <button class="pb-side-toggle biz-sidebar-toggle biz-sidebar-label"
+                    t-on-click.stop="toggleCollapse" title="Collapse / expand sidebar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="pb-sidebar-nav" t-if="state.loaded">
+            <t t-foreach="state.sections" t-as="section" t-key="section.id">
+                <button t-if="hasSectionHeader(section)"
+                        t-attf-class="pb-sec-label pb-sec-toggle biz-sidebar-label #{section.restricted ? 'pb-sec-locked' : ''}"
+                        t-on-click="() => this.toggleSection(section)">
+                    <span class="pb-sec-name" t-esc="section.name"/>
+                    <span t-if="section.restricted" class="pb-sec-lock" t-out="iconSvg('lock')"/>
+                    <span t-else="" t-attf-class="pb-sec-caret #{isSectionCollapsed(section) ? '' : 'open'}">›</span>
+                </button>
+                <div class="pb-nav-group" t-if="!isSectionCollapsed(section)">
+                    <t t-foreach="section.items" t-as="item" t-key="item.id">
+                        <button t-attf-class="pb-nav-item biz-sidebar-item #{isActive(item.id) ? 'active' : ''} #{item.restricted ? 'pb-locked' : ''}"
+                                t-att-title="item.name"
+                                t-on-click="() => this.onItemClick(item)">
+                            <span class="pb-ic-wrap" t-out="iconSvg(item.icon)"/>
+                            <span class="pb-nav-tx biz-sidebar-label" t-esc="item.name"/>
+                            <span t-if="item.restricted" class="pb-nav-lock biz-sidebar-label" t-out="iconSvg('lock')"/>
+                            <span t-if="item.badge and !item.restricted" class="pb-nav-badge biz-sidebar-label" t-esc="item.badge"/>
+                            <span t-if="item.children.length and !item.restricted"
+                                  t-attf-class="pb-nav-caret biz-sidebar-label #{isExpanded(item.id) ? 'open' : ''}">›</span>
+                        </button>
+                        <t t-if="item.children.length and isExpanded(item.id) and !item.restricted">
+                            <t t-foreach="item.children" t-as="child" t-key="child.id">
+                                <button t-attf-class="pb-nav-item pb-subitem biz-sidebar-item biz-sidebar-sub #{isActive(child.id) ? 'active' : ''} #{child.restricted ? 'pb-locked' : ''}"
+                                        t-att-title="child.name"
+                                        t-on-click="() => this.onItemClick(child)">
+                                    <span class="pb-ic-wrap" t-out="iconSvg(child.icon)"/>
+                                    <span class="pb-nav-tx biz-sidebar-label" t-esc="child.name"/>
+                                    <span t-if="child.restricted" class="pb-nav-lock biz-sidebar-label" t-out="iconSvg('lock')"/>
+                                </button>
+                            </t>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </nav>
+
+        <div class="pb-sidebar-user biz-sidebar-footer">
+            <div class="pb-user-av" t-esc="userInitials"/>
+            <div class="pb-user-meta biz-sidebar-label">
+                <div class="pb-user-nm" t-esc="userName"/>
+                <div class="pb-user-ro">Payobook</div>
+            </div>
+        </div>
+    </aside>
+</t>
+
+</templates>

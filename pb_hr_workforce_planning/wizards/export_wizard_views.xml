@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Export Wizard Form -->
+    <record id="view_wfp_export_wizard_form" model="ir.ui.view">
+        <field name="name">wfp.export.wizard.form</field>
+        <field name="model">wfp.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Scenario">
+                <group>
+                    <field name="scenario_id"/>
+                    <field name="export_type"/>
+                </group>
+                <group invisible="not export_file">
+                    <field name="export_file" filename="export_filename"/>
+                    <field name="export_filename" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_export" string="Generate Excel" type="object" class="btn-primary" icon="fa-file-excel-o" invisible="export_file"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wfp_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Forecast</field>
+        <field name="res_model">wfp.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

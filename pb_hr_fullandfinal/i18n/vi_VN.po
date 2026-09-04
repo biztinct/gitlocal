@@ -1,0 +1,570 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.actions.report,print_report_name:pb_hr_fullandfinal.action_report_full_and_final
+msgid "'Full and Final - %s' % (object.employee_id.name)"
+msgstr "'Đầy đủ và cuối cùng - %s' % (object.employee_id.name)"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Date of Joining / Ngày vào làm</strong>"
+msgstr "<strong>Date of Joining / Ngày vào làm</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Department / Phòng ban</strong>"
+msgstr "<strong>Department / Phòng ban</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Employee ID / Mã NV</strong>"
+msgstr "<strong>Employee ID / Mã NV</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Employee Name / Tên nhân viên</strong>"
+msgstr "<strong>Employee Name / Tên nhân viên</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Exit Reason / Lý do nghỉ việc</strong>"
+msgstr "<strong>Exit Reason / Lý do nghỉ việc</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Last Date in Company</strong>"
+msgstr "<strong>Ngày cuối cùng trong Công ty</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>NET PAYABLE (A-B)</strong>"
+msgstr "<strong>NET PHẢI TRẢ (A-B)</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Position / Chức danh</strong>"
+msgstr "<strong>Position / Chức danh</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>Settlement Month / Tháng quyết toán</strong>"
+msgstr "<strong>Settlement Month / Tháng quyết toán</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>TOTAL DEDUCTIONS / TỔNG KHẤU TRỪ (B)</strong>"
+msgstr "<strong>TOTAL DEDUCTIONS / TỔNG KHẤU TRỪ (B)</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "<strong>TOTAL EARNINGS / TỔNG THU (A)</strong>"
+msgstr "<strong>TOTAL EARNINGS / TỔNG THU (A)</strong>"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_allow
+msgid "Allowances"
+msgstr "Phụ cấp"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Allowances / Phụ cấp"
+msgstr "Allowances / Phụ cấp"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Amount in Words / Bằng chữ"
+msgstr "Amount in Words / Bằng chữ"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields.selection,name:pb_hr_fullandfinal.selection__hr_full_final_settlement__source__auto
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Auto"
+msgstr "Tự động"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Basic Salary / Lương cơ bản"
+msgstr "Basic Salary / Lương cơ bản"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_basic
+msgid "Basic salary"
+msgstr "Lương cơ bản"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_bonus
+msgid "Bonus"
+msgstr "Thưởng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Bonus / Thưởng"
+msgstr "Bonus / Thưởng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_generate_wizard_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__company_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Company Logo"
+msgstr "Logo Công ty"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__component_summary_json
+msgid "Component Summary (JSON)"
+msgstr "Tóm tắt thành phần (JSON)"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__computed_values_json
+msgid "Computed Values (JSON)"
+msgstr "Giá trị đã tính (JSON)"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__contract_id
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "DEDUCTIONS"
+msgstr "DEDUCTIONS"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__file_data_start_row
+msgid "Data Start Row"
+msgstr "Dòng bắt đầu dữ liệu"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Deductions breakdown"
+msgstr "Phân tích các khoản khấu trừ"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__department_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__display_name
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_payroll_import_batch__display_name
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_report_pb_hr_fullandfinal_report_full_and_final_document__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_tree
+msgid "Download Full and Final"
+msgstr "Tải xuống đầy đủ và cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Download settlement"
+msgstr "Giải quyết tải xuống"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "EARNINGS"
+msgstr "EARNINGS"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Earnings breakdown"
+msgstr "Phân tích thu nhập"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model,name:pb_hr_fullandfinal.model_hr_employee
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__employee_code
+msgid "Employee ID"
+msgstr "Nhân viên ID"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__employee_ids
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__import_file
+msgid "Excel File"
+msgstr "Tệp Excel"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_generate_wizard_form
+msgid "Excel Overrides"
+msgstr "Ghi đè Excel"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/wizards/full_and_final_wizard.py:0
+msgid "Failed to load Excel file: %s"
+msgstr "Không tải được tệp Excel: %s"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__import_filename
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model,name:pb_hr_fullandfinal.model_hr_full_final_settlement
+msgid "Full & Final Settlement"
+msgstr "Thanh toán đầy đủ & cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.actions.act_window,name:pb_hr_fullandfinal.action_full_and_final_employees
+#: model:ir.actions.report,name:pb_hr_fullandfinal.action_report_full_and_final
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_tree
+msgid "Full and Final"
+msgstr "Quyết toán thôi việc"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model,name:pb_hr_fullandfinal.model_report_pb_hr_fullandfinal_report_full_and_final_document
+msgid "Full and Final Report"
+msgstr "Báo cáo đầy đủ và cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Full and Final Settlement"
+msgstr "Thanh toán đầy đủ và cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_generate_wizard_form
+msgid "Generate"
+msgstr "Tạo"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model,name:pb_hr_fullandfinal.model_hr_full_final_generate_wizard
+msgid "Generate Full & Final Settlement"
+msgstr "Tạo quyết toán đầy đủ và cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.actions.act_window,name:pb_hr_fullandfinal.action_full_and_final_generate_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_generate_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_tree
+msgid "Generate Full and Final"
+msgstr "Tạo đầy đủ và cuối cùng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__file_header_row
+msgid "Header Row"
+msgstr "Dòng tiêu đề"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Health Insurance / BHYT"
+msgstr "Bảo hiểm y tế/BH"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_hi
+msgid "Health insurance"
+msgstr "Bảo hiểm y tế"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__id
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_payroll_import_batch__id
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_report_pb_hr_fullandfinal_report_full_and_final_document__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__input_values_json
+msgid "Input Values (JSON)"
+msgstr "Giá trị đầu vào (JSON)"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__job_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Job Position"
+msgstr "Chức danh Chức vụ"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Last Month"
+msgstr "Tháng trước"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Loan / Advance / Tạm ứng"
+msgstr "Loan / Advance / Tạm ứng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_loan
+msgid "Loan / advance"
+msgstr "Cho vay/tạm ứng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields.selection,name:pb_hr_fullandfinal.selection__hr_full_final_settlement__source__manual
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Manual"
+msgstr "Thủ công"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "NET SETTLEMENT"
+msgstr "THANH TOÁN RÒNG"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__net_payable
+msgid "Net Payable"
+msgstr "Phải trả ròng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Net ≥ ₫30M"
+msgstr "Net ≥ ₫30M"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/full_and_final.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/hr_employee.py:0
+msgid "No full and final settlement found for this employee."
+msgstr "Không tìm thấy khoản thanh toán đầy đủ và cuối cùng nào cho nhân viên này."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/full_and_final.py:0
+msgid "No salary structure selected for full and final computation."
+msgstr "Không có cơ cấu lương nào được chọn để tính toán đầy đủ và cuối cùng."
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Other / Khác"
+msgstr "Other / Khác"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_other_ded
+msgid "Other deductions"
+msgstr "Các khoản khấu trừ khác"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_other_earn
+msgid "Other earnings"
+msgstr "Thu nhập khác"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_ot
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Overtime / Tăng ca"
+msgstr "Overtime / Tăng ca"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__import_batch_id
+msgid "Payroll Batch"
+msgstr "Lô bảng lương"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model,name:pb_hr_fullandfinal.model_hr_payroll_import_batch
+msgid "Payroll Import Batch"
+msgstr "Đợt nhập liệu lương"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__date_to
+msgid "Period End"
+msgstr "Kỳ Kết thúc"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__date_from
+msgid "Period Start"
+msgstr "Kỳ Bắt đầu"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Personal Income Tax / Thuế TNCN"
+msgstr "Personal Income Tax / Thuế TNCN"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_pit
+msgid "Personal income tax"
+msgstr "Thuế thu nhập cá nhân"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/wizards/full_and_final_wizard.py:0
+msgid "Please select a salary structure."
+msgstr "Vui lòng chọn cơ cấu lương."
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__formula_config_id
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__formula_config_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Salary Structure"
+msgstr "Cấu trúc lương"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Select employee…"
+msgstr "Chọn nhân viên…"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Settlement"
+msgstr "giải quyết"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__settlement_date
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Settlement Date"
+msgstr "Ngày thanh toán"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__settlement_month
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Settlement Month"
+msgstr "Tháng quyết toán"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_form
+msgid "Settlement summary"
+msgstr "Tóm tắt quyết toán"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_generate_wizard__file_sheet_name
+msgid "Sheet Name"
+msgstr "Bảng tính Tên"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Social Insurance / BHXH"
+msgstr "Bảo hiểm xã hội / Bệnh tật"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_si
+msgid "Social insurance"
+msgstr "Bảo hiểm xã hội"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__source
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__raw_data_json
+msgid "Source Data (JSON)"
+msgstr "Dữ liệu nguồn (JSON)"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "This Month"
+msgstr "Này Tháng"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.view_full_and_final_search
+msgid "This Year"
+msgstr "Năm nay"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__total_deductions
+msgid "Total Deductions"
+msgstr "Tổng Khấu trừ"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Total Deductions (B)"
+msgstr "Tổng số tiền khấu trừ (B)"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__total_earnings
+msgid "Total Earnings"
+msgstr "Tổng thu nhập"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Total Earnings (A)"
+msgstr "Tổng thu nhập (A)"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Unemployment Insurance / BHTN"
+msgstr "Bảo hiểm Thất nghiệp / BHTN"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_ui
+msgid "Unemployment insurance"
+msgstr "Bảo hiểm thất nghiệp"
+
+#. module: pb_hr_fullandfinal
+#: model_terms:ir.ui.view,arch_db:pb_hr_fullandfinal.report_full_and_final_document
+msgid "Unused Leave / Phép chưa dùng"
+msgstr "Unused Leave / Phép chưa dùng"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_leave
+msgid "Unused leave"
+msgstr "nghỉ phép không sử dụng"

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- Grid Studio v1 (T2.2 — roving focus + keyboard nav + cell editing).
+       Components as columns; frozen header (letter + code) via sticky top,
+       frozen row-labels via sticky left. The scroller is the single tabbable
+       element; cells are inert divs driven by one keydown handler. -->
+  <t t-name="pb_formula_studio.GridStudio">
+    <div class="g2-root">
+    <FormulaBar focused="focused" canEdit="props.canEdit"
+                onSaveFormula="props.onSaveFormula" onValidateLive="props.onValidateLive"/>
+    <div class="g2-toolbar" t-if="props.canEdit and props.onGroupByCategory">
+      <button class="pbfs-btn soft sm" t-on-click="groupByCategory" title="Reorder columns so every component of a category sits together">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="16" rx="1"/><rect x="10.5" y="4" width="4" height="16" rx="1"/><rect x="16" y="4" width="5" height="16" rx="1"/></svg>
+        Group by category
+      </button>
+      <span class="g2-toolbar-hint">Drag a column header to reorder — letters stay fixed</span>
+    </div>
+    <!-- COLROLES P2 — what the lens is holding back. The grid never silently
+         drops a column: if something is not on screen, this says so and offers
+         the way back. -->
+    <div class="g2-lensbar" t-if="hiddenCount">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+      <span t-esc="hiddenLabel"/>
+      <button t-if="props.onToggleLens and props.lens !== 'all'" class="g2-lensbtn"
+              t-on-click="() => this.props.onToggleLens()"
+              title="Show people, bank and reference columns too">Show everything</button>
+    </div>
+    <!-- W8 — collapse-by-category fold chips (view transform; available to all viewers) -->
+    <div class="g2-foldbar" t-if="props.onToggleFold and foldableCategories.length > 1">
+      <span class="g2-foldbar-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Collapse
+      </span>
+      <button t-foreach="foldableCategories" t-as="cat" t-key="cat.key"
+              t-attf-class="g2-foldchip {{ cat.folded ? 'on' : '' }}"
+              t-on-click="() => this.toggleFold(cat.key)"
+              t-att-title="(cat.folded ? 'Unfold ' : 'Fold ') + cat.label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path t-if="cat.folded" d="m9 18 6-6-6-6"/><path t-else="" d="m6 9 6 6 6-6"/>
+        </svg>
+        <span t-esc="cat.label"/>
+      </button>
+    </div>
+    <div class="g2-bulkbar" t-if="selectionCount >= 2">
+      <span class="g2-bulk-count"><b t-esc="selectionCount"/> columns selected</span>
+      <button t-if="props.canEdit and props.onBulkUpdate" class="pbfs-btn primary sm" t-on-click="openBulk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Bulk edit
+      </button>
+      <button class="g2-bulk-clear" t-on-click="clearSelection">Clear</button>
+    </div>
+    <div class="pbfs-grid2" data-coach="grid-canvas" t-ref="scroller" tabindex="0"
+         t-on-keydown="onKeydown" t-on-paste="onGridPaste" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
+      <table t-attf-class="g2-table {{ vcols.on ? 'g2-virt' : '' }}">
+        <thead>
+          <tr class="g2-hrow">
+            <th class="g2-corner">Component</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'">
+                <t t-set="c" t-value="u.comp"/>
+                <th t-att-data-col-id="c.id"
+                    t-attf-class="{{ headClass(c) }} {{ bandBoundaryClass(c) }} {{ ui.dragOverId === c.id ? 'g2-dragover' : '' }} {{ ui.dragId === c.id ? 'g2-dragging' : '' }}"
+                    t-attf-style="{{ bandStyle(c) }}"
+                    t-att-draggable="(props.canEdit and props.onReorder) ? 'true' : 'false'"
+                    t-on-dragstart="(ev) => this.onColDragStart(ev, c)"
+                    t-on-dragover="(ev) => this.onColDragOver(ev, c)"
+                    t-on-drop="(ev) => this.onColDrop(ev, c)"
+                    t-on-dragend="() => this.onColDragEnd()"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'formula')" t-att-title="c.name">
+                  <span class="g2-col" t-esc="c.col"/>
+                  <span class="g2-code" t-esc="c.code"/>
+                  <!-- SOURCING S4 — a glyph, never a word: this header already
+                       carries a letter, a code and a scenario button, and MF13's
+                       lesson is that an affordance which reserves width crushes the
+                       label. The sentence lives in the tooltip. -->
+                  <span t-if="srcOf" t-attf-class="g2-src s-{{ srcOf(c) }} {{ srcDisagrees(c) ? 'src-diff' : '' }}"
+                        t-att-title="srcSentence(c)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcOf(c))"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                  </span>
+                  <button t-if="canScenario(c)" class="g2-addsc" title="Branch a what-if scenario"
+                          t-on-click="(ev) => this.addScenario(ev, c)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                  </button>
+                </th>
+              </t>
+              <t t-elif="u.kind === 'spacer'">
+                <th class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/>
+              </t>
+              <t t-elif="u.kind === 'summary'">
+                <t t-set="sm" t-value="u.summary"/>
+                <th class="g2-chead g2-summary g2-band g2-band-start" t-attf-style="{{ summaryBandStyle(sm) }}"
+                    t-att-title="'Unfold ' + sm.label + ' (' + sm.members.length + ' components)'"
+                    t-on-click="() => this.toggleFold(sm.cat)">
+                  <span class="g2-sumfold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </span>
+                  <span class="g2-sumlabel" t-esc="sm.label"/>
+                  <span class="g2-sumcount" t-esc="sm.members.length"/>
+                </th>
+              </t>
+              <t t-else="">
+                <t t-set="s" t-value="u.scenario"/>
+                <th t-attf-class="g2-chead g2-shead sc-{{ s.color }}" t-att-title="'Scenario: ' + s.name">
+                  <span class="g2-smark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 12 12 22 2 12z"/></svg></span>
+                  <span class="g2-scode" t-esc="s.name"/>
+                  <span class="g2-sacts">
+                    <button class="g2-sact ok" title="Promote into the real component" t-att-disabled="s.valid === false"
+                            t-on-click="(ev) => this.promoteScenario(ev, s)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                    </button>
+                    <button class="g2-sact no" title="Discard scenario" t-on-click="(ev) => this.discardScenario(ev, s)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                  </span>
+                </th>
+              </t>
+            </t>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Name</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="name" t-att-class="cellClass(c, 'name')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'name')">
+                  <span class="g2-name" t-esc="c.name"/>
+                </td>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell g2-sname muted">vs <b t-esc="u.comp.code"/></td>
+              </t>
+            </t>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Category</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="category" t-att-class="cellClass(c, 'category')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
+              <t t-else=""><td class="g2-scell muted">—</td></t>
+            </t>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Type</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="type" t-att-class="cellClass(c, 'type')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'type')">
+                  <span t-attf-class="g2-typ {{ c.type }}" t-esc="typeLabel(c)"/>
+                </td>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
+              <t t-else=""><td class="g2-scell"><span class="g2-typ scenario">what-if</span></td></t>
+            </t>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Formula</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="formula" t-att-class="cellClass(c, 'formula')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
+                    t-on-dblclick="() => this.onCellDblClick(c, 'formula')" t-att-title="formulaTitle(c)">
+                  <input t-if="isEditingCell(c, 'formula')" class="g2-edit" t-ref="editor"
+                         t-on-input="onEditorInput" t-on-keydown="_onEditorKeydown"
+                         t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"
+                         t-att-class="ui.editing.valid === false ? 'invalid' : ''"/>
+                  <t t-elif="ghostFor(c)">
+                    <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-att-title="ghostFor(c).msg or ''" t-esc="ghostFor(c).proposed_formula"/>
+                  </t>
+                  <span t-else="" t-esc="formulaText(c)"/>
+                  <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
+                </td>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td t-attf-class="g2-scell g2-sformula {{ scenarioStatus(s).state === 'error' ? 'has-error' : '' }}"
+                    t-on-click="() => this.startScenarioEdit(s)" t-att-title="s.override_formula">
+                  <input t-if="isScenarioEditing(s)" class="g2-edit" t-ref="scEditor"
+                         t-on-input="onScenarioInput" t-on-keydown="onScenarioEditorKeydown"
+                         t-att-class="ui.scenarioEdit.valid === false ? 'invalid' : ''"/>
+                  <span t-else="" t-esc="s.override_formula || '—'"/>
+                </td>
+              </t>
+            </t>
+          </tr>
+          <tr class="g2-prow g2-valrow">
+            <th class="g2-rlabel">Value</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="value" t-att-class="cellClass(c, 'value')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><t t-set="sm" t-value="u.summary"/>
+                <td class="g2-cell g2-value g2-summary g2-sumvalue" t-esc="summaryValue(sm, props.preview.values)"/>
+              </t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell g2-svalue">
+                  <span class="sv-num" t-esc="scenarioValue(s)"/>
+                  <span t-if="scenarioDelta(s) !== null" t-attf-class="sv-delta {{ scenarioDelta(s) >= 0 ? 'up' : 'dn' }}" t-esc="fmtSignedNum(scenarioDelta(s))"/>
+                  <span t-if="scenarioNetDelta(s) !== null" class="sv-net" title="Take-home ripple">net&#160;<t t-esc="fmtSignedNum(scenarioNetDelta(s))"/></span>
+                </td>
+              </t>
+            </t>
+          </tr>
+          <!-- W4 — extra pinned sample value rows (display-only; non-focusable, D-F3) -->
+          <tr t-foreach="extraPreviews" t-as="ex" t-key="'xrow' + ex.sample_id" class="g2-prow g2-valrow g2-valrow-extra">
+            <th class="g2-rlabel g2-rlabel-extra" t-att-title="ex.name">
+              <span class="g2-extraname" t-esc="ex.name"/>
+              <button class="g2-unpin" title="Unpin this sample row" t-on-click="() => this.onUnpinExtra(ex.sample_id)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+              </button>
+            </th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td class="g2-cell g2-value g2-value-extra" t-esc="extraValue(ex, c.col)"/>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><t t-set="sm" t-value="u.summary"/>
+                <td class="g2-cell g2-value g2-value-extra g2-sumvalue" t-esc="summaryValue(sm, ex.values)"/>
+              </t>
+              <t t-else=""><td class="g2-scell g2-svalue muted">—</td></t>
+            </t>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Status</th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="status" t-att-class="cellClass(c, 'status')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'status')">
+                  <span t-if="statusOf(c).state === 'ok'" class="g2-badge ok" title="Valid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                  </span>
+                  <span t-else="" class="g2-badge bad" t-att-title="statusOf(c).message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                  </span>
+                </td>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell">
+                  <span t-if="scenarioStatus(s).state === 'ok'" class="g2-badge ok" title="Valid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                  </span>
+                  <span t-else="" class="g2-badge bad" t-att-title="scenarioStatus(s).message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                  </span>
+                </td>
+              </t>
+            </t>
+          </tr>
+        </tbody>
+      </table>
+      <div class="g2-editmsg" t-if="ui.editing and ui.editing.valid === false" t-esc="ui.editing.message || 'Invalid formula'"/>
+      <div class="g2-fillbar" t-if="ui.fill.pending and !ui.fill.paste">
+        <span>Fill <b t-esc="ui.fill.targets.length"/> column<t t-if="ui.fill.targets.length !== 1">s</t> with the translated formula?</span>
+        <button class="pbfs-btn primary sm" t-on-click="_commitFill">Enter to fill</button>
+        <button class="pbfs-btn ghost sm" t-on-click="_discardFill">Esc to cancel</button>
+      </div>
+      <div class="g2-fillbar" t-if="ui.fill.pending and ui.fill.paste">
+        <span t-if="pasteValidCount === ui.fill.targets.length">Paste <b t-esc="ui.fill.targets.length"/> formula<t t-if="ui.fill.targets.length !== 1">s</t> from Excel?</span>
+        <span t-else="" class="g2-paste-bad"><b t-esc="ui.fill.targets.length - pasteValidCount"/> of <t t-esc="ui.fill.targets.length"/> can't be pasted — fix or cancel</span>
+        <button class="pbfs-btn primary sm" t-att-disabled="pasteValidCount !== ui.fill.targets.length" t-on-click="_commitPaste">Enter to paste</button>
+        <button class="pbfs-btn ghost sm" t-on-click="_discardFill">Esc to cancel</button>
+      </div>
+      <div class="g2-statusmsg" t-if="focusedError">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span t-esc="focusedError"/>
+      </div>
+      <div class="g2-legend" t-if="ui.tintCol">
+        <span class="g2-lg"><span class="g2-sw up"/>Depends on <b t-esc="ui.tintCol"/> (upstream)</span>
+        <span class="g2-lg"><span class="g2-sw down"/>Used by <b t-esc="ui.tintCol"/> (downstream)</span>
+      </div>
+      <div class="g2-hint" data-coach="grid-hint">
+        <t t-if="props.canEdit">Click a Formula cell and press <b>F2</b> or start typing to edit · <b>Enter</b> saves · <b>Esc</b> cancels · <b>Ctrl+Z</b> undo. Values for <b t-esc="props.sampleName || '—'"/>.</t>
+        <t t-else="">Showing computed values for <b t-esc="props.sampleName || '—'"/>.</t>
+      </div>
+    </div>
+    <CellAutocomplete t-if="ui.editing and ui.autocomplete.open"
+                      items="ui.autocomplete.items" active="ui.autocomplete.active"
+                      style="autocompleteStyle" onPick="(item) => this.onAutocompletePick(item)"
+                      onHover="(i) => this.onAutocompleteHover(i)"/>
+
+    <!-- T2.7 bulk edit popover -->
+    <div t-if="ui.bulkOpen" class="g2-bulkpop-scrim" t-on-click="closeBulk">
+      <div class="g2-bulkpop" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="g2-bulkpop-h">Edit <b t-esc="selectionCount"/> columns</div>
+        <label class="g2-bulk-f"><span>Category</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('category_id',ev)">
+            <option value="">— leave unchanged —</option>
+            <option t-foreach="bulkCategories" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name"/>
+          </select></label>
+        <label class="g2-bulk-f"><span>Number format</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('number_format',ev)">
+            <option value="">— leave unchanged —</option>
+            <option t-foreach="bulkNumberFormats" t-as="o" t-key="o.value" t-att-value="o.value" t-esc="o.label"/>
+          </select></label>
+        <label class="g2-bulk-f"><span>Appears on payslip</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('appears_on_payslip',ev)">
+            <option value="">— leave unchanged —</option><option value="true">Yes</option><option value="false">No</option>
+          </select></label>
+        <label class="g2-bulk-f"><span>Visible in grid</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('is_visible_in_grid',ev)">
+            <option value="">— leave unchanged —</option><option value="true">Yes</option><option value="false">No</option>
+          </select></label>
+        <div class="g2-bulkpop-foot">
+          <button class="pbfs-btn ghost sm" t-on-click="closeBulk">Cancel</button>
+          <button class="pbfs-btn primary sm" t-on-click="applyBulk">Apply</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </t>
+
+  <!-- T2.6 — autocomplete dropdown (fixed position so the grid scroll can't clip it) -->
+  <t t-name="pb_formula_studio.CellAutocomplete">
+    <div class="g2-ac" t-attf-style="{{ props.style }}" t-on-mousedown="(ev) => ev.preventDefault()">
+      <div t-foreach="props.items" t-as="it" t-key="it.id"
+           t-attf-class="g2-ac-item {{ it.kind === 'snippet' ? 'snippet' : '' }} {{ it_index === props.active ? 'active' : '' }}"
+           t-on-mouseenter="() => props.onHover(it_index)"
+           t-on-click="() => props.onPick(it)">
+        <t t-if="it.kind === 'snippet'">
+          <span class="g2-ac-snip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </span>
+          <span class="g2-ac-code" t-esc="it.code"/>
+          <span class="g2-ac-name" t-esc="it.name"/>
+          <span class="g2-ac-val">snippet</span>
+        </t>
+        <t t-else="">
+          <span class="g2-ac-col" t-esc="it.col"/>
+          <span class="g2-ac-code" t-esc="it.code"/>
+          <span class="g2-ac-name" t-esc="it.name"/>
+          <span class="g2-ac-val" t-esc="it.value"/>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- T2.3 — always-visible formula bar (same round-trip as the cell overlay) -->
+  <t t-name="pb_formula_studio.FormulaBar">
+    <div t-attf-class="g2-fbar {{ state.valid === false ? 'invalid' : '' }}" data-coach="grid-fbar">
+      <div class="g2-fbar-tag">
+        <t t-if="props.focused">
+          <span class="g2-fbar-col" t-esc="props.focused.col"/>
+          <span class="g2-fbar-code" t-esc="props.focused.code"/>
+        </t>
+        <span t-else="" class="g2-fbar-col ph">fx</span>
+      </div>
+      <input class="g2-fbar-input" t-ref="input" t-att-placeholder="placeholder"
+             t-att-disabled="!editable"
+             t-on-focus="onFocus" t-on-input="onInput" t-on-keydown="onKeydown" t-on-blur="onBlur"/>
+      <span t-if="state.valid === false" class="g2-fbar-err" t-esc="state.message || 'Invalid formula'"/>
+      <span t-elif="state.editing and state.valid === true" class="g2-fbar-ok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+      </span>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,126 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "%(trip)s — %(cat)s"
+msgstr "%(trip)s — %(cat)s"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model,name:pb_trip_expense_bridge.model_pb_business_trip
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_hr_expense__pb_trip_id
+msgid "Business Trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model,name:pb_trip_expense_bridge.model_pb_trip_expense_category
+msgid "Business Trip Expense Category"
+msgstr "Hạng mục chi phí đi công tác"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model,name:pb_trip_expense_bridge.model_pb_business_trip_line
+msgid "Business Trip Expense Line"
+msgstr "Dòng chi phí chuyến công tác"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "Cannot cancel this trip — linked expenses are already submitted or posted: %s."
+msgstr "Không thể hủy chuyến đi này - các chi phí liên quan đã được gửi hoặc đăng: %s."
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_hr_expense__display_name
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip__display_name
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip_line__display_name
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_trip_expense_category__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,help:pb_trip_expense_bridge.field_pb_business_trip_line__expense_id
+msgid "Draft expense created from this line on trip authorization."
+msgstr "Chi phí dự thảo được tạo từ dòng này khi ủy quyền chuyến đi."
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model,name:pb_trip_expense_bridge.model_hr_expense
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip_line__expense_id
+msgid "Expense"
+msgstr "Chi phí"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip__expense_count
+msgid "Expense Count"
+msgstr "Số lượng chi phí"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_trip_expense_category__product_id
+msgid "Expense Product"
+msgstr "Sản phẩm chi phí"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip__expense_ids
+#: model_terms:ir.ui.view,arch_db:pb_trip_expense_bridge.view_pb_business_trip_form_expense
+msgid "Expenses"
+msgstr "Chi phí"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_hr_expense__id
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip__id
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip_line__id
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_trip_expense_category__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,field_description:pb_trip_expense_bridge.field_pb_business_trip__per_diem_expense_id
+msgid "Per-Diem Expense"
+msgstr "Chi phí công tác phí"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "Per-diem — %(dest)s (%(days)s days)"
+msgstr "Công tác phí — %(dest)s (%(days)s ngày)"
+
+#. module: pb_trip_expense_bridge
+#: model:ir.model.fields,help:pb_trip_expense_bridge.field_pb_trip_expense_category__product_id
+msgid "Product used when a receipted line in this category becomes a draft expense."
+msgstr ""
+"Sản phẩm được sử dụng khi dòng biên nhận trong danh mục này trở thành chi phí hối "
+"phiếu."
+
+#. module: pb_trip_expense_bridge
+#: model:product.template,name:pb_trip_expense_bridge.product_travel_expense_product_template
+msgid "Travel Expense"
+msgstr "Chi phí đi lại"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "Trip"
+msgstr "Chuyến đi"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "Trip Expenses"
+msgstr "Chi phí chuyến đi"
+
+#. module: pb_trip_expense_bridge
+#. odoo-python
+#: code:addons/pb_trip_expense_bridge/models/pb_trip_expense_bridge.py:0
+msgid "pb_trip_id"
+msgstr "pb_trip_id"

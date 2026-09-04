@@ -1,0 +1,1033 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_tenant_override.py:0
+msgid ""
+"'%s' is not a tenant slot. Overrides may only fill slots the product declares; they "
+"can never introduce new content."
+msgstr ""
+"'%s' không phải là vị trí đối tượng thuê. Phần ghi đè chỉ có thể lấp đầy các vị trí mà"
+" sản phẩm khai báo; họ không bao giờ có thể giới thiệu nội dung mới."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_progress__key
+msgid "A learn.content station key, 'mission:<key>' or 'scenario:<key>'."
+msgstr "Khóa trạm learn.content, 'mission:<key>' hoặc 'scenario:<key>'."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_event__station_key
+msgid "A learn.content station key."
+msgstr "Một phím trạm learn.content."
+
+#. module: pb_learn
+#: model_terms:ir.actions.act_window,help:pb_learn.action_learn_override
+msgid ""
+"A row with no company is the shipped default. Add a row with your company\n"
+"                set to override one for your team alone."
+msgstr ""
+"Một hàng không có công ty là mặc định được vận chuyển. Thêm một hàng với công ty của bạn\n"
+"                được đặt để ghi đè một cho riêng nhóm của bạn."
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__provider_ready
+msgid "AI provider configured"
+msgstr "Đã định cấu hình nhà cung cấp AI"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_question_search
+msgid "Answered"
+msgstr "Đã trả lời"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__attempts
+msgid "Attempts"
+msgstr "Nỗ lực"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_event__detail
+msgid "Bounded. An option index, a step key, a ms bucket."
+msgstr "Bị ràng buộc. Chỉ mục tùy chọn, phím bước, nhóm ms."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_companion.py:0
+msgid ""
+"Changing this needs both the Learning content author role and system administration "
+"rights. Yours is missing: %(groups)s"
+msgstr ""
+"Việc thay đổi điều này cần có cả vai trò tác giả nội dung học tập và quyền quản trị hệ"
+" thống. Của bạn bị thiếu: %(groups)s"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/coach/coach.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Coach answered"
+msgstr "Huấn luyện viên đã trả lời"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Coach had no answer"
+msgstr "Huấn luyện viên không có câu trả lời"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Coach opened"
+msgstr "Huấn luyện viên đã mở"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "Coach questions are only stored for learners who have agreed to it."
+msgstr ""
+"Các câu hỏi của huấn luyện viên chỉ được lưu trữ đối với những học viên đã đồng ý với "
+"nó."
+
+#. module: pb_learn
+#: model:ir.actions.act_window,name:pb_learn.action_learn_companion_settings
+#: model:ir.ui.menu,name:pb_learn.menu_learn_companion
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid "Companion settings"
+msgstr "Cài đặt đồng hành"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__company_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__company_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__company_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__company_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__company_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__company_id
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_override_list
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_override_search
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Completed"
+msgstr "Hoàn tất"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__completed_at
+msgid "Completed At"
+msgstr "Hoàn thành vào lúc"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid "Composed answers"
+msgstr "Câu trả lời đã soạn"
+
+#. module: pb_learn
+#: model:ir.ui.menu,name:pb_learn.menu_learn_config
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__create_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__create_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__decided_at
+msgid "Decided At"
+msgstr "Quyết định tại"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__detail
+msgid "Detail"
+msgstr "Chi tiết"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_content__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_intent__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_live__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_runtime__display_name
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_learn
+#: model:res.groups,comment:pb_learn.group_learn_author
+msgid ""
+"Edits the learning content spine. Product only —\n"
+"            content ships with the module and is identical in every tenant."
+msgstr ""
+"Chỉnh sửa cột sống nội dung học tập. Chỉ sản phẩm -\n"
+"            nội dung đi kèm với mô-đun và giống hệt nhau ở mọi đối tượng thuê."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_tenant_override__company_id
+msgid ""
+"Empty means the shipped default for every tenant. A row with a company set overrides "
+"that default for it alone."
+msgstr ""
+"Trống có nghĩa là mặc định được vận chuyển cho mọi đối tượng thuê. Một hàng có nhóm "
+"công ty sẽ ghi đè mặc định đó cho riêng nó."
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_gmtiername
+msgid "Finance approval"
+msgstr "Tài chính phê duyệt"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__first_try_correct
+msgid "First Try Correct"
+msgstr "Lần thử đầu tiên đúng"
+
+#. module: pb_learn
+#: model:pb.sidebar.section,name:pb_learn.sec_learn
+msgid "Grow"
+msgstr "Phát triển"
+
+#. module: pb_learn
+#: model:ir.ui.menu,name:pb_learn.menu_learn_journey
+msgid "Guided Journey"
+msgstr "Hành trình có hướng dẫn"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_hrtiername
+msgid "HR review"
+msgstr "HR soát xét"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_content__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_intent__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_live__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_runtime__id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "In progress"
+msgstr "Đang tiến hành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Journey opened"
+msgstr "Hành trình đã mở"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__key
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__key
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__key
+msgid "Key"
+msgstr "Khoá"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__kind
+msgid "Kind"
+msgstr "loại"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__lang
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__lang
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__lang
+msgid "Lang"
+msgstr "Ngôn ngữ"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_question_search
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_progress__lang
+msgid "Language the learner was reading when they finished."
+msgstr "Ngôn ngữ mà người học đang đọc khi họ đọc xong."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_question_search
+msgid "Last 30 days"
+msgstr "30 ngày qua"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__write_uid
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__write_date
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_learn
+#: model:pb.sidebar.item,name:pb_learn.item_learn_journey
+msgid "Learn"
+msgstr "Học cùng Payobook"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_question
+msgid "Learn coach question"
+msgstr "Tìm hiểu câu hỏi của huấn luyện viên"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_intent
+msgid "Learn coach resolver"
+msgstr "Tìm hiểu cách giải quyết của huấn luyện viên"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_confidence
+msgid "Learn confidence score"
+msgstr "Tìm hiểu điểm tự tin"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_event
+msgid "Learn event"
+msgstr "Tìm hiểu sự kiện"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_consent
+msgid "Learn learner consent"
+msgstr "Tìm hiểu sự đồng ý của người học"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_live
+msgid "Learn live values and capstone predicates"
+msgstr "Tìm hiểu các giá trị trực tiếp và các vị từ capstone"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_progress
+msgid "Learn progress"
+msgstr "Tìm hiểu tiến bộ"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_runtime
+msgid "Learn runtime bootstrap"
+msgstr "Tìm hiểu bootstrap thời gian chạy"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_content
+msgid "Learn static content plane"
+msgstr "Tìm hiểu mặt phẳng nội dung tĩnh"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_tenant_override
+msgid "Learn tenant override slot"
+msgstr "Tìm hiểu vị trí ghi đè đối tượng thuê"
+
+#. module: pb_learn
+#: model:ir.actions.server,name:pb_learn.cron_learn_question_gc_ir_actions_server
+msgid "Learn: delete stored questions past retention"
+msgstr "Tìm hiểu: xóa các câu hỏi đã lưu trong quá trình lưu giữ"
+
+#. module: pb_learn
+#: model:ir.actions.act_window,name:pb_learn.action_learn_progress
+#: model:ir.ui.menu,name:pb_learn.menu_learn_progress
+msgid "Learner progress"
+msgstr "sự tiến bộ của người học"
+
+#. module: pb_learn
+#: model:res.groups,name:pb_learn.group_learn_author
+msgid "Learning content author"
+msgstr "Tác giả nội dung học tập"
+
+#. module: pb_learn
+#: model:ir.actions.act_window,name:pb_learn.action_learn_event
+#: model:ir.ui.menu,name:pb_learn.menu_learn_event
+msgid "Learning events"
+msgstr "Sự kiện học tập"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Lesson abandoned"
+msgstr "Bài học bị bỏ rơi"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Lesson completed"
+msgstr "Bài học đã hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Lesson opened from a deep link"
+msgstr "Bài học được mở từ một liên kết sâu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Lesson started"
+msgstr "Bài học bắt đầu"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__compose_enabled
+msgid "Let the Coach compose answers"
+msgstr "Để Huấn luyện viên soạn câu trả lời"
+
+#. module: pb_learn
+#: model_terms:ir.actions.act_window,help:pb_learn.action_learn_override
+msgid "Make the training speak your company's language"
+msgstr "Làm cho chương trình đào tạo nói được ngôn ngữ của công ty bạn"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__matched
+msgid "Matched"
+msgstr "Đã khớp"
+
+#. module: pb_learn
+#: model:ir.ui.menu,name:pb_learn.menu_learn_content
+msgid "Measurement"
+msgstr "Đo lường"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_question_search
+msgid "Misses only"
+msgstr "Chỉ bỏ lỡ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Mission abandoned"
+msgstr "Nhiệm vụ bị bỏ rơi"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Mission completed"
+msgstr "Nhiệm vụ đã hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Mission recovery shown"
+msgstr "Phục hồi nhiệm vụ được hiển thị"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Mission started"
+msgstr "Nhiệm vụ bắt đầu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Mission step"
+msgstr "Bước nhiệm vụ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_companion.py:0
+msgid ""
+"No AI provider is configured. With the switch on and no provider, the Coach behaves "
+"exactly as it does with the switch off."
+msgstr ""
+"Không có nhà cung cấp AI nào được cấu hình. Khi bật công tắc và không có nhà cung cấp,"
+" Huấn luyện viên sẽ hoạt động chính xác như khi tắt công tắc."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "Not asked yet"
+msgstr "Chưa hỏi"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_learn
+#: model_terms:ir.actions.act_window,help:pb_learn.action_learn_question
+msgid "Nothing stored."
+msgstr "Không có gì được lưu trữ."
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__occurred_at
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__occurred_at
+msgid "Occurred At"
+msgstr "Xảy ra vào lúc"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid "Payobook Coach"
+msgstr "Huấn luyện viên Payobook"
+
+#. module: pb_learn
+#: model:ir.model,name:pb_learn.model_learn_companion_settings
+msgid "Payobook Coach — companion settings"
+msgstr "Payobook Coach — cài đặt đồng hành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Practice mode left"
+msgstr "Chế độ luyện tập còn lại"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Practice mode opened"
+msgstr "Đã mở chế độ luyện tập"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Practice mode screen opened"
+msgstr "Màn hình chế độ luyện tập đã mở"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__provider_note
+msgid "Provider Note"
+msgstr "Lưu ý của nhà cung cấp"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_companion.py:0
+msgid ""
+"Provider: %(provider)s. Questions the written content does not cover may be sent to "
+"it, with this module's tutorial text as the only material."
+msgstr ""
+"Nhà cung cấp: %(provider)s. Các câu hỏi mà nội dung văn bản không đề cập đến có thể "
+"được gửi tới nó, với nội dung hướng dẫn của mô-đun này là tài liệu duy nhất."
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__question
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: pb_learn
+#: model_terms:ir.actions.act_window,help:pb_learn.action_learn_question
+msgid ""
+"Question mining is off unless BOTH the system parameter\n"
+"               <code>pb_learn.collect_questions</code> is true AND the learner\n"
+"               has agreed in the Coach drawer. With either one missing this\n"
+"               table stays empty, which is the default and the intended\n"
+"               state."
+msgstr ""
+"Khai thác câu hỏi bị tắt trừ khi CẢ HAI tham số hệ thống\n"
+"               <code>pb_learn.collect_questions</code> là đúng VÀ người học\n"
+"               đã đồng ý trong ngăn kéo Coach. Với một trong hai thiếu cái này\n"
+"               bảng vẫn trống, đó là mặc định và dự định\n"
+"               trạng thái."
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__questions
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid ""
+"Questions about tax or contribution minimisation are\n"
+"                            refused before any of this, whichever way the switch\n"
+"                            is set."
+msgstr ""
+"Các câu hỏi về giảm thiểu thuế hoặc đóng góp được\n"
+"                            đã từ chối trước bất kỳ điều nào trong số này, bất kể cách chuyển đổi\n"
+"                            được thiết lập."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "Questions may be stored"
+msgstr "Câu hỏi có thể được lưu trữ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "Questions must not be stored"
+msgstr "Không được lưu trữ câu hỏi"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_companion_settings__provider_ready
+msgid "Read from PayAI's own active configuration for this company."
+msgstr "Đọc từ cấu hình hoạt động của chính PayAI cho công ty này."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Scenario abandoned"
+msgstr "Kịch bản bị bỏ rơi"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Scenario completed"
+msgstr "Kịch bản đã hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Scenario started"
+msgstr "Kịch bản bắt đầu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Scenario step"
+msgstr "Bước kịch bản"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_companion_settings__scope_note
+msgid "Scope Note"
+msgstr "Ghi chú phạm vi"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__score
+msgid "Score"
+msgstr "Điểm"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__screen
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__screen
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_question_search
+msgid "Screen"
+msgstr "Màn hình"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_question__question
+msgid "Scrubbed on the way in — see learn.intent._scrub."
+msgstr "Đã xóa trên đường vào - xem learn.intent._scrub."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_override_search
+msgid "Shipped defaults"
+msgstr "Mặc định đã vận chuyển"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__station_key
+msgid "Station Key"
+msgstr "Chìa khóa trạm"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Station opened"
+msgstr "Trạm đã mở"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__step_index
+msgid "Step Index"
+msgstr "Chỉ mục bước"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Step viewed"
+msgstr "Bước đã xem"
+
+#. module: pb_learn
+#: model:ir.actions.act_window,name:pb_learn.action_learn_question
+#: model:ir.ui.menu,name:pb_learn.menu_learn_question
+msgid "Stored questions"
+msgstr "Câu hỏi được lưu trữ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "Storing coach questions is switched off for this database."
+msgstr "Việc lưu trữ các câu hỏi của huấn luyện viên bị tắt đối với cơ sở dữ liệu này."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_question__screen
+msgid "The content screen key the Coach was grounded on."
+msgstr "Phím màn hình nội dung mà Huấn luyện viên đã dựa vào."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "The learning event log is append-only."
+msgstr "Nhật ký sự kiện học tập chỉ có phần bổ sung."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_companion.py:0
+msgid ""
+"The switch applies to this whole database. The provider is configured per company, and"
+" this is the one active for %(company)s."
+msgstr ""
+"Việc chuyển đổi áp dụng cho toàn bộ cơ sở dữ liệu này. Nhà cung cấp được định cấu hình"
+" cho mỗi công ty và đây là nhà cung cấp hoạt động cho %(company)s."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "There is nothing left to store once the question is scrubbed."
+msgstr "Không còn gì để lưu trữ sau khi câu hỏi đã được xóa."
+
+#. module: pb_learn
+#: model_terms:ir.actions.act_window,help:pb_learn.action_learn_override
+msgid ""
+"These are the only words in the training material a company can change:\n"
+"                its pay day, the names it gives to its approval tiers, its import cut-off.\n"
+"                Everything else — every lesson, check and answer — ships with the\n"
+"                product and is the same everywhere, so that no two companies end up\n"
+"                learning different things."
+msgstr ""
+"Đây là những từ duy nhất trong tài liệu đào tạo mà một công ty có thể thay đổi:\n"
+"                ngày trả lương, tên mà nó đặt cho các cấp phê duyệt, hạn mức nhập khẩu.\n"
+"                Mọi thứ khác — mọi bài học, kiểm tra và trả lời — đều đi kèm với\n"
+"                sản phẩm giống nhau ở mọi nơi, do đó không có hai công ty nào kết thúc\n"
+"                học những điều khác nhau."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_override_search
+msgid "This company's overrides"
+msgstr "Ghi đè của công ty này"
+
+#. module: pb_learn
+#: model:ir.actions.client,name:pb_learn.action_learn_journey
+#: model:ir.ui.menu,name:pb_learn.menu_learn_root
+msgid "Training"
+msgstr "Đào tạo"
+
+#. module: pb_learn
+#: model:ir.actions.act_window,name:pb_learn.action_learn_override
+#: model:ir.ui.menu,name:pb_learn.menu_learn_override
+msgid "Training wording"
+msgstr "Luyện tập từ ngữ"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Understanding check answered"
+msgstr "Kiểm tra hiểu đã trả lời"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_progress__attempts
+msgid "Understanding-check answers submitted."
+msgstr "Hiểu-kiểm tra câu trả lời được gửi."
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_confidence__user_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_consent__user_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_event__user_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_progress__user_id
+#: model:ir.model.fields,field_description:pb_learn.field_learn_question__user_id
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_learn
+#: model:ir.model.fields,field_description:pb_learn.field_learn_tenant_override__value
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_tenant_override__note
+msgid "What this slot is for. Shown to the tenant administrator."
+msgstr "Khe này dùng để làm gì. Hiển thị cho quản trị viên đối tượng thuê."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_companion_settings__compose_enabled
+msgid ""
+"When this is off — which is the shipped state everywhere — the Coach answers only from"
+" written content, and nothing it says has ever left this server. When it is on, a "
+"question no written answer covers may be answered by the configured AI provider, using"
+" this module's own tutorial text as its only material. Those answers are badged so the"
+" reader can tell."
+msgstr ""
+"Khi tính năng này tắt - trạng thái được vận chuyển ở mọi nơi - Huấn luyện viên chỉ trả"
+" lời từ nội dung bằng văn bản và không có nội dung nào được đưa ra khỏi máy chủ này. "
+"Khi tính năng này được bật, nhà cung cấp AI đã định cấu hình có thể trả lời một câu "
+"hỏi không có câu trả lời bằng văn bản bằng cách sử dụng văn bản hướng dẫn của chính "
+"mô-đun này làm tài liệu duy nhất. Những câu trả lời đó được gắn huy hiệu để người đọc "
+"có thể biết."
+
+#. module: pb_learn
+#: model:ir.model.fields,help:pb_learn.field_learn_question__matched
+msgid ""
+"Whether the Coach had an answer. The rows where this is FALSE are the point of the "
+"table: a question a real person asked that the content does not cover is the next "
+"thing to write."
+msgstr ""
+"Liệu Huấn luyện viên đã có câu trả lời chưa. Các hàng trong đó FALSE là điểm của bảng:"
+" một câu hỏi mà một người thực sự đã hỏi mà nội dung không đề cập đến sẽ là điều tiếp "
+"theo cần viết."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid ""
+"With it on, a question no written answer covers may\n"
+"                            be answered by the configured AI provider, using\n"
+"                            this module's own tutorial text as its only\n"
+"                            material. No employee, payslip, contract or pay-run\n"
+"                            record is ever sent. Composed answers are badged, so\n"
+"                            a reader can always tell which kind they are holding."
+msgstr ""
+"Khi bật tính năng này, một câu hỏi không có câu trả lời bằng văn bản có thể\n"
+"                            được nhà cung cấp AI đã định cấu hình trả lời bằng cách sử dụng\n"
+"                            văn bản hướng dẫn riêng của mô-đun này là văn bản duy nhất của nó\n"
+"                            vật chất. Không có nhân viên, phiếu lương, hợp đồng hoặc kỳ lương\n"
+"                            bản ghi đã từng được gửi đi. Các câu trả lời soạn sẵn sẽ được gắn huy hiệu, vì vậy\n"
+"                            người đọc luôn có thể biết họ đang cầm loại nào."
+
+#. module: pb_learn
+#: model_terms:ir.ui.view,arch_db:pb_learn.view_learn_companion_settings_form
+msgid ""
+"With this off — the state every database ships in —\n"
+"                            the Coach answers only from written content. Nothing\n"
+"                            it says has ever left this server."
+msgstr ""
+"Khi tắt tính năng này — trạng thái của mọi cơ sở dữ liệu được gửi vào —\n"
+"                            Huấn luyện viên chỉ trả lời từ nội dung bằng văn bản. không có gì\n"
+"                            nó báo đã từng rời khỏi máy chủ này."
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "coach_hit"
+msgstr "huấn luyện viên_hit"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "coach_miss"
+msgstr "huấn luyện viên_miss"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "coach_open"
+msgstr "huấn luyện viên_open"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "declined"
+msgstr "từ chối"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "done"
+msgstr "xong"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_question.py:0
+msgid "granted"
+msgstr "được cấp"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "in_progress"
+msgstr "in_progress"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "lesson_abandon"
+msgstr "bài học_abandon"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "lesson_complete"
+msgstr "bài học_hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "lesson_deeplink"
+msgstr "bài_liên kết sâu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "lesson_start"
+msgstr "bài học_bắt đầu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "mission_abandon"
+msgstr "nhiệm vụ_abandon"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "mission_complete"
+msgstr "nhiệm vụ_hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "mission_recover"
+msgstr "nhiệm vụ_recover"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "mission_start"
+msgstr "nhiệm vụ_bắt đầu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "mission_step"
+msgstr "nhiệm vụ_bước"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "practice_exit"
+msgstr "thực hành_thoát"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "practice_nav"
+msgstr "thực hành_nav"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "practice_open"
+msgstr "thực hành_open"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "quiz_answer"
+msgstr "quiz_answer"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "scenario_abandon"
+msgstr "kịch bản_abandon"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "scenario_complete"
+msgstr "kịch bản_hoàn thành"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "scenario_start"
+msgstr "kịch bản_bắt đầu"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "scenario_step"
+msgstr "kịch bản_bước"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "station_open"
+msgstr "ga_open"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "step_view"
+msgstr "bước_xem"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_importcutoff
+msgid "the 28th"
+msgstr "ngày 28"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_payday
+msgid "the 5th of the month"
+msgstr "ngày 5 hằng tháng"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_bankfileformat
+msgid "the bank's standard salary file"
+msgstr "tệp chi lương chuẩn của ngân hàng"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_companydisplayname
+msgid "your company"
+msgstr "công ty bạn"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_payrollsupportcontact
+msgid "your payroll administrator"
+msgstr "quản trị viên tính lương của bạn"

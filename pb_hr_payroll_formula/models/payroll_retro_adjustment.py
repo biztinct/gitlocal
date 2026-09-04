@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrPayrollRetroAdjustment(models.Model):
@@ -8,11 +8,24 @@ class HrPayrollRetroAdjustment(models.Model):
     _description = 'Payroll Retro Adjustment'
     _order = 'period_from desc, employee_id'
 
+    @api.depends('employee_id', 'component_id', 'period_from')
+    def _compute_display_name(self):
+        for rec in self:
+            emp = rec.employee_id.name or 'Retro adjustment'
+            comp = rec.component_id.name or rec.component_code or ''
+            period = rec.period_from.strftime('%b %Y') if rec.period_from else ''
+            label = emp
+            if comp:
+                label += ' — ' + comp
+            if period:
+                label += ' · retro ' + period
+            rec.display_name = label
+
     formula_config_id = fields.Many2one(
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade',
+        ondelete='restrict',
     )
     applied_in_batch_id = fields.Many2one(
         'hr.payroll.import.batch',
@@ -76,10 +89,9 @@ class HrPayrollRetroAdjustment(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'retro_unique_period',
-            'unique(applied_in_batch_id, employee_id, component_id, original_payslip_id, advantage_change_id)',
-            'A retro adjustment already exists for this batch and period.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _retro_unique_period = models.Constraint(
+        'unique(applied_in_batch_id, employee_id, component_id, original_payslip_id, advantage_change_id)',
+        'A retro adjustment already exists for this batch and period.')

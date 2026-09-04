@@ -1,0 +1,239 @@
+// Approvals cockpit — pbim design system (.pba.pbim), indigo primary with a
+// per-tier accent (blue Officer / amber HR / indigo Finance). White surfaces,
+// Lucide icons, no gradients, no emoji. Mixed-unit min()/max() avoided (C2).
+
+.pba {
+    position: relative; height: 100%; overflow: auto;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 14px; -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    --p:      var(--pbim-primary, #5A4BB0);
+    --ph:     var(--pbim-primary-hover, #4A3D96);
+    --soft:   var(--pbim-soft, #EDEAF8);
+    --line:   var(--pbim-line, #E2E8F0);
+    --muted:  var(--pbim-muted, #64748B);
+    --ink:    var(--pbim-ink, #1B1733);
+    --surface: #fff;
+    --green:  #2E7D4F; --green-s: #E3F2E9;
+    --amber:  #D97706; --amber-s: #FEF3C7;
+    --rose:   #DC2668; --rose-s: #FCE7EF;
+    --blue:   #2563EB; --blue-s: #E5EDFD;
+    --slate:  #64748B; --slate-s: #EEF1F5;
+    --r: 14px; --r-sm: 10px;
+    --sh: 0 8px 24px rgba(16, 12, 40, .07);
+
+    // ------------------------------------------------------------ loading
+    .pba-loading {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        gap: 14px; align-items: center; justify-content: center; color: var(--muted);
+    }
+    .pba-spin {
+        width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--soft); border-top-color: var(--p);
+        animation: pba-spin .8s linear infinite;
+    }
+    @keyframes pba-spin { to { transform: rotate(360deg); } }
+
+    .pba-wrap { padding: 22px 26px 60px; max-width: 1360px; margin: 0 auto; }
+
+    // --------------------------------------------------------------- hero
+    .pba-hero {
+        position: relative; background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh); padding: 18px 22px 18px 26px;
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 18px; margin-bottom: 16px; overflow: hidden;
+
+        // the rail (design-system signature)
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 5px; background: var(--p); }
+
+        .eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--p);
+            font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+        h1 { margin: 4px 0 2px; font-size: 25px; font-weight: 800; color: var(--ink); }
+        .sub { color: var(--muted); font-size: 13px; }
+        .hero-r { display: flex; align-items: center; gap: 10px; }
+        .mine-chip { display: inline-flex; align-items: center; gap: 7px;
+            background: var(--soft); color: var(--p); border-radius: 999px;
+            padding: 7px 14px; font-weight: 700; font-size: 12.5px; }
+    }
+
+    // --------------------------------------------------------------- KPIs
+    .pba-kpis {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;
+        .kpi { background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--r); box-shadow: var(--sh); padding: 15px 17px;
+            display: flex; flex-direction: column; gap: 4px;
+            .ico { color: var(--p); }
+            .n { font-size: 25px; font-weight: 800; line-height: 1.1; }
+            .l { color: var(--muted); font-size: 12px; } }
+        .kpi.l0 .ico { color: var(--blue); }
+        .kpi.l1 .ico { color: var(--amber); }
+        .kpi.l2 .ico { color: var(--p); }
+        .kpi.net { .ico { color: var(--green); } .n { color: var(--green); font-size: 23px; } }
+    }
+
+    // -------------------------------------------------------------- empty
+    .pba-empty {
+        background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r);
+        padding: 54px 24px; text-align: center;
+        .i { color: var(--green); }
+        .t { margin-top: 10px; font-size: 16px; font-weight: 700; }
+        .s { margin-top: 4px; color: var(--muted); font-size: 13px; }
+    }
+
+    // -------------------------------------------------------------- lanes
+    .pba-lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+    .pba-lane {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+        box-shadow: var(--sh); padding: 12px; display: flex; flex-direction: column; gap: 10px;
+
+        .lane-h { display: flex; align-items: center; gap: 9px; padding: 4px 6px 8px;
+            border-bottom: 1px solid var(--line);
+            .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--slate); flex: none; }
+            .nm { font-size: 13px; font-weight: 800; flex: 1; }
+            .ct { font-size: 11px; font-weight: 800; color: var(--muted);
+                background: var(--pbim-bg, #F5F6FA); border-radius: 999px; padding: 2px 9px; } }
+        .lane-empty { color: var(--muted); font-size: 12.5px; text-align: center; padding: 16px 0; opacity: .75; }
+
+        &.l0 .lane-h .dot { background: var(--blue); }
+        &.l1 .lane-h .dot { background: var(--amber); }
+        &.l2 .lane-h .dot { background: var(--p); }
+    }
+
+    // -------------------------------------------------------------- cards
+    .pba-card {
+        border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 13px;
+        display: flex; flex-direction: column; gap: 8px;
+        transition: box-shadow .15s, border-color .15s, transform .12s;
+        &:hover { box-shadow: 0 8px 22px rgba(90, 75, 176, .10); transform: translateY(-1px); }
+        &.mine { border-color: var(--p); box-shadow: 0 0 0 1px var(--pbim-ring, rgba(90, 75, 176, .18)); }
+        &.busy { opacity: .55; pointer-events: none; }
+
+        .c-head { display: flex; align-items: center; gap: 8px; cursor: pointer;
+            .c-nm { font-weight: 700; font-size: 13.5px; flex: 1; overflow: hidden;
+                text-overflow: ellipsis; white-space: nowrap; }
+            .c-open { color: var(--muted); flex: none; }
+            &:hover .c-nm { color: var(--p); } }
+        .c-period { color: var(--muted); font-size: 11.5px; margin-top: -4px; }
+
+        .c-metrics { display: flex; gap: 16px;
+            .m { display: flex; flex-direction: column;
+                .mv { font-weight: 800; font-size: 14px; }
+                .ml { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; } }
+            .m.net .mv { color: var(--green); } }
+
+        // 3-dot chain stepper
+        .c-chain { display: flex; align-items: center; gap: 4px; padding: 2px 0;
+            .cd { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none;
+                &.done { background: var(--green); }
+                &.current { background: var(--p); box-shadow: 0 0 0 3px var(--soft); }
+                &.future { background: var(--line); } }
+            .cl { height: 2px; width: 22px; background: var(--line); border-radius: 2px;
+                &.done { background: var(--green); } } }
+
+        .c-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            .waits { display: inline-flex; align-items: center; gap: 6px; color: var(--muted);
+                background: var(--slate-s); border-radius: 999px; padding: 5px 11px;
+                font-size: 11.5px; font-weight: 600; } }
+    }
+
+    // ------------------------------------------------------------ buttons
+    .pba-btn {
+        display: inline-flex; align-items: center; gap: 6px; border-radius: var(--r-sm);
+        padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+        border: 1px solid transparent; transition: background .14s, color .14s, border-color .14s;
+        &.primary { background: var(--p); color: #fff; &:hover { background: var(--ph); } }
+        &.ghost { background: #fff; color: var(--ink); border-color: var(--line);
+            &:hover { border-color: var(--p); color: var(--p); } }
+        // :not(.ghost) — .ghost and .danger carry the same specificity, so a
+        // plain `&.danger` would paint the ghost variant's background rose and
+        // leave its rose text invisible on it (caught in Chrome-MCP).
+        &.danger:not(.ghost) { background: var(--rose); color: #fff;
+            &:hover { filter: brightness(.94); } }
+        &.ghost.danger { background: #fff; color: var(--rose);
+            &:hover { border-color: var(--rose); background: var(--rose-s); } }
+    }
+
+    // ------------------------------------------------------------- recent
+    .pba-recent {
+        margin-top: 22px; background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh); overflow: hidden;
+        .rec-h { font-size: 13px; font-weight: 800; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+        .rec-row { display: grid; grid-template-columns: 128px 1fr auto minmax(0, 1.2fr) auto;
+            align-items: center; gap: 14px; padding: 11px 16px; cursor: pointer;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            &:last-child { border-bottom: none; }
+            &:hover { background: var(--pbim-bg, #F5F6FA); }
+            .rec-nm { font-weight: 700; font-size: 13px; }
+            .rec-pd { color: var(--muted); font-size: 11.5px; }
+            .rec-why { color: var(--rose); font-size: 11.5px; font-style: italic;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .rec-net { font-weight: 800; font-size: 13px; } }
+        .rec-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+            padding: 4px 11px; font-size: 11px; font-weight: 800;
+            &.ok { background: var(--green-s); color: var(--green); }
+            &.no { background: var(--rose-s); color: var(--rose); } }
+    }
+
+    // ------------------------------------------------------- reject popover
+    .pba-scrim {
+        position: fixed; inset: 0; z-index: 1055; background: rgba(20, 16, 45, .34);
+        display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .pba-pop {
+        background: #fff; border-radius: var(--r); box-shadow: 0 18px 44px rgba(40, 50, 90, .22);
+        width: 92vw; max-width: 460px; overflow: hidden;
+        .pop-h { display: flex; align-items: center; gap: 9px; padding: 15px 18px;
+            font-weight: 800; font-size: 14.5px; color: var(--rose);
+            border-bottom: 1px solid var(--line); }
+        .pop-b { padding: 16px 18px;
+            label { display: block; font-size: 12px; font-weight: 700; color: var(--muted);
+                margin-bottom: 6px; }
+            .pop-ta { width: 100%; border: 1px solid var(--line); border-radius: var(--r-sm);
+                padding: 10px 12px; font-size: 13px; resize: vertical; font-family: inherit;
+                &:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 3px var(--soft); } }
+            .pop-note { margin-top: 9px; font-size: 11.5px; color: var(--muted); } }
+        .pop-f { display: flex; justify-content: flex-end; gap: 9px; padding: 13px 18px;
+            border-top: 1px solid var(--line); background: var(--pbim-bg, #F5F6FA); }
+    }
+
+    // -------------------------------------------------------- responsive
+    @media (max-width: 1100px) {
+        .pba-lanes { grid-template-columns: 1fr; }
+        .pba-kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .pba-wrap { padding: 14px 12px 44px; }
+        .pba-hero { flex-direction: column; align-items: flex-start; gap: 12px;
+            .hero-r { width: 100%; justify-content: space-between; } }
+        .pba-kpis { grid-template-columns: 1fr; gap: 10px; }
+        .pba-recent .rec-row { grid-template-columns: 1fr auto; gap: 6px;
+            .rec-pd, .rec-why { grid-column: 1 / -1; } }
+    }
+}
+
+// ------------------------------------------------------------------ embedded
+// The Approvals cockpit as a LENS of the Home hub (W17). The hub's command bar
+// already carries the identity, so the hero's left half is suppressed in the
+// template and what is left is the "awaiting you" chip and Refresh — which
+// belong at the trailing edge once nothing sits beside them. The padding
+// tightens because the hub owns the outer frame; the standalone rendering above
+// is untouched, which is what makes the embedded mode a suppression rather than
+// a fork.
+.pba.pba--embedded {
+    .pba-wrap { padding: 18px 22px 40px; }
+    // With the title block gone the hero is no longer a hero: it is the two
+    // controls that were sitting beside it. So it stops being hero-shaped —
+    // trailing-aligned, centred, and shallow enough to read as a toolbar rather
+    // than as an empty banner.
+    .pba-hero {
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+    }
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3. -->
+<odoo>
+    <record id="res_config_settings_view_form_biz_debrand" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.biz_debrand</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="biz_debrand_branding">
+                    <block title="Branding" name="biz_debrand_container">
+                        <setting id="biz_debrand_brand_name_setting" string="Brand Name"
+                                 help="Product name shown everywhere in place of the vendor's.">
+                            <field name="biz_debrand_brand_name" placeholder="BizApp"/>
+                        </setting>
+                        <setting id="biz_debrand_brand_website_setting" string="Brand Website"
+                                 help="Replaces vendor links across the UI.">
+                            <field name="biz_debrand_brand_website" placeholder="https://example.com"/>
+                        </setting>
+                        <setting id="biz_debrand_theme_color_setting" string="Brand Theme Color"
+                                 help="Brand color (hex).">
+                            <field name="biz_debrand_theme_color" placeholder="#1565C0"/>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

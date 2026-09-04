@@ -9,6 +9,9 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
 
+from ..models import column_role_classifier
+from ..models import component_code
+
 _logger = logging.getLogger(__name__)
 
 
@@ -99,6 +102,10 @@ class FormulaImportWizard(models.TransientModel):
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
+            # full rebuild: restart the letter namespace at A so the fresh set is
+            # lettered in creation order (F111 — otherwise create() mints letters
+            # past the old high-water mark and re-import misaligns references)
+            self.config_id.col_letter_hwm = 0
 
         # Get existing sequence
         max_sequence = max(
@@ -181,6 +188,9 @@ class FormulaImportWizard(models.TransientModel):
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
+            # full rebuild: restart the letter namespace at A (F111) so verbatim
+            # excel_formula references (=A2+B2) re-align on the fresh rule set
+            self.config_id.col_letter_hwm = 0
 
         # Import rules from JSON
         rules_data = data.get('rules', [])
@@ -189,14 +199,25 @@ class FormulaImportWizard(models.TransientModel):
         )
 
         created_rules = self.env['hr.formula.rule']
+        # A code arriving inside an uploaded JSON structure is a stranger's string:
+        # it may carry underscores, spaces or 40 characters of accent-stripped
+        # Vietnamese. Normalize it the same way every other import path does — a
+        # code that already conforms is passed through untouched.
+        seen_codes = set(self.config_id.rule_ids.mapped('code'))
+        letters = {r.column_letter for r in self.config_id.rule_ids if r.column_letter}
 
         for rule_data in rules_data:
             max_sequence += 10
 
+            code = component_code.normalize_code(
+                rule_data.get('code') or '',
+                label=rule_data.get('name') or ('Imported %s' % max_sequence),
+                existing_codes=seen_codes, reserved=letters)
+            seen_codes.add(code)
             values = {
                 'config_id': self.config_id.id,
                 'name': rule_data.get('name', 'Imported Rule'),
-                'code': rule_data.get('code', f'IMPORT_{max_sequence}'),
+                'code': code,
                 'sequence': max_sequence,
                 'column_type': rule_data.get('column_type', 'formula'),
                 'excel_formula': rule_data.get('excel_formula', ''),
@@ -204,6 +225,9 @@ class FormulaImportWizard(models.TransientModel):
                 'default_value': rule_data.get('default_value', 0.0),
                 'number_format': rule_data.get('number_format', 'currency'),
                 'decimal_places': rule_data.get('decimal_places', 2),
+                # honour an exported letter when present (authoritative); else
+                # create() assigns A,B,C… in order against the reset namespace
+                'column_letter': rule_data.get('column_letter') or False,
             }
 
             created_rules |= self.env['hr.formula.rule'].create(values)
@@ -216,6 +240,76 @@ class FormulaImportWizard(models.TransientModel):
                 'type': 'success',
                 'sticky': False,
             }
+        }
+
+    # ------------------------------------------------------------------
+    # COLROLES — role plumbing shared by both import paths
+    # ------------------------------------------------------------------
+    SAMPLE_LIMIT = 10
+    SAMPLE_SCAN_ROWS = 40
+
+    def _collect_column_samples(self, data_sheet, col_idx, first_data_row):
+        """Up to SAMPLE_LIMIT non-empty values below the header, read from the
+        data_only workbook. These are what tell an inferred contract component apart
+        from an amount one, and what makes an all-text column a reference column."""
+        samples = []
+        if not data_sheet or first_data_row is None:
+            return samples
+        max_row = data_sheet.max_row or 0
+        last_row = min(max_row, first_data_row + self.SAMPLE_SCAN_ROWS)
+        for row_num in range(first_data_row, last_row + 1):
+            try:
+                value = data_sheet.cell(row=row_num, column=col_idx).value
+            except Exception:
+                break
+            if column_role_classifier.is_blank_sample(value):
+                continue
+            samples.append(value)
+            if len(samples) >= self.SAMPLE_LIMIT:
+                break
+        return samples
+
+    def _role_rule_values(self, role):
+        """Rule values implied by a role on a NEWLY created rule.
+
+        Anything that is not a payroll column is not a pay line and not a grid column,
+        so it starts hidden from both. This applies at import time only — existing
+        rules keep whatever visibility somebody already chose for them."""
+        return column_role_classifier.role_rule_defaults(role)
+
+    # ------------------------------------------------------------------
+    # COLROLES P4 — what the import turned out to BE, not just how much of it
+    # ------------------------------------------------------------------
+    # Every column-role signal is decided during the import and then, until now,
+    # thrown away at the finish line: the user was told "58 rules imported" and
+    # left to discover on their own that six of them were people data needing a
+    # mapping. These two helpers close that loop for both single-sheet paths.
+    def _role_summary_part(self, created_rules):
+        """"41 payroll · 2 identity · 4 bank columns", or '' when nothing landed."""
+        Config = self.env['hr.formula.config']
+        return Config.format_role_summary(Config.role_counts_for_rules(created_rules))
+
+    def _import_completion_action(self, created_rules, msg_parts):
+        summary = self._role_summary_part(created_rules)
+        if summary:
+            msg_parts = list(msg_parts) + [summary]
+        params = {
+            'message': ' | '.join(msg_parts),
+            'type': 'success',
+            'sticky': False,
+        }
+        next_action = self.config_id.studio_people_mapping_action(created_rules)
+        # NETROLE P2 — the last thing an import does is ask what each component
+        # turned out to BE. The review carries the people-mapping chain through
+        # and dispatches it on close, so nothing that used to happen stops.
+        next_action = self.config_id.category_review_action(
+            next_action=next_action) or next_action
+        if next_action:
+            params['next'] = next_action
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': params,
         }
 
     def _import_from_excel(self):
@@ -391,6 +485,22 @@ class FormulaImportWizard(models.TransientModel):
             code = self._generate_code_from_label(name, existing_codes)
             existing_codes.add(code)
 
+            # The colour-blind reader has no font signals at all, so the classifier
+            # gets only what this path can honestly see: the header text, the merged
+            # category band above it, and the first few values underneath.
+            col_index = column_index_from_string(col_letter) if col_letter else None
+            samples = self._collect_column_samples(
+                data_sheet, col_index, data_start_row) if col_index else []
+            role, role_tier, role_reason = column_role_classifier.classify_column(
+                name,
+                column_type=column_type,
+                band_label=comp_type or None,
+                sample_values=samples,
+            )
+            _logger.debug(
+                "Excel import: column %s (%s) -> role=%s tier=%s (%s)",
+                col_letter, name, role, role_tier, role_reason)
+
             max_sequence += 10
             values = {
                 'config_id': self.config_id.id,
@@ -405,6 +515,7 @@ class FormulaImportWizard(models.TransientModel):
                 'data_source_field': name,
                 'number_format': False,
             }
+            values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
 
@@ -469,15 +580,7 @@ class FormulaImportWizard(models.TransientModel):
         if blue_constants_created > 0:
             msg_parts.append(_('%d blue constants (converted from %%)') % blue_constants_created)
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': ' | '.join(msg_parts),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return self._import_completion_action(created_rules, msg_parts)
 
     def _import_from_excel_color_coded(self):
         """
@@ -662,6 +765,50 @@ class FormulaImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return is_red_font(cell)
 
+        def is_green_font(cell):
+            """Green HEADER font = "this contract component holds text" (CR-A4).
+
+            Thresholds mirror `is_green_color` in the constant-value reader. There is
+            no clash with the green FILL that marks the formula row, nor with a green
+            font on a constant VALUE cell: this is only ever asked about cells inside
+            the header band."""
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if g > 150 and r < 150 and b < 150:
+                                return True
+                            if g > 180 and r > 180 and b < 150:
+                                return True
+                            if g > 200 and g > r and g > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [3, 11]:
+                        return True
+                    elif color.type == 'theme' and color.theme in [6, 9]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_green_in_merge(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                        for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                            cell = formula_sheet.cell(row=m_row, column=m_col)
+                            if is_green_font(cell):
+                                return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_green_font(cell)
+
         def is_underline_in_merge(row_num, col_idx):
             if merge_parser:
                 merge_info = merge_parser.get_merge_at(row_num, col_idx)
@@ -761,6 +908,14 @@ class FormulaImportWizard(models.TransientModel):
                 identifier_map[col_letter] = str(identifier_value).strip()
 
         _logger.info("Excel color import: identifier_map sample: %s", list(identifier_map.items())[:20])
+
+        # The identifier row here carries PAYSLIP section codes ("ITAXABLEINCOMECC"),
+        # not employee identifiers, so it is deliberately NOT fed to the classifier as
+        # `on_identifier_row` — see COLROLES ledger CR5.
+        first_data_row = max(formula_row, header_block_end) + 1
+
+        def collect_samples(col_idx):
+            return self._collect_column_samples(sheet, col_idx, first_data_row)
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
@@ -873,8 +1028,28 @@ class FormulaImportWizard(models.TransientModel):
 
             header_row = header_rows.get(col_letter, header_block_end)
             report_visible = is_bold_in_merge(header_row, col_idx)
-            is_contract_component = is_red_in_merge(header_row, col_idx)
+            is_red = is_red_in_merge(header_row, col_idx)
+            is_green = is_green_in_merge(header_row, col_idx)
+            # Green is authoritative text, red is a component whose kind is inferred
+            # from what the column actually contains (CR-A4). Underline means "start a
+            # new contract when this changes" for either colour.
+            is_contract_component = is_red or is_green
             requires_new_contract = is_contract_component and is_underline_in_merge(header_row, col_idx)
+
+            samples = collect_samples(col_idx)
+            role, role_tier, role_reason = column_role_classifier.classify_column(
+                name,
+                column_type=column_type,
+                is_contract_component=is_red,
+                is_text_component=is_green,
+                band_label=comp_type or None,
+                sample_values=samples,
+            )
+            is_text_component = is_green or (
+                is_red and role == column_role_classifier.ROLE_CONTRACT)
+            _logger.debug(
+                "Excel color import: column %s (%s) -> role=%s tier=%s (%s)",
+                col_letter, name, role, role_tier, role_reason)
 
             max_sequence += 10
             values = {
@@ -893,7 +1068,9 @@ class FormulaImportWizard(models.TransientModel):
                 'report_visible': report_visible,
                 'is_contract_component': is_contract_component,
                 'requires_new_contract': requires_new_contract,
+                'is_text_component': is_text_component,
             }
+            values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
 
@@ -957,15 +1134,7 @@ class FormulaImportWizard(models.TransientModel):
         if constant_rules_created:
             msg_parts.append(_('%d constant rules added') % constant_rules_created)
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': ' | '.join(msg_parts),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return self._import_completion_action(created_rules, msg_parts)
 
     def action_download_template(self):
         """Download Excel template for import."""
@@ -1727,24 +1896,12 @@ class FormulaImportWizard(models.TransientModel):
         return empty_columns
 
     def _generate_code_from_label(self, label, existing_codes):
-        """Create a short unique code (3-10 chars) derived from the label."""
-        import re
+        """Create a readable, converter-safe code derived from the label.
 
-        base = re.sub(r'[^A-Za-z0-9]', '', label).upper()
-        if not base:
-            base = 'COL'
-
-        if len(base) < 3:
-            base = (base + 'XXX')[:3]
-        if len(base) > 10:
-            base = base[:10]
-
-        code = base
-        suffix = 1
-        while code in existing_codes:
-            # ensure total length <=10 when adding suffix
-            trimmed = base[: max(1, 10 - len(str(suffix)))]
-            code = f"{trimmed}{suffix}"
-            suffix += 1
-
-        return code
+        Delegates to the single shared generator. The previous implementation
+        stripped non-ASCII characters (deleting accented Vietnamese letters rather
+        than folding them) and de-duplicated with DIGIT suffixes that truncated the
+        base — ``EMPCODE`` and ``EMPCODE1`` are then mutual substrings AND the digit
+        ate a letter of the name.
+        """
+        return component_code.build_component_code(label, existing_codes=existing_codes)

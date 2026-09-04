@@ -1,0 +1,330 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "All rows are valid — ready to commit."
+msgstr "Tất cả các hàng đều hợp lệ - sẵn sàng cam kết."
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Click to choose a file"
+msgstr "Bấm để chọn một tập tin"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Commit import"
+msgstr "Cam kết nhập khẩu"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Connector"
+msgstr "Trình kết nối"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Create as new employee"
+msgstr "Tạo làm nhân viên mới"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Data file (.xlsx / .csv)"
+msgstr "Tệp dữ liệu (.xlsx/.csv)"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Data will be pulled from the selected source on the next step."
+msgstr "Dữ liệu sẽ được lấy từ nguồn đã chọn ở bước tiếp theo."
+
+#. module: pb_import_wizard
+#: model:ir.model.fields,field_description:pb_import_wizard.field_pb_import_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Employees created"
+msgstr "Nhân viên được tạo"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Errors"
+msgstr "Lỗi"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Formula configuration"
+msgstr "Cấu hình công thức"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_import_wizard
+#: model:ir.model.fields,field_description:pb_import_wizard.field_pb_import_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_import_wizard
+#: model:ir.actions.client,name:pb_import_wizard.action_pb_import_wizard
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Import complete"
+msgstr "Nhập hoàn tất"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Import data"
+msgstr "Nhập dữ liệu"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Load & match"
+msgstr "Tải và khớp"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Matched"
+msgstr "Đã khớp"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Match…"
+msgstr "Trận đấu…"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Need attention"
+msgstr "Cần chú ý"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "New employees"
+msgstr "Nhân viên mới"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "No employees found."
+msgstr "Không tìm thấy nhân viên nào"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Open batch"
+msgstr "Mở đợt"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Open payslip run →"
+msgstr "Mở chạy phiếu lương →"
+
+#. module: pb_import_wizard
+#: model:ir.model,name:pb_import_wizard.model_pb_import_wizard
+msgid "Payobook guided import wizard orchestration"
+msgstr "Điều phối trình hướng dẫn nhập khẩu có hướng dẫn của Payobook"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Payobook · Import"
+msgstr "Payobook · Nhập khẩu"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Payslips created"
+msgstr "Đã tạo phiếu lương"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Period & file"
+msgstr "Thời gian & hồ sơ"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Resolve these before committing"
+msgstr "Giải quyết những điều này trước khi cam kết"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Retry"
+msgstr "Thử lại"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Rows loaded"
+msgstr "Đã tải hàng"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Search an employee by name, code or email…"
+msgstr "Tìm kiếm nhân viên theo tên, mã hoặc email…"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Skip"
+msgstr "Bỏ qua"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "To"
+msgstr "Để"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Valid"
+msgstr "Hợp lệ"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
+msgid "Validate"
+msgstr "Xác thực"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "rows processed"
+msgstr "hàng được xử lý"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
+msgid "Source & file"
+msgstr "Nguồn & tập tin"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
+msgid "Review & match"
+msgstr "Xem xét và so khớp"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
+msgid "Commit"
+msgstr "Cam kết"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Validated"
+msgstr "Đã xác thực"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Processed"
+msgstr "Đã xử lý"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Unmatched"
+msgstr "Không khớp"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:23
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/js/import_wizard.js:149
+msgid "Step failed."
+msgstr "Bước không thành công."

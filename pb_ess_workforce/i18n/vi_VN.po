@@ -1,0 +1,947 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(acked)s of %(total)s confirmed"
+msgstr "Đã xác nhận %(acked)s trên %(total)s"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(balance)s days left"
+msgstr "Còn %(balance)s ngày"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/ack.py:0
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(hours)s h"
+msgstr "%(hours)s giờ"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(hours)s h scheduled"
+msgstr "%(hours)s giờ theo lịch"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(taken)s of %(allocated)s days used"
+msgstr "Đã dùng %(taken)s trên %(allocated)s ngày"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,help:pb_ess_workforce.field_pb_shift_pulse__rating
+msgid "1 (bad) to 5 (great)."
+msgstr "1 (xấu) đến 5 (tốt)."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "<span>Check-in (HH:MM, optional)</span>"
+msgstr "<span>Đăng ký (HH:MM, tùy chọn)</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "<span>Check-out (HH:MM, optional)</span>"
+msgstr "<span>Trả phòng (HH:MM, tùy chọn)</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "<span>Day</span>"
+msgstr "<span>Ngày</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.work_nav
+msgid "<span>Leave</span>"
+msgstr "<span>Rời</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.work_nav
+msgid "<span>Overtime</span>"
+msgstr "<span>Làm thêm giờ</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.work_nav
+msgid "<span>Schedule</span>"
+msgstr "<span>Lịch trình</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.work_nav
+msgid "<span>Timesheet</span>"
+msgstr "<span>Bảng chấm công</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "<span>What happened?</span>"
+msgstr "<span>Chuyện gì đã xảy ra vậy?</span>"
+
+#. module: pb_ess_workforce
+#: model:ir.model.constraint,message:pb_ess_workforce.constraint_pb_shift_pulse_uniq_per_person_per_day
+msgid "A pulse rating has already been recorded for that day."
+msgstr "Xếp hạng xung đã được ghi lại cho ngày hôm đó."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/shift_pulse.py:0
+msgid "A rating runs from 1 to 5."
+msgstr "Đánh giá nằm trong khoảng từ 1 đến 5."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,help:pb_ess_workforce.field_pb_shift_pulse__uniq_hash
+msgid ""
+"A salted one-way digest that makes one rating per person per day provable without "
+"recording who they are. See the model docstring for exactly what this does and does "
+"not protect."
+msgstr ""
+"Bản tóm tắt một chiều có tính muối giúp cho một đánh giá cho mỗi người mỗi ngày có thể"
+" được chứng minh mà không cần ghi lại họ là ai. Xem chuỗi tài liệu mô hình để biết "
+"chính xác những gì nó có tác dụng và không bảo vệ."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields.selection,name:pb_ess_workforce.selection__hr_shift_planning__ack_state__acked
+msgid "Acknowledged"
+msgstr "Được công nhận"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning__acked_at
+msgid "Acknowledged On"
+msgstr "Đã xác nhận Bật"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning__ack_state
+msgid "Acknowledgment"
+msgstr "Lời cảm ơn"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning__ack_token
+msgid "Acknowledgment Token"
+msgstr "Mã thông báo xác nhận"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Actual"
+msgstr "Thực tế"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "All confirmed"
+msgstr "Đã xác nhận hết"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Already confirmed"
+msgstr "Đã xác nhận trước đó"
+
+#. module: pb_ess_workforce
+#: model:ir.model,name:pb_ess_workforce.model_pb_shift_pulse
+msgid "Anonymous Shift Pulse"
+msgstr "Xung dịch chuyển ẩn danh"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Approved hours"
+msgstr "Số giờ đã duyệt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Awaiting approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_no_employee
+msgid "Back to My Payobook"
+msgstr "Quay lại My Payobook"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Bad"
+msgstr "Tệ"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Check that you copied the whole address, or ask your manager to send it again."
+msgstr "Hãy kiểm tra bạn đã sao chép đủ địa chỉ, hoặc đề nghị quản lý gửi lại."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Choose a leave type."
+msgstr "Hãy chọn loại nghỉ phép."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__comment
+msgid "Comment"
+msgstr "Bình luận"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+msgid "Confirm this shift"
+msgstr "Xác nhận ca làm này"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Confirm week (%(count)s)"
+msgstr "Xác nhận cả tuần (%(count)s)"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Confirm your shift"
+msgstr "Xác nhận ca làm của bạn"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid ""
+"Confirmations close when a shift begins. Speak to your manager if something is wrong."
+msgstr ""
+"Việc xác nhận đóng lại khi ca bắt đầu. Hãy trao đổi với quản lý nếu có gì chưa đúng."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__date
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Days"
+msgstr "Số ngày"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Difference"
+msgstr "Chênh lệch"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning_grid__display_name
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_ess_workforce__display_name
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__display_name
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_today__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_ess_workforce
+#: model:ir.model,name:pb_ess_workforce.model_pb_ess_workforce
+msgid "ESS Workforce (own-only employee facade)"
+msgstr "Lực lượng lao động ESS (mặt tiền chỉ dành cho nhân viên)"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Earlier"
+msgstr "Trước đó"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Enter a time as HH:MM, for example 08:30."
+msgstr "Nhập giờ theo dạng HH:MM, ví dụ 08:30."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Everything confirmed"
+msgstr "Đã xác nhận tất cả"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "First day"
+msgstr "Ngày đầu"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Fix"
+msgstr "Điều chỉnh"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "From"
+msgstr "Từ ngày"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_error
+msgid "Go back"
+msgstr "Quay lại"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Good"
+msgstr "Tốt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Great"
+msgstr "Rất tốt"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/ack.py:0
+msgid "Hi %(name)s — please confirm you have seen this shift."
+msgstr "Chào %(name)s — vui lòng xác nhận bạn đã xem ca làm này."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/publish_notify.py:0
+msgid "Hi %(name)s,"
+msgstr "Chào %(name)s,"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+msgid "Hours scheduled against hours worked, day by day"
+msgstr "Giờ theo lịch so với giờ đã làm, theo từng ngày"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "How did your shift go?"
+msgstr "Ca làm của bạn thế nào?"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_hr_shift_planning_grid__id
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_ess_workforce__id
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__id
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_today__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid ""
+"It was withdrawn or rescheduled after this link was sent. Your manager will send a new"
+" one."
+msgstr ""
+"Ca đã bị rút lại hoặc xếp lại sau khi liên kết này được gửi. Quản lý sẽ gửi cho bạn "
+"liên kết mới."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Last day"
+msgstr "Ngày cuối"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Later"
+msgstr "Sau đó"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Leave request sent for approval."
+msgstr "Đơn nghỉ phép đã được gửi để phê duyệt."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_breadcrumbs
+msgid "My Leave"
+msgstr "Nghỉ phép của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_breadcrumbs
+msgid "My Overtime"
+msgstr "Tăng ca của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_breadcrumbs
+msgid "My Schedule"
+msgstr "Lịch làm việc của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_breadcrumbs
+msgid "My Timesheet"
+msgstr "Bảng chấm công của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "My Work"
+msgstr "Công việc của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_no_employee
+msgid "My Work is not set up for you yet"
+msgstr "Công việc của tôi chưa được thiết lập cho bạn"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "My requests"
+msgstr "Đơn của tôi"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Next week"
+msgstr "Tuần sau"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"No employee record is linked to your user account. Ask HR to link it before using My "
+"Work."
+msgstr ""
+"Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên. Hãy đề nghị bộ phận nhân sự "
+"liên kết trước khi dùng Công việc của tôi."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "No overtime recorded"
+msgstr "Chưa có tăng ca nào được ghi nhận"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "No week to show"
+msgstr "Chưa có tuần nào để hiển thị"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Not great"
+msgstr "Chưa tốt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Nothing left to confirm on that week."
+msgstr "Tuần đó không còn ca nào cần xác nhận."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "OK"
+msgstr "Bình thường"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Overtime is recorded and approved by your manager. This is the record."
+msgstr "Tăng ca do quản lý ghi nhận và phê duyệt. Đây là bản ghi đó."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Past"
+msgstr "Đã qua"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Payobook"
+msgstr "Payobook"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields.selection,name:pb_ess_workforce.selection__hr_shift_planning__ack_state__pending
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/shift_pulse.py:0
+msgid "Pick a rating from 1 to 5."
+msgstr "Hãy chọn mức đánh giá từ 1 đến 5."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Pick the day you want corrected."
+msgstr "Hãy chọn ngày bạn muốn điều chỉnh."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Pick the first and the last day."
+msgstr "Hãy chọn ngày đầu và ngày cuối."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Planned"
+msgstr "Dự kiến"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+msgid "Please confirm you have seen it:"
+msgstr "Vui lòng xác nhận bạn đã xem:"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Previous week"
+msgstr "Tuần trước"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Rate"
+msgstr "Hệ số"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__rating
+msgid "Rating"
+msgstr "Đánh giá"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Reason (optional)"
+msgstr "Lý do (không bắt buộc)"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Request a fix"
+msgstr "Yêu cầu điều chỉnh"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Request time off"
+msgstr "Xin nghỉ phép"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Requested from My Work"
+msgstr "Gửi từ Công việc của tôi"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Saved. Your manager will add the times and review it."
+msgstr "Đã lưu. Quản lý sẽ bổ sung giờ và xem xét yêu cầu."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Scheduled"
+msgstr "Theo lịch"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Second approval"
+msgstr "Duyệt cấp hai"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Send to my manager"
+msgstr "Gửi cho quản lý"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+msgid "Shift"
+msgstr "Ca làm"
+
+#. module: pb_ess_workforce
+#: model:ir.model,name:pb_ess_workforce.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr "Kế hoạch ca"
+
+#. module: pb_ess_workforce
+#: model:ir.model,name:pb_ess_workforce.model_hr_shift_planning_grid
+msgid "Shift Planning Grid API"
+msgstr "API lưới lập kế hoạch thay đổi"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/shift_planning_ack.py:0
+msgid "Shift acknowledged by the employee (%s)."
+msgstr "Nhân viên đã xác nhận ca làm (%s)."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/shift_planning_ack.py:0
+msgid "Shift acknowledgment (%(fields)s) is written only by the acknowledgment flow."
+msgstr "Xác nhận ca (%(fields)s) chỉ được ghi bởi quy trình xác nhận."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Shift confirmed. Thanks — your manager can see it."
+msgstr "Đã xác nhận ca. Cảm ơn bạn — quản lý của bạn đã thấy."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Something wrong? Request a fix"
+msgstr "Có gì chưa đúng? Yêu cầu điều chỉnh"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Still to confirm: %(count)s"
+msgstr "Còn phải xác nhận: %(count)s"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Tell your manager what went wrong on that day."
+msgstr "Hãy cho quản lý biết ngày hôm đó đã có vấn đề gì."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Thank you"
+msgstr "Cảm ơn bạn"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Thanks — your rating was recorded anonymously."
+msgstr "Cảm ơn bạn — đánh giá đã được ghi nhận ẩn danh."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "That shift is not on your schedule."
+msgstr "Ca đó không nằm trong lịch của bạn."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,help:pb_ess_workforce.field_hr_shift_planning__ack_token
+msgid ""
+"The credential behind this shift's login-less confirmation link. Restricted: it is "
+"never returned to a non-system reader."
+msgstr ""
+"Thông tin xác thực đằng sau liên kết xác nhận không cần đăng nhập của ca này. Bị hạn "
+"chế: nó không bao giờ được trả lại cho trình đọc không thuộc hệ thống."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "The last day cannot be before the first."
+msgstr "Ngày cuối không thể trước ngày đầu."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid ""
+"This goes to your manager as an attendance correction. It is filed for you and nobody "
+"else — you cannot file one for a colleague."
+msgstr ""
+"Yêu cầu này được gửi tới quản lý dưới dạng phiếu điều chỉnh chấm công. Nó chỉ được lập"
+" cho chính bạn — bạn không thể lập thay cho đồng nghiệp."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "This link is not valid"
+msgstr "Liên kết này không hợp lệ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "This link works once and only for this shift."
+msgstr "Liên kết này chỉ dùng được một lần và chỉ cho ca làm này."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "This shift has already started"
+msgstr "Ca làm này đã bắt đầu"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "This shift has changed"
+msgstr "Ca làm này đã thay đổi"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Those dates could not be read."
+msgstr "Không đọc được các ngày đã nhập."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "To"
+msgstr "Đến ngày"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "To submit"
+msgstr "Chờ gửi"
+
+#. module: pb_ess_workforce
+#: model:ir.model,name:pb_ess_workforce.model_pb_today
+msgid "Today Triage Board"
+msgstr "Hôm nay Hội đồng phân loại"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_pb_shift_pulse__uniq_hash
+msgid "Uniqueness Hash"
+msgstr "Băm duy nhất"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Unknown shift."
+msgstr "Không tìm thấy ca làm."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Waiting approval"
+msgstr "Chờ duyệt"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_error
+msgid "We couldn't do that"
+msgstr "Chúng tôi không thực hiện được yêu cầu đó"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Week confirmed. Thanks — your manager can see it."
+msgstr "Đã xác nhận cả tuần. Cảm ơn bạn — quản lý của bạn đã thấy."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+msgid "What was recorded, what was approved, and at which rate"
+msgstr "Những gì đã ghi nhận, đã duyệt và ở mức hệ số nào"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid ""
+"What was scheduled, what you actually worked, and the difference. Something wrong? Ask"
+" for a fix."
+msgstr ""
+"Giờ theo lịch, giờ bạn thực làm và chênh lệch giữa hai con số. Có gì chưa đúng? Hãy "
+"yêu cầu điều chỉnh."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+msgid "When your manager records overtime for you, it shows up here."
+msgstr "Khi quản lý ghi nhận tăng ca cho bạn, nó sẽ hiện ở đây."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,help:pb_ess_workforce.field_hr_shift_planning__ack_state
+msgid "Whether the employee has confirmed they have seen this shift."
+msgstr "Liệu nhân viên có xác nhận rằng họ đã nhìn thấy sự thay đổi này hay không."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Worked"
+msgstr "Đã làm"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Yes, I have seen it"
+msgstr "Vâng, tôi đã xem"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "You cannot request a fix for a future day."
+msgstr "Bạn không thể yêu cầu điều chỉnh cho một ngày trong tương lai."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/ack.py:0
+msgid "You confirmed this shift on %(date)s. There is nothing left to do."
+msgstr "Bạn đã xác nhận ca này vào ngày %(date)s. Không cần làm gì thêm."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/shift_pulse.py:0
+msgid "You have already rated today. Thank you."
+msgstr "Hôm nay bạn đã đánh giá rồi. Cảm ơn bạn."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid ""
+"You have no leave allocations yet. Your balances appear here once HR grants them."
+msgstr ""
+"Bạn chưa được cấp ngày phép nào. Số ngày phép sẽ hiện ở đây khi bộ phận nhân sự cấp."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "You have not requested any leave yet."
+msgstr "Bạn chưa gửi đơn nghỉ phép nào."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid "Your answer is anonymous — it is never linked to your name."
+msgstr "Câu trả lời của bạn là ẩn danh — không bao giờ gắn với tên bạn."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Your balances and your requests, in the same approval flow HR uses."
+msgstr "Số ngày phép và các đơn của bạn, đi qua đúng quy trình duyệt mà nhân sự dùng."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+msgid "Your balances, and a form to request time off"
+msgstr "Số ngày phép còn lại và biểu mẫu xin nghỉ"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Your fix request was sent to your manager."
+msgstr "Yêu cầu điều chỉnh của bạn đã được gửi cho quản lý."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_no_employee
+msgid ""
+"Your login is not linked to an employee record, so there is no schedule, timesheet or "
+"leave balance to show. Ask HR to link it."
+msgstr ""
+"Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên, nên chưa có lịch làm, bảng "
+"chấm công hay số ngày phép để hiển thị. Hãy đề nghị bộ phận nhân sự liên kết."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_token_page
+msgid "Your manager can now see that you have this shift."
+msgstr "Quản lý của bạn đã thấy rằng bạn nhận ca này."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
+msgid ""
+"Your published shifts. Confirm the ones you have seen so your manager knows the roster"
+" landed."
+msgstr ""
+"Các ca đã công bố. Hãy xác nhận những ca bạn đã xem để quản lý biết lịch làm đã đến "
+"tay bạn."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
+msgid "Your shift has been published:"
+msgstr "Ca làm của bạn đã được công bố:"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/publish_notify.py:0
+msgid "Your shift on %s"
+msgstr "Ca làm của bạn ngày %s"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+msgid "Your shifts for this week and next — confirm the ones you have seen"
+msgstr "Ca làm tuần này và tuần sau — xác nhận những ca bạn đã xem"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Your timesheet appears once your attendance is set up."
+msgstr "Bảng chấm công sẽ hiện ra khi dữ liệu chấm công của bạn được thiết lập."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "e.g. the badge reader did not register my arrival"
+msgstr "ví dụ: máy quét thẻ không ghi nhận lúc tôi đến"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "h"
+msgstr "h"

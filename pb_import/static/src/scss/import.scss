@@ -1,0 +1,123 @@
+.pbm {
+    /* Import identity — uniform indigo design system (#5A4BB0, solid) */
+    --i: #5A4BB0; --i600: #4A3D96; --i-deep: #241F52; --i-soft: #EDEAF8; --i-soft2: #DDD6F2; --i-border: #E2E8F0;
+    --i-ink: #fff;
+    --ink: #1B1733; --muted: #64748B; --line: #E2E8F0; --line-soft: #F1F5F9; --bg: #F5F6FA;
+    --amber: #D97706; --amber-soft: #FEF3C7; --green: #2E7D4F; --green-soft: #E3F2E9; --cyan: #2563EB; --cyan-soft: #E5EDFD;
+    --rose: #E11D48; --rose-soft: #FFE4E6; --slate: #64748B; --slate-soft: #EEF1F5;
+
+    height: 100%; overflow: auto; background: var(--bg); color: var(--ink);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    .pbm-loading { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
+    .pbm-spinner { width: 34px; height: 34px; border: 3px solid var(--i-soft); border-top-color: var(--i600); border-radius: 50%; animation: pbm-spin .8s linear infinite; }
+    @keyframes pbm-spin { to { transform: rotate(360deg); } }
+
+    .pbm-wrap { max-width: 1240px; margin: 0 auto; padding: 26px 30px 60px; }
+    .pbm-head { margin-bottom: 22px; }
+    .pbm-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0; }
+    .pbm-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    /* KPI strip */
+    .pbm-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .pbm-kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+    .pbm-kpi-ic { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; background: var(--i-soft); color: var(--i); }
+    .pbm-kpi-ic svg { width: 21px; height: 21px; }
+    .pbm-kpi-ic.green { background: #E3F2E9; color: #2E7D4F; } .pbm-kpi-ic.blue { background: #E5EDFD; color: #2563EB; } .pbm-kpi-ic.rose { background: #FCE7EF; color: #DC2668; } .pbm-kpi-ic.teal { background: #D5F5F1; color: #0D9488; }
+    .pbm-kpi .tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbm-kpi .v { font-size: 21px; font-weight: 800; letter-spacing: -.01em; line-height: 1.1; }
+    .pbm-kpi .v.green { color: var(--green); } .pbm-kpi .v.indigo { color: var(--i); } .pbm-kpi .v.rose { color: var(--rose); } .pbm-kpi .v.cyan { color: var(--i); }
+    .pbm-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+
+    /* hero CTA — "Start an import" */
+    .pbm-cta { display: flex; align-items: center; gap: 18px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--i); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+    .pbm-cta .ic { width: 46px; height: 46px; border-radius: 13px; background: var(--i-soft); color: var(--i600); display: flex; align-items: center; justify-content: center; flex: none; }
+    .pbm-cta .ic svg { width: 22px; height: 22px; }
+    .pbm-cta .tx { flex: 1; min-width: 0; }
+    .pbm-cta .tx .lb { font-size: 16px; font-weight: 800; }
+    .pbm-cta .tx .ds { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    .pbm-cta .go { background: var(--i); color: #fff; border: 1px solid var(--i); border-radius: 11px; padding: 11px 20px; font-weight: 800; font-size: 13.5px; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; white-space: nowrap; }
+    .pbm-cta .go:hover { background: var(--i600); }
+    .pbm-cta .go svg { width: 16px; height: 16px; }
+
+    /* secondary launches */
+    .pbm-launches { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .pbm-launch { display: flex; align-items: center; gap: 12px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 13px 16px; cursor: pointer; font-family: inherit; transition: border-color .15s, box-shadow .15s, transform .15s; }
+    .pbm-launch:hover { border-color: var(--i); box-shadow: 0 6px 18px rgba(90,75,176,.12); transform: translateY(-2px); }
+    .pbm-launch-ic { width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i); transition: .15s; }
+    .pbm-launch:hover .pbm-launch-ic { background: var(--i-soft2); color: var(--i); }
+    .pbm-launch .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbm-launch .tx .lb { font-size: 13.5px; font-weight: 700; }
+    .pbm-launch .tx .ds { font-size: 11.5px; color: var(--muted); }
+    .pbm-launch .ar { color: var(--i600); font-weight: 800; flex: none; display: flex; align-items: center; }
+
+    .pbm-panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; }
+    .pbm-panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+    .pbm-panel-h h2 { font-size: 15px; font-weight: 800; margin: 0; }
+    .pbm-tag { font-size: 11px; font-weight: 700; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 4px 10px; }
+
+    /* status filter chips */
+    .pbm-filters { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+    .pbm-fchip { border: 1px solid var(--line); background: #fff; color: #475569; border-radius: 999px; padding: 5px 13px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; transition: .15s; display: inline-flex; align-items: center; gap: 6px; }
+    .pbm-fchip:hover { border-color: var(--i); }
+    .pbm-fchip.on { background: var(--i-soft); border-color: var(--i); color: var(--i); }
+    .pbm-fchip .c { font-size: 10px; font-weight: 800; background: var(--bg); border-radius: 999px; padding: 0 6px; color: var(--muted); }
+    .pbm-fchip.on .c { background: #fff; color: var(--i); }
+
+    /* pipeline */
+    .pbm-pipe { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .pbm-pipe-step { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 78px; background: none; border: none; font-family: inherit; cursor: pointer; padding: 4px 2px; border-radius: 10px; transition: background .14s; }
+    .pbm-pipe-step:hover { background: var(--line-soft); }
+    .pbm-pipe-num { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; background: var(--line-soft); color: var(--slate); transition: .14s; }
+    .pbm-pipe-step:hover .pbm-pipe-num { box-shadow: 0 0 0 3px rgba(90,75,176,.22); }
+    .pbm-pipe-num.on { background: var(--i); color: #fff; }
+    .pbm-pipe-lbl { font-size: 11.5px; font-weight: 700; color: #475569; }
+    .pbm-pipe-arrow { color: var(--i-border); font-weight: 800; font-size: 16px; padding-bottom: 18px; }
+
+    /* One column since IA Cycle 3 took the Connectors panel out — kept as a
+       grid rather than collapsed to a plain div so a future second column
+       (the batch drawer) drops back in without moving the batches table. */
+    .pbm-cols { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+
+    /* batches table */
+    .pbm-table { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .pbm-tr { display: grid; grid-template-columns: 1.5fr 1fr 1.1fr .6fr .7fr .6fr .8fr; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-size: 12.5px; cursor: pointer; }
+    .pbm-tr:last-child { border-bottom: none; }
+    .pbm-tr:not(.head):hover { background: var(--i-soft); }
+    .pbm-tr.head { background: var(--bg); font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); cursor: default; }
+    .pbm-tr .c-nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbm-tr .c-src { color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbm-tr .c-ct { text-align: center; font-weight: 700; }
+    .pbm-tr .c-ct.rose { color: var(--rose); }
+    .pbm-tr .c-dt { color: var(--muted); font-size: 11.5px; }
+
+    .pbm-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+    .pbm-badge .d { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .pbm-badge.done { background: var(--green-soft); color: var(--green); }
+    .pbm-badge.info { background: var(--i-soft); color: var(--i600); }
+    .pbm-badge.draft { background: var(--slate-soft); color: var(--slate); }
+    .pbm-badge.error { background: var(--rose-soft); color: var(--rose); }
+    .pbm-badge.muted { background: var(--slate-soft); color: var(--slate); }
+
+    /* The one door to connectors (IA Cycle 3).
+       A LINK ROW, not a tile: every tile above starts something here, this one
+       leaves for Settings · Integrations, and the shape has to say so before
+       the click. Quieter than a tile, louder than a footnote. */
+    .pbm-conndoor { display: flex; align-items: center; gap: 11px; margin-bottom: 18px; padding: 11px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .pbm-conndoor .ic { flex: none; width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i600); }
+    .pbm-conndoor .tx { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: #475569; }
+    .pbm-conndoor .n { flex: none; font-size: 12px; font-weight: 800; color: var(--i600); font-variant-numeric: tabular-nums; }
+    .pbm-conndoor .go { flex: none; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--i); background: #fff; color: var(--i600); border-radius: 10px; padding: 7px 13px; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: .14s; }
+    .pbm-conndoor .go:hover { background: var(--i-soft); }
+
+    .pbm-empty { text-align: center; color: var(--muted); padding: 30px; font-size: 13.5px; }
+    .pbm-empty b { color: var(--i600); }
+
+    @media (max-width: 1000px) {
+        .pbm-kpis { grid-template-columns: repeat(2, 1fr); }
+        .pbm-cols { grid-template-columns: 1fr; }
+        .pbm-cta { flex-wrap: wrap; }
+        .pbm-tr { grid-template-columns: 1.4fr 1.1fr .6fr .8fr; }
+        .pbm-tr .c-src, .pbm-tr .c-ct:nth-child(5) { display: none; }
+    }
+}

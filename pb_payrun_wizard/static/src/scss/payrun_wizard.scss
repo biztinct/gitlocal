@@ -1,0 +1,326 @@
+// Payobook Run Payroll wizard — Misty Blue, soft-muted
+/* W20: a lens box hands its guest a DEFINITE height, so a `min-height:100%`
+   page grows past it and its own overflow never scrolls. `.pw-root--embedded`
+   (added only when props.embedded) takes the height and owns the scroll; the
+   standalone rule below is byte-unchanged. */
+.pw-root.pw-root--embedded {
+    height: 100%; min-height: 0; overflow-y: auto; align-items: flex-start;
+}
+
+.pw-root {
+    --pw-brand: #5A4BB0; --pw-soft: #EDEAF8; --pw-soft2: #DDD6F2; --pw-ink: #1B1733; --pw-muted: #6E6A85; --pw-border: #D5DEEE;
+    padding: 28px; background: #F4F5FB; min-height: 100%; display: flex; justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    .pw-card { background: #fff; border: 1px solid var(--pw-border); border-radius: 18px;
+        width: 820px; max-width: 100%; box-shadow: 0 18px 44px rgba(27,23,51,.10); overflow: hidden; height: fit-content; }
+
+    .pw-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 26px; border-bottom: 1px solid var(--pw-border); }
+    .pw-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pw-muted); }
+    .pw-head h2 { font-size: 20px; font-weight: 800; margin-top: 3px; }
+    .pw-x { border: none; background: #F4F5FB; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; color: var(--pw-muted); font-size: 15px; }
+
+    // stepper
+    .pw-rail { display: flex; align-items: center; justify-content: center; gap: 0; padding: 22px 26px 6px; flex-wrap: wrap; }
+    .pw-step { display: flex; align-items: center; gap: 9px; }
+    .pw-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700;
+        background: #fff; border: 2px solid var(--pw-border); color: var(--pw-muted); }
+    .pw-step.done .pw-dot { background: #059669; border-color: #059669; color: #fff; }
+    .pw-step.cur .pw-dot { background: var(--pw-brand); border-color: var(--pw-brand); color: #fff; box-shadow: 0 0 0 4px rgba(90,75,176,.15); }
+    .pw-lab { font-size: 12.5px; font-weight: 600; color: var(--pw-muted); }
+    .pw-step.cur .pw-lab, .pw-step.done .pw-lab { color: var(--pw-ink); }
+    .pw-bar { width: 46px; height: 2px; background: var(--pw-border); margin: 0 12px; }
+    .pw-bar.done { background: #059669; }
+
+    .pw-body { padding: 24px 26px; min-height: 220px; }
+    .pw-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 680px) { .pw-grid2 { grid-template-columns: 1fr; } }
+    .pw-sec { background: #F4F7FC; border: 1px solid var(--pw-border); border-radius: 14px; padding: 16px 18px; }
+    .pw-sec h4 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--pw-muted); margin-bottom: 12px; }
+    .pw-sec label { display: block; font-size: 11.5px; color: var(--pw-muted); font-weight: 600; margin: 8px 0 4px; }
+    .pw-in { width: 100%; border: 1px solid var(--pw-border); border-radius: 9px; padding: 8px 11px; font-size: 13.5px; font-family: inherit; background: #fff; }
+    .pw-in:focus { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+    .pw-in.pw-locked, .pw-in[readonly], .pw-in:disabled { background: #F4F5FB; color: #6B7280; cursor: not-allowed; box-shadow: none; opacity: 1; }
+    .pw-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pw-kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0EFF7; font-size: 13px; }
+    .pw-kv:last-of-type { border-bottom: none; }
+    .pw-note { margin-top: 10px; font-size: 12px; color: var(--pw-muted); background: #E8EEF7; border-radius: 8px; padding: 8px 10px; }
+
+    /* NETROLE P3 — the pay-data step. Same geometry as the Import cockpit's
+       drop zone, in this wizard's own misty-blue tokens: the surface is
+       `.pw-root`, not a `pbim` surface, so it keeps its own palette. */
+    .pw-datagrid { align-items: start; }
+    .pw-drop { display: flex; flex-direction: column; align-items: center; gap: 8px;
+        border: 2px dashed var(--pw-soft2); border-radius: 12px; padding: 22px; cursor: pointer;
+        color: var(--pw-brand); background: rgba(90,75,176,.05); font-size: 13px; font-weight: 600; text-align: center; }
+    .pw-drop:hover, .pw-drop.over { background: rgba(90,75,176,.12); border-color: var(--pw-brand); }
+    .pw-drop .fn { display: inline-flex; align-items: center; gap: 7px; color: var(--pw-ink); font-weight: 700; word-break: break-all; }
+    .pw-hint { margin-top: 9px; font-size: 12px; color: var(--pw-muted); }
+    .pw-err { margin-top: 10px; display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; font-weight: 600;
+        color: #9F1239; background: #FEF2F2; border: 1px solid #FBD5D5; border-radius: 9px; padding: 9px 11px; }
+    .pw-err svg { flex: none; margin-top: 1px; }
+    .pw-btn--sm { margin-top: 10px; padding: 6px 12px; font-size: 12.5px; }
+    .pw-cov { font-size: 13px; color: var(--pw-ink); background: #fff; border: 1px solid var(--pw-border);
+        border-radius: 9px; padding: 9px 11px; margin-bottom: 10px; }
+    .pw-cov--warn { display: flex; align-items: flex-start; gap: 7px; color: #B7791F; background: #FEF9EE; border-color: #F3DEB4; }
+    .pw-cov--warn svg { flex: none; margin-top: 2px; }
+    .pw-covlist { display: flex; flex-direction: column; gap: 5px; max-height: 260px; overflow-y: auto; }
+    .pw-covrow { display: grid; grid-template-columns: 16px 1fr auto; align-items: center; gap: 8px;
+        font-size: 12.5px; background: #fff; border: 1px solid var(--pw-border); border-radius: 8px; padding: 6px 10px; }
+    .pw-covrow .ico { display: inline-flex; color: var(--pw-muted); }
+    .pw-covrow .nm { font-weight: 600; color: var(--pw-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pw-covrow .col { font-family: ui-monospace, monospace; font-size: 11px; color: var(--pw-muted); }
+    .pw-covrow.ok { background: #F1FAF5; border-color: #BFE7D3; } .pw-covrow.ok .ico { color: #059669; }
+    .pw-covrow.miss { background: #FEF9EE; border-color: #F3DEB4; } .pw-covrow.miss .ico { color: #B7791F; }
+    .pw-fallback { display: flex; align-items: flex-start; gap: 8px; text-align: left; margin: 14px auto 0; max-width: 560px;
+        font-size: 12.5px; font-weight: 600; color: #B7791F; background: #FEF9EE; border: 1px solid #F3DEB4;
+        border-radius: 10px; padding: 10px 12px; }
+    .pw-fallback svg { flex: none; margin-top: 1px; }
+
+    .pw-busy { text-align: center; padding: 50px 0; color: var(--pw-muted); }
+    .pw-busy--inline { padding: 22px 0; }
+    .pw-spin { width: 38px; height: 38px; border: 3px solid #E7E5F2; border-top-color: var(--pw-brand); border-radius: 50%; margin: 0 auto 14px; animation: pw-spin 0.8s linear infinite; }
+    @keyframes pw-spin { to { transform: rotate(360deg); } }
+    /* Determinate progress bar (chunked compute) */
+    .pw-prog { width: 76%; max-width: 420px; height: 10px; margin: 8px auto 12px; background: #E9E6F5; border-radius: 999px; overflow: hidden; }
+    .pw-prog__bar { height: 100%; background: linear-gradient(90deg, var(--pw-brand), #7C6FD0); border-radius: 999px; transition: width .35s ease; }
+    .pw-prog__meta { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--pw-ink); }
+    .pw-prog__meta b { color: var(--pw-brand); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+    .pw-result { text-align: center; padding: 14px 0; }
+    .pw-result-ic { width: 70px; height: 70px; border-radius: 50%; background: #EDEAF8; color: var(--pw-brand); display: grid; place-items: center; margin: 0 auto 14px; }
+    .pw-result-ic.ok { background: #E7F6EF; color: #059669; }
+    .pw-result h3 { font-size: 19px; font-weight: 800; }
+    .pw-muted { color: var(--pw-muted); font-size: 13px; } .pw-muted.mb { margin-bottom: 12px; }
+    // A feed that could not be refreshed is not a footnote: the figures on the
+    // screen behind it may be last month's.
+    .pw-warn {
+        margin: 12px auto 0; max-width: 44ch; text-align: left;
+        background: #FEF3C7; color: #92400E;
+        border-radius: 10px; padding: 10px 13px; font-size: 12.5px; line-height: 1.5;
+    }
+    .pw-warn-line { display: block; margin-top: 4px; font-size: 11.5px; opacity: .9; }
+    .pw-statpills { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+    .pw-statpill { background: #F4F7FC; border: 1px solid var(--pw-border); border-radius: 12px; padding: 10px 16px; min-width: 80px; }
+    .pw-statpill .n { font-size: 20px; font-weight: 800; } .pw-statpill .l { font-size: 10.5px; color: var(--pw-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
+    .pw-list { display: flex; flex-direction: column; gap: 8px; }
+    .pw-li { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--pw-border); border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; }
+    .pw-flag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; background: #FEF3E2; color: #B7791F; padding: 3px 9px; border-radius: 999px; }
+
+    .pw-foot { padding: 16px 26px; border-top: 1px solid var(--pw-border); display: flex; align-items: center; gap: 10px; background: #F4F7FC; }
+    .pw-spacer { flex: 1; }
+    .pw-btn { display: inline-flex; align-items: center; gap: 7px; border-radius: 10px; padding: 9px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer; border: 1px solid transparent; font-family: inherit; }
+    .pw-btn.primary { background: var(--pw-brand); color: #fff; border-color: var(--pw-brand); } .pw-btn.primary:hover { background: #4A3D96; }
+    .pw-btn.ghost { background: #fff; border-color: var(--pw-border); color: var(--pw-ink); }
+    .pw-btn.mt { margin-top: 16px; }
+    .pw-btn svg { vertical-align: -.18em; }
+}
+
+// ------------------------------------------------ VALUEKIND P4: who is paid
+// A pay run has to be able to say who it covers BEFORE it is created. The
+// statuses come from the source, not from a hard-coded list, because
+// "Active / Resigned / Terminated" is one tenant's vocabulary.
+.pw-who {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--pw-line, #DCE3EC);
+
+    > label {
+        display: block; margin-bottom: 8px;
+        font-size: 12px; font-weight: 600; color: var(--pw-muted, #64748B);
+    }
+}
+.pw-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pw-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--pw-line, #DCE3EC); background: #fff;
+    font-size: 12px; font-weight: 600; color: var(--pw-muted, #64748B);
+
+    &.on { background: var(--pw-primary, #5A4BB0); border-color: transparent; color: #fff; }
+}
+.pw-chip-n {
+    font-weight: 700; opacity: .7;
+    .pw-chip.on & { opacity: .85; }
+}
+.pw-linkb {
+    margin-top: 10px; border: 0; background: none; padding: 0; cursor: pointer;
+    font-size: 12px; font-weight: 600; text-decoration: underline;
+    color: var(--pw-primary, #5A4BB0);
+}
+.pw-picker {
+    margin-top: 10px; padding: 10px;
+    border: 1px solid var(--pw-line, #DCE3EC); border-radius: 10px;
+    background: #fff;
+}
+.pw-picked {
+    margin: 8px 0; font-size: 12px; color: var(--pw-muted, #64748B);
+    display: flex; align-items: center; gap: 8px;
+}
+.pw-plist { max-height: 210px; overflow-y: auto; margin-top: 8px; }
+// `.pw-sec label { display: block }` (line 40) is more specific than a bare
+// class, so the row rendered as a block and the name ran straight into the
+// status: "ANH NGUYENResigned". Matching the label element wins it back
+// without touching the rule that every other label in the wizard relies on.
+.pw-sec label.pw-prow, .pw-prow {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 4px; font-size: 12px; cursor: pointer;
+    border-radius: 6px;
+
+    &:hover { background: var(--pw-line-2, #F1F5F9); }
+    input { cursor: pointer; }
+}
+.pw-pname { flex: 1 1 auto; }
+.pw-pmeta { flex: 0 0 auto; color: var(--pw-muted, #64748B); }
+
+// ------------------------------------- RECORDS R1: update, or just this run
+// Two cards, one question. The "this run only" side is teal and carries a
+// shield everywhere it appears — the chip, the note, the button and the
+// summary — so the mode is recognisable at a glance rather than read.
+$pw-lock: #0E8577;
+$pw-lock-bg: #ECFDF7;
+$pw-lock-bd: #A7E3D5;
+
+.pw-sec .pw-modes-h, .pw-modes-h {
+    margin-top: 16px;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--pw-muted, #6E6A85); font-weight: 700;
+}
+.pw-modes { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.pw-mode {
+    display: grid; grid-template-columns: 32px 1fr 18px; align-items: start; gap: 10px;
+    background: #fff; border: 1px solid var(--pw-border, #D5DEEE); border-radius: 12px;
+    padding: 11px 12px; cursor: pointer;
+    // Motion with purpose: the card lifts as it is chosen and settles back when
+    // it is not. 160ms, transform + shadow only — nothing reflows, nothing jitters.
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+
+    .pw-mode-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px;
+        background: #F4F5FB; color: var(--pw-muted, #6E6A85); transition: background .16s ease, color .16s ease; }
+    .pw-mode-tx { display: flex; flex-direction: column; gap: 2px; }
+    .pw-mode-tx b { font-size: 13.5px; color: var(--pw-ink, #1B1733); }
+    .pw-mode-tx span { font-size: 12px; line-height: 1.45; color: var(--pw-muted, #6E6A85); }
+    .pw-mode-dot { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+        border: 2px solid var(--pw-border, #D5DEEE); color: #fff; margin-top: 6px;
+        transition: background .16s ease, border-color .16s ease; }
+
+    &:hover { border-color: var(--pw-soft2, #DDD6F2); background: #FBFBFE; }
+    &:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(90, 75, 176, .22); }
+
+    &.on {
+        transform: translateY(-2px);
+        border-color: var(--pw-brand, #5A4BB0); background: #FAF9FE;
+        box-shadow: 0 6px 18px rgba(90, 75, 176, .14);
+        .pw-mode-ic { background: var(--pw-soft, #EDEAF8); color: var(--pw-brand, #5A4BB0); }
+        .pw-mode-dot { background: var(--pw-brand, #5A4BB0); border-color: var(--pw-brand, #5A4BB0); }
+    }
+    &[data-mode="once"].on {
+        border-color: $pw-lock; background: $pw-lock-bg;
+        box-shadow: 0 6px 18px rgba(14, 133, 119, .16);
+        .pw-mode-ic { background: #D7F3EB; color: $pw-lock; }
+        .pw-mode-dot { background: $pw-lock; border-color: $pw-lock; }
+        &:focus-visible { box-shadow: 0 0 0 3px rgba(14, 133, 119, .25); }
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pw-mode, .pw-mode.on { transition: none; transform: none; }
+}
+
+.pw-lockchip {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: 8px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .02em; text-transform: none;
+    color: $pw-lock; background: $pw-lock-bg; border: 1px solid $pw-lock-bd;
+    border-radius: 999px; padding: 3px 9px;
+    animation: pw-lockchip-in .18s ease both;
+    svg { vertical-align: -.15em; }
+}
+@keyframes pw-lockchip-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+
+.pw-root .pw-note--lock {
+    display: flex; align-items: flex-start; gap: 7px;
+    color: $pw-lock; background: $pw-lock-bg; border: 1px solid $pw-lock-bd; font-weight: 600;
+    svg { flex: none; margin-top: 1px; }
+}
+
+.pw-root .pw-btn.pw-btn--lock {
+    background: $pw-lock; border-color: $pw-lock;
+    &:hover { background: #0B6E63; }
+}
+
+.pw-oncebox {
+    display: flex; align-items: flex-start; gap: 10px; text-align: left;
+    margin: 14px auto 0; max-width: 620px;
+    color: #0B5F55; background: $pw-lock-bg; border: 1px solid $pw-lock-bd;
+    border-radius: 12px; padding: 12px 14px; font-size: 13px; line-height: 1.5;
+    > svg { flex: none; color: $pw-lock; margin-top: 1px; }
+    p { margin: 0; }
+    b { color: #08453E; }
+    .pw-oncebox-sub { margin-top: 6px; font-size: 12.5px; color: #0B5F55; }
+}
+
+/* RECORDS R3 — the quiet way out of the pay-data step. Muted on purpose: a
+   pay run is not the place to be sent somewhere else, but it IS the place a
+   wrong value on a record gets noticed. */
+.pw-root .pw-recordsline {
+    margin-top: 16px; padding-top: 12px;
+    border-top: 1px dashed var(--pw-line, #DDE3EE);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 12px; color: var(--pw-muted, #6E6A85);
+}
+.pw-root .pw-linkbtn {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: none; background: transparent; cursor: pointer; padding: 0;
+    font: inherit; font-size: 12px; font-weight: 700;
+    color: var(--pw-accent, #3A5DAE); text-decoration: underline;
+    text-underline-offset: 3px;
+    svg { flex: none; }
+    &:hover { color: #24408A; }
+}
+
+/* RECORDS R4 D4 — "not in Payobook yet".
+   One block, above the exception list rather than inside it, because thirty
+   rows that say the same thing are one thing. Amber, not red: nothing failed —
+   these people simply are not on the payroll yet, and the block carries the
+   door that adds them. */
+.pw-root .pw-missing {
+    text-align: left; margin: 0 auto 16px; max-width: 620px;
+    background: #FFF8EC; border: 1px solid #F2DDB4; border-radius: 12px;
+    padding: 13px 15px;
+}
+.pw-root .pw-missing-h {
+    display: flex; align-items: flex-start; gap: 9px;
+    font-size: 13.5px; line-height: 1.45; color: #7A5312;
+    svg { flex: none; margin-top: 1px; color: #B4801F; }
+    b { color: #6A4710; font-weight: 800; }
+}
+.pw-root .pw-missing .pw-muted { margin: 6px 0 0 24px; font-size: 12.5px; }
+.pw-root .pw-missing-names {
+    display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0 24px;
+    max-height: 132px; overflow: auto;
+}
+.pw-root .pw-missing-chip {
+    font-size: 11.5px; font-weight: 700; border-radius: 999px;
+    padding: 3px 10px; background: #fff; color: #7A5312;
+    border: 1px solid #F2DDB4;
+}
+.pw-root .pw-missing-acts {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0 24px;
+}
+.pw-root .pw-btn.sm {
+    padding: 7px 13px; font-size: 12.5px;
+}
+
+/* RD56 — "no file this month?" A pay run that reads a connected system should
+   be able to bring the records into step from the same screen, so the offer
+   sits where the decision is made rather than on a settings page nobody visits
+   during payroll. Quiet: it is an option, not a warning. */
+.pw-feedsync {
+    display: flex; align-items: center; gap: 14px; margin-top: 14px;
+    padding: 12px 14px; border: 1px solid var(--pw-line, #E2E8F0);
+    border-radius: 12px; background: var(--pw-bg, #F8FAFC);
+}
+.pw-feedsync-tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.pw-feedsync-tx b { font-size: 13px; }
+.pw-feedsync-tx span { font-size: 12px; color: var(--pw-muted, #64748B); line-height: 1.45; }
+.pw-feedsync .pw-btn { flex-shrink: 0; }

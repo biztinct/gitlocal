@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==== Needs-you dock (P3b WP-2) ====
+     XML comment rule: never a double hyphen inside one, and never a comment
+     between a t-if and its t-else — both take the WHOLE template file down at
+     runtime, with a "Missing template" that points at an innocent component
+     (W22/W23). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_mission.WfDock">
+    <!-- ONE class attribute: a static `class` plus `t-att-class` is the
+         documented-safe pair (W23). No z-index anywhere on this element — the
+         dock is a flex sibling of the canvas, so a lens's fixed-position modal
+         still resolves against the ROOT stacking context (W37). -->
+    <aside class="pbms-dock" t-att-class="{ 'is-collapsed': state.collapsed }"
+           aria-label="Approvals waiting for you">
+
+      <!-- ==================== collapsed: the 44px badge strip ==================== -->
+      <t t-if="state.collapsed">
+        <button class="pbms-dock__strip" t-on-click="() => this.toggleCollapsed()"
+                t-attf-title="Needs you · {{ total }}"
+                aria-label="Expand the approvals dock">
+          <span class="pbms-dock__stripic" t-out="ic('inbox', 16)"/>
+          <span class="pbms-dock__stripn" t-if="total" t-esc="total"/>
+          <span t-foreach="stripCounts" t-as="s" t-key="s.key"
+                t-attf-class="pbms-dock__dot pbms-dock__dot--{{ s.tone }}"
+                t-att-title="s.label" t-esc="s.n"/>
+        </button>
+      </t>
+
+      <t t-else="">
+        <!-- ========================== expanded ========================== -->
+        <header class="pbms-dock__h">
+          <span class="pbms-dock__hic" t-out="ic('inbox', 13)"/>
+          <span class="pbms-dock__ht">Needs you</span>
+          <span class="pbms-dock__n" t-if="total" t-esc="total"/>
+          <button class="pbms-dock__x" t-on-click="() => this.toggleCollapsed()"
+                  title="Collapse" aria-label="Collapse the approvals dock">
+            <span t-out="ic('chevron', 14)"/>
+          </button>
+        </header>
+
+        <!-- The Team/Org toggle exists only when the SERVER says this user
+             qualifies (`can_org`). An offer the server would refuse is worse
+             than no offer. -->
+        <div class="pbms-dock__scope" t-if="canOrg">
+          <button class="pbms-dock__sc"
+                  t-att-class="{ 'is-on': state.scope === 'team' }"
+                  t-on-click="() => this.setScope('team')">My team</button>
+          <button class="pbms-dock__sc"
+                  t-att-class="{ 'is-on': state.scope === 'org' }"
+                  t-on-click="() => this.setScope('org')">Organisation</button>
+        </div>
+
+        <div class="pbms-dock__body">
+
+          <div class="pbms-dock__msg" t-if="state.loading and !state.data">
+            <span t-out="ic('loader', 20)"/><span>Loading…</span>
+          </div>
+
+          <div class="pbms-dock__msg pbms-dock__msg--bad" t-if="state.failed">
+            <span t-out="ic('alert', 20)"/>
+            <span>The queue could not load. It will retry in a minute.</span>
+          </div>
+
+          <!-- ==== empty state 1: nothing is waiting (the green-check moment) ==== -->
+          <div class="pbms-dock__clear"
+               t-if="!state.loading and !state.failed and hasTeam and !items.length">
+            <span class="pbms-dock__clearic" t-out="ic('checkCircle', 26)"/>
+            <b>All clear</b>
+            <p>Nothing is waiting on you right now.</p>
+          </div>
+
+          <!-- ==== empty state 2: this user manages nobody ==== -->
+          <div class="pbms-dock__clear pbms-dock__clear--noteam"
+               t-if="!state.loading and !state.failed and !hasTeam">
+            <span class="pbms-dock__clearic" t-out="ic('users', 26)"/>
+            <b>No reports</b>
+            <p>Approvals arrive here when someone reports to you.</p>
+            <button class="pbms-dock__btn" t-if="canOrg and state.scope === 'team'"
+                    t-on-click="() => this.setScope('org')">
+              Show the whole organisation
+            </button>
+          </div>
+
+          <!-- ==== the queue, grouped by source ==== -->
+          <div class="pbms-dock__grp" t-foreach="groups" t-as="g" t-key="g.key">
+            <div class="pbms-dock__gh"><t t-esc="g.label"/></div>
+
+            <div class="pbms-dcard" t-foreach="g.rows" t-as="it" t-key="key(it)">
+
+              <!-- Every record is a door (W5): the identity row IS the person
+                   door, and the hovercard names what clicking it does. -->
+              <button class="pbms-dcard__who"
+                      t-on-click="() => this.openPerson(it)"
+                      t-on-mouseenter="(ev) => this.onCardEnter(it, ev)"
+                      t-on-mouseleave="() => this.onCardLeave(it)">
+                <span t-attf-class="pbms-dcard__k pbms-dcard__k--{{ sourceTone(it.source) }}"
+                      t-out="sourceIcon(it.source)"/>
+                <span class="pbms-dcard__nm" t-esc="it.employee.name"/>
+                <span t-attf-class="pbms-dcard__age {{ ageTone(it) }}"
+                      t-esc="ageLabel(it)"/>
+              </button>
+
+              <div class="pbms-dcard__sub">
+                <t t-esc="it.title"/>
+                <t t-if="it.when"> · <t t-esc="it.when"/></t>
+              </div>
+
+              <!-- refuse-with-a-note (the Team cockpit's box). The note is
+                   REQUIRED on the two sources whose refuse action records it,
+                   and honestly labelled optional on the two that discard it —
+                   the server decides, per item, from the same whitelist `act`
+                   uses. -->
+              <t t-if="state.refuseFor === key(it)">
+                <div class="pbms-dcard__refuse">
+                  <textarea class="pbms-dcard__note" rows="2"
+                            t-att-placeholder="notePlaceholder(it)"
+                            t-att-value="state.refuseNote"
+                            t-on-input="onRefuseNote"/>
+                  <div class="pbms-dcard__racts">
+                    <button class="pbms-dock__btn pbms-dock__btn--ghost"
+                            t-on-click="() => this.cancelRefuse()">Cancel</button>
+                    <button class="pbms-dock__btn pbms-dock__btn--danger"
+                            t-att-disabled="!canConfirmRefuse(it) or state.busy[key(it)]"
+                            t-on-click="() => this.confirmRefuse(it)">Refuse</button>
+                  </div>
+                </div>
+              </t>
+
+              <t t-if="state.refuseFor !== key(it)">
+                <div class="pbms-dcard__acts">
+                  <button class="pbms-dcard__act pbms-dcard__act--ok"
+                          t-att-disabled="!it.can_approve or state.busy[key(it)]"
+                          t-attf-title="Approve · {{ it.employee.name }}"
+                          t-on-click="() => this.approve(it)">
+                    <span t-out="ic('check', 13)"/>
+                  </button>
+                  <button class="pbms-dcard__act pbms-dcard__act--no"
+                          t-att-disabled="!it.can_refuse or state.busy[key(it)]"
+                          t-attf-title="Refuse · {{ it.employee.name }}"
+                          t-on-click="() => this.openRefuse(it)">
+                    <span t-out="ic('x', 13)"/>
+                  </button>
+                </div>
+              </t>
+            </div>
+
+            <button class="pbms-dock__more" t-if="g.more"
+                    t-on-click="() => this.openQueue()">
+              +<t t-esc="g.more"/> more
+            </button>
+          </div>
+        </div>
+
+        <footer class="pbms-dock__f" t-if="items.length">
+
+          <!-- ==== the clean batch (P4 WP-6) ====
+               `is_clean` is the SERVER's verdict: the request still says what
+               the grid entered, there is ceiling headroom, and the day is not
+               locked. Only OVERTIME participates in v1 and the copy says so —
+               a button labelled "approve all clean" over a queue that also
+               holds trips and leaves would promise something it does not do. -->
+          <div class="pbms-dock__clean" t-if="cleanItems.length">
+            <p class="pbms-dock__cleanp">
+              <b><t t-esc="cleanItems.length"/></b> clean overtime —
+              hours match the grid, under every ceiling, on an open day.
+            </p>
+            <button class="pbms-dock__cleanb" t-att-disabled="state.batching"
+                    t-on-click="() => this.approveAllClean()">
+              <span t-out="ic('check', 13)"/>
+              <span t-if="!state.batching">
+                Approve all <t t-esc="cleanItems.length"/> clean
+              </span>
+              <span t-if="state.batching">Approving…</span>
+            </button>
+          </div>
+
+          <button class="pbms-dock__full" t-on-click="() => this.openQueue()">
+            <span>Open full queue</span>
+            <span t-out="ic('chevron', 13)"/>
+          </button>
+        </footer>
+      </t>
+
+      <!-- ======================= the RPC-free hovercard =======================
+           `position: fixed` off a measured origin, because the dock body is an
+           overflow scroller and would clip an absolutely-positioned child at the
+           dock's own left edge. Everything on it is already in the payload —
+           a hover that fires a request fires forty of them while you read. -->
+      <t t-if="state.hover and hoverItem()">
+        <t t-set="h" t-value="hoverItem()"/>
+        <div class="pbms-hovercard"
+             t-attf-style="top:{{ state.hoverAt.top }}px;right:{{ state.hoverAt.right }}px">
+          <div class="pbms-hovercard__who">
+            <img class="pbms-hovercard__av" t-att-src="h.employee.avatar_url" alt=""/>
+            <div>
+              <b t-esc="h.employee.name"/>
+              <span class="pbms-hovercard__job" t-esc="h.employee.job"/>
+            </div>
+          </div>
+          <div class="pbms-hovercard__row">
+            <span t-attf-class="pbms-dcard__k pbms-dcard__k--{{ sourceTone(h.source) }}"
+                  t-out="sourceIcon(h.source)"/>
+            <span t-esc="sourceLabel(h.source)"/>
+            <span class="pbms-hovercard__when" t-if="h.when" t-esc="h.when"/>
+          </div>
+          <div class="pbms-hovercard__t" t-esc="h.title"/>
+          <div class="pbms-hovercard__cta">
+            <span t-out="ic('user', 12)"/><span>Open person</span>
+          </div>
+        </div>
+      </t>
+
+    </aside>
+  </t>
+
+</templates>

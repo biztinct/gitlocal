@@ -1,0 +1,215 @@
+// =====================================================================
+//  WeekCellEditor — the cell popover, mounted in the OVERLAY container.
+//
+//  W14 / W43, BY CONSTRUCTION rather than by accident: `.o-overlay-container`
+//  is a sibling of the whole action host, so this block sits outside BOTH the
+//  `.pbim` root and the `.bwg` root. Neither `--pbim-*` nor an inherited
+//  `--bwg-*` resolves here, which means every `var()` FALLBACK below is what
+//  actually paints. They are therefore the real token values, and the block
+//  re-declares the `--bwg-*` defaults on itself so a future addition cannot
+//  silently render an unstyled panel.
+//
+//  A `position: fixed` panel off a MEASURED origin is also the only shape that
+//  escapes the grid's scroller: `.bwg-scroll` is `overflow: auto`, and per CSS
+//  Overflow such a box clips horizontally too (W34) — an absolutely positioned
+//  panel would be sliced off at its edge and read as a rendering bug.
+// =====================================================================
+
+.bwgx {
+    --bwg-primary:      #5A4BB0;
+    --bwg-ink:          #1b1733;
+    --bwg-muted:        #64748b;
+    --bwg-surface:      #ffffff;
+    --bwg-line:         #e2e8f0;
+    --bwg-line-2:       #f1f5f9;
+    --bwg-primary-soft: #EDEAF8;
+    --bwg-amber:        #d97706;
+    --bwg-amber-soft:   #fef3c7;
+    --bwg-rose:         #dc2668;
+    --bwg-rose-soft:    #fce7ef;
+    --bwg-green:        #2E7D4F;
+    --bwg-green-soft:   #E3F2E9;
+
+    position: fixed;
+    z-index: 1100;
+    width: 344px;
+    max-width: calc(100vw - 16px);
+    background: var(--bwg-surface, #ffffff);
+    border: 1px solid var(--bwg-line, #e2e8f0);
+    border-radius: 14px;
+    box-shadow: 0 20px 48px rgba(16, 12, 40, .22);
+    padding: 13px 15px 12px;
+    font-size: 13px;
+    color: var(--bwg-ink, #1b1733);
+    transition: opacity .1s ease;
+
+    // ------------------------------------------------------------- head
+    .bwgx-head {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: start;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--bwg-line-2, #f1f5f9);
+        margin-bottom: 10px;
+    }
+    .bwgx-head__t {
+        font-weight: 800; font-size: 13.5px; line-height: 1.25;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bwgx-head__s {
+        grid-column: 1; font-size: 11.5px;
+        color: var(--bwg-muted, #64748b);
+    }
+    .bwgx-x {
+        grid-row: 1 / span 2; grid-column: 2;
+        border: 0; background: transparent; cursor: pointer;
+        color: var(--bwg-muted, #64748b);
+        padding: 2px; border-radius: 6px; line-height: 0;
+        svg { width: 15px; height: 15px; }
+        &:hover { background: var(--bwg-line-2, #f1f5f9); color: var(--bwg-ink, #1b1733); }
+    }
+
+    // ------------------------------------------------------------- rows
+    .bwgx-sect { margin-top: 10px; }
+    .bwgx-sect__h {
+        font-size: 10px; font-weight: 800; letter-spacing: .09em;
+        text-transform: uppercase; color: var(--bwg-muted, #64748b);
+        margin-bottom: 5px;
+    }
+    .bwgx-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 4px 0;
+        min-height: 32px;
+    }
+    .bwgx-row--prim .bwgx-lbl { font-weight: 700; }
+    .bwgx-lbl {
+        flex: 1; min-width: 0;
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        font-size: 12.5px; margin: 0;
+    }
+    .bwgx-sw {
+        width: 9px; height: 9px; border-radius: 3px; flex: 0 0 auto;
+        background: var(--bwg-chip-c, #5A4BB0);
+    }
+    // the rate, written HERE and in the legend — never in a cell
+    .bwgx-rate {
+        font-weight: 800; font-variant-numeric: tabular-nums;
+        color: var(--bwg-chip-c, #5A4BB0);
+    }
+    .bwgx-badge {
+        font-size: 9.5px; font-weight: 800; letter-spacing: .04em;
+        text-transform: uppercase; border-radius: 999px; padding: 1px 6px;
+        background: var(--bwg-line-2, #f1f5f9); color: var(--bwg-muted, #64748b);
+        &--draft { background: var(--bwg-amber-soft, #fef3c7); color: var(--bwg-amber, #d97706); }
+        &--submitted { background: var(--bwg-amber, #d97706); color: #fff; }
+        &--approved { background: var(--bwg-green-soft, #E3F2E9); color: var(--bwg-green, #2E7D4F); }
+        &--refused { background: var(--bwg-rose-soft, #fce7ef); color: var(--bwg-rose, #dc2668); }
+    }
+
+    // ------------------------------------------------------------ control
+    .bwgx-ctl {
+        display: inline-flex; align-items: center; flex: 0 0 auto;
+        border: 1px solid var(--bwg-line, #e2e8f0);
+        border-radius: 9px; overflow: hidden;
+        background: var(--bwg-surface, #ffffff);
+        &:focus-within { border-color: var(--bwg-primary, #5A4BB0); }
+    }
+    .bwgx-step {
+        border: 0; background: transparent; cursor: pointer;
+        width: 24px; height: 30px; line-height: 1;
+        font-size: 15px; font-weight: 700;
+        color: var(--bwg-muted, #64748b);
+        &:hover { background: var(--bwg-line-2, #f1f5f9); color: var(--bwg-primary, #5A4BB0); }
+    }
+    .bwgx-in {
+        width: 48px; border: 0; outline: none; text-align: center;
+        font-size: 14px; font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--bwg-ink, #1b1733);
+        background: transparent;
+        padding: 4px 0;
+    }
+    .bwgx-locked {
+        flex: 0 0 auto; max-width: 56%; text-align: right;
+    }
+    .bwgx-locked__v {
+        display: block; font-size: 14px; font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--bwg-muted, #64748b);
+    }
+    .bwgx-locked__r {
+        display: block; font-size: 10.5px; line-height: 1.25;
+        color: var(--bwg-muted, #64748b);
+    }
+
+    // ------------------------------------------------------------ ceiling
+    .bwgx-ceil {
+        margin-top: 11px; padding-top: 10px;
+        border-top: 1px solid var(--bwg-line-2, #f1f5f9);
+    }
+    .bwgx-ceil__top {
+        display: flex; justify-content: space-between; align-items: baseline;
+        font-size: 11.5px; margin-bottom: 5px;
+        span:first-child { color: var(--bwg-muted, #64748b); }
+        span:last-child { font-weight: 800; font-variant-numeric: tabular-nums; }
+    }
+    .bwgx-ceil__track {
+        height: 7px; border-radius: 999px; overflow: hidden;
+        background: var(--bwg-line-2, #f1f5f9);
+    }
+    .bwgx-ceil__fill {
+        height: 100%; border-radius: 999px;
+        background: var(--bwg-primary, #5A4BB0);
+        transition: width .18s ease, background .18s ease;
+        &--warn { background: var(--bwg-amber, #d97706); }
+        &--danger { background: var(--bwg-rose, #dc2668); }
+    }
+
+    // ------------------------------------------------------------ warnings
+    // ADVISORY. Nothing here disables anything: an over-ceiling entry is a
+    // thing the officer may legitimately record, and the split preview says
+    // what the server will do with it rather than refusing to let them.
+    .bwgx-warn {
+        display: flex; align-items: flex-start; gap: 7px;
+        margin-top: 9px; padding: 7px 9px;
+        border-radius: 9px;
+        font-size: 11.5px; line-height: 1.35; font-weight: 600;
+        background: var(--bwg-amber-soft, #fef3c7);
+        color: #7C4A08;
+        border: 1px solid #F5DFA0;
+        svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: var(--bwg-amber, #d97706); }
+        &--info {
+            background: var(--bwg-primary-soft, #EDEAF8);
+            border-color: #CBC2EE; color: #241F52;
+            svg { color: var(--bwg-primary, #5A4BB0); }
+        }
+        &--bad {
+            background: var(--bwg-rose-soft, #fce7ef);
+            border-color: #F5B9CF; color: #8A0F3C;
+            svg { color: var(--bwg-rose, #dc2668); }
+        }
+    }
+
+    // ---------------------------------------------------------------- foot
+    .bwgx-foot {
+        display: flex; align-items: center; gap: 8px;
+        margin-top: 12px; padding-top: 10px;
+        border-top: 1px solid var(--bwg-line-2, #f1f5f9);
+    }
+    .bwgx-hint {
+        flex: 1; font-size: 10.5px; color: var(--bwg-muted, #64748b);
+    }
+    .bwgx-btn {
+        border: 1px solid var(--bwg-line, #e2e8f0); border-radius: 9px;
+        padding: 6px 13px; font-size: 12.5px; font-weight: 700;
+        background: var(--bwg-surface, #ffffff); color: var(--bwg-ink, #1b1733);
+        cursor: pointer;
+        &:hover { background: var(--bwg-line-2, #f1f5f9); }
+    }
+    .bwgx-btn--primary {
+        background: var(--bwg-primary, #5A4BB0);
+        border-color: var(--bwg-primary, #5A4BB0);
+        color: #fff;
+        &:hover { filter: brightness(.94); background: var(--bwg-primary, #5A4BB0); }
+    }
+}

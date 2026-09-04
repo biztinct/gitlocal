@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.MappingStudio">
+    <div class="pbim pbms">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading the mapping board…</span></div>
+
+      <div t-else="" class="pbms-wrap">
+
+        <!-- ==== top bar: the way back, and what this screen is ==== -->
+        <div class="pbms-top">
+          <HubBackChip t-if="back" back="back" tone="'light'"/>
+          <!-- JOURNEY J1: "Mapping". Not "Mapping Studio" — there is one board
+               and one home for it now, and a name that describes the FURNITURE
+               ("studio", "canvas") is a name the reader has to translate before
+               it tells them anything. The technical id is untouched. -->
+          <div class="pbms-brand">
+            <span class="pbms-brand__ic" t-out="ic('gitMerge', 18)"/>
+            <span class="pbms-brand__t">Mapping</span>
+          </div>
+        </div>
+
+        <!-- ==== THE SENTENCE ====
+             FROM <source> ══ N mapped ══▶ TO <target>. It is a header, not a
+             toolbar: it is on screen in every state, it names both ends, and
+             both ends are one click from being changed. -->
+        <div class="pbms-story">
+
+          <div t-attf-class="pbms-end from {{ fromSlot.kind === 'static' ? 'is-static' : '' }}">
+            <div class="pbms-end__kicker">FROM</div>
+            <button t-if="fromSlot.kind !== 'static'" class="pbms-pick"
+                    t-on-click="(ev) => this.togglePicker(fromSlot.kind, ev)">
+              <span class="pbms-pick__ic" t-out="ic(fromSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="fromSlot.title"/>
+                <span class="s" t-esc="fromSlot.sub"/>
+              </span>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 15)"/>
+            </button>
+            <div t-else="" class="pbms-pick is-static">
+              <span class="pbms-pick__ic" t-out="ic(fromSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="fromSlot.title"/>
+                <span class="s" t-esc="fromSlot.sub"/>
+              </span>
+            </div>
+
+            <!-- the feed picker rides under the connector, same column: one
+                 connector, many APIs, and which one you are on is never a guess -->
+            <button t-if="state.mode === 'api'" class="pbms-sub"
+                    t-on-click="(ev) => this.togglePicker('endpoint', ev)">
+              <span t-out="ic('database', 13)"/>
+              <span class="n" t-esc="endpointName"/>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 12)"/>
+            </button>
+          </div>
+
+          <!-- ==== the rail between them ====
+               WP-5. It used to be a dashed line marching at 1.1s forever with a
+               stroked chevron on the end — a different vocabulary from the
+               wires on the board below it, animated when nothing was happening.
+               Now: one solid rail with the SAME triangular head the wires use,
+               still at rest, and the dash only flows while the board is
+               actually loading or suggesting. The counts stopped being labels:
+               "15 mapped" flashes every wire, "2 suggested" filters both
+               columns down to the suggestions. -->
+          <div t-attf-class="pbms-link {{ state.busy ? 'is-live' : '' }}">
+            <svg class="pbms-link__svg" viewBox="0 0 240 20" preserveAspectRatio="none">
+              <path class="pbms-link__p" d="M6 10 H 220"/>
+              <polygon class="pbms-link__h" points="234,10 220,3.5 220,16.5"/>
+            </svg>
+            <div class="pbms-link__c">
+              <!-- J4 — on the Transformations board the middle of the sentence
+                   counts RULES, not wires: "FROM Zoho ══ 8 rules ══▶ TO VN".
+                   It is a label rather than a button because the two verbs the
+                   other boards put here (flash the wires, filter to the
+                   suggestions) do not exist on a board with no suggestions and
+                   three lanes to flash. A disabled button is a control that
+                   teaches the reader to stop trying (W64). -->
+              <span t-if="isTransform" class="pbms-count is-static"><b t-esc="ruleCount"/> rules</span>
+              <!-- J5 — the Journey counts WIRED COMPONENTS, because that is
+                   what the picture is about: how much of this scheme has a
+                   source. It is a label and not a button for the reason the
+                   Transformations count is one: the two verbs the other boards
+                   put here (flash the wires, filter to the suggestions) do not
+                   exist on a board with five lanes and no suggestions, and a
+                   disabled control teaches the reader to stop trying (W64). -->
+              <span t-elif="isJourney" class="pbms-count is-static"><b t-esc="journeyWired"/> wired</span>
+              <!-- VALUEKIND P5 — a board with no wires has nothing to count
+                   and nothing to flash. It names what it holds instead. -->
+              <span t-elif="isTreatment" class="pbms-count is-static"><b t-esc="treatmentCount"/> components</span>
+              <button t-else="" class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
+                      title="Flash every mapped wire on the board"
+                      t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
+              <button t-if="suggestedCount" class="pbms-count sug"
+                      title="Show only the fields a suggestion touches"
+                      t-on-click="focusSuggested"><b t-esc="suggestedCount"/> suggested</button>
+            </div>
+          </div>
+
+          <div t-attf-class="pbms-end to {{ toSlot.kind === 'static' ? 'is-static' : '' }}">
+            <div class="pbms-end__kicker">TO</div>
+            <button t-if="toSlot.kind !== 'static'" class="pbms-pick accent"
+                    t-on-click="(ev) => this.togglePicker(toSlot.kind, ev)">
+              <span class="pbms-pick__ic" t-out="ic(toSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="toSlot.title"/>
+                <span class="s" t-esc="toSlot.sub"/>
+              </span>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 15)"/>
+            </button>
+            <div t-else="" class="pbms-pick accent is-static">
+              <span class="pbms-pick__ic" t-out="ic(toSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="toSlot.title"/>
+                <span class="s" t-esc="toSlot.sub"/>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==== the rich dropdown ==== -->
+        <t t-if="state.picker">
+          <div class="pbms-menu-scrim" t-on-click="closePicker"/>
+          <div t-attf-class="pbms-menu {{ state.picker === 'config' ? 'right' : 'left' }}"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-menu__h" t-esc="pickerTitle"/>
+            <div class="pbms-menu__q">
+              <span t-out="ic('search', 14)"/>
+              <input type="search" placeholder="Search…"
+                     t-att-value="state.pquery" t-on-input="onPickerQuery"/>
+            </div>
+            <div class="pbms-menu__l">
+              <button t-foreach="pickerOptions" t-as="o" t-key="o.id"
+                      t-attf-class="pbms-opt {{ o.on ? 'on' : '' }}"
+                      t-on-click="() => this.pick(o.id)">
+                <span t-attf-class="pbms-opt__dot {{ o.tone }}"/>
+                <span class="pbms-opt__t">
+                  <span class="n" t-esc="o.label"/>
+                  <span t-if="o.sub" class="s" t-esc="o.sub"/>
+                </span>
+                <span t-if="o.on" class="pbms-opt__ok" t-out="ic('check', 14)"/>
+              </button>
+              <div t-if="!pickerOptions.length" class="pbms-menu__e">Nothing matches that.</div>
+            </div>
+          </div>
+        </t>
+
+        <!-- ==== modes, in plain language ==== -->
+        <div class="pbms-modes">
+          <button t-foreach="modes" t-as="m" t-key="m.id"
+                  t-attf-class="pbms-mode {{ state.mode === m.id ? 'on' : '' }}"
+                  t-att-title="m.hint"
+                  t-on-click="() => this.setMode(m.id)">
+            <span t-out="ic(m.icon, 14)"/>
+            <span t-esc="m.label"/>
+          </button>
+
+          <div class="pbms-modes__sp"/>
+
+          <!-- ==== J5: the way back to the picture ====
+               A Journey node opened this tab, so the tab offers the way back to
+               where it was opened from. Deliberately NOT `HubBackChip`, which
+               leaves the whole cockpit: this is a move within it, and one chip
+               that sometimes means "back to Settings" and sometimes "back to
+               the Journey" would be a control the reader has to test. -->
+          <button t-if="state.fromJourney and !isJourney" class="pbms-schemechip"
+                  title="Back to the Journey"
+                  t-on-click="backToJourney">
+            <span t-out="ic('back', 13)"/>
+            <span class="n">Journey</span>
+          </button>
+
+          <!-- the scheme is one click away even in the modes where it is not
+               half of the sentence -->
+          <button t-if="schemeChipVisible" class="pbms-schemechip"
+                  t-on-click="(ev) => this.togglePicker('config', ev)">
+            <span t-out="ic('calculator', 13)"/>
+            <span class="n" t-esc="configName"/>
+            <span class="pbms-pick__chev" t-out="ic('chevron', 12)"/>
+          </button>
+
+          <button t-if="canEdit and suggestedCount" class="pbim-btn primary pbim-btn-sm"
+                  t-att-disabled="state.busy ? 'disabled' : false" t-on-click="acceptAll">
+            Accept all ≥90%
+          </button>
+          <button t-if="canEdit and canSuggest" class="pbim-btn outline pbim-btn-sm"
+                  t-att-disabled="state.busy ? 'disabled' : false" t-on-click="suggest">
+            <t t-out="ic('zap', 14)"/> Suggest mappings
+          </button>
+          <button t-if="canEdit and templatable" class="pbim-btn ghost pbim-btn-sm"
+                  t-on-click="openTemplates">
+            <t t-out="ic('layers', 14)"/> Apply template…
+          </button>
+          <!-- J1 — the overlay could MINT a template and this surface could only
+               spend one, so whichever door you came through, half the feature
+               was missing. -->
+          <button t-if="canEdit and templatable" class="pbim-btn ghost pbim-btn-sm"
+                  title="Save the accepted wires on this board as a reusable template"
+                  t-on-click="openTemplateSave">
+            <t t-out="ic('copy', 14)"/> Save as template…
+          </button>
+        </div>
+
+        <!-- ==== J2: the Excel on-ramp ====
+             The Spreadsheet board could show you the columns of a file you had
+             already imported, or columns you typed from memory. Neither is any
+             use to the person holding this month's spreadsheet, which is why
+             the board had never written a value in production. Two states:
+             nothing read yet (a dropzone that says, twice, that it reads
+             HEADINGS), and a file read (its provenance, and the three things
+             you do next). Both offer the scheme-built template, because "I do
+             not have a file in the right shape" is the other half of the
+             problem. -->
+        <t t-if="isImport and state.data and state.data.ok">
+          <div class="pbms-ramp">
+            <t t-if="!sample">
+              <t t-if="canEdit">
+                <label t-attf-class="pbms-drop {{ state.rampOver ? 'over' : '' }} {{ rampBusy ? 'busy' : '' }}"
+                       t-on-dragover="onRampOver" t-on-dragleave="onRampLeave"
+                       t-on-drop="onRampDrop">
+                  <span class="pbms-drop__ic" t-out="ic('table', 28)"/>
+                  <span class="pbms-drop__tx">
+                    <b>Drop this period's spreadsheet here to see its columns</b>
+                    <span>Payobook reads the column headings and one example value from the first row. It does not import your numbers, and it does not create a pay run.</span>
+                  </span>
+                  <span class="pbms-drop__cta">
+                    <t t-if="state.rampBusy === 'read'">Reading the headings…</t>
+                    <t t-else="">Choose a file…</t>
+                  </span>
+                  <input type="file" accept=".xlsx,.xls,.csv" class="pbms-file"
+                         aria-label="Choose a spreadsheet to read the column headings from"
+                         t-on-change="onRampPick"/>
+                </label>
+              </t>
+              <div t-else="" class="pbms-ramp__ro">
+                <span t-out="ic('table', 15)"/>
+                <span>No spreadsheet has been read onto this scheme yet. A payroll manager can drop one here.</span>
+              </div>
+
+              <div class="pbms-ramp__alt">
+                <span class="pbms-ramp__altq">Nothing in the right shape yet?</span>
+                <button class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="rampBusy ? 'disabled' : false"
+                        title="One column per input component, headed exactly as this scheme reads them"
+                        t-on-click="downloadTemplate">
+                  <t t-out="ic('download', 14)"/>
+                  <t t-if="state.rampBusy === 'template'">Building…</t>
+                  <t t-else="">Download a template built from this scheme</t>
+                </button>
+                <span class="pbms-ramp__or">or type a heading into the left column's search box.</span>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="pbms-ramp__bar">
+                <span class="pbms-ramp__ic" t-out="ic('table', 18)"/>
+                <div class="pbms-ramp__tx">
+                  <b t-esc="sample.filename"/>
+                  <span class="s">
+                    <t t-esc="sample.shown"/> column<t t-if="sample.shown !== 1">s</t>
+                    <t t-if="sample.read_on"> · read <t t-esc="sample.read_on"/></t>
+                    · headings only<t t-if="coverage"> · <t t-esc="coverage"/></t>
+                  </span>
+                </div>
+                <div class="pbms-ramp__acts">
+                  <button t-if="canEdit" class="pbim-btn primary pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="Creates a pay run from this file and stops at the review step — nothing is committed"
+                          t-on-click="loadAsPayRun">
+                    <t t-out="ic('play', 14)"/>
+                    <t t-if="state.rampBusy === 'handoff'">Loading…</t>
+                    <t t-else="">Load this file as a pay run…</t>
+                  </button>
+                  <label t-if="canEdit" class="pbim-btn outline pbim-btn-sm pbms-ramp__swap"
+                         title="Read a different spreadsheet's headings onto this board">
+                    <t t-out="ic('refresh', 14)"/>
+                    <span>
+                      <t t-if="state.rampBusy === 'read'">Reading…</t>
+                      <t t-else="">Replace file…</t>
+                    </span>
+                    <input type="file" accept=".xlsx,.xls,.csv" class="pbms-file"
+                           aria-label="Read a different spreadsheet's column headings"
+                           t-on-change="onRampPick"/>
+                  </label>
+                  <button class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="One column per input component, headed exactly as this scheme reads them"
+                          t-on-click="downloadTemplate">
+                    <t t-out="ic('download', 14)"/> Template
+                  </button>
+                  <button t-if="canEdit" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="Forget the file and its columns. Every wire you drew stays."
+                          t-on-click="forgetFile">
+                    <t t-out="ic('x', 14)"/> Forget
+                  </button>
+                </div>
+              </div>
+            </t>
+          </div>
+        </t>
+
+        <!-- ==== J1: the employee &amp; contract toolbar ====
+             Two ways to reach a destination among 236, and the payroll reveal.
+             They are a ROW of their own rather than five more controls in the
+             mode strip: at 1024 that strip already wraps, and an affordance whose
+             width depends on how many verbs there happen to be cannot share a
+             line with the ones that were there first (MF13/MF26). -->
+        <t t-if="isEmp and state.data and state.data.ok">
+          <div class="pbms-emptools">
+            <div class="pbms-empfind">
+              <span class="pbms-empfind__ic" t-out="ic('search', 14)"/>
+              <input type="search" placeholder="Add a field to map…"
+                     aria-label="Search employee and contract fields to add"
+                     t-att-value="state.empQuery" t-on-input="onEmpSearch"/>
+              <div t-if="state.empResults.length" class="pbms-empfind__menu">
+                <button t-foreach="state.empResults" t-as="f" t-key="f.id" type="button"
+                        class="pbms-empfind__opt" t-on-click="() => this.addEmpField(f)">
+                  <span class="lbl" t-esc="f.label"/>
+                  <span class="sub" t-esc="f.sublabel"/>
+                </button>
+              </div>
+            </div>
+
+            <div class="pbms-empbrowse">
+              <button type="button" t-attf-class="pbms-empbtn {{ state.empMenu === 'hr.employee' ? 'on' : '' }}"
+                      t-on-click.stop="() => this.toggleEmpMenu('hr.employee')">
+                <t t-out="ic('users', 14)"/>
+                <span>Employee</span>
+                <span class="chev" t-out="ic('chevron', 12)"/>
+              </button>
+              <button type="button" t-attf-class="pbms-empbtn {{ state.empMenu === 'hr.contract' ? 'on' : '' }}"
+                      t-on-click.stop="() => this.toggleEmpMenu('hr.contract')">
+                <t t-out="ic('fileText', 14)"/>
+                <span>Contract</span>
+                <span class="chev" t-out="ic('chevron', 12)"/>
+              </button>
+
+              <t t-if="state.empMenu">
+                <div class="pbms-menu-scrim" t-on-click="closeEmpMenu"/>
+                <div class="pbms-empmenu" t-on-click="(ev) => ev.stopPropagation()">
+                  <div class="pbms-empmenu__h">
+                    <b t-esc="empMenuLabel"/>
+                    <span class="cnt"><t t-esc="empMenuFields.length"/> fields</span>
+                  </div>
+                  <div class="pbms-empmenu__q">
+                    <span t-out="ic('search', 14)"/>
+                    <input type="search" t-attf-placeholder="Filter {{ empMenuLabel }} fields…"
+                           t-attf-aria-label="Filter {{ empMenuLabel }} fields"
+                           t-att-value="state.empMenuFilter" t-on-input="onEmpMenuFilter"/>
+                  </div>
+                  <div class="pbms-empmenu__l">
+                    <button t-foreach="empMenuFields" t-as="f" t-key="f.id" type="button"
+                            t-attf-class="pbms-empmenu__opt {{ isFieldAdded(f.id) ? 'added' : '' }} {{ isFieldMapped(f.id) ? 'locked' : '' }}"
+                            t-att-disabled="isFieldMapped(f.id) ? 'disabled' : false"
+                            t-att-title="isFieldMapped(f.id) ? 'Already wired — remove the wire first' : false"
+                            t-on-click="() => this.pickEmpMenuField(f)">
+                      <span class="lbl" t-esc="f.label"/>
+                      <span t-if="isFieldAdded(f.id)" class="tick" t-out="ic('check', 14)"/>
+                    </button>
+                    <div t-if="!empMenuFields.length" class="pbms-empmenu__e">No fields match that.</div>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </div>
+
+          <!-- COLROLES P3 — the lane chips. One per role this structure has, in
+               the same order as the swim-lanes below, each carrying how many of
+               its columns still land nowhere. They are a table of contents AND
+               the filter. The payroll chip is the odd one out — it does not
+               filter, it REVEALS, because the pay columns are not sent to this
+               board until somebody asks for them. -->
+          <div class="pbms-lanes">
+            <button t-foreach="empChips" t-as="ch" t-key="ch.role" type="button"
+                    t-attf-class="pbms-lane {{ ch.role }} {{ state.empLane === ch.label ? 'on' : '' }} {{ ch.role === 'payroll' and state.empPayroll ? 'shown' : '' }}"
+                    t-on-click="() => this.toggleEmpLane(ch)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="ch.icon"/><t t-call="pb_formula_studio.RoleIco"/></svg>
+              <span class="l" t-esc="ch.label"/>
+              <span class="n" t-esc="ch.total"/>
+              <span t-if="ch.unmapped" class="u" t-attf-title="{{ ch.unmapped }} not sent anywhere yet"><t t-esc="ch.unmapped"/> unmapped</span>
+            </button>
+            <button t-if="state.empPayroll" type="button" class="pbms-lane ghost on"
+                    t-on-click="toggleEmpPayroll">Hide payroll components</button>
+            <button t-if="state.empLane" type="button" class="pbms-lane ghost"
+                    t-on-click="clearEmpLane">Show every lane</button>
+          </div>
+        </t>
+
+        <!-- ==== Integrations Cycle 6 — the never-synced connector ====
+             The moment a new integration is at its most mappable and looks its
+             most empty. It is a SENTENCE, not a warning: nothing is wrong, and
+             the whole point of the field catalogue is that this board is
+             already usable. `firstRunNote` carries the honest second half —
+             why the field list cannot simply be fetched from the vendor right
+             now — and is empty when it can. -->
+        <div t-if="firstRunHint" class="pbms-expect">
+          <span class="pbms-expect__ic" t-out="ic('database', 15)"/>
+          <div class="pbms-expect__tx">
+            <span t-esc="firstRunHint"/>
+            <span t-if="firstRunNote" class="s" t-esc="firstRunNote"/>
+          </div>
+        </div>
+
+        <!-- ==== the board ==== -->
+        <div class="pbms-board">
+          <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+
+          <div t-elif="state.data and !state.data.ok" class="pbms-empty">
+            <span class="pbms-empty__ic" t-out="ic(state.data.reason === 'no_rules' ? 'sigma' : 'gitMerge', 44)"/>
+            <b t-if="state.data.reason === 'no_rules'">No transformations yet</b>
+            <b t-elif="state.data.reason === 'no_connector'">No system connected</b>
+            <b t-else="">Nothing to map yet</b>
+            <span t-esc="emptyReason"/>
+            <!-- J4 — an empty state with a verb in it. "This system has no rules"
+                 followed by nothing to do about it is a dead end; the hero button
+                 opens the composer empty, right here, which is the whole mission
+                 of the tab expressed in its emptiest state. -->
+            <button t-if="state.data.reason === 'no_rules' and state.data.can_edit"
+                    class="pbim-btn primary" t-on-click="() => this.openComposer(0)">
+              <t t-out="ic('plus', 15)"/> New transformation rule…
+            </button>
+          </div>
+
+          <t t-else="">
+            <!-- first run: the three steps, and the two buttons that do them -->
+            <div t-if="firstRun" class="pbms-first">
+              <div class="pbms-first__steps">
+                <span class="pbms-step"><b>1</b> Pick your source</span>
+                <span class="pbms-step"><b>2</b> Pick your scheme</span>
+                <span class="pbms-step"><b>3</b> Draw a wire, or let us suggest them</span>
+              </div>
+              <div t-if="canEdit" class="pbms-first__acts">
+                <button t-if="canSuggest" class="pbim-btn primary"
+                        t-att-disabled="state.busy ? 'disabled' : false"
+                        t-on-click="suggest">
+                  <t t-out="ic('zap', 15)"/> Suggest mappings
+                </button>
+                <button t-if="templatable" class="pbim-btn outline" t-on-click="openTemplates">
+                  <t t-out="ic('layers', 15)"/> Apply a vendor template
+                </button>
+              </div>
+            </div>
+
+            <!-- J4 — the three-lane board. A SIBLING of the canvas, never a mode
+                 of it: the canvas' two-lane contract carries four other tabs and
+                 a middle lane none of them can render would arrive on all of
+                 them at once. Both boards live in the same `.pbms-canvas` frame,
+                 so the shell around them is genuinely one shell. -->
+            <!-- ==== J5 — the Journey. First tab, cold-start default, and the
+                 only board on this surface that cannot write. Five lanes, one
+                 read, every card a door. ==== -->
+            <div t-if="isJourney" class="pbms-canvas">
+              <JourneyBoard data="state.data" busy="state.busy"
+                            onOpenDoor="(door) => this.openDoor(door)"/>
+            </div>
+
+            <!-- VALUEKIND P5 — the same component the Source Atlas renders
+                 read-only. Editable here, because what it changes belongs to
+                 the scheme rather than to any one pay run. -->
+            <div t-elif="isTreatment" class="pbms-canvas">
+              <ComponentTreatmentBoard configId="state.configId"
+                                       onLoaded="(n) => this.state.treatmentCount = n"/>
+            </div>
+
+            <div t-elif="isTransform" class="pbms-canvas">
+              <TransformFlowBoard data="state.data"
+                                  configName="configName"
+                                  focus="state.focus"
+                                  canEdit="canEdit" busy="state.busy"
+                                  onOpenRule="(id) => this.openComposer(id)"
+                                  onDraw="(key, rid) => this.draw(key, rid)"
+                                  onDelete="(ref) => this.removeTransformWire(ref)"
+                                  onLineage="(id) => this.openComposer(id)"/>
+            </div>
+
+            <div t-else="" class="pbms-canvas">
+              <MappingCanvas leftItems="leftItems" rightItems="rightItems"
+                             wires="wires"
+                             leftTitle="'FROM — ' + fromSlot.title"
+                             rightTitle="'TO — ' + toSlot.title"
+                             canEdit="canEdit" busy="state.busy"
+                             command="state.cmd"
+                             groupFilter="empLaneFilter"
+                             bidirectional="isBidirectional"
+                             onAccept="(w) => this.accept(w)"
+                             onReject="(w) => this.reject(w)"
+                             onDelete="(w) => this.remove(w)"
+                             onDraw="(l, r) => this.draw(l, r)"
+                             onTransformPreview="(ref, d) => this.transformPreview(ref, d)"
+                             onTransformSave="(ref, v) => this.transformSave(ref, v)"
+                             onLeftBlocked="(it) => this.leftBlocked(it)"
+                             onRightBlocked="(it) => this.rightBlocked(it)"
+                             onLineage="(ruleId) => this.openRule(ruleId)"
+                             onClearGroupFilter="() => this.clearEmpLane()"
+                             onLeftAction="isEmp ? ((it, act) => this.empAction(it, act)) : undefined"
+                             onRemoveRight="isEmp ? ((id) => this.removeRightField(id)) : undefined"
+                             canAddLeft="canAddLeft"
+                             addLeftLabel="addLeftLabel"
+                             onAddLeft="(text) => this.addLeftColumn(text)"/>
+            </div>
+
+            <!-- MAPFIX B3 — the footer bar. A column with no wire and no badge
+                 reads as "not finished yet" for a day and as "fine" thereafter;
+                 this is the line that refuses to let that happen. When there is
+                 nothing left it says so quietly rather than disappearing — an
+                 absent affordance is indistinguishable from a broken one. -->
+            <div t-if="isEmp" class="pbms-foot">
+              <t t-if="unresolvedCount">
+                <span class="pbms-foot__say">
+                  <t t-out="ic('alert', 15)"/>
+                  <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t> land nowhere — imported, read once and dropped.
+                </span>
+                <button class="pbim-btn primary pbim-btn-sm"
+                        t-att-disabled="!canEdit or state.busy ? 'disabled' : false"
+                        t-on-click="openReconcile">
+                  Resolve remaining <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t>
+                </button>
+              </t>
+              <span t-else="" class="pbms-foot__say ok">
+                <t t-out="ic('check', 15)"/>
+                Every column has a destination.
+              </span>
+            </div>
+          </t>
+        </div>
+
+        <!-- ==== template panel (api + cycle) ====
+             J1: two faces, one shell. SAVE mints a template from the accepted
+             wires on this board; APPLY spends one and prints the per-line result
+             — every bucket named, unmatched never hidden. That breakdown came
+             from the overlay: a one-line "N applied · N skipped · N unmatched"
+             tells you something went wrong without telling you WHAT, which is
+             the same as not telling you. -->
+        <t t-if="state.tmplMode">
+          <div class="pbms-menu-scrim" t-on-click="closeTemplates"/>
+          <div class="pbms-tmpl" t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-tmpl__h">
+              <b t-if="state.tmplMode === 'save'">Save this board as a template</b>
+              <b t-else="">Apply a saved template</b>
+              <button class="pbms-x" t-on-click="closeTemplates"><t t-out="ic('x', 16)"/></button>
+            </div>
+
+            <!-- SAVE -->
+            <t t-if="state.tmplMode === 'save'">
+              <p class="pbms-tmpl__hint">
+                Snapshots the <b t-esc="mappedCount"/> accepted wire<t t-if="mappedCount !== 1">s</t> on this board<t t-if="state.mode === 'api'"> (with their transforms)</t>.
+                Templates apply by code, so you can reuse them across schemes.
+              </p>
+              <div class="pbms-tmpl__save">
+                <input class="pbms-tmpl__in" placeholder="Template name…"
+                       aria-label="Template name"
+                       t-att-value="state.tmplName"
+                       t-on-input="onTmplName" t-on-keydown="onTmplKey"/>
+                <div class="pbms-tmpl__acts">
+                  <button class="pbim-btn ghost pbim-btn-sm" t-on-click="closeTemplates">Cancel</button>
+                  <button class="pbim-btn primary pbim-btn-sm"
+                          t-att-disabled="state.tmplBusy ? 'disabled' : false"
+                          t-on-click="saveTemplate">Save template</button>
+                </div>
+              </div>
+            </t>
+
+            <!-- APPLY -->
+            <t t-else="">
+              <p class="pbms-tmpl__hint">
+                Templates match by CODE, so one applies across schemes. Nothing you
+                have already wired is ever overwritten — those lines come back as
+                “skipped”.
+              </p>
+              <div t-if="state.tmplBusy and !state.tmplList.length" class="pbms-menu__e">Loading…</div>
+              <div t-elif="!state.tmplList.length" class="pbms-menu__e">
+                No saved templates for this board yet. Wire a board and use <b>Save as template…</b>.
+              </div>
+              <div t-else="" class="pbms-tmpl__l">
+                <div t-foreach="state.tmplList" t-as="t" t-key="t.id" class="pbms-tmpl__r">
+                  <span class="pbms-tmpl__n">
+                    <b t-esc="t.name"/>
+                    <small><t t-esc="t.line_count"/> wire<t t-if="t.line_count !== 1">s</t><t t-if="t.shared"> · shared</t><t t-if="t.connector_type"> · <t t-esc="t.connector_type"/></t></small>
+                  </span>
+                  <button class="pbim-btn primary pbim-btn-sm"
+                          t-att-disabled="state.tmplBusy ? 'disabled' : false"
+                          t-on-click="() => this.applyTemplate(t.id)">Apply</button>
+                  <button t-if="t.can_delete" class="pbms-tmpl__del" title="Delete this template"
+                          t-on-click="() => this.deleteTemplate(t.id)"><t t-out="ic('trash', 15)"/></button>
+                </div>
+              </div>
+
+              <div t-if="state.tmplResult" class="pbms-tmpl__res">
+                <div class="pbms-tmpl__resh">
+                  <b t-esc="state.tmplResult.applied.length"/> applied ·
+                  <b t-esc="state.tmplResult.skipped_existing.length"/> skipped ·
+                  <b t-esc="state.tmplResult.unmatched_sources.length + state.tmplResult.unmatched_targets.length"/> unmatched
+                </div>
+                <div t-if="state.tmplResult.skipped_existing.length" class="pbms-tmpl__ressec">
+                  <span class="pbms-tmpl__tag skip">Skipped (already wired)</span>
+                  <t t-foreach="state.tmplResult.skipped_existing" t-as="s" t-key="'sk' + s_index"><code t-esc="s.source + ' → ' + s.target"/></t>
+                </div>
+                <div t-if="state.tmplResult.unmatched_sources.length" class="pbms-tmpl__ressec">
+                  <span class="pbms-tmpl__tag miss">Source not on board</span>
+                  <t t-foreach="state.tmplResult.unmatched_sources" t-as="u" t-key="'us' + u_index"><code t-esc="u"/></t>
+                </div>
+                <div t-if="state.tmplResult.unmatched_targets.length" class="pbms-tmpl__ressec">
+                  <span class="pbms-tmpl__tag miss">Target not in scheme</span>
+                  <t t-foreach="state.tmplResult.unmatched_targets" t-as="u" t-key="'ut' + u_index"><code t-esc="u"/></t>
+                </div>
+              </div>
+            </t>
+          </div>
+        </t>
+
+        <!-- ==== JOURNEY J3 S2 — the source-conflict choice (J-D3) ====
+             Two live sources on one component used to be settled silently by the
+             resolver's precedence. It is a QUESTION now, and the answers are the
+             owner's three: replace, keep as fallback, cancel. Every sentence in
+             here comes from the server, beside the ladder it describes — a client
+             that composed this text would be a second opinion about precedence.
+             Cancel writes nothing because nothing has been sent yet. -->
+        <!-- Nothing has ever been fetched from this system, so its field list is
+             the vendor's documentation rather than your data. Refusing the wire
+             and stopping there would leave the reader stuck on a fresh setup;
+             this offers the way forward instead. -->
+        <t t-if="state.fetchOffer">
+          <div class="pbms-rcn-scrim" t-on-click="dismissFetchOffer"/>
+          <div class="pbms-cfl" role="dialog" aria-modal="true"
+               t-on-keydown="(ev) => ev.key === 'Escape' &amp;&amp; this.dismissFetchOffer()"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-cfl__h">
+              <span class="pbms-cfl__ic" t-out="ic('cloud', 20)"/>
+              <h3>Fetch this system's fields first</h3>
+            </div>
+            <p class="pbms-cfl__p" t-esc="state.fetchOffer.msg"/>
+            <div class="pbms-cfl__acts">
+              <button class="pbim-btn" t-on-click="dismissFetchOffer"
+                      t-att-disabled="state.fetchBusy ? 1 : 0">Not now</button>
+              <button class="pbim-btn primary" t-on-click="runFetchFields"
+                      t-att-disabled="state.fetchBusy ? 1 : 0">
+                <span t-if="state.fetchBusy">Fetching…</span>
+                <span t-else="">Fetch fields</span>
+              </button>
+            </div>
+          </div>
+        </t>
+
+        <t t-if="state.conflict">
+          <div class="pbms-rcn-scrim" t-on-click="cancelConflict"/>
+          <div t-attf-class="pbms-cfl {{ state.conflict.order ? 'is-order' : '' }}"
+               role="dialog" aria-modal="true"
+               aria-labelledby="pbms-cfl-title"
+               t-on-keydown="(ev) => ev.key === 'Escape' &amp;&amp; this.cancelConflict()"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-cfl__h">
+              <!-- JOURNEY J9 — a LIST, not an alert triangle. Two sources on one
+                   component stopped being a warning the moment the owner asked
+                   for them; an icon that still says "danger" would be the one
+                   thing on this dialog contradicting every sentence on it. -->
+              <span class="pbms-cfl__ic" t-out="ic(state.conflict.order ? 'layers' : 'alert', 20)"/>
+              <b id="pbms-cfl-title" t-esc="state.conflict.title"/>
+              <button class="pbms-x" t-on-click="cancelConflict" aria-label="Close">
+                <t t-out="ic('x', 16)"/>
+              </button>
+            </div>
+            <p class="pbms-cfl__body" t-esc="state.conflict.body"/>
+            <div class="pbms-cfl__pair">
+              <div class="pbms-cfl__side now">
+                <span class="pbms-cfl__k">Reads now</span>
+                <b t-esc="state.conflict.existing.label"/>
+                <code t-esc="state.conflict.existing.key"/>
+              </div>
+              <span class="pbms-cfl__arrow" t-out="ic('arrow', 16)"/>
+              <div class="pbms-cfl__side next">
+                <span class="pbms-cfl__k">You are adding</span>
+                <b t-esc="state.conflict.incoming.label"/>
+                <code t-esc="state.conflict.incoming.key"/>
+              </div>
+            </div>
+            <!-- ==== JOURNEY J9 — the resulting ORDER, stated ====
+                 The owner withdrew the either/or restriction, so this dialog is
+                 a priority notice rather than an ultimatum: it says what the
+                 component will read and in which order, with the same
+                 superscripts the card is about to grow. Server-composed, like
+                 every other sentence in here. -->
+            <ol class="pbms-cfl__order" t-if="state.conflict.order">
+              <li t-foreach="state.conflict.order" t-as="o" t-key="o.rank">
+                <span class="pbms-cfl__rank" t-esc="o.rank"/>
+                <b t-esc="o.label"/>
+                <code t-if="o.key" t-esc="o.key"/>
+              </li>
+            </ol>
+            <div class="pbms-cfl__opts">
+              <!-- "Add source" is the PRIMARY action and Replace is the
+                   secondary: keeping both is what the owner asked for, and the
+                   old behaviour stays reachable in one click rather than being
+                   the default answer to a question that is no longer a
+                   conflict. -->
+              <button class="pbms-cfl__opt keep" t-ref="cflFocus"
+                      t-att-disabled="state.conflictBusy"
+                      t-on-click="() => this.resolveConflict('keep')">
+                <b t-esc="state.conflict.keep_label"/>
+                <span t-esc="state.conflict.keep_note"/>
+              </button>
+              <button class="pbms-cfl__opt" t-att-disabled="state.conflictBusy"
+                      t-on-click="() => this.resolveConflict('replace')">
+                <b t-esc="state.conflict.replace_label"/>
+                <span t-esc="state.conflict.replace_note"/>
+              </button>
+            </div>
+            <div class="pbms-cfl__f">
+              <button class="pbim-btn ghost" t-att-disabled="state.conflictBusy"
+                      t-on-click="cancelConflict" t-esc="state.conflict.cancel_label"/>
+            </div>
+          </div>
+        </t>
+
+        <!-- ==== MAPFIX B3 — reconciliation ====
+             Moved here whole from the Formula Studio, which is where it used to
+             live even though nothing but this board could open it. Every row
+             arrives ticked (MF-B4); unticking one files it as a reference —
+             imported, stored, written nowhere — which is a decision rather than
+             a silence. -->
+        <t t-if="state.rcnOpen">
+          <div class="pbms-rcn-scrim" t-on-click="closeReconcile"/>
+          <div class="pbms-rcn" t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-rcn__h">
+              <div class="pbms-rcn__title">
+                <b>Resolve the remaining columns</b>
+                <span t-esc="configName"/>
+              </div>
+              <button class="pbms-x" t-on-click="closeReconcile" aria-label="Close">
+                <t t-out="ic('x', 16)"/>
+              </button>
+            </div>
+
+            <div t-if="state.rcnBusy and !state.rcnRows" class="pbms-rcn__note">Reading every column…</div>
+            <t t-elif="!rcnRows.length">
+              <div class="pbms-rcn__empty">
+                <span class="pbms-rcn__empty-ic" t-out="ic('checkCircle', 34)"/>
+                <b>Every column has a destination.</b>
+                <span>Nothing is imported and then dropped in this scheme.</span>
+              </div>
+            </t>
+            <t t-else="">
+              <div class="pbms-rcn__note">
+                <t t-esc="rcnRows.length"/> column<t t-if="rcnRows.length !== 1">s</t> are imported and then dropped.
+                Ticked columns are kept on the contract; untick one to leave it imported and deliberately used nowhere.
+              </div>
+              <div class="pbms-rcn__bulk">
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.setRcnAll(true)">Keep all</button>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.setRcnAll(false)">Leave all as reference</button>
+                <span class="pbms-rcn__count"><t t-esc="rcnTicked.length"/> of <t t-esc="rcnRows.length"/> kept</span>
+              </div>
+              <div class="pbms-rcn__rows">
+                <div t-foreach="rcnRows" t-as="row" t-key="row.id"
+                     t-attf-class="pbms-rcn__row {{ row.tick ? '' : 'skipped' }}">
+                  <input type="checkbox" t-att-checked="row.tick" t-on-change="() => this.toggleRcnRow(row)"/>
+                  <div class="pbms-rcn__col">
+                    <b t-esc="row.name || row.code"/>
+                    <span class="pbms-rcn__code"><t t-if="row.col"><t t-esc="row.col"/> · </t><t t-esc="row.code"/></span>
+                  </div>
+                  <div class="pbms-rcn__samples">
+                    <span t-if="!row.samples.length" class="pbms-rcn__nosample">no sample values</span>
+                    <code t-foreach="row.samples" t-as="s" t-key="s_index" t-esc="s"/>
+                  </div>
+                  <div class="pbms-rcn__choice">
+                    <t t-if="row.tick">
+                      <button t-attf-class="pbms-rcn__type {{ row.value_type === 'amount' ? 'on' : '' }}"
+                              t-on-click="() => this.setRcnType(row, 'amount')">Amount</button>
+                      <button t-attf-class="pbms-rcn__type {{ row.value_type === 'text' ? 'on' : '' }}"
+                              t-on-click="() => this.setRcnType(row, 'text')">Text</button>
+                    </t>
+                    <span t-else="" class="pbms-rcn__ref">Reference only</span>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <div class="pbms-rcn__acts">
+              <p class="pbms-rcn__fine">A column another column's formula reads is never listed here — it already has somewhere to be. Neither is one that prints on the payslip.</p>
+              <div class="pbms-rcn__btns">
+                <button class="pbim-btn ghost" t-on-click="closeReconcile">Cancel</button>
+                <button t-if="rcnRows.length" class="pbim-btn primary"
+                        t-att-disabled="state.rcnBusy ? 'disabled' : false"
+                        t-on-click="applyReconcile">
+                  Apply to <t t-esc="rcnRows.length"/> column<t t-if="rcnRows.length !== 1">s</t>
+                </button>
+              </div>
+            </div>
+          </div>
+        </t>
+
+        <!-- ==== JOURNEY J4 — the Rule Composer, in place ====
+             `pb_integrations`' component, mounted unchanged. It is the LAST
+             child of the shell for the reason its own SCSS gives: its scrim is
+             `position: fixed` at the shared modal z-index, and a fixed scrim is trapped
+             by any ancestor carrying a `transform` — so it goes at the root,
+             a sibling of the board, exactly where the Integrations cockpit puts
+             it. Two callbacks are the whole contract. -->
+        <RuleComposer t-if="state.composer"
+                      connectorId="state.composer.connectorId"
+                      ruleId="state.composer.ruleId"
+                      connectors="composerConnectors"
+                      onClose="() => this.closeComposer()"
+                      onSaved="() => this.onRuleSaved()"/>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

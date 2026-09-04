@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+from . import hr_loan
+from . import res_company
+from . import demo_catalog
+from . import demo_division
+from . import demo_generator
+from . import demo_employees
+from . import demo_ess
+from . import demo_timeoff
+from . import demo_workforce
+from . import demo_workforce_current
+from . import demo_history
+from . import demo_payrun
+from . import demo_extras
+from . import demo_integrations
+from . import demo_analytics
+from . import demo_sidebar_access

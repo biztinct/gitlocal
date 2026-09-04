@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WFP Tagging Wizard Form -->
+    <record id="view_wfp_tagging_wizard_form" model="ir.ui.view">
+        <field name="name">wfp.tagging.wizard.form</field>
+        <field name="model">wfp.tagging.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tag Formula Components for Workforce Planning">
+                <group>
+                    <field name="formula_config_id"/>
+                </group>
+                <group invisible="line_ids">
+                    <p class="text-muted">
+                        Select a formula configuration and click "Load &amp; Auto-Detect"
+                        to automatically classify formula components for workforce planning.
+                    </p>
+                </group>
+                <field name="line_ids" invisible="not line_ids">
+                    <list editable="bottom" decoration-success="wfp_category == 'base_salary'" decoration-info="wfp_category in ('allowance', 'bonus')" decoration-danger="wfp_category == 'employer_cost'" decoration-warning="wfp_category == 'deduction'" decoration-muted="wfp_category in ('exclude', 'info')">
+                        <field name="column_letter" readonly="1" string="Col"/>
+                        <field name="rule_code" readonly="1"/>
+                        <field name="rule_name" readonly="1"/>
+                        <field name="column_type" readonly="1"/>
+                        <field name="component_type" readonly="1" optional="show"/>
+                        <field name="category_code" readonly="1" optional="show"/>
+                        <field name="excel_formula" readonly="1" optional="hide"/>
+                        <field name="detected_wfp_category" readonly="1" string="Auto-Detected" optional="show"/>
+                        <field name="wfp_category"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_load_rules" string="Load &amp; Auto-Detect" type="object" class="btn-primary" icon="fa-magic" invisible="line_ids"/>
+                    <button name="action_apply_tags" string="Apply Tags" type="object" class="btn-success" icon="fa-check" invisible="not line_ids"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_wfp_tagging_wizard" model="ir.actions.act_window">
+        <field name="name">Tag Formula Components</field>
+        <field name="res_model">wfp.tagging.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

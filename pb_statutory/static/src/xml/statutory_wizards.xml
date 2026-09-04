@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_statutory.PolicyWizard">
+    <div class="pbim sta pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · Statutory</div><h2>New insurance policy</h2></div>
+          <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span>Creating…</span></div>
+          <t t-elif="state.result">
+            <div class="pplw-result"><div class="pplw-result-ic"><t t-out="ic('check',30)"/></div><h3>Policy created</h3><p t-esc="state.result.name"/></div>
+          </t>
+          <t t-else="">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Identity</h4>
+                <label class="pplw-label">Name *</label><input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
+                <label class="pplw-label">Code *</label><input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
+                <label class="pplw-label">Effective date</label><input type="date" class="pplw-in" data-coach="st-newpolicy-date" t-att-value="state.form.effective_date" t-on-change="(ev) => this.onField('effective_date', ev)"/>
+                <div class="pplw-note">Rates default to Vietnam 2024. Fine-tune ceilings and waivers later on the Advanced form.</div>
+              </div>
+              <div class="pplw-sec">
+                <h4>Rates (employee / employer %)</h4>
+                <label class="pplw-label">Social Insurance (BHXH)</label>
+                <div class="pplw-row2"><input type="number" class="pplw-in" t-att-value="state.form.si_employee_rate" t-on-change="(ev) => this.onField('si_employee_rate', ev)"/><input type="number" class="pplw-in" t-att-value="state.form.si_employer_rate" t-on-change="(ev) => this.onField('si_employer_rate', ev)"/></div>
+                <label class="pplw-label">Health Insurance (BHYT)</label>
+                <div class="pplw-row2"><input type="number" class="pplw-in" t-att-value="state.form.hi_employee_rate" t-on-change="(ev) => this.onField('hi_employee_rate', ev)"/><input type="number" class="pplw-in" t-att-value="state.form.hi_employer_rate" t-on-change="(ev) => this.onField('hi_employer_rate', ev)"/></div>
+                <label class="pplw-label">Unemployment (BHTN)</label>
+                <div class="pplw-row2"><input type="number" class="pplw-in" t-att-value="state.form.ui_employee_rate" t-on-change="(ev) => this.onField('ui_employee_rate', ev)"/><input type="number" class="pplw-in" t-att-value="state.form.ui_employer_rate" t-on-change="(ev) => this.onField('ui_employer_rate', ev)"/></div>
+              </div>
+            </div>
+          </t>
+        </div>
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="openPolicy"><t t-out="ic('arrow',15)"/> Open policy</button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create policy</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_statutory.TaxWizard">
+    <div class="pbim sta pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · Statutory</div><h2>New tax table</h2></div>
+          <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span>Creating…</span></div>
+          <t t-elif="state.result">
+            <div class="pplw-result"><div class="pplw-result-ic"><t t-out="ic('check',30)"/></div><h3>Tax table created</h3>
+              <p><t t-esc="state.result.name"/><t t-if="state.result.slabs"> · <t t-esc="state.result.slabs"/> brackets generated</t></p></div>
+          </t>
+          <t t-else="">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Identity</h4>
+                <label class="pplw-label">Name *</label><input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
+                <label class="pplw-label">Code *</label><input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
+                <label class="pplw-label">Tax year *</label><input type="number" class="pplw-in" t-att-value="state.form.tax_year" t-on-change="(ev) => this.onField('tax_year', ev)"/>
+              </div>
+              <div class="pplw-sec">
+                <h4>Deductions (<t t-esc="cur"/>/month)</h4>
+                <label class="pplw-label">Personal relief</label><input type="number" class="pplw-in" t-att-value="state.form.personal_deduction" t-on-change="(ev) => this.onField('personal_deduction', ev)"/>
+                <label class="pplw-label">Per dependent</label><input type="number" class="pplw-in" t-att-value="state.form.dependent_deduction" t-on-change="(ev) => this.onField('dependent_deduction', ev)"/>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.gen_slabs" t-on-change="() => this.toggle('gen_slabs')"/> Generate default progressive brackets</label>
+              </div>
+            </div>
+          </t>
+        </div>
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="openTax"><t t-out="ic('arrow',15)"/> Open tax table</button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create tax table</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

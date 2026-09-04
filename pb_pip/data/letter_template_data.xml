@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         ONE LETTER, AND ONLY ONE.
+
+         P0 shipped the `pip` letter TYPE in `LETTER_TYPES` and no template
+         for it; this is that template.
+
+         There is deliberately no "you completed your plan" letter and no
+         "you did not" letter. A letter is FILED IN SOMEBODY'S DOCUMENTS
+         FOREVER, and a document that says "improvement plan — completed
+         successfully" sitting in a person's file for the rest of their
+         career is a punishment for having succeeded. The good outcome is a
+         conversation, a note on the record and a rating. Only the plan
+         itself — the thing the person has to be able to hold and refer back
+         to, and the thing a company has to be able to show it actually gave
+         them — is a letter.
+
+         Nothing here is evaluated: P0's letter engine SUBSTITUTES, so a
+         `${...}` that is misspelt stays on the page exactly as typed, which
+         is what makes editing these safe for a non-technical administrator.
+         `${plan_start}`, `${plan_end}`, `${objectives}`, `${checkin_freq}`
+         and `${hr_owner}` are handed in when the plan starts.
+
+         THE TONE IS THE POINT. It says what the plan is, what happens at
+         the end, and — in the first paragraph, not the last — that the
+         company's intention is for it to work.
+         ================================================================== -->
+
+    <record id="letter_template_pip" model="pb.letter.template">
+        <field name="name">Growth plan</field>
+        <field name="letter_type">pip</field>
+        <field name="subject">Your growth plan</field>
+        <field name="sequence">30</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    Following our conversations, we have agreed a growth
+                    plan for your work at <strong>${company}</strong>. It runs
+                    from <strong>${plan_start}</strong> to
+                    <strong>${plan_end}</strong>.
+                </p>
+                <p style="color:#4A5568;">
+                    Your role: ${job_title}
+                </p>
+                <p>
+                    We are setting this out in writing so that you know exactly
+                    what we are looking for and exactly when we will look at it
+                    — not because a decision has been made. The company's
+                    intention in giving you this plan is that you complete it.
+                </p>
+                <p><strong>What we have agreed you will work on</strong></p>
+                ${objectives}
+                <p><strong>How we will keep track</strong><br/>
+                    You and your manager will sit down ${checkin_freq} for the
+                    length of the plan. Those conversations are for support as
+                    much as for review: if something in the plan turns out to
+                    be unrealistic, that is the place to say so and it can be
+                    changed.
+                </p>
+                <p><strong>What happens at the end</strong><br/>
+                    On ${plan_end} your manager will be asked how each of the
+                    points above has gone, and we will talk to you before
+                    anything is decided. If the plan is completed, it ends
+                    there and nothing further is recorded. If it is not, we
+                    will go through the options with you at that point.
+                </p>
+                <p>${extra}</p>
+                <p>
+                    ${hr_owner} in HR is looking after this and is your contact
+                    for anything about it — including anything you think we
+                    have got wrong. Please ask.
+                </p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

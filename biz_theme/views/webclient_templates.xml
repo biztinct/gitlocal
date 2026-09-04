@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Theme Engine: published token overrides. Anchored after the last
+         asset call inside the head_web block, so the :root overrides load
+         AFTER the compiled bundles and win the cascade. If the route fails,
+         compiled brand defaults apply — tint-only, never breaking. -->
+    <template id="webclient_bootstrap" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call='web.conditional_assets_tests']" position="after">
+            <link rel="stylesheet" type="text/css" href="/biz_theme/tokens.css"/>
+        </xpath>
+
+        <!-- Backend browser-tab favicon + title.
+             Stock web hard-codes the favicon to /web/static/img/favicon.ico
+             (the Odoo icon) and the <title> to "Odoo". Neither honours the
+             company favicon or the debrand name — and the company *logo* is a
+             different field the tab never uses. Point the favicon at the current
+             company's `favicon` (biz_debrand seeds every company with the brand
+             icon) and the title at the debrand brand name. Both degrade safely:
+             missing favicon → the stock static file; missing brand param →
+             the product name. Scoped to webclient_bootstrap, so the website/portal front
+             end (which sets its own favicon) is untouched. -->
+        <xpath expr="//t[@t-call='web.layout']" position="inside">
+            <t t-set="icp" t-value="request.env['ir.config_parameter'].sudo()"/>
+            <!-- Tab favicon from the current company's LOGO (this CE build has no
+                 res.company.favicon field — only web_debranding adds one, and it
+                 isn't installed). /web/image degrades to a transparent 1x1 if the
+                 logo is empty, so we guard on `logo` and fall back to the stock
+                 icon to keep a real image. -->
+            <t t-set="x_icon"
+               t-value="request.env.company.logo and ('/web/image/res.company/%s/logo' % request.env.company.id) or '/web/static/img/favicon.ico'"/>
+            <!-- Tab title: an explicit `biz_theme.app_name` knob wins; otherwise
+                 honour the debrand suite's own keys if installed; otherwise fall
+                 back to the current company name (already per-company branded);
+                 finally the product name — never the platform's (C7 WP-1: the
+                 tab title is a string an end user reads). Configure at
+                 Settings → Technical → System
+                 Parameters (key `biz_theme.app_name`). -->
+            <t t-set="title"
+               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Payobook'"/>
+        </xpath>
+    </template>
+
+</odoo>

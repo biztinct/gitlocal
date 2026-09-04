@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_contracts.PbContracts">
+    <div class="pbim con pbim-page ppl-people ppl-contracts" t-att-class="{ 'ppl-people--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contracts…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head" data-coach="ct-head">
+          <!-- The identity block, and only the identity block (W17): inside
+               the People hub the command bar already says People > Contracts.
+               New contract and every number below are untouched. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
+            <h1 class="pbim-h1">Contracts</h1>
+            <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
+          </div>
+          <button class="pbim-btn primary" t-on-click="newContract"><t t-out="ic('plus',16)"/> New contract</button>
+        </div>
+
+        <!-- KPI band -->
+        <div class="ppl-kpis" data-coach="ct-kpis">
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running</span></div></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.expiring ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring"/><span class="l">Expiring ≤30d</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('file',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.draft"/><span class="l">Draft</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('calendar',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expired"/><span class="l">Expired</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.avg_wage)"/><span class="l">Avg wage</span></div></div>
+        </div>
+
+        <!-- filters -->
+        <div class="pbim-panel ppl-filters" data-coach="ct-filters">
+          <div class="ppl-filter-row">
+            <div class="pbim-chips">
+              <button t-foreach="statusChips" t-as="c" t-key="c.id"
+                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
+                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
+              </button>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input placeholder="Search employee, reference, structure…" t-on-input="onSearch"/>
+            </div>
+          </div>
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
+            </div>
+            <div t-if="state.structures.length" class="pbim-chips ppl-depts">
+              <button t-foreach="state.structures" t-as="s" t-key="s_index"
+                      t-attf-class="pbim-fchip {{ state.structure === s.name ? 'on' : '' }}" t-on-click="() => this.setStructure(s.name)">
+                <t t-esc="s.name"/> <span class="c" t-esc="s.count"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- roster -->
+        <div t-if="filtered.length" class="ppl-roster" data-coach="ct-roster">
+          <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
+            <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
+            <div class="ppl-id">
+              <div class="nm" t-esc="c.employee"/>
+              <div class="jb"><t t-esc="c.name"/><t t-if="c.structure"> · <t t-esc="c.structure"/></t></div>
+            </div>
+            <div class="ppl-period">
+              <span t-esc="c.date_start or '—'"/>
+              <span class="ar">→</span>
+              <span t-esc="c.date_end or 'indefinite'"/>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span>
+              <span t-if="c.days_to_expiry !== null and c.days_to_expiry >= 0 and c.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="c.days_to_expiry"/>d</span>
+            </div>
+            <div class="ppl-wage">
+              <span class="v money" t-esc="c.wage ? money(c.wage) : '—'"/>
+              <span class="k">monthly</span>
+            </div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No contracts match these filters.</div></div>
+
+        <div class="ppl-foot">
+          Showing <t t-esc="filtered.length"/> of <t t-esc="state.total"/> ·
+          <button class="ppl-link" t-on-click="openAll">Open full contract list →</button>
+        </div>
+      </div>
+
+      <!-- The contract drawer, mounted only when it registered itself into the
+           soft "pb_contracts_drawer" registry. t-key on the id forces a
+           remount, and therefore a fresh slide-in, when switching records. -->
+      <t t-if="state.drawerContractId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerContractId"/>
+    </div>
+  </t>
+
+</templates>

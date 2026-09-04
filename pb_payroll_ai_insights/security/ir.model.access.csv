@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payroll_ai_config_admin,payroll.ai.config admin,model_payroll_ai_config,group_payai_admin,1,1,1,1
+access_payroll_ai_config_manager,payroll.ai.config manager,model_payroll_ai_config,group_payai_manager,1,0,0,0
+access_payroll_ai_engine_user,payroll.ai.engine user,model_payroll_ai_engine,group_payai_user,1,1,1,0
+access_payroll_data_query_user,payroll.data.query user,model_payroll_data_query,group_payai_user,1,1,1,0
+access_payroll_chart_schema_user,payroll.chart.schema user,model_payroll_chart_schema,group_payai_user,1,1,1,0
+access_payroll_ai_conversation_user,payroll.ai.conversation user,model_payroll_ai_conversation,group_payai_user,1,1,1,1
+access_payroll_ai_message_user,payroll.ai.message user,model_payroll_ai_message,group_payai_user,1,1,1,1
+access_payroll_ai_dashboard_user,payroll.ai.dashboard user,model_payroll_ai_dashboard,group_payai_user,1,1,1,0
+access_payroll_ai_dashboard_manager,payroll.ai.dashboard manager,model_payroll_ai_dashboard,group_payai_manager,1,1,1,1
+access_payroll_ai_dashboard_widget_user,payroll.ai.dashboard.widget user,model_payroll_ai_dashboard_widget,group_payai_user,1,1,1,1
+access_payroll_ai_pulse_user,payroll.ai.pulse user,model_payroll_ai_pulse,group_payai_user,1,1,0,0
+access_payroll_ai_pulse_manager,payroll.ai.pulse manager,model_payroll_ai_pulse,group_payai_manager,1,1,1,1
+access_payroll_ai_report_wizard_user,payroll.ai.report.wizard user,model_payroll_ai_report_wizard,group_payai_user,1,1,1,1
+access_payroll_ai_consent_own,payroll.ai.consent own,model_payroll_ai_consent,base.group_user,1,1,1,0

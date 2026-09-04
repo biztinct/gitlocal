@@ -1,0 +1,624 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid " Reason: %s"
+msgstr " Lý do: %s"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid " and %s more"
+msgstr " và %s khác"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/payrun_wizard.py:0
+msgid ""
+"%(n)s week(s) in this period have not been closed and locked. The run still computes —"
+" this is a note, not a block."
+msgstr ""
+"%(n)s tuần trong giai đoạn này chưa bị đóng và khóa. Quá trình chạy vẫn được tính toán"
+" - đây là một ghi chú, không phải một khối."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid ""
+"%(what)s is not possible: the week is closed for %(days)s. Ask an attendance or "
+"payroll manager to reopen the day first."
+msgstr ""
+"%(what)s không thể thực hiện được: tuần đã kết thúc đối với %(days)s. Hãy yêu cầu "
+"người quản lý chấm công hoặc tính lương mở lại ngày làm việc trước."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "%s correction(s) awaiting approval"
+msgstr "(Các) bản chỉnh sửa %s đang chờ phê duyệt"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "%s day(s) unlocked"
+msgstr "%s ngày đã được mở khóa"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "%s exception(s) open"
+msgstr "(Các) ngoại lệ %s mở"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/attendance_weekentry.py:0
+msgid "%s is closed for payroll — ask a manager to reopen the day."
+msgstr "%s đã đóng cửa tính lương — hãy yêu cầu người quản lý mở lại ngày làm việc."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "%s overtime request(s) undecided"
+msgstr "%s yêu cầu làm thêm giờ chưa được quyết định"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close_review.py:0
+msgid "A review's day must fall inside its week."
+msgstr "Ngày đánh giá phải nằm trong tuần đó."
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/hr_attendance.py:0
+msgid "Adding a punch"
+msgstr "Thêm một cú đấm"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/attendance_correction.py:0
+msgid "Applying this correction"
+msgstr "Áp dụng hiệu chỉnh này"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/overtime_request.py:0
+msgid "Approving this overtime"
+msgstr "Phê duyệt việc làm thêm giờ này"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_hr_attendance
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_pb_attendance_import_wizard
+msgid "Attendance Bulk Import"
+msgstr "Nhập số lượng lớn chấm công"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_hr_attendance_correction
+msgid "Attendance Correction Request"
+msgstr "Yêu cầu sửa điểm danh"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_pb_close_review
+msgid "Close Review (flag waived as-is)"
+msgstr "Đóng đánh giá (cờ được miễn nguyên trạng)"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__company_id
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Corrections all decided"
+msgstr "Sửa chữa tất cả đã được quyết định"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__create_uid
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__create_date
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__date
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__date
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid "Day %(d)s REOPENED by %(who)s. Reason: %(why)s"
+msgstr "Ngày %(d)s ĐƯỢC MỞ LẠI bởi %(who)s. Lý do: %(why)s"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid "Day %(d)s locked by %(who)s.%(why)s"
+msgstr "Ngày %(d)s bị khóa bởi %(who)s.%(why)s"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/hr_attendance.py:0
+msgid "Deleting this punch"
+msgstr "Xóa cú đấm này"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance__display_name
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance_correction__display_name
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance_weekentry__display_name
+#: model:ir.model.fields,field_description:pb_close.field_hr_overtime_request__display_name
+#: model:ir.model.fields,field_description:pb_close.field_pb_attendance_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_close.field_pb_close__display_name
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__display_name
+#: model:ir.model.fields,field_description:pb_close.field_pb_payrun_wizard__display_name
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/hr_attendance.py:0
+msgid "Editing this punch"
+msgstr "Chỉnh sửa cú đấm này"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Every day locked"
+msgstr "Ngày nào cũng bị khóa"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__kind
+msgid "Flag"
+msgstr "Cờ"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance__id
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance_correction__id
+#: model:ir.model.fields,field_description:pb_close.field_hr_attendance_weekentry__id
+#: model:ir.model.fields,field_description:pb_close.field_hr_overtime_request__id
+#: model:ir.model.fields,field_description:pb_close.field_pb_attendance_import_wizard__id
+#: model:ir.model.fields,field_description:pb_close.field_pb_close__id
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__id
+#: model:ir.model.fields,field_description:pb_close.field_pb_payrun_wizard__id
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__message_has_error
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__write_uid
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__write_date
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__reason
+msgid "Last reason"
+msgstr "Lý do cuối cùng"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_wf_lock__state__locked
+#: model_terms:ir.ui.view,arch_db:pb_close.view_pb_wf_lock_search
+msgid "Locked"
+msgstr "Đã khoá"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__locked_by_id
+msgid "Locked by"
+msgstr "Bị khóa bởi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__locked_on
+msgid "Locked on"
+msgstr "Đã khóa"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid ""
+"Locking or reopening a workforce day is restricted to attendance managers and payroll "
+"managers."
+msgstr ""
+"Việc khóa hoặc mở lại ngày làm việc chỉ dành cho người quản lý chấm công và người quản"
+" lý bảng lương."
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__missing_checkout
+msgid "Missing checkout"
+msgstr "Thiếu thanh toán"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__missing_punch
+msgid "Missing punch"
+msgstr "Cú đấm thiếu"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Missing punch-out"
+msgstr "Thiếu cú đấm"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "No exceptions open"
+msgstr "Không có ngoại lệ mở"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__ot_pending
+msgid "Ot pending"
+msgstr "Đang chờ xử lý"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Outside tolerance"
+msgstr "Dung sai bên ngoài"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_hr_overtime_request
+msgid "Overtime Request"
+msgstr "Yêu cầu làm thêm giờ"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Overtime all decided"
+msgstr "Làm thêm giờ tất cả đã được quyết định"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Overtime undecided"
+msgstr "Làm thêm giờ chưa quyết định"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_pb_payrun_wizard
+msgid "Payobook Run Payroll wizard orchestration"
+msgstr "Payobook Run Payroll Wizard điều phối"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/overtime_request.py:0
+msgid "Refusing this overtime"
+msgstr "Từ chối việc làm thêm giờ này"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_wf_lock__state__open
+#: model_terms:ir.ui.view,arch_db:pb_close.view_pb_wf_lock_search
+msgid "Reopened"
+msgstr "Đã mở lại"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid ""
+"Reopening a closed day needs a reason — it is the only account anyone reviewing this "
+"payroll will have of why the week was taken back."
+msgstr ""
+"Việc mở lại một ngày đóng cửa cần có lý do - đó là tài khoản duy nhất mà bất kỳ ai xem"
+" xét bảng lương này sẽ có lý do tại sao tuần đó bị rút lại."
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__reviewer_id
+msgid "Reviewed by"
+msgstr "Xem xét bởi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__reviewed_at
+msgid "Reviewed on"
+msgstr "Đã đánh giá vào"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/attendance_correction.py:0
+msgid "Submitting this correction"
+msgstr "Gửi bản sửa lỗi này"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/overtime_request.py:0
+msgid "Submitting this overtime"
+msgstr "Gửi việc làm thêm giờ này"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/wf_lock.py:0
+msgid "That company is not in your active companies."
+msgstr "Công ty đó không có trong các công ty đang hoạt động của bạn."
+
+#. module: pb_close
+#: model:ir.model.constraint,message:pb_close.constraint_pb_wf_lock_company_day_uniq
+msgid "That day already has a workforce lock row."
+msgstr "Ngày đó đã có hàng khóa lao động rồi."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/attendance_import.py:0
+msgid "That day is closed for payroll (%s) — reopen it first"
+msgstr "Ngày đó đóng cửa để tính lương (%s) - mở lại trước"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "That employee is not available in this company."
+msgstr "Nhân viên đó không có mặt ở công ty này."
+
+#. module: pb_close
+#: model:ir.model.constraint,message:pb_close.constraint_pb_close_review_flag_uniq
+msgid "That flag has already been reviewed."
+msgstr "Lá cờ đó đã được xem xét."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid ""
+"That is %(n)s flags. A single review note can cover at most %(cap)s — narrow the "
+"department or the search first, so the decision you are recording is one somebody "
+"could defend."
+msgstr ""
+"Đó là cờ %(n)s. Một ghi chú đánh giá có thể bao gồm tối đa %(cap)s — trước tiên hãy "
+"thu hẹp bộ phận hoặc tìm kiếm, vì vậy, quyết định bạn đang ghi lại là quyết định mà ai"
+" đó có thể bảo vệ."
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__date
+msgid "The calendar day this lock closes, in the employee-local sense."
+msgstr "Ngày dương lịch mà khóa này đóng lại, theo nghĩa nhân viên-địa phương."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid ""
+"The weekly Close board is restricted to attendance officers and payroll managers."
+msgstr ""
+"Bảng Đóng hàng tuần được giới hạn cho các nhân viên chấm công và quản lý tiền lương."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Unexpected error."
+msgstr "Lỗi không mong muốn."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Unknown flag type."
+msgstr "Loại cờ không xác định."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__unscheduled_day
+msgid "Unscheduled day"
+msgstr "Ngày không hẹn trước"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__variance_over
+msgid "Variance over"
+msgstr "Phương sai trên"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close_review.py:0
+msgid ""
+"Waiving a Close flag is restricted to attendance managers and payroll managers — it is"
+" what lets the week reach payroll."
+msgstr ""
+"Việc bỏ cờ Đóng chỉ được giới hạn đối với người quản lý điểm danh và người quản lý "
+"bảng lương - đó là điều cho phép tuần đó đạt được bảng lương."
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_wf_lock__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_close
+#: model:ir.model.fields,field_description:pb_close.field_pb_close_review__week_start
+msgid "Week"
+msgstr "Tuần"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/payrun_wizard.py:0
+msgid "Week of %(w)s is not closed — %(f)s flag(s) open, %(l)s of %(t)s day(s) locked."
+msgstr "Tuần %(w)s chưa bị đóng - (các) cờ %(f)s mở, %(l)s của %(t)s ngày bị khóa."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/payrun_wizard.py:0
+msgid ""
+"Week of %(w)s is not closed — %(l)s of %(t)s day(s) locked, %(ot)s overtime and %(c)s "
+"correction(s) still undecided."
+msgstr ""
+"Tuần %(w)s chưa đóng - %(l)s trong số %(t)s ngày đã bị khóa, %(ot)s làm thêm giờ và "
+"(các) điều chỉnh %(c)s vẫn chưa được quyết định."
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close.py:0
+msgid "Week outside tolerance"
+msgstr "Tuần bên ngoài dung sai"
+
+#. module: pb_close
+#: model:ir.model.fields.selection,name:pb_close.selection__pb_close_review__kind__week_variance
+msgid "Week variance"
+msgstr "phương sai tuần"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_pb_close
+msgid "Weekly Close Cockpit"
+msgstr "Đóng buồng lái hàng tuần"
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_hr_attendance_weekentry
+msgid "Weekly Entry Grid API"
+msgstr "API lưới mục nhập hàng tuần"
+
+#. module: pb_close
+#: model:ir.model.fields,help:pb_close.field_pb_wf_lock__reason
+msgid "Why the day was last locked or reopened. Required to reopen."
+msgstr "Tại sao ngày cuối cùng bị khóa hoặc mở lại. Bắt buộc phải mở lại."
+
+#. module: pb_close
+#: model:ir.model,name:pb_close.model_pb_wf_lock
+#: model_terms:ir.ui.view,arch_db:pb_close.view_pb_wf_lock_form
+msgid "Workforce Day Lock"
+msgstr "Khóa ngày lực lượng lao động"
+
+#. module: pb_close
+#: model:ir.actions.act_window,name:pb_close.action_pb_wf_lock
+#: model_terms:ir.ui.view,arch_db:pb_close.view_pb_wf_lock_list
+#: model_terms:ir.ui.view,arch_db:pb_close.view_pb_wf_lock_search
+msgid "Workforce Day Locks"
+msgstr "Khóa ngày lao động"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/payrun_wizard.py:0
+msgid "Workforce close"
+msgstr "Lực lượng lao động đóng"
+
+#. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/close_review.py:0
+msgid ""
+"You cannot waive a flag on your own attendance — that is signing off on your own "
+"payslip inputs."
+msgstr ""
+"Bạn không thể bỏ cờ khi tham dự của chính mình - đó là ký tên vào phiếu lương đầu vào "
+"của chính bạn."

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- Tenant slots — the shipped defaults. A key with no row here does not exist, so this file is also the declaration the override constraint validates against. -->
+<odoo>
+
+    <record id="slot_bankfileformat" model="learn.tenant.override">
+        <field name="key">bankFileFormat</field>
+        <field name="value">the bank's standard salary file</field>
+    </record>
+
+    <record id="slot_companydisplayname" model="learn.tenant.override">
+        <field name="key">companyDisplayName</field>
+        <field name="value">your company</field>
+    </record>
+
+    <record id="slot_gmtiername" model="learn.tenant.override">
+        <field name="key">gmTierName</field>
+        <field name="value">Finance approval</field>
+    </record>
+
+    <record id="slot_hrtiername" model="learn.tenant.override">
+        <field name="key">hrTierName</field>
+        <field name="value">HR review</field>
+    </record>
+
+    <record id="slot_importcutoff" model="learn.tenant.override">
+        <field name="key">importCutoff</field>
+        <field name="value">the 28th</field>
+    </record>
+
+    <record id="slot_payday" model="learn.tenant.override">
+        <field name="key">payDay</field>
+        <field name="value">the 5th of the month</field>
+    </record>
+
+    <record id="slot_payrollsupportcontact" model="learn.tenant.override">
+        <field name="key">payrollSupportContact</field>
+        <field name="value">your payroll administrator</field>
+    </record>
+
+    <record id="slot_standardworkingdays" model="learn.tenant.override">
+        <field name="key">standardWorkingDays</field>
+        <field name="value">22</field>
+    </record>
+
+</odoo>

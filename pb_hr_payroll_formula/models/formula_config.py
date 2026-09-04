@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
+from . import formula_operand_context
+from . import value_kind_classifier
+from odoo.tools.sql import table_exists
+from markupsafe import Markup, escape
 import json
+import re
 import logging
 
 _logger = logging.getLogger(__name__)
+
+# RD60 — how far back `employee_signal_map` looks for somebody's employment
+# status. Deep enough that a run of small correction files, or a refresh that
+# pulled only salaries, does not lose the roster's statuses; shallow enough that
+# the Run Payroll wizard never walks a year of history to draw four chips.
+_SIGNAL_STATUS_BATCH_SCAN = 8
 
 
 class HrFormulaConfig(models.Model):
@@ -124,21 +135,25 @@ class HrFormulaConfig(models.Model):
     debit_account_id = fields.Many2one(
         'account.account',
         string='Default Debit Account',
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
         help="Default debit account to assign when creating salary rules from this formula configuration."
     )
     credit_account_id = fields.Many2one(
         'account.account',
         string='Default Credit Account',
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
         help="Default credit account to assign when creating salary rules from this formula configuration."
     )
 
     structure_id = fields.Many2one(
         'hr.payroll.structure',
-        string='Payroll Structure',
+        string='Legacy Payroll Structure',
         tracking=True,
-        help="Link to the payroll structure this config applies to"
+        help="Optional link to an old-style payroll structure, for interop only. "
+             "Nothing in the Excel import or the formula calculation reads it — "
+             "leave it empty unless this configuration must line up with salary "
+             "rules defined outside the formula engine. Several configurations "
+             "may share one structure (mid-cycle and end-cycle for the same "
+             "structure is normal), so a structure alone does not identify a "
+             "configuration."
     )
     mid_cycle_source_component_id = fields.Many2one(
         'hr.formula.rule',
@@ -174,6 +189,72 @@ class HrFormulaConfig(models.Model):
         string='Formula Rules',
         copy=True
     )
+
+    # F11 — progressive rate/bracket tables referenced by BRACKET(code, value)
+    rate_table_ids = fields.One2many(
+        'hr.formula.rate.table',
+        'config_id',
+        string='Rate Tables',
+        copy=True
+    )
+
+    # ==========================================
+    # B2 — CONFIG BRANCHES (safe fork / merge)
+    # ==========================================
+    # A branch is a full config copy tagged with the config it was forked from.
+    # Edits happen in the branch in isolation; a merge writes the branch's
+    # changed formulas back onto the parent and seals a release. None of these
+    # copy into a clone (a clone starts life as its own mainline).
+    parent_branch_id = fields.Many2one(
+        'hr.formula.config', string='Branched from',
+        ondelete='set null', index=True, copy=False,
+        help="The configuration this one was forked from (empty for mainline configs)."
+    )
+    child_branch_ids = fields.One2many(
+        'hr.formula.config', 'parent_branch_id',
+        string='Branches', copy=False
+    )
+    branch_note = fields.Char(string='Branch note', copy=False)
+    fork_milestone_id = fields.Many2one(
+        'hr.formula.config.milestone', string='Fork point',
+        ondelete='set null', copy=False,
+        help="Milestone recorded on the parent when this branch was cut — the "
+             "reference point for detecting parent drift (merge conflicts)."
+    )
+    branch_state = fields.Selection([
+        ('open', 'Open'),
+        ('merged', 'Merged'),
+        ('discarded', 'Discarded'),
+    ], string='Branch Status', default='open', copy=False,
+        help="Lifecycle of a branch after it is cut.")
+
+    # ==========================================
+    # B5 — SCHEME VARIANTS (master → variants)
+    # ==========================================
+    # A variant is a materialized config that inherits its components from a
+    # master scheme. Editing the master and pushing propagates every component
+    # EXCEPT those the variant has locally overridden. Variants are real configs
+    # (no compute-path change) kept in sync — the cure for "N near-identical
+    # configurations" a bureau otherwise maintains by hand.
+    master_config_id = fields.Many2one(
+        'hr.formula.config', string='Master scheme',
+        ondelete='set null', index=True, copy=False,
+        help="The master scheme this variant inherits its components from."
+    )
+    variant_ids = fields.One2many(
+        'hr.formula.config', 'master_config_id',
+        string='Variants', copy=False
+    )
+    variant_override_codes = fields.Char(
+        string='Overridden components', copy=False,
+        help="Comma-separated component codes that are locally overridden in "
+             "this variant and therefore protected from a master push/sync."
+    )
+
+    # F111 — high-water mark for permanent column letters. Monotonic: never
+    # decreases, so a deleted component's letter is never handed out again
+    # (D111.3). Lazily initialised from the current max letter on first use.
+    col_letter_hwm = fields.Integer(string='Letter high-water mark', default=0)
 
     rule_count = fields.Integer(
         string='Rules Count',
@@ -232,11 +313,172 @@ class HrFormulaConfig(models.Model):
         help="HR system connector for importing payroll input data"
     )
 
+    def _resolve_feed_connector(self):
+        """The connector whose field mappings feed this scheme, or empty.
+
+        The explicit binding wins. When there is none, the wires themselves are
+        asked — a mapping already carries both its connector and, through
+        `target_rule_id.config_id`, the scheme it lands on, so a scheme with
+        wires is never genuinely ambiguous about where its values come from.
+
+        This exists because the run-time gate in
+        `payroll_import_batch._transform_data_to_formula_inputs` reads
+        `config.connector_id` and, when it is unset, applies NO mappings at all
+        — silently. ABM had 25 confirmed Zoho wires onto this scheme and an
+        unset binding, so the board reported 25 mapped while the pay run
+        behaved as though the connector did not exist. `create` on
+        `hr.integration.field.mapping` now binds on the way in and a migration
+        backfilled what was already there; this is the third rail, so that a
+        row written by SQL, a restore, or a future path that clears the field
+        cannot put a scheme back into that silence.
+
+        Resolving also BINDS, so the answer is stable and visible on the record
+        afterwards rather than being recomputed differently later. When wires
+        from more than one connector land on the same scheme the one with the
+        most wires is chosen, ties broken by id, and the choice is logged —
+        the run-time gate can only honour one, and picking silently at random
+        would be the same class of defect this method exists to close.
+        """
+        self.ensure_one()
+        if self.connector_id:
+            return self.connector_id
+        Mapping = self.env['hr.integration.field.mapping']
+        mappings = Mapping.sudo().search([
+            ('target_rule_id.config_id', '=', self.id),
+            ('connector_id', '!=', False),
+        ])
+        if not mappings:
+            return self.env['hr.integration.connector']
+        tally = {}
+        for mapping in mappings:
+            tally[mapping.connector_id] = tally.get(mapping.connector_id, 0) + 1
+        winner = sorted(tally.items(), key=lambda kv: (-kv[1], kv[0].id))[0][0]
+        if len(tally) > 1:
+            _logger.warning(
+                "Scheme %s has field mappings from %s connectors; the pay run "
+                "can apply only one and chose %s (%s of %s wires). Bind the "
+                "scheme explicitly to say otherwise.",
+                self.display_name, len(tally), winner.display_name,
+                tally[winner], len(mappings))
+        self.sudo().connector_id = winner.id
+        return winner
+
     use_color_coded_excel_import = fields.Boolean(
         string='Use Color-Coded Excel Import',
-        default=False,
+        default=True,
         help="When enabled, Excel import uses color-coded headers and rows."
     )
+
+    # COLROLES P4 — opt-in: let the roles you assigned drive the payroll export's
+    # leading employee columns instead of the built-in fixed set. Default OFF, and
+    # while it is off the exported workbook is byte-for-byte what it always was.
+    export_identity_columns = fields.Boolean(
+        string='Role-Driven Export Columns',
+        default=False,
+        help="Off (default): the payroll Excel export opens with its standard "
+             "employee columns.\n"
+             "On: it opens with the columns you marked Identity or Employee Profile "
+             "in this structure, in their own order. Nothing else about the export "
+             "changes."
+    )
+
+    # ==========================================
+    # SC-3 — WHICH SOURCES THIS SCHEME MAY USE, AND WHO WINS.
+    #
+    # Three lanes, owner-configured per scheme:
+    #   api     → declared kinds ('feed', 'rule')       — the connected system
+    #   excel   → declared kind  ('excel',)             — the pay data file
+    #   records → kinds ('employee_field', 'contract_field', 'bank_account',
+    #                    'contract_component')          — Payobook's own data
+    #
+    # The PRIORITY answers two questions at once: whose value a pay run uses,
+    # and who may update Payobook's stored data — the writeback already
+    # refuses to write when the winning rung is not a payload, so a scheme
+    # that ranks its records first makes them the source of truth (a lower
+    # lane may only fill a box that is empty). Transformations are not a
+    # lane: they are always available.
+    #
+    # The DEFAULT reproduces `hr.formula.rule._SOURCE_RANK` plus the trailing
+    # contract component EXACTLY, so an untouched scheme behaves bit-for-bit
+    # as it always has.
+    # ==========================================
+    SOURCE_LANES = ('api', 'excel', 'records')
+    _LANE_KINDS = {
+        'api': ('feed', 'rule'),
+        'excel': ('excel',),
+        'records': ('employee_field', 'contract_field', 'bank_account',
+                    'contract_component'),
+    }
+
+    source_api_enabled = fields.Boolean(
+        string='Read the connected system', default=True,
+        help="Off: this scheme's pay runs never read the connected system, "
+             "the sync steps disappear from the Run Payroll wizard, and the "
+             "system-fields mapping tab is hidden.")
+    source_excel_enabled = fields.Boolean(
+        string='Read spreadsheets', default=True,
+        help="Off: this scheme's pay runs take no pay data file — the upload "
+             "step disappears from the Run Payroll wizard and spreadsheet "
+             "imports are refused.")
+    source_records_enabled = fields.Boolean(
+        string='Read Payobook records', default=True,
+        help="Off: mapped employee/contract fields and the contract's amount "
+             "lines are not read as pay-run sources. Editing records by hand "
+             "is always possible — that is not a pay-run source.")
+    source_priority = fields.Char(
+        string='Source priority', default='api,excel,records',
+        help="The order sources win in, highest first, as three tokens: "
+             "api, excel, records. A source lower in the order is used only "
+             "where every higher one is silent, and may only FILL an empty "
+             "box on data a higher source owns — never overwrite it.")
+
+    @api.constrains('source_priority')
+    def _check_source_priority(self):
+        for config in self:
+            tokens = [t.strip() for t in
+                      (config.source_priority or '').split(',') if t.strip()]
+            bad = [t for t in tokens if t not in self.SOURCE_LANES]
+            if bad or len(tokens) != len(set(tokens)):
+                raise ValidationError(_(
+                    "The source order must list each of these once: "
+                    "api, excel, records."))
+
+    def _source_lane_ok(self, lane):
+        """Is `lane` switched on for this scheme? Unknown lanes are on."""
+        self.ensure_one()
+        return {
+            'api': bool(self.source_api_enabled),
+            'excel': bool(self.source_excel_enabled),
+            'records': bool(self.source_records_enabled),
+        }.get(lane, True)
+
+    def _source_lane_order(self):
+        """The ENABLED lanes, highest priority first.
+
+        Tolerant of a partial `source_priority` (missing tokens append in
+        default order) because this string is data, and data ages.
+        """
+        self.ensure_one()
+        tokens = [t.strip() for t in
+                  (self.source_priority or '').split(',')
+                  if t.strip() in self.SOURCE_LANES]
+        for lane in self.SOURCE_LANES:
+            if lane not in tokens:
+                tokens.append(lane)
+        return [t for t in tokens if self._source_lane_ok(t)]
+
+    def _source_kind_rank(self):
+        """The declared-source KIND order this scheme resolves in.
+
+        This is what `hr.formula.rule._config_kind_rank()` hands to the one
+        shared walk — a kind absent from the tuple belongs to a disabled lane
+        and is not read at all.
+        """
+        self.ensure_one()
+        out = []
+        for lane in self._source_lane_order():
+            out.extend(self._LANE_KINDS[lane])
+        return tuple(out)
 
     # ==========================================
     # STATE & VALIDATION
@@ -335,6 +577,160 @@ class HrFormulaConfig(models.Model):
         string='Default Column Width (px)',
         default=120
     )
+
+    # ==========================================
+    # W73 — PAYSLIP THEME (brand tokens within compliance bounds; D-L7)
+    # ==========================================
+    # Accent is a LOCKED palette key over the existing sc-* section colours (no
+    # free hex — brand/compliance bounds, C11). Preview and print read these same
+    # four fields; the themed QWeb report (D-L8) is the only new report.
+    theme_accent = fields.Selection([
+        ('slate', 'Slate'),
+        ('indigo', 'Indigo'),
+        ('emerald', 'Emerald'),
+        ('amber', 'Amber'),
+        ('rose', 'Rose'),
+        ('sky', 'Sky'),
+        ('violet', 'Violet'),
+    ], string='Payslip Accent', default='slate')
+    theme_font = fields.Selection([
+        ('system', 'System (sans-serif)'),
+        ('serif', 'Serif'),
+        ('mono', 'Monospace'),
+    ], string='Payslip Font', default='system')
+    theme_logo = fields.Binary(
+        string='Payslip Logo',
+        help="Brand logo for the themed payslip. Falls back to the company logo.")
+    theme_show_logo = fields.Boolean(string='Show Logo on Payslip', default=True)
+    payslip_header_html = fields.Html(
+        string='Payslip Header Content',
+        sanitize=True,
+        help="Optional formatted content shown below the employee header."
+    )
+    payslip_footer_html = fields.Html(
+        string='Payslip Footer Content',
+        sanitize=True,
+        help="Optional formatted content shown after the payslip totals."
+    )
+    payslip_layout_html = fields.Html(
+        string='Imported Payslip Document Layout',
+        sanitize=True,
+        help=("Optional full-document layout reconstructed from an uploaded "
+              "payslip. When set, it replaces the standard section preview and "
+              "print body without deleting the seeded section configuration.")
+    )
+
+    # ------------------------------------------------------------------
+    # JOURNEY J2 — the spreadsheet this scheme's columns were read from.
+    #
+    # A mapping board that can only show the columns of a file somebody has
+    # already imported is a board you cannot use until after you have done the
+    # thing it exists to help you do. These four fields hold the answer to
+    # "what does my file look like" between visits: the workbook itself (so the
+    # same gesture can hand it on as a pay run), its name and when it was read,
+    # and the columns the loader produced from it.
+    #
+    # Nothing here is pay DATA. The stored columns carry one sample value each
+    # so a heading can be recognised; the file is kept because the user
+    # uploaded it to be used, and it is replaced or forgotten on request.
+    # ------------------------------------------------------------------
+    import_sample_file = fields.Binary(
+        string='Sample Pay File', attachment=True, copy=False,
+        help="The spreadsheet whose column headings were read for the mapping board.")
+    import_sample_filename = fields.Char(string='Sample Pay File Name', copy=False)
+    import_sample_date = fields.Datetime(string='Headings Read On', copy=False)
+    import_sample_columns_json = fields.Text(
+        string='Discovered Columns', copy=False,
+        help="The column keys the loader produces for the stored file, as JSON.")
+
+    # Dynamic components inside rich payslip content are persisted as inert,
+    # human-readable markers.  The editor turns them into non-editable chips;
+    # preview and print resolve them with the active sample/payslip values.
+    # Keeping the reference out of HTML attributes also means Odoo's HTML
+    # sanitizer can remain fully enabled without losing the component link.
+    _payslip_component_token_re = re.compile(
+        r'\{\{pb_component:(\d+):(label|value|both)\}\}')
+    _payslip_meta_token_re = re.compile(
+        r'\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}')
+
+    def _normalise_payslip_content_tokens(self, html_value):
+        """Keep only canonical tokens belonging to this configuration."""
+        self.ensure_one()
+        allowed = set(self.rule_ids.ids)
+
+        def replace(match):
+            rule_id = int(match.group(1))
+            if rule_id not in allowed:
+                return ''
+            return '{{pb_component:%s:%s}}' % (rule_id, match.group(2))
+
+        return self._payslip_component_token_re.sub(replace, str(html_value or ''))
+
+    def _payslip_content_rule_ids(self, html_value, amount_only=False):
+        """Return scoped component ids referenced by a rich-content block."""
+        self.ensure_one()
+        allowed = set(self.rule_ids.ids)
+        result = set()
+        for match in self._payslip_component_token_re.finditer(str(html_value or '')):
+            rule_id, mode = int(match.group(1)), match.group(2)
+            if rule_id in allowed and (not amount_only or mode in ('value', 'both')):
+                result.add(rule_id)
+        return result
+
+    @staticmethod
+    def _payslip_token_value(rule, value, currency):
+        if value is None:
+            return '—'
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return str(value)
+        number_format = rule.number_format or 'currency'
+        if number_format == 'percentage':
+            return ('{:,.2f}'.format(number * 100).rstrip('0').rstrip('.') + '%')
+        if number_format == 'integer':
+            return '{:,.0f}'.format(number)
+        if number_format == 'number':
+            return '{:,.2f}'.format(number).rstrip('0').rstrip('.')
+        sign = '−' if number < 0 else ''
+        return '%s%s%s' % (
+            sign, currency or '', '{:,.0f}'.format(abs(number)))
+
+    def _render_payslip_content(self, html_value, values_by_rule=None, currency='', meta=None):
+        """Resolve rich-content markers with values for preview or one slip."""
+        self.ensure_one()
+        rules = {rule.id: rule for rule in self.rule_ids}
+        values_by_rule = values_by_rule or {}
+        meta = meta or {}
+
+        def replace(match):
+            rule = rules.get(int(match.group(1)))
+            if not rule:
+                return ''
+            mode = match.group(2)
+            name = ((rule.salary_rule_id.name if rule.salary_rule_id else False)
+                    or rule.name or rule.code or _('Component'))
+            value = self._payslip_token_value(
+                rule, values_by_rule.get(rule.id), currency)
+            if mode == 'label':
+                return '<span class="pb-ps-component pb-ps-component-label">%s</span>' % escape(name)
+            if mode == 'value':
+                return '<span class="pb-ps-component pb-ps-component-value">%s</span>' % escape(value)
+            return (
+                '<span class="pb-ps-component pb-ps-component-both">'
+                '<span class="pb-ps-component-name">%s</span>'
+                '<span class="pb-ps-component-amount">%s</span>'
+                '</span>'
+            ) % (escape(name), escape(value))
+
+        # html_value comes from a sanitize=True field.  Only escaped rule data
+        # is introduced while resolving markers, so the result remains safe.
+        rendered = self._payslip_component_token_re.sub(
+            replace, str(html_value or ''))
+        rendered = self._payslip_meta_token_re.sub(
+            lambda match: str(escape(meta.get(match.group(1)) or '—')),
+            rendered)
+        return Markup(rendered)
 
     # ==========================================
     # DISPLAY NAME
@@ -554,10 +950,34 @@ class HrFormulaConfig(models.Model):
     # ==========================================
     # CONSTRAINTS
     # ==========================================
-    _sql_constraints = [
-        ('code_uniq', 'unique(code, company_id)',
-         'Configuration code must be unique per company!'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_uniq = models.Constraint(
+        'unique(code, company_id)',
+        'Configuration code must be unique per company!')
+
+    @api.model
+    def _generate_unique_code(self, name, company_id=None):
+        """Build a meaningful, unique Reference Code from the config name
+        (e.g. 'VPTQ Mid Cycle' -> 'VPTQ_MID_CYCLE', with a _2/_3 suffix on
+        collision). Used by create() and the Formula Studio wizard so the
+        code never has to be typed by hand."""
+        base = re.sub(r'[^A-Z0-9]+', '_', (name or 'CONFIG').upper()).strip('_')[:28] or 'CONFIG'
+        company_id = company_id or self.env.company.id
+        code, n = base, 1
+        while self.with_context(active_test=False).search_count(
+                [('code', '=', code), ('company_id', '=', company_id)]):
+            n += 1
+            code = '%s_%s' % (base, n)
+        return code
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('code'):
+                vals['code'] = self._generate_unique_code(vals.get('name'), vals.get('company_id'))
+        return super().create(vals_list)
 
     @api.constrains('rule_ids')
     def _check_rule_codes(self):
@@ -625,9 +1045,87 @@ class HrFormulaConfig(models.Model):
                 "Please validate and fix all issues first."
             ))
         self.write({'state': 'active'})
+        # F7: anchor a milestone so "compare to activation" has a reference point.
+        n = self.env['hr.formula.config.milestone'].sudo().search_count(
+            [('config_id', '=', self.id)]) + 1
+        self.env['hr.formula.config.milestone'].sudo().record(
+            self, _("Activated v%s") % n)
 
     def action_archive(self):
         self.write({'state': 'archived', 'active': False})
+
+    # ==========================================
+    # DELETE SAFETY
+    # ==========================================
+    # Real payroll history must never be destroyed by removing the config that
+    # produced it. The child FKs are the backstop (payslips / carryover /
+    # proration / retro adjustments / import batches are all ondelete='restrict'),
+    # but a raw restrict raises an opaque Postgres error, so we look first and
+    # report in plain language. Everything NOT listed here is config-scoped
+    # metadata on ondelete='cascade' and is meant to go with the config.
+    # (model, field, singular, plural) - the plural is spelled out rather than
+    # derived, because "import batch" pluralises to "batches", not "batchs".
+    _DELETE_BLOCKER_MODELS = [
+        ('hr.payslip', 'formula_config_id', 'payslip', 'payslips'),
+        ('hr.payroll.import.batch', 'formula_config_id', 'import batch', 'import batches'),
+        ('hr.payroll.cycle.carryover', 'formula_config_id', 'carry-forward record', 'carry-forward records'),
+        ('hr.payroll.proration.line', 'formula_config_id', 'proration record', 'proration records'),
+        ('hr.payroll.retro.adjustment', 'formula_config_id', 'retro adjustment', 'retro adjustments'),
+    ]
+
+    def _delete_blockers(self):
+        """Records that make a hard delete unsafe, newest concern first.
+
+        Returns a list of ``{'model', 'label', 'count'}`` dicts - empty means
+        the config carries no payroll history and can be deleted outright.
+
+        ``table_exists`` is checked per model because the addons tree is SHARED
+        across databases while schemas are created by a per-database upgrade:
+        between an rsync and the `-u` of database N, the model class is in the
+        registry but its table is not in the schema, and an unguarded search
+        would raise UndefinedTable and leave the transaction ABORTED - which
+        would take the whole cockpit board down with it, not just this check.
+        """
+        self.ensure_one()
+        blockers = []
+        for model_name, field_name, singular, plural in self._DELETE_BLOCKER_MODELS:
+            Model = self.env.get(model_name)
+            if Model is None or field_name not in Model._fields:
+                continue
+            if not table_exists(self.env.cr, Model._table):
+                continue
+            count = Model.sudo().with_context(active_test=False).search_count(
+                [(field_name, '=', self.id)])
+            if count:
+                blockers.append({
+                    'model': model_name,
+                    'label': singular if count == 1 else plural,
+                    'count': count,
+                })
+        return blockers
+
+    def _delete_blocker_message(self, blockers):
+        """Human sentence for a blocker list, e.g. '12 payslips and 1 import batch'."""
+        parts = ['%d %s' % (b['count'], b['label']) for b in blockers]
+        if not parts:
+            return ''
+        if len(parts) == 1:
+            return parts[0]
+        return '%s and %s' % (', '.join(parts[:-1]), parts[-1])
+
+    def unlink(self):
+        for config in self:
+            blockers = config._delete_blockers()
+            if blockers:
+                raise UserError(_(
+                    "\"%(name)s\" cannot be deleted because it is used by "
+                    "%(blockers)s.\n\nArchive it instead - the configuration is "
+                    "hidden from everyday use while the payroll history that "
+                    "depends on it stays intact.",
+                    name=config.name or '',
+                    blockers=config._delete_blocker_message(blockers),
+                ))
+        return super().unlink()
 
     # ==========================================
     # FORMULA VALIDATION
@@ -970,27 +1468,228 @@ class HrFormulaConfig(models.Model):
         }
 
     # ==========================================
-    # IMPORT FROM EXCEL (MULTI-SHEET WIZARD)
+    # SET UP COLUMNS FROM EXCEL (MULTI-SHEET WIZARD)
     # ==========================================
     def action_import_from_excel_multisheet(self):
-        """Open multi-sheet Excel import wizard with enhanced features.
+        """Read a workbook's STRUCTURE and turn it into this scheme's columns.
 
-        This wizard provides:
-        - Worksheet selection with checkboxes
-        - Per-sheet column selection
-        - Append order configuration
-        - Cross-sheet formula resolution (VLOOKUP, SUMIF, etc.)
+        JOURNEY J2 — behaviour unchanged, name corrected. This is the sixth
+        and most confusing of the old import doors: it was called "Import from
+        Excel" next to another button called "Payroll Import", and the two do
+        opposite things. This one defines what the columns ARE (a one-off
+        setup act, from a colour-coded workbook); the other loads this month's
+        numbers into them. Every string it puts on screen now says "columns"
+        and "set up" so the two can never be confused again.
         """
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Import from Excel (Multi-Sheet)'),
+            'name': _('Set Up Columns from Excel'),
             'res_model': 'hr.formula.multisheet.import.wizard',
             'view_mode': 'form',
             'target': 'new',
             'context': {
                 'default_config_id': self.id,
             }
+        }
+
+    # ==========================================
+    # JOURNEY J2 — the template built from this scheme
+    # ==========================================
+    def _pay_template_pk_header(self):
+        """The employee-identifier heading a generated template leads with.
+
+        Prefer what this scheme already reads — a component bound to (or named
+        after) an identifier column means the file in use spells it that way,
+        and a template that spells it differently would fail to merge. Fall
+        back to the loader's own first candidate.
+        """
+        self.ensure_one()
+        from ..integrations.excel_connector import ExcelConnector
+        Batch = self.env['hr.payroll.import.batch']
+        for rule in self.rule_ids.sorted(key=lambda r: r.sequence):
+            _sheet, header = ExcelConnector.template_slot_for(rule)
+            if header and Batch._find_primary_key_header([header]):
+                return header
+        return _('Employee Code')
+
+    def _build_pay_data_template(self):
+        """`(bytes, filename)` — the workbook whose headings this scheme reads.
+
+        One generator, and it lives where every other Excel-shaped thing in
+        this module lives. The studio's download button and the tests are its
+        callers; before J2 it had none at all.
+        """
+        self.ensure_one()
+        from ..integrations.excel_connector import ExcelConnector
+        connector = ExcelConnector(self.env['hr.integration.connector'])
+        content = connector.generate_template(
+            self.rule_ids.sorted(key=lambda r: r.sequence),
+            pk_header=self._pay_template_pk_header(),
+            sheet_title=_('Pay Data'),
+        )
+        stem = (self.code or self.name or 'scheme').strip().replace(' ', '_')
+        return content, '%s_pay_data_template.xlsx' % stem
+
+    # ==========================================
+    # COLUMN ROLES — shared summary (COLROLES P4)
+    # ==========================================
+    # An import that has just filed six of a workbook's columns as people data
+    # should SAY so; the studio, the single-sheet wizard and the multi-sheet
+    # wizard all need the same sentence, so it is written once here.
+    @api.model
+    def role_labels(self):
+        """Lowercase role words for a running sentence ("2 identity · 4 bank")."""
+        return {
+            'payroll': _("payroll"),
+            'identity': _("identity"),
+            'profile': _("employee profile"),
+            'contract': _("contract"),
+            'bank': _("bank"),
+            'reference': _("reference"),
+        }
+
+    @api.model
+    def role_counts_for_rules(self, rules):
+        """Ordered {role: count} over a rule recordset — roles with no column
+        are dropped, and payroll always leads because it is what most of the
+        workbook is."""
+        order = ('payroll', 'identity', 'profile', 'contract', 'bank', 'reference')
+        tally = dict.fromkeys(order, 0)
+        for rule in rules:
+            role = rule.column_role or 'payroll'
+            tally[role] = tally.get(role, 0) + 1
+        return {role: tally[role] for role in order if tally.get(role)}
+
+    @api.model
+    def format_role_summary(self, counts):
+        """"41 payroll · 2 identity · 4 bank columns" — empty when nothing counted."""
+        labels = self.role_labels()
+        parts = ['%s %s' % (n, labels.get(role, role)) for role, n in counts.items() if n]
+        if not parts:
+            return ''
+        return _("%s columns") % ' · '.join(parts)
+
+    def role_column_summary(self):
+        """The sentence for THIS structure, over the columns it holds now."""
+        self.ensure_one()
+        return self.format_role_summary(self.role_counts_for_rules(self.rule_ids))
+
+    #: roles whose columns describe a PERSON rather than their pay — the ones a
+    #: mapping board exists for.
+    PEOPLE_ROLES = ('identity', 'profile', 'contract', 'bank')
+
+    def studio_people_mapping_action(self, rules):
+        """Reopen Formula Studio on the people-mapping board after an import.
+
+        Deliberately narrow. It fires only when the import was launched FROM the
+        studio (context flag `pbfs_studio_import`) AND the import actually produced
+        people columns — a pure-payroll workbook is never bounced to a board it has
+        nothing to put on. Returns None when the studio is not installed, so the
+        formula engine keeps working without it.
+        """
+        self.ensure_one()
+        if not self.env.context.get('pbfs_studio_import'):
+            return None
+        if not rules.filtered(
+                lambda r: (r.column_role or 'payroll') in self.PEOPLE_ROLES):
+            return None
+        action = self.env.ref('pb_formula_studio.action_pb_formula_studio',
+                              raise_if_not_found=False)
+        if not action:
+            return None
+        signal = {'config_id': self.id, 'pbfs_open_people_mapping': True}
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': dict(signal),
+            'context': dict(signal),
+        }
+
+    # ==========================================
+    # NETROLE P2 — the import ends with a category conversation
+    # ==========================================
+    # An Excel scheme arrives with every component on the same shelf, and until
+    # now the only thing that ever moved one was a person opening each row. The
+    # formulas already say what each component does to net pay (NETROLE Phase 1);
+    # this is where that reading is offered — as a question, at the moment the
+    # import finishes, never as a silent write.
+    def category_review_action(self, next_action=None):
+        """Classify this scheme and return the review action — or None.
+
+        None means "say nothing": the studio is not installed, the
+        classification failed, or every component is already filed the way the
+        formulas read it. In all three cases the caller's existing chain is
+        byte-identical to what it was before this method existed.
+
+        A classification failure must NEVER fail an import (C7 says log it), so
+        every step here is guarded. The one failure that DOES open the review is
+        a scheme with no net-pay component: that is not an error to swallow, it
+        is the one question only a person can answer.
+        """
+        self.ensure_one()
+        try:
+            summary = (self.classify_net_roles() or {}).get(self.id) or {}
+        except Exception:
+            _logger.exception(
+                "NETROLE: could not classify configuration %s after import; "
+                "the import itself is unaffected", self.id)
+            return None
+        action = self.env.ref('pb_formula_studio.action_pb_category_review',
+                              raise_if_not_found=False)
+        if not action:
+            return None
+        if summary.get('error'):
+            worth_asking = bool(self.rule_ids)
+        else:
+            try:
+                suggestions = self.suggest_categories()
+            except Exception:
+                _logger.exception(
+                    "NETROLE: could not build category suggestions for "
+                    "configuration %s", self.id)
+                return None
+            worth_asking = any(
+                row.get('changes') or row.get('band_conflict')
+                or row.get('confidence') == 'review'
+                for row in suggestions)
+        if not worth_asking:
+            return None
+        params = {'config_id': self.id}
+        if next_action:
+            params['next_action'] = next_action
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': params,
+            'context': {'config_id': self.id},
+        }
+
+    def action_open_category_review(self):
+        """Reopen the review any time, from the structure itself."""
+        self.ensure_one()
+        action = self.env.ref('pb_formula_studio.action_pb_category_review',
+                              raise_if_not_found=False)
+        if not action:
+            raise UserError(_(
+                "The category review needs the Formula Studio, which is not "
+                "installed on this database."))
+        try:
+            self.classify_net_roles()
+        except Exception:
+            _logger.exception("NETROLE: classification failed for config %s",
+                              self.id)
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': {'config_id': self.id},
+            'context': {'config_id': self.id},
         }
 
     # ==========================================
@@ -1028,19 +1727,15 @@ class HrFormulaConfig(models.Model):
         }
 
     def action_launch_payroll_import(self):
-        """Launch payroll import with this configuration pre-selected"""
+        """Load this month's pay data for this scheme — through the guided flow.
+
+        JOURNEY J2: same door, same pre-scoping, one destination. It used to
+        open the raw batch form; it now arrives in the same four-step flow the
+        Import cockpit's hero button opens, with this scheme already chosen.
+        """
         self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('New Payroll Import'),
-            'res_model': 'hr.payroll.import.batch',
-            'view_mode': 'form',
-            'target': 'current',
-            'context': {
-                'default_formula_config_id': self.id,
-                'default_source_type': 'excel',
-            },
-        }
+        return self.env['hr.payroll.import.batch'].action_open_guided_import(
+            config=self, source_type='excel')
 
     def action_delete_all_rules(self):
         """Delete all salary component rules from this configuration"""
@@ -1150,3 +1845,846 @@ class HrFormulaConfig(models.Model):
                     'sticky': False,
                 }
             }
+
+    # ==================================================================
+    # VALUEKIND — what each component's value IS
+    # ==================================================================
+    def _value_kind_samples(self, limit=200):
+        """``{CODE: [raw values]}`` from the newest finished import batch.
+
+        Read from ``hr_payroll_import_line.raw_data_json`` — the material as it
+        ARRIVED. Never from ``hr_payslip.formula_input_values``: that blob is
+        downstream of the two coercion sites this whole feature exists to fix,
+        so evidence drawn from it would only confirm its own damage (C18.118).
+
+        A component is looked up by its connector mapping's ``source_field``
+        first, then by its own spellings (code, name, column letter), because a
+        component fed through the header ladder has no mapping row at all.
+        """
+        self.ensure_one()
+        Line = self.env['hr.payroll.import.line'].sudo()
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        # RD59 — same reason as `employee_signal_map`: a record refresh is a
+        # batch, and "the newest batch" must mean the newest PAY DATA. Sampling
+        # a refresh's payload would teach the value-kind classifier about a
+        # payload no payslip was ever computed from.
+        pay_data = [('formula_config_id', '=', self.id),
+                    ('create_payslips', '=', True)]
+        batch = Batch.search(pay_data + [('state', '=', 'done')],
+                             order='id desc', limit=1)
+        if not batch:
+            batch = Batch.search(pay_data, order='id desc', limit=1)
+        if not batch:
+            return {}
+        lines = Line.search([('batch_id', '=', batch.id)], limit=limit)
+        rows = []
+        for line in lines:
+            try:
+                data = json.loads(line.raw_data_json or '{}')
+            except (TypeError, ValueError):
+                continue
+            if isinstance(data, dict):
+                rows.append(data)
+        if not rows:
+            return {}
+
+        # One normalised index per row, so a header spelling that differs only in
+        # case, spacing or punctuation still finds its column.
+        Batchm = self.env['hr.payroll.import.batch']
+        indexed = []
+        for row in rows:
+            indexed.append({Batchm._normalize_header_key(k): v
+                            for k, v in row.items() if isinstance(k, str)})
+
+        mapping_by_rule = {}
+        if 'hr.integration.field.mapping' in self.env:
+            wires = self.env['hr.integration.field.mapping'].sudo().search(
+                [('target_rule_id', 'in', self.rule_ids.ids)])
+            mapping_by_rule = {w.target_rule_id.id: w for w in wires
+                               if w.target_rule_id}
+
+        out = {}
+        for rule in self.rule_ids:
+            keys = []
+            wire = mapping_by_rule.get(rule.id)
+            if wire and wire.source_field:
+                keys.append(wire.source_field)
+            keys += [rule.code, rule.name, rule.data_source_field]
+            values = []
+            for key in keys:
+                if not key:
+                    continue
+                norm = Batchm._normalize_header_key(key)
+                if not norm:
+                    continue
+                found = [row.get(norm) for row in indexed if norm in row]
+                if found:
+                    values = found
+                    break
+            if values:
+                out[rule.code] = values
+        return out
+
+    def _scheme_operand_contexts(self):
+        """``{REF: set(contexts)}`` over EVERY formula in this scheme.
+
+        A component's kind is decided by how the WHOLE scheme uses it, not by
+        its own formula — an input column has no formula of its own at all.
+        """
+        self.ensure_one()
+        merged = {}
+        for rule in self.rule_ids:
+            formula_operand_context.merge_contexts(
+                merged,
+                formula_operand_context.deserialize(rule.formula_operand_roles))
+        return merged
+
+    def _rule_operand_contexts(self, rule, scheme_contexts):
+        """The contexts applied to ONE rule, under any spelling it answers to.
+
+        `formula_dependencies` and the operand scan both record COLUMN LETTERS
+        as often as codes, so all three spellings are asked (C18.115).
+        """
+        contexts = set()
+        for spelling in (rule.code, rule.column_letter, rule.original_column_letter):
+            key = formula_operand_context.normalize_ref(spelling)
+            if key:
+                contexts |= set(scheme_contexts.get(key, ()))
+        return contexts
+
+    def classify_value_kinds(self, force=False):
+        """(Re)classify every component's `value_kind`. Returns rows changed.
+
+        `value_kind_source='user'` is never touched unless `force`, which the UI
+        does not offer — a person's answer outranks the ladder, permanently.
+        """
+        self.ensure_one()
+        # Imported here, not at module top: `formula_net_role` declares
+        # `_inherit` on both hr.formula.rule and hr.formula.config, and
+        # `models/__init__.py` loads it deliberately LAST (line 78). A top-level
+        # import would pull those inherits in before `formula_rule` itself.
+        from .formula_net_role import looks_like_a_quantity
+
+        scheme = self._scheme_operand_contexts()
+        samples = self._value_kind_samples()
+        vendor = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', self.rule_ids.ids)]):
+                if wire.target_rule_id:
+                    vendor[wire.target_rule_id.id] = wire.source_data_type or ''
+
+        changed = 0
+        for rule in self.rule_ids:
+            # The payroll SIGNAL is suggested for every rule, including one
+            # whose value type a person has already chosen: they are separate
+            # questions, and skipping the whole row for the first would leave
+            # the second permanently unanswered — which is what made the pay
+            # run wizard show no employment-status filter at all.
+            if not rule.payroll_signal:
+                signal = value_kind_classifier.suggest_payroll_signal(
+                    code=rule.code or '', name=rule.name or '',
+                    sample_values=samples.get(rule.code) or [],
+                    quantity=bool(looks_like_a_quantity(rule.name or '',
+                                                        rule.code or '')))
+                if signal:
+                    rule.with_context(skip_formula_version=True).write(
+                        {'payroll_signal': signal})
+                    changed += 1
+
+            if rule.value_kind_source == 'user' and not force:
+                continue
+            kind, reason = value_kind_classifier.classify_value_kind(
+                code=rule.code or '',
+                name=rule.name or '',
+                column_role=rule.column_role or 'payroll',
+                net_role=rule.net_role or '',
+                column_type=rule.column_type or 'input',
+                contexts=self._rule_operand_contexts(rule, scheme),
+                quantity=bool(looks_like_a_quantity(rule.name or '', rule.code or '')),
+                vendor_type=vendor.get(rule.id, ''),
+                sample_values=samples.get(rule.code) or [],
+                appears_on_payslip=bool(rule.appears_on_payslip),
+            )
+            vals = {}
+            if rule.value_kind != kind or rule.value_kind_reason != reason:
+                vals.update(value_kind=kind, value_kind_source='auto',
+                            value_kind_reason=reason)
+            if vals:
+                rule.with_context(skip_formula_version=True).write(vals)
+                changed += 1
+        _logger.info("VALUEKIND: classified %s component(s) on scheme %s (%s)",
+                     changed, self.id, self.name)
+        return changed
+
+    def audit_value_kinds(self, run_id=None):
+        """Read-only. Two different disagreements, deliberately kept apart.
+
+        ``rows``  — the component's DECLARED kind versus the values the source
+                    actually delivers. Self-healing: re-classifying makes these
+                    agree, so an empty list here means the declarations are
+                    consistent, not that payroll is correct.
+
+        ``drift`` — what the source delivered versus WHAT THE PAYSLIP STORED.
+                    This is the one that matters, and the one that would have
+                    caught ABM's LOCATION in March instead of leaving it to a
+                    screenshot: the feed sent "Ho Chi Minh Branch", the payslip
+                    holds 0.0, and every `IF(F5="La Nga", …)` in the scheme has
+                    been false ever since. No declaration is wrong; the VALUE
+                    was destroyed on the way in.
+
+        Reads and reports. Never writes, never recomputes a payslip — repairing
+        a historic run is a separate, explicitly-approved exercise.
+        """
+        self.ensure_one()
+        samples = self._value_kind_samples()
+        scheme = self._scheme_operand_contexts()
+        rows = []
+        for rule in self.rule_ids:
+            values = samples.get(rule.code) or []
+            if not values:
+                continue
+            bad = value_kind_classifier.contradictions(rule.value_kind, values)
+            if not bad:
+                continue
+            rows.append({
+                'code': rule.code,
+                'name': rule.name or rule.code,
+                'declared': rule.value_kind,
+                'source': rule.value_kind_source,
+                'reason': rule.value_kind_reason or '',
+                'contexts': sorted(self._rule_operand_contexts(rule, scheme)),
+                'seen': len(values),
+                'contradicted': len(bad),
+                'examples': [str(v)[:60] for v in bad[:3]],
+            })
+        rows.sort(key=lambda r: -r['contradicted'])
+        return {
+            'config_id': self.id,
+            'name': self.name or '',
+            'rows': rows,
+            'drift': self._audit_stored_drift(run_id=run_id, samples=samples),
+        }
+
+    def _audit_stored_drift(self, run_id=None, samples=None, limit=200):
+        """Components whose payslips hold a number where the source sent text.
+
+        The comparison is per COMPONENT, not per employee: a component is
+        reported when the source delivered a non-blank, non-numeric value for a
+        row and the payslip for that same period stored the component's numeric
+        fallback. That pairing is what "the value was destroyed on the way in"
+        looks like from the outside.
+        """
+        self.ensure_one()
+        samples = samples if samples is not None else self._value_kind_samples()
+        if not samples:
+            return []
+        Slip = self.env['hr.payslip'].sudo()
+        domain = [('formula_config_id', '=', self.id)]
+        if run_id:
+            domain.append(('payslip_run_id', '=', int(run_id)))
+        slips = Slip.search(domain, order='id desc', limit=limit)
+        if not slips:
+            return []
+
+        stored = {}        # code -> list of stored values
+        for slip in slips:
+            try:
+                blob = json.loads(slip.formula_input_values or '{}')
+            except (TypeError, ValueError):
+                continue
+            if not isinstance(blob, dict):
+                continue
+            for code, value in blob.items():
+                stored.setdefault(code, []).append(value)
+
+        out = []
+        for rule in self.rule_ids:
+            delivered = samples.get(rule.code) or []
+            held = stored.get(rule.code) or []
+            if not delivered or not held:
+                continue
+            texty = [v for v in delivered
+                     if value_kind_classifier.is_texty_sample(v)]
+            if not texty:
+                continue
+            numeric_held = [v for v in held
+                            if isinstance(v, (int, float))
+                            and not isinstance(v, bool)]
+            if not numeric_held:
+                continue
+            out.append({
+                'code': rule.code,
+                'name': rule.name or rule.code,
+                'declared': rule.value_kind,
+                'delivered_examples': [str(v)[:60] for v in texty[:3]],
+                'stored_examples': numeric_held[:3],
+                'slips_seen': len(held),
+                'slips_numeric': len(numeric_held),
+            })
+        out.sort(key=lambda r: -r['slips_numeric'])
+        return out
+
+    # ==================================================================
+    # VALUEKIND P2 — the board a person decides types on
+    # ==================================================================
+    _VALUE_KIND_GATE = (
+        'pb_hr_payroll_base.group_payroll_base_officer',
+        'pb_hr_payroll_base.group_payroll_base_manager',
+        'pb_hr_payroll_base.group_payroll_super_admin',
+        'om_hr_payroll.group_hr_payroll_manager',
+    )
+
+    def _value_kind_gate(self):
+        """Same ladder the pay run itself requires. Read AND write."""
+        if self.env.su or self.env.user._is_admin():
+            return
+        if any(self.env.user.has_group(g) for g in self._VALUE_KIND_GATE):
+            return
+        raise AccessError(_(
+            "You need payroll officer access to change how a pay component's "
+            "value is read."))
+
+    def _value_kind_lane(self, rule, wire):
+        """Where this component's value comes from, in the Atlas's own words.
+
+        One vocabulary for both boards. The point of this whole feature is that
+        a type is a property of the COMPONENT, not of the wire that happens to
+        feed it — so the lane is information, never the thing being edited.
+        """
+        if rule.column_type == 'formula':
+            return 'calculated'
+        if rule.column_type == 'constant':
+            return 'constant'
+        if wire:
+            return 'feed'
+        if getattr(rule, 'is_contract_component', False):
+            return 'contract_component'
+        return 'excel'
+
+    @api.model
+    def _value_kind_options(self):
+        """The selection, as the client needs it — value, label, and whether
+        choosing it means the value gets converted to a number."""
+        field = self.env['hr.formula.rule']._fields['value_kind']
+        return [{'value': key,
+                 'label': label,
+                 'numeric': value_kind_classifier.wants_number(key),
+                 # VALUEKIND P5 — picking a kind changes which pay roles the
+                 # row may hold, and the board has to grey them out in the same
+                 # keystroke rather than after a failed save.
+                 'money': key in value_kind_classifier.MONEY_ROLE_KINDS}
+                for key, label in field.selection]
+
+    @api.model
+    def _value_kind_label(self, kind):
+        """The words a person reads for a value kind, for use in a sentence."""
+        field = self.env['hr.formula.rule']._fields['value_kind']
+        return dict(field.selection).get(kind or '', _("untyped"))
+
+    def value_kind_board(self, run_id=None):
+        """Everything the Field types board shows, in one call.
+
+        Read-only. Nothing here changes a value or recomputes a payslip —
+        a person presses Save, and then presses Recompute, and both say so.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        samples = self._value_kind_samples()
+        scheme = self._scheme_operand_contexts()
+        drift = {d['code']: d
+                 for d in self._audit_stored_drift(run_id=run_id, samples=samples)}
+
+        wires = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', self.rule_ids.ids)]):
+                if wire.target_rule_id:
+                    wires[wire.target_rule_id.id] = wire
+
+        rows = []
+        for rule in self.rule_ids.sorted(key=lambda r: (r.sequence, r.id)):
+            wire = wires.get(rule.id)
+            values = samples.get(rule.code) or []
+            row_drift = drift.get(rule.code)
+            rows.append({
+                'id': rule.id,
+                'code': rule.code or '',
+                'name': rule.name or rule.code or '',
+                'band': (rule.component_type or '')
+                        or (rule.category_id.name or '') or _('Ungrouped'),
+                'lane': self._value_kind_lane(rule, wire),
+                'source_key': (wire.source_field if wire
+                               else (rule.data_source_field or rule.column_letter or '')),
+                'kind': rule.value_kind,
+                'kind_source': rule.value_kind_source,
+                'kind_reason': rule.value_kind_reason or '',
+                # VALUEKIND P4 — the other two axes a person needs on the same
+                # row. `group` is what the Atlas chips show and what people call
+                # "the category"; `pay_role` is what every report counts it as;
+                # `rollup` is the double-count guard.
+                'group': (rule.component_type or '')
+                         or (rule.category_id.name or '') or '',
+                'group_set': bool(rule.component_type),
+                'pay_role': rule.net_role or '',
+                'pay_role_source': rule.net_role_source or '',
+                'pay_role_confidence': rule.net_role_confidence or '',
+                'pay_role_reason': rule.net_role_reason or '',
+                'rollup': bool(rule.net_role_detail),
+                'signal': rule.payroll_signal or '',
+                'needs_review': not rule.net_role
+                                or rule.net_role_confidence == 'review',
+                # VALUEKIND P5 — a row that already holds a money role its own
+                # value type forbids. Shown, never silently rewritten: these
+                # were derived before the gate existed, the figures they feed
+                # are correct today (every one is flagged Subtotal), and a
+                # classification a person has been living with is theirs to
+                # confirm. `Fix these` on the board does it in one press.
+                'role_conflict': not value_kind_classifier.role_is_allowed(
+                    rule.value_kind, rule.net_role),
+                'role_blocked': not value_kind_classifier.role_is_allowed(
+                    rule.value_kind, 'earning'),
+                'appears_on_payslip': bool(rule.appears_on_payslip),
+                'numeric': value_kind_classifier.wants_number(rule.value_kind),
+                'delivered': [str(v)[:48] for v in values[:3]],
+                'seen': len(values),
+                'drift': bool(row_drift),
+                'drift_stored': (row_drift or {}).get('stored_examples') or [],
+                'contexts': sorted(self._rule_operand_contexts(rule, scheme)),
+            })
+        role_field = self.env['hr.formula.rule']._fields['net_role']
+        signal_field = self.env['hr.formula.rule']._fields['payroll_signal']
+        groups = sorted({r['group'] for r in rows if r['group']})
+        return {
+            'config_id': self.id,
+            'name': self.name or '',
+            'options': self._value_kind_options(),
+            'pay_roles': [{'value': k, 'label': label,
+                           'money': k in value_kind_classifier._PAY_ROLES}
+                          for k, label in role_field.selection],
+            'signals': [{'value': k, 'label': label}
+                        for k, label in signal_field.selection],
+            'groups': groups,
+            'rows': rows,
+            'drift_count': len(drift),
+            'review_count': sum(1 for r in rows if r['needs_review']),
+            'role_conflict_count': sum(1 for r in rows if r['role_conflict']),
+        }
+
+    def _pb_state_label(self):
+        """The status word a person reads, for use inside a sentence."""
+        self.ensure_one()
+        return dict(self._fields['state'].selection).get(self.state, self.state)
+
+    def reclassify_from_formulas(self):
+        """Re-derive every pay role and Subtotal flag from the scheme's formulas.
+
+        The board's own door to `classify_net_roles`. It had one — the Category
+        review, reached from a server action bound to `hr.formula.config` — but
+        that menu is not reachable in the current navigation (`menu-451` falls
+        through to Discuss), so in practice the only way to re-derive a scheme
+        was to run an import. This is the action the two banners on this board
+        actually need: the value-type gate and the roll-up chain are both
+        decided here, and neither moves until something re-classifies.
+
+        Rows a person has set are left alone — see `net_role_source`.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        before = {r.id: (r.net_role, r.net_role_detail) for r in self.rule_ids}
+        summary = (self.classify_net_roles() or {}).get(self.id) or {}
+        if summary.get('error'):
+            raise UserError(_(
+                "This scheme could not be re-classified: %(why)s",
+                why=summary['error']))
+        changed = [r.code for r in self.rule_ids
+                   if before.get(r.id) != (r.net_role, r.net_role_detail)]
+        _logger.info("VALUEKIND P5: %s re-classified scheme %s — %s change(s): %s",
+                     self.env.user.login, self.id, len(changed),
+                     ', '.join(sorted(changed)) or 'none')
+        return {
+            'changed': len(changed),
+            'kept': len(summary.get('kept') or []),
+            'gated': len(summary.get('gated') or []),
+        }
+
+    def fix_role_conflicts(self, codes=None):
+        """Set every gated component to 'Information only'. Returns the codes.
+
+        The one action behind the board's conflict banner. It writes the same
+        role and reason the classifier would now derive, and marks it `certain`
+        — a person pressed this; it is not a guess to be re-opened next time
+        the scheme is classified.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        wanted = {str(c).upper() for c in (codes or [])}
+        fixed = []
+        for rule in self.rule_ids:
+            if wanted and (rule.code or '').upper() not in wanted:
+                continue
+            if value_kind_classifier.role_is_allowed(rule.value_kind, rule.net_role):
+                continue
+            rule.write({
+                'net_role': value_kind_classifier.ROLE_INFO,
+                # A person pressed this, so a later re-classify leaves it be.
+                'net_role_source': 'user',
+                'net_role_confidence': 'certain',
+                'net_role_reason': self._role_gate_reason(rule),
+            })
+            fixed.append(rule.code)
+        if fixed:
+            _logger.info("VALUEKIND P5: %s set %s component(s) to information "
+                         "only on scheme %s: %s", self.env.user.login,
+                         len(fixed), self.id, ', '.join(sorted(fixed)))
+        return fixed
+
+    def set_value_kinds(self, updates):
+        """``{code: kind}`` -> the rows changed. A person's decision.
+
+        Writes `value_kind_source='user'`, which every automatic writer —
+        the classifier and the upgrade migration alike — is required to respect
+        for good. `reset_value_kind` is the only way back.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        valid = {k for k, _label in
+                 self.env['hr.formula.rule']._fields['value_kind'].selection}
+        by_code = {(r.code or '').upper(): r for r in self.rule_ids}
+        changed = []
+        for code, kind in (updates or {}).items():
+            rule = by_code.get(str(code).upper())
+            if not rule:
+                raise UserError(_("No component named '%s' on this scheme.", code))
+            if kind not in valid:
+                raise UserError(_("'%(kind)s' is not a value kind.", kind=kind))
+            if rule.value_kind == kind and rule.value_kind_source == 'user':
+                continue
+            rule.write({
+                'value_kind': kind,
+                'value_kind_source': 'user',
+                'value_kind_reason': _("%s chose this.", self.env.user.name),
+            })
+            changed.append(rule.code)
+        if changed:
+            _logger.info("VALUEKIND: %s set %s on scheme %s: %s",
+                         self.env.user.login, len(changed), self.id,
+                         ', '.join(changed))
+        return {'changed': changed,
+                'note': _("Saved. Existing payslips keep the values they were "
+                          "computed with until the run is recomputed.")}
+
+    def set_component_setup(self, updates):
+        """``{code: {group, pay_role, rollup, kind}}`` -> the rows changed.
+
+        One save for all four axes, because they are four columns of one row on
+        one screen and a person edits them together. Every key is optional; only
+        what is sent is written.
+
+        A pay role a PERSON chooses is marked `certain` and its reason names
+        them, so the net-role classifier — which derives roles from the scheme's
+        formulas — treats it exactly as `value_kind_source='user'` treats a
+        chosen value type: an answer somebody gave is never re-derived.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        Rule = self.env['hr.formula.rule']
+        valid_kinds = {k for k, _l in Rule._fields['value_kind'].selection}
+        valid_roles = {k for k, _l in Rule._fields['net_role'].selection}
+        by_code = {(r.code or '').upper(): r for r in self.rule_ids}
+
+        changed = []
+        for code, patch in (updates or {}).items():
+            rule = by_code.get(str(code).upper())
+            if not rule:
+                raise UserError(_("No component named '%s' on this scheme.", code))
+            if not isinstance(patch, dict):
+                raise UserError(_("Malformed change for '%s'.", code))
+            vals = {}
+
+            if 'kind' in patch:
+                if patch['kind'] not in valid_kinds:
+                    raise UserError(_("'%(k)s' is not a value kind.", k=patch['kind']))
+                if patch['kind'] != rule.value_kind:
+                    vals.update(value_kind=patch['kind'], value_kind_source='user',
+                                value_kind_reason=_("%s chose this.",
+                                                    self.env.user.name))
+
+            if 'pay_role' in patch:
+                role = patch['pay_role'] or False
+                if role and role not in valid_roles:
+                    raise UserError(_("'%(r)s' is not a pay role.", r=role))
+                # VALUEKIND P5 — the value type gates the role, and it gates it
+                # against the kind being saved in THIS call, not the one on the
+                # record: changing "Money" to "Quantity (hours, days)" and
+                # leaving the role at "Adds to net pay" is one edit of one row,
+                # and it must not be possible to leave the row self-contradictory.
+                kind = vals.get('value_kind', rule.value_kind)
+                if not value_kind_classifier.role_is_allowed(kind, role):
+                    raise UserError(_(
+                        "'%(name)s' is %(kind)s, so it cannot be '%(role)s'. "
+                        "Only a component that holds an amount can be added to "
+                        "or taken off net pay — set it to 'Information only', "
+                        "or change its value type first.",
+                        name=rule.name or rule.code,
+                        kind=self._value_kind_label(kind),
+                        role=dict(Rule._fields['net_role'].selection).get(role, role)))
+                if role != (rule.net_role or False):
+                    vals.update(net_role=role,
+                                # Blank hands the row BACK to the classifier;
+                                # anything else is a decision it must respect.
+                                net_role_source='user' if role else False,
+                                net_role_confidence='certain' if role else False,
+                                net_role_reason=_("%s chose this.",
+                                                  self.env.user.name) if role else False)
+
+            # The kind may have changed on its own, with no `pay_role` key at
+            # all. The stored role has to follow it down rather than survive as
+            # a contradiction nobody asked about — this IS the person's edit of
+            # this row, so demoting here is their action, not a silent rewrite.
+            if 'value_kind' in vals and 'pay_role' not in patch:
+                kept, demoted = value_kind_classifier.gate_role(
+                    vals['value_kind'], rule.net_role or False)
+                if demoted:
+                    vals.update(net_role=kept,
+                                net_role_confidence='certain',
+                                net_role_reason=self._role_gate_reason_for(
+                                    rule, vals['value_kind']))
+
+            # The Subtotal flag rides the same marker: it and the pay role are
+            # one decision about how a component is treated, edited on one row.
+            if 'rollup' in patch and bool(patch['rollup']) != bool(rule.net_role_detail):
+                vals['net_role_detail'] = bool(patch['rollup'])
+                vals.setdefault('net_role_source', 'user')
+
+            if 'signal' in patch:
+                signal = patch['signal'] or False
+                valid_signals = {k for k, _l in
+                                 Rule._fields['payroll_signal'].selection}
+                if signal and signal not in valid_signals:
+                    raise UserError(_("'%(s)s' is not something a component can "
+                                      "tell the run.", s=signal))
+                if signal != (rule.payroll_signal or False):
+                    vals['payroll_signal'] = signal
+
+            if 'group' in patch:
+                group = (patch['group'] or '').strip()
+                if group != (rule.component_type or ''):
+                    vals['component_type'] = group or False
+
+            if vals:
+                rule.write(vals)
+                changed.append(rule.code)
+
+        if changed:
+            _logger.info("VALUEKIND P4: %s set up %s component(s) on scheme %s: %s",
+                         self.env.user.login, len(changed), self.id,
+                         ', '.join(changed))
+        return {
+            'changed': changed,
+            'note': _("Saved. Reports use this from now on; payslips already "
+                      "computed keep what they were computed with until the run "
+                      "is recomputed."),
+        }
+
+    @api.model
+    def unreviewed_components(self, config_ids=None):
+        """Components a person still has to rule on, per scheme.
+
+        Deliberately ONLY the genuinely unsure — no pay role at all, or the
+        classifier marked it `review`. A `likely` role is a working answer, and
+        a gate that stops on those becomes noise people learn to click through,
+        which is worse than no gate.
+        """
+        configs = self.browse(config_ids) if config_ids else self.search([])
+        out = []
+        for config in configs.exists():
+            rules = config.rule_ids.filtered(
+                lambda r: r.column_type != 'constant'
+                and (not r.net_role or r.net_role_confidence == 'review'))
+            if not rules:
+                continue
+            out.append({
+                'config_id': config.id,
+                'name': config.name or '',
+                'count': len(rules),
+                'codes': rules.mapped('code')[:20],
+            })
+        return out
+
+    def reset_value_kind(self, codes):
+        """Hand chosen components back to the classifier."""
+        self.ensure_one()
+        self._value_kind_gate()
+        wanted = {str(c).upper() for c in (codes or [])}
+        rules = self.rule_ids.filtered(lambda r: (r.code or '').upper() in wanted)
+        if rules:
+            rules.write({'value_kind_source': 'auto'})
+            self.classify_value_kinds()
+        return {'reset': rules.mapped('code')}
+
+    # ==================================================================
+    # VALUEKIND P4 — who belongs in a pay run
+    # ==================================================================
+    def _signal_component(self, signal):
+        """The component a person named as carrying this signal, or empty."""
+        self.ensure_one()
+        return self.rule_ids.filtered(
+            lambda r: r.payroll_signal == signal)[:1]
+
+    def employee_signal_map(self, limit=5000):
+        """``{employee_id: {'status': str, 'hours': float}}`` for this run.
+
+        Read from `hr_payroll_import_line.raw_data_json` — what the source
+        actually delivered — because on a scheme-driven tenant the Payobook
+        records can be stale: ABM has all 152 employees `active` with a running
+        contract while the feed reports 85 Resigned and 25 Terminated. The
+        payroll run has to believe the feed, not the record it has not been
+        told to update.
+        """
+        self.ensure_one()
+        status_rule = self._signal_component('employment_status')
+        hours_rule = self._signal_component('worked_hours')
+        if not (status_rule or hours_rule):
+            return {}
+
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        # RD59/RD60 — THE TWO SIGNALS DO NOT COME FROM THE SAME PLACE.
+        #
+        # Both used to be read from "the newest batch", and that single rule was
+        # wrong in two different directions on the same afternoon:
+        #
+        #   * RD54's record refresh is a batch. The moment one ran, the Run
+        #     Payroll wizard read employment status from ITS payload instead of
+        #     the month's pay data — and a salary-only refresh carries no status
+        #     at all, so every chip collapsed into "Not stated": 160 employees
+        #     offered with no way to exclude leavers, on a screen that had been
+        #     filtering correctly an hour earlier.
+        #   * Pinning both signals to the newest PAY DATA then landed on a
+        #     twelve-row correction file, which states a status for four people
+        #     and says nothing about the other 148. Same empty chips, opposite
+        #     cause.
+        #
+        # They are different KINDS of fact, so they get different rules:
+        #
+        #   HOURS  belong to a period. Only this run's own pay data may say how
+        #          many hours somebody worked this month; a refresh pulled on a
+        #          different day is not evidence about June.
+        #   STATUS belongs to the person. It is true until it changes, and the
+        #          freshest statement of it wins WHOEVER made it — the newest
+        #          batch that actually names a status for that employee, read
+        #          per person rather than per batch. A payload that is silent
+        #          about somebody is silent, not an assertion that they have no
+        #          status.
+        pay_data = [('formula_config_id', '=', self.id),
+                    ('create_payslips', '=', True)]
+        run_batch = Batch.search(pay_data + [('state', '=', 'done')],
+                                 order='id desc', limit=1) \
+            or Batch.search(pay_data, order='id desc', limit=1)
+        status_batches = Batch.search(
+            [('formula_config_id', '=', self.id)],
+            order='id desc', limit=_SIGNAL_STATUS_BATCH_SCAN)
+        if not (run_batch or status_batches):
+            return {}
+
+        wires = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', (status_rule | hours_rule).ids)]):
+                if wire.target_rule_id and wire.source_field:
+                    wires[wire.target_rule_id.id] = wire.source_field
+
+        # `_normalize_header_key` lives on the import batch, not here. Calling
+        # it on `self` raised AttributeError, which the caller's try/except
+        # swallowed into "this scheme has no signals" — so the wizard showed no
+        # status filter and every status returned all 152 employees.
+        Batchm = self.env['hr.payroll.import.batch']
+
+        def keys_for(rule):
+            out = []
+            if rule and wires.get(rule.id):
+                out.append(wires[rule.id])
+            if rule:
+                out += [rule.code, rule.name, rule.data_source_field]
+            return [Batchm._normalize_header_key(k) for k in out if k]
+
+        status_keys = keys_for(status_rule)
+        hours_keys = keys_for(hours_rule)
+        Line = self.env['hr.payroll.import.line'].sudo()
+
+        def rows_of(batch):
+            for line in Line.search([('batch_id', '=', batch.id)], limit=limit):
+                if not line.employee_id:
+                    continue
+                try:
+                    raw = json.loads(line.raw_data_json or '{}')
+                except (TypeError, ValueError):
+                    continue
+                if not isinstance(raw, dict):
+                    continue
+                yield line.employee_id.id, {
+                    Batchm._normalize_header_key(k): v
+                    for k, v in raw.items() if isinstance(k, str)}
+
+        # Hours — this run's pay data and nothing else (see the note above).
+        out = {}
+        if run_batch:
+            for emp_id, indexed in rows_of(run_batch):
+                hours = next((indexed[k] for k in hours_keys if k in indexed), 0.0)
+                try:
+                    hours = float(str(hours).replace(',', '') or 0.0)
+                except (TypeError, ValueError):
+                    hours = 0.0
+                out[emp_id] = {'status': '', 'hours': hours}
+
+        # Status — newest first, and the FIRST batch to name one for a person
+        # wins. `setdefault`-by-hand rather than a plain write: a later (older)
+        # batch must not overwrite a fresher statement, and a batch that is
+        # silent about somebody must not overwrite one that spoke.
+        answered = set()
+        for batch in status_batches:
+            for emp_id, indexed in rows_of(batch):
+                if emp_id in answered:
+                    continue
+                status = next(
+                    (indexed[k] for k in status_keys if indexed.get(k)), '')
+                status = str(status or '').strip()
+                if not status:
+                    continue
+                answered.add(emp_id)
+                if emp_id in out:
+                    out[emp_id]['status'] = status
+                else:
+                    out[emp_id] = {'status': status, 'hours': 0.0}
+        return out
+
+    def employment_status_options(self):
+        """Every employment status the source actually delivers, with counts.
+
+        Data-driven on purpose: "Active / Resigned / Terminated" is ABM's
+        vocabulary, and the next tenant's will be different — and Vietnamese.
+        `left` marks the ones that read as "no longer employed", which is a
+        DEFAULT for the tick boxes, never a filter applied behind anyone's back.
+        """
+        self.ensure_one()
+        signals = self.employee_signal_map()
+        if not signals:
+            return []
+        counts, worked = {}, {}
+        for info in signals.values():
+            key = info['status'] or ''
+            counts[key] = counts.get(key, 0) + 1
+            if info['hours']:
+                worked[key] = worked.get(key, 0) + 1
+        out = []
+        for status, n in sorted(counts.items(), key=lambda kv: -kv[1]):
+            left = value_kind_classifier.is_left_status(status)
+            out.append({
+                'value': status,
+                'label': status or _('Not stated'),
+                'count': n,
+                'worked': worked.get(status, 0),
+                'left': left,
+                'default': not left,
+            })
+        return out

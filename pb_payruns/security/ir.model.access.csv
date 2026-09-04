@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payslip_run_pb_officer,hr.payslip.run pb officer,om_hr_payroll.model_hr_payslip_run,pb_hr_payroll_base.group_payroll_base_officer,1,1,0,0
+access_hr_payslip_pb_officer,hr.payslip pb officer,om_hr_payroll.model_hr_payslip,pb_hr_payroll_base.group_payroll_base_officer,1,1,0,0
+access_hr_payslip_line_pb_officer,hr.payslip.line pb officer,om_hr_payroll.model_hr_payslip_line,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_hr_payslip_run_pb_analytics_user,hr.payslip.run pb analytics user (read-only; IA C7 — the Insights board reads run roll-ups with the caller's rights now that its sudo is gone; this tier already saw every one of these totals through that sudo),om_hr_payroll.model_hr_payslip_run,pb_hr_payroll_base.group_payroll_analytics_user,1,0,0,0

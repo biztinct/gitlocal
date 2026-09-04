@@ -5,7 +5,7 @@
             <field name="name">pb.workforce.role.tree</field>
             <field name="model">pb.workforce.role</field>
             <field name="arch" type="xml">
-                <tree default_order="capability_id,name">
+                <list default_order="capability_id,name">
                     <field name="name"/>
                     <field name="code" optional="hide"/>
                     <field name="capability_id"/>
@@ -16,7 +16,7 @@
                     <field name="salary_average" optional="hide"/>
                     <field name="total_annual_cost" optional="hide"/>
                     <field name="state"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -33,8 +33,8 @@
                     <field name="manager_id"/>
                     <field name="color"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_global_click pb-role-card oe_kanban_card oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}">
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click pb-role-card o_kanban_card">
                                 <div class="pb-role-card__header">
                                     <span class="badge badge-primary" t-esc="record.segmentation_quadrant.value or 'N/A'"/>
                                     <div class="pb-role-card__name" t-esc="record.name.value"/>
@@ -67,11 +67,11 @@
                 <form string="Role">
                     <header>
                         <button name="action_mark_reviewed" type="object" string="Mark Reviewed" class="oe_highlight"
-                                attrs="{'invisible': [('state', '=', 'archived')]}"/>
+                                invisible="state == 'archived'"/>
                         <button name="action_open_demand_plans" type="object" string="Open Demand Plans"
                                 class="oe_link"/>
                         <button name="action_reset_draft" type="object" string="Reset to Draft"
-                                attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                                invisible="state == 'draft'"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,ready,approved,archived"/>
                     </header>
                     <sheet>
@@ -119,34 +119,34 @@
                                 <field name="segmentation_quadrant" readonly="1"/>
                             </page>
                             <page string="Focus Areas">
-                                <field name="focus_area_ids" context="{'default_role_id': active_id}">
-                                    <tree editable="bottom">
+                                <field name="focus_area_ids" context="{'default_role_id': id}">
+                                    <list editable="bottom">
                                         <field name="name"/>
                                         <field name="success_metric"/>
                                         <field name="description"/>
                                         <field name="sequence"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                             <page string="KPIs">
-                                <field name="kpi_ids" context="{'default_role_id': active_id}">
-                                    <tree editable="bottom">
+                                <field name="kpi_ids" context="{'default_role_id': id}">
+                                    <list editable="bottom">
                                         <field name="name"/>
                                         <field name="target_value"/>
                                         <field name="unit_of_measure"/>
                                         <field name="frequency"/>
                                         <field name="description"/>
                                         <field name="sequence"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
-                            <page string="Skills">
-                                <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <page string="Required Skills">
+                                <field name="skill_ids" widget="many2many_tags"/>
                                 <field name="proficiency_notes"/>
                             </page>
                             <page string="Demand Plans">
                                 <field name="demand_plan_ids">
-                                    <tree>
+                                    <list>
                                         <field name="name"/>
                                         <field name="year"/>
                                         <field name="plan_type"/>
@@ -154,7 +154,7 @@
                                         <field name="total_headcount"/>
                                         <field name="total_employee_cost"/>
                                         <field name="variance_percent"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                         </notebook>
@@ -174,7 +174,7 @@
                     <filter name="filter_gap_positive" string="Open Gap" domain="[('headcount_gap', '&gt;', 0)]"/>
                     <filter name="filter_ready" string="Ready" domain="[('state', '=', 'ready')]"/>
                     <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]"/>
-                    <group expand="0" string="Group By">
+                    <group name="group_by">
                         <filter name="group_capability" string="Capability" context="{'group_by': 'capability_id'}"/>
                         <filter name="group_quadrant" string="Quadrant" context="{'group_by': 'segmentation_quadrant'}"/>
                         <filter name="group_manager" string="Owner" context="{'group_by': 'manager_id'}"/>

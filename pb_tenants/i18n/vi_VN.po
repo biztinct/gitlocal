@@ -1,0 +1,1504 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"(kept forever, downloadable for handover), then permanently drops the\n"
+"              database and its staging copy. The address"
+msgstr ""
+"(được lưu giữ vĩnh viễn, có thể tải xuống để chuyển giao), sau đó sẽ loại bỏ vĩnh viễn\n"
+"              cơ sở dữ liệu và bản sao dàn dựng của nó. Địa chỉ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "(or"
+msgstr "(hoặc"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"). Then Check DNS, then Activate —\n"
+"            certificate and routing are automatic."
+msgstr ""
+"). Sau đó kiểm tra DNS, rồi kích hoạt —\n"
+"            chứng chỉ và định tuyến là tự động."
+
+#. module: pb_tenants
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__cert_days_left
+msgid "-1 when the certificate could not be read"
+msgstr "-1 khi không thể đọc được chứng chỉ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "A"
+msgstr "A"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "A private, isolated database + filestore"
+msgstr "Cơ sở dữ liệu + kho lưu trữ riêng tư, biệt lập"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "A valid admin email is required."
+msgstr "Cần có email quản trị viên hợp lệ."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Acme Manufacturing Co."
+msgstr "Công ty sản xuất Acme"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Activate"
+msgstr "Kích hoạt"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid ""
+"Activation failed:\n"
+"%s"
+msgstr ""
+"Kích hoạt không thành công:\n"
+"%s"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_domain__state__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Add at your domain registrar"
+msgstr "Thêm vào công ty đăng ký tên miền của bạn"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__admin_email
+msgid "Admin Email"
+msgstr "Email quản trị"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__admin_name
+msgid "Admin Name"
+msgstr "Tên quản trị viên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Administrator"
+msgstr "Quản trị viên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Attach domain"
+msgstr "Đính kèm tên miền"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Backing up…"
+msgstr "Đang sao lưu…"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__backup_ids
+msgid "Backup"
+msgstr "Sao lưu"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Backup failed: %s"
+msgstr "Sao lưu không thành công: %s"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Backup now"
+msgstr "Sao lưu ngay bây giờ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Backups"
+msgstr "Sao lưu"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Building an isolated workspace — about a minute…"
+msgstr "Xây dựng một không gian làm việc biệt lập - khoảng một phút…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "CNAME"
+msgstr "CNAME"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__cert_days_left
+msgid "Cert Days Left"
+msgstr "Số ngày còn lại của chứng chỉ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__cert_expires
+msgid "Cert Expires"
+msgstr "Chứng chỉ hết hạn"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__cert_own
+msgid "Cert Own"
+msgstr "Chứng chỉ riêng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Check"
+msgstr "Kiểm tra"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Checked"
+msgstr "Đã kiểm tra"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Clean Payobook golden template — no data"
+msgstr "Mẫu vàng Payobook sạch — không có dữ liệu"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Client adds one DNS record:"
+msgstr "Khách hàng thêm một bản ghi DNS:"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Client company"
+msgstr "Công ty khách hàng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Company name"
+msgstr "Tên công ty"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Company name is required."
+msgstr "Tên công ty là bắt buộc."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Confirmation text does not match the tenant subdomain."
+msgstr "Văn bản xác nhận không khớp với tên miền phụ của đối tượng thuê."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__country_code
+msgid "Country Code"
+msgstr "Quốc gia Mã"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Create the first tenant"
+msgstr "Tạo đối tượng thuê đầu tiên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"Create your first client workspace — its own database, its own subdomain, fully "
+"isolated. It takes about two minutes."
+msgstr ""
+"Tạo không gian làm việc cho khách hàng đầu tiên của bạn — cơ sở dữ liệu riêng, tên "
+"miền phụ riêng, hoàn toàn biệt lập. Phải mất khoảng hai phút."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Created"
+msgstr "Đã tạo"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__create_uid
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__create_uid
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__create_date
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__create_date
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_domain__state__verified
+msgid "DNS verified"
+msgstr "Đã xác minh DNS"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Danger zone"
+msgstr "Vùng nguy hiểm"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Database"
+msgstr "Cơ sở dữ liệu"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__db_size
+msgid "Db Size"
+msgstr "Kích thước DB"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Decommission tenant"
+msgstr "Người thuê ngừng hoạt động"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Decommission this tenant"
+msgstr "Ngừng hoạt động đối tượng thuê này"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__decommissioned
+#: code:addons/pb_tenants/static/src/js/tenants.js:18
+msgid "Decommissioned"
+msgstr "Đã ngừng hoạt động"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Decommissioning…"
+msgstr "Đang ngừng hoạt động…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Detail"
+msgstr "Chi tiết"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Disk free"
+msgstr "Đĩa miễn phí"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__display_name
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__display_name
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__display_name
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenants__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__domain_ids
+msgid "Domain"
+msgstr "Miền"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Domain activation timed out."
+msgstr "Đã hết thời gian kích hoạt tên miền."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Domain automation script is not installed on this server (deploy runbook step)."
+msgstr ""
+"Tập lệnh tự động hóa tên miền chưa được cài đặt trên máy chủ này (bước triển khai "
+"runbook)."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Domain not found."
+msgstr "Không tìm thấy tên miền."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Domains"
+msgstr "Tên miền"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__state__done
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__health_state__down
+msgid "Down"
+msgstr "Xuống"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__draft
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Email (their login)"
+msgstr "Email (đăng nhập của họ)"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__employee_count
+msgid "Employee Count"
+msgstr "Nhân viên Số lượng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Enter a valid external hostname, e.g. payroll.acme.com."
+msgstr "Nhập tên máy chủ bên ngoài hợp lệ, ví dụ: bảng lương.acme.com."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__error
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_domain__state__error
+#: code:addons/pb_tenants/static/src/js/tenants.js:18
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_tenants
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__cert_expires
+msgid "Expiry of the certificate served for this tenant's subdomain"
+msgstr "Chứng chỉ được cung cấp cho miền phụ của đối tượng thuê này đã hết hạn"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__state__failed
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__filename
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Filestore"
+msgstr "Kho tập tin"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__filestore_size
+msgid "Filestore Size"
+msgstr "Kích thước kho tập tin"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__kind__final
+msgid "Final (offboarding)"
+msgstr "Trận chung kết (xuất phát)"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Finish these once — every tenant you create after that is instant."
+msgstr ""
+"Hoàn thành những việc này một lần — mọi đối tượng thuê bạn tạo sau đó đều diễn ra ngay"
+" lập tức."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Fleet"
+msgstr "Hạm đội"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Fleet storage"
+msgstr "Kho lưu trữ đội tàu"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Full name"
+msgstr "Tên đầy đủ"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid ""
+"Golden template database \"%s\" does not exist yet — build it first (deploy runbook)."
+msgstr ""
+"Cơ sở dữ liệu mẫu vàng \"%s\" chưa tồn tại - hãy xây dựng nó trước (triển khai "
+"runbook)."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "HTTP probe of %s failed (status %s)."
+msgstr "Thăm dò HTTP của %s không thành công (trạng thái %s)."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"Hand these credentials to the client administrator — the password is shown once and "
+"never stored."
+msgstr ""
+"Trao những thông tin xác thực này cho quản trị viên máy khách — mật khẩu được hiển thị"
+" một lần và không bao giờ được lưu trữ."
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__health_checked
+msgid "Health Checked"
+msgstr "Đã kiểm tra sức khỏe"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__health_state
+msgid "Health State"
+msgstr "Tình trạng sức khỏe"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Health checked"
+msgstr "Đã kiểm tra sức khỏe"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__health_state__ok
+msgid "Healthy"
+msgstr "khỏe mạnh"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__hostname
+msgid "Hostname"
+msgstr "Tên máy chủ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__id
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__id
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__id
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenants__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "In progress"
+msgstr "Đang tiến hành"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Internal users"
+msgstr "Người dùng nội bộ"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Invalid subdomain."
+msgstr "Tên miền phụ không hợp lệ."
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__kind
+msgid "Kind"
+msgstr "loại"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__last_backup_at
+msgid "Last Backup At"
+msgstr "Sao lưu lần cuối vào lúc"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__last_check
+msgid "Last Check"
+msgstr "Kiểm tra lần cuối"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__last_error
+msgid "Last Error"
+msgstr "Cuối Lỗi"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__last_login
+msgid "Last Login"
+msgstr "Đăng nhập lần cuối"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__write_uid
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__write_uid
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__write_date
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__write_date
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Last user login"
+msgstr "Đăng nhập người dùng cuối cùng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__live
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
+msgid "Live"
+msgstr "Trực tiếp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Live tenants"
+msgstr "Người thuê nhà trực tiếp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Loading Mission Control…"
+msgstr "Đang tải Kiểm soát nhiệm vụ…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Loading tenant…"
+msgstr "Đang tải đối tượng thuê…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Login"
+msgstr "Đăng nhập"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Manage"
+msgstr "Quản lý"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__kind__manual
+msgid "Manual"
+msgstr "Thủ công"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__message
+msgid "Message"
+msgstr "Tin nhắn"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Name the workspace"
+msgstr "Đặt tên cho không gian làm việc"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "New tenant"
+msgstr "Người thuê nhà mới"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Nguyen Thi Lan"
+msgstr "Nguyễn Thị Lân"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__kind__nightly
+msgid "Nightly"
+msgstr "Hàng đêm"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Nightly backups from day one"
+msgstr "Sao lưu hàng đêm từ ngày đầu tiên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Nightly backups run automatically; the last"
+msgstr "Sao lưu hàng đêm chạy tự động; cái cuối cùng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "No backups yet."
+msgstr "Chưa có bản sao lưu nào."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "No custom domains — clients use"
+msgstr "Không có tên miền tùy chỉnh - khách hàng sử dụng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "No tenants yet"
+msgstr "Chưa có người thuê nhà"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "No usable backup file found for this tenant."
+msgstr "Không tìm thấy tệp sao lưu có thể sử dụng được cho đối tượng thuê này."
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__notes
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "One platform, many databases — create, watch and manage every client on"
+msgstr "Một nền tảng, nhiều cơ sở dữ liệu - tạo, xem và quản lý mọi khách hàng trên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Open tenant"
+msgstr "Người thuê mở"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Password"
+msgstr "Mật khẩu"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__path
+msgid "Path"
+msgstr "Đường dẫn"
+
+#. module: pb_tenants
+#: model:ir.model,name:pb_tenants.model_pb_tenant
+msgid "Payobook SaaS tenant"
+msgstr "Người thuê Payobook SaaS"
+
+#. module: pb_tenants
+#: model:ir.model,name:pb_tenants.model_pb_tenants
+msgid "Payobook Tenant Mission Control"
+msgstr "Kiểm soát nhiệm vụ của người thuê Payobook"
+
+#. module: pb_tenants
+#: model:ir.actions.server,name:pb_tenants.cron_health_ir_actions_server
+msgid "Payobook Tenants: fleet health refresh"
+msgstr "Người thuê Payobook: làm mới sức khỏe đội tàu"
+
+#. module: pb_tenants
+#: model:ir.actions.server,name:pb_tenants.cron_nightly_backups_ir_actions_server
+msgid "Payobook Tenants: nightly backups"
+msgstr "Người thuê Payobook: sao lưu hàng đêm"
+
+#. module: pb_tenants
+#: model:ir.actions.server,name:pb_tenants.cron_certs_ir_actions_server
+msgid "Payobook Tenants: tenant TLS certificates"
+msgstr "Người thuê Payobook: chứng chỉ TLS của người thuê"
+
+#. module: pb_tenants
+#: model:ir.model,name:pb_tenants.model_pb_tenant_backup
+msgid "Payobook tenant backup"
+msgstr "Sao lưu người thuê Payobook"
+
+#. module: pb_tenants
+#: model:ir.model,name:pb_tenants.model_pb_tenant_domain
+msgid "Payobook tenant custom domain"
+msgstr "Tên miền tùy chỉnh của người thuê Payobook"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__ping_ms
+msgid "Ping Ms"
+msgstr "Ping Cô"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Platform go-live checklist"
+msgstr "Danh sách kiểm tra khi đưa nền tảng vào hoạt động"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Platform live — wildcard routing, TLS and template ready."
+msgstr "Nền tảng hoạt động - định tuyến ký tự đại diện, TLS và mẫu đã sẵn sàng."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Platform · Admin"
+msgstr "Nền tảng · Quản trị viên"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_backup__kind__pre_restore
+msgid "Pre-restore safety"
+msgstr "Trước khi khôi phục an toàn"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__provision_log
+msgid "Provision Log"
+msgstr "Nhật ký cung cấp"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__provision_step
+msgid "Provision Step"
+msgstr "Bước cung cấp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Provision tenant"
+msgstr "Đối tượng thuê cung cấp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__provisioning
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
+msgid "Provisioning"
+msgstr "Cung cấp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"Provisioning clones the golden template into a brand-new database, locks its web address,\n"
+"            regenerates its identity, and creates the administrator account. Nothing existing is touched."
+msgstr ""
+"Việc cung cấp sẽ sao chép mẫu vàng vào cơ sở dữ liệu hoàn toàn mới, khóa địa chỉ web của nó,\n"
+"            tạo lại danh tính của nó và tạo tài khoản quản trị viên. Không có gì hiện có được chạm vào."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Provisioning…"
+msgstr "Đang cung cấp…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Re-check platform"
+msgstr "Kiểm tra lại nền tảng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Refresh health"
+msgstr "Làm mới sức khỏe"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Refusing to offboard: final backup failed (%s)."
+msgstr "Từ chối tắt máy: sao lưu cuối cùng không thành công (%s)."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Response"
+msgstr "phản hồi"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Restore latest → staging"
+msgstr "Khôi phục mới nhất → dàn dựng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+#: code:addons/pb_tenants/static/src/js/tenants.js:260
+msgid "Restore to staging"
+msgstr "Khôi phục về giai đoạn"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Retry failed step"
+msgstr "Thử lại bước không thành công"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Review & confirm"
+msgstr "Xem xét và xác nhận"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__size
+msgid "Size"
+msgstr "Kích thước"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__slug
+msgid "Slug"
+msgstr "sên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Staging copy"
+msgstr "Bản sao dàn dựng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Staging ready from"
+msgstr "Dàn dựng sẵn sàng từ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Starts from"
+msgstr "Bắt đầu từ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__state
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__state
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Subdomain"
+msgstr "Tên miền phụ"
+
+#. module: pb_tenants
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__slug
+msgid "Subdomain label and database name (acme -> acme.payobook.com)"
+msgstr "Nhãn tên miền phụ và tên cơ sở dữ liệu (acme -> acme.payobook.com)"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Takes a"
+msgstr "Mất một"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_backup__tenant_id
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant_domain__tenant_id
+msgid "Tenant"
+msgstr "người thuê nhà"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant %s is not in provisioning."
+msgstr "Đối tượng thuê %s không được cung cấp."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Tenant Mission Control"
+msgstr "Kiểm soát nhiệm vụ của người thuê"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant Mission Control is restricted to system administrators."
+msgstr "Kiểm soát nhiệm vụ của người thuê được giới hạn ở quản trị viên hệ thống."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Tenant administrator"
+msgstr "Quản trị viên thuê nhà"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant is already decommissioned."
+msgstr "Người thuê nhà đã ngừng hoạt động."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant must be live before attaching a domain."
+msgstr "Người thuê phải hoạt động trước khi đính kèm miền."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant not available for backup."
+msgstr "Người thuê nhà không có sẵn để sao lưu."
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Tenant not found."
+msgstr "Không tìm thấy người thuê nhà."
+
+#. module: pb_tenants
+#: model:ir.actions.client,name:pb_tenants.action_pb_tenants
+#: model:pb.sidebar.item,name:pb_tenants.item_tenants
+msgid "Tenants"
+msgstr "Người thuê nhà"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"The wildcard TLS certificate is issued from the server once the DNS record above "
+"resolves (deploy runbook step — a one-time TXT record will be requested during "
+"issuance)."
+msgstr ""
+"Chứng chỉ TLS ký tự đại diện được cấp từ máy chủ sau khi bản ghi DNS ở trên được giải "
+"quyết (bước triển khai runbook — bản ghi TXT một lần sẽ được yêu cầu trong quá trình "
+"cấp)."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Their own address on your platform"
+msgstr "Địa chỉ riêng của họ trên nền tảng của bạn"
+
+#. module: pb_tenants
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__cert_own
+msgid ""
+"True when the tenant has its own auto-renewing certificate; False means it is falling "
+"back to the wildcard, which does NOT auto-renew."
+msgstr ""
+"Đúng khi đối tượng thuê có chứng chỉ tự động gia hạn; Sai có nghĩa là nó đang quay trở"
+" lại ký tự đại diện, KHÔNG tự động gia hạn."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Type the subdomain"
+msgstr "Nhập tên miền phụ"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__health_state__unknown
+msgid "Unknown"
+msgstr "Không xác định"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Unknown provisioning step: %s"
+msgstr "Bước cung cấp không xác định: %s"
+
+#. module: pb_tenants
+#: model:ir.model.fields,field_description:pb_tenants.field_pb_tenant__user_count
+msgid "User Count"
+msgstr "Số lượng người dùng"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "Verify DNS first, then activate."
+msgstr "Xác minh DNS trước, sau đó kích hoạt."
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_domain__state__pending
+msgid "Waiting for DNS"
+msgstr "Đang chờ DNS"
+
+#. module: pb_tenants
+#: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__health_state__warn
+msgid "Warning"
+msgstr "Cảnh báo"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Welcome aboard"
+msgstr "Chào mừng lên tàu"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "What this creates"
+msgstr "Điều này tạo ra điều gì"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Workspace"
+msgstr "Không gian làm việc"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "acme"
+msgstr "đỉnh cao"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "archived"
+msgstr "đã lưu trữ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "are kept. Manual and final backups are kept forever."
+msgstr "được giữ lại. Bản sao lưu thủ công và cuối cùng được lưu giữ mãi mãi."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "available"
+msgstr "còn lại"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "backup"
+msgstr "sao lưu"
+
+#. module: pb_tenants
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__db_size
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant__filestore_size
+#: model:ir.model.fields,help:pb_tenants.field_pb_tenant_backup__size
+msgid "bytes"
+msgstr "byte"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "drop"
+msgstr "giọt"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "employees"
+msgstr "nhân viên"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "final full backup"
+msgstr "bản sao lưu đầy đủ cuối cùng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "https://"
+msgstr "https://"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "is live"
+msgstr "đang trực tiếp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "lan@acme.com"
+msgstr "lan@acme.com"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "ms"
+msgstr "cô"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "none"
+msgstr "không"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "open staging"
+msgstr "dàn dựng mở"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "payroll.acme.com"
+msgstr "bảng lương.acme.com"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "provisioning log"
+msgstr "nhật ký cung cấp"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "s"
+msgstr "s"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "server"
+msgstr "máy chủ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid ""
+"stops working immediately.\n"
+"              This cannot be undone."
+msgstr ""
+"ngừng hoạt động ngay lập tức.\n"
+"              Điều này không thể hoàn tác được."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "their host →"
+msgstr "chủ nhà của họ →"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "to confirm"
+msgstr "để xác nhận"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "unknown"
+msgstr "không xác định"
+
+#. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
+msgid "unknown error"
+msgstr "lỗi không xác định"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "users"
+msgstr "người dùng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
+msgid "— pick later —"
+msgstr "— chọn sau —"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:73
+msgid "Platform status refreshed."
+msgstr "Đã làm mới trạng thái nền tảng."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:86
+msgid "Copied"
+msgstr "Đã sao chép"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:91
+msgid "Copy failed — select and copy manually."
+msgstr "Sao chép không thành công — chọn và sao chép thủ công."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:130
+msgid "Checking availability…"
+msgstr "Đang kiểm tra tính khả dụng…"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:137
+msgid "Available"
+msgstr "Khả dụng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:138
+msgid "Not available"
+msgstr "Không sẵn sàng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:141
+msgid "Could not check — retry."
+msgstr "Không thể kiểm tra - thử lại."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:158
+msgid "Lost connection to the server — check your network and retry."
+msgstr "Mất kết nối với máy chủ — hãy kiểm tra mạng của bạn và thử lại."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:187
+msgid "Provisioning %(host)s …"
+msgstr "Đang cung cấp %(host)s …"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:197
+msgid "Step failed."
+msgstr "Bước không thành công."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:243
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:261
+msgid ""
+"This restores a copy of the backup into '%(database)s'. The live tenant is untouched. "
+"Any existing staging copy is replaced. Continue?"
+msgstr ""
+"Thao tác này sẽ khôi phục bản sao của bản sao lưu vào '%(database)s'. Người thuê nhà "
+"trực tiếp không bị ảnh hưởng. Mọi bản sao dàn dựng hiện có đều được thay thế. Tiếp "
+"tục?"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:262
+msgid "Restore copy"
+msgstr "Khôi phục bản sao"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:278
+msgid "Remove staging copy"
+msgstr "Xóa bản sao dàn dựng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:279
+msgid "Drop the staging database '%(database)s'? The live tenant is untouched."
+msgstr ""
+"Bỏ cơ sở dữ liệu dàn dựng '%(database)s'? Người thuê nhà trực tiếp không bị ảnh hưởng."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:280
+msgid "Drop staging"
+msgstr "Bỏ dàn dựng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:299
+msgid "Remove domain"
+msgstr "Xóa miền"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:300
+msgid "Detach %(hostname)s from this tenant? Its certificate and routing are removed."
+msgstr ""
+"Tách %(hostname)s khỏi đối tượng thuê này? Chứng chỉ và định tuyến của nó bị xóa."
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:301
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:313
+msgid "Tenant decommissioned. Final backup: %(backup)s"
+msgstr "Người thuê đã ngừng hoạt động. Bản sao lưu cuối cùng: %(backup)s"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:313
+msgid "n/a"
+msgstr "n/a"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:316
+msgid "Offboarding failed."
+msgstr "Tắt máy không thành công."

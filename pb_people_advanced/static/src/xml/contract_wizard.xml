@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_people_advanced.ContractWizard">
+    <div class="pbim con pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · People <t t-if="state.defaults.employee_name">· <t t-esc="state.defaults.employee_name"/></t></div>
+            <h2><t t-esc="renewFrom ? 'Renew contract' : 'New contract'"/></h2></div>
+          <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <t t-elif="state.result">
+            <div class="pplw-result">
+              <div class="pplw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Contract created</h3>
+              <p><t t-esc="state.result.name"/></p>
+            </div>
+          </t>
+
+          <t t-else="">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Structure &amp; wage</h4>
+                <label class="pplw-label">Salary structure *</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('struct_id', ev)">
+                  <option t-foreach="state.defaults.structures" t-as="s" t-key="s.id" t-att-value="s.id"
+                          t-att-selected="('' + s.id) === state.form.struct_id" t-esc="s.name"/>
+                </select>
+                <label class="pplw-label">Structure type</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('structure_type_id', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.structure_types" t-as="st" t-key="st.id" t-att-value="st.id"
+                          t-att-selected="('' + st.id) === state.form.structure_type_id" t-esc="st.name"/>
+                </select>
+                <label class="pplw-label">Monthly wage (<t t-esc="cur"/>)</label>
+                <input type="number" class="pplw-in" t-att-value="state.form.wage" t-on-change="(ev) => this.onField('wage', ev)"/>
+              </div>
+              <div class="pplw-sec">
+                <h4>Period &amp; schedule</h4>
+                <div class="pplw-row2">
+                  <div><label class="pplw-label">Start *</label><input type="date" class="pplw-in" t-att-value="state.form.date_start" t-on-change="(ev) => this.onField('date_start', ev)"/></div>
+                  <div><label class="pplw-label">End</label><input type="date" class="pplw-in" t-on-change="(ev) => this.onField('date_end', ev)"/></div>
+                </div>
+                <label class="pplw-label">Working schedule</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('resource_calendar_id', ev)">
+                  <option t-foreach="state.defaults.calendars" t-as="cal" t-key="cal.id" t-att-value="cal.id"
+                          t-att-selected="('' + cal.id) === state.form.resource_calendar_id" t-esc="cal.name"/>
+                </select>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.activate" t-on-change="() => this.toggle('activate')"/> Activate (set running) on create</label>
+                <div t-if="renewFrom" class="pplw-note">Renewing — start date should be after the previous contract ends to avoid an overlap.</div>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="openContract"><t t-out="ic('arrow',15)"/> Open contract</button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create contract</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

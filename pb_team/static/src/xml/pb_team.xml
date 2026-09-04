@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_team.Cockpit">
+    <div class="pbteam pbim" t-att-class="{ 'pbteam--embedded': props.embedded }">
+
+      <!-- loading -->
+      <t t-if="state.loading">
+        <div class="pbteam-load">
+          <div class="pbteam-spinner"/>
+          <span>Loading your team…</span>
+        </div>
+      </t>
+
+      <t t-else="">
+        <!-- ======================= NO TEAM ======================= -->
+        <t t-if="!state.data.has_team">
+          <div class="pbteam-empty pbteam-empty--noteam">
+            <div class="pbteam-empty-ic"><t t-out="ic('users', 40)"/></div>
+            <h2>No team reports to you yet</h2>
+            <p t-if="state.data.is_hr">You don't have direct reports, but you can still act on requests from the relevant cockpits.</p>
+            <p t-else="">When employees are assigned to you as their manager, their overtime, trips, attendance and leave approvals will appear here.</p>
+          </div>
+        </t>
+
+        <!-- ======================= COCKPIT ======================= -->
+        <t t-else="">
+          <!-- hero -->
+          <div class="pbteam-hero">
+            <!-- W17: embedded, the shell's rail and command bar already carry
+                 the identity — so the hero collapses to its numbers. -->
+            <div class="pbteam-hero-id" t-if="!props.embedded">
+              <img class="pbteam-hero-av" t-att-src="state.data.me.avatar_url" alt=""/>
+              <div>
+                <!-- P2 §3.10: the rail says "Team Approvals" (W28 — "Approvals"
+                     was already taken by the payroll cockpit), so this does. -->
+                <div class="pbteam-eyebrow">Team Approvals</div>
+                <div class="pbteam-hero-name"><t t-esc="state.data.me.name"/></div>
+              </div>
+            </div>
+
+            <div class="pbteam-stats">
+              <div class="pbteam-stat">
+                <div class="pbteam-stat-v"><t t-esc="state.data.team_size"/></div>
+                <div class="pbteam-stat-l">Team members</div>
+              </div>
+              <div class="pbteam-stat pbteam-stat--pending" t-att-class="{ 'is-live': pendingCount }">
+                <div class="pbteam-stat-v">
+                  <span t-if="pendingCount" class="pbteam-pulse"/>
+                  <t t-esc="pendingCount"/>
+                </div>
+                <div class="pbteam-stat-l">Awaiting you</div>
+              </div>
+              <div class="pbteam-stat">
+                <div class="pbteam-donut" t-attf-style="--p: {{ compliancePct }}">
+                  <span><t t-esc="compliancePct"/>%</span>
+                </div>
+                <div class="pbteam-stat-l">On-time this week</div>
+              </div>
+              <div class="pbteam-stat pbteam-stat--ot">
+                <div class="pbteam-otbar">
+                  <div class="pbteam-otbar-fill" t-att-class="{ over: otPct > 100 }" t-attf-style="width: {{ otPct > 100 ? 100 : otPct }}%"/>
+                </div>
+                <div class="pbteam-stat-l">
+                  OT <t t-esc="otMtd"/>h / <t t-esc="otCap"/>h
+                </div>
+              </div>
+            </div>
+
+            <div class="pbteam-hero-tools">
+              <button class="pbteam-chip" t-att-class="{ on: state.recursive }" t-on-click="() => this.toggleScope()" title="Include indirect (skip-level) reports">
+                <t t-out="ic('layers', 14)"/> Skip-level
+              </button>
+              <button class="pbteam-chip" t-on-click="() => this.refresh()" title="Refresh">
+                <t t-out="ic('refresh', 14)"/>
+              </button>
+            </div>
+          </div>
+
+          <div class="pbteam-body">
+            <!-- queue -->
+            <div class="pbteam-queue">
+              <div class="pbteam-section-h">
+                <span><t t-out="ic('inbox', 16)"/> Approval queue</span>
+                <span class="pbteam-count-pills">
+                  <t t-foreach="Object.keys(state.data.queues.counts)" t-as="s" t-key="s">
+                    <span t-attf-class="pbteam-pill pbteam-pill--{{ s }}"><t t-esc="state.data.queues.counts[s]"/></span>
+                  </t>
+                </span>
+              </div>
+
+              <t t-if="!pendingCount">
+                <div class="pbteam-empty pbteam-empty--clear">
+                  <div class="pbteam-empty-ic pbteam-empty-ic--ok"><t t-out="ic('sparkle', 34)"/></div>
+                  <h3>Your team is all caught up</h3>
+                  <p>Nothing is waiting on you right now.</p>
+                </div>
+              </t>
+
+              <t t-else="">
+                <div class="pbteam-cards">
+                  <t t-foreach="items" t-as="it" t-key="key(it)">
+                    <div t-attf-class="pbteam-card pbteam-card--{{ it.source }}">
+                      <img class="pbteam-card-av" t-att-src="it.employee.avatar_url" alt=""/>
+                      <div class="pbteam-card-main">
+                        <div class="pbteam-card-top">
+                          <span class="pbteam-card-name"><t t-esc="it.employee.name"/></span>
+                          <span t-attf-class="pbteam-src pbteam-src--{{ it.source }}"><t t-out="sourceIc(it.source)"/></span>
+                          <span t-if="it.age >= 2" class="pbteam-age" t-attf-title="Waiting {{ it.age }} days">
+                            <t t-out="ic('clock', 12)"/> <t t-esc="it.age"/>d
+                          </span>
+                        </div>
+                        <div class="pbteam-card-title"><t t-esc="it.title"/></div>
+                        <div class="pbteam-card-sub">
+                          <span t-if="it.when" class="pbteam-when"><t t-esc="it.when"/></span>
+                          <span t-if="it.subtitle" class="pbteam-note"><t t-esc="it.subtitle"/></span>
+                        </div>
+
+                        <!-- refuse note popover -->
+                        <t t-if="state.refuseFor === key(it)">
+                          <div class="pbteam-refuse">
+                            <textarea class="pbteam-refuse-in" placeholder="Reason (optional)…"
+                                      t-att-value="state.refuseNote"
+                                      t-on-input="(ev) => (state.refuseNote = ev.target.value)"/>
+                            <div class="pbteam-refuse-act">
+                              <button class="pbteam-btn pbteam-btn--ghost" t-on-click="() => this.cancelRefuse()">Cancel</button>
+                              <button class="pbteam-btn pbteam-btn--danger" t-on-click="() => this.confirmRefuse(it)">Confirm refuse</button>
+                            </div>
+                          </div>
+                        </t>
+                      </div>
+
+                      <div class="pbteam-card-act" t-if="state.refuseFor !== key(it)">
+                        <button class="pbteam-act pbteam-act--ok" t-att-disabled="!it.can_approve || state.busy[key(it)]"
+                                t-on-click="() => this.approve(it)" title="Approve">
+                          <t t-out="ic('check', 17)"/>
+                        </button>
+                        <button class="pbteam-act pbteam-act--no" t-att-disabled="!it.can_refuse || state.busy[key(it)]"
+                                t-on-click="() => this.openRefuse(it)" title="Refuse">
+                          <t t-out="ic('x', 17)"/>
+                        </button>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+
+            <!-- roster rail -->
+            <div class="pbteam-roster">
+              <div class="pbteam-section-h"><span><t t-out="ic('users', 16)"/> Roster</span></div>
+
+              <t t-if="state.data.metrics.upcoming_leaves.length">
+                <div class="pbteam-upcoming">
+                  <div class="pbteam-upcoming-h"><t t-out="ic('umbrella', 14)"/> Upcoming time off</div>
+                  <t t-foreach="state.data.metrics.upcoming_leaves" t-as="l" t-key="l_index">
+                    <div class="pbteam-up-row">
+                      <span class="pbteam-up-emp"><t t-esc="l.employee"/></span>
+                      <span class="pbteam-up-when"><t t-esc="l.when"/></span>
+                    </div>
+                  </t>
+                </div>
+              </t>
+
+              <div class="pbteam-roster-list">
+                <t t-foreach="state.data.roster" t-as="m" t-key="m.id">
+                  <div class="pbteam-rmember">
+                    <img class="pbteam-rmember-av" t-att-src="m.avatar_url" alt=""/>
+                    <div class="pbteam-rmember-main">
+                      <div class="pbteam-rmember-name"><t t-esc="m.name"/></div>
+                      <div class="pbteam-rmember-job"><t t-esc="m.job"/></div>
+                    </div>
+                    <div class="pbteam-rmember-meta">
+                      <span t-if="m.gauge !== null" t-attf-class="pbteam-gauge pbteam-gauge--{{ m.gauge >= 80 ? 'ok' : (m.gauge >= 50 ? 'mid' : 'low') }}" t-attf-title="{{ m.gauge }}% on-time this week">
+                        <t t-esc="m.gauge"/>%
+                      </span>
+                      <span t-if="m.exceptions" class="pbteam-exc" t-attf-title="{{ m.exceptions }} open exceptions">
+                        <t t-out="ic('alert', 12)"/> <t t-esc="m.exceptions"/>
+                      </span>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+        </t>
+      </t>
+    </div>
+  </t>
+
+</templates>

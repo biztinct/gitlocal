@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/growth` reuses `pb_me_portal`'s .pbme kit — the same hero, the
+       same cards — so it looks like it was always part of the employee's
+       own area rather than bolted on. Everything specific to it is
+       under .pbpg.
+
+       THE VOCABULARY IS THE FEATURE. "My growth plan". Not "PIP", not
+       "performance improvement plan", not "formal", not "warning". The page
+       is read by somebody who is already worried, often on a phone,
+       sometimes with a colleague nearby.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be
+       called from QWeb, so the handful of glyphs this page uses are inlined
+       here, exactly as pb_lifecycle's token pages, pb_me_portal's ess_icon,
+       pb_onboarding's ob_icon and pb_offboarding's of_icon do.
+       W87: the name is passed with t-value="'name'", NEVER as a t-set BODY
+       — a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false
+       and every icon falls through to the else branch.
+
+       R42: `t-att-class` with a DICT is an OWL thing and this is NOT OWL.
+       In a server-side template the dict is written into the attribute as
+       its Python repr AND it replaces the static class. Every conditional
+       class on this page is `t-attf-class` with a #{...} interpolation.
+       (And this comment is ruled with `=`, because a doubled hyphen inside
+       an XML comment is a parse error that takes the whole file with it.)
+       ================================================================== -->
+  <template id="pg_icon" name="Growth page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbpg-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'sprout'"><path d="M7 20h10"/><path d="M12 20c0-6 .5-8 3-10"/><path d="M12 20c0-4-.5-6-3-8"/><path d="M18 5a3 3 0 0 1-3 3c-1 0-2-.5-2-2a3 3 0 0 1 3-3c1 0 2 .5 2 2z"/><path d="M6 8a3 3 0 0 0 3 3c1 0 2-.5 2-2a3 3 0 0 0-3-3c-1 0-2 .5-2 2z"/></t>
+      <t t-elif="icon == 'target'"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></t>
+      <t t-elif="icon == 'calendar'"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'file'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'chat'"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_growth" name="Growth portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'growth'" class="breadcrumb-item active">My Growth Plan</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================
+       The card is on /my ONLY when there is a plan to read. A permanent
+       "My growth plan" tile on everybody's home page would be a standing
+       invitation to wonder who has one. -->
+  <template id="portal_my_home_growth" name="Growth home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="29">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="has_growth_plan">
+        <t t-call="portal.portal_docs_entry">
+          <t t-set="title">My Growth Plan</t>
+          <t t-set="text">What you and your manager agreed, and when you will look at it</t>
+          <t t-set="url" t-value="'/my/growth'"/>
+          <t t-set="config_card" t-value="True"/>
+          <t t-set="placeholder_count" t-value="'growth_count'"/>
+        </t>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/growth                                                       -->
+  <!-- ================================================================= -->
+  <template id="portal_my_growth" name="My Growth Plan (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbpg">
+
+        <div t-if="notice" class="pbpg-notice">
+          <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'check'"/></t>
+          <span t-esc="notice"/>
+        </div>
+        <div t-if="problem" class="pbpg-notice pbpg-notice--bad">
+          <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'alert'"/></t>
+          <span t-esc="problem"/>
+        </div>
+
+        <!-- ==================== nothing running ====================
+             NOT an error and NOT an empty box. A person who lands here
+             with no plan gets a page that says something true and kind
+             and then points them somewhere useful. -->
+        <t t-if="not plan">
+          <t t-call="pb_me_portal.ess_hero">
+            <t t-set="hero_title">My Growth Plan</t>
+            <t t-set="hero_sub">Nothing is running at the moment.</t>
+          </t>
+          <div class="pbme-card pbpg-none">
+            <div class="pbpg-none-ic">
+              <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'sprout'"/><t t-set="isz" t-value="26"/></t>
+            </div>
+            <div>
+              <div class="pbme-card-title">There is nothing here for you to do</div>
+              <p class="pbme-muted">
+                This page is where a growth plan appears if you and your
+                manager ever agree one — what you are working on, what good
+                looks like and when you will sit down and talk about it. You
+                would have had those conversations first; nothing ever appears
+                here as a surprise.
+              </p>
+            </div>
+          </div>
+        </t>
+
+        <!-- ==================== a plan is running ==================== -->
+        <t t-else="">
+          <div class="pbpg-hero">
+            <div class="pbpg-hero-tx">
+              <div class="pbme-eyebrow">My Growth Plan</div>
+              <h1 class="pbpg-hero-h1">
+                <t t-if="plan.state == 'evaluation'">
+                  Your plan has run its course
+                </t>
+                <t t-elif="days_left is not None and days_left &gt; 1">
+                  <t t-esc="days_left"/> days to go
+                </t>
+                <t t-elif="days_left == 1">One day to go</t>
+                <t t-elif="days_left == 0">Today is the last day</t>
+                <t t-else="">Your plan</t>
+              </h1>
+              <p class="pbpg-hero-sub">
+                <t t-if="plan.state == 'evaluation'">
+                  Your manager has been asked how each part went. Nothing is
+                  decided until the three of you have talked about it.
+                </t>
+                <t t-else="">
+                  Running to <strong><t t-esc="end_label"/></strong>. This
+                  is everything that was agreed, in one place, so nothing about
+                  it has to be remembered.
+                </t>
+              </p>
+            </div>
+            <div class="pbpg-hero-ring" t-if="plan.state != 'evaluation'">
+              <div class="pbpg-ring-n"><t t-esc="elapsed"/>%</div>
+              <div class="pbpg-ring-l">of the time</div>
+            </div>
+          </div>
+
+          <!-- ===================== what we agreed ===================== -->
+          <div class="pbme-card">
+            <div class="pbme-card-title">
+              <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'target'"/><t t-set="isz" t-value="16"/></t>
+              What we agreed you are working on
+            </div>
+            <p class="pbme-muted">
+              Each of these has a "what good looks like" beside it on purpose:
+              so that at the end, whether it happened is something you can both
+              point at rather than something you have to argue about.
+            </p>
+            <div t-foreach="objectives" t-as="obj" t-key="obj['id']"
+                 t-attf-class="pbpg-obj pbpg-obj--#{obj['status']}">
+              <div class="pbpg-obj-h">
+                <b t-esc="obj['name']"/>
+                <span t-attf-class="pbpg-tag pbpg-tag--#{obj['status']}"
+                      t-esc="obj['label']"/>
+              </div>
+              <p t-if="obj['metric']" class="pbpg-obj-m" t-esc="obj['metric']"/>
+              <p t-if="obj['target']" class="pbpg-obj-t">
+                Target: <t t-esc="obj['target']"/>
+              </p>
+            </div>
+          </div>
+
+          <!-- ===================== the conversations ===================== -->
+          <div class="pbme-card" t-if="checkins">
+            <div class="pbme-card-title">
+              <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="16"/></t>
+              When you and your manager will talk
+            </div>
+            <p class="pbme-muted">
+              You and your manager will sit down <t t-esc="freq_label"/>, for
+              as long as the plan runs. These are for support as much as for
+              review — if something on the plan turns out to be unrealistic,
+              that is the place to say so and it can be changed.
+            </p>
+            <div class="pbpg-dates">
+              <div t-foreach="checkins" t-as="ck" t-key="ck['id']"
+                   t-attf-class="pbpg-date #{ck['done'] and 'pbpg-date--done' or ''} #{ck['next'] and 'pbpg-date--next' or ''}">
+                <span class="pbpg-date-dot">
+                  <t t-if="ck['done']">
+                    <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="12"/></t>
+                  </t>
+                </span>
+                <span class="pbpg-date-d" t-esc="ck['label']"/>
+                <span t-if="ck['next']" class="pbpg-date-n">next</span>
+                <span t-elif="ck['state'] == 'missed'" class="pbpg-date-m">did not happen</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== the paperwork ===================== -->
+          <div class="pbme-card pbpg-help">
+            <div>
+              <div class="pbme-card-title">If you want to read it again later</div>
+              <p class="pbme-muted">
+                The letter that sets all of this out is yours to keep. It says
+                the same things this page does, in the form that goes in your
+                file.
+                <t t-if="hr_owner">
+                  <t t-esc="hr_owner"/> in HR is looking after this and is your
+                  contact for anything about it — including anything you think
+                  has been got wrong.
+                </t>
+                <t t-else="">
+                  Your HR contact can answer anything about it — including
+                  anything you think has been got wrong.
+                </t>
+              </p>
+              <div class="pbpg-links">
+                <a t-if="has_letter" href="/my/growth/letter"
+                   class="pbme-btn pbpg-btn-quiet">
+                  <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'file'"/><t t-set="isz" t-value="15"/></t>
+                  Download my plan
+                </a>
+                <a href="/my/documents" class="pbme-btn pbpg-btn-quiet">
+                  <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'file'"/><t t-set="isz" t-value="15"/></t>
+                  My documents
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== the acknowledgement ===================== -->
+          <div class="pbme-card pbpg-ack" t-if="not plan.employee_ack">
+            <div class="pbme-card-title">Have you read it?</div>
+            <p class="pbme-muted">
+              Pressing this says you have read the plan and had the chance to
+              ask about it. It is <strong>not</strong> you agreeing that
+              everything on it is fair — if you think something is wrong, say
+              so to your manager or to HR, and say so anyway.
+            </p>
+            <form action="/my/growth/ack" method="post">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+              <button type="submit" class="pbme-btn pbme-btn--primary pbpg-send">
+                <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+                I have read my plan
+              </button>
+            </form>
+          </div>
+          <div class="pbme-card pbpg-ack pbpg-ack--done" t-else="">
+            <p class="pbme-muted">
+              <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+              You said you had read this on <t t-esc="plan.ack_at"/>. Nothing
+              further is needed from you here — the rest happens in the
+              conversations.
+            </p>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

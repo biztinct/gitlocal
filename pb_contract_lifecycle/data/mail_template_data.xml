@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by the
+         next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` IN
+         `email_values`. A template's own rendered address can reach mail.mail
+         EMPTY, and the message is then created, queued and addressed to nobody
+         with no error anywhere (R6). The `email_to` field below is kept as
+         documentation of who each one is FOR.
+
+         The first six are declared on `pb.contract.review`; the three
+         extension ones on `pb.contract.extension`. A template renders against
+         the model it is declared on, so handing a decision's id to a template
+         declared on the request would silently render somebody else's
+         record. -->
+
+    <!-- ================= somebody has to choose ================= -->
+    <record id="mail_template_decision_needed" model="mail.template">
+        <field name="name">Contract: a decision is needed</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s contract ends on {{ object.end_date }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    contract ends on
+                    <strong><t t-out="object.end_date or ''"/></strong>. There
+                    are three things you can do, and one of them has to be
+                    chosen before that date.
+                </p>
+                <ul>
+                    <li><strong>Let it end.</strong> The contract runs to its
+                        date and stops. Their leaving checklist opens so the
+                        laptop, the accounts and the final pay are handled.</li>
+                    <li><strong>Extend it.</strong> Write down why and a new
+                        agreement is prepared on exactly the same terms, taking
+                        over the day after this one ends.</li>
+                    <li><strong>Make it permanent.</strong> Their colleagues
+                        are asked what it has been like working with them, and
+                        if that goes well a contract with no end date is
+                        prepared.</li>
+                </ul>
+                <p>
+                    Open <strong>Lifecycle</strong> in Payobook and go to
+                    <strong>Contracts</strong>. Their row is near the top.
+                </p>
+                <p style="color:#4A5568;">
+                    You are being asked two months early on purpose. A decision
+                    taken in the last fortnight is a decision the calendar took.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= nobody has chosen yet ================= -->
+    <record id="mail_template_decision_late" model="mail.template">
+        <field name="name">Contract: still nothing decided</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">Still no decision on {{ object.employee_id.name }}'s contract</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    contract ends on
+                    <strong><t t-out="object.end_date or ''"/></strong> and
+                    nothing has been chosen yet.
+                </p>
+                <p>
+                    This is now with the HR team as well as with their manager.
+                    If the plan is to let it end, saying so starts their leaving
+                    checklist in good time; if it is to keep them, they should
+                    hear it from a person before they read it in a letter.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the date went past ================= -->
+    <record id="mail_template_decision_lapsed" model="mail.template">
+        <field name="name">Contract: ended with nothing decided</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s contract has ended and nothing was decided</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    contract ended on
+                    <strong><t t-out="object.end_date or ''"/></strong> and no
+                    decision was recorded.
+                </p>
+                <p>
+                    Somebody has to speak to them today, and somebody has to
+                    tell payroll what to do about this month. Payobook has not
+                    created anything and has not stopped anything — it is
+                    telling you because nothing else will.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= it was decided ================= -->
+    <record id="mail_template_decision_made" model="mail.template">
+        <field name="name">Contract: the decision was recorded</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s contract: the decision is recorded</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    It has been recorded that
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    contract will run to
+                    <strong><t t-out="object.end_date or ''"/></strong> and
+                    then end.
+                </p>
+                <p>
+                    Their leaving checklist is open, dated the last day: the
+                    equipment to return, the accounts to close, the handover
+                    and the final pay. Nothing has been sent to them — that
+                    conversation is a person's job, not a system's.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= they are permanent ================= -->
+    <record id="mail_template_converted" model="mail.template">
+        <field name="name">Contract: made permanent</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Congratulations, {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Congratulations,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    is now on a permanent contract. Their colleagues were asked
+                    what it has been like working with them, and this is the
+                    result of what they said.
+                </p>
+                <p>
+                    A new agreement with no end date has been prepared and the
+                    letter is on its way. Pay, hours and team are unchanged.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the extension: asked ================= -->
+    <record id="mail_template_extension_ask" model="mail.template">
+        <field name="name">Contract: agree this extension</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.approver_user_id.email or '' }}</field>
+        <field name="subject">Please agree the contract extension for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    You are asked to agree an extension of
+                    <strong><t t-out="object.months or ''"/></strong> months
+                    for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>.
+                </p>
+                <p>
+                    The new agreement would run from
+                    <strong><t t-out="object.new_date_start or ''"/></strong> to
+                    <strong><t t-out="object.new_date_end or ''"/></strong>, on
+                    exactly the terms they are on now.
+                </p>
+                <p><strong>The reason given</strong><br/>
+                   <t t-out="object.reason or ''"/></p>
+                <p>
+                    Please answer by
+                    <strong><t t-out="object.approve_by or ''"/></strong>. After
+                    that the HR team is told, because the contract runs out
+                    whether or not anybody has answered.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook and
+                    find their row.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the extension: nobody answered ================= -->
+    <record id="mail_template_extension_overdue" model="mail.template">
+        <field name="name">Contract: an extension is waiting past its date</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.approver_user_id.email or '' }}</field>
+        <field name="subject">Nobody has agreed the extension for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The extension asked for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    should have been agreed by
+                    <strong><t t-out="object.approve_by or ''"/></strong> and
+                    has not been.
+                </p>
+                <p>
+                    It is still open and it can still be agreed — this is a
+                    nudge and not a decision. Nothing has been created and
+                    nothing has been cancelled.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the extension: turned down ================= -->
+    <record id="mail_template_extension_refused" model="mail.template">
+        <field name="name">Contract: an extension was turned down</field>
+        <field name="model_id" ref="model_pb_contract_extension"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.approver_user_id.email or '' }}</field>
+        <field name="subject">The extension for {{ object.employee_id.name }} was not agreed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The extension asked for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    was not agreed.
+                </p>
+                <p>
+                    Nothing has been created, and the choice is back on the
+                    Contracts board: let the contract end, or evaluate them for
+                    a permanent one. Their contract still ends on its own date,
+                    so this still needs somebody.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the extension: agreed ================= -->
+    <record id="mail_template_extension_done" model="mail.template">
+        <field name="name">Contract: the extension was agreed</field>
+        <field name="model_id" ref="model_pb_contract_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your contract has been extended</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Good news,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    contract has been extended. A new agreement has been
+                    prepared on exactly the same terms, starting the day after
+                    the current one ends.
+                </p>
+                <p>
+                    The letter is on its way and is filed with their documents.
+                    Pay, hours and team are unchanged.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

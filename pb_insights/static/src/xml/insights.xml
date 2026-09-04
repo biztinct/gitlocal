@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_insights.PbInsights">
+    <div class="pbin pbim" t-att-class="{ 'pbin--embedded': props.embedded }">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbin-loading">
+        <div class="pbin-spin"/>
+        <span>Loading the analytics board…</span>
+      </div>
+
+      <div t-else="" class="pbin-wrap">
+
+        <div t-if="state.error" class="pbin-alert">
+          <t t-out="ic('alert', 16)"/><span t-esc="state.error"/>
+        </div>
+
+        <!-- ============================= hero ============================ -->
+        <div class="pbin-hero" data-coach="in-hero">
+          <div class="pbin-hero-main">
+            <!-- The hub's command bar already says INSIGHTS · PULSE, so the
+                 eyebrow and the h1 are chrome the host owns (W17). Everything
+                 below them is DATA — the net headline, the delta, the run
+                 state — and none of it is suppressed: an embedded mode that
+                 removed a number would be a fork, not a mount. -->
+            <div class="eyebrow" t-if="!props.embedded"><t t-out="ic('trending', 13)"/><span>Executive analytics</span></div>
+            <h1 t-if="!props.embedded">Insights</h1>
+            <p class="sub">
+              <span t-esc="d.company"/>
+              <b t-if="hero.run_name" t-esc="latestRunLabel"/>
+            </p>
+
+            <div class="pbin-headline">
+              <span class="v pbin-door" t-esc="money(state.heroNet)"
+                    t-att-class="{ off: !explorerAvailable }"
+                    title="See what this run is made of"
+                    t-on-click="() => this.openHeroNet()"/>
+              <span class="k">net payroll</span>
+              <span t-if="hasDelta" class="delta" t-att-class="deltaUp ? 'up' : 'down'"
+                    t-att-title="deltaTitle">
+                <t t-out="ic(deltaUp ? 'trending' : 'trendingDn', 13)"/>
+                <span t-esc="(deltaUp ? '+' : '') + hero.delta_pct + '%'"/>
+              </span>
+            </div>
+            <div class="pbin-headline-mt">
+              <span t-if="hero.run_state_label" class="pbin-state" t-att-class="'st-' + hero.run_state">
+                <span class="dot"/><span t-esc="hero.run_state_label"/>
+              </span>
+              <span t-if="hero.employees_paid" t-esc="paidLabel"/>
+              <span t-if="hasDelta" t-esc="vsLabel"/>
+            </div>
+
+            <div class="pbin-spark" t-if="spark.line">
+              <svg viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true">
+                <path class="ar" t-att-d="spark.area"/>
+                <path class="ln" t-att-d="spark.line"/>
+              </svg>
+              <span class="cap" t-esc="sparkLabel"/>
+            </div>
+          </div>
+
+          <div class="pbin-hero-kpis">
+            <button class="pbin-kpi pbin-door" t-att-class="{ off: !explorerAvailable }"
+                    title="Headcount actually paid, by department and period"
+                    t-on-click="() => this.openHeadcount()">
+              <span class="ico blue"><t t-out="ic('users', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="num(hero.headcount)"/><span class="l">active headcount</span></span>
+              <span class="go"><t t-out="ic('arrowRight', 14)"/></span>
+            </button>
+            <button class="pbin-kpi pbin-door" t-att-class="{ off: !explorerAvailable }"
+                    title="Cost per employee by department"
+                    t-on-click="() => this.openAvgCost()">
+              <span class="ico green"><t t-out="ic('wallet', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="money(hero.avg_cost)"/><span class="l">avg cost / employee</span></span>
+              <span class="go"><t t-out="ic('arrowRight', 14)"/></span>
+            </button>
+            <button class="pbin-kpi pbin-door" t-att-class="{ off: !explorerAvailable }"
+                    title="Employer contributions by department"
+                    t-on-click="() => this.openEmployerCost()">
+              <span class="ico amber"><t t-out="ic('shield', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="money(hero.employer_total)"/><span class="l">employer contributions</span></span>
+              <span class="go"><t t-out="ic('arrowRight', 14)"/></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================== cost story ========================== -->
+        <div class="pbin-panel pbin-trend" data-coach="in-trend">
+          <div class="pbin-panel-h">
+            <div>
+              <h2>Cost story</h2>
+              <p class="hint" t-esc="trendHint"/>
+            </div>
+            <div class="pbin-tools">
+              <div class="pbin-chips">
+                <button t-foreach="[3, 6, 12]" t-as="win" t-key="win"
+                        class="chip" t-att-class="state.months === win ? 'on' : ''"
+                        t-on-click="() => this.setMonths(win)">
+                  <t t-esc="win"/>M
+                </button>
+              </div>
+              <button class="pbin-icobtn" title="Refresh" t-on-click="() => this.refresh()">
+                <t t-out="ic('refresh', 15)"/>
+              </button>
+            </div>
+          </div>
+
+          <div t-if="points.length" class="pbin-readout">
+            <span class="rl">
+              <b t-esc="readout.name"/>
+              <span class="pbin-state" t-att-class="'st-' + readout.state">
+                <span class="dot"/><span t-esc="readout.state_label"/>
+              </span>
+            </span>
+            <span class="rv"><i class="sw net"/>Net<b t-esc="money(readout.net)"/></span>
+            <span class="rv"><i class="sw gross"/>Gross<b t-esc="money(readout.gross)"/></span>
+            <span class="rv muted" t-esc="readoutMeta"/>
+            <button t-if="readout.id" class="pbin-openrun"
+                    t-on-click="() => this.openRun(readout.id)">
+              <t t-out="ic('file', 12)"/><span>Open pay run</span>
+            </button>
+          </div>
+
+          <div t-if="points.length" class="pbin-cols" t-on-mouseleave="() => this.clearHover()">
+            <div t-foreach="points" t-as="pt" t-key="pt.id"
+                 class="pbin-col" t-att-class="state.hover === pt_index ? 'on' : ''"
+                 t-on-mouseenter="() => this.hoverPoint(pt_index)"
+                 t-on-click="() => this.openRunComposition(pt.id)"
+                 t-att-title="pt.name + ' — see what this run is made of'">
+              <div class="track">
+                <div class="lay gross" t-attf-style="height:{{ bar(pt.gross, trend.max) }}%"/>
+                <div class="lay net" t-attf-style="height:{{ bar(pt.net, trend.max) }}%"/>
+              </div>
+              <div t-attf-class="cs st-{{ pt.state }}"/>
+              <div class="cl" t-esc="colLabel(pt_index)"/>
+            </div>
+          </div>
+          <div t-else="" class="pbin-empty">
+            <t t-out="ic('calendarOff', 22)"/>
+            <span>No pay runs in this window. Widen the range or run payroll to build the trend.</span>
+          </div>
+
+          <div t-if="points.length" class="pbin-legend">
+            <span><i class="sw net"/>Net paid</span>
+            <span><i class="sw gross"/>Gross</span>
+            <span t-if="trend.hidden" class="pbin-badge warn" t-esc="trendCapLabel"/>
+          </div>
+        </div>
+
+        <!-- ================== departments + statutory ==================== -->
+        <div class="pbin-duo" data-coach="in-duo">
+
+          <div class="pbin-panel">
+            <div class="pbin-panel-h">
+              <div>
+                <h2>Department leaderboard</h2>
+                <p class="hint" t-esc="deptHint"/>
+              </div>
+              <div class="pbin-tools">
+                <span t-if="departments.approx" class="pbin-badge warn">approx</span>
+                <div class="pbin-chips">
+                  <button class="chip" t-att-class="state.deptMode === 'total' ? 'on' : ''"
+                          t-on-click="() => this.setDeptMode('total')">Total</button>
+                  <button class="chip" t-att-class="state.deptMode === 'perhead' ? 'on' : ''"
+                          t-on-click="() => this.setDeptMode('perhead')">Per head</button>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="departments.rows.length" class="pbin-deps">
+              <div t-foreach="departments.rows" t-as="dep" t-key="dep.id"
+                   class="dep" t-att-class="{ inert: !dep.drillable }"
+                   t-att-title="dep.drillable ? 'See what this department was paid, by component' : 'These employees have no department, so there is nothing to open'"
+                   t-on-click="() => this.openDepartment(dep)">
+                <div class="dh">
+                  <span class="nm" t-esc="dep.name"/>
+                  <span class="am"><t t-esc="money(deptValue(dep))"/>
+                    <span class="hc">· <t t-esc="num(dep.count)"/></span></span>
+                </div>
+                <div class="tr">
+                  <div class="fl" t-attf-style="width:{{ bar(deptValue(dep), deptMax()) }}%"/>
+                </div>
+              </div>
+              <p t-if="departments.hidden" class="pbin-more" t-esc="deptMoreLabel"/>
+            </div>
+            <div t-else="" class="pbin-empty small">
+              <t t-out="ic('users', 20)"/><span>No department cost to show yet.</span>
+            </div>
+          </div>
+
+          <div class="pbin-panel">
+            <div class="pbin-panel-h">
+              <div>
+                <h2>Statutory split</h2>
+                <p class="hint" t-esc="statutoryHint"/>
+              </div>
+            </div>
+
+            <div t-if="statutory.total" class="pbin-stat">
+              <div class="ring">
+                <svg viewBox="0 0 140 140">
+                  <circle class="bg" cx="70" cy="70" t-att-r="donut.r"/>
+                  <circle class="emp pbin-arc" cx="70" cy="70" t-att-r="donut.r"
+                          t-att-stroke-dasharray="donut.empDash" transform="rotate(-90 70 70)"
+                          t-att-class="{ dim: state.statHover and state.statHover !== 'employee' }"
+                          t-on-mouseenter="() => { state.statHover = 'employee'; }"
+                          t-on-mouseleave="() => { state.statHover = ''; }"
+                          t-on-click="() => this.openStatutoryLeg('employee')"/>
+                  <circle class="er pbin-arc" cx="70" cy="70" t-att-r="donut.r"
+                          t-att-stroke-dasharray="donut.erDash"
+                          t-att-stroke-dashoffset="donut.erOffset" transform="rotate(-90 70 70)"
+                          t-att-class="{ dim: state.statHover and state.statHover !== 'employer' }"
+                          t-on-mouseenter="() => { state.statHover = 'employer'; }"
+                          t-on-mouseleave="() => { state.statHover = ''; }"
+                          t-on-click="() => this.openStatutoryLeg('employer')"/>
+                </svg>
+                <div class="mid">
+                  <span class="v" t-esc="money(statHoverValue)"/>
+                  <span class="k" t-esc="statHoverLabel"/>
+                </div>
+              </div>
+              <div class="lg">
+                <button class="lgrow pbin-door" t-att-class="{ off: !explorerAvailable }"
+                        t-on-mouseenter="() => { state.statHover = 'employee'; }"
+                        t-on-mouseleave="() => { state.statHover = ''; }"
+                        t-on-click="() => this.openStatutoryLeg('employee')">
+                  <span class="sw emp"/><span class="nm">Employee</span>
+                  <b t-esc="money(statutory.employee)"/><span class="pc"><t t-esc="donut.empPct"/>%</span>
+                </button>
+                <button class="lgrow pbin-door" t-att-class="{ off: !explorerAvailable }"
+                        t-on-mouseenter="() => { state.statHover = 'employer'; }"
+                        t-on-mouseleave="() => { state.statHover = ''; }"
+                        t-on-click="() => this.openStatutoryLeg('employer')">
+                  <span class="sw er"/><span class="nm">Employer</span>
+                  <b t-esc="money(statutory.employer)"/><span class="pc"><t t-esc="donut.erPct"/>%</span>
+                </button>
+                <button class="lgrow tax pbin-door" t-if="statutory.tax"
+                        t-att-class="{ off: !explorerAvailable }"
+                        t-on-click="() => this.openStatutoryLeg('tax')">
+                  <span class="sw tx"/><span class="nm">Income tax withheld</span>
+                  <b t-esc="money(statutory.tax)"/>
+                </button>
+                <div class="codes">
+                  <button t-foreach="statutory.rows.slice(0, 8)" t-as="crow"
+                          t-key="crow.code + crow.leg"
+                          t-attf-class="code lg-{{ crow.leg }}"
+                          t-att-title="crow.code + ' · ' + money(crow.amount) + ' — open this component'"
+                          t-on-click="() => this.openStatutoryCode(crow)">
+                    <t t-esc="crow.code"/>
+                  </button>
+                  <span t-if="statutory.rows_hidden" class="code more"
+                        t-att-title="statutory.rows_hidden + ' more contribution codes not shown'">
+                    +<t t-esc="statutory.rows_hidden"/>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div t-else="" class="pbin-empty small">
+              <t t-out="ic('shield', 20)"/><span>No statutory components on the latest run.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= workforce pulse ====================== -->
+        <div class="pbin-pulse" data-coach="in-pulse">
+          <div class="pbin-pulse-h">
+            <h2>Workforce pulse</h2>
+            <span class="hint">this week · month to date</span>
+          </div>
+          <div class="pbin-pulse-row">
+
+            <!-- attendance exceptions -->
+            <div class="ptile" t-att-class="pulse.attendance ? '' : 'ghost'">
+              <div class="ph"><span class="ico rose"><t t-out="ic('alert', 17)"/></span>
+                <span class="tt">Attendance exceptions</span></div>
+              <t t-if="pulse.attendance">
+                <div class="pn" t-esc="num(pulse.attendance.total)"/>
+                <!-- a day-by-day micro-chart: a single total says how many,
+                     the shape says whether it is a spike or a habit -->
+                <div class="pspark" t-if="pulse.attendance.by_day">
+                  <span t-foreach="pulse.attendance.by_day" t-as="day" t-key="day.date"
+                        class="sb" t-att-title="day.count + ' on ' + day.date">
+                    <i t-attf-style="height:{{ dayBar(day.count) }}%"/>
+                    <em t-esc="day.dow.slice(0,1)"/>
+                  </span>
+                </div>
+                <div class="pk">
+                  <button t-foreach="['missing_punch', 'late', 'early_leave', 'missing_checkout']"
+                          t-as="kind" t-key="kind" class="pkind"
+                          t-att-class="{ off: !excCount(kind) }"
+                          t-att-title="excCount(kind) ? 'Show these employees' : ''"
+                          t-on-click="() => this.openAttendanceKind(kind)"
+                          t-esc="excLabel(kind)"/>
+                </div>
+                <div class="pf">
+                  <t t-esc="excWeekLabel"/>
+                  <span t-if="pulse.attendance.capped" class="pcap"
+                        t-att-title="'Only the first ' + pulse.attendance.employees + ' employees were scanned'">
+                    · sampled
+                  </span>
+                </div>
+              </t>
+              <div t-else="" class="pghost">Attendance workflow is not installed.</div>
+            </div>
+
+            <!-- leave -->
+            <div class="ptile" t-att-class="pulse.leave ? '' : 'ghost'">
+              <div class="ph"><span class="ico blue"><t t-out="ic('calendarOff', 17)"/></span>
+                <span class="tt">Time off</span></div>
+              <t t-if="pulse.leave">
+                <div class="pn" t-esc="num(pulse.leave.out_today)"/>
+                <div class="pk">
+                  <button class="pkind" t-on-click="() => this.openLeave()"
+                          title="Open the approval queue" t-esc="leaveLabel"/>
+                </div>
+                <div class="avs">
+                  <img t-foreach="pulse.leave.cards" t-as="card" t-key="card_index"
+                       class="av" t-att-src="card.avatar_url" t-att-alt="card.name" t-att-title="card.name"/>
+                  <span t-if="pulse.leave.overflow" class="ov">+<t t-esc="pulse.leave.overflow"/></span>
+                </div>
+                <!-- 14-day out-of-office density: who is away, and when it bites -->
+                <div class="pdens" t-if="pulse.leave.density">
+                  <span t-foreach="pulse.leave.density" t-as="dd" t-key="dd.date"
+                        class="dc" t-attf-style="opacity:{{ densityAlpha(dd.count) }}"
+                        t-att-title="dd.count + ' away on ' + dd.date"/>
+                </div>
+                <div class="pf">next 14 days</div>
+              </t>
+              <div t-else="" class="pghost">Time Off is not installed.</div>
+            </div>
+
+            <!-- overtime -->
+            <div class="ptile" t-att-class="pulse.ot ? '' : 'ghost'">
+              <div class="ph"><span class="ico amber"><t t-out="ic('clock', 17)"/></span>
+                <span class="tt">Overtime MTD</span></div>
+              <t t-if="pulse.ot">
+                <div class="pn pbin-door" t-esc="hours(pulse.ot.total)"
+                     title="Open approved overtime for this month"
+                     t-on-click="() => this.openOvertime(false)"/>
+                <div class="pk">
+                  <span t-foreach="pulse.ot.by_type" t-as="otrow" t-key="otrow.key"
+                        t-esc="otTypeLabel(otrow)"/>
+                </div>
+                <div class="cap" t-if="pulse.ot.cap">
+                  <div class="tr"><div class="fl" t-attf-style="width:{{ bar(pulse.ot.total, pulse.ot.cap * (pulse.ot.employees or 1)) }}%"/></div>
+                  <button class="pf pkind" t-att-class="{ off: !pulse.ot.near_cap }"
+                          t-att-title="pulse.ot.near_cap ? 'Show the employees near their ceiling' : ''"
+                          t-on-click="() => this.openOvertime(true)"
+                          t-esc="otCeilingLabel"/>
+                </div>
+              </t>
+              <div t-else="" class="pghost">Overtime is not installed.</div>
+            </div>
+
+            <!-- bonus hours (gated) -->
+            <div class="ptile" t-if="pulse.bonus">
+              <div class="ph"><span class="ico teal"><t t-out="ic('zap', 17)"/></span>
+                <span class="tt">Bonus hours MTD</span></div>
+              <div class="pn pbin-door" t-esc="hours(pulse.bonus.hours)"
+                   title="Open the requests that overflowed the ceiling"
+                   t-on-click="() => this.openBonusHours()"/>
+              <div class="pk">
+                <button class="pkind" t-on-click="() => this.openBonusHours()"
+                        t-esc="bonusLabel"/>
+              </div>
+              <div class="pf">paid through the BONHRS input</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== snapshots ========================= -->
+        <div class="pbin-panel" t-if="snapshots.length">
+          <div class="pbin-panel-h">
+            <div>
+              <h2>Analytics snapshots</h2>
+              <p class="hint">Generated when a run reaches Finance approval · read-only</p>
+            </div>
+          </div>
+          <div class="pbin-snaps">
+            <div t-foreach="snapshots" t-as="snap" t-key="snap.id" class="snap"
+                 t-att-class="{ inert: !snap.run_id }"
+                 t-att-title="snap.run_id ? 'See what this run is actually made of' : 'This snapshot is not linked to a pay run'"
+                 t-on-click="() => this.openSnapshot(snap)">
+              <div class="sh">
+                <span class="pd" t-esc="snap.period"/>
+                <span t-attf-class="pbin-state st-{{ snap.state }}">
+                  <span class="dot"/><span t-esc="snap.state_label"/>
+                </span>
+              </div>
+              <div class="sv" t-esc="money(snap.total)"/>
+              <div class="sm">
+                <span t-esc="snapEmployeesLabel(snap)"/>
+                <span t-if="snap.country" class="cc" t-esc="snap.country"/>
+                <span t-if="snap.anomalies" class="an">
+                  <t t-out="ic('alert', 12)"/><span t-esc="snapAlertsLabel(snap)"/>
+                </span>
+              </div>
+              <div class="sf" t-if="snap.run_name" t-esc="snap.run_name"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================== explore band =======================
+             This replaces the old "Reports & analysis" gallery. Those nine
+             cards were a copy of the Explorer's own lens grid, so the board
+             carried a duplicate menu while its actual numbers were inert.
+             Now every figure above is its own door, and this is simply the
+             way in when you have a question the board did not anticipate. -->
+        <div class="pbin-explore" data-coach="in-explore" t-if="explorerAvailable"
+             t-on-click="() => this.openExplorer()">
+          <span class="ei"><t t-out="ic('sparkles', 19)"/></span>
+          <span class="et">
+            <b>Ask something else</b>
+            <i>Every figure above opens where it came from — or start a question
+               of your own in the Analytics Explorer.</i>
+          </span>
+          <span class="ea"><t t-out="ic('arrowRight', 16)"/></span>
+        </div>
+
+        <p class="pbin-foot" t-esc="footLabel"/>
+      </div>
+
+      <!-- ==== the two drills nothing else in the product shows ====
+           An attendance-exception cohort and the near-ceiling overtime list are
+           filtered subsets no hub lens carries, so they open INWARDS: a ledger
+           over the board, a drawer over the ledger, and the cockpit still
+           underneath both. Fourth use of the C3/C4 pattern. -->
+      <div t-if="state.people" class="pbin-people" t-on-click.self="closePeople">
+        <!-- No data-coach here on purpose: `pb_learn`'s anchor registry is
+               GENERATED, and an `in-*` anchor it does not declare fails its
+               stray-anchor gate. This ledger is a surface the Coach does not
+               teach yet; when it does, the anchor is added through the
+               generator, not by typing one here. -->
+          <div class="pbin-people__panel pbim-panel">
+          <header class="pbin-people__head">
+            <div>
+              <h3 t-esc="state.people.title"/>
+              <p t-esc="state.people.subtitle"/>
+            </div>
+            <button class="pbin-people__x" t-on-click="closePeople"
+                    aria-label="Close">
+              <t t-out="ic('close', 16)"/>
+            </button>
+          </header>
+
+          <div t-if="state.peopleLoading" class="pbin-loading">
+            <div class="pbin-spin"/><span>Loading…</span>
+          </div>
+
+          <t t-else="">
+            <div class="pbin-people__filters">
+              <div class="pbim-chips">
+                <t t-foreach="state.people.facets or []" t-as="fac" t-key="fac.key">
+                  <t t-if="fac.chips.length > 1">
+                    <t t-if="fac.kind === 'chips'">
+                      <button t-foreach="fac.chips" t-as="c" t-key="c.id"
+                              t-attf-class="pbim-fchip {{ state.pf[fac.key] === c.id ? 'on' : '' }}"
+                              t-on-click="() => this.setPeopleFacet(fac.key, c.id)">
+                        <t t-esc="c.label"/> <span class="c" t-esc="peopleChipCount(fac.key, c.id)"/>
+                      </button>
+                    </t>
+                    <t t-else="">
+                      <select class="pbin-people__sel"
+                              t-on-change="(ev) => this.onPeopleFacetSelect(fac.key, ev)">
+                        <option value="">All</option>
+                        <option t-foreach="fac.chips" t-as="c" t-key="c.id"
+                                t-att-value="c.id"
+                                t-att-selected="state.pf[fac.key] === c.id" t-esc="c.label"/>
+                      </select>
+                    </t>
+                  </t>
+                </t>
+                <button t-if="peopleDirty" class="pbim-fchip"
+                        t-on-click="clearPeopleFilters">
+                  <t t-out="ic('close', 13)"/> Clear
+                </button>
+              </div>
+              <div class="pbin-people__search">
+                <span class="ic"><t t-out="ic('search', 15)"/></span>
+                <input t-att-placeholder="state.people.search_ph"
+                       t-on-input="onPeopleSearch"/>
+              </div>
+            </div>
+
+            <div t-if="peopleRows.length" class="pbim-tablewrap pbin-people__tw">
+              <table class="pbim-table">
+                <thead>
+                  <tr>
+                    <th t-foreach="state.people.columns" t-as="col" t-key="col_index"
+                        t-attf-class="{{ col.wide ? 'pbin-th-wide' : '' }}"
+                        t-esc="col.label"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="peopleRows" t-as="r" t-key="r.id" class="click"
+                      t-on-click="() => this.openPerson(r)">
+                    <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-else="" class="pbim-empty" t-esc="state.people.empty"/>
+
+            <!-- Honest in both directions: what is on screen, and what exists
+                 behind the id cap the pulse applies (W45). -->
+            <div class="pbin-people__foot" t-esc="peopleFoot"/>
+          </t>
+        </div>
+      </div>
+
+      <!-- The kit's drawer (W6): imported, never forked. -->
+      <WfDrawer t-if="state.pdrawer" title="state.pdrawer.title"
+                subtitle="state.pdrawer.subtitle"
+                onClose="() => this.closePersonDrawer()">
+        <div class="pbin-dr">
+          <div t-if="state.pdrawerLoading and !state.pdrawer.facts.length"
+               class="pbin-dr__load">
+            <div class="pbin-spin"/><span>Loading…</span>
+          </div>
+          <img t-if="state.pdrawer.avatar_url" class="pbin-dr__av"
+               t-att-src="state.pdrawer.avatar_url" alt=""/>
+          <div t-foreach="state.pdrawer.facts" t-as="f" t-key="f.label"
+               class="pbin-dr__kv">
+            <span class="k" t-esc="f.label"/>
+            <span class="v" t-esc="f.value"/>
+          </div>
+        </div>
+      </WfDrawer>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,344 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:336
+msgid "%s KB"
+msgstr "%s KB"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:210
+msgid "%s employees picked — the filing covers exactly these."
+msgstr "Nhân viên %s đã chọn - hồ sơ bao gồm chính xác những điều này."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+msgid ""
+"%s further parameters belong to the other filings of this country and are not asked "
+"for here."
+msgstr ""
+"Các tham số khác của %s thuộc về các hồ sơ khác của quốc gia này và không được yêu cầu"
+" ở đây."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:326
+msgid "%s produced %s file(s) — download them below."
+msgstr "%s đã tạo (các) tệp %s - tải chúng xuống bên dưới."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:52
+msgid "Choose the filing"
+msgstr "Chọn hồ sơ"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_govt_reports
+#: model:ir.model.fields,field_description:pb_govt_reports.field_pb_filing_flow__display_name
+#: model:ir.model.fields,field_description:pb_govt_reports.field_pb_govt_reports__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Filings for"
+msgstr "Hồ sơ cho"
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "Filings for this country are not available on this database."
+msgstr "Hồ sơ cho quốc gia này không có sẵn trên cơ sở dữ liệu này."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:54
+msgid "Generate"
+msgstr "Tạo"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: model:ir.actions.client,name:pb_govt_reports.action_pb_filing_flow
+msgid "Generate a filing"
+msgstr "Tạo hồ sơ"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Generate another"
+msgstr "Tạo cái khác"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+msgid ""
+"Generated %s file(s). Nothing has been sent anywhere — download them and file them "
+"yourself."
+msgstr ""
+"Đã tạo (các) tệp %s. Chưa có gì được gửi đi bất cứ đâu — hãy tải chúng xuống và tự "
+"mình lưu trữ chúng."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:312
+msgid "Generating the filing…"
+msgstr "Đang tạo hồ sơ…"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/govt_reports.js:0
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+#: model:ir.actions.client,name:pb_govt_reports.action_pb_govt_reports
+#: code:addons/pb_govt_reports/static/src/js/govt_reports.js:98
+msgid "Government Reports"
+msgstr "Báo cáo chính phủ"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Government reports for"
+msgstr "Báo cáo của Chính phủ cho"
+
+#. module: pb_govt_reports
+#: model:ir.model.fields,field_description:pb_govt_reports.field_pb_filing_flow__id
+#: model:ir.model.fields,field_description:pb_govt_reports.field_pb_govt_reports__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+msgid ""
+"Leave empty to cover everyone in range, narrowed by the department and contract type "
+"above."
+msgstr ""
+"Để trống để bao gồm tất cả mọi người trong phạm vi, được thu hẹp theo bộ phận và loại "
+"hợp đồng ở trên."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:148
+msgid "Loading filings…"
+msgstr "Đang tải hồ sơ…"
+
+#. module: pb_govt_reports
+#: model:ir.model,name:pb_govt_reports.model_pb_govt_reports
+msgid "Payobook Government Reports cockpit data"
+msgstr "Báo cáo Chính phủ Payobook dữ liệu buồng lái"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Payobook · Compliance"
+msgstr "Payobook · Tuân thủ"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid ""
+"Pick what you are filing. The next step asks only for the\n"
+"                parameters that filing actually needs."
+msgstr ""
+"Chọn những gì bạn đang nộp. Bước tiếp theo chỉ yêu cầu\n"
+"                các thông số mà việc nộp hồ sơ thực sự cần."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:165
+msgid "Preparing the filing…"
+msgstr "Đang chuẩn bị hồ sơ…"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:294
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:53
+msgid "Scope"
+msgstr "Phạm vi"
+
+#. module: pb_govt_reports
+#: model:ir.model,name:pb_govt_reports.model_pb_filing_flow
+msgid "Statutory filing — stepped flow"
+msgstr "Nộp hồ sơ theo luật định - quy trình từng bước"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "Statutory filings for"
+msgstr "Hồ sơ theo luật định cho"
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "The filing ran and produced no file."
+msgstr "Việc nộp đơn đã chạy và không tạo ra tập tin nào."
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "The filing's file could not be produced: %s"
+msgstr "Không thể tạo tệp hồ sơ: %s"
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "This country's filing wizard cannot generate a file on this database."
+msgstr ""
+"Trình hướng dẫn lưu trữ của quốc gia này không thể tạo tệp trên cơ sở dữ liệu này."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:327
+msgid "This filing"
+msgstr "Hồ sơ này"
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "This filing could not be generated: %s"
+msgstr "Không thể tạo tệp này: %s"
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "This filing has changed. Start it again."
+msgstr "Hồ sơ này đã thay đổi. Bắt đầu lại."
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "This filing has expired. Start it again."
+msgstr "Hồ sơ này đã hết hạn. Bắt đầu lại."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:222
+msgid "This filing ran and produced no file."
+msgstr "Tệp này đã chạy và không tạo ra tệp nào."
+
+#. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
+msgid "This filing's action is not a generate step."
+msgstr "Hành động nộp đơn này không phải là một bước tạo ra."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:136
+msgid "This step could not be completed."
+msgstr "Bước này không thể hoàn thành."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "Type two letters to search employees…"
+msgstr "Gõ hai chữ cái để tìm kiếm nhân viên…"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+msgid "are coming soon."
+msgstr "đang đến sớm."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid ""
+"are not available on\n"
+"                this database."
+msgstr ""
+"không có sẵn trên\n"
+"                cơ sở dữ liệu này."
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+msgid "parameters"
+msgstr "thông số"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:203
+msgid "%s further parameters belong to the other filings of this"
+msgstr "Các tham số khác của %s thuộc về các hồ sơ khác của điều này"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:211
+msgid "Leave empty to cover everyone in range, narrowed by the"
+msgstr "Để trống để bao quát mọi người trong phạm vi, bị thu hẹp bởi"
+
+#. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:219
+msgid "Generated %s file(s). Nothing has been sent anywhere —"
+msgstr "Đã tạo (các) tệp %s. Không có gì được gửi đi bất cứ đâu -"

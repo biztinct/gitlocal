@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_payrun_wizard.PayrunWizard">
+    <div class="pw-root" t-att-class="{ 'pw-root--embedded': props.embedded }">
+        <div class="pw-card">
+            <!-- Header. W17: in a hub the brand chip already says "Pay Run" and
+                 the lens rail already says RUN, and the close button would leave
+                 the hub entirely - so the whole row goes, and the stepper below
+                 carries the orientation. -->
+            <div class="pw-head" t-if="!props.embedded">
+                <div>
+                    <div class="pw-eyebrow">Payobook · Pay run</div>
+                    <h2>Run Payroll</h2>
+                </div>
+                <!-- the glyph stays a glyph: this row is standalone-only chrome
+                     and the cycle's rule is that standalone renders unchanged.
+                     Its replacement belongs to the phase that retires the
+                     wizard's private icon map, not to an embedding phase. -->
+                <button class="pw-x" t-on-click="cancel">✕</button>
+            </div>
+
+            <!-- Stepper -->
+            <div class="pw-rail" data-coach="pw-rail">
+                <t t-foreach="steps" t-as="s" t-key="s_index">
+                    <div t-attf-class="pw-step #{state.step > s_index+1 ? 'done' : ''} #{state.step === s_index+1 ? 'cur' : ''}">
+                        <div class="pw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',14)"/></t><t t-else=""><t t-esc="s_index+1"/></t></div>
+                        <div class="pw-lab" t-esc="s"/>
+                    </div>
+                    <div t-if="s_index &lt; steps.length - 1" t-attf-class="pw-bar #{state.step > s_index+1 ? 'done' : ''}"/>
+                </t>
+            </div>
+
+            <div class="pw-body">
+                <t t-if="state.loading">
+                    <div class="pw-busy">
+                        <t t-if="state.progress and state.progress.total">
+                            <div class="pw-prog">
+                                <div class="pw-prog__bar" t-attf-style="width: #{Math.round(100 * state.progress.done / state.progress.total)}%"></div>
+                            </div>
+                            <div class="pw-prog__meta">
+                                <span t-esc="state.busyMsg"/>
+                                <b><t t-esc="state.progress.done"/> / <t t-esc="state.progress.total"/> · <t t-esc="Math.round(100 * state.progress.done / state.progress.total)"/>%</b>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="pw-spin"></div>
+                            <div t-esc="state.busyMsg"/>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Step 1 -->
+                <t t-elif="stepKey === 'period'">
+                    <div class="pw-grid2" data-coach="pw-scope">
+                        <div class="pw-sec">
+                            <h4>Period</h4>
+                            <t t-if="(state.defaults.divisions || []).length">
+                                <label>Configuration</label>
+                                <select class="pw-in" data-coach="pw-division" t-on-change="(ev)=>this.onDivision(ev)">
+                                    <t t-foreach="state.defaults.divisions" t-as="d" t-key="d.key">
+                                        <option t-att-value="d.key" t-att-selected="d.key === state.form.division" t-esc="d.name"/>
+                                    </t>
+                                </select>
+                            </t>
+                            <label>Batch name</label>
+                            <input t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.name" t-att-readonly="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('name',ev)"/>
+                            <div class="pw-row2">
+                                <div><label>From</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_start" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_start',ev)"/></div>
+                                <div><label>To</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_end" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_end',ev)"/></div>
+                            </div>
+                        </div>
+                        <div class="pw-sec" data-coach="pw-summary">
+                            <h4>Scope</h4>
+                            <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
+                            <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
+                            <div class="pw-kv" t-if="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
+                            <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>
+
+                            <!-- VALUEKIND P4 — who this run covers. Shown only
+                                 when a scheme names a component carrying
+                                 employment status; otherwise the wizard looks
+                                 and behaves exactly as it always has. -->
+                            <t t-if="hasStatusFilter">
+                              <div class="pw-who">
+                                <label>Include</label>
+                                <div class="pw-chips">
+                                  <button t-foreach="statusOptions" t-as="opt" t-key="opt.value"
+                                          t-attf-class="pw-chip {{ state.who.statuses[opt.value] ? 'on' : '' }}"
+                                          t-on-click="() => this.toggleStatus(opt.value)">
+                                    <t t-esc="opt.label"/>
+                                    <span class="pw-chip-n" t-esc="opt.count"/>
+                                  </button>
+                                </div>
+                                <div class="pw-note" t-if="state.who.preview">
+                                  <t t-esc="state.who.preview.total"/> employee<t t-if="state.who.preview.total !== 1">s</t>
+                                  match. People who have left are unticked by default —
+                                  tick them if you still owe them a payslip.
+                                </div>
+
+                                <button class="pw-linkb" t-on-click="() => this.state.who.open = !state.who.open">
+                                  <t t-if="state.who.open">Hide the list</t>
+                                  <t t-else="">Run for just a few people…</t>
+                                </button>
+
+                                <div t-if="state.who.open" class="pw-picker">
+                                  <input class="pw-in" type="search" placeholder="Find an employee…"
+                                         t-att-value="state.who.search" t-on-input="onWhoSearch"/>
+                                  <div class="pw-picked" t-if="state.who.picked.length">
+                                    <b t-esc="state.who.picked.length"/> selected —
+                                    only these will be paid.
+                                    <button class="pw-linkb" t-on-click="clearPicked">Clear</button>
+                                  </div>
+                                  <div class="pw-plist">
+                                    <label t-foreach="state.who.preview ? state.who.preview.employees : []"
+                                           t-as="emp" t-key="emp.id" class="pw-prow">
+                                      <input type="checkbox"
+                                             t-att-checked="state.who.picked.includes(emp.id)"
+                                             t-on-change="() => this.togglePicked(emp.id)"/>
+                                      <span class="pw-pname" t-esc="emp.name"/>
+                                      <span class="pw-pmeta">
+                                        <t t-esc="emp.status"/>
+                                        <t t-if="emp.hours"> · <t t-esc="emp.hours"/> h</t>
+                                      </span>
+                                    </label>
+                                  </div>
+                                  <div class="pw-note" t-if="state.who.preview and state.who.preview.total > state.who.preview.shown">
+                                    Showing <t t-esc="state.who.preview.shown"/> of
+                                    <t t-esc="state.who.preview.total"/> — search to narrow.
+                                  </div>
+                                </div>
+                              </div>
+                            </t>
+
+                            <div class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Pay data (NETROLE P3) — present only when a scheme binds
+                     components to spreadsheet columns. -->
+                <t t-elif="stepKey === 'data'">
+                    <div class="pw-grid2 pw-datagrid" data-coach="pw-paydata">
+                        <div class="pw-sec">
+                            <h4>This month's pay data</h4>
+                            <p class="pw-muted mb">
+                                <b t-esc="state.sheet.gate.config_name"/> reads
+                                <b><t t-esc="sheetComponents.length"/></b> pay component<t t-if="sheetComponents.length !== 1">s</t>
+                                from a spreadsheet. Load the file for this period.
+                            </p>
+                            <label t-attf-class="pw-drop {{ state.sheet.dragging ? 'over' : '' }}"
+                                   t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+                                <t t-out="ic('upload',24)"/>
+                                <span t-if="!state.sheet.file_name">Drop the file here, or click to choose — .xlsx, .xls or .csv</span>
+                                <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.sheet.file_name"/></span>
+                                <input type="file" accept=".xlsx,.xls,.csv" t-on-change="onSheetFile" style="display:none"/>
+                            </label>
+                            <div class="pw-hint" t-if="!state.sheet.file_name and state.sheet.gate.filename_hint">
+                                Last time this scheme read <b t-esc="state.sheet.gate.filename_hint"/>.
+                            </div>
+
+                            <!-- RD56 — NO FILE IS NOT THE SAME AS NOTHING TO DO.
+                                 A pay run with no spreadsheet wrote nothing to
+                                 any record, so a tenant that runs payroll from
+                                 the connected system saw its contracts drift
+                                 further from it every month while the payslips
+                                 stayed right — 152 contracts all reading one
+                                 person's salary. One button, no second choice:
+                                 the file has its two cards because a file can
+                                 be a one-off, and the connected system is the
+                                 source of truth by definition. -->
+                            <div class="pw-feedsync" t-if="!state.sheet.file_name and lanes.api">
+                                <div class="pw-feedsync-tx">
+                                    <b>No file this month?</b>
+                                    <span>Bring employee and contract records into
+                                    step with the connected system first — the
+                                    values it delivered will be saved and used
+                                    from now on.</span>
+                                </div>
+                                <button class="pw-btn pw-btn--sm"
+                                        t-att-disabled="state.sheet.recordsBusy"
+                                        t-on-click="updateRecordsFromFeed">
+                                    <t t-if="state.sheet.recordsBusy">Updating…</t>
+                                    <t t-else="">Update records</t>
+                                </button>
+                            </div>
+                            <div class="pw-hint" t-if="state.sheet.recordsMsg">
+                                <t t-out="ic('check',13)"/> <span t-esc="state.sheet.recordsMsg"/>
+                            </div>
+                            <div class="pw-err" t-if="state.sheet.error">
+                                <t t-out="ic('alert',14)"/> <span t-esc="state.sheet.error"/>
+                            </div>
+                            <button class="pw-btn ghost pw-btn--sm" t-if="state.sheet.file_name" t-on-click="clearSheetFile">Choose a different file</button>
+
+                            <!-- RECORDS R1 — what this file is for: a lasting
+                                 change, or just this run. Shown only once a file
+                                 is actually in hand, so the step keeps one
+                                 question at a time. -->
+                            <t t-if="state.sheet.file_name">
+                                <h4 class="pw-modes-h">What should these values do?</h4>
+                                <div class="pw-modes" role="radiogroup"
+                                     aria-label="What should these values do?"
+                                     data-coach="pw-paymode">
+                                    <div t-attf-class="pw-mode {{ state.sheet.mode === 'update' ? 'on' : '' }}"
+                                         role="radio" data-mode="update"
+                                         t-att-aria-checked="state.sheet.mode === 'update' ? 'true' : 'false'"
+                                         t-att-tabindex="state.sheet.mode === 'update' ? 0 : -1"
+                                         t-on-click="() => this.setSheetMode('update')"
+                                         t-on-keydown="(ev) => this.onModeKey(ev, 'update')">
+                                        <span class="pw-mode-ic"><t t-out="ic('database',18)"/></span>
+                                        <span class="pw-mode-tx">
+                                            <b>Update Payobook</b>
+                                            <!-- SC-4 — truthful caption: when Payobook records rank
+                                                 first, this can only FILL empty boxes. -->
+                                            <span t-if="lanes.records_first">Only empty record boxes are filled — Payobook records are the source of truth here and are never overwritten.</span>
+                                            <span t-else="">Values are saved to employee and contract records and used from now on.</span>
+                                        </span>
+                                        <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'update'"><t t-out="ic('check',13)"/></t></span>
+                                    </div>
+                                    <div t-attf-class="pw-mode {{ state.sheet.mode === 'once' ? 'on' : '' }}"
+                                         role="radio" data-mode="once"
+                                         t-att-aria-checked="state.sheet.mode === 'once' ? 'true' : 'false'"
+                                         t-att-tabindex="state.sheet.mode === 'once' ? 0 : -1"
+                                         t-on-click="() => this.setSheetMode('once')"
+                                         t-on-keydown="(ev) => this.onModeKey(ev, 'once')">
+                                        <span class="pw-mode-ic"><t t-out="ic('shield',18)"/></span>
+                                        <span class="pw-mode-tx">
+                                            <b>This run only</b>
+                                            <span>Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction.</span>
+                                        </span>
+                                        <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'once'"><t t-out="ic('check',13)"/></t></span>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div class="pw-sec" data-coach="pw-coverage">
+                            <h4>Coverage
+                                <!-- The hero moment made visible: when the run is
+                                     one-time, the panel says so before anything
+                                     is computed. -->
+                                <span class="pw-lockchip" t-if="sheetOnce and state.sheet.file_name">
+                                    <t t-out="ic('shield',13)"/> Payobook stays exactly as it is
+                                </span>
+                            </h4>
+                            <t t-if="state.sheet.checking">
+                                <div class="pw-busy pw-busy--inline"><div class="pw-spin"></div><div>Reading the column headings…</div></div>
+                            </t>
+                            <t t-elif="sheetReady">
+                                <t t-set="pf" t-value="state.sheet.preflight"/>
+                                <div class="pw-cov">
+                                    <b><t t-esc="pf.fed.length"/> of <t t-esc="pf.total"/></b>
+                                    spreadsheet component<t t-if="pf.total !== 1">s</t> are fed by this file
+                                    (<t t-esc="pf.columns"/> column<t t-if="pf.columns !== 1">s</t> read).
+                                </div>
+                                <div class="pw-cov pw-cov--warn" t-if="!pf.employees_col">
+                                    <t t-out="ic('alert',13)"/> No employee code, name or email column was recognised — rows may match nobody.
+                                </div>
+                                <div class="pw-covlist">
+                                    <div class="pw-covrow ok" t-foreach="pf.fed_rows" t-as="f" t-key="f.code">
+                                        <span class="ico"><t t-out="ic('check',13)"/></span>
+                                        <span class="nm" t-esc="f.name"/>
+                                        <span class="col" t-esc="f.column"/>
+                                    </div>
+                                    <div class="pw-covrow miss" t-foreach="pf.missing" t-as="m" t-key="m.code">
+                                        <span class="ico"><t t-out="ic('alert',13)"/></span>
+                                        <span class="nm" t-esc="m.name"/>
+                                        <span class="col" t-esc="m.key"/>
+                                    </div>
+                                </div>
+                                <div class="pw-note" t-if="pf.missing.length">
+                                    The missing components will use their fallback values for this run.
+                                </div>
+                                <div class="pw-note pw-note--lock" t-if="sheetOnce">
+                                    <t t-out="ic('shield',13)"/>
+                                    <span>Anyone in the file who is not in Payobook yet will be listed, not paid.</span>
+                                </div>
+                            </t>
+
+                            <!-- RECORDS R3 — the quiet way out. A pay run is
+                                 where a wrong value is NOTICED; the desk is
+                                 where it is fixed for good. Rendered only when
+                                 that screen exists on this database. -->
+                            <div t-if="hasRecordsDesk" class="pw-recordsline">
+                                Need to change what's on record instead?
+                                <button type="button" class="pw-linkbtn" t-on-click="openRecordsDesk">
+                                    <t t-out="ic('database',13)"/> Open Records Desk
+                                </button>
+                            </div>
+                            <t t-else="">
+                                <p class="pw-muted">Choose a file and its columns will be checked against the components below before anything is computed.</p>
+                                <div class="pw-covlist">
+                                    <div class="pw-covrow" t-foreach="sheetComponents" t-as="c" t-key="c.code">
+                                        <span class="ico"><t t-out="ic('table',13)"/></span>
+                                        <span class="nm" t-esc="c.name"/>
+                                        <span class="col" t-esc="c.key"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Step 2 (after compute) -->
+                <t t-elif="stepKey === 'compute' and state.summary">
+                    <div class="pw-result" data-coach="pw-result">
+                        <div class="pw-result-ic"><t t-out="ic('zap',30)"/></div>
+                        <h3 t-if="state.summary.adopted and !state.summary.fresh">
+                          Reused <t t-esc="state.summary.adopted"/> existing payslips</h3>
+                        <h3 t-else="">Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
+                        <p class="pw-muted"><t t-esc="state.summary.name"/> · net total <b t-esc="vnd(state.summary.total_net)"/></p>
+                        <p class="pw-muted" t-if="state.summary.adopted">
+                            <t t-esc="state.summary.adopted"/> payslip(s) for this period already existed and were
+                            added to this run <b>exactly as they were</b> — their figures are from when they were
+                            last computed, not from now. Press <b>Recompute Formulas</b> on the pay run if you
+                            want them worked out again, or delete the drafts first and generate a fresh set.
+                        </p>
+                        <!-- The connected systems were refreshed first, and what
+                             that produced. A run on stale data is one of the two
+                             ways a pay run silently reports last month's pay. -->
+                        <p class="pw-muted" t-if="state.summary.sync and state.summary.sync.ran">
+                            Synced <t t-esc="state.summary.sync.connectors.length"/>
+                            connected system(s) for this period before computing.
+                        </p>
+                        <p class="pw-warn" t-if="state.summary.sync and state.summary.sync.errors.length">
+                            <b>Could not refresh <t t-esc="state.summary.sync.errors.length"/>
+                            connected system(s)</b> — these figures may be from the last
+                            successful sync rather than from now.
+                            <span t-foreach="state.summary.sync.errors" t-as="e" t-key="e_index"
+                                  class="pw-warn-line" t-esc="e"/>
+                        </p>
+                        <!-- NETROLE P3: what the file did, and what running without one cost. -->
+                        <p class="pw-muted" t-if="state.summary.sheet and !state.summary.sheet.one_time">
+                            <t t-esc="state.summary.sheet.filename"/> fed
+                            <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
+                            across <t t-esc="state.summary.sheet.rows"/> row(s) and produced
+                            <b><t t-esc="state.summary.sheet.created"/></b> payslip(s) in this run.
+                        </p>
+                        <!-- RECORDS R1 — a person must never be unsure which mode
+                             they ran. The one-time run says so in its own line. -->
+                        <div class="pw-oncebox" t-if="state.summary.sheet and state.summary.sheet.one_time">
+                            <t t-out="ic('shield',16)"/>
+                            <div>
+                                <p>
+                                    <t t-esc="state.summary.sheet.filename"/> fed
+                                    <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
+                                    across <t t-esc="state.summary.sheet.rows"/> row(s) —
+                                    <b>used once; nothing was saved to any employee, contract or bank record.</b>
+                                </p>
+                                <p class="pw-oncebox-sub" t-if="state.summary.sheet.unmatched_count">
+                                    <b><t t-esc="state.summary.sheet.unmatched_count"/></b> row(s) were for people
+                                    not in Payobook yet and were not paid — they are listed together on the
+                                    next step, with a way to add them.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pw-fallback" t-if="(state.summary.skipped_components || []).length">
+                            <t t-out="ic('alert',14)"/>
+                            <span>
+                                <b><t t-esc="state.summary.skipped_components.length"/></b>
+                                component(s) used fallback values — no spreadsheet was loaded:
+                                <t t-esc="state.summary.skipped_components.join(', ')"/>
+                            </span>
+                        </div>
+                        <div class="pw-statpills" data-coach="pw-pills">
+                            <div class="pw-statpill"><div class="n" t-esc="state.summary.count"/><div class="l">Payslips</div></div>
+                            <div class="pw-statpill"><div class="n" t-esc="state.summary.computed"/><div class="l">Computed</div></div>
+                            <div class="pw-statpill"><div class="n" t-esc="needReview"/><div class="l">Need review</div></div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Step 3 -->
+                <t t-elif="stepKey === 'review' and state.summary">
+                    <t t-set="exc" t-value="state.summary.exceptions || []"/>
+                    <!-- RECORDS R4 D4 — the rows that name somebody who is not
+                         in Payobook are ONE fact with one next step, above the
+                         list rather than scattered through it. The door is the
+                         Import screen (which adds people), never the Records
+                         Desk (there is nothing yet to edit). -->
+                    <div t-if="missingPeople.length" class="pw-missing"
+                         data-coach="pw-missing">
+                        <div class="pw-missing-h">
+                            <t t-out="ic('users',15)"/>
+                            <b t-esc="missingHeading"/>
+                        </div>
+                        <p class="pw-muted">
+                            Nobody is created from a pay data file. Add them first
+                            and their pay will come through on the next run.
+                        </p>
+                        <div class="pw-missing-names">
+                            <span t-foreach="missingPeople" t-as="u" t-key="u_index"
+                                  class="pw-missing-chip" t-att-title="u.why"
+                                  t-esc="u.emp"/>
+                        </div>
+                        <div class="pw-missing-acts">
+                            <button t-if="importDoorAction" class="pw-btn primary sm"
+                                    t-on-click="openImportWizard">
+                                <t t-out="ic('upload',14)"/> Add these people
+                            </button>
+                            <button class="pw-btn ghost sm" t-on-click="copyMissingNames">
+                                <t t-out="ic('copy',14)"/> Copy names
+                            </button>
+                        </div>
+                    </div>
+                    <t t-if="exc.length or state.summary.flagged">
+                        <p class="pw-muted mb">These items need a look before approval:</p>
+                        <div class="pw-list" data-coach="pw-exceptions">
+                            <t t-foreach="exc" t-as="e" t-key="e_index">
+                                <div class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> <t t-esc="e.why"/></span><span t-esc="e.emp"/></div>
+                            </t>
+                            <t t-foreach="state.summary.rows" t-as="r" t-key="r.id">
+                                <div t-if="r.flag" class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> Net is zero</span><span t-esc="r.emp"/></div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-if="!exc.length and !state.summary.flagged and !missingPeople.length">
+                        <div class="pw-result"><div class="pw-result-ic ok"><t t-out="ic('check',30)"/></div><h3>No exceptions</h3><p class="pw-muted">All <t t-esc="state.summary.count"/> payslips look clean.</p></div>
+                    </t>
+                </t>
+            </div>
+
+            <!-- Footer -->
+            <div class="pw-foot" t-if="!state.loading">
+                <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="back">← Back</button>
+                <button class="pw-btn ghost" t-if="stepKey === 'period' and !props.embedded" t-on-click="cancel">Cancel</button>
+                <div class="pw-spacer"></div>
+                <button class="pw-btn primary" data-coach="pw-compute" t-if="stepKey === 'period'" t-on-click="advanceFromPeriod">
+                    <t t-if="wantsSheet">Add pay data</t><t t-else="">Compute payslips</t>
+                    <t t-out="ic('arrow',14)"/>
+                </button>
+                <!-- Skipping is a CHOICE made in front of the list, never a default. -->
+                <button class="pw-btn ghost" data-coach="pw-skipsheet" t-if="stepKey === 'data'" t-on-click="runWithoutSheet">Run without a spreadsheet</button>
+                <button t-attf-class="pw-btn primary {{ sheetOnce ? 'pw-btn--lock' : '' }}"
+                        t-if="stepKey === 'data'" t-att-disabled="!sheetReady" t-on-click="continueWithSheet">
+                    <t t-if="sheetOnce"><t t-out="ic('shield',14)"/></t>
+                    <t t-esc="sheetContinueLabel"/> <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" t-if="stepKey === 'compute'" t-on-click="() => this.gotoKey('review')">Review exceptions <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" t-if="stepKey === 'review'" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

@@ -14,8 +14,13 @@ import base64
 import io
 import re
 import logging
+from markupsafe import Markup, escape
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+
+from ..formula_engine import excel_semantics
+from ..models import column_role_classifier
+from ..models import component_code
 
 _logger = logging.getLogger(__name__)
 
@@ -123,7 +128,9 @@ class MultiSheetImportWizard(models.TransientModel):
     # ==========================================
     primary_key_column = fields.Char(
         string='Primary Key Column',
-        help="Column header used to match rows across worksheets (e.g., 'Employee ID')"
+        help="Column header used to match rows across worksheets (e.g., 'Employee ID'). "
+             "Required before columns can be selected — it is what joins an employee's "
+             "rows together across the workbook."
     )
 
     primary_key_column_letter = fields.Char(
@@ -246,6 +253,19 @@ class MultiSheetImportWizard(models.TransientModel):
         compute='_compute_import_stats'
     )
 
+    # COLROLES P4 — the Review step is where a person decides what each column IS;
+    # the per-role tally belongs at the top of it, not only in the finished import.
+    role_summary_html = fields.Html(
+        string='Column Roles',
+        compute='_compute_role_summary',
+        sanitize=False,
+    )
+
+    role_likely_count = fields.Integer(
+        string='Inferred Roles',
+        compute='_compute_role_summary',
+    )
+
     # ==========================================
     # COMPUTED FIELDS
     # ==========================================
@@ -261,6 +281,59 @@ class MultiSheetImportWizard(models.TransientModel):
             rec.import_count = len(previews)
             rec.duplicate_count = len(rec.component_preview_ids.filtered('is_duplicate'))
             rec.formula_count = len(previews.filtered(lambda p: p.column_type == 'formula'))
+
+    ROLE_CHIP_COLORS = {
+        'payroll': ('#eef2ff', '#3730a3'),
+        'identity': ('#ecfeff', '#155e75'),
+        'profile': ('#f0fdf4', '#166534'),
+        'contract': ('#fefce8', '#854d0e'),
+        'bank': ('#fdf2f8', '#9d174d'),
+        'reference': ('#f8fafc', '#475569'),
+    }
+
+    @api.depends('component_preview_ids.column_role',
+                 'component_preview_ids.column_role_tier',
+                 'component_preview_ids.include_in_import')
+    def _compute_role_summary(self):
+        """A chip per role that actually has columns, plus how many of them were
+        inferred rather than matched. Built as plain inline-styled markup so the
+        wizard needs no asset bundle of its own."""
+        labels = dict(
+            self.env['hr.formula.multisheet.component.preview']
+            ._fields['column_role'].selection)
+        for rec in self:
+            previews = rec.component_preview_ids.filtered('include_in_import')
+            tally = {}
+            for preview in previews:
+                role = preview.column_role or 'payroll'
+                tally[role] = tally.get(role, 0) + 1
+            chips = []
+            for role in ('payroll', 'identity', 'profile', 'contract', 'bank', 'reference'):
+                count = tally.get(role)
+                if not count:
+                    continue
+                bg, fg = rec.ROLE_CHIP_COLORS.get(role, ('#f1f5f9', '#334155'))
+                chips.append(Markup(
+                    '<span style="display:inline-flex;align-items:baseline;gap:6px;'
+                    'padding:3px 10px;margin:0 6px 6px 0;border-radius:999px;'
+                    'background:%s;color:%s;font-size:12px;font-weight:600;">'
+                    '<span style="font-size:13px;">%s</span>%s</span>'
+                ) % (bg, fg, count, escape(labels.get(role, role))))
+            rec.role_likely_count = len(previews.filtered(
+                lambda p: p.column_role_tier == 'likely'))
+            if not chips:
+                rec.role_summary_html = False
+                continue
+            note = Markup('')
+            if rec.role_likely_count:
+                note = Markup(
+                    '<div style="margin-top:2px;font-size:12px;color:#64748b;">'
+                    '<span style="color:#b45309;">●</span> %s</div>'
+                ) % (_("%s column(s) carry a dot: their role was inferred from a "
+                       "resemblance — worth a glance before importing.")
+                     % rec.role_likely_count)
+            rec.role_summary_html = Markup('<div>%s%s</div>') % (
+                Markup('').join(chips), note)
 
     @api.depends('component_preview_ids')
     def _compute_cross_sheet_stats(self):
@@ -531,6 +604,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible_map': color_info['report_visible_map'],
                         'contract_component_map': color_info.get('contract_component_map', {}),
                         'requires_new_contract_map': color_info.get('requires_new_contract_map', {}),
+                        'text_component_map': color_info.get('text_component_map', {}),
                         'header_block_start': color_info['header_block_start'],
                         'formula_row': color_info['formula_row'],
                     }
@@ -649,6 +723,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 report_visible_map = ctx.get('report_visible_map', {})
                 contract_component_map = ctx.get('contract_component_map', {})
                 requires_new_contract_map = ctx.get('requires_new_contract_map', {})
+                text_component_map = ctx.get('text_component_map', {})
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -683,6 +758,35 @@ class MultiSheetImportWizard(models.TransientModel):
                     sample = self._get_sample_value(
                         sheet_data, data_sheet, formula_sheet, header_info['value'], col_letter
                     )
+                    uniform_val = False
+                    if col_letter not in formula_columns:
+                        uniform_val = self._column_uniform_value(
+                            sheet_data, data_sheet, header_info['value'], col_letter)
+
+                    is_text_component = bool(text_component_map.get(col_letter))
+                    resolved_column_type = ('input' if is_red_data_column else
+                                            ('formula' if col_letter in formula_columns else 'input'))
+                    # `is_referenced` here means "the main sheet reads this column",
+                    # which is exactly the guarantee the classifier needs to keep a
+                    # referenced column in payroll whatever its header says.
+                    column_role, role_tier, role_reason = column_role_classifier.classify_column(
+                        header_info['value'],
+                        column_type=resolved_column_type,
+                        is_contract_component=(
+                            bool(contract_component_map.get(col_letter)) and not is_text_component),
+                        is_text_component=is_text_component,
+                        band_label=header_info.get('component_type') or None,
+                        sample_values=[sample] if sample else None,
+                        is_referenced=bool(is_referenced),
+                    )
+                    if is_text_component or (
+                            contract_component_map.get(col_letter)
+                            and column_role == column_role_classifier.ROLE_CONTRACT):
+                        is_text_component = True
+                    _logger.debug(
+                        "Multisheet import: %s!%s (%s) -> role=%s tier=%s (%s)",
+                        sheet_line.sheet_name, col_letter, header_info['value'],
+                        column_role, role_tier, role_reason)
 
                     column_lines.append({
                         'wizard_id': self.id,
@@ -696,10 +800,13 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible': bool(report_visible_map.get(col_letter)),
                         'is_contract_component': bool(contract_component_map.get(col_letter)),
                         'requires_new_contract': bool(requires_new_contract_map.get(col_letter)),
+                        'is_text_component': is_text_component,
+                        'column_role': column_role,
+                        'column_role_tier': role_tier,
                         'is_selected': True,  # All columns selected by default
-                        'column_type': 'input' if is_red_data_column else
-                                       ('formula' if col_letter in formula_columns else 'input'),
+                        'column_type': resolved_column_type,
                         'sample_value': sample,
+                        'uniform_value': uniform_val or False,
                         'has_cross_sheet_ref': has_cross_ref,
                         'cross_sheet_formula': cross_formula,
                         'is_referenced_by_main': is_referenced,
@@ -1149,10 +1256,14 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible': bool(col_sel.report_visible),
                         'is_contract_component': bool(col_sel.is_contract_component),
                         'requires_new_contract': bool(col_sel.requires_new_contract),
+                        'is_text_component': bool(col_sel.is_text_component),
+                        'column_role': col_sel.column_role or 'payroll',
+                        'column_role_tier': col_sel.column_role_tier or 'default',
                         'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
                         'sample_value': col_sel.sample_value,
+                        'uniform_value': col_sel.uniform_value or False,
                         'is_duplicate': False,
                         'include_in_import': True,
                         'is_in_excel': True,
@@ -1252,12 +1363,25 @@ class MultiSheetImportWizard(models.TransientModel):
             _logger.exception("Failed to process sheets with resolution")
             raise UserError(_("Failed to process sheets: %s") % str(e))
 
+    # WP-E / D-E1: unresolved references must degrade VISIBLY, never become a
+    # silent 0. This sentinel (a) survives into the stored formula so the value
+    # is obviously wrong, (b) is matched by the preview mixin's SHEET_REF_RE
+    # (the trailing '!' makes `REF!` match) so the row goes red, and (c) makes
+    # the downstream Excel→Python converter fail loudly (syntax error → the rule
+    # carries has_evaluation_error) instead of quietly returning 0. It is inert
+    # to the column-ref regexes because nothing after the '!' looks like a
+    # <col><row> cell reference.
+    _UNRESOLVED_MARK = '#REF!'
+
     def _resolve_cross_sheet_formula(self, formula, column_mapping):
         """
         Resolve cross-sheet references in a formula to simple column references.
 
         VLOOKUP(B4,'TimeTB 2'!$C$4:$AU$11,45,0) → DM2
         SUMIF(Others!$B$8:$B$15,$B4,Others!$F$8:$F$15) → SUMIF(XX:XX,$B4,YY:YY)
+
+        Unresolved references are replaced with ``#REF!`` (D-E1), never ``0`` —
+        the import preview red-lines them and the converter refuses them loudly.
         """
         if not formula:
             return formula
@@ -1290,11 +1414,12 @@ class MultiSheetImportWizard(models.TransientModel):
                 # Return just the code - the formula converter handles codes in column_map.values()
                 return new_col
             else:
-                _logger.debug(
-                    f"VLOOKUP unresolved: sheet='{sheet_name}', target_col='{target_col}', "
-                    f"col_index={col_index}. Returning 0."
+                _logger.warning(
+                    "VLOOKUP unresolved: sheet='%s', target_col='%s', col_index=%s. "
+                    "Marking #REF! (was silently 0 before WP-E).",
+                    sheet_name, target_col, col_index
                 )
-                return "0"  # Unresolved - return 0
+                return self._UNRESOLVED_MARK  # D-E1: visible, never silent 0
 
         result = vlookup_pattern.sub(resolve_vlookup, result)
 
@@ -1324,20 +1449,32 @@ class MultiSheetImportWizard(models.TransientModel):
             if new_criteria_col and new_sum_col:
                 return f"SUMIF({new_criteria_col}:{new_criteria_col},{criteria},{new_sum_col}:{new_sum_col})"
             else:
-                return "0"
+                _logger.warning(
+                    "SUMIF unresolved: criteria='%s', sum='%s'. Marking #REF!.",
+                    criteria_sheet, sum_sheet
+                )
+                return self._UNRESOLVED_MARK  # D-E1
 
         result = sumif_pattern.sub(resolve_sumif, result)
 
-        # Resolve direct references: 'Sheet'!A4 -> NewCol4
+        # Resolve direct references: 'Sheet'!A4 -> NewCol
+        # D-E2: the sheet-name token is ANCHORED and constrained. The old
+        # `'?([^'!]+)'?` greedily swallowed everything up to the '!' — including a
+        # leading `=IF(` — so `=IF(Sheet2!B2>0,1,0)` matched with sheet name
+        # `=IF(Sheet2`, never resolved, and (returning "0") was shredded into
+        # `0>0,1,0)`. The token is now either a quoted name or a bare Excel sheet
+        # name (letter/underscore/unicode start; word-chars, dot, unicode after —
+        # NEVER operators or spaces, which Excel forces to be quoted), with a left
+        # boundary so it cannot eat a preceding function call or identifier.
         direct_pattern = re.compile(
-            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?(\d+)",
+            r"(?<![\w!.'])(?:'([^']+)'|([A-Za-z_\u00C0-\uffff][\w.\u00C0-\uffff]*))\s*!\s*\$?([A-Z]+)\$?(\d+)",
             re.IGNORECASE
         )
 
         def resolve_direct(match):
-            sheet_name = self._normalize_sheet_key(match.group(1))
-            col = match.group(2).upper()
-            row = match.group(3)
+            raw_sheet = match.group(1) if match.group(1) is not None else match.group(2)
+            sheet_name = self._normalize_sheet_key(raw_sheet)
+            col = match.group(3).upper()
 
             new_col = column_mapping.get((sheet_name, col))
             if not new_col:
@@ -1350,9 +1487,11 @@ class MultiSheetImportWizard(models.TransientModel):
                 return new_col
             else:
                 _logger.warning(
-                    f"Direct reference unresolved: sheet='{sheet_name}', col='{col}'. Returning 0."
+                    "Direct reference unresolved: sheet='%s', col='%s'. Marking #REF! "
+                    "(preserved visibly; was silently 0 before WP-E).",
+                    sheet_name, col
                 )
-                return "0"
+                return self._UNRESOLVED_MARK  # D-E1
 
         result = direct_pattern.sub(resolve_direct, result)
 
@@ -1414,7 +1553,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 start_idx = self._column_letter_to_index(start_col)
                 end_idx = self._column_letter_to_index(end_col)
             except Exception:
-                return "0"
+                return self._UNRESOLVED_MARK  # D-E1
 
             base_idx = min(start_idx, end_idx)
             target_idx = base_idx + col_index - 1
@@ -1424,7 +1563,7 @@ class MultiSheetImportWizard(models.TransientModel):
             if not new_col:
                 new_col = column_mapping.get((sheet_key, target_idx))
 
-            return new_col or "0"
+            return new_col or self._UNRESOLVED_MARK  # D-E1
 
         result = vlookup_pattern.sub(resolve_same_sheet_vlookup, result)
 
@@ -1627,6 +1766,56 @@ class MultiSheetImportWizard(models.TransientModel):
                     return formula_value[:50]
 
         return ''
+
+    def _column_uniform_value(self, sheet_data, data_sheet, header_value, col_letter):
+        """The column's uniform numeric value as a string, or False.
+
+        A uniform value column is a parameter in practice — W41 exports
+        constants exactly this way — so import seeds ``default_value`` from it
+        and the round-tripped config recomputes faithfully (WP-L review M2:
+        constants degraded to input 0 broke 28 letters on recompute). A
+        VARYING column must stay at default 0: seeding a first-row value would
+        silently pay it to any employee missing the input in a future payrun.
+
+        Exactly ONE leading non-numeric cell is tolerated: the W41 two-header
+        layout puts the CODE row where the importer sees the first data row,
+        so the column reads ['DAYSTD', 26, 26, …] — the code string must not
+        defeat uniformity (and is why the returned VALUE, not sample_value, is
+        what seeds default_value). Any other non-numeric cell ⇒ not uniform."""
+        values = []
+        rows = sheet_data.get('data_rows') or []
+        if rows:
+            for row in rows:
+                v = row.get(header_value)
+                if v is not None and str(v).strip() != '':
+                    values.append(v)
+        elif data_sheet is not None:
+            from openpyxl.utils import column_index_from_string
+            col_idx = column_index_from_string(col_letter)
+            data_start_row = sheet_data.get('data_start_row') or (
+                sheet_data.get('header_row', 1) + 1)
+            scan_end = min(data_start_row + 500, data_sheet.max_row)
+            for row_num in range(data_start_row, scan_end + 1):
+                v = data_sheet.cell(row=row_num, column=col_idx).value
+                if v is not None and str(v).strip() != '':
+                    values.append(v)
+        if not values:
+            return False
+        nums = []
+        text_positions = []
+        for i, v in enumerate(values):
+            n = excel_semantics.coerce_number(str(v))
+            if n is None:
+                text_positions.append(i)
+            else:
+                nums.append(round(n, 6))
+        if not nums:
+            return False
+        if text_positions and text_positions != [0]:
+            return False
+        if any(n != nums[0] for n in nums[1:]):
+            return False
+        return repr(nums[0])
 
     def _detect_empty_columns_between_valid(self, headers, sheet, header_row):
         """
@@ -1981,6 +2170,48 @@ class MultiSheetImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return is_red_font(cell)
 
+        def is_green_font(cell):
+            """Green HEADER font = contract component that holds TEXT (CR-A4).
+
+            Same thresholds as the red reader above, mirrored onto the green channel.
+            Asked only about header-band cells, so it cannot collide with the green
+            FILL that marks the formula row."""
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if g > 150 and r < 150 and b < 150:
+                                return True
+                            if g > 180 and r > 180 and b < 150:
+                                return True
+                            if g > 200 and g > r and g > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [3, 11]:
+                        return True
+                    elif color.type == 'theme' and color.theme in [6, 9]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_green_in_merge(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                    for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                        cell = formula_sheet.cell(row=m_row, column=m_col)
+                        if is_green_font(cell):
+                            return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_green_font(cell)
+
         def is_underline_in_merge(row_num, col_idx):
             merge_info = merge_parser.get_merge_at(row_num, col_idx)
             if merge_info:
@@ -1998,6 +2229,7 @@ class MultiSheetImportWizard(models.TransientModel):
         report_visible_map = {}
         contract_component_map = {}
         requires_new_contract_map = {}
+        text_component_map = {}
 
         for col_idx in range(1, max_col + 1):
             col_letter = get_column_letter(col_idx)
@@ -2038,7 +2270,12 @@ class MultiSheetImportWizard(models.TransientModel):
             header_map[col_letter] = value_str
             header_rows[col_letter] = header_row
             report_visible_map[col_letter] = is_bold_in_merge(header_row, col_idx)
-            contract_component_map[col_letter] = is_red_in_merge(header_row, col_idx)
+            is_red = is_red_in_merge(header_row, col_idx)
+            is_green = is_green_in_merge(header_row, col_idx)
+            # Green is an authoritative text component, red is a component whose kind
+            # is inferred from its sample values later (CR-A4).
+            text_component_map[col_letter] = is_green
+            contract_component_map[col_letter] = is_red or is_green
             requires_new_contract_map[col_letter] = (
                 contract_component_map[col_letter] and is_underline_in_merge(header_row, col_idx)
             )
@@ -2093,6 +2330,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'is_contract_component': contract_component_map.get(h['column_letter'], False),
                     'requires_new_contract': requires_new_contract_map.get(h['column_letter'], False),
                     'payslip_identifier': identifier_map.get(h['column_letter']),
+                    'is_text_component': text_component_map.get(h['column_letter'], False),
                 }
                 for h in headers
             ],
@@ -2110,6 +2348,7 @@ class MultiSheetImportWizard(models.TransientModel):
             'report_visible_map': report_visible_map,
             'contract_component_map': contract_component_map,
             'requires_new_contract_map': requires_new_contract_map,
+            'text_component_map': text_component_map,
             'header_block_start': header_block_start,
             'header_block_end': header_block_end,
             'formula_row': formula_row,
@@ -2172,7 +2411,13 @@ class MultiSheetImportWizard(models.TransientModel):
         data_start_row = sheet_data.get('data_start_row', header_row + 1)
 
         constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row, data_sheet)
-        scan_up_to_row = data_start_row + 2
+        # D-E4: scan ONLY the rows ABOVE the first data row. The old
+        # `data_start_row + 2` reached two rows INTO the employee data, so a
+        # blue-styled INPUT column would freeze employee #1's value as a
+        # workbook-wide constant applied to everyone. `_detect_blue_constant_cells`
+        # scans `range(1, scan_up_to_row)`, so passing `data_start_row` stops
+        # exactly before the data.
+        scan_up_to_row = data_start_row
         blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row, data_sheet)
         formula_referenced = self._detect_formula_referenced_constants(
             formula_columns, formula_sheet, header_row, data_sheet
@@ -2695,6 +2940,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             created_rules = []
             updated_rules = []
+            unparseable_constants = []   # D-E5: constants whose value wasn't numeric
             identifier_cache = {}
             payslip_config_model = self.env['hr.payslip.config']
 
@@ -2739,7 +2985,13 @@ class MultiSheetImportWizard(models.TransientModel):
                     'report_visible': bool(comp.report_visible),
                     'is_contract_component': bool(comp.is_contract_component),
                     'requires_new_contract': bool(comp.requires_new_contract),
+                    'is_text_component': bool(comp.is_text_component),
                 }
+                # Role defaults belong to a NEWLY created rule only; an existing
+                # rule keeps the visibility somebody already chose for it, and a
+                # role a person set by hand is never overwritten (CR-A1).
+                role_vals = column_role_classifier.role_rule_defaults(
+                    comp.column_role or 'payroll')
                 if sequence is not None:
                     rule_vals['sequence'] = sequence
 
@@ -2750,23 +3002,53 @@ class MultiSheetImportWizard(models.TransientModel):
                 if comp.column_type == 'formula' and comp.excel_formula:
                     rule_vals['excel_formula'] = comp.excel_formula
 
-                # Handle constant components (from colored cell pairs)
+                # Uniform value column → seed default_value so a round-tripped
+                # config recomputes faithfully (WP-L review M2: W41-exported
+                # constants re-imported as input 0.0 broke 28 letters). Varying
+                # columns keep default 0 — seeding a first-row value would
+                # silently pay it to any employee missing the input later. The
+                # seed comes from uniform_value, never sample_value (which can
+                # be the W41 code-header row read as a phantom first data row).
+                if comp.column_type == 'input' and comp.uniform_value:
+                    number = excel_semantics.coerce_number(comp.uniform_value)
+                    if number is not None:
+                        rule_vals['default_value'] = number
+
+                # Handle constant components (from colored cell pairs).
+                # D-E5: parse via the shared Excel coercion (handles "8%",
+                # "1.234,50", thousands separators) instead of a bare float().
+                # A value that is genuinely non-numeric (text/date) is NOT
+                # silently turned into 0.0 — it is recorded and surfaced loudly
+                # in the completion notice so the officer can fix it.
                 if comp.column_type == 'constant':
                     if comp.sample_value:
-                        try:
-                            rule_vals['constant_value'] = float(comp.sample_value)
-                        except (ValueError, TypeError):
+                        number = excel_semantics.coerce_number(comp.sample_value)
+                        if number is None:
                             rule_vals['constant_value'] = 0.0
+                            unparseable_constants.append(
+                                (comp.generated_code, comp.sample_value))
+                            _logger.warning(
+                                "Constant %s has non-numeric value %r — imported as 0.0; "
+                                "needs manual entry.",
+                                comp.generated_code, comp.sample_value)
+                        else:
+                            rule_vals['constant_value'] = number
 
                 if comp.data_source == 'integration' and comp.integration_connector_id:
                     rule_vals['integration_connector_id'] = comp.integration_connector_id.id
                     rule_vals['source_field_mapping'] = comp.integration_field_name
 
                 if existing_rule and self.update_existing:
-                    existing_rule.write(rule_vals)
+                    # F7: overwriting an existing rule via import is a versioned
+                    # 'import' event (fresh creates are version-0 / unversioned).
+                    if all(r.column_role_source != 'user' for r in existing_rule):
+                        rule_vals['column_role'] = role_vals['column_role']
+                        rule_vals['column_role_source'] = 'auto'
+                    existing_rule.with_context(
+                        formula_version_reason='import').write(rule_vals)
                     updated_rules.append(existing_rule)
                 elif not existing_rule:
-                    new_rule = self.env['hr.formula.rule'].create(rule_vals)
+                    new_rule = self.env['hr.formula.rule'].create(dict(rule_vals, **role_vals))
                     created_rules.append(new_rule)
 
             # Update missing fields with their data source settings
@@ -2786,8 +3068,35 @@ class MultiSheetImportWizard(models.TransientModel):
                 "Updated: %d rules"
             ) % (len(created_rules), len(updated_rules))
 
-            next_action = self.config_id.get_formview_action()
+            # COLROLES P4 — say what those rules turned out to BE. The roles were
+            # decided during this import and were, until now, discarded at the
+            # finish line; a workbook whose people columns went unnoticed is
+            # exactly the workbook that never gets mapped.
+            touched = self.env['hr.formula.rule'].browse(
+                [r.id for rules in (created_rules, updated_rules) for r in rules])
+            Config = self.env['hr.formula.config']
+            role_summary = Config.format_role_summary(
+                Config.role_counts_for_rules(touched))
+            if role_summary:
+                message += '\n' + role_summary
+
+            # D-E5: don't let non-numeric constants pass off as a clean import.
+            if unparseable_constants:
+                shown = ', '.join(
+                    '%s (%s)' % (code, val) for code, val in unparseable_constants[:8])
+                message += _(
+                    "\n\n⚠ %d constant(s) had non-numeric values and were imported "
+                    "as 0 — set them manually: %s"
+                ) % (len(unparseable_constants), shown)
+
+            next_action = (self.config_id.studio_people_mapping_action(touched)
+                           or self.config_id.get_formview_action())
             next_action['target'] = 'current'
+            # NETROLE P2 — same finish line, same question: what did these
+            # columns turn out to be? The review chains whatever was going to
+            # happen next and dispatches it on close.
+            next_action = self.config_id.category_review_action(
+                next_action=next_action) or next_action
 
             return {
                 'type': 'ir.actions.client',
@@ -2795,8 +3104,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 'params': {
                     'title': _('Import Complete'),
                     'message': message,
-                    'type': 'success',
-                    'sticky': False,
+                    'type': 'warning' if unparseable_constants else 'success',
+                    'sticky': bool(unparseable_constants),
                     'next': next_action,
                 }
             }
@@ -2960,33 +3269,35 @@ class MultiSheetImportWizard(models.TransientModel):
             'context': self.env.context,
         }
 
-    def _generate_code(self, header: str, existing_codes: set) -> str:
-        """Generate a unique code from header value."""
+    def _generate_code(self, header: str, existing_codes: set, reserved=()) -> str:
+        """Generate a readable, converter-safe code for a spreadsheet header.
+
+        Delegates to the single shared generator (``models/component_code.py``) so
+        every import path — this wizard, the single-sheet wizard, the Excel
+        connector, the studio's "add component" — names a column the same way.
+        Before MAPFIX this stripped non-ASCII characters, which DELETED accented
+        Vietnamese letters instead of folding them: "Chi trả phép năm chưa sử dụng"
+        became CHITRPHPNMCHASDNG — lossy and seventeen characters long.
+        """
         header_str = str(header).strip()
 
-        # Skip formula values - they start with '='
-        if header_str.startswith('='):
-            base_code = 'FORMULA_COL'
-        # Skip resolved formula patterns
-        elif 'values.get' in header_str or 'VLOOKUP' in header_str.upper() or 'SUMIF' in header_str.upper():
-            base_code = 'FORMULA_COL'
+        # A stray formula cell used as a header carries no name worth reading.
+        if (header_str.startswith('=')
+                or 'values.get' in header_str
+                or 'VLOOKUP' in header_str.upper()
+                or 'SUMIF' in header_str.upper()):
+            header_str = 'FORMULACOL'
         elif header_str.isdigit():
-            base_code = f'COL_{header_str}'
-        else:
-            base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
-            if not base_code:
-                base_code = 'UNNAMED'
-            # Truncate overly long codes (likely formula remnants)
-            if len(base_code) > 40:
-                base_code = base_code[:40]
+            header_str = 'COL' + header_str
 
-        code = base_code
-        suffix = 1
-        while code in existing_codes:
-            code = f"{base_code}_{suffix}"
-            suffix += 1
+        return component_code.build_component_code(
+            header_str, existing_codes=existing_codes, reserved=reserved)
 
-        return code
+    @staticmethod
+    def _dedupe_code_c5(base, existing_codes):
+        """Kept as the historical entry point; the implementation now lives in
+        ``models/component_code.dedupe_code_c5`` so there is exactly one."""
+        return component_code.dedupe_code_c5(base, existing_codes)
 
 
 class MultiSheetSheetLine(models.TransientModel):
@@ -3281,6 +3592,44 @@ class MultiSheetComponentPreview(models.TransientModel):
         string='Requires New Contract'
     )
 
+    # COLROLES — what this column is FOR. Auto-classified during analysis and
+    # editable in the Review step, which is the one moment a person is already
+    # looking at every column of the workbook.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Role', default='payroll')
+
+    # COLROLES P4 — how sure that role is. Display-only, transient-only: it never
+    # reaches hr.formula.rule, it only lets the Review step mark the rows that were
+    # a resemblance rather than a match, so a human looks at those first.
+    column_role_tier = fields.Selection([
+        ('certain', 'Certain'),
+        ('likely', 'Likely'),
+        ('default', 'Fallback'),
+    ], string='Role Confidence', default='default')
+
+    role_tier_dot = fields.Char(
+        string='!',
+        compute='_compute_role_tier_dot',
+        help="A dot means this column's role was inferred from a resemblance, not "
+             "an exact match — worth a glance before importing."
+    )
+
+    @api.depends('column_role_tier')
+    def _compute_role_tier_dot(self):
+        for line in self:
+            line.role_tier_dot = '\u25cf' if line.column_role_tier == 'likely' else ''
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        help="Contract component holding text rather than an amount."
+    )
+
     column_type = fields.Selection([
         ('input', 'Input'),
         ('formula', 'Formula'),
@@ -3308,6 +3657,15 @@ class MultiSheetComponentPreview(models.TransientModel):
 
     sample_value = fields.Char(
         string='Sample'
+    )
+
+    uniform_value = fields.Char(
+        string='Uniform Value',
+        help="Set when every numeric data cell in the source column holds the "
+             "same value — a parameter in practice; this value (NOT "
+             "sample_value, which can be the W41 code-header row) seeds "
+             "default_value on import so round-tripped configs recompute "
+             "faithfully."
     )
 
     is_in_excel = fields.Boolean(
@@ -3467,6 +3825,44 @@ class MultiSheetColumnSelection(models.TransientModel):
         readonly=True
     )
 
+    # COLROLES — what this column is FOR. Auto-classified during analysis and
+    # editable in the Review step, which is the one moment a person is already
+    # looking at every column of the workbook.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Role', default='payroll')
+
+    # COLROLES P4 — how sure that role is. Display-only, transient-only: it never
+    # reaches hr.formula.rule, it only lets the Review step mark the rows that were
+    # a resemblance rather than a match, so a human looks at those first.
+    column_role_tier = fields.Selection([
+        ('certain', 'Certain'),
+        ('likely', 'Likely'),
+        ('default', 'Fallback'),
+    ], string='Role Confidence', default='default')
+
+    role_tier_dot = fields.Char(
+        string='!',
+        compute='_compute_role_tier_dot',
+        help="A dot means this column's role was inferred from a resemblance, not "
+             "an exact match — worth a glance before importing."
+    )
+
+    @api.depends('column_role_tier')
+    def _compute_role_tier_dot(self):
+        for line in self:
+            line.role_tier_dot = '\u25cf' if line.column_role_tier == 'likely' else ''
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        help="Contract component holding text rather than an amount."
+    )
+
     # Selection controls
     is_selected = fields.Boolean(
         string='Include',
@@ -3482,6 +3878,11 @@ class MultiSheetColumnSelection(models.TransientModel):
 
     sample_value = fields.Char(
         string='Sample',
+        readonly=True
+    )
+
+    uniform_value = fields.Char(
+        string='Uniform Value',
         readonly=True
     )
 

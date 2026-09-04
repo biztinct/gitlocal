@@ -1,0 +1,84 @@
+/* ============================================
+   Formula Rule List / Grid View
+   Fixes column overlap & adds top scrollbar
+   ============================================
+
+   IMPORTANT: every rule here is scoped to `.o_pb_fx_grid`, a marker class
+   added to the formula-engine wizard / import / sample-data forms that host
+   genuinely wide, many-column embedded grids. Without this scope the rules
+   below (min-width: 1800px + forced horizontal scroll) leaked onto EVERY
+   one2many list in the app — including the native payslip-lines dialog —
+   forcing an 1800px table into a ~950px modal and clipping the first
+   column's text on the left. Keep the scope. */
+
+/* --- 1. Make the list container horizontally scrollable --- */
+.o_pb_fx_grid .o_field_one2many .o_list_renderer {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+}
+
+/* --- 2. Let the table expand beyond viewport --- */
+.o_pb_fx_grid .o_field_one2many .o_list_table {
+    table-layout: auto !important;
+    min-width: 1800px;
+    width: max-content !important;
+}
+
+/* --- 3. Prevent text from bleeding across cells --- */
+.o_pb_fx_grid .o_field_one2many .o_list_table td.o_data_cell,
+.o_pb_fx_grid .o_field_one2many .o_list_table th {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 260px;
+}
+
+/* --- 4. Handle / drag column --- */
+.o_pb_fx_grid .o_field_one2many .o_list_table .o_handle_cell {
+    min-width: 32px !important;
+    width: 32px !important;
+}
+
+/* --- 5. Top scrollbar wrapper (injected by JS before the table) --- */
+.o_formula_grid_top_scroll_wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 20px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    margin-bottom: 0;
+    /* Sticky so it stays visible when scrolling vertically through rows */
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.o_formula_grid_top_scroll_wrapper>div {
+    height: 1px;
+    /* just enough to create the scrollbar track */
+}
+
+/* --- 6. Push sticky headers below the top scrollbar ---
+   When our scrollbar wrapper is present, the table headers must
+   stick 20px below the top of the scroll container (= below the scrollbar).
+   We use the adjacent sibling combinator to target only tables
+   that follow our wrapper. */
+.o_formula_grid_top_scroll_wrapper~.o_list_table thead th,
+.o_formula_grid_top_scroll_wrapper+.o_list_table thead th {
+    top: 20px !important;
+    z-index: 10;
+}
+
+/* --- 7. Header styling for readability --- */
+.o_pb_fx_grid .o_field_one2many .o_list_table thead th {
+    font-size: 12px;
+    font-weight: 600;
+    background: #f0f3f6 !important;
+    border-bottom: 2px solid #adb5bd;
+}
+
+/* --- 8. Row hover highlight --- */
+.o_pb_fx_grid .o_field_one2many .o_list_table tbody tr:hover {
+    background-color: #e8f0fe !important;
+}

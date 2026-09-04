@@ -1,0 +1,329 @@
+/* Grid Studio v1 — .pbfs-grid2 namespace. Renders inside .pbfs so the studio
+   design tokens (--i, --line, --muted, …) inherit down. T2.1 = read-only. */
+.pbfs {
+    .pbfs-gridwrap { min-width: 0; min-height: 0; display: flex; flex-direction: column; padding: 0 12px 12px; }
+    .g2-root { min-width: 0; min-height: 0; flex: 1; display: flex; flex-direction: column; }
+
+    /* ---- formula bar (T2.3) ---- */
+    .g2-fbar {
+        display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-bottom: 12px;
+        background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 3px rgba(15, 12, 40, .04);
+    }
+    .g2-fbar.invalid { border-color: #FECACA; background: #FEF2F2; }
+    .g2-fbar:focus-within { border-color: var(--i); box-shadow: 0 0 0 3px var(--i-soft); }
+    .g2-fbar.invalid:focus-within { border-color: var(--danger); box-shadow: 0 0 0 3px #FEE2E2; }
+    .g2-fbar-tag { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .g2-fbar-col { font-weight: 800; color: #fff; background: var(--i); border-radius: 6px; padding: 2px 8px; font-size: 11px; }
+    .g2-fbar-col.ph { background: var(--i-soft); color: var(--i600); font-style: normal; }
+    .g2-fbar-code { font-weight: 700; color: var(--i-deep); font-size: 12.5px; }
+    .g2-fbar-input {
+        flex: 1; min-width: 0; border: 0; outline: none; background: transparent; padding: 4px 0;
+        font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 13px; color: var(--i-deep);
+    }
+    .g2-fbar-input:disabled { color: var(--muted); cursor: not-allowed; }
+    .g2-fbar-input::placeholder { color: var(--muted); font-family: "Inter", sans-serif; }
+    .g2-fbar-err { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--danger); }
+    .g2-fbar-ok { flex-shrink: 0; display: inline-flex; color: var(--green); }
+    .g2-fbar-ok svg { width: 16px; height: 16px; }
+
+    .pbfs-grid2 {
+        overflow: auto;
+        flex: 1;
+        min-height: 0;   // fill the workbench height (was max-height: calc(100vh - 220px))
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(15, 12, 40, .04);
+    }
+
+    .g2-table { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 12.5px; }
+
+    /* ---- W109 column virtualization ----
+       Dormant below 60 components (no .g2-virt class → variable-width columns,
+       DOM identical to before). When active, every column is pinned to a single
+       fixed width so the spacer <td>s (which stand in for the off-window columns)
+       add up to the exact scroll extent. */
+    .g2-root { --g2-colw: 168px; }
+    .g2-table.g2-virt .g2-chead,
+    .g2-table.g2-virt .g2-cell,
+    .g2-table.g2-virt .g2-scell {
+        width: var(--g2-colw); min-width: var(--g2-colw); max-width: var(--g2-colw);
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    .g2-spacer { padding: 0 !important; border: 0 !important; background: transparent; }
+
+    /* ---- frozen header (sticky top) + frozen label column (sticky left) ---- */
+    .g2-table thead th { position: sticky; top: 0; z-index: 3; }
+    .g2-rlabel { position: sticky; left: 0; z-index: 2; }
+    .g2-corner { position: sticky; top: 0; left: 0; z-index: 4; }
+
+    .g2-corner, .g2-rlabel {
+        background: var(--bg);
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line-soft);
+        text-align: left; padding: 8px 14px;
+        font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+        white-space: nowrap; min-width: 96px;
+    }
+    .g2-corner { color: var(--i600); }
+
+    /* column headers (letter + code) */
+    .g2-chead {
+        background: var(--i-soft); border-bottom: 1px solid var(--i-border); border-right: 1px solid var(--line-soft);
+        padding: 7px 12px; min-width: 130px; max-width: 220px; cursor: pointer; vertical-align: middle;
+        transition: background .12s;
+    }
+    .g2-chead:hover { background: var(--i-soft2); }
+    .g2-chead .g2-col { display: inline-block; font-weight: 800; color: #fff; background: var(--i); border-radius: 6px; padding: 1px 7px; font-size: 11px; margin-right: 7px; }
+    .g2-chead .g2-code { font-weight: 700; color: var(--i-deep); font-size: 12px; }
+    .g2-chead.sel { background: var(--i); }
+    .g2-chead.sel .g2-col { background: #fff; color: var(--i); }
+    .g2-chead.sel .g2-code { color: #fff; }
+
+    /* body cells */
+    .g2-cell {
+        padding: 7px 12px; border-bottom: 1px solid var(--line-soft); border-right: 1px solid var(--line-soft);
+        min-width: 130px; max-width: 220px; cursor: pointer; color: var(--ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g2-cell.muted { color: var(--muted); }
+    .g2-cell.sel { background: var(--i-soft); }
+    .g2-prow:hover .g2-cell { background: rgba(90, 75, 176, .03); }
+    .g2-prow:hover .g2-cell.sel { background: var(--i-soft); }
+    .g2-name { font-weight: 700; }
+
+    .g2-typ { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; background: #EEF1F5; color: #475569; }
+    .g2-typ.input { background: var(--cyan-soft); color: var(--cyan); }
+    .g2-typ.formula { background: var(--i-soft); color: var(--i600); }
+    .g2-typ.constant { background: #F1F5F9; color: #64748B; }
+
+    .g2-formula { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); }
+    .g2-formula.is-formula { color: var(--i-deep); }
+
+    /* value row — the live numbers, emphasised */
+    .g2-valrow .g2-rlabel { color: var(--i600); }
+    .g2-value { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+
+    /* W4 — extra pinned sample value rows (display-only, lighter than the active row) */
+    .g2-valrow-extra .g2-value-extra { font-weight: 700; color: var(--i-deep); }
+    .g2-valrow-extra .g2-rlabel-extra {
+        color: var(--i600); font-weight: 700; font-size: 11.5px;
+        display: flex; align-items: center; gap: 6px; justify-content: space-between;
+    }
+    .g2-rlabel-extra .g2-extraname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .g2-unpin {
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 18px; height: 18px; border: 0; border-radius: 5px; background: transparent;
+        color: var(--muted); cursor: pointer;
+    }
+    .g2-unpin:hover { background: var(--i-soft); color: var(--i-deep); }
+    .g2-unpin svg { width: 12px; height: 12px; }
+
+    .g2-statuscell { text-align: center; }
+    .g2-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; }
+    .g2-badge svg { width: 14px; height: 14px; }
+    .g2-badge.ok { background: var(--green-soft); color: var(--green); }
+    .g2-badge.bad { background: #FEE2E2; color: var(--danger); }
+
+    /* T2.5 — red error corner triangle on a broken formula cell */
+    .g2-cell.g2-formula.has-error { position: relative; color: var(--danger); }
+    .g2-cell.g2-formula.has-error::after {
+        content: ""; position: absolute; top: 0; right: 0;
+        border-width: 0 9px 9px 0; border-style: solid;
+        border-color: transparent var(--danger) transparent transparent;
+    }
+    .g2-statusmsg {
+        display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 12px;
+        background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; color: #B91C1C; font-size: 12px;
+    }
+    .g2-statusmsg svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    .g2-hint { padding: 12px 4px 2px; font-size: 12px; color: var(--muted); }
+
+    /* ---- roving focus + multi-select (T2.2) ---- */
+    .pbfs-grid2:focus { outline: none; }
+    .pbfs-grid2:focus-visible { box-shadow: 0 0 0 2px var(--i-border) inset; }
+    .g2-cell.focused { outline: 2px solid var(--i); outline-offset: -2px; position: relative; z-index: 1; }
+    .g2-chead.in-selection, .g2-cell.in-selection { background: var(--i-soft2); }
+    .g2-chead.in-selection { box-shadow: inset 0 -2px 0 0 var(--i); }
+
+    /* in-cell edit overlay <input> (single, swapped into the focused Formula cell) */
+    .g2-edit {
+        width: 100%; box-sizing: border-box; border: 0; outline: 2px solid var(--i); outline-offset: -2px;
+        border-radius: 5px; padding: 4px 7px; font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+        font-size: 12px; color: var(--i-deep); background: #fff;
+    }
+    .g2-edit.invalid { outline-color: var(--danger); background: #FEF2F2; }
+    .g2-formula:has(.g2-edit) { overflow: visible; }
+    .g2-editmsg { margin-top: 8px; padding: 8px 12px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; color: #B91C1C; font-size: 12px; }
+
+    /* ---- drag-fill (T2.8) ---- */
+    .g2-fillhandle {
+        position: absolute; right: -3px; bottom: -3px; width: 9px; height: 9px;
+        background: var(--i); border: 1.5px solid #fff; border-radius: 2px; cursor: crosshair; z-index: 2;
+        box-shadow: 0 1px 3px rgba(36, 31, 82, .3);
+    }
+    .g2-cell.fill-target { background: var(--i-soft) !important; box-shadow: inset 0 0 0 1px var(--i-border); }
+    .g2-ghost { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--i600); font-style: italic; opacity: .9; }
+    .g2-ghost.invalid { color: var(--danger); text-decoration: line-through; }
+    .g2-fillbar {
+        display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 8px 12px;
+        background: var(--i-soft); border: 1px solid var(--i-border); border-radius: 10px; font-size: 12.5px; color: var(--i-deep);
+    }
+    .g2-fillbar b { font-weight: 800; }
+    .g2-fillbar .pbfs-btn { margin-left: 0; }
+
+    /* ---- bulk edit (T2.7): selection toolbar + popover ---- */
+    .g2-bulkbar {
+        display: flex; align-items: center; gap: 12px; padding: 8px 14px; margin-bottom: 12px;
+        background: var(--i); border-radius: 12px; color: #fff; box-shadow: 0 6px 18px rgba(90, 75, 176, .22);
+    }
+    .g2-bulk-count { font-size: 13px; font-weight: 700; }
+    .g2-bulk-count b { font-weight: 900; }
+    .g2-bulkbar .pbfs-btn.primary { background: #fff; color: var(--i600); border-color: #fff; }
+    .g2-bulkbar .pbfs-btn.primary:hover { background: var(--i-soft); }
+    .g2-bulk-clear { margin-left: auto; background: none; border: 0; color: rgba(255,255,255,.85); font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; text-decoration: underline; }
+    .g2-bulk-clear:hover { color: #fff; }
+
+    .g2-bulkpop-scrim { position: fixed; inset: 0; z-index: 60; background: rgba(20, 16, 50, .28); display: flex; align-items: center; justify-content: center; }
+    .g2-bulkpop { width: 380px; max-width: 92vw; background: #fff; border-radius: 16px; box-shadow: 0 24px 60px rgba(20, 16, 50, .34); padding: 22px; }
+    .g2-bulkpop-h { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 16px; }
+    .g2-bulkpop-h b { color: var(--i600); }
+    .g2-bulk-f { display: block; margin-bottom: 14px; }
+    .g2-bulk-f span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+    .g2-bulk-f .ce-input { width: 100%; }
+    .g2-bulkpop-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+    /* ---- cell autocomplete dropdown (T2.6) ---- */
+    /* (rendered inside .pbfs but positioned fixed) */
+    .g2-ac {
+        position: fixed; z-index: 50; min-width: 260px; max-width: 380px; max-height: 264px; overflow-y: auto;
+        background: #fff; border: 1px solid var(--i-border); border-radius: 10px; box-shadow: 0 12px 34px rgba(36, 31, 82, .18); padding: 5px;
+    }
+    .g2-ac-item {
+        display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 7px; cursor: pointer;
+    }
+    .g2-ac-item.active { background: var(--i-soft); }
+    .g2-ac-col { font-size: 10.5px; font-weight: 800; color: #fff; background: var(--i); border-radius: 5px; padding: 2px 6px; min-width: 24px; text-align: center; flex-shrink: 0; }
+    .g2-ac-code { font-size: 12px; font-weight: 800; color: var(--i-deep); flex-shrink: 0; }
+    .g2-ac-name { font-size: 12px; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .g2-ac-val { font-size: 11.5px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    /* W104 — snippet rows in the cell autocomplete (distinct from component refs) */
+    .g2-ac-item.snippet { border-top: 1px solid var(--line-soft); margin-top: 2px; }
+    .g2-ac-item.snippet:first-child { border-top: 0; margin-top: 0; }
+    .g2-ac-snip { display: inline-flex; align-items: center; justify-content: center; width: 24px; flex-shrink: 0; color: var(--i600); }
+    .g2-ac-snip svg { width: 14px; height: 14px; }
+    .g2-ac-item.snippet .g2-ac-val { color: var(--i600); text-transform: uppercase; font-size: 9.5px; letter-spacing: .05em; }
+
+    /* ---- dependency tinting (T2.4): amber upstream / cyan downstream ---- */
+    .g2-chead.dep-upstream, .g2-cell.dep-upstream { background: var(--amber-soft); }
+    .g2-chead.dep-downstream, .g2-cell.dep-downstream { background: var(--cyan-soft); }
+    .g2-chead.dep-upstream { box-shadow: inset 0 -3px 0 0 var(--amber); }
+    .g2-chead.dep-downstream { box-shadow: inset 0 -3px 0 0 var(--cyan); }
+    /* focus + selection win over tint for legibility */
+    .g2-cell.dep-upstream.in-selection, .g2-cell.dep-downstream.in-selection { background: var(--i-soft2); }
+
+    .g2-legend { display: flex; gap: 20px; padding: 10px 4px 0; }
+    .g2-lg { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+    .g2-lg b { color: var(--ink); font-weight: 800; }
+    .g2-sw { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+    .g2-sw.up { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
+    .g2-sw.down { background: var(--cyan-soft); box-shadow: inset 0 0 0 1.5px var(--cyan); }
+
+    /* ---- F14 scenario columns (ghost overlays next to their base) ---- */
+    /* "branch a scenario" button — reveals on base-header hover */
+    .g2-chead { position: relative; }
+    .g2-addsc { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border: 0; border-radius: 6px;
+        background: transparent; color: var(--i600); cursor: pointer; display: grid; place-items: center;
+        opacity: 0; transition: opacity .12s, background .12s; }
+    .g2-addsc svg { width: 13px; height: 13px; }
+    .g2-chead:hover .g2-addsc { opacity: .55; }
+    .g2-addsc:hover { opacity: 1 !important; background: #fff; }
+
+    /* scenario header — ghost, dashed, colour-coded per scenario */
+    .g2-shead { position: relative; background: repeating-linear-gradient(135deg, #FBFAFF, #FBFAFF 7px, #F4F1FC 7px, #F4F1FC 14px);
+        border-bottom: 2px dashed var(--sc); border-right: 1px solid var(--line-soft);
+        white-space: nowrap; --sc: #7C6BD6; --sc-soft: #EFEAFB; }
+    .g2-shead.sc-violet { --sc: #7C6BD6; --sc-soft: #EFEAFB; }
+    .g2-shead.sc-teal   { --sc: #0E8C7F; --sc-soft: #DDF3F0; }
+    .g2-shead.sc-amber  { --sc: #C08327; --sc-soft: #FBEFD9; }
+    .g2-shead.sc-rose   { --sc: #C24A6B; --sc-soft: #FBE4EA; }
+    .g2-shead.sc-cyan   { --sc: #0E7490; --sc-soft: #E0F4F9; }
+    .g2-smark { display: inline-flex; vertical-align: middle; margin-right: 5px; color: var(--sc); }
+    .g2-smark svg { width: 11px; height: 11px; }
+    .g2-scode { font-weight: 800; font-size: 11.5px; color: var(--sc); }
+    .g2-sacts { display: inline-flex; gap: 3px; margin-left: 8px; vertical-align: middle; }
+    .g2-sact { width: 19px; height: 19px; border: 0; border-radius: 6px; cursor: pointer; display: grid; place-items: center; }
+    .g2-sact svg { width: 12px; height: 12px; }
+    .g2-sact.ok { background: var(--green-soft); color: var(--green); }
+    .g2-sact.ok:hover { background: var(--green); color: #fff; }
+    .g2-sact.ok:disabled { opacity: .4; cursor: not-allowed; }
+    .g2-sact.no { background: #FCE7E7; color: var(--danger); }
+    .g2-sact.no:hover { background: var(--danger); color: #fff; }
+
+    /* scenario body cells — tinted band pairing them to their base */
+    .g2-scell { padding: 0 12px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+        background: #FBFAFF; box-shadow: inset 2px 0 0 0 #7C6BD6; font-size: 12.5px; color: var(--ink); white-space: nowrap; }
+    .g2-scell.muted { color: var(--muted); }
+    .g2-sname b { color: var(--i-deep); font-weight: 800; }
+    .g2-typ.scenario { background: #EFEAFB; color: #6A57C8; }
+    .g2-sformula { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--i-deep); cursor: text; }
+    .g2-sformula.has-error { color: var(--danger); }
+    .g2-svalue { text-align: right; font-variant-numeric: tabular-nums; }
+    .g2-svalue .sv-num { font-weight: 800; color: var(--ink); }
+    .g2-svalue .sv-delta { display: inline-block; margin-left: 7px; font-weight: 800; font-size: 11.5px; }
+    .g2-svalue .sv-delta.up { color: var(--green); }
+    .g2-svalue .sv-delta.dn { color: var(--danger); }
+    .g2-svalue .sv-net { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); margin-top: 1px; }
+    .g2-valrow .g2-scell { background: #F6F3FE; }
+}
+
+/* F111 — group-by-category toolbar + column drag-reorder + category band */
+.pbfs .g2-toolbar { display: flex; align-items: center; gap: 12px; padding: 6px 2px 10px; }
+.pbfs .g2-toolbar .pbfs-btn svg { width: 15px; height: 15px; }
+.pbfs .g2-toolbar-hint { font-size: 11.5px; color: var(--muted); }
+
+/* COLROLES — the lens tally. Quiet, but always present when anything is held
+   back, so the grid never silently loses a column. */
+.pbfs .g2-lensbar { display: flex; align-items: center; gap: 8px; padding: 0 2px 10px; color: var(--muted); font-size: 11.5px; }
+.pbfs .g2-lensbar svg { width: 14px; height: 14px; flex-shrink: 0; }
+.pbfs .g2-lensbar b { color: var(--ink); font-weight: 800; }
+.pbfs .g2-lensbtn {
+    padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff;
+    color: var(--i600); font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
+}
+.pbfs .g2-lensbtn:hover { background: var(--i-soft); border-color: var(--i-border); }
+
+/* W8 — collapse-by-category fold chips (toolbar) + folded summary columns */
+.pbfs .g2-foldbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 0 2px 10px; }
+.pbfs .g2-foldbar-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.pbfs .g2-foldbar-lbl svg { width: 14px; height: 14px; }
+.pbfs .g2-foldchip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px 4px 8px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink);
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.pbfs .g2-foldchip svg { width: 13px; height: 13px; color: var(--muted); }
+.pbfs .g2-foldchip:hover { border-color: var(--i-soft); background: var(--i-soft2); }
+.pbfs .g2-foldchip.on { background: var(--i); border-color: var(--i); color: #fff; }
+.pbfs .g2-foldchip.on svg { color: #fff; }
+
+.pbfs .g2-summary { background: var(--i-soft2); cursor: pointer; }
+.pbfs th.g2-summary:hover { background: var(--i-soft); }
+.pbfs th.g2-summary { display: flex; align-items: center; gap: 6px; }
+.pbfs .g2-sumfold { display: inline-flex; align-items: center; color: var(--i600); }
+.pbfs .g2-sumfold svg { width: 15px; height: 15px; }
+.pbfs .g2-sumlabel { font-weight: 800; color: var(--i-deep); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbfs .g2-sumcount { margin-left: auto; font-weight: 800; font-size: 10.5px; color: #fff; background: var(--i); border-radius: 999px; padding: 1px 7px; }
+.pbfs td.g2-summary { text-align: center; color: var(--muted); }
+.pbfs td.g2-sumvalue { text-align: right; font-weight: 800; color: var(--i-deep); font-variant-numeric: tabular-nums; }
+
+/* the category band = a colour bar under each header cell; a boundary marks a
+   new category run. --band is set inline per column (F111). */
+.pbfs .g2-hrow th.g2-band { box-shadow: inset 0 -3px 0 0 var(--band, transparent); }
+.pbfs .g2-hrow th.g2-band-start { border-left: 2px solid var(--band, var(--line)); }
+
+/* drag-reorder feedback */
+.pbfs .g2-hrow th[draggable="true"] { cursor: grab; }
+.pbfs .g2-hrow th.g2-dragging { opacity: .45; cursor: grabbing; }
+.pbfs .g2-hrow th.g2-dragover { box-shadow: inset 3px 0 0 0 var(--i), inset 0 -3px 0 0 var(--band, transparent); background: var(--i-soft); }

@@ -2,10 +2,35 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+import json
 import re
 import logging
 
+from ..formula_engine import excel_semantics
+from . import component_code
+from . import formula_operand_context
+from . import value_kind_classifier
+
 _logger = logging.getLogger(__name__)
+
+# F7 — fields whose change is worth a version snapshot. A write touching none of
+# these (e.g. a pure `sequence` reorder, or engine-set is_valid/python_formula)
+# produces no version row.
+VERSIONED_FIELDS = {
+    'excel_formula', 'code', 'name', 'category_id',
+    'column_type', 'number_format', 'appears_on_payslip',
+    # COLROLES — moving a column out of Payroll (or back into it) changes what the
+    # structure is understood to DO, so it earns a version row like any other
+    # structural edit.
+    'column_role',
+    # VALUEKIND — changing a component from money to text changes how every
+    # future run STORES it, not just how a screen shows it. Same class of edit.
+    'value_kind',
+    # B4: statutory constant values are versioned too, so applying a
+    # legislation pack (or any rate/cap edit) leaves an F7 audit trail.
+    'constant_value',
+}
+_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename', 'legislation', 'merge', 'sync', 'refactor'}
 
 
 class HrFormulaRule(models.Model):
@@ -32,7 +57,7 @@ class HrFormulaRule(models.Model):
     salary_rule_id = fields.Many2one(
         'hr.salary.rule',
         string='Linked Salary Rule',
-        help="Optional link to standard Odoo salary rule"
+        help="Optional link to a standard salary rule"
     )
 
     company_id = fields.Many2one(
@@ -138,6 +163,278 @@ class HrFormulaRule(models.Model):
         help="Field name in the integration connector that maps to this component. "
              "Used when data_source is 'integration' to identify which field to fetch."
     )
+
+    # ==================================================================
+    # SOURCING S3 — the binding: which source feeds this component, and under
+    # which key. The explicit answer to a question that until now could only be
+    # INFERRED from an overloaded Char that carried spreadsheet headers, feed
+    # keys, sheet-prefixed names and column letters indiscriminately.
+    #
+    # TWO CHARS, NEVER A FOREIGN KEY. A spreadsheet header and a feed key have no
+    # record to point at; and a `rule` binding pointed at
+    # `hr.api.transformation.rule` would rebuild the exact failure S2 spent a
+    # phase repairing — `ondelete='set null'` forgetting 23 wires in silence. A
+    # rule's durable identity is already its `output_key`. Storing the text cannot
+    # be nulled by a cascade, so "the thing I name is gone" becomes a computed
+    # OBSERVATION (`binding_dangling`) rather than data loss.
+    #
+    # Empty means "match by name, as before" — the unbound ladder is untouched and
+    # is still how every component in every existing database resolves.
+    #
+    # ==================================================================
+    # JOURNEY J9 — THE BINDING IS PLURAL NOW, AND THESE FIVE FIELDS ARE ITS HEAD.
+    #
+    # The owner removed the either/or restriction: a component may declare a
+    # connected-system key AND a spreadsheet column AND be kept on the contract,
+    # and the order between them has to be stated. The declarations live in
+    # `source_ids` (`hr.formula.rule.source`, one row per KIND); the five Chars
+    # below became COMPUTED, STORED and READONLY views of the highest-ranked row.
+    #
+    # They are kept — not deprecated, not renamed — because there are seventy-odd
+    # references to them across six files, including two `search()` domains in
+    # `pb_integrations` that need them stored and searchable. Every one keeps
+    # working untouched, reading exactly what it read before on every
+    # single-source component, which is all of them on all four live databases
+    # except GASALLOWANCE.
+    #
+    # WRITE THROUGH `set_source_binding` / `clear_source_binding`, never directly:
+    # a direct write to a stored computed field sticks until the next recompute
+    # and then silently disagrees with `source_ids`.
+    # ==================================================================
+    source_ids = fields.One2many(
+        'hr.formula.rule.source', 'rule_id', string='Sources',
+        help="Every source this component declares. A pay run reads them in "
+             "order: connected system, then rule output, then spreadsheet, and "
+             "the contract component last.")
+
+    source_binding = fields.Selection([
+        ('excel', 'Spreadsheet column'),
+        ('feed', 'Connected system key'),
+        ('rule', 'Rule output'),
+    ], string='Source', compute='_compute_source_binding', store=True,
+       readonly=True,
+       help="The first source this component reads. It is set by adding a "
+            "source; leave the component with none to let the system match it "
+            "by name, which is what happens today.")
+
+    source_binding_key = fields.Char(
+        string='Source key', compute='_compute_source_binding', store=True,
+        readonly=True,
+        help="The column header, feed key or rule output name this component reads.")
+
+    source_binding_origin = fields.Selection([
+        ('user', 'Chosen by hand'),
+        ('board', 'Drawn on a mapping board'),
+        ('import', 'Set during import'),
+        ('migration', 'Inferred on upgrade'),
+    ], string='How the source was set', compute='_compute_source_binding',
+       store=True, readonly=True,
+       help="Whether a person chose this source or the system inferred it.")
+
+    source_binding_date = fields.Datetime(
+        string='Source set on', compute='_compute_source_binding', store=True,
+        readonly=True)
+    source_binding_uid = fields.Many2one(
+        'res.users', string='Source set by', compute='_compute_source_binding',
+        store=True, readonly=True, ondelete='set null')
+
+    #: JOURNEY J9 — the order the resolver reads declared sources in. It is the
+    #: order that was already in `payroll_import_batch.py`; nothing moved (J-D5).
+    #: `feed` before `rule` because both arrive in the FEED payload and a
+    #: connector's own field mapping is the more specific statement; `excel`
+    #: third.
+    #:
+    #: JOURNEY J10 — three more members, and STILL nothing moved. The mapped
+    #: employee/contract field and the bank destination are read by the
+    #: resolver's tail AFTER the spreadsheet and BEFORE the contract component
+    #: (`payroll_import_batch.get_mapped_input_value`, then
+    #: `contract_component_amounts`, then the default), so rank 4 is where they
+    #: have always been; they simply had no name in this tuple. They are ONE
+    #: RUNG, not three: a component carries at most one `hr.payslip.import.
+    #: mapping` row, so they never compete — the three spellings are chosen by
+    #: what that row points at (§2.3). The contract component is still not a
+    #: binding: it is the last rung and `declared_sources()` appends it.
+    _SOURCE_RECORD_KINDS = ('employee_field', 'contract_field', 'bank_account')
+    _SOURCE_RANK = ('feed', 'rule', 'excel') + _SOURCE_RECORD_KINDS
+
+    def _config_kind_rank(self):
+        """SC-3 — the source order THIS component's scheme has configured.
+
+        `_SOURCE_RANK` above stays as the class-level DEFAULT (plus the
+        trailing contract component); a scheme that has reordered or disabled
+        its source lanes answers through `hr.formula.config._source_kind_rank`
+        instead. A kind absent from the returned tuple belongs to a DISABLED
+        lane: every consumer filters on membership, so a disabled lane's
+        declared sources simply stop being read — no second gate needed.
+        """
+        self.ensure_one()
+        config = self.config_id
+        if config and 'source_priority' in config._fields:
+            try:
+                return config._source_kind_rank()
+            except Exception:   # noqa: BLE001 — a bad token must not stop a run
+                pass
+        return self._SOURCE_RANK + ('contract_component',)
+
+    @api.depends('source_ids.kind', 'source_ids.key', 'source_ids.origin',
+                 'source_ids.set_date', 'source_ids.set_uid',
+                 'config_id.source_priority', 'config_id.source_api_enabled',
+                 'config_id.source_excel_enabled',
+                 'config_id.source_records_enabled')
+    def _compute_source_binding(self):
+        """The highest-ranked declared source, as the five legacy Chars.
+
+        T4 — this must never MANUFACTURE a binding. A sealed column has no source
+        rows (the child model refuses them), so it computes to False and
+        `_check_source_binding` has nothing to object to, which is what keeps a
+        live upgrade from aborting half-way through a scheme of ninety-nine
+        columns.
+
+        SC-3 — ranked by the SCHEME's configured order (hence the config
+        fields in `@api.depends`: reordering the lanes must move this stored
+        badge). A disabled lane's declared row is filtered out here too, so
+        the badge never names a source the resolver will not read.
+        """
+        for rule in self:
+            rank = rule._config_kind_rank()
+            rows = [s for s in rule.source_ids
+                    if s.kind in rank and (s.key or '').strip()]
+            rows.sort(key=lambda s: rank.index(s.kind))
+            top = rows[0] if rows else None
+            rule.source_binding = top.kind if top else False
+            rule.source_binding_key = (top.key or '').strip() if top else False
+            rule.source_binding_origin = (top.origin or 'user') if top else False
+            rule.source_binding_date = top.set_date if top else False
+            rule.source_binding_uid = top.set_uid.id if (top and top.set_uid) else False
+
+    binding_dangling = fields.Boolean(
+        compute='_compute_binding_dangling',
+        string='Source no longer exists',
+        help="This component names a source that nothing currently provides.")
+
+    @api.depends('source_ids.dangling')
+    def _compute_binding_dangling(self):
+        """Does anything currently answer to the names this component declares?
+
+        T6 — one boolean over N sources now. Deliberately NOT stored: it is a
+        statement about the world outside this record (a rule that may be
+        archived tomorrow, a catalogue that changes on every sync), and a stored
+        copy would be wrong between syncs — which is the whole disease this
+        programme is treating. The per-source answer, including `excel` never
+        being dangling and an EMPTY catalogue meaning "unknown" rather than
+        "gone", lives on the child so there is one definition of it.
+        """
+        for rule in self:
+            rule.binding_dangling = any(s.dangling for s in rule.source_ids)
+
+    @api.constrains('source_binding', 'source_binding_key', 'column_type')
+    def _check_source_binding(self):
+        for rule in self:
+            if rule.source_binding and not (rule.source_binding_key or '').strip():
+                raise ValidationError(_(
+                    "Choose which key “%s” reads, or clear its source.")
+                    % (rule.code or rule.name or ''))
+            if rule.source_binding and rule.column_type != 'input':
+                raise ValidationError(_(
+                    "“%s” is calculated — it needs no source.")
+                    % (rule.code or rule.name or ''))
+
+    def declared_sources(self):
+        """Every source this component declares, in the order the resolver reads them.
+
+        JOURNEY J9. **This is the single definition of precedence**, and both the
+        resolver and every board must read it — two implementations of an order
+        is how the boards started disagreeing in the first place.
+
+        Returns an ordered list of `{'kind', 'key', 'origin'}`: the `source_ids`
+        sorted by `_SOURCE_RANK`, plus a trailing
+        `{'kind': 'contract_component', 'key': ''}` when `is_contract_component`.
+
+        A LIVE CONNECTOR WIRE IS NOT IN HERE, deliberately. A wire is read by the
+        connector pre-pass, which is a different mechanism gated on
+        `config.connector_id` (T5), and folding it in would make every wired
+        component on every live database suddenly "declare" a source it never
+        declared — twenty-two of them on abm — and enter the resolver's bound
+        branch for the first time. The display side folds the wire in, because a
+        drawn wire is something a person stated and belongs on the card; see
+        `pb_formula_studio._declared_sources`.
+
+        JOURNEY J10 — NEITHER IS THE MAPPED RECORD FIELD, for the same reason in
+        reverse: it lives on `hr.payslip.import.mapping`, which is a property of
+        the CONFIG rather than of this rule, and answering it from here would be
+        one search per component. It is rank 4 in `_SOURCE_RANK` and the two
+        callers that can afford the query — the studio's `_source_record_dests`
+        and the batch's `_declared_source_plan` — splice it in at that position,
+        ahead of the trailing contract component. The ORDER is defined once, in
+        `_SOURCE_RANK`; only the lookup is duplicated, and it is duplicated
+        because the two live in different modules with different query budgets.
+        """
+        self.ensure_one()
+        # SC-3 — the scheme's configured order, not the class constant. A kind
+        # missing from the rank belongs to a DISABLED lane and is dropped
+        # here, which is the single gate every consumer inherits.
+        rank = self._config_kind_rank()
+        rows = [s for s in self.source_ids
+                if s.kind in rank and (s.key or '').strip()]
+        rows.sort(key=lambda s: rank.index(s.kind))
+        out = [{'kind': s.kind, 'key': (s.key or '').strip(),
+                'origin': s.origin or 'user'} for s in rows]
+        if self.is_contract_component and 'contract_component' in rank:
+            comp = {'kind': 'contract_component', 'key': '', 'origin': 'user'}
+            # No longer hardwired last: it sits where the records lane sits.
+            idx = rank.index('contract_component')
+            at = next((i for i, d in enumerate(out)
+                       if rank.index(d['kind']) > idx), len(out))
+            out.insert(at, comp)
+        return out
+
+    def set_source_binding(self, kind, key, origin='user'):
+        """Declare that this component reads `key` from `kind`.
+
+        JOURNEY J9 — THE SIGNATURE IS UNCHANGED AND THE MEANING IS NOW "UPSERT
+        THE ROW FOR THIS KIND, LEAVING OTHER KINDS ALONE". That single sentence
+        is the owner's "remove the restriction": drawing a feed wire onto a
+        component already bound to a spreadsheet column no longer silently throws
+        the spreadsheet column away.
+
+        `set_source_binding(False, ...)` still means CLEAR EVERYTHING, because
+        existing callers use it that way and a falsy first argument has never
+        meant anything else.
+        """
+        for rule in self:
+            if not kind:
+                rule.clear_source_binding()
+                continue
+            clean = (key or '').strip()
+            if not clean:
+                raise ValidationError(_(
+                    "Choose which key “%s” reads, or clear its source.")
+                    % (rule.code or rule.name or ''))
+            existing = rule.source_ids.filtered(lambda s: s.kind == kind)
+            vals = {'kind': kind, 'key': clean, 'origin': origin,
+                    'set_date': fields.Datetime.now(),
+                    'set_uid': self.env.user.id}
+            if existing:
+                existing[0].write(vals)
+                (existing - existing[0]).unlink()
+            else:
+                rule.write({'source_ids': [(0, 0, vals)]})
+        return True
+
+    def clear_source_binding(self, kind=None):
+        """Remove a declared source. `None` removes every one of them.
+
+        The counterpart `set_source_binding` no longer has: once a component can
+        hold several sources, "stop reading the spreadsheet" and "stop reading
+        anything" are different acts and only one of them used to be expressible.
+        """
+        for rule in self:
+            rows = rule.source_ids
+            if kind:
+                rows = rows.filtered(lambda s: s.kind == kind)
+            if rows:
+                rows.unlink()
+        return True
 
     source_sheet_name = fields.Char(
         string='Source Sheet',
@@ -311,6 +608,19 @@ class HrFormulaRule(models.Model):
         help="Show this component on payslip document"
     )
 
+    # F9 — Payslip Studio: order within the payslip section + per-line visibility
+    payslip_sequence = fields.Integer(
+        string='Payslip Order',
+        default=10,
+        help="Order of this line within its payslip section."
+    )
+    visibility_rule = fields.Selection([
+        ('always', 'Always show'),
+        ('when_nonzero', 'Only when non-zero'),
+        ('never', 'Never (hidden)'),
+    ], string='Payslip Visibility', default='always',
+        help="Controls whether this line prints on the payslip.")
+
     report_visible = fields.Boolean(
         string='Visible in Reports',
         default=False,
@@ -328,6 +638,114 @@ class HrFormulaRule(models.Model):
         default=False,
         help="If enabled, changes to this component will trigger a new contract effective date."
     )
+
+    # ==========================================
+    # COLUMN ROLE (COLROLES)
+    # ==========================================
+    # An imported salary structure is a flat wall of columns in which the employee
+    # code, the bank account and the actual pay components are indistinguishable.
+    # The role says what a column is FOR. Nothing in this phase acts on it beyond
+    # employee-code recognition — the exclusions and the studio lens come later —
+    # so a wrong role is, for now, only a wrong label.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Column Role', default='payroll', required=True,
+        help="What this column is for. Only Payroll columns feed the calculation.")
+
+    column_role_source = fields.Selection([
+        ('auto', 'Auto-classified'),
+        ('user', 'Set by a person'),
+    ], string='Role Source', default='auto', required=True,
+        help="Whether the role was auto-classified or set by a person.")
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        default=False,
+        help="This contract component holds text (a grade, a reference, a note) "
+             "rather than an amount, so it is stored and compared as text."
+    )
+
+    # ==========================================
+    # VALUE KIND (VALUEKIND)
+    # ==========================================
+    # `column_role` says what a column is FOR; this says what its value IS. They
+    # are different questions and they disagree usefully: an Employee Code is an
+    # identity column holding an identifier, an Insurance Book Number is a
+    # payroll column holding one too.
+    #
+    # Load-bearing, NOT cosmetic. Everything that used to reach `float()` here
+    # reached it by GUESSING, and the guess's failure mode was destruction — an
+    # unparseable value became the wire's `default_value`, i.e. 0.0. ABM's
+    # `LOCATION` is read by `IF(F5="La Nga", …)` and arrived as `0.0`, so the
+    # comparison was false for every employee on every run, in silence.
+    value_kind = fields.Selection([
+        ('money', 'Amount (currency)'),
+        ('decimal', 'Decimal number'),
+        ('integer', 'Whole number'),
+        ('quantity', 'Quantity (hours, days)'),
+        ('rate', 'Percentage / rate'),
+        ('identifier', 'Reference code'),
+        ('text', 'Text'),
+        ('date', 'Date'),
+        ('boolean', 'Yes / No'),
+    ], string='Value Kind', default='money', required=True,
+        help="What this component's value IS. Decides whether it is stored as a "
+             "number or kept exactly as it arrived, whether it can become a "
+             "payslip line, and how it is displayed. The first five are "
+             "numbers; the last four are not and are never converted.")
+
+    # VALUEKIND P4 — components that say something ABOUT THE PERSON rather than
+    # about their pay, and that the run therefore has to act on.
+    #
+    # A pay run has to answer "does this person belong in this run at all?", and
+    # on a scheme-driven tenant the only truthful answer lives in the feed. On
+    # ABM every one of the 152 employees is `active` on `hr.employee` with a
+    # running contract, while the feed says 85 Resigned and 25 Terminated — the
+    # records are stale and the component is not. So the component has to be
+    # nameable, exactly as the net-pay component is.
+    #
+    # Deliberately NOT inferred from the code: `EMPSTATUS` is one tenant's
+    # spelling. It is auto-suggested and a person confirms it.
+    payroll_signal = fields.Selection([
+        ('employment_status', 'Whether the person is still employed'),
+        ('worked_hours', 'Hours actually worked'),
+    ], string='Tells the run', index=True,
+        help="Some components say something about the PERSON rather than about "
+             "their pay, and the run has to act on them — whether to produce a "
+             "payslip at all, for instance.")
+
+    value_kind_source = fields.Selection([
+        ('auto', 'Auto-classified'),
+        ('user', 'Set by a person'),
+    ], string='Value Kind Source', default='auto', required=True,
+        help="Whether the value kind was worked out automatically or chosen by "
+             "a person. A person's choice is never overwritten.")
+
+    value_kind_reason = fields.Char(
+        string='Value Kind Reason',
+        help="Why this value kind was chosen.")
+
+    # How the scheme's formulas USE this component: `REF:context` pairs, e.g.
+    # `F:strcmp`. Deliberately SEPARATE from `formula_dependencies`, which feeds
+    # the engine's topological order and whose output must not move (C18.115) —
+    # and which answers a different question anyway: `IF(F5="La Nga", …)` and
+    # `X5/AB5` both produce a bare reference, and only the operator tells them
+    # apart.
+    formula_operand_roles = fields.Char(
+        string='Operand Roles',
+        compute='_compute_formula_operand_roles', store=True,
+        help="How this component's own formula uses each column it names.")
+
+    @api.depends('excel_formula')
+    def _compute_formula_operand_roles(self):
+        for record in self:
+            record.formula_operand_roles = formula_operand_context.serialize(
+                formula_operand_context.operand_contexts(record.excel_formula or ''))
 
     is_visible_in_grid = fields.Boolean(
         string='Visible in Grid',
@@ -400,31 +818,39 @@ class HrFormulaRule(models.Model):
                 else:
                     record.column_letter = ''
             else:
-                # Unsaved record
+                # Unsaved record with data — show the letter create() will
+                # ACTUALLY assign (from the high-water mark), so what the user
+                # sees is what gets saved. (The old "count unforced saved
+                # siblings" logic showed 'A' post-freeze — a mirage, since every
+                # saved rule is forced — and the user would author references
+                # against an occupied identity.)
                 if record.name or record.code:
-                    # Has data - show provisional letter
-                    # Count saved records (excluding those with forced_column_letter)
-                    saved_count = len(record.config_id.rule_ids.filtered(
-                        lambda r: isinstance(r.id, int) and not r.forced_column_letter
-                    ))
-                    # Count unsaved records WITH DATA that come before this one
-                    # Use sequence and id string for ordering
+                    config = record.config_id
+                    used = [self._letter_to_num(r.column_letter)
+                            for r in config.rule_ids
+                            if isinstance(r.id, int) and r.column_letter
+                            and not self._is_constant_namespace(r.column_letter)]
+                    base = max(config.col_letter_hwm or 0, max(used) if used else 0)
                     current_key = (record.sequence or 0, str(record.id))
-                    unsaved_with_data_before = len(record.config_id.rule_ids.filtered(
-                        lambda r: not isinstance(r.id, int) and
-                        (r.name or r.code) and
-                        not r.forced_column_letter and
-                        (r.sequence or 0, str(r.id)) < current_key
-                    ))
-                    record.column_letter = self._index_to_letter(saved_count + unsaved_with_data_before)
+                    offset = len(config.rule_ids.filtered(
+                        lambda r: not isinstance(r.id, int) and (r.name or r.code)
+                        and (r.sequence or 0, str(r.id)) < current_key))
+                    record.column_letter = self._index_to_letter(base + offset)
                 else:
                     # Empty/new row - blank
                     record.column_letter = ''
 
     def _inverse_column_letter(self):
+        """Setting a letter (re)freezes it; BLANKING it is ignored when a frozen
+        letter already exists — a column letter is a permanent identity (F111),
+        so a cleared cell must not silently unfreeze the rule and let it be
+        re-lettered positionally, orphaning every formula that referenced it."""
         for record in self:
             value = (record.column_letter or '').strip().upper()
-            record.forced_column_letter = value or False
+            if value:
+                record.forced_column_letter = value
+            elif not record.forced_column_letter:
+                record.forced_column_letter = False
 
     @staticmethod
     def _index_to_letter(index):
@@ -434,6 +860,50 @@ class HrFormulaRule(models.Model):
             result = chr(index % 26 + ord('A')) + result
             index = index // 26 - 1
         return result
+
+    # ======================================================================
+    # F111 — column letters are PERMANENT identities (frozen via
+    # forced_column_letter). sequence is pure display order; reordering can
+    # never move a letter, so letter-based formula references stay valid.
+    # ======================================================================
+    @staticmethod
+    def _letter_to_num(letter):
+        """Excel column letter -> 1-based number ('A'->1, 'Z'->26, 'AA'->27)."""
+        n = 0
+        for ch in (letter or '').strip().upper():
+            if 'A' <= ch <= 'Z':
+                n = n * 26 + (ord(ch) - 64)
+            else:
+                return 0
+        return n
+
+    @api.model
+    def _is_constant_namespace(self, letter):
+        """True for the ZA/ZB… constants namespace (Z followed by a letter),
+        which must be skipped when picking the next free identity letter. A
+        lone 'Z' is an ordinary column and is NOT excluded (D111.3)."""
+        return bool(letter) and len(letter) > 1 and letter[0].upper() == 'Z'
+
+    @api.model
+    def _next_free_letter(self, config):
+        """The next permanent letter identity for `config`, never reusing a freed
+        letter (D111.3). Mirrors create(): the mark is max(letter high-water,
+        current max letter), so a deleted top letter is not handed out again. The
+        ZA+ constants namespace is skipped."""
+        used = [self._letter_to_num(r.column_letter) for r in config.rule_ids
+                if r.column_letter and not self._is_constant_namespace(r.column_letter)]
+        base = max(config.col_letter_hwm or 0, max(used) if used else 0)
+        return self._index_to_letter(base)   # 1-based mark -> next 0-based index
+
+    @api.model
+    def _assert_letters_frozen(self, config, before):
+        """Guard: after any sequence-only reorder, every rule's column_letter
+        must be unchanged (D111.2). Raise — never silently re-point formulas."""
+        after = {r.id: r.column_letter for r in config.rule_ids}
+        if before != after:
+            raise UserError(_(
+                "Column letters changed during reorder — the operation was "
+                "aborted to protect your formulas. This is a bug; please report it."))
 
     @staticmethod
     def _letter_to_index(letter):
@@ -498,8 +968,36 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'"([^"]|"")*"', _mask_string, result)
 
+        # Excel-only operators Python would misparse (strings are masked, so
+        # these can only be operators here):
+        # - <>  is Excel not-equal; unconverted it is a Python syntax error.
+        # - ^   is Excel power; Python ^ is XOR and silently returns garbage
+        #       (100^2 == 102). Known edge vs Excel: -2^2 (Excel 4, Python -4)
+        #       and right-assoc chains a^b^c — acceptable for payroll formulas.
+        # - &   is Excel text concatenation; we cannot rewrite an infix
+        #       operator reliably without a full parser, so fail LOUDLY (the
+        #       error lands in python_formula / has_evaluation_error) instead
+        #       of letting eval() produce a silent 0.
+        result = result.replace('<>', '!=')
+        result = result.replace('^', '**')
+        if '&' in result:
+            raise ValueError(
+                "Excel '&' text concatenation is not supported yet — "
+                "rewrite the formula without '&'."
+            )
+
+        # F11 — expand BRACKET(table_code, value) into a nested-IF Excel string
+        # BEFORE any further conversion, so the value expression's cell refs and
+        # the emitted IF/MAX convert through the normal pipeline. The evaluator
+        # never sees a bracket table (D-F11.1).
+        if 'BRACKET' in result.upper() and self.config_id:
+            result = self.env['hr.formula.rate.table'].expand_brackets(result, self.config_id)
+
         # Normalize redundant parentheses around cell references like "(B15)".
-        result = re.sub(r'\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
+        # The lookbehind is load-bearing: without it this turns a function
+        # call ISBLANK(G1) into ISBLANKG1, which the cell-ref regex then
+        # swallows as values.get('ISBLANKG', 0) -> silent 0.
+        result = re.sub(r'(?<![A-Za-z0-9_])\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
 
         # Resolve same-sheet VLOOKUP into direct column references when possible.
         # Example: VLOOKUP(B5,CM2:$F$5,6,0) -> target column letter.
@@ -695,6 +1193,12 @@ class HrFormulaRule(models.Model):
         result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
         _logger.debug(f"  AFTER cell ref replacement: {result[:200]}...")
 
+        # Excel TRUE()/FALSE() and bare TRUE/FALSE literals -> Python booleans.
+        # Must run BEFORE the standalone-letter/code replacement, which would
+        # otherwise turn them into values.get('TRUE', 0) == permanent 0.
+        result = re.sub(r'\bTRUE\s*\(\s*\)|\bTRUE\b', 'True', result)
+        result = re.sub(r'\bFALSE\s*\(\s*\)|\bFALSE\b', 'False', result)
+
         # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
         # But NOT if they're part of a string like "YES" OR inside already-converted values.get()
         def replace_ref_no_row(match):
@@ -741,18 +1245,24 @@ class HrFormulaRule(models.Model):
             r'\bMIN\(': 'min([',
             r'\bMAX\(': 'max([',
             r'\bABS\(': 'abs(',
-            r'\bROUND\(': 'round(',
+            # Excel ROUND is half-away-from-zero; Python round() is banker's
+            # rounding (2.5 -> 2) which drifts money on .5 boundaries.
+            r'\bROUND\(': 'self._round(',
             r'\bIF\(': 'self._if(',
             r'\bIFERROR\(': 'self._iferror(',
             r'\bISBLANK\(': 'self._isblank(',
             r'\bAND\(': 'all([',
             r'\bOR\(': 'any([',
-            r'\bNOT\(': 'not(',
+            # NOT must stay a CALL: Python's `not` operator binds looser than
+            # *, so not(x)*5 parses as not(x*5).
+            r'\bNOT\(': 'self._not(',
             r'\bCOUNTA\(': 'self._counta([',
             r'\bPOWER\(': 'pow(',
             r'\bSQRT\(': 'math.sqrt(',
-            r'\bCEILING\(': 'math.ceil(',
-            r'\bFLOOR\(': 'math.floor(',
+            # Excel CEILING/FLOOR take a significance argument (round to a
+            # multiple); math.ceil/math.floor are 1-arg and TypeError'd here.
+            r'\bCEILING\(': 'self._ceiling(',
+            r'\bFLOOR\(': 'self._floor(',
             r'\bSUMIF\(': 'self._sumif(',
             r'\bSUMIFS\(': 'self._sumifs(',
             r'\bROW\(': 'self._row(',
@@ -777,6 +1287,14 @@ class HrFormulaRule(models.Model):
         # Fix closing brackets for array functions (SUM, MIN, MAX, etc.)
         result = self._fix_array_brackets(result)
 
+        # Rewrite IF into a lazy Python ternary and IFERROR into a
+        # lambda-guarded call. Python evaluates call arguments eagerly, so
+        # without this IF(B1=0,0,A1/B1) raises #DIV/0! out of the branch
+        # Excel never evaluates, and IFERROR can catch nothing at all.
+        # Runs while string literals are still masked (no commas/parens
+        # hiding inside literals).
+        result = self._lazify_conditionals(result)
+
         # Restore string literals.
         for idx, literal in enumerate(string_literals):
             result = result.replace(f"__str{idx}__", literal)
@@ -794,6 +1312,14 @@ class HrFormulaRule(models.Model):
                 result
             )
 
+        # ISBLANK must see the RAW value: the coerced `values` dict maps
+        # blank to 0, so self._isblank(values.get(...)) could never be True.
+        result = re.sub(
+            r"self\._isblank\(\s*values\.get\('([^']+)',\s*0\)\s*\)",
+            r"self._isblank(raw_values.get('\1'))",
+            result
+        )
+
         # Treat empty-string comparisons as blank checks using raw values.
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*==\s*\"\"",
@@ -807,12 +1333,12 @@ class HrFormulaRule(models.Model):
         )
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*!=\s*\"\"",
-            r"not self._isblank_value(raw_values.get('\1'))",
+            r"(not self._isblank_value(raw_values.get('\1')))",
             result
         )
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*!=\s*''",
-            r"not self._isblank_value(raw_values.get('\1'))",
+            r"(not self._isblank_value(raw_values.get('\1')))",
             result
         )
 
@@ -820,25 +1346,29 @@ class HrFormulaRule(models.Model):
         def _quote_literal(value):
             return repr(value)
 
+        # Excel text equality is case-insensitive ("ct" = "CT" is TRUE), so
+        # string comparisons route through self._streq instead of Python ==.
+        # The `not` forms are parenthesized: `not x * 5` would otherwise
+        # parse as not(x * 5).
         def _replace_raw_eq(match):
             key = match.group(1)
             literal = match.group(2)
-            return f"raw_values.get('{key}') == {_quote_literal(literal)}"
+            return f"self._streq(raw_values.get('{key}'), {_quote_literal(literal)})"
 
         def _replace_raw_ne(match):
             key = match.group(1)
             literal = match.group(2)
-            return f"raw_values.get('{key}') != {_quote_literal(literal)}"
+            return f"(not self._streq(raw_values.get('{key}'), {_quote_literal(literal)}))"
 
         def _replace_raw_eq_reverse(match):
             literal = match.group(1)
             key = match.group(2)
-            return f"{_quote_literal(literal)} == raw_values.get('{key}')"
+            return f"self._streq(raw_values.get('{key}'), {_quote_literal(literal)})"
 
         def _replace_raw_ne_reverse(match):
             literal = match.group(1)
             key = match.group(2)
-            return f"{_quote_literal(literal)} != raw_values.get('{key}')"
+            return f"(not self._streq(raw_values.get('{key}'), {_quote_literal(literal)}))"
 
         result = re.sub(
             r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*==\s*\"([^\"]*)\"",
@@ -884,6 +1414,73 @@ class HrFormulaRule(models.Model):
         _logger.debug(f"Converted to Python: {result}")
 
         return result
+
+    @staticmethod
+    def _split_top_level_args(argstr):
+        """Split a call's argument string at top-level commas (paren- and
+        bracket-depth aware). String literals are masked as __strN__ at this
+        stage, so no comma can hide inside a literal."""
+        parts, depth, start = [], 0, 0
+        for i, ch in enumerate(argstr):
+            if ch in '([':
+                depth += 1
+            elif ch in ')]':
+                depth -= 1
+            elif ch == ',' and depth == 0:
+                parts.append(argstr[start:i])
+                start = i + 1
+        parts.append(argstr[start:])
+        return parts
+
+    def _lazify_conditionals(self, formula):
+        """Rewrite eager helper calls into lazy Python forms:
+
+        - self._if(c, t[, f])   -> ((t) if (c) else (f))    [f defaults to 0]
+        - self._iferror(x, y)   -> self._iferror(lambda: (x), (y))
+
+        Excel only evaluates the branch it returns; Python evaluates all call
+        arguments first, so without this IF(B1=0,0,A1/B1) explodes with
+        #DIV/0! from the branch Excel never runs, and IFERROR can never catch
+        anything. Processes rightmost-first (rightmost occurrence is always
+        innermost for nesting). Bails out to the eager helpers on anything
+        malformed — never raises.
+        """
+        for token, kind in (('self._iferror(', 'iferror'), ('self._if(', 'if')):
+            for _guard in range(200):
+                idx = formula.rfind(token)
+                if kind == 'iferror':
+                    # skip occurrences already rewritten to the lambda form
+                    while idx != -1 and formula[idx + len(token):].lstrip().startswith('lambda'):
+                        idx = formula.rfind(token, 0, idx)
+                if idx == -1:
+                    break
+                open_pos = idx + len(token) - 1
+                depth, close_pos = 0, -1
+                for i in range(open_pos, len(formula)):
+                    ch = formula[i]
+                    if ch == '(':
+                        depth += 1
+                    elif ch == ')':
+                        depth -= 1
+                        if depth == 0:
+                            close_pos = i
+                            break
+                if close_pos == -1:
+                    break  # unbalanced parens — leave the eager call in place
+                args = self._split_top_level_args(formula[open_pos + 1:close_pos])
+                if kind == 'if' and len(args) in (2, 3):
+                    cond = args[0].strip()
+                    true_val = args[1].strip()
+                    false_val = args[2].strip() if len(args) == 3 else '0'
+                    replacement = f"(({true_val}) if ({cond}) else ({false_val}))"
+                elif kind == 'iferror' and len(args) == 2:
+                    replacement = (
+                        f"self._iferror(lambda: ({args[0].strip()}), ({args[1].strip()}))"
+                    )
+                else:
+                    break  # unexpected arity — leave as-is (eager fallback)
+                formula = formula[:idx] + replacement + formula[close_pos + 1:]
+        return formula
 
     def _fix_array_brackets(self, formula):
         """Fix brackets for functions that were converted to list operations
@@ -941,9 +1538,18 @@ class HrFormulaRule(models.Model):
                 record.formula_dependencies = ''
                 continue
 
+            # F11 — expand BRACKET(table_code, value) FIRST so dependencies come
+            # from the compiled formula's real column refs (the value expression),
+            # not the pseudo-function name or the table code (which would otherwise
+            # be mistaken for column codes and poison the topological order).
+            formula_src = record.excel_formula
+            if 'BRACKET' in formula_src.upper() and record.config_id:
+                formula_src = record.env['hr.formula.rate.table'].expand_brackets(
+                    formula_src, record.config_id)
+
             # Extract column references - both with row numbers (A1, B2) and without (A, B, C)
             # Also extract CODE references (BASIC, GROSS, etc.)
-            formula = record.excel_formula.upper()
+            formula = formula_src.upper()
             formula_no_strings = record._strip_string_literals(formula)
 
             range_refs = []
@@ -1003,35 +1609,145 @@ class HrFormulaRule(models.Model):
     # ==========================================
     # CRUD OVERRIDES
     # ==========================================
-    @api.model
-    def create(self, vals):
-        """Auto-assign sequence to avoid duplicate column letters when adding new rows manually.
-        
-        This does NOT interfere with Excel import because:
-        - Excel import explicitly sets sequence based on column order (line 2143 in multisheet_import_wizard.py)
-        - We only auto-assign when sequence is missing or equals the default (10)
-        - Excel import assigns unique sequences like 0, 10, 20, 30, etc.
-        """
-        # Only auto-assign if:
-        # 1. config_id is provided (creating a rule for a config)
-        # 2. sequence is not explicitly set OR is the default value (10)
-        # This prevents duplicate column letters when clicking "Add a line" in the UI
-        if 'config_id' in vals and vals.get('sequence', 10) == 10:
-            # IMPORTANT: Use explicit search instead of config.rule_ids to avoid pagination issues
-            # When viewing a paginated One2many list, config.rule_ids only contains visible records
-            existing_rules = self.env['hr.formula.rule'].search([
-                ('config_id', '=', vals['config_id']),
-                ('forced_column_letter', '=', False)
-            ])
-            
-            if existing_rules:
-                # Find the maximum sequence among ALL existing rules (not just current page)
-                max_sequence = max(existing_rules.mapped('sequence'))
-                # Assign next sequence (increment by 10 as per Odoo convention)
-                vals['sequence'] = max_sequence + 10
-            # If no existing rules, leave sequence as default (10)
-        
-        return super(HrFormulaRule, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Auto-assign sequence to avoid duplicate column letters when adding rows
+        manually, and (F111) freeze a permanent letter identity at birth.
+
+        Excel import sets sequence + column_letter explicitly, so both branches
+        below no-op for it. Batch-safe: in-batch counters keep siblings created
+        in one call from colliding on a sequence or a letter."""
+        seq_next = {}   # config_id -> next auto sequence within this batch
+        let_next = {}   # config_id -> highest letter number assigned within this batch
+
+        def _base_letter_num(cid, config):
+            used = [self._letter_to_num(r.column_letter) for r in config.rule_ids
+                    if r.column_letter and not self._is_constant_namespace(r.column_letter)]
+            return max(used) if used else 0
+
+        for vals in vals_list:
+            cid = vals.get('config_id')
+            # sequence: only when unset/default (never override an explicit import
+            # order). Count ALL rules — post-F111 every rule carries a forced
+            # letter, so an old `forced_column_letter = False` filter would match
+            # nothing and pile every new row at sequence 10.
+            if cid and vals.get('sequence', 10) == 10:
+                if cid not in seq_next:
+                    existing = self.env['hr.formula.rule'].search([('config_id', '=', cid)])
+                    seq_next[cid] = (max(existing.mapped('sequence')) + 10) if existing else 10
+                else:
+                    seq_next[cid] += 10
+                vals['sequence'] = seq_next[cid]
+            # F111 permanent letter: respect an explicit letter/forced letter
+            # (import, ZA+ constants); otherwise assign the next letter from a
+            # monotonic high-water mark, so a freed letter is never reused.
+            if cid and not vals.get('forced_column_letter') and not vals.get('column_letter'):
+                config = self.env['hr.formula.config'].browse(cid)
+                if config.exists():
+                    if cid not in let_next:
+                        let_next[cid] = max(config.col_letter_hwm or 0, _base_letter_num(cid, config))
+                    let_next[cid] += 1
+                    vals['forced_column_letter'] = self._index_to_letter(let_next[cid] - 1)
+
+        records = super(HrFormulaRule, self).create(vals_list)
+        # Persist the high-water mark so a freed top letter is NEVER handed out
+        # again — derive it from the letters actually assigned (covers both the
+        # auto-minted rows above AND explicitly-lettered import rows, which never
+        # touched `let_next`). Without this, an Excel/JSON import leaves hwm=0 and
+        # the next studio-added component reuses a just-deleted letter (D111.3).
+        by_cfg = {}
+        for rec in records:
+            if rec.config_id and rec.column_letter and not self._is_constant_namespace(rec.column_letter):
+                n = self._letter_to_num(rec.column_letter)
+                by_cfg[rec.config_id.id] = max(by_cfg.get(rec.config_id.id, 0), n)
+        for cid, hwm in by_cfg.items():
+            cfg = self.env['hr.formula.config'].browse(cid)
+            if cfg.exists() and (cfg.col_letter_hwm or 0) < hwm:
+                cfg.sudo().col_letter_hwm = hwm
+        return records
+
+    def write(self, vals):
+        """F7 capture funnel. Snapshot the OUTGOING state of any rule whose
+        versioned fields are about to change, BEFORE the write lands. One row
+        per rule per write call; no-op writes and non-versioned-only writes are
+        skipped. Callers set `formula_version_reason` in context (edit/bulk/
+        fill/import); `skip_formula_version` opts a write out entirely; a mutable
+        `formula_version_seen` set in context dedupes multiple writes to the same
+        rule within one logical operation (see save_component)."""
+        # COLROLES / CR-A1 — a role written WITHOUT an explicit source is a person
+        # choosing it (a backend form edit, a list-view inline edit). Every automatic
+        # writer — the import wizards, the upgrade migration, the reclassify RPC —
+        # passes `column_role_source` itself, and none of them may overwrite a row
+        # already marked 'user'.
+        if vals and 'column_role' in vals and 'column_role_source' not in vals:
+            vals = dict(vals, column_role_source='user')
+
+        # VALUEKIND — the same contract, for the same reason. Every automatic
+        # writer (the classifier RPC, the migration) passes `value_kind_source`
+        # itself; anything else setting `value_kind` is a person, and a person's
+        # answer must survive the next re-classification pass.
+        if vals and 'value_kind' in vals and 'value_kind_source' not in vals:
+            vals = dict(vals, value_kind_source='user')
+
+        tracked = VERSIONED_FIELDS & set(vals or {})
+        if (tracked
+                and not self.env.context.get('skip_formula_version')
+                and 'hr.formula.rule.version' in self.env):
+            reason = self.env.context.get('formula_version_reason', 'edit')
+            if reason not in _VALID_VERSION_REASONS:
+                reason = 'edit'
+            note = self.env.context.get('formula_version_note') or False
+            seen = self.env.context.get('formula_version_seen')
+            Version = self.env['hr.formula.rule.version'].sudo()
+            rows = []
+            for rule in self:
+                if seen is not None and rule.id in seen:
+                    continue
+                # skip when the write changes nothing on the tracked fields
+                if all(rule._version_field_matches(f, vals) for f in tracked):
+                    continue
+                rows.append({
+                    'rule_id': rule.id,
+                    'seq': rule._next_version_seq(),
+                    'excel_formula': rule.excel_formula or '',
+                    'snapshot_json': json.dumps(rule._version_snapshot()),
+                    'reason': reason,
+                    'note': note,
+                })
+                if seen is not None:
+                    seen.add(rule.id)
+            if rows:
+                Version.create(rows)
+        return super().write(vals)
+
+    def _version_field_matches(self, fname, vals):
+        """True when `fname`'s stored value already equals what the write sets
+        (so the write is a no-op for that field)."""
+        self.ensure_one()
+        field = self._fields[fname]
+        return field.convert_to_write(self[fname], self) == vals.get(fname)
+
+    def _next_version_seq(self):
+        self.ensure_one()
+        last = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', self.id)], order='seq desc', limit=1)
+        return (last.seq + 1) if last else 1
+
+    def _version_snapshot(self):
+        """Full picture of the versioned + display fields at snapshot time."""
+        self.ensure_one()
+        return {
+            'name': self.name or '',
+            'code': self.code or '',
+            'category_id': self.category_id.id or False,
+            'category_name': self.category_id.name or '',
+            'column_type': self.column_type or '',
+            'column_role': self.column_role or '',
+            'number_format': self.number_format or '',
+            'appears_on_payslip': bool(self.appears_on_payslip),
+            'column_letter': self.column_letter or '',
+            'constant_value': self.constant_value or 0.0,
+        }
 
     # ==========================================
     # VALIDATION
@@ -1098,79 +1814,65 @@ class HrFormulaRule(models.Model):
     # REORDER ACTIONS
     # ==========================================
     def move_column_left(self):
-        """Move this column one position left"""
+        """Move this column one position left — DISPLAY ONLY (F111/D111.2).
+        Letters are frozen; only sequence moves, so no formula is re-pointed."""
         self.ensure_one()
-        prev_rule = self.config_id.rule_ids.filtered(
+        config = self.config_id
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        prev_rule = config.rule_ids.filtered(
             lambda r: r.sequence < self.sequence
         ).sorted(key=lambda r: r.sequence, reverse=True)[:1]
-
         if prev_rule:
-            # Swap sequences
             my_seq = self.sequence
             self.sequence = prev_rule.sequence
             prev_rule.sequence = my_seq
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
+        self._assert_letters_frozen(config, before)
 
     def move_column_right(self):
-        """Move this column one position right"""
+        """Move this column one position right — DISPLAY ONLY (F111/D111.2)."""
         self.ensure_one()
-        next_rule = self.config_id.rule_ids.filtered(
+        config = self.config_id
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        next_rule = config.rule_ids.filtered(
             lambda r: r.sequence > self.sequence
         ).sorted(key=lambda r: r.sequence)[:1]
-
         if next_rule:
-            # Swap sequences
             my_seq = self.sequence
             self.sequence = next_rule.sequence
             next_rule.sequence = my_seq
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
+        self._assert_letters_frozen(config, before)
 
     def reorder_to_position(self, new_sequence):
-        """Reorder this column to a new sequence position"""
+        """Reorder this column to a new display position — DISPLAY ONLY
+        (F111/D111.2). Only sequence changes; column letters stay frozen."""
         self.ensure_one()
+        config = self.config_id
         old_seq = self.sequence
-
         if new_sequence == old_seq:
-            return
-
-        rules = self.config_id.rule_ids.sorted(key=lambda r: r.sequence)
-
+            return True
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
         if new_sequence > old_seq:
-            # Moving right - shift others left
             for rule in rules:
                 if old_seq < rule.sequence <= new_sequence:
                     rule.sequence -= 1
         else:
-            # Moving left - shift others right
             for rule in rules:
                 if new_sequence <= rule.sequence < old_seq:
                     rule.sequence += 1
-
         self.sequence = new_sequence
-
-        # Update formula references if needed
-        self._update_formula_references_after_reorder()
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
-
-    def _update_formula_references_after_reorder(self):
-        """Update formula references in all rules after column reorder"""
-        # This is handled by the computed field _compute_python_formula
-        # which will regenerate Python code with new column letters
-        pass
+        self._assert_letters_frozen(config, before)
+        return True
 
     # ==========================================
     # CONSTRAINTS
     # ==========================================
-    _sql_constraints = [
-        ('code_config_uniq', 'unique(code, config_id)',
-         'Rule code must be unique within the configuration!'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_config_uniq = models.Constraint(
+        'unique(code, config_id)',
+        'Rule code must be unique within the configuration!')
 
     @api.constrains('column_type', 'excel_formula', 'data_source_field')
     def _check_column_settings(self):
@@ -1200,6 +1902,224 @@ class HrFormulaRule(models.Model):
                     )
                 seen[letter] = rule
 
+    @api.constrains('code')
+    def _check_code_shape(self):
+        """Codes must be plain uppercase identifiers.
+
+        SHAPE ONLY — deliberately NOT non-substring. The Excel->Python converter's
+        code pass is greedy (maximal munch), so ``SI`` and ``SIEMP`` both resolve;
+        the underscore is the actual breaker, because ``[A-Z][A-Z0-9]{1,}`` excludes
+        it and the raw token then reaches the eval as a NameError that reads 0.
+        A non-substring constraint would reject perfectly safe sets and contradict
+        the empirically-verified rule in FORMULA_ENGINE_CONVENTIONS C13.
+        """
+        for record in self:
+            code = record.code or ''
+            if not code:
+                continue
+            if not component_code.is_valid_code(code):
+                raise ValidationError(_(
+                    "Component code '%(code)s' cannot be used. Use capital letters and "
+                    "digits only, starting with a letter — no spaces, no underscores "
+                    "(they stop the formula converter from resolving the reference, "
+                    "which silently turns it into a zero).",
+                    code=code,
+                ))
+
+    # ==========================================
+    # CODE RENAME ENGINE
+    # ==========================================
+    # Lives here, not in the studio, for two reasons: the upgrade migration runs
+    # before pb_formula_studio is necessarily loaded and must be self-sufficient,
+    # and one implementation cannot drift from another.
+    #
+    # WHAT IS DELIBERATELY NOT REWRITTEN — these are historical records of what was
+    # computed under the OLD code, and rewriting them would make the archive lie:
+    #   * ``hr.payslip.line.code`` on payslips already generated
+    #   * ``hr.payslip.formula_input_values`` / ``formula_computed_values`` JSON
+    #   * ``hr.formula.rule.version.snapshot_json``
+    # Library mapping templates (``hr.formula.mapping.template.line``) are also left
+    # alone: they are not scoped to a configuration, so a code there may belong to a
+    # different structure entirely.
+
+    #: Config-scoped places a component code is stored as a STRING rather than a FK.
+    #: (model, code field, path from the record to its config_id)
+    _CODE_STRING_SITES = (
+        ('hr.formula.sample.input.line', 'column_code', 'sample_id.config_id'),
+        ('hr.formula.test.result', 'rule_code', 'config_id'),
+        ('hr.formula.budget.line', 'code', 'budget_id.config_id'),
+        ('hr.formula.simulation', 'headline_code', 'config_id'),
+        ('hr.formula.period.comparison', 'headline_code', 'config_id'),
+        ('hr.formula.shadow.discrepancy', 'component_code', 'run_id.config_id'),
+        ('hr.formula.shadow.cluster', 'component_code', 'run_id.config_id'),
+    )
+
+    def _advantage_template_for(self, code):
+        """The contract-component template carrying ``code``, if the payroll base is
+        installed. Matched by STRING (``payroll_import_batch._get_or_create_advantage_template``
+        searches on ``code``), which is exactly why a rename that forgets it mints a
+        SECOND template and leaves every existing contract line on the old one."""
+        if not code or 'hr.contract.advantage.template' not in self.env:
+            return None
+        return self.env['hr.contract.advantage.template'].sudo().search(
+            [('code', '=', code)], limit=1)
+
+    def _rename_code(self, new_code, siblings_renamed=()):
+        """Rename this component's code, orphan-safely, in one transaction.
+
+        ``siblings_renamed`` are the ids of rules in OTHER configurations that carry
+        the same old code and are being renamed to the same new code as part of this
+        operation. Contract-component templates are global and matched by string, so
+        a code shared by two structures may only move if every one of them moves —
+        otherwise the structures left behind read their contract amounts as 0.
+
+        Returns ``{'ok': bool, 'msg': str, ...}``; never raises for a business
+        refusal, so a caller can report and carry on.
+        """
+        self.ensure_one()
+        old = (self.code or '').strip()
+        new = (new_code or '').strip().upper()
+
+        if not new:
+            return {'ok': False, 'msg': _("The code cannot be empty.")}
+        if not component_code.is_valid_code(new):
+            return {'ok': False, 'msg': _("Use letters and digits only, starting with a letter "
+                                          "(no spaces or underscores).")}
+        if new == old:
+            return {'ok': False, 'msg': _("That is already the code.")}
+
+        config = self.config_id
+        clash = config.rule_ids.filtered(
+            lambda x: x.id != self.id and (x.code or '').upper() == new)
+        if clash:
+            return {'ok': False, 'msg': _("Another component (%s) already uses that code.")
+                    % (clash[0].column_letter or clash[0].name or clash[0].id)}
+
+        letters = {r.column_letter for r in config.rule_ids if r.column_letter}
+        if new in letters:
+            return {'ok': False, 'msg': _("'%s' is a column letter in this structure — a code "
+                                          "that looks like a letter is read as one.") % new}
+
+        # --- contract component template: the biggest orphan risk -------------
+        old_tmpl = self._advantage_template_for(old)
+        new_tmpl = self._advantage_template_for(new)
+        if old_tmpl and new_tmpl and old_tmpl.id != new_tmpl.id:
+            return {'ok': False, 'msg': _(
+                "A contract component already exists under the code '%(new)s' (%(new_name)s). "
+                "Renaming '%(old)s' (%(old_name)s) onto it would merge two different "
+                "components and silently re-file everything already recorded against them.",
+                new=new, new_name=new_tmpl.name or new,
+                old=old, old_name=old_tmpl.name or old)}
+
+        if old_tmpl:
+            others = self.search([('code', '=', old), ('id', '!=', self.id),
+                                  ('id', 'not in', list(siblings_renamed))])
+            if others:
+                names = ', '.join(sorted({o.config_id.display_name for o in others}))
+                return {'ok': False, 'msg': _(
+                    "'%(old)s' is also used by %(where)s, and the contract component of that "
+                    "name is shared between them. Renaming it here alone would leave those "
+                    "structures reading 0. Rename it in every structure at once, or leave it "
+                    "as it is.", old=old, where=names)}
+
+        # --- formulas that name the old code as a bare token -------------------
+        # Formulas normally reference COLUMN LETTERS, so this is usually a no-op.
+        # Skipped when the old code coincides with a column letter used here: `=GM`
+        # is then a letter reference and rewriting it would corrupt the formula.
+        rewritten = []
+        if old and old not in letters:
+            pat = re.compile(r'(?<![A-Za-z0-9_])%s(?![A-Za-z0-9_])' % re.escape(old))
+            for r in config.rule_ids:
+                if r.id == self.id or r.column_type != 'formula' or not r.excel_formula:
+                    continue
+                if pat.search(r.excel_formula):
+                    r.with_context(formula_version_reason='rename').write(
+                        {'excel_formula': pat.sub(new, r.excel_formula)})
+                    rewritten.append(r.column_letter or r.code)
+
+        # --- code-keyed sample vectors ----------------------------------------
+        migrated_samples = 0
+        if old:
+            for sample in config.sample_data_ids:
+                touched, svals = False, {}
+                for fname in ('input_values_json', 'expected_values_json', 'computed_values_json'):
+                    raw = getattr(sample, fname, False)
+                    if not raw:
+                        continue
+                    try:
+                        data = json.loads(raw)
+                    except Exception:
+                        continue
+                    if isinstance(data, dict) and old in data and new not in data:
+                        data[new] = data.pop(old)
+                        svals[fname] = json.dumps(data)
+                        touched = True
+                if 'boundary_key' in sample._fields and sample.boundary_key:
+                    key = sample.boundary_key
+                    if key == old or key.startswith('%s=' % old):
+                        svals['boundary_key'] = new + key[len(old):]
+                        touched = True
+                if touched:
+                    sample.write(svals)
+                    migrated_samples += 1
+
+        # --- other config-scoped code strings ----------------------------------
+        side_effects = {}
+        for model_name, field_name, path in self._CODE_STRING_SITES:
+            if model_name not in self.env:
+                continue
+            Model = self.env[model_name].sudo()
+            domain = [(field_name, '=', old), ('%s.id' % path, '=', config.id)]
+            try:
+                records = Model.search(domain)
+            except Exception:          # pragma: no cover - schema drift on old DBs
+                _logger.warning("Code rename: could not scan %s.%s", model_name, field_name)
+                continue
+            if records:
+                records.write({field_name: new})
+                side_effects[model_name] = len(records)
+
+        # --- the salary rule the payslip line points at -------------------------
+        renamed_salary_rule = False
+        if old and 'hr.salary.rule' in self.env:
+            SalaryRule = self.env['hr.salary.rule'].sudo()
+            linked = self.salary_rule_id
+            if linked and (linked.code or '') == old:
+                linked.code = new
+                renamed_salary_rule = True
+            elif not linked:
+                # Only when nothing else in the database still answers to that code:
+                # an unlinked salary rule shared with another structure is not ours
+                # to move. Leaving it costs a duplicate stub, never an amount.
+                shared = self.search_count([('code', '=', old), ('id', '!=', self.id),
+                                            ('id', 'not in', list(siblings_renamed))])
+                if not shared:
+                    company = config.company_id or self.env.company
+                    found = SalaryRule.search([('code', '=', old),
+                                               ('company_id', '=', company.id)], limit=1)
+                    if found and not self.search_count([('salary_rule_id', '=', found.id),
+                                                        ('id', '!=', self.id)]):
+                        found.code = new
+                        renamed_salary_rule = True
+
+        # --- the template itself, last, so a refusal above costs nothing --------
+        renamed_template = False
+        if old_tmpl and not new_tmpl:
+            old_tmpl.code = new
+            renamed_template = True
+
+        self.with_context(formula_version_reason='rename').write({'code': new})
+        return {
+            'ok': True,
+            'msg': _("Renamed %(old)s → %(new)s", old=old or '(blank)', new=new),
+            'old_code': old, 'new_code': new,
+            'rewritten': rewritten,
+            'migrated_samples': migrated_samples,
+            'renamed_template': renamed_template,
+            'renamed_salary_rule': renamed_salary_rule,
+            'side_effects': side_effects,
+        }
+
     # ==========================================
     # EVALUATION
     # ==========================================
@@ -1218,7 +2138,23 @@ class HrFormulaRule(models.Model):
             return values.get(self.code, self.default_value or 0.0)
 
         if self.column_type == 'formula':
-            if not self.excel_formula:
+            return self._run_formula(values, self.excel_formula, write_diagnostics=True)
+
+        return 0.0
+
+    def _run_formula(self, values, excel_formula, write_diagnostics=True):
+        """Core formula evaluation, factored out of ``evaluate`` so the F8
+        simulation overlay can evaluate a *draft* formula for a rule without
+        persisting it (D8.2 — draft evaluation is an overlay, never a write).
+
+        ``excel_formula`` is the formula text to run (``self.excel_formula`` for
+        a normal evaluation, or a candidate draft for a simulation). When
+        ``write_diagnostics`` is False the ``excel_formula_converted`` /
+        ``has_evaluation_error`` side-effect writes are suppressed so overlay
+        evaluation never mutates the rule record."""
+        self.ensure_one()
+        if self.column_type == 'formula':
+            if not excel_formula:
                 _logger.warning(f"No Excel formula defined for {self.code}, returning 0")
                 return 0.0
 
@@ -1229,10 +2165,11 @@ class HrFormulaRule(models.Model):
                 for rule in self.config_id.rule_ids:
                     if rule.column_letter and rule.code:
                         column_map[rule.column_letter] = rule.code
-                python_code = self._convert_excel_to_python(self.excel_formula, column_map)
+                python_code = self._convert_excel_to_python(excel_formula, column_map)
 
                 # Store the converted Python code for debugging
-                self.excel_formula_converted = python_code
+                if write_diagnostics:
+                    self.excel_formula_converted = python_code
 
                 # Enhanced logging for debugging IFERROR and other formula issues
                 _logger.debug(f"=== Formula Evaluation for {self.code} ===")
@@ -1240,15 +2177,16 @@ class HrFormulaRule(models.Model):
                 _logger.debug(f"  Python code: {python_code}")
                 _logger.debug(f"  Column map: {column_map}")
             except Exception as e:
-                error_msg = f"Error converting formula: {str(e)}\nExcel formula: {self.excel_formula}"
+                error_msg = f"Error converting formula: {str(e)}\nExcel formula: {excel_formula}"
                 _logger.error(f"Error converting formula for {self.code}: {e}")
 
                 # Store the error information
-                self.write({
-                    'has_evaluation_error': True,
-                    'last_evaluation_error': error_msg,
-                    'last_evaluation_date': fields.Datetime.now()
-                })
+                if write_diagnostics:
+                    self.write({
+                        'has_evaluation_error': True,
+                        'last_evaluation_error': error_msg,
+                        'last_evaluation_date': fields.Datetime.now()
+                    })
                 return 0.0
 
             if not python_code:
@@ -1256,53 +2194,9 @@ class HrFormulaRule(models.Model):
                 return 0.0
 
             try:
-                # Helper function to safely convert values
-                def safe_value(v):
-                    """Convert value, preserving non-numeric strings for comparisons like ="YES"
-
-                    - None/empty → 0
-                    - Numbers → kept as-is
-                    - Numeric strings ("123") → converted to float
-                    - Non-numeric strings ("YES") → preserved for IF comparisons
-                    """
-                    if v is None or v == '':
-                        return 0
-                    if isinstance(v, (int, float)):
-                        return v
-                    if isinstance(v, str):
-                        cleaned = v.strip().replace(' ', '')
-                        if not cleaned:
-                            return 0
-                        is_percent = False
-                        if cleaned.endswith('%'):
-                            cleaned = cleaned[:-1]
-                            is_percent = True
-                        try:
-                            # Handle thousands separators and decimal marks.
-                            if ',' in cleaned and '.' in cleaned:
-                                if cleaned.rfind(',') > cleaned.rfind('.'):
-                                    cleaned = cleaned.replace('.', '').replace(',', '.')
-                                else:
-                                    cleaned = cleaned.replace(',', '')
-                            elif ',' in cleaned:
-                                parts = cleaned.split(',')
-                                if all(len(p) == 3 for p in parts[1:]):
-                                    cleaned = ''.join(parts)
-                                else:
-                                    cleaned = cleaned.replace(',', '.')
-                            elif '.' in cleaned:
-                                parts = cleaned.split('.')
-                                if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
-                                    cleaned = ''.join(parts)
-                            number = float(cleaned)
-                            if is_percent:
-                                number = number / 100
-                            return number
-                        except (ValueError, TypeError):
-                            # Return 0 for non-numeric strings in arithmetic contexts
-                            # String comparisons use raw_values via _isblank_value helper
-                            return 0
-                    return 0
+                # Arithmetic-context coercion — single source of truth shared
+                # with FormulaEvaluator so the two paths cannot drift.
+                safe_value = excel_semantics.coerce_value
 
                 # Build safe evaluation context with values properly converted
                 raw_values = values.copy()
@@ -1329,7 +2223,7 @@ class HrFormulaRule(models.Model):
                     if ref_code in python_code or f"'{ref_code}'" in python_code:
                         _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
 
-                if '"' in (self.excel_formula or '') or "raw_values" in python_code:
+                if '"' in (excel_formula or '') or "raw_values" in python_code:
                     try:
                         ref_codes = re.findall(r"(?:values|raw_values)\.get\('([^']+)'", python_code)
                         ref_values = {
@@ -1345,16 +2239,25 @@ class HrFormulaRule(models.Model):
                     _logger.debug(
                         "Formula eval debug: code=%s excel=%s python=%s refs=%s",
                         self.code,
-                        self.excel_formula,
+                        excel_formula,
                         python_code,
                         ref_values,
                     )
 
-                result = eval(python_code, {"__builtins__": {}}, safe_context)
+                # Reject anything the converter never emits (ORM/interpreter
+                # tokens) BEFORE eval — formula text is user input.
+                excel_semantics.assert_safe_expression(python_code)
+
+                # safe_context goes in as GLOBALS (not locals): the IFERROR
+                # lambda resolves free names via its globals at call time, so
+                # names passed only as eval locals would NameError inside it.
+                eval_globals = dict(safe_context)
+                eval_globals["__builtins__"] = {}
+                result = eval(python_code, eval_globals)
                 _logger.debug(f"  Result: {result}")
 
                 # Clear any previous errors on successful evaluation
-                if self.has_evaluation_error:
+                if write_diagnostics and self.has_evaluation_error:
                     self.write({
                         'has_evaluation_error': False,
                         'last_evaluation_error': False,
@@ -1373,7 +2276,7 @@ class HrFormulaRule(models.Model):
                 # Build detailed error message
                 error_details = []
                 error_details.append(f"Error evaluating formula for {self.code}")
-                error_details.append(f"\nExcel formula: {self.excel_formula}")
+                error_details.append(f"\nExcel formula: {excel_formula}")
                 error_details.append(f"\nPython code: {python_code}")
                 error_details.append(f"\nError type: {type(e).__name__}")
                 error_details.append(f"\nError message: {str(e)}")
@@ -1384,17 +2287,18 @@ class HrFormulaRule(models.Model):
                 error_msg = '\n'.join(error_details)
 
                 _logger.error(f"Formula evaluation error for {self.code}")
-                _logger.error(f"  Excel formula: {self.excel_formula}")
+                _logger.error(f"  Excel formula: {excel_formula}")
                 _logger.error(f"  Python code: {python_code}")
                 _logger.error(f"  Error: {e}")
                 _logger.error(f"  Available values: {list(values.keys())}")
 
                 # Store the error information
-                self.write({
-                    'has_evaluation_error': True,
-                    'last_evaluation_error': error_msg,
-                    'last_evaluation_date': fields.Datetime.now()
-                })
+                if write_diagnostics:
+                    self.write({
+                        'has_evaluation_error': True,
+                        'last_evaluation_error': error_msg,
+                        'last_evaluation_date': fields.Datetime.now()
+                    })
 
                 return 0.0
 
@@ -1424,140 +2328,62 @@ class HrFormulaRule(models.Model):
 
     def _isblank_value(self, value):
         """Return True when a raw value should be treated as blank."""
-        if value is None or value == '':
-            return True
-        if isinstance(value, str) and value.strip() in ('0', '0.0', '0.00'):
-            return True
-        if isinstance(value, (int, float)) and not isinstance(value, bool) and value == 0:
-            return True
-        return False
+        return excel_semantics.is_blank_value(value)
 
     def _coerce_number(self, value):
         """Convert a value to float for numeric functions, ignoring non-numeric text."""
-        if value is None or value == '':
-            return None
-        if isinstance(value, bool):
-            return 1.0 if value else 0.0
-        if isinstance(value, (int, float)):
-            return float(value)
-        try:
-            import numbers
-            if isinstance(value, numbers.Number):
-                return float(value)
-        except Exception:
-            pass
-        if isinstance(value, str):
-            cleaned = value.strip().replace(' ', '')
-            if not cleaned:
-                return None
-            is_percent = False
-            if cleaned.endswith('%'):
-                cleaned = cleaned[:-1]
-                is_percent = True
-            try:
-                if ',' in cleaned and '.' in cleaned:
-                    if cleaned.rfind(',') > cleaned.rfind('.'):
-                        cleaned = cleaned.replace('.', '').replace(',', '.')
-                    else:
-                        cleaned = cleaned.replace(',', '')
-                elif ',' in cleaned:
-                    parts = cleaned.split(',')
-                    if all(len(p) == 3 for p in parts[1:]):
-                        cleaned = ''.join(parts)
-                    else:
-                        cleaned = cleaned.replace(',', '.')
-                elif '.' in cleaned:
-                    parts = cleaned.split('.')
-                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
-                        cleaned = ''.join(parts)
-                number = float(cleaned)
-                if is_percent:
-                    number = number / 100
-                return number
-            except (ValueError, TypeError):
-                return None
-        return None
+        return excel_semantics.coerce_number(value)
 
     def _sumlist(self, values_list):
         """Excel SUM that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-
-        # Handle case where a single value is passed instead of a list
-        if not isinstance(values_list, (list, tuple)):
-            number = self._coerce_number(values_list)
-            return number if number is not None else 0.0
-
-        _logger.debug(f"_sumlist called with {len(values_list)} values: {values_list[:5]}..." if len(values_list) > 5 else f"_sumlist called with {len(values_list)} values: {values_list}")
-
-        total = 0.0
-        for value in values_list:
-            number = self._coerce_number(value)
-            if number is not None:
-                total += number
-        _logger.debug(f"_sumlist result: {total}")
-        return total
+        return excel_semantics.sum_list(values_list)
 
     def _maxlist(self, values_list):
         """Excel MAX that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return max(numbers) if numbers else 0.0
+        return excel_semantics.max_list(values_list)
 
     def _minlist(self, values_list):
         """Excel MIN that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return min(numbers) if numbers else 0.0
+        return excel_semantics.min_list(values_list)
 
     def _avg(self, values_list):
         """Excel AVERAGE function implementation"""
-        if not values_list:
-            return 0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return sum(numbers) / len(numbers) if numbers else 0
+        return excel_semantics.avg_list(values_list)
 
     def _counta(self, values_list):
         """Excel COUNTA function implementation (counts non-empty values)."""
-        if values_list is None:
-            return 0
-        if not isinstance(values_list, (list, tuple)):
+        if values_list is not None and not isinstance(values_list, (list, tuple)):
             return 0 if values_list in (None, '') else 1
-        count = 0
-        for value in values_list:
-            if value not in (None, ''):
-                count += 1
-        return count
+        return excel_semantics.counta_list(values_list)
 
     def _iferror(self, value, error_value):
-        """Excel IFERROR function implementation
-
-        Note: In Python, arguments are evaluated before the function is called,
-        so we can't catch evaluation errors here. Instead, we check for error
-        indicators like None, empty string, or the special ERROR_VALUE sentinel.
-        """
-        # Check if value is an error indicator
-        if value is None or value == '' or (hasattr(value, '__name__') and value.__name__ == 'ERROR_VALUE'):
-            return error_value
-
-        # Check if value is NaN or Inf (common error values)
-        try:
-            import math
-            if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
-                return error_value
-        except:
-            pass
-
-        return value
+        """Excel IFERROR — the converter passes the first argument as a
+        lambda so real evaluation errors (#DIV/0!…) are caught, like Excel."""
+        return excel_semantics.excel_iferror(value, error_value)
 
     def _isblank(self, value):
         """Excel ISBLANK function implementation"""
-        return value in (None, '')
+        return excel_semantics.excel_isblank(value)
+
+    def _round(self, number, digits=0):
+        """Excel ROUND — half away from zero (Python round() is banker's)."""
+        return excel_semantics.excel_round(number, digits)
+
+    def _ceiling(self, number, significance=1):
+        """Excel CEILING(number, significance) — round up to a multiple."""
+        return excel_semantics.excel_ceiling(number, significance)
+
+    def _floor(self, number, significance=1):
+        """Excel FLOOR(number, significance) — round down to a multiple."""
+        return excel_semantics.excel_floor(number, significance)
+
+    def _not(self, value):
+        """Excel NOT as a call (keeps precedence: NOT(x)*5)."""
+        return excel_semantics.excel_not(value)
+
+    def _streq(self, left, right):
+        """Excel text equality: case-insensitive, trimmed."""
+        return excel_semantics.excel_streq(left, right)
 
     def _sumif(self, range_val, criteria, sum_range=None):
         """
@@ -1730,13 +2556,10 @@ class HrFormulaRule(models.Model):
         return 0
 
     def _roundup(self, number, decimals=0):
-        """Excel ROUNDUP function implementation"""
-        import math
-        multiplier = 10 ** int(decimals)
-        return math.ceil(number * multiplier) / multiplier
+        """Excel ROUNDUP — away from zero (math.ceil is wrong for negatives
+        and float-multiply corrupts exact values like ROUNDUP(1.2, 1))."""
+        return excel_semantics.excel_roundup(number, decimals)
 
     def _rounddown(self, number, decimals=0):
-        """Excel ROUNDDOWN function implementation"""
-        import math
-        multiplier = 10 ** int(decimals)
-        return math.floor(number * multiplier) / multiplier
+        """Excel ROUNDDOWN — toward zero."""
+        return excel_semantics.excel_rounddown(number, decimals)

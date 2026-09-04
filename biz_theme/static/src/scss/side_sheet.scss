@@ -1,0 +1,245 @@
+// =============================================================================
+// SIDE SHEET — Slide-in panel for sub-workflows
+// =============================================================================
+// Opens from the right side, keeping the parent record visible behind a
+// semi-transparent backdrop. Used for staff assignment, rescheduling,
+// cancellation, and other contextual actions.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Backdrop
+// ---------------------------------------------------------------------------
+.vu-side-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 1049;
+    pointer-events: none;
+    transition: background 300ms ease;
+
+    &.vu-side-sheet-backdrop--visible {
+        background: rgba(0, 0, 0, 0.3);
+        pointer-events: all;
+    }
+}
+
+// Prevent body scroll when sheet is open
+body.vu-side-sheet-active {
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Sheet panel
+// ---------------------------------------------------------------------------
+.vu-side-sheet {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: var(--vu-sheet-width, 480px);
+    max-width: 90vw;
+    height: 100vh;
+    background: var(--vu-surface-card);
+    box-shadow: var(--vu-sheet-shadow, -4px 0 24px rgba(0, 0, 0, 0.15));
+    z-index: 1050;
+    transform: translateX(100%);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.vu-side-sheet--open {
+    transform: translateX(0);
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+.vu-side-sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--vu-space-lg);
+    border-bottom: 1px solid var(--vu-border-soft);
+    flex-shrink: 0;
+}
+
+.vu-side-sheet__title {
+    font-family: var(--vu-font-family-headings);
+    font-size: var(--vu-font-size-lg);
+    font-weight: 600;
+    color: var(--vu-text-primary);
+}
+
+.vu-side-sheet__subtitle {
+    font-size: 0.75rem;
+    color: var(--vu-text-secondary);
+    margin-top: 2px;
+}
+
+.vu-side-sheet__close {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--vu-radius-sm);
+    background: var(--vu-surface-muted);
+    border: 1px solid var(--vu-border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--vu-transition-fast);
+    color: var(--vu-text-secondary);
+    font-size: 0.8125rem;
+
+    &:hover {
+        background: var(--vu-status-danger);
+        color: white;
+        border-color: var(--vu-status-danger);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Body (scrollable content area)
+// ---------------------------------------------------------------------------
+.vu-side-sheet__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--vu-space-lg);
+}
+
+// ---------------------------------------------------------------------------
+// Footer (sticky action bar)
+// ---------------------------------------------------------------------------
+.vu-side-sheet__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--vu-space-sm);
+    padding: var(--vu-space-md) var(--vu-space-lg);
+    border-top: 1px solid var(--vu-border-soft);
+    flex-shrink: 0;
+    background: var(--vu-surface-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Content sections within the sheet
+// ---------------------------------------------------------------------------
+.vu-side-sheet-section {
+    margin-bottom: var(--vu-space-lg);
+}
+
+.vu-side-sheet-section__title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--vu-text-secondary);
+    margin-bottom: var(--vu-space-sm);
+}
+
+// ---------------------------------------------------------------------------
+// Recommendation cards (staff suggestions, time slots, etc.)
+// ---------------------------------------------------------------------------
+.vu-recommendation-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vu-space-sm);
+    padding: var(--vu-space-sm) var(--vu-space-md);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    cursor: pointer;
+    transition: all var(--vu-transition-fast);
+    margin-bottom: var(--vu-space-sm);
+
+    &:hover {
+        border-color: var(--vu-brand-primary);
+        background: var(--vu-surface-hover);
+        box-shadow: var(--vu-shadow-sm);
+    }
+
+    &.vu-recommendation-card--selected {
+        border-color: var(--vu-brand-primary);
+        background: rgba(90, 75, 176, 0.06);
+        box-shadow: 0 0 0 2px rgba(90, 75, 176, 0.1);
+    }
+}
+
+.vu-recommendation-card__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--vu-surface-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--vu-brand-primary);
+    flex-shrink: 0;
+}
+
+.vu-recommendation-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.vu-recommendation-card__name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--vu-text-primary);
+}
+
+.vu-recommendation-card__detail {
+    font-size: 0.6875rem;
+    color: var(--vu-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-sm);
+    margin-top: 2px;
+}
+
+.vu-recommendation-card__check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--vu-border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all var(--vu-transition-fast);
+    font-size: 0.625rem;
+    color: transparent;
+
+    .vu-recommendation-card--selected & {
+        border-color: var(--vu-brand-primary);
+        background: var(--vu-brand-primary);
+        color: white;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Entrance animations
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+    .vu-side-sheet--open .vu-side-sheet__body > * {
+        animation: vu-sheet-fade-up 200ms ease-out both;
+    }
+
+    @for $i from 1 through 8 {
+        .vu-side-sheet--open .vu-side-sheet__body > :nth-child(#{$i}) {
+            animation-delay: #{$i * 30}ms;
+        }
+    }
+}
+
+@keyframes vu-sheet-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

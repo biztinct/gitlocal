@@ -1,19 +1,17 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# 	* pb_hr_payroll_analytics
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 01:58+0000\n"
-"PO-Revision-Date: 2026-01-20 01:58+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -32,11 +30,11 @@ msgstr "<i class=\"fa fa-bar-chart\" title=\"Bar Chart\"/> Trên cùng Thành ph
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid ""
-"<i class=\"fa fa-building\" title=\"Company\" style=\"font-size: 50px; "
-"margin-bottom: 10px; color: #475569;\"/>"
+"<i class=\"fa fa-building\" title=\"Company\" style=\"font-size: 50px; margin-bottom: "
+"10px; color: #475569;\"/>"
 msgstr ""
-"<i class=\"fa fa-building\" tiêu đề=\"Công ty\" style=\"phông chữ-size: 50px; "
-"margin-bottom: 10px; color: #475569;\"/>"
+"<i class=\"fa fa-building\" title=\"Công ty\" style=\"font-size: 50px; margin-bottom: "
+"10px; color: #475569;\"/>"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -46,43 +44,43 @@ msgstr "<i class=\"fa fa-building-o\" title=\"Departments\"/> Chi phí bởi Ph�
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Employer vs Employee"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #27ae60;\"/> Employer "
+"vs Employee"
 msgstr ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Người sử dụng lao động vs Nhân viên"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #27ae60;\"/> Người sử "
+"dụng lao động vs Nhân viên"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Budget vs Actual"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> Budget vs"
+" Actual"
 msgstr ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Ngân sách vs Thực tế"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> Ngân sách"
+" vs Thực tế"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Dependents by Category"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> "
+"Dependents by Category"
 msgstr ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Người phụ thuộc bởi Danh mục"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> Người phụ"
+" thuộc bởi Danh mục"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Salary Components"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> Salary "
+"Components"
 msgstr ""
-"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Lương Thành phần"
+"<i class=\"fa fa-chart-area\" style=\"margin-right: 8px; color: #3498db;\"/> Lương "
+"Thành phần"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "<i class=\"fa fa-check-circle\" title=\"Employees\"/>"
-msgstr "<i class=\"fa fa-check-circle\" title=\"Employees\"/>"
+msgstr "<i class=\"fa fa-check-circle\" title=\"Nhân viên\"/>"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -91,66 +89,54 @@ msgstr "<i class=\"fa fa-file-text\" title=\"Active Structures\"/> Đang hoạt 
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
-msgid ""
-"<i class=\"fa fa-file-text\" title=\"Salary Config\" style=\"margin-right: "
-"10px;\"/>"
-msgstr ""
-"<i class=\"fa fa-tệp-text\" tiêu đề=\"Lương Cấu hình\" style=\"margin-right: "
-"10px;\"/>"
+msgid "<i class=\"fa fa-file-text\" title=\"Salary Config\" style=\"margin-right: 10px;\"/>"
+msgstr "<i class=\"fa fa-file-text\" title=\"Cấu hình lương\" style=\"margin-right: 10px;\"/>"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-globe\" style=\"margin-right: 8px; color: #3498db;\"/> "
-"Personnel Costs by Country"
+"<i class=\"fa fa-globe\" style=\"margin-right: 8px; color: #3498db;\"/> Personnel "
+"Costs by Country"
 msgstr ""
-"<i class=\"fa fa-globe\" style=\"margin-right: 8px; color: #3498db;\"/> "
-"Nhân sự Chi phí bởi Quốc gia"
+"<i class=\"fa fa-globe\" style=\"margin-right: 8px; color: #3498db;\"/> Nhân sự Chi "
+"phí bởi Quốc gia"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_budget_form
-msgid ""
-"<i class=\"fa fa-info-circle\"/> This report uses sample data for "
-"demonstration"
-msgstr ""
-"<i class=\"fa fa-info-circle\"/> Này báo cáo sử dụng mẫu dữ liệu cho "
-"demonstration"
+msgid "<i class=\"fa fa-info-circle\"/> This report uses sample data for demonstration"
+msgstr "<i class=\"fa fa-info-circle\"/> Này báo cáo sử dụng mẫu dữ liệu cho demonstration"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Cost Breakdown by Department"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Cost "
+"Breakdown by Department"
 msgstr ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Chi phí Phân tích bởi Phòng cấm"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Chi phí "
+"Phân tích bởi Phòng cấm"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Variance Analysis"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Variance "
+"Analysis"
 msgstr ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/>"
-" Chênh lệch Phân tích"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Chênh "
+"lệch Phân tích"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Annual Cost Trend"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #3498db;\"/> Annual "
+"Cost Trend"
 msgstr ""
-"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #3498db;\"/>"
-" Hàng năm Chi phí Xu hướng"
+"<i class=\"fa fa-line-chart\" style=\"margin-right: 8px; color: #3498db;\"/> Hàng năm "
+"Chi phí Xu hướng"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
-msgid ""
-"<i class=\"fa fa-list\" title=\"Components List\"/> All Report-Visible "
-"Components"
-msgstr ""
-"<i class=\"fa fa-list\" title=\"Components List\"/> Tất cả Báo cáo-Hiển thị "
-"Thành phần"
+msgid "<i class=\"fa fa-list\" title=\"Components List\"/> All Report-Visible Components"
+msgstr "<i class=\"fa fa-list\" title=\"Components List\"/> Tất cả Báo cáo-Hiển thị Thành phần"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -165,11 +151,11 @@ msgstr "<i class=\"fa fa-money\" title=\"Earnings\"/> Thu nhập"
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> "
-"Headcount Distribution"
+"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Headcount "
+"Distribution"
 msgstr ""
-"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> "
-"Số lượng nhân sự Phân bổ"
+"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #27ae60;\"/> Số lượng "
+"nhân sự Phân bổ"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
@@ -177,17 +163,17 @@ msgid ""
 "<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> "
 "Contribution Types"
 msgstr ""
-"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> "
-"Đóng góp Loại"
+"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> Đóng góp "
+"Loại"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> "
-"Employee Type Distribution"
+"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> Employee "
+"Type Distribution"
 msgstr ""
-"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> "
-"Nhân viên Loại Phân bổ"
+"<i class=\"fa fa-pie-chart\" style=\"margin-right: 8px; color: #3498db;\"/> Nhân viên "
+"Loại Phân bổ"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -202,25 +188,21 @@ msgstr "<i class=\"fa fa-pie-chart\" title=\"Pie Chart\"/> Báo cáo-Hiển th�
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<i class=\"fa fa-scatter\" style=\"margin-right: 8px; color: #e74c3c;\"/> "
-"Cost per Employee Analysis"
+"<i class=\"fa fa-scatter\" style=\"margin-right: 8px; color: #e74c3c;\"/> Cost per "
+"Employee Analysis"
 msgstr ""
-"<i class=\"fa fa-scatter\" style=\"margin-right: 8px; color: #e74c3c;\"/> "
-"Chi phí mỗi Nhân viên Phân tích"
+"<i class=\"fa fa-scatter\" style=\"margin-right: 8px; color: #e74c3c;\"/> Chi phí mỗi "
+"Nhân viên Phân tích"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
-msgid ""
-"<i class=\"fa fa-sitemap\" title=\"Organization\"/> Departments (Click to "
-"Drill Down)"
-msgstr ""
-"<i class=\"fa fa-sitemap\" title=\"Organization\"/> Phòng cấm (Nhấp để "
-"Drill Down)"
+msgid "<i class=\"fa fa-sitemap\" title=\"Organization\"/> Departments (Click to Drill Down)"
+msgstr "<i class=\"fa fa-sitemap\" title=\"Organization\"/> Phòng cấm (Nhấp để Drill Down)"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "<i class=\"fa fa-spinner fa-spin\" title=\"Loading\" style=\"font-size: 30px;\"/>"
-msgstr "<i class=\"fa fa-spinner fa-spin\" title=\"Loading\" style=\"font-size: 30px;\"/>"
+msgstr "<i class=\"fa fa-spinner fa-spin\" title=\"Đang tải\" style=\"font-size: 30px;\"/>"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -230,16 +212,16 @@ msgstr "<i class=\"fa fa-user\" title=\"Employee\"/> Phân tích theo nhân viê
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "<i class=\"fa fa-users\" title=\"Department\" style=\"margin-right: 10px;\"/>"
-msgstr "<i class=\"fa fa-users\" title=\"Department\" style=\"margin-right: 10px;\"/>"
+msgstr "<i class=\"fa fa-users\" title=\"Phòng ban\" style=\"margin-right: 10px;\"/>"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid ""
-"<span class=\"badge badge-success\" style=\"padding: 8px 12px; font-size: "
-"12px; font-weight: bold;\">READY FOR APPROVAL</span>"
+"<span class=\"badge badge-success\" style=\"padding: 8px 12px; font-size: 12px; font-"
+"weight: bold;\">READY FOR APPROVAL</span>"
 msgstr ""
-"<span class=\"badge badge-thành công\" style=\"padding: 8px 12px; phông chữ-size: "
-"12px; phông chữ-weight: bold;\">SẴN SÀNG CHO PHÊ DUYỆT</span>"
+"<span class=\"badge badge-success\" style=\"padding: 8px 12px; font-size: 12px; font-"
+"weight: bold;\">SẴN SÀNG PHÊ DUYỆT</span>"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_needaction
@@ -250,6 +232,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__message_needaction
 msgid "Action Needed"
 msgstr "Hành động Cần"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__active
+msgid "Active"
+msgstr "Đang hoạt động"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dashboard__active_tab
@@ -325,15 +312,23 @@ msgstr "Tất cả Đã trả Trên Thời gian"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
-#, python-format
 msgid "All analytics refreshed successfully!"
 msgstr "Tất cả phân tích refreshed thành công!"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__allowances
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Allowances"
 msgstr "Phụ cấp"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_select
+msgid "Amount Type"
+msgstr "Loại số tiền"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__analysis_by
@@ -342,14 +337,19 @@ msgid "Analysis By"
 msgstr "Phân tích Bởi"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_root
-msgid "Analytics"
-msgstr "Phân tích"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__analytic_account_id
+msgid "Analytic Account"
+msgstr "Analytic Tài khoản"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_dashboard
-msgid "Analytics Dashboard"
-msgstr "Phân tích Bảng điều khiển"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__analytic_distribution
+msgid "Analytic Distribution"
+msgstr "Phân bổ phân tích"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__analytic_precision
+msgid "Analytic Precision"
+msgstr "Độ chính xác phân tích"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
@@ -380,7 +380,6 @@ msgstr "Hàng năm Chi phí"
 #: model:ir.actions.act_window,name:pb_hr_payroll_analytics.action_view_hr_analytics_annual_costs
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__annual_costs
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__annual
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_annual
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_annual_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid "Annual HR Costs"
@@ -399,9 +398,22 @@ msgstr "Hàng năm Tổng Chi phí"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_annual_costs.py:0
-#, python-format
 msgid "Annual costs analysis generated!"
 msgstr "Hàng năm chi phí phân tích đã tạo!"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__appears_on_payslip
+msgid "Appears on Payslip"
+msgstr "Xuất hiện trên phiếu lương"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_python
+msgid ""
+"Applied this rule for calculation if condition is true. You can specify condition like"
+" basic > 1000."
+msgstr ""
+"Quy tắc này được áp dụng cho việc tính toán nếu điều kiện là đúng. Bạn có thể chỉ ra "
+"điều kiện như luong_co_ban > 10000000."
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
@@ -508,7 +520,6 @@ msgstr "Quay lại để Trang chủ"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__basic_salary
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Basic Salary"
 msgstr "Basic Lương"
 
@@ -537,7 +548,6 @@ msgstr "Ngân sách Dữ liệu (JSON)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dashboard__budget_variance_id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__budget_variance
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__budget
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_budget
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_budget_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid "Budget Variance"
@@ -546,7 +556,12 @@ msgstr "Ngân sách Chênh lệch"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_budget_variance.py:0
-#, python-format
+msgid "Budget analytics needs payroll history — nothing generated."
+msgstr "Phân tích ngân sách cần lịch sử bảng lương - không có gì được tạo ra."
+
+#. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_analytics_budget_variance.py:0
 msgid "Budget variance analysis generated (sample data)!"
 msgstr "Ngân sách chênh lệch phân tích đã tạo (mẫu dữ liệu)!"
 
@@ -601,7 +616,6 @@ msgstr "CSV Dữ liệu"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/wizards/hr_analytics_export_wizard.py:0
-#, python-format
 msgid "CSV export coming soon - use PDF for now"
 msgstr "CSV xuất sắp tới sớm - sử dụng PDF cho bây giờ"
 
@@ -640,15 +654,15 @@ msgid "Cancel"
 msgstr "Hủy"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__category_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Category"
 msgstr "Danh mục"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line__category_type
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__category_type
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Category Type"
 msgstr "Danh mục Loại"
 
@@ -658,6 +672,11 @@ msgid "Charts will appear here after report generation"
 msgstr "Biểu đồ sẽ xuất hiện ở đây sau báo cáo tạo"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__child_ids
+msgid "Child Salary Rule"
+msgstr "Quy tắc con"
+
+#. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 msgid "Clear Cache"
 msgstr "Clear Bộ nhớ đệm"
@@ -665,20 +684,20 @@ msgstr "Clear Bộ nhớ đệm"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
-#, python-format
 msgid "Cleared %d cached records"
 msgstr "Cleared %d đã lưu đệm bản ghi"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_analytics.action_hr_payroll_employee_detail
 msgid ""
-"Click on a chart segment in the Analytics Dashboard to drill down into "
-"employee-level details."
+"Click on a chart segment in the Analytics Dashboard to drill down into employee-level "
+"details."
 msgstr ""
-"Nhấp vào biểu đồ segment trong Phân tích Bảng điều khiển để drill down vào "
-"nhân viên-level chi tiết."
+"Nhấp vào biểu đồ segment trong Phân tích Bảng điều khiển để drill down vào nhân viên-"
+"level chi tiết."
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__code
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "Code"
 msgstr "Mã"
@@ -704,6 +723,7 @@ msgstr "Kết hợp Chế độ xem (Tất cả Dimensions)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__company_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__company_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -743,15 +763,19 @@ msgid "Component Code"
 msgstr "Thành phần Mã"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__active_view__config_detail
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
-msgid "Config Detail"
-msgstr "Cấu hình Chi tiết"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__component_type
+msgid "Component Type"
+msgstr "Loại thành phần"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__config_detail_data_json
-msgid "Config Detail Data (JSON)"
-msgstr "Cấu hình Chi tiết Dữ liệu (JSON)"
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__component_type
+msgid "Component type from formula configuration (e.g., Deductions, Allowances)."
+msgstr "Thành phần Loại từ Cấu hình công thức (e.g., Khấu trừ, Phụ cấp)."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_select
+msgid "Condition Based on"
+msgstr "Điều kiện Dựa trên"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -766,7 +790,6 @@ msgstr "Tổng hợp Dữ liệu (JSON)"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Consolidated Pivot: All Salary Structures"
 msgstr "Tổng hợp Bảng xoay: Tất cả Cấu trúc lươngs"
 
@@ -779,12 +802,22 @@ msgstr "Tổng hợp Chế độ xem"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache__context_data
 msgid "Context (JSON)"
-msgstr "Context (JSON)"
+msgstr "Ngữ cảnh (JSON)"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__contract_id
+msgid "Contract"
+msgstr "Hợp đồng"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__contractor_count
 msgid "Contractors"
 msgstr "Hợp đồngs"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__register_id
+msgid "Contribution Register"
+msgstr "Sổ đóng góp"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__contribution_summary
@@ -812,6 +845,35 @@ msgid "Cost Trend (JSON)"
 msgstr "Chi phí Xu hướng (JSON)"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__costcenter
+msgid "Cost center"
+msgstr "Trung tâm chi phí"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__costcenter
+msgid "Cost center of employee."
+msgstr "Trung tâm chi phí của nhân viên."
+
+#. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:269
+msgid "Cost per Employee"
+msgstr "Chi phí trên mỗi nhân viên"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__component_detail
+msgid "Counted in a Total"
+msgstr "Được tính trong tổng số"
+
+#. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:253
+msgid "Countries"
+msgstr "Quốc gia"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__country_ids
 msgid "Countries included in this analysis"
 msgstr "Quốc gia included trong này phân tích"
@@ -836,6 +898,11 @@ msgid "Country Filter"
 msgstr "Quốc gia Bộ lọc"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__is_country_specific
+msgid "Country Specific"
+msgstr "Quốc gia Cụ thể"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache__created_at
 msgid "Created At"
 msgstr "Đã tạo Tại"
@@ -858,6 +925,7 @@ msgstr "Đã tạo Bởi"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__create_uid
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__create_uid
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__create_uid
 msgid "Created by"
 msgstr "Đã tạo bởi"
 
@@ -873,8 +941,14 @@ msgstr "Đã tạo bởi"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__create_date
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__create_date
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__create_date
 msgid "Created on"
 msgstr "Đã tạo trên"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__account_credit
+msgid "Credit Account"
+msgstr "Tài khoản ghi Có"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__cross_country
@@ -914,6 +988,7 @@ msgstr "Dữ liệu Size (bytes)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__date_from
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__date_from
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__date_from
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__date_from
 msgid "Date From"
 msgstr "Ngày Từ"
 
@@ -926,8 +1001,14 @@ msgstr "Ngày Từ"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__date_to
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__date_to
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__date_to
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__date_to
 msgid "Date To"
 msgstr "Ngày Để"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__account_debit
+msgid "Debit Account"
+msgstr "Tài khoản ghi Nợ"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__trend_direction__decreasing
@@ -935,23 +1016,16 @@ msgid "Decreasing (<-5%)"
 msgstr "Th12reasing (<-5%)"
 
 #. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Deductions"
-msgstr "Khấu trừ"
-
-#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__department_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line__department_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__department_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_payroll_employee_detail_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_payroll_employee_detail_tree
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Department"
 msgstr "Phòng cấm"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Department '%s' not found"
 msgstr "Phòng cấm '%s' không tìm thấy"
 
@@ -972,11 +1046,6 @@ msgid "Department Name"
 msgstr "Phòng cấm Tên"
 
 #. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_pivot_dept
-msgid "Department x Components"
-msgstr "Phòng cấm x Thành phần"
-
-#. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "Departments"
 msgstr "Phòng cấm"
@@ -995,7 +1064,6 @@ msgstr "Người phụ thuộc số lượng tracking và phúc lợi phân tíc
 #: model:ir.actions.act_window,name:pb_hr_payroll_analytics.action_view_hr_analytics_dependents
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__dependents
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__dependents
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_dependents
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dependents_form
 msgid "Dependents & Benefits"
@@ -1009,7 +1077,6 @@ msgstr "Người phụ thuộc Phân tích"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dependents.py:0
-#, python-format
 msgid "Dependents analysis generated!"
 msgstr "Người phụ thuộc phân tích đã tạo!"
 
@@ -1017,6 +1084,11 @@ msgstr "Người phụ thuộc phân tích đã tạo!"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__dependents_by_employee
 msgid "Dependents by Employee (JSON)"
 msgstr "Người phụ thuộc bởi Nhân viên (JSON)"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__note
+msgid "Description"
+msgstr "Mô tả"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__compliance_details
@@ -1040,8 +1112,14 @@ msgstr "Trực tiếp Lương (JSON)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__display_name
 msgid "Display Name"
 msgstr "Hiển thị Tên"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__distribution_analytic_account_ids
+msgid "Distribution Analytic Account"
+msgstr "Tài khoản phân tích phân phối"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__state__draft
@@ -1056,6 +1134,7 @@ msgstr "Nháp"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__employee_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__employee_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_payroll_employee_detail_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
@@ -1092,6 +1171,11 @@ msgstr "Nhân viên Bảng lương Chi tiết"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_payroll_employee_detail_graph
 msgid "Employee Payroll Trends"
 msgstr "Nhân viên Bảng lương Trends"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__employee_rate
+msgid "Employee Rate (%)"
+msgstr "Nhân viên Tỷ lệ (%)"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
@@ -1135,21 +1219,19 @@ msgid "Employer Cost"
 msgstr "Người sử dụng lao động Chi phí"
 
 #. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Employer Costs"
-msgstr "Người sử dụng lao động Chi phí"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__employer_rate
+msgid "Employer Rate (%)"
+msgstr "Người sử dụng lao động Tỷ lệ (%)"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_personnel_costs.py:0
-#, python-format
 msgid "Error generating analytics: %s"
 msgstr "Lỗi generating phân tích: %s"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
-#, python-format
 msgid "Error refreshing analytics: %s"
 msgstr "Lỗi refreshing phân tích: %s"
 
@@ -1160,9 +1242,13 @@ msgstr "Lỗi refreshing phân tích: %s"
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dependents.py:0
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_headcount.py:0
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_statutory_contrib.py:0
-#, python-format
 msgid "Error: %s"
 msgstr "Lỗi: %s"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__register_id
+msgid "Eventual third party involved in the salary payment of the employees."
+msgstr "Bên thứ ba mà có liên quan đến việc thanh toán lương của nhân viên."
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__file_format__xlsx
@@ -1172,7 +1258,6 @@ msgstr "Excel Bảng tính"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/wizards/hr_analytics_export_wizard.py:0
-#, python-format
 msgid "Excel export coming soon - use PDF for now"
 msgstr "Excel xuất sắp tới sớm - sử dụng PDF cho bây giờ"
 
@@ -1197,7 +1282,6 @@ msgstr "Xuất Phân tích Báo cáo"
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
 #: code:addons/pb_hr_payroll_analytics/wizards/hr_analytics_export_wizard.py:0
-#, python-format
 msgid "Export failed: %s"
 msgstr "Xuất thất bại: %s"
 
@@ -1232,6 +1316,11 @@ msgid "Fiscal Year"
 msgstr "Fiscal Năm"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_fix
+msgid "Fixed Amount"
+msgstr "Giá trị cố định"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_follower_ids
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__message_follower_ids
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__message_follower_ids
@@ -1262,13 +1351,22 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line__formula_config_id
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_percentage
+msgid "For example, enter 50.0 to apply a percentage of 50%"
+msgstr "Ví dụ, nhập 50,0 để sử dụng 50%"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_formula
+msgid "Formula"
+msgstr "Công thức"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__formula_config_id
 msgid "Formula Config"
 msgstr "Cấu hình công thức"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line__formula_config_id
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__formula_config_id
 msgid "Formula configuration used for computation"
 msgstr "Công thức cấu hình được sử dụng cho tính toán"
 
@@ -1300,9 +1398,6 @@ msgstr "Grand Tổng"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__group_by
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__group_by
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_personnel_costs_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Group By"
 msgstr "Nhóm Bởi"
 
@@ -1359,6 +1454,13 @@ msgid "HR Analytics Export Wizard"
 msgstr "HR Phân tích Xuất Thuật sĩ"
 
 #. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:156
+msgid "HR Analytics Report"
+msgstr "Báo cáo phân tích nhân sự"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__has_message
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__has_message
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__has_message
@@ -1369,11 +1471,17 @@ msgid "Has Message"
 msgstr "Có Thông báo"
 
 #. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js:270
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.actions.act_window,name:pb_hr_payroll_analytics.action_view_hr_analytics_headcount
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dashboard__headcount_id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__headcount
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__headcount
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_headcount
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_headcount_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_headcount_tree
@@ -1398,7 +1506,6 @@ msgstr "Số lượng nhân sự Xu hướng (JSON)"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_headcount.py:0
-#, python-format
 msgid "Headcount analysis generated!"
 msgstr "Số lượng nhân sự phân tích đã tạo!"
 
@@ -1445,6 +1552,7 @@ msgstr "Historical dữ liệu cho so sánh"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__id
 msgid "ID"
 msgstr "ID"
 
@@ -1495,6 +1603,15 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__active
+msgid ""
+"If the active field is set to false, it will allow you to hide the salary rule without"
+" removing it."
+msgstr ""
+"Nếu bỏ chọn trường Hiệu lực, nó sẽ cho phép bạn ẩn quy tắc tính lương mà không cần xóa"
+" bỏ nó."
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_export_wizard__include_charts
 msgid "Include Charts"
 msgstr "Bao gồm Biểu đồ"
@@ -1527,7 +1644,7 @@ msgstr "Bao gồm visualizations trong đã xuất báo cáo"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__trend_direction__increasing
 msgid "Increasing (>5%)"
-msgstr "Increasing (>5%)"
+msgstr "Tăng (>5%)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__in
@@ -1542,6 +1659,11 @@ msgstr "Ấn Độ"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__country__id
 msgid "Indonesia"
 msgstr "Indonesia"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__input_ids
+msgid "Inputs"
+msgstr "Đầu vào"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__insurance_impact
@@ -1566,53 +1688,53 @@ msgstr "Là Hợp lệ"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__contribution_summary
 msgid "JSON: {SI: {employee, employer, total}, HI: {...}, ...}"
-msgstr "JSON: {SI: {nhân viên, người sử dụng lao động, tổng}, HI: {...},...}"
+msgstr "JSON: {SI: {employee, employer, total}, HI: {...}, ...}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__employer_contributions_json
 msgid "JSON: {dimension: {SI: amount, HI: amount, CPF: amount, ...}}"
-msgstr "JSON: {kích thước: {SI: số tiền, HI: số tiền, CPF: số tiền,...}}"
+msgstr "JSON: {dimension: {SI: amount, HI: amount, CPF: amount, ...}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__training_costs_json
 msgid "JSON: {dimension: {amount: total, employees: count}}"
-msgstr "JSON: {kích thước: {số tiền: tổng, nhân viên: số lượng}}"
+msgstr "JSON: {dimension: {amount: total, employees: count}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__recruitment_costs_json
 msgid "JSON: {dimension: {amount: total, new_hires: count}}"
-msgstr "JSON: {kích thước: {số tiền: tổng, new_hires: số lượng}}"
+msgstr "JSON: {dimension: {amount: total, new_hires: count}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__direct_salaries_json
 msgid "JSON: {dimension: {basic: amount, allowances: amount, ...}}"
-msgstr "JSON: {kích thước: {basic: số tiền, phụ cấp: số tiền,...}}"
+msgstr "JSON: {dimension: {basic: amount, allowances: amount, ...}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__benefits_json
 msgid "JSON: {dimension: {health_insurance: amount, housing: amount, ...}}"
-msgstr "JSON: {kích thước: {health_insurance: số tiền, housing: số tiền,...}}"
+msgstr "JSON: {dimension: {health_insurance: amount, housing: amount, ...}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__total_cost_json
 msgid "JSON: {dimension: {total: amount, per_employee: amount}}"
-msgstr "JSON: {kích thước: {tổng: số tiền, per_employee: số tiền}}"
+msgstr "JSON: {dimension: {total: amount, per_employee: amount}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__employee_contrib_json
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__employer_contrib_json
 msgid "JSON: {employee_id: {SI, HI, UI, CPF, SSF, NSSF, EPF, SOCSO, ...}}"
-msgstr "JSON: {employee_id: {SI, HI, UI, CPF, SSF, NSSF, EPF, SOCSO,...}}"
+msgstr "JSON: {employee_id: {SI, HI, UI, CPF, SSF, NSSF, EPF, SOCSO, ...}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__pending_contributions
 msgid "JSON: {type: {amount, due_date, days_overdue}}"
-msgstr "JSON: {loại: {số tiền, Ngày đến hạn, days_overdue}}"
+msgstr "JSON: {type: {amount, due_date, days_overdue}}"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__contribution_types
 msgid "JSON: {type: {due_date, paid_date, status}}"
-msgstr "JSON: {loại: {Ngày đến hạn, paid_date, trạng thái}}"
+msgstr "JSON: {type: {due_date, paid_date, status}}"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
@@ -1628,21 +1750,6 @@ msgstr "Largest Chi phí Drivers (JSON)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache__last_accessed
 msgid "Last Accessed"
 msgstr "Cuối Đã truy cập"
-
-#. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dashboard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_export_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail____last_update
-msgid "Last Modified on"
-msgstr "Cuối Modified trên"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__last_refresh
@@ -1668,6 +1775,7 @@ msgstr "Cuối Làm mới"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__write_uid
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__write_uid
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__write_uid
 msgid "Last Updated by"
 msgstr "Cuối Đã cập nhật bởi"
 
@@ -1683,6 +1791,7 @@ msgstr "Cuối Đã cập nhật bởi"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__write_date
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__write_date
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__write_date
 msgid "Last Updated on"
 msgstr "Cuối Đã cập nhật trên"
 
@@ -1690,16 +1799,6 @@ msgstr "Cuối Đã cập nhật trên"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "Loading salary configs..."
 msgstr "Đang tải lương cấu hình..."
-
-#. module: pb_hr_payroll_analytics
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_main_attachment_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__message_main_attachment_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__message_main_attachment_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__message_main_attachment_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__message_main_attachment_id
-#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Chính Tệp đính kèm"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__my
@@ -1712,6 +1811,21 @@ msgstr "Malaysia"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_statutory_form
 msgid "Mark Paid"
 msgstr "Đánh dấu Đã trả"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_formula
+msgid "Mathematical formula for amount calculation"
+msgstr "Mathematical công thức cho số tiền tính toán"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__max_amount
+msgid "Maximum Amount"
+msgstr "Tối đa Số tiền"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range_max
+msgid "Maximum Range"
+msgstr "Phạm vi tối đa"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_has_error
@@ -1732,6 +1846,16 @@ msgstr "Thông báo Giao lỗi"
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__message_ids
 msgid "Messages"
 msgstr "Thông báo"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__min_amount
+msgid "Minimum Amount"
+msgstr "Tối thiểu Số tiền"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range_min
+msgid "Minimum Range"
+msgstr "Phạm vi tối thiểu"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache__model_name
@@ -1767,7 +1891,7 @@ msgstr "Hàng tháng Số lượng nhân sự (JSON)"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__movements
 msgid "Movements (JSON)"
-msgstr "Movements (JSON)"
+msgstr "Biến động (JSON)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__my_activity_date_deadline
@@ -1780,14 +1904,10 @@ msgid "My Activity Deadline"
 msgstr "My Hoạt động Hạn chót"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__name
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "Name"
 msgstr "Tên"
-
-#. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Net Salary"
-msgstr "Net Lương"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__new_hires
@@ -1837,9 +1957,14 @@ msgstr "Tiếp theo Hoạt động Loại"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
-#, python-format
 msgid "No data available to export for this report"
 msgstr "Không dữ liệu sẵn có để xuất cho này báo cáo"
+
+#. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_payroll_employee_detail.py:0
+msgid "No payroll data for %s yet."
+msgstr "Chưa có dữ liệu bảng lương cho %s."
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_analytics.action_hr_payroll_employee_detail
@@ -1849,14 +1974,12 @@ msgstr "Không bảng lương chi tiết dữ liệu sẵn có"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_statutory_contrib.py:0
-#, python-format
 msgid "No payslips found for the selected period and country."
 msgstr "Không phiếu lương tìm thấy cho đã chọn kỳ và quốc gia."
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_personnel_costs.py:0
-#, python-format
 msgid "No payslips found for the selected period."
 msgstr "Không phiếu lương tìm thấy cho đã chọn kỳ."
 
@@ -1864,6 +1987,18 @@ msgstr "Không phiếu lương tìm thấy cho đã chọn kỳ."
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Non-Zero Amount"
 msgstr "Non-Zero Số tiền"
+
+#. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_analytics_budget_variance.py:0
+msgid "Nothing generated"
+msgstr "Không có gì được tạo ra"
+
+#. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_payroll_employee_detail.py:0
+msgid "Nothing to show"
+msgstr "Không có gì để hiển thị"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_needaction_counter
@@ -1933,7 +2068,6 @@ msgstr "PDF Báo cáo"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/wizards/hr_analytics_export_wizard.py:0
-#, python-format
 msgid "PDF export not yet configured for this report"
 msgstr "PDF xuất không vẫn đã cấu hình cho này báo cáo"
 
@@ -1941,6 +2075,11 @@ msgstr "PDF xuất không vẫn đã cấu hình cho này báo cáo"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__state__paid
 msgid "Paid"
 msgstr "Đã trả"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__parent_rule_id
+msgid "Parent Salary Rule"
+msgstr "Quy tắc Lương Cấp cha"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__part_time_count
@@ -1953,14 +2092,19 @@ msgid "Partial Payments"
 msgstr "Một phần Thanh toán"
 
 #. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Payslip"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__slip_id
+msgid "Pay Slip"
 msgstr "Phiếu lương"
 
 #. module: pb_hr_payroll_analytics
-#: model:ir.model,name:pb_hr_payroll_analytics.model_hr_payslip_line
-msgid "Payslip Line"
-msgstr "Dòng Phiếu lương"
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__payroll_country_code
+msgid "Payroll Country"
+msgstr "Bảng lương Quốc gia"
+
+#. module: pb_hr_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
+msgid "Payslip"
+msgstr "Phiếu lương"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_tree
@@ -1983,6 +2127,16 @@ msgid "Pending Contributions (JSON)"
 msgstr "Đang chờ Đóng góp (JSON)"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_percentage
+msgid "Percentage (%)"
+msgstr "Phần trăm (%)"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_percentage_base
+msgid "Percentage based on"
+msgstr "Phần trăm dựa trên"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__period_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__period_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__period_name
@@ -2000,7 +2154,6 @@ msgstr "Kỳ Loại"
 #: model:ir.actions.act_window,name:pb_hr_payroll_analytics.action_view_hr_analytics_personnel_costs
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__personnel_costs
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__personnel_costs
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_personnel_costs
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_personnel_costs_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_personnel_costs_tree
 msgid "Personnel Costs"
@@ -2030,37 +2183,30 @@ msgstr "Nhân sự chi phí phân tích bởi phòng cấm"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_personnel_costs.py:0
-#, python-format
 msgid "Personnel costs analytics generated successfully!"
 msgstr "Nhân sự chi phí phân tích đã tạo thành công!"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Pivot: %s"
 msgstr "Bảng xoay: %s"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Pivot: %s - %s"
 msgstr "Bảng xoay: %s - %s"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Please select a config and department first"
 msgstr "Vui lòng chọn cấu hình và phòng cấm đầu tiên"
 
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#: code:addons/pb_hr_payroll_analytics/models/hr_formula_config_analytics.py:0
-#, python-format
 msgid "Please select a salary config first"
 msgstr "Vui lòng chọn lương cấu hình đầu tiên"
 
@@ -2095,9 +2241,44 @@ msgid "Projection Basis"
 msgstr "Projection Cơ sở"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_python_compute
+msgid "Python Code"
+msgstr "Mã Python"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_python
+msgid "Python Condition"
+msgstr "Điều kiện Python"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__quantity
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__period_type__quarterly
 msgid "Quarterly"
-msgstr "Quarterly"
+msgstr "Hàng quý"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range
+msgid "Range Based on"
+msgstr "Phạm vi dựa trên"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__rate
+msgid "Rate (%)"
+msgstr "Tỷ lệ (%)"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_statutory_contrib__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__state__ready
@@ -2122,12 +2303,25 @@ msgid "Refresh"
 msgstr "Làm mới"
 
 #. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
+msgid "Replaced by the Analytics Explorer"
+msgstr "Được thay thế bằng Analytics Explorer"
+
+#. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:50
+msgid "Report"
+msgstr "Báo cáo"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_export_wizard__report_type
 msgid "Report Type"
 msgstr "Báo cáo Loại"
 
 #. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__report_visible
 msgid "Report Visible"
 msgstr "Báo cáo Hiển thị"
 
@@ -2147,6 +2341,11 @@ msgid "Responsible User"
 msgstr "Phụ trách Người dùng"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__salary_rule_id
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__message_has_sms_error
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__message_has_sms_error
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__message_has_sms_error
@@ -2162,8 +2361,18 @@ msgid "Salary Configs"
 msgstr "Lương Cấu hình"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__active_view__config_detail
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
+msgid "Salary Details"
+msgstr "Chi tiết lương"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_formula_config_analytics__config_detail_data_json
+msgid "Salary Details Data (JSON)"
+msgstr "Dữ liệu chi tiết lương (JSON)"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.actions.act_window,name:pb_hr_payroll_analytics.action_open_formula_config_analytics
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_formula_config_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 msgid "Salary Structure Analytics"
 msgstr "Cấu trúc lương Phân tích"
@@ -2204,16 +2413,16 @@ msgid "Separations"
 msgstr "Th9arations"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_headcount__country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__country__sg
 msgid "Singapore"
 msgstr "Singapore"
-
-#. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Social Security"
-msgstr "Xã hội Bảo mật"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__compliance_status__pending
@@ -2223,7 +2432,7 @@ msgstr "Một số Đang chờ"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__trend_direction__stable
 msgid "Stable (±5%)"
-msgstr "Stable (±5%)"
+msgstr "Ổn định (±5%)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__state
@@ -2259,7 +2468,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dashboard__statutory_contrib_id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__active_tab__statutory_contrib
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_export_wizard__report_type__statutory
-#: model:ir.ui.menu,name:pb_hr_payroll_analytics.menu_hr_analytics_statutory
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_dashboard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_statutory_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_statutory_tree
@@ -2274,7 +2482,6 @@ msgstr "Theo luật Đóng góp Báo cáo"
 #. module: pb_hr_payroll_analytics
 #. odoo-python
 #: code:addons/pb_hr_payroll_analytics/models/hr_analytics_statutory_contrib.py:0
-#, python-format
 msgid "Statutory contributions analytics generated successfully!"
 msgstr "Theo luật đóng góp phân tích đã tạo thành công!"
 
@@ -2294,14 +2501,14 @@ msgid "Target model name (e.g., hr.analytics.personnel.costs)"
 msgstr "Mục tiêu model tên (e.g., hr.phân tích.nhân sự.chi phí)"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__account_tax_id
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_dependents__tax_benefit_impact
 msgid "Tax Benefit Impact (JSON)"
 msgstr "Thuế Phúc lợi Tác động (JSON)"
-
-#. module: pb_hr_payroll_analytics
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
-msgid "Taxes"
-msgstr "Taxes"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__th
@@ -2309,6 +2516,60 @@ msgstr "Taxes"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__country__th
 msgid "Thailand"
 msgstr "Thái Lan"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__code
+msgid ""
+"The code of salary rules can be used as reference in computation of other rules. In "
+"that case, it is case sensitive."
+msgstr ""
+"Mã của quy tắc lương có thể được sử dụng như tham chiếu trong việc tính toán các quy "
+"tắc khác."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_select
+msgid "The computation method for the rule amount."
+msgstr "Phương pháp tính toán cho tổng tiền của một quy tắc."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range_max
+msgid "The maximum amount, applied for this rule."
+msgstr "Tổng tiền tối đa được áp dụng trên quy tắc này."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range_min
+msgid "The minimum amount, applied for this rule."
+msgstr "Tổng tiền tối thiểu được áp dụng trên quy tắc này."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__component_detail
+msgid ""
+"This amount is already included in another line's total, so pay run figures count the "
+"total instead of this line."
+msgstr ""
+"Số tiền này đã được bao gồm trong tổng số của dòng khác, vì vậy số liệu tính lương sẽ "
+"tính tổng số thay vì dòng này."
+
+#. module: pb_hr_payroll_analytics
+#. odoo-python
+#: code:addons/pb_hr_payroll_analytics/models/hr_analytics_dashboard.py:0
+msgid ""
+"This legacy dashboard no longer generates data. Open Insights > Analytics Explorer for"
+" live figures read straight from your payslips."
+msgstr ""
+"Trang tổng quan cũ này không còn tạo dữ liệu nữa. Mở Thông tin chi tiết > Analytics "
+"Explorer để xem số liệu trực tiếp được đọc trực tiếp từ phiếu lương của bạn."
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__condition_range
+msgid ""
+"This will be used to compute the % fields values; in general it is on basic, but you "
+"can also use categories code fields in lowercase as a variable names (hra, ma, lta, "
+"etc.) and the variable basic."
+msgstr ""
+"Giá trị này dùng để tính các trường phần trăm; thông thường dựa trên lương cơ bản, "
+"nhưng bạn cũng có thể dùng mã danh mục viết thường làm tên biến (hra, ma, lta, v.v.) "
+"và biến basic."
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_cache__ttl_minutes
@@ -2327,6 +2588,7 @@ msgstr "Trên cùng 5 chi phí items và của họ tác động"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payroll_employee_detail__total
+#: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__total
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_formula_config_analytics_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_personnel_costs_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_tree
@@ -2505,6 +2767,11 @@ msgid "Trend Direction"
 msgstr "Xu hướng Direction"
 
 #. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__report_visible
+msgid "True if this component should appear in reporting outputs."
+msgstr "Đúng nếu này Thành phần nên xuất hiện trong báo cáo đầu ra."
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__activity_exception_decoration
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__activity_exception_decoration
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_dependents__activity_exception_decoration
@@ -2516,12 +2783,20 @@ msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_cache__cache_key
-msgid ""
-"Unique identifier for cached data (e.g., "
-"personnel_costs_VN_2024_01_department)"
+msgid "Unique identifier for cached data (e.g., personnel_costs_VN_2024_01_department)"
 msgstr ""
 "Duy nhất identifier cho đã lưu đệm dữ liệu (e.g., "
 "personnel_costs_VN_2024_01_department)"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__sequence
+msgid "Use to arrange calculation sequence"
+msgstr "Sử dụng để sắp xếp trình tự tính toán"
+
+#. module: pb_hr_payroll_analytics
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__appears_on_payslip
+msgid "Used to display the salary rule on payslip."
+msgstr "Được sử dụng để hiển thị quy tắc lương trên phiếu lương."
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__use_sample_data
@@ -2536,7 +2811,7 @@ msgstr "Chênh lệch %"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__variance_by_dimension
 msgid "Variance % by dept/title/designation"
-msgstr "Chênh lệch % bởi dept/tiêu đề/designation"
+msgstr "Chênh lệch % theo phòng ban/chức danh/vị trí"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_budget_variance__variance_json
@@ -2556,12 +2831,12 @@ msgstr "Chênh lệch percentage bởi phòng cấm"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__state__verified
 msgid "Verified"
-msgstr "Verified"
+msgstr "Đã xác minh"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_statutory_form
 msgid "Verify"
-msgstr "Verify"
+msgstr "Xác minh"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__vn
@@ -2603,7 +2878,7 @@ msgstr "Năm-over-năm chi phí phân tích và projections"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__period_type__yearly
 msgid "Yearly"
-msgstr "Yearly"
+msgstr "Hàng năm"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__yoy_comparison
@@ -2616,6 +2891,13 @@ msgid "YoY Growth %"
 msgstr "So với cùng kỳ Tăng trưởng %"
 
 #. module: pb_hr_payroll_analytics
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:0
+#: code:addons/pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js:104
+msgid "chart"
+msgstr "biểu đồ"
+
+#. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_analytics_personnel_costs__period_name
 msgid "e.g., \"January 2024 - Personnel Costs\""
 msgstr "e.g., \"Th1uary 2024 - Nhân sự Chi phí\""
@@ -2626,237 +2908,11 @@ msgid "e.g., \"January 2024 - Statutory Contributions\""
 msgstr "e.g., \"Th1uary 2024 - Theo luật Đóng góp\""
 
 #. module: pb_hr_payroll_analytics
-msgid "Regular"
-msgstr "Thường kỳ"
+#: model:ir.model,name:pb_hr_payroll_analytics.model_hr_payslip_line_analytics
+msgid "hr.payslip.line.analytics"
+msgstr "hr.payslip.line.analytics"
 
 #. module: pb_hr_payroll_analytics
-msgid "End Cycle"
-msgstr "Cuối kỳ"
-
-#. module: pb_hr_payroll_analytics
-msgid "Mid Cycle"
-msgstr "Giữa kỳ"
-
-#. module: pb_hr_payroll_analytics
-msgid "Bonus"
-msgstr "Thưởng"
-
-#. module: pb_hr_payroll_analytics
-msgid "13th Month"
-msgstr "Tháng 13"
-
-#. module: pb_hr_payroll_analytics
-msgid "Special"
-msgstr "Đặc biệt"
-
-#. module: pb_hr_payroll_analytics
-msgid "Salary Details"
-msgstr "Chi tiết lương"
-
-#. module: pb_hr_payroll_analytics
-msgid "No hierarchy data available. Try refreshing."
-msgstr "Không có dữ liệu phân cấp. Vui lòng thử làm mới."
-
-#. module: pb_hr_payroll_analytics
-msgid "No active salary configs found for this company."
-msgstr "Không tìm thấy cấu hình lương đang hoạt động cho công ty này."
-
-#. module: pb_hr_payroll_analytics
-msgid "Cycle"
-msgstr "Chu kỳ"
-
-#. module: pb_hr_payroll_analytics
-msgid "Total Cost"
-msgstr "Tổng chi phí"
-
-#. module: pb_hr_payroll_analytics
-msgid "Click to drill down"
-msgstr "Nhấp để xem chi tiết"
-
-#. module: pb_hr_payroll_analytics
-msgid "Departments in"
-msgstr "Phòng ban trong"
-
-#. module: pb_hr_payroll_analytics
-msgid "No departments found for this config."
-msgstr "Không tìm thấy phòng ban cho cấu hình này."
-
-#. module: pb_hr_payroll_analytics
-msgid "Loading department details..."
-msgstr "Đang tải chi tiết phòng ban..."
-
-#. module: pb_hr_payroll_analytics
-msgid "Error loading department. Please try again."
-msgstr "Lỗi khi tải phòng ban. Vui lòng thử lại."
-
-#. module: pb_hr_payroll_analytics
-msgid "Amount"
-msgstr "Số tiền"
-
-#. module: pb_hr_payroll_analytics
-msgid "No employee data available for the selected department and period."
-msgstr "Không có dữ liệu nhân viên cho phòng ban và kỳ đã chọn."
-
-#. module: pb_hr_payroll_analytics
-msgid "Report"
-msgstr "Báo cáo"
-
-#. module: pb_hr_payroll_analytics
-msgid "chart"
-msgstr "biểu đồ"
-
-#. module: pb_hr_payroll_analytics
-msgid "HR Analytics Report"
-msgstr "Báo cáo phân tích nhân sự"
-
-#. module: pb_hr_payroll_analytics
-msgid "Countries"
-msgstr "Quốc gia"
-
-#. module: pb_hr_payroll_analytics
-msgid "Cost per Employee"
-msgstr "Chi phí trên mỗi nhân viên"
-
-#. module: pb_hr_payroll_analytics
-msgid "Headcount"
-msgstr "Số lượng nhân sự"
-
-#. module: pb_hr_payroll_analytics
-msgid "Failed to load Chart.js"
-msgstr "Không thể tải Chart.js"
-
-#. module: pb_hr_payroll_analytics
-msgid "Engineering"
-msgstr "Kỹ thuật"
-
-#. module: pb_hr_payroll_analytics
-msgid "Sales"
-msgstr "Kinh doanh"
-
-#. module: pb_hr_payroll_analytics
-msgid "Operations"
-msgstr "Vận hành"
-
-#. module: pb_hr_payroll_analytics
-msgid "HR"
-msgstr "Nhân sự"
-
-#. module: pb_hr_payroll_analytics
-msgid "Finance"
-msgstr "Tài chính"
-
-#. module: pb_hr_payroll_analytics
-msgid "Social Insurance"
-msgstr "Xã hội Bảo hiểm"
-
-#. module: pb_hr_payroll_analytics
-msgid "Health Insurance"
-msgstr "Sức khỏe Bảo hiểm"
-
-#. module: pb_hr_payroll_analytics
-msgid "Unemployment Insurance"
-msgstr "Unemployment Bảo hiểm"
-
-#. module: pb_hr_payroll_analytics
-msgid "Employee Contributions"
-msgstr "Đóng góp của nhân viên"
-
-#. module: pb_hr_payroll_analytics
-msgid "Employer Contributions"
-msgstr "Đóng góp của NSDLĐ"
-
-#. module: pb_hr_payroll_analytics
-msgid "Full-time"
-msgstr "Toàn thời gian"
-
-#. module: pb_hr_payroll_analytics
-msgid "Part-time"
-msgstr "Bán thời gian"
-
-#. module: pb_hr_payroll_analytics
-msgid "Contractor"
-msgstr "Hợp đồng"
-
-#. module: pb_hr_payroll_analytics
-msgid "Dependents Count"
-msgstr "Số người phụ thuộc"
-
-#. module: pb_hr_payroll_analytics
-msgid "Budget"
-msgstr "Ngân sách"
-
-#. module: pb_hr_payroll_analytics
-msgid "Actual"
-msgstr "Thực tế"
-
-#. module: pb_hr_payroll_analytics
-msgid "Jan"
-msgstr "Th1"
-
-#. module: pb_hr_payroll_analytics
-msgid "Feb"
-msgstr "Th2"
-
-#. module: pb_hr_payroll_analytics
-msgid "Mar"
-msgstr "Th3"
-
-#. module: pb_hr_payroll_analytics
-msgid "Apr"
-msgstr "Th4"
-
-#. module: pb_hr_payroll_analytics
-msgid "May"
-msgstr "Th5"
-
-#. module: pb_hr_payroll_analytics
-msgid "Jun"
-msgstr "Th6"
-
-#. module: pb_hr_payroll_analytics
-msgid "Jul"
-msgstr "Th7"
-
-#. module: pb_hr_payroll_analytics
-msgid "Aug"
-msgstr "Th8"
-
-#. module: pb_hr_payroll_analytics
-msgid "Sep"
-msgstr "Th9"
-
-#. module: pb_hr_payroll_analytics
-msgid "Oct"
-msgstr "Th10"
-
-#. module: pb_hr_payroll_analytics
-msgid "Nov"
-msgstr "Th11"
-
-#. module: pb_hr_payroll_analytics
-msgid "Dec"
-msgstr "Th12"
-
-#. module: pb_hr_payroll_analytics
-msgid "Monthly Cost"
-msgstr "Chi phí hàng tháng"
-
-#. module: pb_hr_payroll_analytics
-msgid "Unknown error"
-msgstr "Lỗi không xác định"
-
-#. module: pb_hr_payroll_analytics
-msgid "Drill-Down Error"
-msgstr "Lỗi xem chi tiết"
-
-#. module: pb_hr_payroll_analytics
-msgid "Failed to load employee details: "
-msgstr "Không thể tải chi tiết nhân viên: "
-
-#. module: pb_hr_payroll_analytics
-msgid "Success"
-msgstr "Thành công"
-
-#. module: pb_hr_payroll_analytics
-msgid "Analytics refreshed successfully"
-msgstr "Đã làm mới phân tích thành công"
+#: model:ir.model.fields,help:pb_hr_payroll_analytics.field_hr_payslip_line_analytics__amount_percentage_base
+msgid "result will be affected to a variable"
+msgstr "kết quả sẽ bị ảnh hưởng tới một biến số"

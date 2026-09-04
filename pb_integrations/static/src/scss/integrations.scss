@@ -1,0 +1,267 @@
+// Integrations — module-specific bits (layout on top of the shared kit).
+//
+// IA Cycle 3 replaced the three raw-list link tiles (`.itg-link*`, removed with
+// them) with a Data VIEW of this cockpit: a tab strip, a grid and the shared
+// 320px drawer. Everything below the view switch is that.
+//
+// Strictly --pbim-* tokens (W1), flat fills (W3), and every var() carries the
+// correct pbim hex as its fallback (W14). There is no `--pbim-pill` token — the
+// literal 999px is written out (W19).
+
+// =====================================================================
+// The board is now the DRAWER'S CONTAINING BLOCK.
+//
+// `WfDrawer`'s scrim is `position: absolute; inset: 0`, and `.pbim-page` is
+// `min-height: 100%; overflow: auto` with no `position` — so the scrim would
+// resolve against the initial containing block and, worse, an absolute child of
+// a scrolling box scrolls WITH the content: the drawer would slide off the top
+// as soon as the user scrolled the table under it. Nothing errors; it simply
+// looks broken (W34's family of bug).
+//
+// The fix is the one C2 proved on the pay-run ledger: the ROOT stops scrolling
+// and becomes a definite-height flex column, and the scrolling moves inside to
+// `.pbim-wrap` — which is a `max-width: 1240px; margin: 0 auto` readable column
+// and therefore needs `width: 100%`, or an auto margin cancels its stretch and
+// it lays itself out at its CAP (W39, found live at 1440px in P3a).
+//
+// Two selector classes so this wins over `.pbim.pbim-page`'s own `overflow`;
+// no z-index anywhere, because the scrim carries the kit's 60 and this box must
+// not become a stacking context (W37).
+.pbim.itg-board {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    > .pbim-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        min-width: 0;
+        width: 100%;
+        overflow-y: auto;
+        padding: 26px 26px 40px;
+    }
+    > .pbim-busy { flex: 1 1 auto; }
+}
+
+.itg-board {
+    .ppl-av svg { width: 20px; height: 20px; }
+    .itg-counts { min-width: 250px; font-size: 12px; color: var(--pbim-muted, #64748B); }
+    /* the mappings count is a link into the Mapping Studio (Cycle 2) — it has
+       to look like one without leaving the quiet counts line */
+    .itg-counts .itg-maplink {
+        border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px;
+        font-weight: 800; color: var(--pbim-primary, #5A4BB0); cursor: pointer;
+        border-bottom: 1px dotted var(--pbim-primary-light, #CBC2EE);
+    }
+    .itg-counts .itg-maplink:hover { color: var(--pbim-primary-hover, #4A3D96); border-bottom-style: solid; }
+
+    // ==================================================== view switch
+    .itg-views { display: flex; gap: 8px; margin-bottom: 14px; }
+
+    // ======================================================= ledger
+    .itg-ledger { padding: 16px 18px; }
+
+    .itg-tabs {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .itg-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 13px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #ffffff);
+        color: #475569;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .14s;
+
+        svg { display: block; }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .itg-tab__ic { display: inline-flex; flex: none; }
+    .itg-tabsub {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+    // The trailing edge of the tab strip (Cycle 8). It carries NO auto margin of
+    // its own: `.itg-tabsub` already has one, and an auto margin pushes the
+    // whole tail of a flex row — so the subtitle and this button travel to the
+    // right edge together. A second `margin-left: auto` would split the free
+    // space between the two and strand the subtitle in the middle.
+    .itg-newrule {
+        flex: 0 0 auto;
+        padding: 7px 13px;
+        font-size: 12.5px;
+    }
+
+    // A deep-linked scope is VISIBLE and REMOVABLE. A filter you cannot see is
+    // a table that lies by omission.
+    // A feed nobody has run is the one number on this row that asks for
+    // something. It takes the kit's amber semantic, never a new hex (W1).
+    .itg-feeds.is-stale .n { color: var(--pbim-amber, #D97706); }
+
+    // The kit's KPI row is a HARD six columns (theme_people.scss:22), shared
+    // with the People cockpits. Integrations now has seven stats, and the
+    // seventh landed alone on a second row — so this board (and only this
+    // board) asks for as many columns as fit. Overriding here rather than in
+    // the kit: changing the shared rule would reflow every cockpit that uses
+    // it, to fix a count only this one has.
+    .ppl-kpis {
+        grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
+    }
+    @media (max-width: 1100px) {
+        .ppl-kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    }
+
+    .itg-scope {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 12px;
+        padding: 8px 13px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--pbim-primary-dark, #241F52);
+
+        b { font-weight: 800; }
+    }
+    .itg-scope__ic { display: inline-flex; flex: none; color: var(--pbim-primary, #5A4BB0); }
+    .itg-scope__x {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--pbim-primary, #5A4BB0);
+        border-radius: 999px;
+        padding: 4px 11px;
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-primary, #5A4BB0);
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover { background: var(--pbim-soft2, #DDD6F2); }
+    }
+
+    .itg-lfilters {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .itg-facets { flex: 0 1 auto; min-width: 0; }
+    // Capped: a facet dropdown stretched across the whole filter row reads as a
+    // search box, and the row already has one.
+    .itg-select {
+        max-width: 260px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        background: var(--pbim-surface, #ffffff);
+    }
+    .itg-clear { border-style: dashed; }
+
+    // The wrapper is bounded and scrolls, so the kit's sticky `thead` actually
+    // sticks: a sticky header resolves against its nearest SCROLLPORT, and a
+    // wrapper that is exactly as tall as its content never scrolls, which is
+    // how a sticky header ends up inert-looking-fine (W34).
+    .itg-tw { max-height: 60vh; overflow: auto; }
+    .itg-th-wide { min-width: 240px; }
+    .itg-th-badge, .itg-td-badge { text-align: right; white-space: nowrap; }
+
+    .itg-foot {
+        margin-top: 12px;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    // ======================================================== drawer body
+    .itg-dr { display: flex; flex-direction: column; gap: 16px; }
+    .itg-dr__load {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--pbim-muted, #64748B);
+        font-size: 12.5px;
+        svg { display: block; animation: itg-dr-spin 1s linear infinite; }
+    }
+    @keyframes itg-dr-spin { to { transform: rotate(360deg); } }
+
+    .itg-dr__h {
+        margin-bottom: 7px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .itg-dr__kv {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 0;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 12.5px;
+
+        .k { flex: none; color: var(--pbim-muted, #64748B); }
+        .v {
+            min-width: 0;
+            text-align: right;
+            font-weight: 700;
+            color: var(--pbim-text, #1B1733);
+            overflow-wrap: anywhere;
+        }
+        .v.err { color: var(--pbim-rose, #DC2668); }
+        .v.ok { color: var(--pbim-green, #2E7D4F); }
+
+        // A payload value, a python expression or a note is prose, not a
+        // figure: it gets the full width and a monospace face rather than
+        // being squeezed into the right-hand column and ellipsised.
+        &.is-wrap {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 4px;
+            .v {
+                text-align: left;
+                font-weight: 500;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 11.5px;
+                white-space: pre-wrap;
+            }
+        }
+    }
+}

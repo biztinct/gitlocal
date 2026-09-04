@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_wizard.ImportWizard">
+    <div class="iw-root">
+      <div class="iw-card">
+        <div class="iw-head">
+          <div>
+            <div class="iw-eyebrow">Payobook · Import</div>
+            <h2>Import data</h2>
+          </div>
+          <button class="iw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <!-- stepper -->
+        <div class="iw-rail" data-coach="iw-steps">
+          <t t-foreach="steps" t-as="s" t-key="s_index">
+            <div t-attf-class="iw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
+              <span class="iw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
+              <span class="iw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="iw-bar {{ state.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <div class="iw-body">
+          <!-- busy overlay -->
+          <div t-if="state.loading" class="iw-busy"><div class="iw-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- STEP 1: SOURCE & FILE -->
+          <t t-if="state.step === 1 and !state.loading">
+            <div class="iw-grid2">
+              <div class="iw-sec" data-coach="iw-source">
+                <h4>Source</h4>
+                <div class="iw-seg">
+                  <button t-foreach="state.defaults.sources" t-as="src" t-key="src.id"
+                          t-attf-class="iw-segbtn {{ state.form.source_type === src.id ? 'on' : '' }}"
+                          t-on-click="() => this.setSource(src.id)" t-esc="src.label"/>
+                </div>
+                <label>Formula configuration</label>
+                <select class="iw-in" t-on-change="(ev) => this.onField('formula_config_id', ev)">
+                  <option t-foreach="state.defaults.configs" t-as="c" t-key="c.id" t-att-value="c.id"
+                          t-att-selected="('' + c.id) === state.form.formula_config_id" t-esc="c.name"/>
+                </select>
+                <t t-if="state.form.source_type === 'api_data_store'">
+                  <label>Connector</label>
+                  <select class="iw-in" t-on-change="(ev) => this.onField('connector_id', ev)">
+                    <option t-foreach="state.defaults.connectors" t-as="cn" t-key="cn.id" t-att-value="cn.id"
+                            t-att-selected="('' + cn.id) === state.form.connector_id" t-esc="cn.name"/>
+                  </select>
+                </t>
+              </div>
+
+              <div class="iw-sec">
+                <h4>Period &amp; file</h4>
+                <div class="iw-seg iw-periods">
+                  <button t-foreach="state.defaults.periods" t-as="pr" t-key="pr.id"
+                          t-attf-class="iw-segbtn {{ state.form.period === pr.id ? 'on' : '' }}"
+                          t-on-click="() => this.applyPeriod(pr)" t-esc="pr.label"/>
+                </div>
+                <div class="iw-row2">
+                  <div><label>From</label><input type="date" class="iw-in" t-att-value="state.form.date_from" t-on-change="(ev) => this.onField('date_from', ev)"/></div>
+                  <div><label>To</label><input type="date" class="iw-in" t-att-value="state.form.date_to" t-on-change="(ev) => this.onField('date_to', ev)"/></div>
+                </div>
+                <t t-if="state.form.source_type === 'excel'">
+                  <label>Data file (.xlsx / .csv)</label>
+                  <label class="iw-drop">
+                    <t t-out="ic('upload',22)"/>
+                    <span t-if="!state.form.file_name">Click to choose a file</span>
+                    <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.form.file_name"/></span>
+                    <input type="file" accept=".xlsx,.xls,.csv" t-on-change="onFile" style="display:none"/>
+                  </label>
+                </t>
+                <t t-else="">
+                  <div class="iw-note">Data will be pulled from the selected source on the next step.</div>
+                </t>
+              </div>
+            </div>
+          </t>
+
+          <!-- STEP 2: REVIEW & MATCH -->
+          <t t-if="state.step === 2 and !state.loading and state.summary">
+            <div class="iw-stats" data-coach="iw-review">
+              <div class="iw-stat"><span class="n" t-esc="state.summary.total_lines"/><span class="l">Rows loaded</span></div>
+              <div class="iw-stat ok"><span class="n" t-esc="state.summary.matched"/><span class="l">Matched</span></div>
+              <div class="iw-stat new"><span class="n" t-esc="state.summary.new"/><span class="l">New employees</span></div>
+              <div t-attf-class="iw-stat {{ state.summary.errors ? 'err' : '' }}"><span class="n" t-esc="state.summary.errors"/><span class="l">Need attention</span></div>
+            </div>
+            <div class="iw-tablewrap">
+              <table class="iw-table">
+                <thead><tr><th>Code</th><th>Employee</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="state.summary.lines" t-as="l" t-key="l.id">
+                    <td class="mono" t-esc="l.code"/>
+                    <td t-esc="l.name"/>
+                    <td><span t-attf-class="iw-badge {{ l.is_new ? 'new' : lineCls(l.state) }}"><t t-esc="lineLabel(l)"/></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </t>
+
+          <!-- STEP 3: VALIDATE & FIX -->
+          <t t-if="state.step === 3 and !state.loading and state.summary">
+            <div class="iw-stats">
+              <div class="iw-stat ok"><span class="n" t-esc="state.summary.matched"/><span class="l">Valid</span></div>
+              <div t-attf-class="iw-stat {{ state.summary.errors ? 'err' : 'ok' }}"><span class="n" t-esc="state.summary.errors"/><span class="l">Errors</span></div>
+            </div>
+            <t t-if="errorLines.length">
+              <div class="iw-errhead"><t t-out="ic('alert',15)"/> Resolve these before committing</div>
+              <div class="iw-errlist" data-coach="iw-fixrows">
+                <div t-foreach="errorLines" t-as="l" t-key="l.id" class="iw-err-wrap">
+                  <div class="iw-err">
+                    <div class="who"><span class="nm" t-esc="l.name"/><span class="cd" t-esc="l.code"/></div>
+                    <div class="why" t-esc="l.error or 'Unmatched'"/>
+                    <div class="ops">
+                      <button t-attf-class="iw-mini {{ state.match.lineId === l.id ? '' : 'ghost' }}"
+                              t-on-click="() => this.openMatch(l.id)">Match…</button>
+                      <button class="iw-mini ghost" t-on-click="() => this.fixLine(l.id, 'retry')">Retry</button>
+                      <button class="iw-mini ghost" t-on-click="() => this.fixLine(l.id, 'skip')">Skip</button>
+                    </div>
+                  </div>
+                  <div t-if="state.match.lineId === l.id" class="iw-match">
+                    <input class="iw-in" placeholder="Search an employee by name, code or email…"
+                           t-on-input="onMatchSearch"/>
+                    <div class="iw-match-res">
+                      <button t-foreach="state.match.results" t-as="e" t-key="e.id"
+                              class="iw-match-row" t-on-click="() => this.pickEmployee(e.id)">
+                        <span class="nm" t-esc="e.name"/>
+                        <span class="cd" t-esc="e.code or e.email"/>
+                      </button>
+                      <div t-if="!state.match.results.length" class="iw-match-empty">No employees found.</div>
+                    </div>
+                    <button class="iw-mini" t-on-click="() => this.markNewEmployee(l.id)">
+                      <t t-out="ic('plus',14)"/> Create as new employee
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </t>
+            <t t-else="">
+              <div class="iw-clear"><t t-out="ic('check',26)"/><div>All rows are valid — ready to commit.</div></div>
+            </t>
+          </t>
+
+          <!-- STEP 4: COMMIT / DONE -->
+          <t t-if="state.step === 4 and !state.loading and state.summary">
+            <div class="iw-done">
+              <div class="iw-done-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Import complete</h3>
+              <p class="iw-muted"><t t-esc="state.summary.name"/> · <t t-esc="state.summary.processed"/> rows processed</p>
+            </div>
+            <div class="iw-outcomes" data-coach="iw-outcome">
+              <div class="iw-outcome"><span class="ic"><t t-out="ic('users',18)"/></span><span class="n" t-esc="state.summary.created_employees"/><span class="l">Employees created</span></div>
+              <div class="iw-outcome"><span class="ic"><t t-out="ic('receipt',18)"/></span><span class="n" t-esc="state.summary.created_payslips"/><span class="l">Payslips created</span></div>
+              <button t-if="state.summary.payslip_run_id" class="iw-outcome link" t-on-click="openRun"><span class="ic"><t t-out="ic('file',18)"/></span><span class="rn" t-esc="state.summary.payslip_run_name"/><span class="l">Open payslip run →</span></button>
+            </div>
+          </t>
+        </div>
+
+        <!-- footer -->
+        <div class="iw-foot">
+          <button t-if="state.step === 1" class="iw-btn ghost" t-on-click="close">Cancel</button>
+          <button t-else="" class="iw-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
+          <div class="iw-sp"/>
+          <button t-if="state.step === 1" class="iw-btn primary" t-att-disabled="!canLoad || state.loading" t-on-click="toReview">Load &amp; match <t t-out="ic('arrow',15)"/></button>
+          <button t-if="state.step === 2" class="iw-btn primary" t-att-disabled="state.loading" t-on-click="toValidate">Validate <t t-out="ic('arrow',15)"/></button>
+          <button t-if="state.step === 3" class="iw-btn primary" data-coach="iw-commit" t-att-disabled="state.loading" t-on-click="commit">Commit import <t t-out="ic('arrow',15)"/></button>
+          <button t-if="state.step === 4" class="iw-btn ghost" t-on-click="openBatch">Open batch</button>
+          <button t-if="state.step === 4" class="iw-btn primary" t-on-click="close">Done</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

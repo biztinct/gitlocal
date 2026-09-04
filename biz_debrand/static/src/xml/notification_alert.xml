@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+     web_debranding's runtime _t() lookup misses this term, so the raw
+     "Odoo Push…" English source leaks through. Drop the "Odoo" word directly
+     in the template — brand-neutral, works for any brand. -->
+<templates xml:space="preserve">
+    <t t-name="biz_debrand.NotificationAlert" t-inherit="web.NotificationAlert" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('alert')]" position="replace">
+            <div t-if="isNotificationBlocked" class="alert alert-primary text-center">
+                Push notifications have been blocked. Go to your browser settings to allow them.
+            </div>
+        </xpath>
+    </t>
+</templates>

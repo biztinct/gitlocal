@@ -1,0 +1,208 @@
+// Leave Command Center — pbim design system (.pbto.pbim), fresh-green tint.
+// White surfaces, Lucide icons, no gradients, no emoji. Mixed-unit min()/max()
+// avoided (C2 SCSS trap).
+
+.pbto {
+    position: relative; height: 100%; overflow: auto;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 14px; -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // promoted-green token aliases (leave identity — canonical pbim green, W1)
+    --p:   #2E7D4F;
+    --ph:  #246A42;
+    --soft: #E3F2E9;
+    --line: var(--pbim-line, #E2E8F0);
+    --muted: var(--pbim-muted, #64748B);
+    --surface: #fff;
+    --ink: var(--pbim-ink, #1B1733);
+    --amber: #D97706; --amber-s: #FEF3C7;
+    --rose: #DC2668; --rose-s: #FCE7EF;
+    --r: 14px; --r-sm: 10px;
+    --sh: 0 8px 24px rgba(16,12,40,.07);
+
+    // ---------------------------------------------------------- loading
+    .pbto-loading { position: absolute; inset: 0; display: flex; flex-direction: column;
+        gap: 14px; align-items: center; justify-content: center; color: var(--muted); }
+    .pbto-spin { width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--soft); border-top-color: var(--p); animation: pbto-spin .8s linear infinite; }
+    @keyframes pbto-spin { to { transform: rotate(360deg); } }
+
+    .pbto-wrap { padding: 22px 26px 60px; max-width: 1360px; margin: 0 auto; }
+
+    // ------------------------------------------------- embedded (P3a, W17/W20)
+    // Standalone, THIS ELEMENT is the scroller (`height: 100%; overflow: auto`
+    // above) and the balance table's `position: sticky` header is calibrated to
+    // it. Under Mission Control the root is a flex child of the canvas, so the
+    // scroller has to move INSIDE: the root stops scrolling and `.pbto-wrap`
+    // becomes the scrollport, which is also the sticky header's containing
+    // block — otherwise the header sticks to a box that never scrolls and hangs
+    // in mid-air over the rows (P2's warning about the three root-scrollers).
+    &.pbto--embedded {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+
+        .pbto-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            min-width: 0;       // belt and braces (W20): never overlap the host
+            // `width: 100%` is LOAD-BEARING, not decoration. This element already
+            // carried `max-width: 1360px; margin: 0 auto`, and an AUTO MARGIN on
+            // the cross axis cancels a flex item's stretch — so as a flex child it
+            // sized to its max-width and stayed 1360px wide inside a 1304px lens,
+            // hanging 56px past the canvas whenever the workspace was narrower
+            // than ~1412px (i.e. on every laptop). Caught live at 1440 (W39).
+            width: 100%;
+            overflow: auto;
+            padding-top: 16px;
+        }
+        // With the title block gone the hero is just its tools; keep them on
+        // the right where they were rather than letting space-between drop
+        // them against the left edge.
+        .pbto-hero { justify-content: flex-end; margin-bottom: 14px; }
+    }
+
+    // ---------------------------------------------------------- hero
+    .pbto-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 18px;
+        .eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--p);
+            font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+        h1 { margin: 4px 0 2px; font-size: 26px; font-weight: 800; color: var(--ink); }
+        .sub { color: var(--muted); font-size: 13px; }
+        .hero-tools { display: flex; align-items: center; gap: 12px; } }
+    .monthnav { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line);
+        border-radius: 999px; padding: 4px 6px;
+        .mbtn { width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: var(--p);
+            cursor: pointer; display: grid; place-items: center; &:hover { background: var(--soft); } }
+        .ml { font-weight: 700; font-size: 13px; min-width: 120px; text-align: center; } }
+
+    // ---------------------------------------------------------- KPIs
+    .pbto-kpis { display: grid; grid-template-columns: 1.7fr 1fr 1.3fr; gap: 14px; margin-bottom: 20px;
+        .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+            padding: 16px 18px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 4px;
+            .ico { color: var(--p); } .n { font-size: 26px; font-weight: 800; line-height: 1; }
+            .l { color: var(--muted); font-size: 12px; } .l.tt { font-weight: 600; margin-bottom: 8px; } }
+        .kpi.out { .kh { display: flex; align-items: center; gap: 8px;
+                .l { flex: 1; } .n { font-size: 20px; } }
+            .avstrip { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+                .av { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; } }
+            .none { color: var(--muted); font-size: 12.5px; margin-top: 4px; } }
+        .kpi.week .wbars { display: flex; align-items: flex-end; gap: 8px; height: 60px;
+            .wb { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end;
+                .bar { width: 60%; min-height: 4px; border-radius: 4px 4px 0 0; background: var(--p); opacity: .8; }
+                .wl { font-size: 10px; color: var(--muted); }
+                &.today .bar { opacity: 1; box-shadow: 0 0 0 2px var(--soft); } } } }
+
+    // ---------------------------------------------------------- columns
+    .pbto-cols { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; align-items: start; margin-bottom: 20px; }
+    @media (max-width: 1080px) { .pbto-cols { grid-template-columns: 1fr; } }
+
+    .pbto-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+        box-shadow: var(--sh); overflow: hidden;
+        .panel-h { padding: 15px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;
+            .ttl { display: flex; align-items: center; gap: 8px; font-weight: 700; } .ttl svg { color: var(--p); }
+            .hint { font-size: 11px; color: var(--amber); font-weight: 600; }
+            .pgr { display: flex; align-items: center; gap: 8px; .pg { font-size: 12px; color: var(--muted); } } } }
+
+    // ---------------------------------------------------------- queue
+    .q-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; }
+    .q-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line);
+        border-radius: var(--r-sm); background: #fff; transition: box-shadow .12s;
+        &:hover { box-shadow: var(--sh); }
+        .av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .body { flex: 1; min-width: 0; }
+        .r1 { display: flex; align-items: center; gap: 8px; .nm { font-weight: 700; font-size: 13px; } }
+        .tchip { border-radius: 6px; padding: 1px 8px; font-weight: 700; font-size: 10.5px; color: var(--c);
+            background: color-mix(in srgb, var(--c) 12%, #fff); border: 1px solid color-mix(in srgb, var(--c) 32%, #fff); }
+        .r2 { display: flex; align-items: center; gap: 8px; margin-top: 3px; color: var(--muted); font-size: 12px;
+            .dur { font-weight: 700; color: var(--ink); }
+            .st { border-radius: 999px; padding: 1px 8px; font-size: 10.5px; font-weight: 700;
+                background: var(--soft); color: var(--p); &.two { background: #E5EDFD; color: #2563EB; } } }
+        .note { color: var(--muted); font-size: 11.5px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .acts { display: flex; gap: 6px; } }
+
+    // ---------------------------------------------------------- heatmap
+    .heatwrap { padding: 12px; overflow-x: auto; }
+    .heatgrid { border-collapse: separate; border-spacing: 2px; font-size: 11px;
+        th.corner { width: 90px; }
+        th.dh { color: var(--muted); font-weight: 700; width: 20px; text-align: center; padding-bottom: 4px;
+            &.we { color: #94A3B8; } &.td { color: var(--p); } }
+        th.deph { text-align: right; padding-right: 8px; color: var(--ink); font-weight: 600; font-size: 11.5px;
+            max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        td.hc { width: 20px; height: 20px; border-radius: 5px; text-align: center; color: #fff; font-weight: 700;
+            cursor: pointer; background: #EEF2F6; color: transparent; transition: transform .08s;
+            &:hover { transform: scale(1.18); }
+            &.we { background: #E6EBF0; }
+            &.lv1 { background: #A7F3D0; color: #065F46; }
+            &.lv2 { background: #6EE7B7; color: #065F46; }
+            &.lv3 { background: #34D399; color: #04543a; }
+            &.lv4 { background: var(--p); color: #fff; }
+            &.td { box-shadow: 0 0 0 2px var(--p); } } }
+
+    // ---------------------------------------------------------- balances
+    .baltable-wrap { padding: 8px; overflow-x: auto; }
+    .baltable { width: 100%; border-collapse: collapse; font-size: 12.5px;
+        thead th { position: sticky; top: 0; background: #F1F5F9; padding: 8px 10px; text-align: center; }
+        th.emp { text-align: left; min-width: 200px; }
+        .tcol .tchip { border-radius: 6px; padding: 1px 8px; font-weight: 700; font-size: 10.5px; color: var(--c);
+            background: color-mix(in srgb, var(--c) 12%, #fff); }
+        tbody th.emp { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-weight: 600;
+            .av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+            .nm { display: block; font-weight: 700; } .dp { display: block; color: var(--muted); font-size: 11px; } }
+        td.bcell { text-align: center; padding: 8px 10px; border-bottom: 1px solid #F1F5F9;
+            .bal { font-weight: 800; font-variant-numeric: tabular-nums; &.low { color: var(--amber); } }
+            .of { color: var(--muted); font-size: 11px; } }
+        tbody tr:hover td, tbody tr:hover th.emp { background: #F8FAFC; } }
+
+    // ---------------------------------------------------------- modal / drawer
+    .pbto-scrim { position: fixed; inset: 0; background: rgba(16,12,40,.4); z-index: 1050; display: grid; place-items: center; }
+    .pbto-modal { background: #fff; border-radius: var(--r); box-shadow: 0 24px 60px rgba(16,12,40,.3);
+        width: 420px; max-width: 92vw; overflow: visible;
+        &.wide { width: 480px; }
+        .m-h { padding: 16px 18px; font-weight: 800; font-size: 16px; border-bottom: 1px solid var(--line); }
+        .m-b { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;
+            p { margin: 0; color: var(--muted); font-size: 13px; } }
+        .m-f { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--line); }
+        textarea, input, select { width: 100%; border: 1px solid var(--line); border-radius: var(--r-sm);
+            padding: 9px 11px; font-family: inherit; font-size: 13px; color: var(--ink); background: #fff;
+            &:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 3px rgba(5,150,105,.15); } }
+        textarea { min-height: 68px; resize: vertical; } }
+    .fld { display: flex; flex-direction: column; gap: 5px; position: relative;
+        > span { font-size: 11.5px; font-weight: 600; color: var(--muted); } }
+    .fld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .emp-pick { position: relative;
+        .emp-drop { position: absolute; top: 100%; left: 0; right: 0; z-index: 20; background: #fff;
+            border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: var(--sh); margin-top: 4px;
+            max-height: 240px; overflow-y: auto;
+            .emp-opt { display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer;
+                &:hover { background: var(--soft); }
+                .av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+                .nm { display: block; font-weight: 600; font-size: 13px; } .dp { display: block; color: var(--muted); font-size: 11px; } } } }
+
+    // ---------------------------------------------------------- buttons / empty
+    .pbto-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; border: 1px solid transparent;
+        border-radius: var(--r-sm); padding: 9px 15px; font-size: 13px; font-weight: 600; font-family: inherit; transition: all .12s;
+        &.primary { background: var(--p); color: #fff; &:hover { background: var(--ph); } }
+        &.ghost { background: #fff; color: var(--p); border-color: var(--line); &:hover { background: var(--soft); border-color: var(--p); } }
+        &.bad { background: var(--rose); color: #fff; &:hover { filter: brightness(.94); } }
+        &.bad.ghost { background: #fff; color: var(--rose); border-color: rgba(220,38,104,.3); &:hover { background: var(--rose-s); } }
+        &.tiny { padding: 6px 9px; font-size: 12px; border-radius: 8px; }
+        &[disabled] { opacity: .5; cursor: not-allowed; } }
+    .pbto-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 46px 20px;
+        text-align: center; color: var(--muted);
+        .i { color: var(--p); opacity: .85; margin-bottom: 4px; } .t { font-weight: 700; color: var(--ink); }
+        .s { font-size: 12.5px; max-width: 300px; } &.small { padding: 28px 16px; } }
+
+    // ---------------------------------------------------------- responsive (390px)
+    @media (max-width: 760px) {
+        .pbto-wrap { padding: 16px 14px 48px; }
+        .pbto-hero { flex-direction: column; align-items: stretch; }
+        .pbto-hero .hero-tools { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .pbto-kpis { grid-template-columns: 1fr; }
+        .q-card { flex-wrap: wrap; .acts { margin-left: auto; } }
+    }
+}

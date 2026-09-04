@@ -1,0 +1,1533 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_dashboard.py:0
+msgid "%(user)s's PayAI Dashboard"
+msgstr "Bảng điều khiển PayAI của %(user)s"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "<span>PayAI Configuration</span>"
+msgstr "Cấu hình <span>PayAI</span>"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "<strong>💡 Quick Start:</strong>"
+msgstr "<strong>💡 Bắt đầu nhanh:</strong>"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "AI"
+msgstr "AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__ai_icon
+msgid "AI Chat Avatar"
+msgstr "Hình đại diện trò chuyện AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__purpose__insights
+msgid "AI Insights"
+msgstr "Thông tin chi tiết về AI"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_report_wizard_form
+msgid "AI Options"
+msgstr "Tùy chọn AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__provider_type
+msgid "AI Provider"
+msgstr "Nhà cung cấp AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_config
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "AI Provider Settings"
+msgstr "Cài đặt nhà cung cấp AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__summary
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_form
+msgid "AI Summary"
+msgstr "Tóm tắt AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_ai_narratives
+msgid "AI-Generated Narratives"
+msgstr "Lời kể do AI tạo ra"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__summary
+msgid "AI-generated narrative explaining the anomaly"
+msgstr "Tường thuật do AI tạo ra giải thích sự bất thường"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__api_key
+msgid "API Key"
+msgstr "Khóa API"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__api_key
+msgid "API key for the selected AI provider"
+msgstr "Khóa API cho nhà cung cấp AI đã chọn"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_form
+msgid "Acknowledge"
+msgstr "Thừa nhận"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__state__acknowledged
+msgid "Acknowledged"
+msgstr "Được công nhận"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__is_active
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_conversation__state__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__name
+msgid "Alert Title"
+msgstr "Tiêu đề cảnh báo"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_anomalies
+msgid "Anomaly Alerts"
+msgstr "Cảnh báo bất thường"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__provider_type__anthropic
+msgid "Anthropic Claude"
+msgstr "Claude nhân loại"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Appearance"
+msgstr "Ngoại hình"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_conversation__state__archived
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "Ask PayAI anything about payroll, HR, or anything else..."
+msgstr "Hỏi PayAI bất cứ điều gì về bảng lương, nhân sự hoặc bất cứ điều gì khác..."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Ask PayAI anything..."
+msgstr "Hãy hỏi PayAI bất cứ điều gì..."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Ask PayAI to add a chart... (e.g., 'Add salary distribution chart')"
+msgstr "Yêu cầu PayAI thêm biểu đồ... (ví dụ: 'Thêm biểu đồ phân bổ lương')"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "Ask anything about payroll, HR data, or get general assistance"
+msgstr "Hỏi bất cứ điều gì về bảng lương, dữ liệu nhân sự hoặc nhận hỗ trợ chung"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Ask me anything about your payroll, attendance, leaves, or recruitment data:"
+msgstr ""
+"Hãy hỏi tôi bất cứ điều gì về bảng lương, sự chuyên cần, ngày nghỉ phép hoặc dữ liệu "
+"tuyển dụng của bạn:"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__attendance
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_attendance
+msgid "Attendance Summary"
+msgstr "Tóm tắt điểm danh"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__base_url
+msgid "Base URL (Optional)"
+msgstr "URL cơ sở (Tùy chọn)"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,comment:pb_payroll_ai_insights.group_payai_manager
+msgid "Can configure PayAI settings and manage dashboards"
+msgstr "Có thể định cấu hình cài đặt PayAI và quản lý trang tổng quan"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,comment:pb_payroll_ai_insights.group_payai_user
+msgid "Can use PayAI chat and view dashboards"
+msgstr "Có thể sử dụng trò chuyện PayAI và xem bảng điều khiển"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__category
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__chart_config
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__chart_config
+msgid "Chart Configuration"
+msgstr "Cấu hình biểu đồ"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__chart_config
+msgid "Chart.js JSON config for mini-chart visualization in the alert card"
+msgstr "Cấu hình JSON của Chart.js để trực quan hóa biểu đồ nhỏ trong thẻ cảnh báo"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Chat"
+msgstr "Trò chuyện"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.act_window,name:pb_payroll_ai_insights.action_payai_conversations
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_history
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_conversation_tree
+msgid "Chat History"
+msgstr "Lịch sử trò chuyện"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_chat
+msgid "Chat with PayAI"
+msgstr "Trò chuyện với PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_message__intent
+msgid "Classified intent: payroll_data, payroll_knowledge, general"
+msgstr "Mục đích phân loại: dữ liệu bảng lương, kiến thức bảng lương, chung"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Clear chat"
+msgstr "Xóa cuộc trò chuyện"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Click \"Test Connection\" to verify"
+msgstr "Nhấp vào \"Kiểm tra kết nối\" để xác minh"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.xml:0
+msgid "Click chart element to view details"
+msgstr "Nhấp vào thành phần biểu đồ để xem chi tiết"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__company_id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_config_parent
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.actions.act_window,help:pb_payroll_ai_insights.action_payroll_ai_config
+msgid "Configure your AI provider to start using PayAI"
+msgstr "Định cấu hình nhà cung cấp AI của bạn để bắt đầu sử dụng PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_config.py:0
+msgid "Connection failed: %(message)s"
+msgstr "Kết nối không thành công: %(message)s"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_config.py:0
+msgid ""
+"Connection successful!\n"
+"Latency: %(latency)s ms\n"
+"Response: %(message)s"
+msgstr ""
+"Kết nối thành công!\n"
+"Độ trễ: %(latency)s ms\n"
+"Phản hồi: %(message)s"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__content
+msgid "Content"
+msgstr "Nội dung"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__conversation_id
+msgid "Conversation"
+msgstr "Cuộc trò chuyện"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_cost_trend
+msgid "Cost Trend"
+msgstr "Xu hướng chi phí"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__create_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__create_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__temperature
+msgid "Creativity level (0=deterministic, 1=creative)"
+msgstr "Mức độ sáng tạo (0=quyết định, 1=sáng tạo)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__severity__critical
+msgid "Critical"
+msgstr "Quan trọng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__metric_value
+msgid "Current Value"
+msgstr "Giá trị hiện tại"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__base_url
+msgid "Custom API base URL. Leave empty for default."
+msgstr "URL cơ sở API tùy chỉnh. Để trống theo mặc định."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__ai_icon
+msgid ""
+"Custom icon/avatar for the PayAI chat panel. Recommended size: 128×128 pixels. If not "
+"set, a default icon is used."
+msgstr ""
+"Biểu tượng/hình đại diện tùy chỉnh cho bảng trò chuyện PayAI. Kích thước đề xuất: "
+"128×128 pixel. Nếu không được đặt, biểu tượng mặc định sẽ được sử dụng."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__dashboard_id
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_dashboard
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__name
+msgid "Dashboard Name"
+msgstr "Bảng điều khiển Tên"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__decided_at
+msgid "Decided At"
+msgstr "Quyết định tại"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_form
+msgid "Details"
+msgstr "Chi tiết"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_tree
+msgid "Detected"
+msgstr "Đã phát hiện"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__user_id
+msgid "Detected By"
+msgstr "được phát hiện bởi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__deviation_pct
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_tree
+msgid "Deviation %"
+msgstr "Độ lệch %"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__display_name
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__purpose__doc_ocr
+msgid "Document OCR"
+msgstr "Tài liệu OCR"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_config.py:0
+msgid "Error: %(error)s"
+msgstr "Lỗi: %(error)s"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.report_payai_executive
+msgid "Executive Summary"
+msgstr "Tóm tắt điều hành"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__baseline_value
+msgid "Expected Baseline"
+msgstr "Đường cơ sở dự kiến"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_forecast
+msgid "Forecast"
+msgstr "Dự báo"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__report_format
+msgid "Format"
+msgstr "Định dạng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__date_from
+msgid "From Date"
+msgstr "Từ ngày"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,comment:pb_payroll_ai_insights.group_payai_admin
+msgid "Full access to PayAI configuration and all data"
+msgstr "Toàn quyền truy cập vào cấu hình PayAI và tất cả dữ liệu"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.act_window,name:pb_payroll_ai_insights.action_payroll_ai_report_wizard
+msgid "Generate AI Report"
+msgstr "Tạo báo cáo AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_ai_narratives
+msgid ""
+"Generate AI narrative summaries for each section. This makes multiple API calls and "
+"can take 30-60 seconds."
+msgstr ""
+"Tạo bản tóm tắt tường thuật AI cho từng phần. Việc này thực hiện nhiều lệnh gọi API và"
+" có thể mất 30-60 giây."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_report
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_report_wizard_form
+msgid "Generate Report"
+msgstr "Tạo Báo cáo"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.report_payai_executive
+msgid "Generated by PayAI — Intelligent Payroll Analytics | Powered by AI"
+msgstr "Được tạo bởi PayAI - Phân tích bảng lương thông minh | Được hỗ trợ bởi AI"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.report_payai_executive
+msgid "Generated on"
+msgstr "Được tạo vào"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Generation Settings"
+msgstr "Cài đặt thế hệ"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Get an API key from"
+msgstr "Nhận khóa API từ"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__position
+msgid "Grid Position"
+msgstr "Vị trí lưới"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_x
+msgid "Grid X"
+msgstr "Lưới X"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_y
+msgid "Grid Y"
+msgstr "Lưới Y"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__headcount
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_headcount
+msgid "Headcount Analysis"
+msgstr "Số lượng nhân sự Phân tích"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__height
+msgid "Height (grid units)"
+msgstr "Chiều cao (đơn vị lưới)"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "Hello! I'm PayAI"
+msgstr "Xin chào! Tôi là PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid ""
+"Hold the microphone and speak. When you let go, the recording goes to an outside "
+"company's speech service, which turns it into text. The recording is audio: unlike "
+"text, we cannot take names out of it first. The text then waits in the box — nothing "
+"is asked or answered until you read it and press send. Say no and the microphone stays"
+" off. Everything else works the same."
+msgstr ""
+"Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển "
+"giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng "
+"tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô "
+"nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn "
+"từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Hold to speak"
+msgstr "Giữ để nói"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_x
+msgid "Horizontal position in the Gridstack grid (0-based)"
+msgstr "Vị trí nằm ngang trong lưới Gridstack (dựa trên 0)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__deviation_pct
+msgid "How far the metric is from baseline"
+msgstr "Chỉ số này cách đường cơ sở bao xa"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid ""
+"I can't answer that one for you — your role is not allowed to read %(topic)s, and PayAI answers with your own access rights rather than around them.\n"
+"\n"
+"In Payobook this data sits behind the payroll roles — a Payroll Officer, a Payroll Manager or a Payroll Super Administrator can see it. Ask one of them for the figure, or ask whoever administers roles in your company to add you."
+msgstr ""
+"Tôi không thể trả lời câu này cho bạn — vai trò của bạn không được phép xem %(topic)s, và PayAI trả lời theo đúng quyền của bạn chứ không đi vòng qua nó.\n"
+"\n"
+"Trong Payobook, dữ liệu này nằm sau các vai trò lương — Chuyên viên tính lương, Quản lý lương hoặc Quản trị viên cấp cao mới xem được. Hãy hỏi một trong những người đó để lấy con số, hoặc nhờ người phụ trách phân quyền trong công ty cấp quyền cho bạn."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "I could not turn that into text. Please try typing."
+msgstr "Tôi không chuyển được phần đó thành chữ. Bạn thử gõ giúp tôi nhé."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "I did not catch anything in that recording."
+msgstr "Tôi không nghe được gì trong bản ghi âm đó."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard__is_shared
+msgid "If checked, other users can view this dashboard"
+msgstr "Nếu được chọn, những người dùng khác có thể xem trang tổng quan này"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_report_wizard_form
+msgid "Include Sections"
+msgstr "Bao gồm các phần"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__severity__info
+msgid "Information"
+msgstr "Thông tin"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__insights
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Intelligent Payroll Analytics"
+msgstr "Phân tích tiền lương thông minh"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__intent
+msgid "Intent"
+msgstr "ý định"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__chart_config
+msgid "JSON Chart.js configuration"
+msgstr "Cấu hình JSON Chart.js"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_message__chart_config
+msgid "JSON Chart.js configuration for inline chart rendering"
+msgstr "Cấu hình JSON Chart.js để hiển thị biểu đồ nội tuyến"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_message__insights
+msgid "JSON list of insight strings"
+msgstr "Danh sách JSON chứa các chuỗi thông tin chuyên sâu"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_pulse__details
+msgid "JSON with metric values"
+msgstr "JSON với các giá trị số liệu"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_conversation__redaction_map
+msgid ""
+"JSON: which placeholder stands for which person in this conversation. Never leaves the"
+" server; see the retention note at the top of this file."
+msgstr ""
+"JSON: phần giữ chỗ nào đại diện cho người nào trong cuộc trò chuyện này. Không bao giờ"
+" rời khỏi máy chủ; xem ghi chú lưu giữ ở đầu tập tin này."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Key Insights"
+msgstr "Thông tin chi tiết chính"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__write_uid
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_engine__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_chart_schema__write_date
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_data_query__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__leave
+msgid "Leave / Absence"
+msgstr "Nghỉ phép / Vắng mặt"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_leaves
+msgid "Leave Summary"
+msgstr "Tóm tắt nghỉ phép"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Leave empty for default"
+msgstr "Để trống theo mặc định"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Loading dashboard..."
+msgstr "Đang tải trang tổng quan..."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__max_tokens
+msgid "Max Tokens"
+msgstr "Mã thông báo tối đa"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__timeout
+msgid "Maximum time to wait for AI response"
+msgstr "Thời gian tối đa để chờ phản hồi của AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__max_tokens
+msgid "Maximum tokens in AI response"
+msgstr "Mã thông báo tối đa trong phản hồi AI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__message_count
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__chart_config
+msgid "Mini Chart Config"
+msgstr "Cấu hình biểu đồ nhỏ"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__model_name
+msgid "Model Name"
+msgstr "Model Tên"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_config__model_name
+msgid "Model identifier (e.g., gpt-4o-mini, gpt-4o)"
+msgstr "Mã định danh mẫu (ví dụ: gpt-4o-mini, gpt-4o)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__state__new
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "No chart data"
+msgstr "Không có dữ liệu biểu đồ"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "No speech service is set up here."
+msgstr "Ở đây chưa cấu hình dịch vụ chuyển giọng nói thành chữ."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "No, keep the microphone off"
+msgstr "Không, tắt micrô"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_consent.py:0
+msgid "Not asked yet"
+msgstr "Chưa hỏi"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "Not available with your access"
+msgstr "Không khả dụng với quyền của bạn"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__provider_type__ollama
+msgid "Ollama (local)"
+msgstr "Ollama (địa phương)"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid ""
+"One thing I left out: I can't list individual salaries for your role. Reading a named "
+"person's pay needs the Payroll Manager or the Payroll Final Approver group; below that"
+" I answer in aggregate only. What you have above is the same payroll, without the "
+"names."
+msgstr ""
+"Một điều tôi đã lược bớt: tôi không thể liệt kê lương của từng người với vai trò của "
+"bạn. Để xem lương đích danh của một người cần nhóm Quản lý lương (Payroll Manager) "
+"hoặc Người phê duyệt cuối (Payroll Final Approver); dưới mức đó tôi chỉ trả lời ở dạng"
+" tổng hợp. Phần trên vẫn là bảng lương đó, chỉ là không có tên."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Online"
+msgstr "Trực tuyến"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Open PayAI Chat"
+msgstr "Mở trò chuyện PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__provider_type__openai
+msgid "OpenAI (GPT-4o / GPT-4o-mini)"
+msgstr "OpenAI (GPT-4o / GPT-4o-mini)"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "OpenAI GPT"
+msgstr "OpenAI GPT"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__refresh_query
+msgid "Original query to re-execute for data refresh"
+msgstr "Truy vấn ban đầu cần thực hiện lại để làm mới dữ liệu"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__overtime
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__user_id
+msgid "Owner"
+msgstr "Người phụ trách"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_report_wizard__report_format__pdf
+msgid "PDF Report"
+msgstr "PDF Báo cáo"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Paste your API key above"
+msgstr "Dán khóa API của bạn ở trên"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_message__role__assistant
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_root
+#: model:res.groups.privilege,name:pb_payroll_ai_insights.res_groups_privilege_payai
+msgid "PayAI"
+msgstr "PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,name:pb_payroll_ai_insights.group_payai_admin
+msgid "PayAI Administrator"
+msgstr "Quản trị viên PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_chart_schema
+msgid "PayAI Chart Schema Builder"
+msgstr "Trình tạo lược đồ biểu đồ PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+#: model:ir.actions.client,name:pb_payroll_ai_insights.action_payai_chat_full
+msgid "PayAI Chat"
+msgstr "Trò chuyện PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.act_window,name:pb_payroll_ai_insights.action_payroll_ai_config
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_config
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "PayAI Configuration"
+msgstr "Cấu hình PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_tree
+msgid "PayAI Configurations"
+msgstr "Cấu hình PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "PayAI Conversation"
+msgstr "Cuộc trò chuyện về PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+#: model:ir.actions.client,name:pb_payroll_ai_insights.action_payai_dashboard
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_dashboard
+msgid "PayAI Dashboard"
+msgstr "Bảng điều khiển PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_dashboard_widget
+msgid "PayAI Dashboard Widget"
+msgstr "Tiện ích bảng điều khiển PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "PayAI Data Query Engine"
+msgstr "Công cụ truy vấn dữ liệu PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_engine
+msgid "PayAI Engine"
+msgstr "Công cụ PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.report,name:pb_payroll_ai_insights.action_report_payai_executive
+msgid "PayAI Executive Report"
+msgstr "Báo cáo điều hành PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,name:pb_payroll_ai_insights.group_payai_manager
+msgid "PayAI Manager"
+msgstr "Người quản lý PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_message
+msgid "PayAI Message"
+msgstr "Tin nhắn PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_pulse
+msgid "PayAI Pulse — Proactive Anomaly Detection"
+msgstr "PayAI Pulse — Chủ động phát hiện sự bất thường"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_report_wizard
+msgid "PayAI Report Generator"
+msgstr "Trình tạo báo cáo PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:res.groups,name:pb_payroll_ai_insights.group_payai_user
+msgid "PayAI User"
+msgstr "Người dùng PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "PayAI can make mistakes. Verify important data."
+msgstr "PayAI có thể mắc sai lầm. Xác minh dữ liệu quan trọng."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_engine.py:0
+msgid ""
+"PayAI is not configured. Please go to PayAI > Configuration and set up your AI "
+"provider."
+msgstr ""
+"PayAI chưa được định cấu hình. Vui lòng truy cập PayAI > Cấu hình và thiết lập nhà "
+"cung cấp AI của bạn."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_consent
+msgid "PayAI user consent"
+msgstr "Sự đồng ý của người dùng PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.server,name:pb_payroll_ai_insights.ir_cron_payai_pulse_detection_ir_actions_server
+msgid "PayAI: Anomaly Detection (Daily)"
+msgstr "PayAI: Phát hiện bất thường (Hàng ngày)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__category__cost
+msgid "Payroll Cost"
+msgstr "Chi phí tiền lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Pin to Dashboard"
+msgstr "Ghim vào Trang tổng quan"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_config.py:0
+msgid "Please configure an API key first."
+msgstr "Trước tiên hãy định cấu hình khóa API."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "Powered by"
+msgstr "Được hỗ trợ bởi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.actions.act_window,name:pb_payroll_ai_insights.action_payroll_ai_pulse
+#: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_pulse
+msgid "Pulse Alerts"
+msgstr "Cảnh báo xung"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__purpose
+msgid "Purpose"
+msgstr "Mục đích"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__details
+msgid "Raw Details"
+msgstr "Chi tiết thô"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Read answers aloud"
+msgstr "Đọc to câu trả lời"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Recording"
+msgstr "Ghi âm"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_consent.py:0
+msgid "Recordings may be sent for transcription"
+msgstr "Bản ghi có thể được gửi để phiên âm"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_consent.py:0
+msgid "Recordings must not be sent"
+msgstr "Bản ghi âm không được phép gửi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__redaction_map
+msgid "Redaction map"
+msgstr "Bản đồ biên tập"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__refresh_query
+msgid "Refresh Query"
+msgstr "Làm mới truy vấn"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Remove widget"
+msgstr "Xóa tiện ích"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__report_json
+msgid "Report Data (JSON)"
+msgstr "Dữ liệu báo cáo (JSON)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__name
+msgid "Report Title"
+msgstr "Tiêu đề báo cáo"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_pulse_form
+msgid "Resolve"
+msgstr "giải quyết"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__state__resolved
+msgid "Resolved"
+msgstr "Đã giải quyết"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__role
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__include_salary
+msgid "Salary Distribution"
+msgstr "Phân phối lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Send recordings for transcription?"
+msgstr "Gửi bản ghi âm đi để chuyển thành chữ?"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__name
+msgid "Session Name"
+msgstr "Tên phiên"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__severity
+msgid "Severity"
+msgstr "Mức độ nghiêm trọng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__is_shared
+msgid "Shared"
+msgstr "Đã chia sẻ"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Start chatting with PayAI!"
+msgstr "Bắt đầu trò chuyện với PayAI!"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__state
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_pulse__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_message__role__system
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__temperature
+msgid "Temperature"
+msgstr "Nhiệt độ"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__provider_type__tesseract
+msgid "Tesseract OCR"
+msgstr "Tesseract OCR"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That recording did not arrive in one piece."
+msgstr "Bản ghi âm đó về không nguyên vẹn."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That recording is too long. Try a shorter one."
+msgstr "Bản ghi âm đó quá dài. Bạn thử ghi ngắn hơn nhé."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That recording was empty."
+msgstr "Bản ghi âm đó rỗng."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "This is what I heard. Edit it, then press send."
+msgstr "Đây là phần tôi nghe được. Bạn sửa lại nếu cần, rồi bấm gửi."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_config__timeout
+msgid "Timeout (seconds)"
+msgstr "Thời gian chờ (giây)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_report_wizard__date_to
+msgid "To Date"
+msgstr "Đến ngày"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "Upload a custom avatar for the PayAI chat panel. 128×128px recommended."
+msgstr ""
+"Tải lên hình đại diện tùy chỉnh cho bảng trò chuyện PayAI. Khuyến nghị 128×128px."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Use the copilot bar above to add charts, or pin charts from the PayAI chat."
+msgstr ""
+"Sử dụng thanh copilot ở trên để thêm biểu đồ hoặc ghim biểu đồ từ cuộc trò chuyện "
+"PayAI."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__user_id
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_conversation__user_id
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_message__role__user
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_y
+msgid "Vertical position in the Gridstack grid (0-based)"
+msgstr "Vị trí dọc trong lưới Gridstack (dựa trên 0)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_consent__voice
+msgid "Voice"
+msgstr "Giọng nói"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Voice input is switched off for this database."
+msgstr "Tính năng nhập bằng giọng nói đang tắt trên cơ sở dữ liệu này."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Voice input needs your agreement first."
+msgstr "Nhập bằng giọng nói cần bạn đồng ý trước."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_pulse__severity__warning
+msgid "Warning"
+msgstr "Cảnh báo"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml:0
+msgid "Welcome to PayAI"
+msgstr "Chào mừng đến với PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_consent__voice
+msgid ""
+"Whether this user agreed to their microphone recording being sent to the configured "
+"speech-to-text provider."
+msgstr ""
+"Liệu người dùng này có đồng ý gửi bản ghi micrô của họ tới nhà cung cấp dịch vụ chuyển"
+" giọng nói thành văn bản đã định cấu hình hay không."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__name
+msgid "Widget Title"
+msgstr "Tiêu đề tiện ích"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__widget_ids
+msgid "Widgets"
+msgstr "Widget"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__width
+msgid "Width (grid units)"
+msgstr "Chiều rộng (đơn vị lưới)"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__width
+msgid "Width in grid units (1-12)"
+msgstr "Chiều rộng tính theo đơn vị lưới (1-12)"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "Yes, send my recordings"
+msgstr "Đồng ý, gửi bản ghi âm của tôi"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "You"
+msgstr "Bạn"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.xml:0
+msgid "Your dashboard is empty"
+msgstr "Trang tổng quan của bạn trống"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid ""
+"Your intelligent payroll analytics assistant. I can generate charts, analyze data, and"
+" answer any question."
+msgstr ""
+"Trợ lý phân tích bảng lương thông minh của bạn. I can generate charts, analyze data, "
+"and answer any question."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "attendance records"
+msgstr "dữ liệu chấm công"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.report_payai_executive
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_consent.py:0
+msgid "declined"
+msgstr "từ chối"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_consent.py:0
+msgid "granted"
+msgstr "được cấp"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "individual employee salaries"
+msgstr "lương của từng nhân viên"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "leave and time-off records"
+msgstr "dữ liệu nghỉ phép"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "payslip totals"
+msgstr "các số tổng trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "that payroll data"
+msgstr "dữ liệu lương đó"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the deduction and contribution lines on payslips"
+msgstr "các dòng khấu trừ và đóng góp trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the department-level payroll summary"
+msgstr "bảng tổng hợp lương theo phòng ban"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the employee list"
+msgstr "danh sách nhân viên"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the overtime lines on payslips"
+msgstr "các dòng làm thêm giờ trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the payroll history a forecast is built from"
+msgstr "dữ liệu lịch sử lương dùng để lập dự báo"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the payroll overview"
+msgstr "bức tranh tổng quan về lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the payslip history"
+msgstr "lịch sử phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the recruitment pipeline"
+msgstr "quy trình tuyển dụng"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "the wages on employment contracts"
+msgstr "mức lương ghi trên hợp đồng lao động"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
+msgid "timesheet entries"
+msgstr "các dòng chấm giờ dự án"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.report_payai_executive
+msgid "to"
+msgstr "ĐẾN"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "➕ New Chat"
+msgstr "➕ Trò chuyện mới"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "💡 Key Insights"
+msgstr "💡 Thông tin chi tiết chính"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "💬 Chat with PayAI"
+msgstr "💬 Trò chuyện với PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "📊 Dashboard"
+msgstr "📊 Bảng điều khiển"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "📌 Pin to Dashboard"
+msgstr "👉 Ghim vào Bảng điều khiển"
+
+#. module: pb_payroll_ai_insights
+#: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
+msgid "🔌 Test Connection"
+msgstr "🔌 Kiểm tra kết nối"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:191
+msgid "Widget removed"
+msgstr "Đã xóa tiện ích"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:224
+msgid "Dashboard updated!"
+msgstr "Bảng điều khiển được cập nhật!"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:231
+msgid "Failed to generate. Check AI configuration."
+msgstr "Không tạo được. Kiểm tra cấu hình AI."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:244
+msgid "Dashboard refreshed"
+msgstr "Đã làm mới trang tổng quan"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:248
+msgid "Chat history cleared"
+msgstr "Đã xóa lịch sử trò chuyện"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:265
+msgid "Chart pinned to dashboard!"
+msgstr "Biểu đồ được ghim vào bảng điều khiển!"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:268
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:145
+msgid "Failed to pin chart"
+msgstr "Không thể ghim biểu đồ"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:143
+msgid "Chart pinned to dashboard! 📌"
+msgstr "Biểu đồ được ghim vào bảng điều khiển! 🎯"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:37
+msgid "Bar"
+msgstr "Cột"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:38
+msgid "Line"
+msgstr "Dòng"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:39
+msgid "Pie"
+msgstr "Tròn"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:40
+msgid "Doughnut"
+msgstr "Bánh vòng"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:41
+msgid "Radar"
+msgstr "ra đa"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:42
+msgid "Polar"
+msgstr "Cực"

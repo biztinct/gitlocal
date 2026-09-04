@@ -1,0 +1,426 @@
+// Connector cockpit — layout glue on top of the .pbim kit primitives.
+.pbcc {
+    .pbcc-wrap > * + * { margin-top: 14px; }
+    .pbcc-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+    .pbcc-hero-state { margin-left: auto; flex: 0 0 auto; }
+    // C7 WP-5 — "Never synced" in the header is the ABSENCE of an event, and it
+    // has to read as one. In the kit's indigo it would look like a fact the
+    // connector is proud of, sitting beside a green Connected badge.
+    .pbim-chip.muted { background: var(--pbim-line-2); color: var(--pbim-muted); }
+    .pbcc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }
+    .pbcc-hero .pbim-hero-av svg { width: 24px; height: 24px; }
+
+    .pbcc-actions {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); padding: 14px 18px; box-shadow: var(--pbim-sh);
+    }
+    .pbcc-actions .left, .pbcc-actions .right { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pbcc-msg { display: flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600;
+        border-radius: var(--pbim-r-sm); padding: 10px 14px; background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbcc-msg.err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    .pbcc-cols { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; align-items: start; }
+    @media (max-width: 980px) { .pbcc-cols { grid-template-columns: 1fr; } }
+    .pbcc-side { display: flex; flex-direction: column; gap: 14px; }
+
+    .pbcc-count { font-size: 12px; font-weight: 800; color: var(--pbim-muted); margin-left: 4px; }
+    .pbcc-feedhint { margin: 3px 0 0; color: var(--pbim-muted); font-size: 10.5px; font-weight: 550; }
+    .pbcc-tw { max-height: 420px; }
+    .pbcc-src { font-weight: 700; }
+    .pbcc-req { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+        color: var(--pbim-amber); background: var(--pbim-amber-soft); border-radius: 999px; padding: 1px 7px; margin-left: 7px; }
+
+    .pbcc-mini { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pbcc-mini-h { display: flex; align-items: center; gap: 12px; }
+    .pbcc-mini-h .ic { width: 40px; height: 40px; border-radius: 11px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; }
+    .pbcc-mini-h .n { font-size: 22px; font-weight: 800; line-height: 1; }
+    .pbcc-mini-h .l { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--pbim-muted); margin-top: 3px; }
+
+    .pbcc-rules { display: flex; flex-direction: column; gap: 7px; }
+    .pbcc-rule { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 8px 12px; }
+    .pbcc-rule .nm { font-size: 12.5px; font-weight: 600; }
+
+    .pbcc-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(244,245,251,.72);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+        color: var(--pbim-muted); font-weight: 700; }
+
+    // ==================================================== the header overflow
+    // No z-index above the kit's own: a cockpit that becomes a stacking context
+    // traps every modal mounted inside it (W37). 30 is below the drawer scrim's
+    // 60 and far below a modal's 1050, and the menu only has to clear the panel
+    // immediately under it.
+    .pbcc-kebab { position: relative; }
+    .pbcc-kebab__b { padding: 7px 9px; }
+    .pbcc-kebab__m {
+        position: absolute; top: calc(100% + 6px); right: 0; z-index: 30;
+        min-width: 208px; padding: 5px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm); box-shadow: var(--pbim-sh-lg);
+    }
+    .pbcc-kebab__i {
+        display: flex; align-items: center; gap: 9px; width: 100%;
+        padding: 8px 10px; border: 0; border-radius: 8px; background: transparent;
+        color: var(--pbim-text); font: inherit; font-size: 12.5px; font-weight: 600;
+        text-align: left; cursor: pointer;
+        &:hover { background: var(--pbim-line-2); }
+        svg { display: block; flex: none; }
+    }
+
+    // ============================================================== the feeds
+    .pbcc-feedgrid {
+        display: grid; gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+    }
+    .pbcc-feed {
+        display: flex; flex-direction: column; gap: 7px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 11px 13px 12px; background: var(--pbim-surface);
+    }
+    .pbcc-feed__h { display: flex; align-items: center; gap: 9px; }
+    .pbcc-feed__ic {
+        width: 30px; height: 30px; flex: none; border-radius: 9px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+        svg { display: block; }
+    }
+    .pbcc-feed__nm { display: flex; flex-direction: column; min-width: 0; }
+    .pbcc-feed__nm .n { font-size: 12.5px; font-weight: 700; line-height: 1.25;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbcc-feed__nm .c { font-size: 10.5px; font-weight: 700; color: var(--pbim-muted);
+        text-transform: uppercase; letter-spacing: .03em; }
+    .pbcc-feed__dot {
+        width: 9px; height: 9px; flex: none; margin-left: auto; border-radius: 999px;
+        background: var(--pbim-slate);
+        &.ok { background: var(--pbim-green); }
+        &.warn { background: var(--pbim-amber); }
+        &.err { background: var(--pbim-rose); }
+        &.muted { background: var(--pbim-slate); }
+    }
+    .pbcc-feed__sync { display: flex; align-items: center; gap: 7px;
+        font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
+    .pbcc-feed__abm { font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .04em; color: var(--pbim-cyan); background: var(--pbim-cyan-soft);
+        border-radius: 999px; padding: 1px 7px; }
+    .pbcc-feed__mode { font-size: 9.5px; font-weight: 800; color: var(--pbim-amber);
+        background: var(--pbim-amber-soft); border-radius: 999px; padding: 1px 7px; }
+    .pbcc-feed__mode.off { color: var(--pbim-muted); background: var(--pbim-line-2); }
+    .pbcc-feed__counts { font-size: 11.5px; font-weight: 600; color: var(--pbim-text); }
+    /* WHICH MONTH this feed's rows are about. Muted while it agrees with the
+       selected period, amber the moment it does not — a feed still holding
+       August during a July run is the whole reason the period control exists,
+       and it has to be visible without reading the number beside it. */
+    .pbcc-feed__period { display: flex; align-items: center; gap: 5px; margin-top: 3px;
+        font-size: 10.5px; font-weight: 700; color: var(--pbim-muted); line-height: 1.35; }
+    .pbcc-feed__period.warn { color: var(--pbim-amber); }
+    .pbcc-feed__legacy { display: flex; align-items: center; gap: 5px; margin-top: 5px;
+        color: var(--pbim-amber); font-size: 9.5px; font-weight: 700; line-height: 1.35; }
+    /* C6 — the expected-field count. Indigo, because it is a statement about
+       what the feed CAN deliver rather than about what it has; the counts
+       beside it are history and stay in the ink colour. */
+    .pbcc-feed__flds { color: var(--pbim-primary-hover); }
+    .pbcc-feed__err { font-size: 11.5px; font-weight: 600; color: var(--pbim-rose);
+        background: var(--pbim-rose-soft); border-radius: 8px; padding: 6px 9px;
+        overflow: hidden; text-overflow: ellipsis; }
+    // ---------------------------------------------- the action row (C7 WP-3)
+    //
+    // Cycle 1 shipped this strip with two buttons, Cycle 2 added "Map fields"
+    // and Cycle 6 "Fetch fields". Four `.pbim-btn`s measure ~400px; the card is
+    // 258px at its narrowest. The row was `display: flex` with NO `flex-wrap`,
+    // and every `.pbim-btn` carries `white-space: nowrap` — so the buttons
+    // could neither wrap nor shrink and simply ran out past the card's edge.
+    //
+    // Nothing clips here, which is why it looked like two different bugs: an
+    // inner card's overflow is painted OVER by the next card in the grid (later
+    // sibling, later paint), so its last button vanishes and the card seems to
+    // be offering fewer actions; the RIGHTMOST card of a row has empty grid
+    // track to spill into, so the same overflow is fully visible outside the
+    // card. One cause, two symptoms — the owner reported both.
+    //
+    // `margin-top: auto` because a wrapped row is taller: grid stretches every
+    // card in a row to the same height, and without it a card whose buttons
+    // took two lines would sit its actions at a different Y from its
+    // neighbours'.
+    .pbcc-feed__acts {
+        display: flex; flex-wrap: wrap; gap: 7px;
+        margin-top: auto; padding-top: 2px;
+        .pbim-btn { flex: 0 1 auto; min-width: 0; }
+    }
+    .pbcc-feed__spin { width: 13px; height: 13px; border-width: 2px; }
+
+    // ======================================================== the credentials
+    .pbcc-cred .pbim-h2 svg { vertical-align: -2px; margin-right: 5px; }
+    .pbcc-credsum { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pbcc-credchip {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 4px 11px; font-size: 11.5px; font-weight: 700;
+        color: var(--pbim-muted);
+        svg { display: block; }
+        &.is-set { color: var(--pbim-green); background: var(--pbim-green-soft);
+            border-color: transparent; }
+    }
+    .pbcc-credform { display: flex; flex-direction: column; gap: 9px; }
+    .pbcc-credrow { display: grid; grid-template-columns: 190px 1fr auto;
+        align-items: center; gap: 10px; }
+    @media (max-width: 720px) { .pbcc-credrow { grid-template-columns: 1fr; } }
+    .pbcc-credrow__l { display: flex; flex-direction: column; gap: 2px; }
+    .pbcc-credrow__l .n { font-size: 12.5px; font-weight: 700; }
+    .pbcc-credstate { font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .04em; color: var(--pbim-muted);
+        &.is-set { color: var(--pbim-green); }
+    }
+    .pbcc-credrow__i {
+        width: 100%; padding: 8px 11px; font: inherit; font-size: 12.5px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); color: var(--pbim-text);
+        &:focus { outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbcc-credclear {
+        display: inline-flex; align-items: center; gap: 5px;
+        border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 5px 11px; background: transparent; cursor: pointer;
+        font: inherit; font-size: 11.5px; font-weight: 700; color: var(--pbim-muted);
+        svg { display: block; }
+        &.is-on { color: var(--pbim-rose); background: var(--pbim-rose-soft);
+            border-color: transparent; }
+    }
+    .pbcc-credfoot { display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-top: 3px; }
+    .pbcc-credhint { font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
+
+    // =========================================== Connection & Feed Studio
+    .pbcc-panel-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    /* The period every dated pull asks for, sitting with the buttons it governs. */
+    .pbcc-period { display: flex; align-items: center; gap: 4px;
+        padding: 3px 7px; border: 1px solid var(--pbim-line); border-radius: 9px;
+        background: var(--pbim-surface-2); }
+    .pbcc-period__lb { display: flex; align-items: center; gap: 4px; margin-right: 2px;
+        font-size: 10px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .04em; color: var(--pbim-muted); }
+    .pbcc-period__in { border: 1px solid var(--pbim-line); border-radius: 7px;
+        padding: 2px 6px; font-size: 11.5px; font-weight: 600;
+        color: var(--pbim-text); background: var(--pbim-surface);
+        font-family: inherit; }
+    .pbcc-period__in:focus { outline: 2px solid var(--pbim-indigo-soft); outline-offset: 1px; }
+    .pbcc-period__sep { font-size: 11px; color: var(--pbim-muted); }
+    .pbim-btn-xs { padding: 2px 7px; font-size: 11px; line-height: 1.5; }
+    .pbcc-studio {
+        position: fixed; inset: 42px 0 0 247px; z-index: 950;
+        background: var(--pbim-bg); overflow: auto;
+    }
+    .pbcc-studio__shell { min-height: 100%; padding: 22px 28px 40px; }
+    .pbcc-studio__head {
+        display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        max-width: 1280px; margin: 0 auto 16px;
+    }
+    .pbcc-studio__title { display: flex; align-items: center; gap: 15px; }
+    .pbcc-studio__title h1 { margin: 0; font-size: 23px; line-height: 1.2; color: var(--pbim-text); }
+    .pbcc-studio__title p { margin: 4px 0 0; color: var(--pbim-muted); font-size: 12.5px; }
+    .pbcc-studio__save { display: flex; align-items: center; gap: 8px; }
+    .pbcc-studio__issue { display: inline-flex; align-items: center; gap: 6px;
+        color: var(--pbim-amber); background: var(--pbim-amber-soft); border-radius: 999px;
+        padding: 5px 10px; font-size: 11.5px; font-weight: 750; }
+    .pbcc-studio__summary {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        max-width: 1280px; margin: 0 auto 12px;
+    }
+    .pbcc-studio__metric {
+        display: flex; align-items: center; gap: 11px; padding: 12px 14px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+    }
+    .pbcc-studio__metric .ic { width: 34px; height: 34px; flex: none; display: grid;
+        place-items: center; border-radius: 10px; background: var(--pbim-soft);
+        color: var(--pbim-primary-strong); }
+    .pbcc-studio__metric div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbcc-studio__metric strong { font-size: 12.5px; }
+    .pbcc-studio__metric small { font-size: 10.5px; color: var(--pbim-muted); }
+    .pbcc-studio__tabs {
+        display: flex; align-items: center; gap: 4px; max-width: 1280px; margin: 0 auto;
+        padding: 6px; border: 1px solid var(--pbim-line); border-bottom: 0;
+        border-radius: var(--pbim-r-lg) var(--pbim-r-lg) 0 0; background: var(--pbim-surface);
+    }
+    .pbcc-studio__tabs button { display: inline-flex; align-items: center; gap: 7px;
+        border: 0; border-radius: 9px; padding: 9px 14px; color: var(--pbim-muted);
+        background: transparent; font: inherit; font-size: 12.5px; font-weight: 750; cursor: pointer; }
+    .pbcc-studio__tabs button:hover { background: var(--pbim-line-2); color: var(--pbim-text); }
+    .pbcc-studio__tabs button.on { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+    .pbcc-studio__tabs button span { min-width: 20px; text-align: center; border-radius: 999px;
+        background: var(--pbim-line-2); padding: 1px 6px; font-size: 10px; }
+    .pbcc-studio__body { max-width: 1280px; min-height: 510px; margin: 0 auto;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 0 0 var(--pbim-r-lg) var(--pbim-r-lg); box-shadow: var(--pbim-sh); }
+
+    .pbcc-config-page { display: grid; grid-template-columns: minmax(220px, .7fr) 1.7fr;
+        gap: 34px; padding: 42px; align-items: start; }
+    .pbcc-config-copy .eyebrow, .pbcc-feededitor .eyebrow { color: var(--pbim-primary-strong);
+        font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+    .pbcc-config-copy h2, .pbcc-feededitor h2 { margin: 7px 0 8px; font-size: 20px; }
+    .pbcc-config-copy p { margin: 0; color: var(--pbim-muted); font-size: 12.5px; line-height: 1.6; }
+    .pbcc-config-card { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; }
+    .pbcc-config-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .pbcc-config-field.wide, .pbcc-config-note.wide, .pbcc-callback.wide,
+    .pbcc-console-setup.wide, .pbcc-oauth-connect.wide { grid-column: 1 / -1; }
+    .pbcc-config-field > span, .pbcc-callback span { font-size: 11.5px; font-weight: 750; color: var(--pbim-text); }
+    .pbcc-config-field input, .pbcc-config-field select, .pbcc-config-field textarea {
+        width: 100%; min-height: 39px; padding: 9px 11px; border: 1px solid var(--pbim-line);
+        border-radius: 9px; background: var(--pbim-surface); color: var(--pbim-text);
+        font: inherit; font-size: 12.5px; resize: vertical;
+    }
+    .pbcc-config-field input:focus, .pbcc-config-field select:focus, .pbcc-config-field textarea:focus {
+        outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    .pbcc-config-field small { color: var(--pbim-muted); font-size: 10.5px; }
+    .pbcc-input-suffix { display: flex; align-items: stretch; }
+    .pbcc-input-suffix input { border-radius: 9px 0 0 9px; }
+    .pbcc-input-suffix em { display: grid; place-items: center; padding: 0 11px;
+        border: 1px solid var(--pbim-line); border-left: 0; border-radius: 0 9px 9px 0;
+        background: var(--pbim-line-2); color: var(--pbim-muted); font-size: 11px; font-style: normal; }
+    .pbcc-config-note { display: flex; align-items: flex-start; gap: 10px; padding: 12px;
+        border-radius: 10px; background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbcc-config-note div { display: flex; flex-direction: column; gap: 2px; }
+    .pbcc-config-note strong { font-size: 11.5px; }
+    .pbcc-config-note span { font-size: 10.5px; line-height: 1.45; }
+
+    .pbcc-feedstudio { display: grid; grid-template-columns: 310px minmax(0, 1fr); min-height: 560px; }
+    .pbcc-feedstudio__list { padding: 16px; border-right: 1px solid var(--pbim-line);
+        background: var(--pbim-line-2); }
+    .pbcc-feedstudio__listhead { display: flex; align-items: center; justify-content: space-between;
+        gap: 8px; padding: 2px 3px 12px; }
+    .pbcc-feedstudio__listhead div { display: flex; flex-direction: column; }
+    .pbcc-feedstudio__listhead strong { font-size: 12.5px; }
+    .pbcc-feedstudio__listhead small { font-size: 10.5px; color: var(--pbim-muted); }
+    .pbcc-feedpick { display: flex; align-items: center; gap: 9px; width: 100%; margin-bottom: 6px;
+        padding: 10px; border: 1px solid transparent; border-radius: 10px; background: transparent;
+        color: var(--pbim-text); font: inherit; text-align: left; cursor: pointer; }
+    .pbcc-feedpick:hover { background: var(--pbim-surface); }
+    .pbcc-feedpick.on { background: var(--pbim-surface); border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 2px var(--pbim-ring); }
+    .pbcc-feedpick .dot { width: 8px; height: 8px; flex: none; border-radius: 999px; background: var(--pbim-slate); }
+    .pbcc-feedpick .dot.ok { background: var(--pbim-green); }
+    .pbcc-feedpick .dot.warn { background: var(--pbim-amber); }
+    .pbcc-feedpick .text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .pbcc-feedpick strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .pbcc-feedpick small { color: var(--pbim-muted); font-size: 9.5px; }
+    .pbcc-feedpick svg { color: var(--pbim-muted); }
+    .pbcc-feededitor { padding: 28px 32px; min-width: 0; }
+    .pbcc-feededitor__head { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .pbcc-feededitor__head h2 { margin-bottom: 0; }
+    .pbcc-switch { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px;
+        font-weight: 750; cursor: pointer; }
+    .pbcc-switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .pbcc-switch span { width: 34px; height: 19px; border-radius: 999px; padding: 2px;
+        background: var(--pbim-slate); transition: .15s; }
+    .pbcc-switch span::after { content: ''; display: block; width: 15px; height: 15px;
+        border-radius: 50%; background: white; transition: .15s; }
+    .pbcc-switch input:checked + span { background: var(--pbim-green); }
+    .pbcc-switch input:checked + span::after { transform: translateX(15px); }
+    .pbcc-feedurl { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px;
+        margin: 20px 0; padding: 10px 12px; border-radius: 10px; background: var(--pbim-line-2); }
+    .pbcc-feedurl > span { color: var(--pbim-primary-strong); font-size: 10.5px; font-weight: 850; }
+    .pbcc-feedurl code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        font-size: 11.5px; color: var(--pbim-text); }
+    .pbcc-feedurl button { display: grid; place-items: center; border: 0; background: transparent;
+        color: var(--pbim-muted); cursor: pointer; }
+    .pbcc-feedform { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .pbcc-feededitor__foot { display: flex; align-items: center; justify-content: space-between;
+        gap: 15px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--pbim-line); }
+    .pbcc-feededitor__foot div { display: flex; flex-direction: column; gap: 2px; }
+    .pbcc-feededitor__foot strong { font-size: 11px; }
+    .pbcc-feededitor__foot span { color: var(--pbim-muted); font-size: 10.5px; }
+    .pbcc-callback { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 12px; border: 1px dashed var(--pbim-primary); border-radius: 10px;
+        background: var(--pbim-soft); }
+    .pbcc-callback div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pbcc-callback code { overflow-wrap: anywhere; font-size: 11.5px; color: var(--pbim-primary-strong); }
+
+    .pbcc-console-setup { border: 1px solid var(--pbim-border); border-radius: 16px; padding: 16px;
+        background: linear-gradient(145deg, var(--pbim-soft), var(--pbim-surface)); }
+    .pbcc-console-setup__head { display: flex; justify-content: space-between; gap: 16px;
+        align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--pbim-border); }
+    .pbcc-console-setup__head > div { display: grid; gap: 3px; }
+    .pbcc-console-setup__row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 30px;
+        align-items: center; gap: 12px; min-height: 42px; border-bottom: 1px solid var(--pbim-border); }
+    .pbcc-console-setup__row > span { color: var(--pbim-muted); font-size: 11px; font-weight: 800; }
+    .pbcc-console-setup__row code { overflow-wrap: anywhere; font-size: 11.5px; }
+    .pbcc-console-setup__row button { border: 0; background: transparent; color: var(--pbim-primary-strong);
+        cursor: pointer; display: grid; place-items: center; }
+    .pbcc-console-setup__row.important code { color: var(--pbim-primary-strong); font-weight: 800; }
+    .pbcc-console-setup > p { color: var(--pbim-muted); font-size: 11px; line-height: 1.55; margin: 12px 0 0; }
+    .pbcc-oauth-connect { display: flex; align-items: center; justify-content: space-between;
+        gap: 15px; margin-top: 3px; padding: 15px; border-radius: 12px;
+        background: var(--pbim-line-2); }
+    .pbcc-oauth-connect div { display: flex; flex-direction: column; gap: 3px; }
+    .pbcc-oauth-connect strong { font-size: 12px; }
+    .pbcc-oauth-connect span { color: var(--pbim-muted); font-size: 10.5px; line-height: 1.4; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    @media (max-width: 1050px) {
+        .pbcc-studio { left: 0; }
+        .pbcc-studio__summary { grid-template-columns: 1fr; }
+        .pbcc-config-page { grid-template-columns: 1fr; padding: 28px; }
+        .pbcc-feedstudio { grid-template-columns: 250px minmax(0, 1fr); }
+    }
+    @media (max-width: 760px) {
+        .pbcc-studio__shell { padding: 14px; }
+        .pbcc-studio__head { align-items: flex-start; flex-direction: column; }
+        .pbcc-studio__save { width: 100%; flex-wrap: wrap; }
+        .pbcc-feedstudio { grid-template-columns: 1fr; }
+        .pbcc-feedstudio__list { border-right: 0; border-bottom: 1px solid var(--pbim-line); max-height: 240px; overflow: auto; }
+        .pbcc-feedform, .pbcc-config-card { grid-template-columns: 1fr; }
+        .pbcc-config-field.wide, .pbcc-config-note.wide, .pbcc-callback.wide,
+        .pbcc-console-setup.wide, .pbcc-oauth-connect.wide { grid-column: auto; }
+        .pbcc-console-setup__row { grid-template-columns: 1fr 30px; gap: 7px; padding: 8px 0; }
+        .pbcc-console-setup__row > span { grid-column: 1 / -1; }
+        .pbcc-oauth-connect { align-items: flex-start; flex-direction: column; }
+    }
+}
+
+/* RD58 — the automatic monthly fetch, on the screen people actually open.
+   Two switches because fetching and writing are different acts; the warning is
+   load-bearing, not decoration — the second one hands the connected system
+   ownership of every mapped field. */
+.pbcc-sched { display: flex; flex-direction: column; gap: 12px; }
+.pbcc-sched-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pbcc-sched-next { font-size: 12px; color: var(--pbim-muted, #64748B); }
+.pbcc-sw { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.pbcc-sw input { margin-top: 3px; flex-shrink: 0; width: 15px; height: 15px; cursor: pointer; }
+.pbcc-sw-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pbcc-sw-tx b { font-size: 13px; }
+.pbcc-sw-tx span { font-size: 12px; color: var(--pbim-muted, #64748B); line-height: 1.45; }
+.pbcc-sched-warn { display: flex; align-items: flex-start; gap: 8px; padding: 9px 12px; border-radius: 9px;
+                   background: #FFFBEB; color: #92400E; font-size: 12px; line-height: 1.45; }
+.pbcc-sched-warn svg { flex-shrink: 0; margin-top: 1px; }
+
+/* SC-2 — the schedule editor: frequency + day + time, and the sentence. */
+.pbcc-sched-edit { display: flex; flex-direction: column; gap: 10px; }
+.pbcc-sched-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pbcc-seg {
+  border: 1px solid var(--pbim-border, #E2E8F0); background: #fff;
+  color: var(--pbim-muted, #64748B); border-radius: 999px; padding: 6px 14px;
+  font-size: 12.5px; font-weight: 600; cursor: pointer;
+  &.sm { padding: 4px 10px; font-size: 12px; }
+  &.on { background: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); color: #fff; }
+  &:disabled { opacity: .55; cursor: default; }
+}
+.pbcc-sched-lb { display: flex; align-items: center; gap: 6px; font-size: 12.5px;
+  font-weight: 600; color: var(--pbim-muted, #64748B); margin: 0; }
+.pbcc-sched-sel, .pbcc-sched-time {
+  border: 1px solid var(--pbim-border, #E2E8F0); border-radius: 8px;
+  padding: 4px 8px; font-size: 13px; background: #fff; }
+.pbcc-sched-tz { font-size: 12px; color: var(--pbim-muted, #64748B); }
+.pbcc-sched-sentence {
+  background: var(--pbim-soft, #EDEAF8); border: 1px solid #CBC2EE;
+  border-radius: 9px; padding: 9px 12px; font-size: 13px; }
+.pbcc-sched-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.pbcc-sched-last { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--pbim-muted, #64748B); flex-wrap: wrap; }
+.pbcc-sched-dot { width: 8px; height: 8px; border-radius: 999px; background: #94A3B8; flex-shrink: 0; }
+.pbcc-sched-dot.ok { background: #10B981; }
+.pbcc-sched-dot.failed { background: #EF4444; }
+.pbcc-sched-dot.skipped { background: #F59E0B; }
+.pbcc-sched-msg { color: #475569; }
+.pbcc-sched-off { font-size: 12px; color: var(--pbim-muted, #64748B); }

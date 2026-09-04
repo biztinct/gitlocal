@@ -197,11 +197,10 @@ class HrFormulaSampleData(models.Model):
 
                 discrepancies = 0
                 max_disc = 0
-                def _coerce_number(value):
-                    try:
-                        return float(value)
-                    except (TypeError, ValueError):
-                        return None
+                # F6: shared coercion (superset of the old plain float() — any
+                # value that used to coerce still coerces to the same number, so
+                # verdicts are unchanged; regression-checked on the VN demo).
+                from ..formula_engine.comparison import coerce_number as _coerce_number
 
                 for code, exp_value in expected.items():
                     if exp_value is None:
@@ -256,6 +255,13 @@ class HrFormulaSampleData(models.Model):
                 row_style = "background:#f6f8fa;font-weight:bold;" if is_formula else ""
                 formula_value = rule.excel_formula or ''
                 formula_value = re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', formula_value)
+
+                # Format numeric values: round to integer, no decimals
+                if isinstance(value, (int, float)):
+                    display_value = f"{int(round(value)):,}"
+                else:
+                    display_value = str(value) if value else ''
+
                 rows_html.append(
                     f"<tr style='{row_style}'>"
                     f"<td style='white-space:nowrap'>{rule.column_letter or ''}</td>"
@@ -264,7 +270,7 @@ class HrFormulaSampleData(models.Model):
                     f"<td style='white-space:normal;word-break:break-word;'>{rule.name or ''}</td>"
                     f"<td style='white-space:normal;word-break:break-word;'>"
                     f"{rule.code or ''}</td>"
-                    f"<td style='text-align:right;white-space:nowrap'>{value}</td>"
+                    f"<td style='text-align:right;white-space:nowrap'>{display_value}</td>"
                     f"<td style='white-space:normal;word-break:break-word;' title='{formula_value}'>"
                     f"{formula_value}</td>"
                     "</tr>"
@@ -560,15 +566,36 @@ class HrFormulaSampleData(models.Model):
             _logger.error(f"Error computing formula results: {e}", exc_info=True)
             return {'error': str(e)}
 
-    def _evaluate_rules_with_dependencies(self, input_values):
-        """Evaluate rules using dependency order to handle forward references."""
+    def _evaluate_rules_with_dependencies(self, input_values, readonly=False,
+                                          errors=None):
+        """Evaluate rules using dependency order to handle forward references.
+
+        ``readonly=True`` guarantees ZERO writes: the dependency-metadata
+        refresh (a compute-field assignment that stamps write_date on every
+        rule) is skipped, and formulas run through the ``_run_formula`` overlay
+        with ``write_diagnostics=False`` instead of ``evaluate()``. Required
+        for read-only RPC paths (the W54 Problems-rail detection runs on every
+        panel open — it must never touch production rules).
+
+        RD48 — ``errors`` is an optional caller-supplied dict, filled with
+        ``{code: message}`` for every formula that raised. An OUT-PARAMETER, so
+        the return value and every existing caller are untouched.
+
+        It exists because a component's STORED error (``last_evaluation_error``)
+        is a message from whatever data the formula last ran against WITH
+        diagnostics on — usually a sample — while a read-only preview of a REAL
+        person deliberately writes none. The panel could therefore show "float
+        division by zero" beside a Standard Working Hour of 198, because a
+        sample where that hour was 0 had failed days earlier. An error that
+        belongs to THIS subject has to travel with THIS evaluation."""
         self.ensure_one()
         rules = self.config_id.rule_ids
         if not rules:
             return input_values.copy()
 
         # Refresh dependency metadata to include recent parsing changes.
-        rules._compute_dependencies()
+        if not readonly:
+            rules._compute_dependencies()
         try:
             from ..formula_engine import FormulaEvaluator
             evaluator = FormulaEvaluator()
@@ -597,12 +624,16 @@ class HrFormulaSampleData(models.Model):
             elif rule.column_type == 'formula':
                 try:
                     _logger.debug("  Evaluating formula: %s", rule.excel_formula)
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula,
+                                               write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                     results[rule.code] = value
                     _logger.debug("  Result: %s", value)
                 except Exception as e:
                     _logger.warning("Formula evaluation error for %s: %s", rule.code, e)
                     results[rule.code] = 0.0
+                    if errors is not None:
+                        errors[rule.code] = str(e)
         # Second pass to resolve forward references not captured in dependency parsing.
         for _pass in range(2):
             changed = False
@@ -610,10 +641,17 @@ class HrFormulaSampleData(models.Model):
                 if rule.column_type != 'formula':
                     continue
                 try:
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula,
+                                               write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                 except Exception as e:
                     _logger.warning("Formula re-evaluation error for %s: %s", rule.code, e)
                     value = 0.0
+                    if errors is not None:
+                        errors[rule.code] = str(e)
+                else:
+                    if errors is not None:
+                        errors.pop(rule.code, None)
                 if results.get(rule.code) != value:
                     results[rule.code] = value
                     changed = True

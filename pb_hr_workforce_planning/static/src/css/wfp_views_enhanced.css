@@ -1,0 +1,245 @@
+/* ============================================================
+   WFP ENHANCED VIEWS — Premium styling for Odoo forms/lists
+   Scoped to WFP model views only
+   ============================================================ */
+
+/* ── Scenario Kanban Cards ── */
+.o_kanban_view .o_kanban_record .wfp-kanban-card {
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.o_kanban_view .o_kanban_record .wfp-kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: #cbd5e1;
+}
+
+.wfp-kanban-card .wfp-kanban-accent {
+    height: 4px;
+    width: 100%;
+}
+
+.wfp-kanban-card[data-state="draft"] .wfp-kanban-accent {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+.wfp-kanban-card[data-state="calculated"] .wfp-kanban-accent {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+.wfp-kanban-card[data-state="approved"] .wfp-kanban-accent {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+.wfp-kanban-card[data-state="archived"] .wfp-kanban-accent {
+    background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+}
+
+.wfp-kanban-body {
+    padding: 16px;
+}
+
+.wfp-kanban-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.wfp-kanban-config {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.wfp-kanban-metrics {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.wfp-kanban-metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.wfp-kanban-metric-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.wfp-kanban-metric-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    font-weight: 600;
+}
+
+.wfp-kanban-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.wfp-kanban-pct.up {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.wfp-kanban-pct.down {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.wfp-kanban-pct.neutral {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.wfp-kanban-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.wfp-kanban-date {
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Form View Enhancements ── */
+/* Stat buttons with color */
+.o_form_view[data-res_model="wfp.planning.scenario"] .oe_stat_button {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin: 4px;
+    transition: all 0.2s ease;
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] .oe_stat_button:hover {
+    background: #f8fafc;
+    border-color: #2563eb;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] .oe_stat_button .o_stat_info .o_stat_value {
+    color: #2563eb;
+    font-weight: 800;
+}
+
+/* Header buttons */
+.o_form_view[data-res_model="wfp.planning.scenario"] header .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] header .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] header .btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+    font-weight: 600;
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] header .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+}
+
+/* Notebook tabs */
+.o_form_view[data-res_model="wfp.planning.scenario"] .o_notebook .nav-link {
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.15s ease;
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] .o_notebook .nav-link.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+/* Form group titles */
+.o_form_view[data-res_model="wfp.planning.scenario"] .o_inner_group .o_group_header {
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 14px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+}
+
+/* Title field */
+.o_form_view[data-res_model="wfp.planning.scenario"] .oe_title h1 input,
+.o_form_view[data-res_model="wfp.planning.scenario"] .oe_title h1 span {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+}
+
+/* ── List/Tree View Enhancements ── */
+/* Forecast list - row colors are already handled via decoration attributes */
+.o_list_view[data-res_model="wfp.employee.forecast"] .o_data_row {
+    transition: background 0.1s ease;
+}
+
+.o_list_view[data-res_model="wfp.employee.forecast"] .o_data_row:hover {
+    background: rgba(37, 99, 235, 0.04) !important;
+}
+
+/* Scenario list */
+.o_list_view[data-res_model="wfp.planning.scenario"] .o_data_row:hover {
+    background: rgba(37, 99, 235, 0.04) !important;
+}
+
+/* ── Monthly Projection Views ── */
+.o_list_view[data-res_model="wfp.monthly.projection"] .o_data_row:hover {
+    background: rgba(37, 99, 235, 0.04) !important;
+}
+
+/* ── Statusbar Enhancement ── */
+.o_form_view[data-res_model="wfp.planning.scenario"] .o_statusbar_status .o_arrow_button {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.o_form_view[data-res_model="wfp.planning.scenario"] .o_statusbar_status .o_arrow_button.o_active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+}
+
+/* ── Compensation Cycle Kanban ── */
+.o_kanban_view[data-res_model="wfp.compensation.cycle"] .o_kanban_record {
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+.o_kanban_view[data-res_model="wfp.compensation.cycle"] .o_kanban_record:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}

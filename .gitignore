@@ -1,0 +1,15 @@
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.s4-shots/
+.s6-shots/
+.journey-shots/
+.mapfix-d-shots/
+.r1shots/
+.r2shots/
+.r3shots/
+.r4shots/
+.cd3shots/

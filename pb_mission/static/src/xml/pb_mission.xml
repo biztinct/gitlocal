@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_mission.PbMission">
+    <!-- FLEET P4. Workforce is one of the parts of the product that is sold on
+         its own. A company that has not got it has no rail entry and no search
+         rows for it; this is the door they may still know the address of, and
+         it answers with one sentence instead of an empty workspace. The page
+         is the KIT's, not a second one written here, so the wording cannot
+         drift between Mission Control and every other workspace. -->
+    <HubFeatureOff t-if="workforceOff" label="'Workforce'" icon="'compass'"
+                   text="workforceOffText"/>
+    <!-- position:relative — each lens's own drawer scrim is absolute and belongs
+         to the LENS box, not the viewport; the shell root only has to be a
+         positioned, definite-height column (W20). -->
+    <div t-else="" class="pbim pbms">
+
+      <!-- ===================== command bar (mockup B) ===================== -->
+      <header class="pbms-top">
+        <span class="pbms-brand">
+          <span class="pbms-brand__ic" t-out="ic('compass', 15)"/>
+          <span class="pbms-brand__tx">Workforce</span>
+        </span>
+
+        <!-- The way back, when somebody sent us here.
+             This workspace is its own shell, so pb_hub's HubShell — which is
+             what renders `pb_back` everywhere else — never runs for it. Before
+             IA Cycle 6 an Insights drill therefore landed on the Time Off lens
+             with the right filter and no way home, which is the dead end W5
+             forbids. The chip is IMPORTED from the kit, not re-drawn: two
+             return doors that look different are two doors. Absent, not inert,
+             when nobody passed one (W29). -->
+        <HubBackChip t-if="back" back="back"/>
+
+        <!-- The shared context, mounted ONCE for the whole workspace (W4/W6).
+             Which of the department / week / day / filter segments appear is
+             the current lens's decision (`features`), and switching lens never
+             resets what is in them — that is the entire point of the shell.
+             Its `person` segment is OFF here since P3b: the palette below is
+             this bar's search. -->
+        <WfContextBar className="'pbms-ctx'" features="features"/>
+
+        <!-- ============ the command bar's search: ⌘K ============
+             P3a used the context bar's person typeahead here. P3b replaces it
+             with one input that finds PEOPLE, LENSES and ACTIONS — so the bar's
+             `person` feature is off on every lens (the kit keeps it for every
+             standalone cockpit) and the pinned-person chip moves here, beside
+             the launcher, because the pin is still context and still has to be
+             visible and clearable from the bar. -->
+        <span class="pbms-pin" t-if="wf.personId">
+          <span t-out="ic('user', 12)"/>
+          <span class="pbms-pin__n" t-esc="state.personName"/>
+          <button class="pbms-pin__x" t-on-click="() => this.closePerson()"
+                  title="Clear person" aria-label="Clear person">
+            <span t-out="ic('x', 11)"/>
+          </button>
+        </span>
+
+        <button class="pbms-search" t-on-click="() => this.openPalette()"
+                aria-label="Search people, lenses and actions">
+          <span class="pbms-search__ic" t-out="ic('search', 14)"/>
+          <span class="pbms-search__tx">Search people, lenses, actions…</span>
+          <span class="pbms-search__kbd" t-esc="paletteHint"/>
+        </button>
+
+        <span class="pbms-user" t-att-title="userName" t-esc="userInitials"/>
+      </header>
+
+      <div class="pbms-low">
+
+        <!-- ========================= lens rail ========================== -->
+        <nav class="pbms-rail" aria-label="Workforce lenses">
+          <!-- ONE class attribute: a static `class` plus `t-att-class` is the
+               documented-safe pair; both t-att-class and t-attf-class compile to
+               `class`, so an element carrying both keeps whichever the compiler
+               wrote last (W23). -->
+          <button t-foreach="lenses" t-as="l" t-key="l.key"
+                  class="pbms-rail__b"
+                  t-att-class="{ 'is-on': state.lens === l.key }"
+                  t-att-aria-current="state.lens === l.key ? 'page' : false"
+                  t-att-title="l.label"
+                  t-on-click="() => this.setLens(l.key)">
+            <span class="pbms-rail__ic" t-out="ic(l.icon, 17)"/>
+            <span class="pbms-rail__l" t-esc="l.label"/>
+          </button>
+        </nav>
+
+        <!-- ==================== canvas: one lens ========================
+             Every branch is its own `t-if`, never a t-elif chain: a comment
+             between a branch and its `t-else`/`t-elif` breaks the pairing, and
+             it fails at RUNTIME, not at -u (W23).
+
+             Each lens sits in `.pbms-lens`, a definite-height flex box, because
+             five of the seven own their internal scrolling and an auto-height
+             host makes them grow to content and overlap their own chrome (W20).
+
+             `t-key` remounts on every switch — P3a keeps no lens state cache. -->
+        <main class="pbms-canvas">
+
+          <div class="pbms-lens" t-if="state.lens === 'today'">
+            <PbToday t-key="'lens-today'" embedded="true" onHandOff="_h.onHandOff"
+                     pbCmd="state.cmd"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'schedule'">
+            <PbSchedule t-key="'lens-schedule'" embedded="true" pbCmd="state.cmd"/>
+          </div>
+
+          <!-- The Time lens is handed the W26 arrival payload as a synthetic
+               `action` prop, which is exactly what the hub already reads. The
+               nonce is what makes a repeated hand-off unambiguous. -->
+          <div class="pbms-lens" t-if="state.lens === 'time'">
+            <PbTimeHub t-key="'lens-time-' + state.timeNonce" embedded="true"
+                       action="state.timeArrival"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'timeoff'">
+            <PbTimeoff t-key="'lens-timeoff'" embedded="true" pbCmd="state.cmd"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'overtime'">
+            <PbOtDesk t-key="'lens-overtime'" embedded="true" pbCmd="state.cmd"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'trips'">
+            <PbTrips t-key="'lens-trips'" embedded="true"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'approvals'">
+            <PbTeamCockpit t-key="'lens-approvals'" embedded="true"/>
+          </div>
+
+          <!-- P4's Close lens. Unlike the seven above it is not an embedded
+               cockpit — there was no Close surface to embed — but it takes the
+               same three wires: the shared context (through wf_context, not a
+               prop), the `pb_cmd` nonce channel, and the shell's own hand-off
+               and person doors, so "Fix" lands on Time.Exceptions without ever
+               leaving the room. -->
+          <div class="pbms-lens" t-if="state.lens === 'close'">
+            <PbCloseLens t-key="'lens-close'" embedded="true"
+                         pbCmd="state.cmd"
+                         onHandOff="_h.onHandOff"
+                         onOpenPerson="_h.onDockPerson"/>
+          </div>
+
+          <!-- ================== the shell person surface ==================
+               ONE drawer for the four lenses that do not bring their own
+               (`ownsPersonDrawer` in LENSES). It lives INSIDE the canvas
+               because <WfDrawer/>'s scrim is `position: absolute; inset: 0` —
+               here that is the canvas box, so the command bar and the lens rail
+               stay reachable behind it, exactly as a lens's own drawer behaves.
+               The canvas is `position: relative` with NO z-index, so it is a
+               containing block without being a stacking context (W37). -->
+          <WfDrawer t-if="personDrawerOpen" title="personTitle"
+                    subtitle="personSubtitle" onClose="_h.onClosePerson">
+            <WfPersonWeek data="state.person" onOpenProfile="_h.onOpenProfile"/>
+          </WfDrawer>
+        </main>
+
+        <!-- ==================== the Needs-you dock =====================
+             The third flex child of `.pbms-low`, mounted ONCE for the whole
+             workspace and never keyed to the lens: the point of an ambient
+             queue is that switching lens does not reload or reset it.
+
+             It carries NO z-index (W37) — it is a flex sibling of the canvas,
+             so a lens's `position: fixed; z-index: 1050` modal still resolves
+             against the root stacking context. -->
+        <WfDock onOpenPerson="_h.onDockPerson" onOpenQueue="_h.onDockQueue"/>
+      </div>
+    </div>
+  </t>
+
+</templates>

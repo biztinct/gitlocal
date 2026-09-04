@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_dashboard.PbDashboard">
+    <div class="pbd-root" t-att-class="{ 'pbd-root--embedded': props.embedded }">
+        <t t-if="state.loaded">
+            <!-- Hero (solid) -->
+            <div class="pbd-hero" data-coach="dash-hero">
+                <div class="pbd-hero-l">
+                    <!-- The one element the Home hub already owns: its command
+                         bar says "Home", so this line would be the second thing
+                         on screen naming where you are (W17). The greeting, the
+                         run summary and both hero buttons stay — an embedded
+                         mode that removed a figure or a door would be a fork. -->
+                    <div class="pbd-eyebrow" t-if="!props.embedded" t-esc="companyEyebrow()"/>
+                    <h1><t t-esc="greeting()"/>, <t t-esc="state.d.user"/></h1>
+                    <div class="pbd-sub" t-if="isEmpty">No payroll data yet — let's get you set up</div>
+                    <div class="pbd-sub" t-else="">
+                        <t t-esc="state.d.run.name"/> · <t t-esc="state.d.run.done"/>/<t t-esc="state.d.run.slips"/> payslips done ·
+                        <t t-esc="state.d.kpis.pending"/> awaiting approval
+                    </div>
+                </div>
+                <div class="pbd-hero-r">
+                    <button class="pbd-btn-glass" data-coach="dash-runpayroll" t-on-click="() => this.open('pb_payrun_wizard.action_pb_payrun_wizard')">
+                        <t t-out="icon('zap',15)"/> Run Payroll</button>
+                    <button class="pbd-btn-glass" t-on-click="() => this.openInsights()">
+                        <t t-out="icon('trending-up',15)"/> Analytics</button>
+                </div>
+            </div>
+
+            <!-- Activation checklist. Sits BETWEEN the hero and the KPI strip
+                 so every data-coach anchor below stays exactly where it was;
+                 the KPIs and cards still render, showing honest zeros.
+
+                 It is drawn while the tenant has no pay run and disappears for
+                 good once it has one. Every tick comes from a count the server
+                 took this second, so there is no state in here to get wrong.
+                 The first unfinished step is the only primary button on the
+                 screen. -->
+            <div class="pbd-act" t-if="activation">
+                <div class="pbd-act-head">
+                    <span class="pbd-act-hic"><t t-out="icon('flag',18)"/></span>
+                    <div class="pbd-act-hx">
+                        <div class="pbd-act-t">Get your first payroll out</div>
+                        <div class="pbd-act-s">Each step opens the screen it talks about. Come back here any time.</div>
+                    </div>
+                    <div class="pbd-act-count"><t t-esc="activation.doneCount"/> of <t t-esc="activation.items.length"/> done</div>
+                </div>
+                <ol class="pbd-acts">
+                    <li t-foreach="activation.items" t-as="it" t-key="it.key"
+                        class="pbd-act-i"
+                        t-att-class="{ 'is-done': it.done, 'is-next': it_index === activation.next }">
+                        <span class="pbd-act-mark">
+                            <t t-if="it.done"><t t-out="icon('check',14)"/></t>
+                            <t t-else=""><t t-out="icon(it.icon,15)"/></t>
+                        </span>
+                        <div class="pbd-act-x">
+                            <div class="pbd-act-n" t-esc="it.title"/>
+                            <div class="pbd-act-d" t-esc="it.desc"/>
+                        </div>
+                        <button class="pbd-btn" t-att-class="{ ghost: it_index !== activation.next }"
+                                t-on-click="() => this.runStep(it)"><t t-esc="it.cta"/></button>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- KPI strip -->
+            <div class="pbd-kpis" data-coach="dash-kpis">
+                <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="activeContractsLabel()"/></div>
+                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks">personnel cost</div></div>
+                <div class="pbd-kpi k-amber"><div class="kl">Pending approval <t t-out="icon('clock',15)"/></div><div class="kv" t-esc="state.d.kpis.pending"/><div class="ks">awaiting sign-off</div></div>
+                <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="rulesLabel()"/></div>
+            </div>
+
+            <!-- Cockpit cards -->
+            <div class="pbd-grid">
+                <div class="pbd-card">
+                    <div class="pbd-card-head">
+                        <div><div class="pbd-card-t">Latest pay run</div><div class="pbd-card-m" t-esc="state.d.run.name"/></div>
+                        <!-- With no payslips there is no readiness to measure,
+                             and a red empty dial is a measurement this tenant
+                             has not earned. Draw the placeholder instead —
+                             same idiom as the Company-overview card below. -->
+                        <t t-if="state.d.run.slips" t-out="ring(state.d.run.readiness)"/>
+                        <span class="pbd-ring-none" t-else="">—</span>
+                    </div>
+                    <div class="pbd-pills">
+                        <span class="pbd-pill ok"><t t-esc="state.d.run.done"/>/<t t-esc="state.d.run.slips"/> done</span>
+                        <span class="pbd-pill warn" t-if="state.d.run.pending"><t t-esc="state.d.run.pending"/> pending</span>
+                    </div>
+                    <div class="pbd-mini">
+                        <div><div class="mv" t-esc="state.d.run.slips"/><div class="ml">Payslips</div></div>
+                        <div><div class="mv" t-esc="state.d.run.done"/><div class="ml">Approved</div></div>
+                        <div><div class="mv" t-esc="state.d.run.pending"/><div class="ml">Pending</div></div>
+                    </div>
+                    <button class="pbd-link" t-on-click="() => this.open('pb_payruns.action_pb_payruns_kanban')">Open pay runs →</button>
+                </div>
+
+                <div class="pbd-card">
+                    <div class="pbd-card-head">
+                        <div><div class="pbd-card-t">Company overview</div><div class="pbd-card-m">All departments · monthly</div></div>
+                        <!-- The 100 was a decoration, not a measurement. With nobody
+                             on the payroll there is nothing to be 100% of, and a red
+                             0 ring would be a different lie — so it draws nothing. -->
+                        <t t-if="!isEmpty and state.d.kpis.headcount" t-out="ring(100)"/>
+                    </div>
+                    <div class="pbd-pills">
+                        <span class="pbd-pill muted"><t t-esc="state.d.kpis.headcount"/> headcount</span>
+                        <span class="pbd-pill warn"><t t-esc="state.d.kpis.pending"/> approvals</span>
+                    </div>
+                    <div class="pbd-mini">
+                        <div><div class="mv" t-esc="money(state.d.kpis.payroll)"/><div class="ml">Payroll</div></div>
+                        <div><div class="mv" t-esc="money(state.d.kpis.avg)"/><div class="ml">Avg salary</div></div>
+                        <div><div class="mv" t-esc="money(state.d.kpis.contributions)"/><div class="ml">Contributions</div></div>
+                    </div>
+                    <button class="pbd-link" t-on-click="() => this.openInsights()">Open analytics →</button>
+                </div>
+
+                <div class="pbd-card" data-coach="dash-formula">
+                    <div class="pbd-card-head">
+                        <div><div class="pbd-card-t">Formula engine</div><div class="pbd-card-m">Excel-driven configs</div></div>
+                        <!-- Nothing configured yet is not nought percent
+                             healthy; it is nothing to be healthy about. -->
+                        <t t-if="state.d.formula.count" t-out="ring(state.d.formula.health)"/>
+                        <span class="pbd-ring-none" t-else="">—</span>
+                    </div>
+                    <div class="pbd-pills">
+                        <span class="pbd-pill cyan"><t t-esc="state.d.formula.active"/> active</span>
+                        <span class="pbd-pill muted"><t t-esc="state.d.formula.count"/> configs</span>
+                    </div>
+                    <div class="pbd-mini">
+                        <div><div class="mv" t-esc="state.d.formula.rules"/><div class="ml">Rules</div></div>
+                        <div><div class="mv" t-esc="state.d.formula.count"/><div class="ml">Configs</div></div>
+                        <div><div class="mv" t-esc="state.d.formula.tests"/><div class="ml">Tests</div></div>
+                    </div>
+                    <button class="pbd-link" t-on-click="() => this.open('pb_formula_studio.action_pb_formula_studio')">Open formula engine →</button>
+                </div>
+            </div>
+        </t>
+        <t t-else=""><div class="pbd-loading">Loading dashboard…</div></t>
+    </div>
+</t>
+
+</templates>

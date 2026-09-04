@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sso_error_page" name="Zoho SSO message">
+        <html lang="en">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title><t t-esc="title"/> · Payobook</title>
+                <style>
+                    * { box-sizing: border-box; }
+                    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+                           background: #f5f5fb; color: #1d1934; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+                    .card { width: min(520px, 100%); background: #fff; border: 1px solid #e6e3f2; border-radius: 20px;
+                            padding: 34px; box-shadow: 0 18px 55px rgba(42, 32, 84, .12); }
+                    .brand { color: #5b48bd; font-weight: 800; font-size: 18px; margin-bottom: 28px; }
+                    h1 { margin: 0 0 12px; font-size: 25px; line-height: 1.25; }
+                    p { margin: 0; color: #666178; line-height: 1.6; }
+                    a { display: inline-flex; margin-top: 26px; padding: 11px 17px; border-radius: 10px;
+                        color: #fff; background: #5b48bd; text-decoration: none; font-weight: 700; }
+                </style>
+            </head>
+            <body>
+                <main class="card">
+                    <div class="brand">Payobook</div>
+                    <h1><t t-esc="title"/></h1>
+                    <p><t t-esc="message"/></p>
+                    <a href="/web/login">Go to Payobook sign in</a>
+                </main>
+            </body>
+        </html>
+    </template>
+</odoo>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payslip.Statement">
+    <div class="pbps">
+      <!-- hero (Light tint) -->
+      <div class="pbps-hero">
+        <div class="pbps-av" t-esc="data.initials"/>
+        <div class="pbps-id">
+          <div class="pbps-nm" t-esc="data.employee"/>
+          <div class="pbps-jt"><t t-esc="data.job"/><t t-if="data.job and data.dept"> · </t><t t-esc="data.dept"/></div>
+          <div class="pbps-chips">
+            <span t-if="data.period" class="pbps-chip">
+              <svg class="pbps-ic" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg>
+              <t t-esc="data.period"/>
+            </span>
+            <span t-if="data.structure" class="pbps-chip">
+              <svg class="pbps-ic" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.57 3.9a2 2 0 0 0 1.66 0l8.57-3.9a1 1 0 0 0 0-1.83Z"/><path d="m2 12 9.17 4.16a2 2 0 0 0 1.66 0L22 12"/></svg>
+              <t t-esc="data.structure"/>
+            </span>
+            <span t-if="data.reference" class="pbps-chip">
+              <svg class="pbps-ic" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg>
+              <t t-esc="data.reference"/>
+            </span>
+          </div>
+        </div>
+        <div class="pbps-net">
+          <div class="pbps-net-k">Net pay</div>
+          <div class="pbps-net-v" t-esc="money(data.net)"/>
+          <span t-attf-class="pbps-badge {{ data.state==='done' ? 'paid' : 'pend' }}" t-esc="data.state_label"/>
+        </div>
+      </div>
+
+      <!-- earnings vs deductions -->
+      <div class="pbps-grid">
+        <div class="pbps-card">
+          <div class="pbps-card-h"><span class="pbps-dotc earn"/>Earnings<span class="pbps-tag"><t t-esc="data.earnings ? data.earnings.length : 0"/></span></div>
+          <div t-foreach="data.earnings or []" t-as="e" t-key="e_index" class="pbps-row">
+            <span class="pbps-row-nm" t-esc="e.name"/>
+            <span class="pbps-row-amt" t-esc="money(e.amount)"/>
+          </div>
+          <div class="pbps-sub earn"><span>Gross pay</span><span t-esc="money(data.gross)"/></div>
+        </div>
+        <div class="pbps-card">
+          <div class="pbps-card-h"><span class="pbps-dotc ded"/>Deductions<span class="pbps-tag"><t t-esc="data.deductions ? data.deductions.length : 0"/></span></div>
+          <div t-foreach="data.deductions or []" t-as="d" t-key="d_index" class="pbps-row">
+            <span class="pbps-row-nm" t-esc="d.name"/>
+            <span class="pbps-row-amt ded">−<t t-esc="money(d.amount)"/></span>
+          </div>
+          <div t-if="!data.deductions or !data.deductions.length" class="pbps-empty">No deductions</div>
+          <div class="pbps-sub ded"><span>Total deductions</span><span>−<t t-esc="money(data.deductions_total)"/></span></div>
+          <t t-if="data.advance">
+            <div class="pbps-row pbps-advrow">
+              <span class="pbps-row-nm" t-esc="data.advance_label"/>
+              <span class="pbps-row-amt adv">−<t t-esc="money(data.advance)"/></span>
+            </div>
+            <div class="pbps-sub net"><span>Net pay</span><span t-esc="money(data.net)"/></div>
+          </t>
+        </div>
+      </div>
+
+      <!-- employer contributions (informational — not deducted from pay) -->
+      <div t-if="data.employer and data.employer.length" class="pbps-card pbps-emp">
+        <div class="pbps-card-h"><span class="pbps-dotc emp"/>Employer contributions<span class="pbps-tag"><t t-esc="data.employer.length"/></span></div>
+        <div t-foreach="data.employer" t-as="c" t-key="c_index" class="pbps-row">
+          <span class="pbps-row-nm" t-esc="c.name"/>
+          <span class="pbps-row-amt" t-esc="money(c.amount)"/>
+        </div>
+        <div class="pbps-sub emp"><span>Total employer cost</span><span t-esc="money(data.employer_total)"/></div>
+        <div class="pbps-empnote">Paid by the employer — not deducted from your pay.</div>
+      </div>
+
+      <!-- waterfall -->
+      <div class="pbps-water">
+        <div class="pbps-seg gross"><span class="k">Gross</span><span class="v" t-esc="moneyShort(data.gross)"/></div>
+        <div class="pbps-seg ded" t-attf-style="flex-basis:{{ segDed }}%"><span class="k">− Deductions</span><span class="v" t-esc="moneyShort(data.deductions_total)"/></div>
+        <div t-if="data.advance" class="pbps-seg adv"><span class="k">− Advance</span><span class="v" t-esc="moneyShort(data.advance)"/></div>
+        <div class="pbps-seg net"><span class="k">Net pay</span><span class="v" t-esc="moneyShort(data.net)"/></div>
+      </div>
+
+      <!-- worked days -->
+      <div t-if="data.worked and data.worked.length" class="pbps-worked">
+        <div t-foreach="data.worked" t-as="w" t-key="w_index" class="pbps-wd">
+          <span class="k" t-esc="w.label"/>
+          <span class="v"><t t-esc="w.hours"/> h<t t-if="w.days"> · <t t-esc="w.days"/> d</t></span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

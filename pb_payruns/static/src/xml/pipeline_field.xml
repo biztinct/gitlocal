@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payruns.PipelineField">
+    <div t-if="rejected" class="pb-pipe rejected">
+      <span class="pb-pipe-rej">✕ Rejected</span>
+    </div>
+    <div t-else="" class="pb-pipe">
+      <t t-foreach="stages" t-as="s" t-key="s.key">
+        <div t-attf-class="pb-pipe-step {{ s.cls }}">
+          <span class="pb-pipe-dot"><t t-if="s.cls === 'done'">✓</t></span>
+          <span class="pb-pipe-lbl" t-esc="s.label"/>
+        </div>
+        <div t-if="!s_last" t-attf-class="pb-pipe-bar {{ s.cls === 'done' ? 'done' : '' }}"/>
+      </t>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ===== ONE card label, rendered by BOTH columns =====
+       SOURCING S6. `mapping_canvas.xml` carried two item blocks with two
+       independent label blocks, and every chip therefore had to be added to
+       both. It was added to one three times running: the source chip (S16), the
+       sealed badge (S18), and now D1's duplicate — each one a template bug that
+       presents as a data bug, because the server payload and the client helper
+       both check out. There is one label block now.
+
+       `itemChips` is the other half of it: three chips answer three different
+       questions about a card, and nothing stopped two of them answering with the
+       same word. Now nothing can. -->
+  <t t-name="pb_formula_studio.McItemLabel">
+    <div class="mc-item-label">
+      <span t-esc="it.label"/>
+      <!-- JOURNEY J9 — the rank is a real <sup>, never a Unicode superscript
+           character: a screen reader announces the element and skips the
+           glyph, and the font stack renders the element at every size where
+           the codepoint is missing from half the faces we ship. -->
+      <span t-foreach="itemChips(it)" t-as="ch" t-key="ch.key"
+            t-att-class="ch.cls" t-att-title="ch.hint">
+        <t t-esc="ch.label"/><sup t-if="ch.rank" t-esc="ch.rank"/>
+      </span>
+      <!-- SOURCING S5 — lineage, in place. Only a card that HAS lineage grows the
+           affordance, so every other board is unchanged. S6 — and a COMPONENT fed
+           by a rule output has lineage too, which is why this lives here rather
+           than in the left column alone. -->
+      <button t-if="hasLineage(it)" class="mc-item-lineage" type="button"
+              t-att-title="lineageLabel(it)"
+              t-on-click="(ev) => this.openLineage(it, ev, mcSide)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 7.2 15.6 11M8.5 16.8 15.6 13"/></svg>
+      </button>
+    </div>
+  </t>
+
+  <t t-name="pb_formula_studio.MappingCanvas">
+    <div t-attf-class="mapping-canvas {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
+         t-ref="root" tabindex="0" t-on-keydown="onKeydown">
+
+      <!-- THE BOARD. Everything that can be scrolled out of view lives inside
+           this element, and this element CLIPS: a wire may end on a column's
+           edge, it may never paint over the story bar or the mode strip. The
+           transform popover and the draw hint are deliberate siblings, outside
+           the clip, because they are allowed to overhang. -->
+      <div class="mc-board">
+
+        <!-- wire layer (SVG bezier paths, pixel coords relative to the board) -->
+        <svg class="mc-wires" preserveAspectRatio="none">
+          <t t-foreach="ui.geom" t-as="g" t-key="g.id">
+            <!-- JOURNEY J8 — the wire says which cards it claims, in the DOM.
+                 MJ30's lesson was that no automated check this codebase owns can
+                 see a wire (MJ12 excludes SVG from the sweep, by necessity), and
+                 the check that finally caught it — "how far is this endpoint from
+                 the port it says it ends on" — was typed into a console by hand
+                 twice. These five attributes are what make it a committed
+                 artefact (`tools/mapping_overlap_sweep.js`): they are read only
+                 by that harness and change nothing on screen. -->
+            <g t-attf-class="mc-w {{ g.state }} {{ g.err ? 'error' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'sel' : '' }}"
+               t-att-data-wire="g.id" t-att-data-left="g.leftId"
+               t-att-data-right="g.rightId"
+               t-att-data-dockl="g.dockL" t-att-data-dockr="g.dockR">
+              <!-- a fat transparent stroke under the visible one: a 2px line is
+                   not a trackpad target, and the layer itself takes no events -->
+              <path class="mc-hit" t-att-d="g.d"
+                    t-on-mouseenter="() => this.enterWire(g.id)"
+                    t-on-mouseleave="() => this.leaveWire()"
+                    t-on-click="(ev) => this.selectWire(g, ev)"
+                    t-on-dblclick="(ev) => this.centreBoth(g, ev)">
+                <!-- SVG's own tooltip element: a `title` ATTRIBUTE on an SVG
+                     child is not a tooltip, it is an unknown attribute, and
+                     the gesture would be undiscoverable on the wire itself
+                     (which is where a reader tries it first). -->
+                <title>Double-click to bring both ends into view</title>
+              </path>
+              <path class="mc-wire" t-att-d="g.d"/>
+              <polygon class="mc-head" t-att-points="g.head"/>
+              <!-- JOURNEY J3 S1 — the second head. Present only on a board whose
+                   rows genuinely run both ways, because an arrow that claims a
+                   direction the code does not have is worse than no arrow. -->
+              <polygon t-if="g.headBack" class="mc-head back" t-att-points="g.headBack"/>
+              <!-- the travelling highlight: a normalised dash walking the same
+                   path, desynchronised per wire so N of them never march in
+                   lockstep. CSS, not SMIL — SMIL restarts on every re-render. -->
+              <path t-if="flowing" class="mc-flow" t-att-d="g.d" pathLength="100"
+                    t-attf-style="animation-duration:{{ flowDur(g_index) }}"/>
+              <circle t-if="g.dockL" class="mc-park" t-att-cx="g.sx" t-att-cy="g.y1" r="3.4"/>
+              <circle t-if="g.dockR" class="mc-park" t-att-cx="g.tx" t-att-cy="g.y2" r="3.4"/>
+            </g>
+          </t>
+        </svg>
+
+        <div class="mc-cols">
+          <!-- LEFT column (source) -->
+          <div class="mc-col left"
+               t-on-mouseenter="() => { ui.hoverCol = 'left'; }"
+               t-on-mouseleave="() => { ui.hoverCol = ''; }">
+            <div class="mc-col-head">
+              <div class="mc-col-head__t">
+                <span class="mc-col-title" t-esc="props.leftTitle or 'Source'"/>
+                <span class="mc-col-count" t-esc="countLabel('left')"/>
+              </div>
+              <!-- WP-4: the search belongs in the header, which is the one part
+                   of a column that does not scroll away from you -->
+              <div class="mc-col-q">
+                <span class="mc-col-q__ic" t-out="ic('search', 13)"/>
+                <input type="search" t-ref="lq" t-att-placeholder="searchPlaceholder('left')"
+                       t-att-value="ui.q.left"
+                       t-on-input="(ev) => this.onSearch('left', ev)"
+                       t-on-keydown="(ev) => this.onSearchKey('left', ev)"/>
+                <button t-if="ui.q.left" class="mc-col-q__x" title="Clear the search"
+                        t-on-click="() => this.clearSearch('left')" t-out="ic('x', 12)"/>
+              </div>
+              <div class="mc-col-f">
+                <button t-foreach="filterChips('left')" t-as="c" t-key="c.v"
+                        t-attf-class="mc-chip {{ ui.f.left === c.v ? 'on' : '' }} {{ c.v === 'suggested' ? 'sug' : '' }}"
+                        t-on-click="() => this.setFilter('left', c.v)" t-esc="c.l"/>
+              </div>
+              <!-- filtering must never lie about a wire -->
+              <div t-if="hiddenWires('left')" class="mc-col-hid">
+                <t t-esc="hiddenWires('left')"/> wire<t t-if="hiddenWires('left') > 1">s</t> hidden by this filter
+                <button t-on-click="() => this.clearFilters('left')">clear</button>
+              </div>
+            </div>
+            <!-- the SCROLLER is this element, and `scroll` does not bubble: the
+                 handler has to sit exactly here or wire geometry silently goes
+                 stale the moment the column moves (Integrations C5, W146). -->
+            <div class="mc-col-body" t-ref="lbody" t-on-scroll="onColScroll">
+              <!-- SOURCING S6 — the column takes what you typed.
+                   The Excel board could only ever offer "the keys of the last
+                   load", so on a database with no upload it offered nothing and
+                   the only spreadsheet-mapping surface in the product was a dead
+                   end. Type a heading (or a column letter) that is not in the
+                   list and it becomes a card you can wire. Nothing at rest, and
+                   nothing at all on a board whose adapter does not allow it. -->
+              <button t-if="showAddLeft" class="mc-col-add" type="button"
+                      t-on-click="addLeft">
+                <span class="mc-col-add__ic" t-out="ic('plus', 12)"/>
+                <span class="mc-col-add__t" t-esc="addLeftText"/>
+              </button>
+              <t t-set="lview" t-value="leftView"/>
+              <t t-foreach="lview" t-as="it" t-key="it.id">
+                <!-- opt-in group header: drawn only for items that carry a
+                     `group`, so every existing adapter renders unchanged -->
+                <div t-if="leftGroupHead(lview, it_index)" class="mc-group" t-esc="leftGroupHead(lview, it_index)"/>
+                <div data-side="left" t-att-data-id="it.id"
+                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }} {{ isWirable(it) ? '' : 'sealed' }}"
+                     t-on-click="() => this.clickLeft(it.id)"
+                     t-on-mouseenter="() => this.enterItem('left', it.id)"
+                     t-on-mouseleave="() => this.leaveItem()">
+                  <div class="mc-item-main">
+                    <t t-call="pb_formula_studio.McItemLabel">
+                      <t t-set="mcSide" t-value="'left'"/>
+                    </t>
+                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- JOURNEY J3 S1 — what this row DOES, both halves of it.
+                         Left column only: it is a statement about the mapping,
+                         and the mapping is anchored on the component. -->
+                    <div t-if="dirNote(it)" t-attf-class="mc-item-dir {{ it.meta.direction }}"
+                         t-att-title="dirNote(it)"><span class="mc-item-dir__g" t-esc="it.meta.direction === 'two_way' ? '⇆' : '→'"/><t t-esc="dirNote(it)"/></div>
+                    <!-- what the data looks like. A live sample is a value that
+                         arrived; only a SHIPPED-PAPER catalogue sample is an
+                         invented example, and the `e.g.` marks exactly that
+                         (SC-1). A catalogue row observed in real data carries a
+                         REAL sample and shows it plain. -->
+                    <div t-if="it.sample" t-attf-class="mc-item-sample {{ it.prov === 'catalog' and it.provOrigin === 'template' ? 'eg' : '' }}">
+                      <span t-if="it.prov === 'catalog' and it.provOrigin === 'template'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
+                    </div>
+                  </div>
+                  <!-- MAPFIX D3 — ONE trigger, of a fixed width, IN the flow.
+                       Phase B's three pills reserved unpredictable width at
+                       `opacity: 0` and collapsed the name (MF13); floated out of
+                       the flow to stop that, they covered the name and the code
+                       instead. A single 22px button is measurable, never moves,
+                       and leaves the label to ellipsise beside it — so the name
+                       and the code are readable in every state. The verbs live in
+                       the menu it opens. -->
+                  <button t-if="props.canEdit and itemActions(it).length" type="button"
+                          t-att-title="itemActionsLabel(it)"
+                          t-att-aria-label="itemActionsLabel(it)"
+                          aria-haspopup="menu"
+                          t-att-aria-expanded="isMenuOpen(it) ? 'true' : 'false'"
+                          t-attf-class="mc-item-more {{ isMenuOpen(it) ? 'on' : '' }}"
+                          t-on-click="(ev) => this.toggleItemMenu(it, ev)"
+                          t-out="ic('moreVertical', 15)"/>
+                  <span class="mc-plug right"/>
+                </div>
+              </t>
+              <!-- An empty column has TWO causes and they need different sentences.
+                   "Nothing matches that" over a list the adapter never sent is a
+                   lie, and the Clear button under it is a verb with nothing to
+                   undo — the reader clears a filter they never set and concludes
+                   the board is broken. -->
+              <div t-if="!lview.length" class="mc-col-empty">
+                <t t-if="props.leftItems.length">
+                  Nothing matches that.
+                  <button t-on-click="() => this.clearFilters('left')">Clear</button>
+                </t>
+                <!-- SOURCING S6 — an empty column that can be filled says how.
+                     "Nothing to show on this side" over a board whose whole job is
+                     to be filled in is a dead end with a full stop after it. -->
+                <t t-elif="props.canAddLeft">Type a column heading in the search box
+                  above to add it — no file needs to be loaded.</t>
+                <t t-else="">Nothing to show on this side.</t>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT column (target) -->
+          <div class="mc-col right"
+               t-on-mouseenter="() => { ui.hoverCol = 'right'; }"
+               t-on-mouseleave="() => { ui.hoverCol = ''; }">
+            <div class="mc-col-head">
+              <div class="mc-col-head__t">
+                <span class="mc-col-title" t-esc="props.rightTitle or 'Target'"/>
+                <span class="mc-col-count" t-esc="countLabel('right')"/>
+              </div>
+              <div class="mc-col-q">
+                <span class="mc-col-q__ic" t-out="ic('search', 13)"/>
+                <input type="search" t-ref="rq" t-att-placeholder="searchPlaceholder('right')"
+                       t-att-value="ui.q.right"
+                       t-on-input="(ev) => this.onSearch('right', ev)"
+                       t-on-keydown="(ev) => this.onSearchKey('right', ev)"/>
+                <button t-if="ui.q.right" class="mc-col-q__x" title="Clear the search"
+                        t-on-click="() => this.clearSearch('right')" t-out="ic('x', 12)"/>
+              </div>
+              <div class="mc-col-f">
+                <button t-foreach="filterChips('right')" t-as="c" t-key="c.v"
+                        t-attf-class="mc-chip {{ ui.f.right === c.v ? 'on' : '' }} {{ c.v === 'suggested' ? 'sug' : '' }}"
+                        t-on-click="() => this.setFilter('right', c.v)" t-esc="c.l"/>
+              </div>
+              <div t-if="hiddenWires('right')" class="mc-col-hid">
+                <t t-esc="hiddenWires('right')"/> wire<t t-if="hiddenWires('right') > 1">s</t> hidden by this filter
+                <button t-on-click="() => this.clearFilters('right')">clear</button>
+              </div>
+            </div>
+            <div class="mc-col-body" t-ref="rbody" t-on-scroll="onColScroll">
+              <t t-set="rview" t-value="rightView"/>
+              <t t-foreach="rview" t-as="it" t-key="it.id">
+                <!-- opt-in group header, the mirror of the left column's. Only
+                     boards whose right items carry a `group` grow one. -->
+                <div t-if="rightGroupHead(rview, it_index)" class="mc-group" t-esc="rightGroupHead(rview, it_index)"/>
+                <div data-side="right" t-att-data-id="it.id"
+                     t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
+                     t-on-click="() => this.clickRight(it.id)"
+                     t-on-mouseenter="() => this.enterItem('right', it.id)"
+                     t-on-mouseleave="() => this.leaveItem()">
+                  <span class="mc-plug left"/>
+                  <div class="mc-item-main">
+                    <!-- SOURCING S6 — the SAME label block as the left column.
+                         S16 and S18 were both this: two item templates that did
+                         not share a label, so every chip had to be added twice and
+                         the right column silently omitted whichever addition
+                         forgot — which looks like a data bug and is a template
+                         one. D1 is that failure a third time. It shares now. -->
+                    <t t-call="pb_formula_studio.McItemLabel">
+                      <t t-set="mcSide" t-value="'right'"/>
+                    </t>
+                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
+                         selection's permitted values (with the stored code, which
+                         is what the file has to contain), or whether a many2one
+                         creates what it cannot find. Rendered only for cards that
+                         carry a note, so every other board is unchanged. -->
+                    <!-- MAPFIX E1 — and when the card had to CUT the list, the
+                         note is the way to open it. The tooltip was the only
+                         place the rest of the values existed: slow, unselectable,
+                         cut off by the viewport, and absent on touch. Only a
+                         truncated note becomes a button — the adapter sends
+                         `values` only when it hid something, so an affordance
+                         that would do nothing never appears. -->
+                    <t t-if="note(it)">
+                      <button t-if="noteValues(it)" type="button"
+                              t-attf-class="mc-item-note act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
+                              t-att-title="note(it).title"
+                              t-att-aria-label="noteMenuLabel(it)"
+                              aria-haspopup="dialog"
+                              t-att-aria-expanded="isNoteOpen(it) ? 'true' : 'false'"
+                              t-on-click="(ev) => this.toggleNoteMenu(it, ev)">
+                        <span class="mc-item-note__t"><t t-esc="note(it).text"/><span
+                              class="mc-item-note__x" t-out="ic('chevronDown', 11)"/></span>
+                      </button>
+                      <div t-else="" t-attf-class="mc-item-note {{ note(it).tone }}"
+                           t-att-title="note(it).title" t-esc="note(it).text"/>
+                    </t>
+                  </div>
+                  <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
+                          t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
+                </div>
+              </t>
+              <div t-if="!rview.length" class="mc-col-empty">
+                <t t-if="props.rightItems.length">
+                  Nothing matches that.
+                  <button t-on-click="() => this.clearFilters('right')">Clear</button>
+                </t>
+                <t t-else="">Nothing to show on this side.</t>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== the wire hub: what this wire MEANS =====
+             Cycle 5 built this as three zones — `‹ │ transform │ ›` — and the
+             two outer ones were navigation: press an arrow, that column scrolls
+             to that end. C7 removes them. Two presses to see one connection,
+             with the first end usually gone off screen by the time the second
+             arrived, is not how a reader asks "where does this go?" — a
+             DOUBLE-CLICK on the wire or on this pill now centres both columns
+             at once and rings both cards.
+             What is left is meaning only: the transform glyph on an accepted
+             wire, a confidence and its two verbs on a suggestion. The pill is
+             ~90px narrower for it, which is why `spreadHubs` was re-tuned. -->
+        <div class="mc-hubs">
+          <t t-foreach="ui.geom" t-as="g" t-key="'h' + g.id">
+            <div t-if="hubVisible(g)"
+                 t-attf-class="mc-hub {{ g.state }} {{ g.err ? 'err' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'on' : '' }}"
+                 t-attf-style="left:{{ g.hx }}px;top:{{ g.hy }}px"
+                 title="Double-click to bring both ends into view"
+                 t-on-mouseenter="() => this.enterWire(g.id)"
+                 t-on-mouseleave="() => this.leaveWire()"
+                 t-on-dblclick="(ev) => this.centreBoth(g, ev)">
+
+              <div class="mc-hub__c">
+                <!-- a suggestion: how sure, and the two verbs -->
+                <t t-if="g.state === 'suggested'">
+                  <span class="mc-conf" t-att-title="g.reason" t-esc="confidencePct(g) + '%'"/>
+                  <button t-if="props.canEdit" class="mc-b-ok" title="Accept"
+                          t-on-click="() => this.accept(g)" t-out="ic('check', 12)"/>
+                  <button t-if="props.canEdit" class="mc-b-x" title="Reject"
+                          t-on-click="() => this.reject(g)" t-out="ic('x', 12)"/>
+                </t>
+                <!-- W62 — an accepted API wire: the transform, editable in place -->
+                <t t-elif="g.transform">
+                  <button class="mc-tf-chip"
+                          t-att-title="g.transform.error ? (g.transform.error_msg or 'Transform failed — using default') : (g.transform.python ? 'Python transform (edit in backend)' : 'Edit transform')"
+                          t-on-click="() => this.openTransform(g)">
+                    <t t-esc="transformGlyph(g.transform)"/>
+                  </button>
+                  <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping"
+                          t-on-click="() => this.del(g)" t-out="ic('trash', 12)"/>
+                </t>
+                <!-- an accepted cycle wire: no transform to show -->
+                <t t-else="">
+                  <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping"
+                          t-on-click="() => this.del(g)" t-out="ic('trash', 12)"/>
+                  <span t-else="" class="mc-hub__dot"/>
+                </t>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <!-- ===== the hint, and the one honest refusal =====
+             Discoverability is what the arrows were really for, so it has to be
+             replaced rather than dropped: hovering any wire says what the
+             gesture is, once, in the corner — not fifty tooltips at rest. -->
+        <div t-if="ui.hoverWire and !ui.reveal" class="mc-gesture">
+          <span t-out="ic('maximize', 13)"/>
+          <b>Double-click</b> to bring both ends into view
+        </div>
+
+        <!-- An end behind a filter cannot be scrolled to. Cycle 5's vocabulary,
+             on the wire rather than on the column: say which end, and offer the
+             clear — never clear a search the reader typed without asking, and
+             never let a double-click look like it did nothing (W40). -->
+        <div t-if="ui.reveal" class="mc-reveal">
+          <span class="mc-reveal__ic" t-out="ic('eyeOff', 14)"/>
+          <span class="mc-reveal__t" t-esc="revealText"/>
+          <button class="mc-reveal__go" t-on-click="revealBoth">Clear the filter and show me</button>
+          <button class="mc-reveal__x" title="Dismiss" t-on-click="dismissReveal" t-out="ic('x', 13)"/>
+        </div>
+
+        <!-- ===== dock chips: the wires whose end is out of view =====
+             One chip per column edge, counted. A parked wire is still a wire;
+             what it must never be is a line to nowhere or a silent omission. -->
+        <div class="mc-docks">
+          <t t-foreach="ui.docks" t-as="d" t-key="d.key">
+            <button t-attf-class="mc-dock {{ d.side }} {{ d.dir &lt; 0 ? 'up' : 'down' }} {{ d.amber ? 'sug' : '' }} {{ d.filtered === d.count ? 'filt' : '' }}"
+                    t-attf-style="left:{{ d.x }}px;top:{{ d.y }}px"
+                    title="Click to visit these one by one"
+                    t-on-click="() => this.clickDock(d)">
+              <span class="mc-dock__ic" t-out="ic(d.dir &lt; 0 ? 'arrowUp' : 'arrowDown', 12)"/>
+              <span class="mc-dock__t" t-esc="dockLabel(d)"/>
+            </button>
+          </t>
+        </div>
+
+        <!-- A connection whose field is not on this board at all: counted and
+             said out loud, never dropped on the floor.
+             C6 — it used to fire for every mapping naming a path the CONNECTOR
+             had not yet delivered, which on a never-synced connector was all of
+             them, correct ones included. Now that a field the feed is expected
+             to deliver has a card of its own, this can only fire for a path in
+             neither the payloads nor the catalogue — which is the case it was
+             written for. The wording follows: "no longer delivers" claimed a
+             history nobody had checked. -->
+        <div t-if="ui.gone" class="mc-gone">
+          <t t-esc="ui.gone"/> mapping<t t-if="ui.gone > 1">s</t> point at a field this source is not known to deliver.
+        </div>
+      </div>
+
+      <!-- W62 — transform editor popover (scrim pattern, C11).
+           OUTSIDE `.mc-board`, so the board's clip can never cut it in half. -->
+      <t t-if="ui.tfOpen">
+        <div class="mc-tf-scrim" t-on-click="closeTransform"/>
+        <div t-attf-class="mc-tf-pop {{ tfAnchor.flip ? 'flip' : '' }}"
+             t-attf-style="left:{{ tfAnchor.x }}px;top:{{ tfAnchor.y }}px"
+             t-on-click="(ev) => ev.stopPropagation()">
+          <div class="mc-tf-head">
+            <span class="mc-tf-title">Transform on the wire</span>
+            <button class="mc-tf-x" t-on-click="closeTransform" t-out="ic('x', 15)"/>
+          </div>
+
+          <!-- python: read-only on the canvas (D-I2) -->
+          <div t-if="ui.tfPy" class="mc-tf-note">
+            <span class="mc-tf-glyph">ƒ</span>
+            <div>
+              <b>Python expression</b>
+              <p>Code transforms are edited in the connector's field-mapping form in the backend, not on the canvas.</p>
+              <p t-if="ui.tfPreview.error" class="mc-tf-err"><t t-esc="ui.tfPreview.error"/></p>
+            </div>
+          </div>
+
+          <!-- read-only user: badge + locked notice, no editor (W104 lesson) -->
+          <div t-elif="!props.canEdit" class="mc-tf-note">
+            <span class="mc-tf-glyph"><t t-esc="tfDraftGlyph"/></span>
+            <div>
+              <b>View only</b>
+              <p>Only payroll managers can edit transforms on the wire.</p>
+            </div>
+          </div>
+
+          <!-- manager editor -->
+          <t t-else="">
+            <div class="mc-tf-row">
+              <label>Operation</label>
+              <select class="mc-tf-sel" t-on-change="onDraftType">
+                <option t-foreach="tfTypeOptions" t-as="o" t-key="o.v" t-att-value="o.v" t-att-selected="o.v === ui.tfDraft.transformation_type" t-esc="o.l"/>
+              </select>
+            </div>
+            <div t-if="tfNeedsValue" class="mc-tf-row">
+              <label>Factor / value</label>
+              <input class="mc-tf-inp" type="number" step="any" t-att-value="ui.tfDraft.transformation_value" t-on-input="onDraftValue"/>
+            </div>
+            <div t-if="tfNeedsDecimals" class="mc-tf-row">
+              <label>Decimal places</label>
+              <input class="mc-tf-inp" type="number" step="1" min="0" t-att-value="ui.tfDraft.transformation_decimals" t-on-input="onDraftDecimals"/>
+            </div>
+
+            <!-- live preview: sample → transformed (D-I2) -->
+            <div class="mc-tf-prev">
+              <span class="mc-tf-badge"><t t-esc="tfDraftGlyph"/></span>
+              <t t-if="ui.tfPreview.loading"><span class="mc-tf-dim">computing…</span></t>
+              <t t-elif="ui.tfPreview.error"><span class="mc-tf-err" t-esc="ui.tfPreview.error"/></t>
+              <t t-else="">
+                <span class="mc-tf-dim" t-esc="ui.tfPreview.sample"/>
+                <span class="mc-tf-arr" t-out="ic('arrow', 15)"/>
+                <b t-esc="ui.tfPreview.result"/>
+              </t>
+            </div>
+
+            <div class="mc-tf-actions">
+              <button class="mc-tf-cancel" t-on-click="closeTransform">Cancel</button>
+              <button class="mc-tf-save" t-att-disabled="ui.tfSaving" t-on-click="saveTransform">
+                <t t-esc="ui.tfSaving ? 'Saving…' : 'Save'"/>
+              </button>
+            </div>
+          </t>
+        </div>
+      </t>
+
+      <!-- MAPFIX D3 — the card's action menu.
+           OUTSIDE `.mc-board` for the transform popover's reason: the board
+           clips, and a menu cut in half by a column edge is worse than none.
+           Three verbs with room for a sentence each, instead of three pills
+           painted across the name they belong to.
+
+           MAPFIX E1 — and the right column's VALUE LIST, which is this same
+           popover with a different body. One implementation, one placement
+           routine, one scrim, one Escape rung. -->
+      <t t-if="ui.menu">
+        <div class="mc-menu-scrim" t-on-click="() => this.closeItemMenu(true)"/>
+        <div t-attf-class="mc-menu {{ ui.menu.flip ? 'flip' : '' }} {{ ui.menu.kind === 'values' ? 'vals' : '' }}"
+             t-ref="menu"
+             t-att-role="ui.menu.kind === 'values' ? 'dialog' : 'menu'"
+             t-att-aria-label="ui.menu.label"
+             t-attf-style="left:{{ ui.menu.x }}px;top:{{ ui.menu.y }}px"
+             t-on-keydown="onMenuKeydown"
+             t-on-click="(ev) => ev.stopPropagation()">
+          <div class="mc-menu__h" t-esc="ui.menu.label"/>
+          <t t-if="ui.menu.kind === 'lineage'">
+            <div class="mc-lin">
+              <div t-if="ui.menu.lineage.summary" class="mc-lin__sum" t-esc="ui.menu.lineage.summary"/>
+              <div class="mc-lin__sec">Reads</div>
+              <div t-if="!ui.menu.lineage.reads.length" class="mc-lin__none">Nothing — it is the same for everyone.</div>
+              <div t-foreach="ui.menu.lineage.reads" t-as="p" t-key="p" class="mc-lin__row" t-esc="p"/>
+              <div class="mc-lin__sec">If nothing matches</div>
+              <div class="mc-lin__row prose" t-esc="ui.menu.lineage.fallback"/>
+              <div class="mc-lin__sec">Feeds</div>
+              <div t-if="!ui.menu.lineage.feeds.length" class="mc-lin__none">Nothing yet — no component reads this.</div>
+              <div t-foreach="ui.menu.lineage.feeds" t-as="f" t-key="f" class="mc-lin__row" t-esc="f"/>
+              <button t-if="ui.menu.lineage.rule_id and props.onLineage" class="mc-lin__open" type="button"
+                      t-on-click="() => this.props.onLineage(ui.menu.lineage.rule_id)">Open rule</button>
+            </div>
+          </t>
+          <t t-elif="ui.menu.kind === 'values'">
+            <div class="mc-menu__vals" tabindex="-1">
+              <div t-foreach="ui.menu.values" t-as="v" t-key="v.key" class="mc-menu__v">
+                <span class="mc-menu__vl" t-esc="v.label"/>
+                <span t-if="v.key !== v.label" class="mc-menu__vk" t-esc="v.key"/>
+              </div>
+            </div>
+            <div class="mc-menu__f" t-esc="valuesFooter()"/>
+          </t>
+          <t t-else="">
+            <button t-foreach="ui.menu.acts" t-as="act" t-key="act.key"
+                    class="mc-menu__i" type="button" role="menuitem"
+                    t-on-click="() => this.runMenuAction(act)">
+              <span class="mc-menu__l" t-esc="act.label"/>
+              <span t-if="act.hint" class="mc-menu__s" t-esc="act.hint"/>
+            </button>
+          </t>
+        </div>
+      </t>
+
+      <!-- draw-mode hint -->
+      <div t-if="ui.armedLeft != null and props.canEdit" class="mc-drawhint">
+        <span t-out="ic('arrow', 15)"/>
+        Click a target component to connect · <b>Esc</b> to cancel
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,758 @@
+/* F10 — Unified Mapping Canvas */
+
+/* JOURNEY J1 — the overlay shell that used to head this file is GONE.
+ *
+ * `.pbfs-map*` styled a scrim inside the Formula Studio holding a second copy of
+ * this board's chrome: its own header, its own tab strip, its own lane chips,
+ * its own template panel and its own two field pickers. All of it moved into the
+ * full-screen host (`mapping_studio.scss`, `.pbms-*`) when the two shells were
+ * merged, so the rules went with the markup rather than being left behind to
+ * style nothing — a stylesheet that outlives its DOM is how the next reader
+ * concludes a surface still exists.
+ *
+ * What stays in this file is THE BOARD: `.mapping-canvas` and everything under
+ * it, which is the component both hosts always shared and the one host now
+ * mounts. It binds its palette from `--i*` variables the host supplies, which is
+ * why nothing here needed to change when the host did.
+ */
+
+/* ================================================================ the canvas
+ *
+ * Integrations Cycle 5. Three structural rules, and everything else follows:
+ *
+ *   1. `.mc-board` CLIPS. Nothing drawn between the columns can reach the story
+ *      bar, the mode strip or the column headers — which is what the owner
+ *      photographed. The transform popover and the draw hint are siblings of
+ *      the board rather than children, because they are allowed to overhang.
+ *   2. every colour is a bound `--i*` variable whose FALLBACK is a hex this
+ *      file already contained (W1). Nothing new was invented; the amber, rose
+ *      and slate families simply gained names so the Mapping Studio can bind
+ *      them to `--pbim-*` and the two hosts cannot drift.
+ *   3. one object per wire. The three overlapping midpoint badges became the
+ *      three-zone hub, so there is never a pile of controls at one coordinate.
+ */
+.mapping-canvas {
+    position: absolute; inset: 0; outline: none;
+    --mc-amber:      var(--i-amber, #D97706);
+    --mc-amber-line: var(--i-amber-line, #FCD34D);
+    --mc-amber-ink:  var(--i-amber-ink, #B45309);
+    --mc-amber-wash: var(--i-amber-wash, #FEF3C7);
+    --mc-rose:       var(--i-rose, #DC2626);
+    --mc-rose-ink:   var(--i-rose-ink, #B91C1C);
+    --mc-rose-wash:  var(--i-rose-wash, #FEE2E2);
+    --mc-slate:      var(--i-slate, #94A3B8);
+    --mc-wash:       var(--i-wash, #F1F5F9);
+    --mc-wash2:      var(--i-wash2, #EEF1F5);
+}
+.mapping-canvas .mc-board {
+    position: absolute; inset: 0;
+    overflow: hidden;      /* fallback */
+    overflow: clip;        /* no scroll container, no escape */
+}
+
+/* ---- wires ---- */
+.mapping-canvas .mc-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+/* a 2px line is not a trackpad target; the hit stroke is */
+.mapping-canvas .mc-hit { fill: none; stroke: transparent; stroke-width: 16; stroke-linecap: round; pointer-events: stroke; cursor: pointer; }
+.mapping-canvas .mc-wire { fill: none; stroke-width: 2.2; stroke-linecap: round; transition: stroke-width .12s ease, opacity .14s ease; }
+.mapping-canvas .mc-head { transition: opacity .14s ease; }
+.mapping-canvas .mc-w { color: var(--i, #5A4BB0); transition: opacity .14s ease; }
+.mapping-canvas .mc-w .mc-wire { stroke: currentColor; }
+.mapping-canvas .mc-w .mc-head, .mapping-canvas .mc-w .mc-park { fill: currentColor; }
+.mapping-canvas .mc-w.accepted .mc-wire { stroke-width: 2.4; }
+.mapping-canvas .mc-w.suggested { color: var(--mc-amber); opacity: .92; }
+.mapping-canvas .mc-w.suggested .mc-wire { stroke-dasharray: 6 5; }
+.mapping-canvas .mc-w.error { color: var(--mc-rose); }
+.mapping-canvas .mc-w.hot .mc-wire, .mapping-canvas .mc-w.sel .mc-wire { stroke-width: 3.6; }
+.mapping-canvas .mc-w.hot, .mapping-canvas .mc-w.sel { opacity: 1; }
+.mapping-canvas.is-focus .mc-w.dim { opacity: .14; }
+/* the parked-endpoint dot: this wire's end is out of the column's view */
+.mapping-canvas .mc-park { stroke: #fff; stroke-width: 1.4; }
+
+/* The travelling bead — the reference renderer's animateMotion circle, done as
+   a normalised dash so it survives a re-render (SMIL restarts on every one).
+   `pathLength="100"` makes the dash a PERCENTAGE of the wire, so a short wire
+   and a long one carry the same-looking bead; the duration is set per wire
+   inline and deliberately desynchronised, which is most of why it feels alive. */
+.mapping-canvas .mc-flow {
+    fill: none; stroke: currentColor; stroke-width: 5.4; stroke-linecap: round;
+    stroke-dasharray: 1.1 98.9; pointer-events: none;
+    animation-name: mc-flow; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes mc-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }
+.mapping-canvas.is-busy .mc-flow { animation-play-state: paused; opacity: .35; }
+/* the story bar's "flash every wire" */
+.mapping-canvas.is-pulse .mc-w .mc-wire { animation: mc-pulseline 1s ease; }
+@keyframes mc-pulseline { 0%, 100% { stroke-width: 2.4; } 40% { stroke-width: 5.4; } }
+
+/* ---- columns ---- */
+.mapping-canvas .mc-cols { position: absolute; inset: 0; display: flex; z-index: 2; pointer-events: none; }
+/* The column width is a PROPERTY, not a number, because something outside this
+   file has to know it: the floating launchers are offset by exactly one column
+   plus a gutter so they land in the canvas rather than on the TO cards, and
+   Cycle 6's hard-coded 380px was that arithmetic done once, at one viewport
+   (C7 WP-4). The fallback keeps every host that does not set it rendering as
+   it always has. */
+.mapping-canvas .mc-col { width: var(--mc-col-w, 340px); display: flex; flex-direction: column; pointer-events: auto; min-height: 0; }
+.mapping-canvas .mc-col.left { margin-right: auto; }
+.mapping-canvas .mc-col.right { margin-left: auto; }
+.mapping-canvas .mc-col-head { display: flex; flex-direction: column; gap: 7px; padding: 11px 14px 9px; flex: none; }
+.mapping-canvas .mc-col-head__t { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mapping-canvas .mc-col.right .mc-col-head__t { flex-direction: row-reverse; }
+.mapping-canvas .mc-col-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i600, #4A3D96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mapping-canvas .mc-col-count { font-size: 11px; font-weight: 800; color: var(--muted, #6B7280); background: var(--mc-wash2); border-radius: 999px; padding: 1px 8px; flex: none; white-space: nowrap; }
+
+/* WP-4 — search. With 200 source fields, scrolling is not a way to find one. */
+.mapping-canvas .mc-col-q { display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 9px; padding: 5px 9px; transition: border-color .13s, box-shadow .13s; }
+.mapping-canvas .mc-col-q:focus-within { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-col-q__ic { display: inline-flex; flex: none; color: var(--muted, #6B7280); }
+.mapping-canvas .mc-col-q input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-col-q input::-webkit-search-cancel-button,
+.mapping-canvas .mc-col-q input::-webkit-search-decoration { -webkit-appearance: none; display: none; }
+.mapping-canvas .mc-col-q__x { border: 0; background: none; padding: 0; display: inline-flex; flex: none; color: var(--muted, #6B7280); cursor: pointer; }
+.mapping-canvas .mc-col-q__x:hover { color: var(--ink, #1E1B2E); }
+
+.mapping-canvas .mc-col-f { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.mapping-canvas .mc-col.right .mc-col-f { justify-content: flex-end; }
+.mapping-canvas .mc-chip { border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 999px; padding: 2px 9px; font-family: inherit; font-size: 10.5px; font-weight: 800; color: var(--muted, #6B7280); cursor: pointer; transition: .13s; }
+.mapping-canvas .mc-chip:hover { border-color: var(--i-border, #CBC2EE); color: var(--i600, #4A3D96); }
+.mapping-canvas .mc-chip.on { background: var(--i, #5A4BB0); border-color: var(--i, #5A4BB0); color: #fff; }
+.mapping-canvas .mc-chip.sug.on { background: var(--mc-amber); border-color: var(--mc-amber); }
+
+.mapping-canvas .mc-col-hid { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: var(--mc-amber-ink); background: var(--mc-amber-wash); border-radius: 7px; padding: 4px 8px; }
+.mapping-canvas .mc-col.right .mc-col-hid { flex-direction: row-reverse; }
+.mapping-canvas .mc-col-hid button { border: 0; background: none; padding: 0; font-family: inherit; font-size: 10.5px; font-weight: 800; color: var(--mc-amber-ink); text-decoration: underline; cursor: pointer; }
+
+/* `position: relative` is load-bearing: the jump scrolls this element by
+   `offsetTop` arithmetic rather than `scrollIntoView`, so it must be the
+   offsetParent of its own cards — and nothing else on the screen can move.
+
+   JOURNEY J7 D1 — and so is the BORDER, which is the dock strip.
+
+   The chips are absolutely positioned over this column at `z-index: 4`; they
+   used to hang on the clamp band, a line inside the scrollport, so the top chip
+   sat on the first card and the bottom chip on the last (measured live on abm:
+   167.9 × 23.8px over "Last Working Day"). A strip has to be reserved for them,
+   and the reservation has to survive SCROLLING — which rules out padding, whose
+   whole behaviour is to scroll away, in the exact state ("11 above") where the
+   chip exists. A border is outside the scrollport: no card can ever be painted
+   in it, at any offset.
+
+   Unconditional, and that is the point. Growing the strip only when a chip
+   appears moves every card, which moves which cards fall outside the band,
+   which changes whether there is a chip — a placement wired into its own cause.
+
+   `box-sizing: border-box` (the backend's global reset) means this does NOT move the
+   element's border box, and `getBoundingClientRect` is where the wire clamp
+   band comes from. Cards start 30px lower; wires end exactly where they did. */
+/* JOURNEY J8 D2 — the horizontal padding is the ARROWHEAD'S band, and 14px was
+   one pixel too few.
+
+   A wire's head is a triangle spanning `ANCHOR_GAP` (4) to `ANCHOR_GAP + HEAD`
+   (15) from the card's edge, so it is drawn INTO this padding. At 14px the last
+   pixel of the head — the flat BASE of the triangle, its widest and most
+   recognisable edge — fell outside the padding box and under the column's
+   scrollbar, which belongs to `.mc-cols` (`z-index: 2`) and paints over
+   `.mc-wires` (`z-index: 1`). Measured live on abm at 1440 before the fix: the
+   head's layout box ran 375→386 and its painted pixels stopped at 384. Nothing
+   was clipped by `.mc-board`; the column layer simply covered it.
+
+   18px is `ANCHOR_GAP + HEAD + 3`, and the same number is `WIRE_GUTTER` in
+   `mapping_geometry.js` (which the empty-column anchor fallback reads); a test
+   pins them together, because two constants that must agree and cannot see each
+   other is how this arrived. */
+.mapping-canvas .mc-col-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 4px 18px 20px; border-top: 30px solid transparent; border-bottom: 30px solid transparent; display: flex; flex-direction: column; gap: 7px; }
+.mapping-canvas .mc-col-empty { padding: 22px 10px; text-align: center; font-size: 12px; color: var(--muted, #6B7280); }
+.mapping-canvas .mc-col-empty button { display: block; margin: 8px auto 0; border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 8px; padding: 5px 12px; font-family: inherit; font-size: 11.5px; font-weight: 700; color: var(--i600, #4A3D96); cursor: pointer; }
+
+.mapping-canvas .mc-item { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 11px; padding: 9px 12px; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(15, 12, 40, .05); transition: border-color .13s, box-shadow .13s, transform .1s; }
+.mapping-canvas .mc-col.right .mc-item { flex-direction: row-reverse; text-align: right; }
+.mapping-canvas .mc-item:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
+.mapping-canvas .mc-item-main { flex: 1; min-width: 0; }
+/* ---- JOURNEY J7 D2 — the whole name, on the card ----
+   The owner's ask was "find out a way to display full name of the component",
+   against cards reading "Enroll for Insu…", "Employee Bank Ac…", "Phone
+   Allowa…". The cause was measured on the live board rather than assumed: the
+   label row is 252px, and a 142px "Contract component" source pill sits ON THE
+   NAME'S LINE — so the name was being offered 104px of it, and 23 of the right
+   column's 73 cards were ellipsised. It is MF13/MF26 a third time, in its
+   original form: an affordance whose width is not the text's cannot share a
+   line with the text.
+
+   `flex-wrap: wrap` is the entire fix, and it works because flex wraps on BASE
+   sizes before it shrinks anything: a name that cannot fit beside its chips
+   sends the chips to the next line and keeps the full 252px, where every one of
+   abm's 99 components fits (the longest needs 224px). Nothing moves on a card
+   whose name was always short — those chips stay inline, so the board does not
+   grow a row it did not need.
+
+   The name may then take TWO lines before it clamps, which is 500px of text at
+   this width; `-webkit-line-clamp` is what puts the ellipsis on the second one.
+   `overflow-wrap: break-word` deliberately, never `anywhere`: `anywhere` feeds
+   into min-content and that is the road back to MF13's one-character label. */
+.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; row-gap: 3px; }
+.mapping-canvas .mc-item-label > span:first-child {
+    min-width: 0; overflow: hidden; white-space: normal; overflow-wrap: break-word;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    line-height: 1.32;
+}
+/* The residual: a name that fills both lines. MJ34 — the full text is in a
+   `title`, and the card SAYS the title is there, because an affordance nobody
+   can see is one that does not exist. Set by the measured pass in
+   `_clipPass()`, so it appears on exactly the cards that lost a word. */
+.mapping-canvas .mc-item-label > span.is-clipped {
+    cursor: help;
+    text-decoration: underline dotted currentColor;
+    text-decoration-thickness: 1px; text-underline-offset: 2px;
+}
+
+/* ---- Integrations Cycle 6: where this card came from ----
+   Rendered only when `provChip()` returns something, which it does not for a
+   field the connector has actually delivered. Four tones, all of them bound to
+   the canvas' own `--i*` variables (which the studio binds to `--pbim-*`), so
+   there is not one new hex here and the Formula-Studio overlay cannot drift
+   into a second vocabulary. Uppercase and small on purpose: a provenance is a
+   footnote on a field name, never a second label competing with it. */
+.mapping-canvas .mc-prov {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent; line-height: 1.5; cursor: help;
+}
+.mapping-canvas .mc-prov.exp   { background: var(--i-soft, #EDEAF8);  color: var(--i600, #4A3D96);  border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-prov.calc  { background: var(--i-wash, #F1F5F9);  color: var(--i-deep, #241F52); border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-prov.warn  { background: var(--i-amber-wash, #FEF3C7); color: var(--i-amber-ink, #D97706); border-color: var(--i-amber-line, #FEF3C7); }
+.mapping-canvas .mc-prov.odoo  { background: var(--i-wash, #F1F5F9);  color: var(--i-slate, #64748B); border-color: var(--i-wash2, #F1F5F9); }
+/* ---- COLROLES P3: "this card already has a destination" ----
+   Same slot and same grammar as `.mc-prov`, a different sentence. Two tones:
+   `contract` for an amount component the contract syncs by itself, `text` for
+   one explicitly kept as text. Both read as SEALED rather than as a warning —
+   nothing is wrong with these columns, they are simply not this board's to
+   wire, and colouring them amber would send people looking for a fault. */
+.mapping-canvas .mc-badge {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent; line-height: 1.5; cursor: help;
+}
+.mapping-canvas .mc-badge.contract { background: var(--mc-rose-wash, #FEE2E2); color: var(--mc-rose-ink, #B91C1C); border-color: var(--mc-rose-wash, #FEE2E2); }
+.mapping-canvas .mc-badge.text     { background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); border-color: var(--i-border, #CBC2EE); }
+/* A sealed card takes no wire. Its plug is hollow, which is the board's own way
+   of saying "nothing connects here" without greying the row out (W40 — a row
+   nobody can read is not an explanation). */
+.mapping-canvas .mc-item.sealed { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(100,116,139,.045) 7px 14px); }
+.mapping-canvas .mc-item.sealed .mc-plug { background: #fff; box-shadow: 0 0 0 1px #CBD5E1; }
+.mapping-canvas .mc-item.sealed:hover { border-color: var(--line, #E8E9F3); }
+/* ---- MAPFIX D3 — one trigger, one menu ----
+   The history is worth keeping in front of the next reader. Phase B put three
+   verbs on the card. IN the flow they reserved their width at `opacity: 0` and
+   crushed the name to a single character (MF13/CR22). Lifted OUT of the flow to
+   fix that, they covered the name and the code whenever the row was hovered,
+   which is the defect Phase D was called on. Both are the same failure: an
+   affordance whose width depends on how many verbs there happen to be cannot
+   share a line with the text.
+   So: ONE button, a FIXED 22px, in the flow, where `.mc-item-main`'s
+   `flex: 1; min-width: 0` simply ellipsises the label beside it. Nothing moves
+   on hover, nothing overlaps in any state, and a bounding-box assertion can
+   prove it. It is visible at rest (dimmed) because hover-only discovery has now
+   proved fragile twice and because a touch device has no hover at all. */
+.mapping-canvas .mc-item-more {
+    flex: none; width: 22px; height: 22px; padding: 0; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; background: transparent;
+    color: var(--i-slate, #64748B); opacity: .45; cursor: pointer;
+    transition: opacity .12s, background .12s, border-color .12s, color .12s;
+}
+.mapping-canvas .mc-item-more svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-item:hover .mc-item-more,
+.mapping-canvas .mc-item.focus .mc-item-more,
+.mapping-canvas .mc-item-more:focus-visible,
+.mapping-canvas .mc-item-more.on {
+    opacity: 1; color: var(--i600, #4A3D96);
+    border-color: var(--i-border, #CBC2EE); background: #fff;
+}
+.mapping-canvas .mc-item-more:hover { background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item-more.on { background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item-more:focus-visible { outline: 2px solid var(--i, #5A4BB0); outline-offset: 1px; }
+.mapping-canvas .mc-item.armed .mc-item-more { color: #fff; opacity: .8; border-color: rgba(255,255,255,.5); background: transparent; }
+
+/* The menu. Same scrim/popover idiom as the transform editor (`.mc-tf-pop`), same
+   tokens, positioned by the component against the board's own box. A row has room
+   for the verb AND what it does, which three pills on a 300px card never had. */
+.mapping-canvas .mc-menu-scrim { position: absolute; inset: 0; z-index: 40; }
+.mapping-canvas .mc-menu {
+    position: absolute; z-index: 41; width: 264px;
+    background: #fff; border: 1px solid var(--i-border, #CBC2EE);
+    border-radius: 12px; box-shadow: 0 14px 34px rgba(15, 12, 40, .18);
+    padding: 5px; overflow: hidden;
+    animation: mc-menu-in .12s ease;
+}
+.mapping-canvas .mc-menu__h {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted, #6B7280);
+    padding: 6px 9px 5px; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mapping-canvas .mc-menu__i {
+    display: block; width: 100%; text-align: left; border: 0; background: none;
+    border-radius: 8px; padding: 7px 9px; cursor: pointer; font-family: inherit;
+}
+.mapping-canvas .mc-menu__i:hover, .mapping-canvas .mc-menu__i:focus-visible {
+    background: var(--i-soft, #EDEAF8); outline: none;
+}
+.mapping-canvas .mc-menu__i:focus-visible { box-shadow: inset 0 0 0 2px var(--i, #5A4BB0); }
+.mapping-canvas .mc-menu__l { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-menu__s { display: block; font-size: 10.5px; line-height: 1.35; color: var(--muted, #6B7280); margin-top: 2px; }
+@keyframes mc-menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* MAPFIX D4/D5 — what a destination will accept. A footnote under the sublabel,
+   never a second label: it wraps to at most two lines and then ellipsises, so a
+   selection with twenty values cannot make one card taller than the column. */
+.mapping-canvas .mc-item-note {
+    font-size: 10.5px; line-height: 1.35; color: var(--i-slate, #64748B);
+    margin-top: 3px; cursor: help;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.mapping-canvas .mc-item-note.warn { color: var(--i-amber-ink, #D97706); }
+
+/* MAPFIX E1 — a note that had to CUT the list becomes the way to open it.
+   It stays exactly where the inert note was: its own block under the sublabel,
+   never a second thing on the name's line. MF13/CR22/MF26 is about affordances
+   that SHARE a line with the text and reserve unpredictable width; this one
+   reserves none, because it is the text. The chevron sits inside the clamped
+   box after the last word, so it cannot push the card wider either. */
+.mapping-canvas .mc-item-note.act {
+    display: block; width: 100%; margin-top: 3px; padding: 0;
+    border: 0; background: none; font: inherit; font-size: 10.5px;
+    line-height: 1.35; text-align: inherit; cursor: pointer;
+    color: var(--i600, #4A3D96);
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__t {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-decoration: underline; text-decoration-style: dotted;
+    text-underline-offset: 2px; text-decoration-color: var(--i-border, #CBC2EE);
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__x {
+    display: inline-block; vertical-align: -2px; margin-left: 3px; opacity: .8;
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__x svg { width: 11px; height: 11px; }
+.mapping-canvas .mc-item-note.act:hover .mc-item-note__t,
+.mapping-canvas .mc-item-note.act.on .mc-item-note__t {
+    text-decoration-color: currentColor;
+}
+.mapping-canvas .mc-item-note.act:focus-visible {
+    outline: 2px solid var(--i, #5A4BB0); outline-offset: 2px; border-radius: 5px;
+}
+.mapping-canvas .mc-item-note.act.warn { color: var(--i-amber-ink, #D97706); }
+
+/* The value list, inside the SAME popover the card menu uses (`.mc-menu`). It
+   scrolls on its own so a 120-row selection never makes the popover taller than
+   the board — the board is what `_placeMenu` measures against, and a popover that
+   outgrows it is the MF27 defect coming back. */
+.mapping-canvas .mc-menu.vals { width: 288px; }
+.mapping-canvas .mc-menu__vals {
+    max-height: 244px; overflow-y: auto; padding: 1px 2px 3px;
+}
+.mapping-canvas .mc-menu__vals:focus-visible { outline: none; }
+.mapping-canvas .mc-menu__v {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 4px 7px; border-radius: 7px;
+}
+.mapping-canvas .mc-menu__v:nth-child(odd) { background: var(--i-wash, #F1F5F9); }
+.mapping-canvas .mc-menu__vl {
+    flex: 1; min-width: 0; font-size: 12px; color: var(--ink, #1E1B2E);
+    overflow-wrap: anywhere;
+}
+.mapping-canvas .mc-menu__vk {
+    flex: none; max-width: 46%; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px; font-weight: 700; color: var(--i600, #4A3D96);
+    background: var(--i-soft, #EDEAF8); padding: 1px 5px; border-radius: 5px;
+    overflow-wrap: anywhere;
+}
+.mapping-canvas .mc-menu__f {
+    font-size: 10px; line-height: 1.4; color: var(--muted, #6B7280);
+    padding: 6px 9px 4px; border-top: 1px solid var(--line, #E8E9F3); margin-top: 3px;
+}
+
+.mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+.mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
+.mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }
+
+/* Integrations Cycle 2 — the two opt-in lines. Both render only for items that
+   carry the key, so every pre-existing adapter is pixel-identical. */
+.mapping-canvas .mc-item-sample { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; color: var(--i600, #4A3D96); background: var(--i-soft, #EDEAF8); border-radius: 5px; padding: 1px 6px; margin-top: 4px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* C6 — a CATALOGUE sample is an illustration, not a value that arrived. It is
+   drawn in the neutral wash rather than the indigo one, and it carries the
+   `e.g.` that makes the difference readable rather than merely encoded. */
+.mapping-canvas .mc-item-sample.eg { color: var(--i-slate, #64748B); background: var(--i-wash, #F1F5F9); }
+.mapping-canvas .mc-item-sample__k { font-family: inherit; font-style: italic; opacity: .8; margin-right: 4px; }
+.mapping-canvas .mc-group { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #6B7280); padding: 8px 4px 1px; }
+.mapping-canvas .mc-group:first-child { padding-top: 2px; }
+
+.mapping-canvas .mc-plug { width: 9px; height: 9px; border-radius: 50%; background: #CBD5E1; border: 2px solid #fff; box-shadow: 0 0 0 1px #CBD5E1; flex: none; }
+.mapping-canvas .mc-item.wired .mc-plug { background: #D97706; box-shadow: 0 0 0 1px #D97706; }
+.mapping-canvas .mc-item.accepted .mc-plug { background: var(--i, #5A4BB0); box-shadow: 0 0 0 1px var(--i, #5A4BB0); }
+
+.mapping-canvas .mc-item.accepted { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item.focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item.armed { border-color: var(--i, #5A4BB0); background: var(--i, #5A4BB0); }
+.mapping-canvas .mc-item.armed .mc-item-label, .mapping-canvas .mc-item.armed .mc-item-sub { color: #fff; }
+.mapping-canvas .mc-item.armed .mc-col-tag { background: rgba(255, 255, 255, .25); color: #fff; }
+.mapping-canvas .mc-item.armed .mc-plug { background: #fff; box-shadow: 0 0 0 1px #fff; }
+.mapping-canvas .mc-item.drophint { border-style: dashed; border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-item.drophint:hover { background: var(--i-soft, #EDEAF8); border-color: var(--i, #5A4BB0); }
+
+/* WP-3 — hover coupling. Point at a card and the board answers "these, and
+   nothing else"; point at a wire and both of its ends light up. Dimming is what
+   makes the answer readable on a 200-row column — but it is only ever OPACITY,
+   never a colour change, so the accent stays the one accent (W1). */
+.mapping-canvas .mc-item { transition: border-color .13s, box-shadow .13s, opacity .14s, transform .1s; }
+.mapping-canvas.is-focus .mc-item.dim { opacity: .34; }
+.mapping-canvas.is-focus .mc-item.lit { border-color: var(--i, #5A4BB0); box-shadow: 0 3px 14px rgba(90, 75, 176, .2); }
+.mapping-canvas.is-focus .mc-item.lit.wired:not(.accepted) { border-color: var(--mc-amber); box-shadow: 0 3px 14px rgba(217, 119, 6, .22); }
+/* the arrival ring, cloned from the Formula Engine's `.pulse` */
+.mapping-canvas .mc-item.flash { border-color: var(--i, #5A4BB0); animation: mc-flash .95s ease; }
+@keyframes mc-flash {
+    0% { box-shadow: 0 0 0 0 rgba(90, 75, 176, .5); }
+    100% { box-shadow: 0 0 0 14px rgba(90, 75, 176, 0); }
+}
+
+/* ==================================================== WP-2 — the wire hub
+ *
+ *      │ ÷3600 │            the transform, or a confidence and its two verbs.
+ *
+ * Cycle 5 shipped this as `‹ │ ÷3600 │ ›`, the two outer zones being
+ * navigation: press an arrow, that column scrolls to that end. Cycle 7 removes
+ * them. Reaching one end at a time means the FIRST end has usually scrolled
+ * away by the time the second arrives, so the reader never sees the connection
+ * — only its halves, in sequence. A DOUBLE-CLICK on the wire or on this pill
+ * now moves both columns at once and rings both cards, and the pill keeps only
+ * what carries meaning.
+ *
+ * It is ~90px narrower for it, which is why `spreadHubs()`'s x-window came down
+ * with it: a window sized for the old pill spreads hubs that no longer touch,
+ * and a hub pushed off its own wire is the defect the spread exists to prevent. */
+.mapping-canvas .mc-hubs { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.mapping-canvas .mc-hub {
+    position: absolute; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: 2px; padding: 2px;
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 999px;
+    box-shadow: 0 3px 12px rgba(15, 12, 40, .16);
+    pointer-events: auto; user-select: none; cursor: pointer;
+    transition: box-shadow .13s, border-color .13s;
+}
+.mapping-canvas .mc-hub__c { display: flex; align-items: center; gap: 3px; padding: 0 4px; }
+.mapping-canvas .mc-hub__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--i, #5A4BB0); }
+.mapping-canvas .mc-hub.on { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8), 0 6px 18px rgba(15, 12, 40, .18); }
+.mapping-canvas .mc-hub.suggested { border-color: var(--mc-amber-line); box-shadow: 0 3px 12px rgba(217, 119, 6, .22); }
+.mapping-canvas .mc-hub.err { border-color: var(--mc-rose); }
+/* a hub belongs to its wire: when the wire dims, so does the pill, or a control
+   floats in the gutter with no visible line under it */
+.mapping-canvas.is-focus .mc-hub.dim { opacity: .3; }
+.mapping-canvas.is-focus .mc-hub.dim:hover { opacity: 1; }
+/* the board is reloading: do not let a click act on geometry about to change */
+.mapping-canvas.is-busy .mc-hub, .mapping-canvas.is-busy .mc-dock { pointer-events: none; opacity: .5; }
+
+.mapping-canvas .mc-conf { font-size: 11px; font-weight: 800; color: var(--mc-amber-ink); }
+.mapping-canvas .mc-hub__c button { width: 20px; height: 20px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.mapping-canvas .mc-hub__c .mc-b-ok { background: var(--i, #5A4BB0); color: #fff; }
+.mapping-canvas .mc-hub__c .mc-b-ok:hover { background: var(--i600, #4A3D96); }
+.mapping-canvas .mc-hub__c .mc-b-x { background: var(--mc-wash); color: var(--muted, #6B7280); }
+.mapping-canvas .mc-hub__c .mc-b-x:hover { background: var(--mc-rose-wash); color: var(--mc-rose-ink); }
+.mapping-canvas .mc-hub__c .mc-b-del { background: #fff; border: 1px solid var(--line, #E8E9F3); color: var(--mc-slate); }
+.mapping-canvas .mc-hub__c .mc-b-del:hover { background: var(--mc-rose-wash); color: var(--mc-rose-ink); border-color: var(--mc-rose); }
+.mapping-canvas .mc-hub svg { width: 12px; height: 12px; }
+
+/* ---- C7: the gesture's discoverability, and its one honest refusal ----
+ *
+ * The arrows were visible controls; a double-click is not, so the hint has to
+ * be. It appears once, in the board's own corner, while a wire is under the
+ * pointer — not as fifty resting tooltips, which is the clutter Cycle 5's hub
+ * was itself called in to remove. */
+.mapping-canvas .mc-gesture {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    z-index: 5; pointer-events: none;
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--i-deep, #241F52); color: #fff;
+    font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(15, 12, 40, .22);
+    animation: mc-gesture-in .16s ease;
+    b { font-weight: 800; }
+    svg { display: block; }
+}
+@keyframes mc-gesture-in { from { opacity: 0; transform: translate(-50%, 5px); } }
+
+/* The refusal. Cycle 5's "hidden by filter" vocabulary, moved from the column
+   onto the wire: a double-click asking to see a connection whose end is behind
+   a search must say so and offer the clear, never silently throw away what the
+   reader typed and never look like it did nothing (W40). */
+.mapping-canvas .mc-reveal {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    z-index: 6; max-width: calc(100% - 24px);
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 8px 7px 13px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--mc-amber-line);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, .2);
+    font-size: 11.5px; font-weight: 600; color: var(--mc-slate);
+    animation: mc-gesture-in .16s ease;
+    svg { display: block; }
+}
+.mapping-canvas .mc-reveal__ic { color: var(--mc-amber-ink); flex: none; }
+.mapping-canvas .mc-reveal__t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mapping-canvas .mc-reveal__go {
+    flex: none; border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    background: var(--i, #5A4BB0); color: #fff; font: inherit; font-weight: 700;
+    &:hover { background: var(--i600, #4A3D96); }
+}
+.mapping-canvas .mc-reveal__x {
+    flex: none; width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0;
+    display: grid; place-items: center; cursor: pointer;
+    background: transparent; color: var(--muted, #6B7280);
+    &:hover { background: var(--mc-wash); }
+}
+
+/* ---- W62 transform chip (the hub's centre zone on an accepted API wire) ---- */
+.mapping-canvas .mc-tf-chip { width: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--i-border, #CBC2EE); background: #fff; color: var(--i600, #4A3D96); font-size: 11.5px; font-weight: 800; font-family: ui-monospace, "SF Mono", Menlo, monospace; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; }
+.mapping-canvas .mc-tf-chip:hover { background: var(--i-soft, #EDEAF8); border-color: var(--i, #5A4BB0); }
+.mapping-canvas .mc-hub.err .mc-tf-chip { color: var(--mc-rose-ink); border-color: var(--mc-rose); background: var(--mc-rose-wash); }
+
+/* ============================================ WP-1.4 — the dock chips
+ *
+ * A parked endpoint in the reference renderer is a 4px dot. That is right for
+ * three arrows and useless for fifty, so endpoints parked on the same edge of
+ * the same column collapse into ONE counted chip that is also the control for
+ * going to them — click cycles through them, nearest first. The rule this
+ * enforces is the important one: a connection is never silently absent. */
+.mapping-canvas .mc-docks { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.mapping-canvas .mc-dock {
+    position: absolute; pointer-events: auto;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    border: 1px solid transparent; border-radius: 999px; padding: 3px 10px;
+    background: var(--i-deep, #241F52); color: #fff;
+    font-family: inherit; font-size: 10.5px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(36, 31, 82, .3);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.mapping-canvas .mc-dock__ic { display: inline-flex; }
+.mapping-canvas .mc-dock svg { width: 12px; height: 12px; }
+/* J7 D1 — all four variants centre on the strip's mid-line, which is what the
+   component now sends as `d.y`. The old pair hung the chip just BELOW the top
+   band edge and just ABOVE the bottom one, i.e. deliberately into the column —
+   correct for a marker on a wire's parked end, and the reason it landed on a
+   card. Vertical centring is what makes "the chip is inside the 30px strip" a
+   fact of the stylesheet rather than a coincidence of two offsets. */
+.mapping-canvas .mc-dock.left.up    { transform: translate(-100%, -50%); }
+.mapping-canvas .mc-dock.left.down  { transform: translate(-100%, -50%); }
+.mapping-canvas .mc-dock.right.up   { transform: translate(0, -50%); }
+.mapping-canvas .mc-dock.right.down { transform: translate(0, -50%); }
+.mapping-canvas .mc-dock.left  { margin-left: -8px; }
+.mapping-canvas .mc-dock.right { margin-left: 8px; }
+.mapping-canvas .mc-dock:hover { box-shadow: 0 6px 20px rgba(36, 31, 82, .42); }
+.mapping-canvas .mc-dock.sug { background: var(--mc-amber); box-shadow: 0 4px 14px rgba(217, 119, 6, .3); }
+.mapping-canvas .mc-dock.filt { background: #fff; color: var(--mc-amber-ink); border: 1px dashed var(--mc-amber); box-shadow: 0 3px 10px rgba(217, 119, 6, .18); }
+
+/* a wire pointing at a field the source no longer delivers: counted, not dropped */
+.mapping-canvas .mc-gone {
+    position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 4;
+    font-size: 11px; font-weight: 700; color: var(--mc-rose-ink);
+    background: var(--mc-rose-wash); border-radius: 999px; padding: 4px 13px;
+}
+
+.mapping-canvas .mc-drawhint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; gap: 8px; background: var(--i-deep, #241F52); color: #fff; font-size: 12.5px; font-weight: 600; padding: 8px 15px; border-radius: 999px; box-shadow: 0 8px 24px rgba(36, 31, 82, .35); }
+.mapping-canvas .mc-drawhint svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-drawhint b { font-weight: 800; }
+
+/* ---- W9x — motion is a flourish, never the message ---- */
+@media (prefers-reduced-motion: reduce) {
+    .mapping-canvas .mc-flow { display: none; }
+    .mapping-canvas .mc-item, .mapping-canvas .mc-wire, .mapping-canvas .mc-head,
+    .mapping-canvas .mc-w, .mapping-canvas .mc-hub, .mapping-canvas .mc-dock { transition: none; }
+    .mapping-canvas .mc-item.flash { animation: none; }
+    .mapping-canvas.is-pulse .mc-w .mc-wire { animation: none; }
+    /* C7 — the hint and the reveal bar still APPEAR; only their slide does not.
+       Suppressing the elements would remove the only thing that makes the new
+       gesture discoverable, which is a different decision from suppressing
+       motion. The smooth scroll obeys the same preference: `scrollTo` with
+       `behavior: "smooth"` is honoured as `auto` by every engine that
+       implements this query, so the ends still arrive — instantly. */
+    .mapping-canvas .mc-gesture, .mapping-canvas .mc-reveal { animation: none; }
+}
+
+/* ---- W62 transform popover (scrim pattern, C11) ---- */
+.mapping-canvas .mc-tf-scrim { position: fixed; inset: 0; z-index: 40; background: transparent; }
+/* The popover is a sibling of the clipped board, so it can overhang; what it
+   still has to do is stay ON SCREEN. `tfAnchor` clamps x to a half-width margin
+   and sets `flip` when there is no room below the wire. */
+.mapping-canvas .mc-tf-pop { position: absolute; z-index: 41; transform: translate(-50%, 12px); width: 300px; max-width: 92%; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 14px; box-shadow: 0 18px 50px rgba(20, 16, 50, .28); padding: 14px; }
+.mapping-canvas .mc-tf-pop.flip { transform: translate(-50%, calc(-100% - 12px)); }
+.mapping-canvas .mc-tf-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.mapping-canvas .mc-tf-title { font-size: 12.5px; font-weight: 800; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 3px; border-radius: 6px; display: grid; place-items: center; }
+.mapping-canvas .mc-tf-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-x svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-tf-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.mapping-canvas .mc-tf-row label { font-size: 11.5px; font-weight: 700; color: var(--muted, #6B7280); flex: none; }
+.mapping-canvas .mc-tf-sel, .mapping-canvas .mc-tf-inp { flex: 1; min-width: 0; border: 1px solid var(--line, #E8E9F3); border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); background: #fff; }
+.mapping-canvas .mc-tf-inp { max-width: 130px; text-align: right; }
+.mapping-canvas .mc-tf-sel:focus, .mapping-canvas .mc-tf-inp:focus { outline: none; border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-tf-prev { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #FAFAFE; border: 1px solid var(--line, #E8E9F3); border-radius: 9px; padding: 8px 10px; margin: 4px 0 12px; font-size: 12.5px; }
+.mapping-canvas .mc-tf-badge { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 2px 7px; border-radius: 6px; }
+.mapping-canvas .mc-tf-dim { color: var(--muted, #6B7280); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.mapping-canvas .mc-tf-prev b { color: var(--ink, #1E1B2E); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 800; }
+.mapping-canvas .mc-tf-arr { display: inline-flex; color: var(--i, #5A4BB0); flex: none; }
+.mapping-canvas .mc-tf-arr svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-tf-err { color: #B91C1C; font-weight: 600; }
+.mapping-canvas .mc-tf-note { display: flex; gap: 11px; align-items: flex-start; }
+.mapping-canvas .mc-tf-note .mc-tf-glyph { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 16px; font-weight: 800; color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); border-radius: 8px; width: 34px; height: 34px; display: grid; place-items: center; flex: none; }
+.mapping-canvas .mc-tf-note b { font-size: 12.5px; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-note p { font-size: 11.5px; color: var(--muted, #6B7280); line-height: 1.5; margin: 3px 0 0; }
+.mapping-canvas .mc-tf-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.mapping-canvas .mc-tf-cancel { border: 1px solid var(--line, #E8E9F3); background: #fff; color: var(--muted, #6B7280); font-family: inherit; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 8px; cursor: pointer; }
+.mapping-canvas .mc-tf-cancel:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-save { border: 0; background: var(--i, #5A4BB0); color: #fff; font-family: inherit; font-size: 12px; font-weight: 800; padding: 7px 16px; border-radius: 8px; cursor: pointer; }
+.mapping-canvas .mc-tf-save:hover { background: var(--i600, #4A3D96); }
+.mapping-canvas .mc-tf-save:disabled { opacity: .6; cursor: default; }
+
+
+/* remove ✕ on an unwired right card (Employee/Contract tab) */
+.mapping-canvas .mc-item-x {
+    position: absolute; top: -7px; left: -7px; z-index: 3;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1px solid var(--line, #E8E9F3); background: #fff; color: #94A3B8;
+    box-shadow: 0 2px 6px rgba(15, 12, 40, .14); cursor: pointer; padding: 0;
+    opacity: 0; transform: scale(.7); transition: opacity .12s, transform .12s, background .12s, color .12s;
+}
+.mapping-canvas .mc-item-x svg { width: 12px; height: 12px; }
+.mapping-canvas .mc-item:hover .mc-item-x { opacity: 1; transform: scale(1); }
+.mapping-canvas .mc-item-x:hover { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+
+/* SOURCING S4 — "already fed by" on a mapping board's right column. Same
+   geometry as `.mc-prov` next to it, a different question: prov says where the
+   CARD came from, this says what feeds the COMPONENT. Flat fills, no gradients. */
+.mapping-canvas .mc-src {
+    display: inline-flex; align-items: center; font-size: 9.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .03em; padding: 2px 6px; border-radius: 5px;
+    background: #EEF1F5; color: #64748B; white-space: nowrap; flex-shrink: 0;
+}
+.mapping-canvas .mc-src.s-excel              { background: #D1FAE5; color: #0F8A63; }
+.mapping-canvas .mc-src.s-feed               { background: #E0F4F9; color: #0E7490; }
+.mapping-canvas .mc-src.s-rule               { background: #EDEAF8; color: #4A3D96; }
+.mapping-canvas .mc-src.s-contract_component { background: #FEF3C7; color: #B7791F; }
+.mapping-canvas .mc-src.s-employee_field     { background: #E8EEF7; color: #3B5B8C; }
+/* JOURNEY J10 — the record tier, in three spellings. Related hues, because
+   they are ONE RUNG of the ladder and a reader should see that at a glance;
+   distinct enough to tell apart, because which record a value is kept on is
+   exactly what the owner could not see. The glyphs carry it without colour. */
+.mapping-canvas .mc-src.s-contract_field     { background: #E4EBF6; color: #2F4E80; }
+.mapping-canvas .mc-src.s-bank_account       { background: #E7EEF3; color: #35617A; }
+.mapping-canvas .mc-src.s-calculated         { background: #DDD6F2; color: #241F52; }
+.mapping-canvas .mc-src.s-constant           { background: #EEF1F5; color: #64748B; }
+
+/* JOURNEY J9 — the rank, on a card that carries more than one source.
+   `line-height: 0` is the load-bearing declaration: a <sup> otherwise raises
+   the chip's line box and every card on the board grows a pixel or two, which
+   moves the clamp band the wires are measured against (MJ36's family). At zero
+   the superscript is painted outside the flow of the line and the chip's box is
+   the same box it was. `tabular-nums` so 1 and 2 occupy the same width and the
+   chips do not shuffle sideways as the list grows. */
+.mapping-canvas .mc-src sup {
+    font-variant-numeric: tabular-nums; font-size: 8px; font-weight: 800;
+    line-height: 0; margin-left: 2px; vertical-align: super;
+}
+
+
+/* SOURCING S5 — lineage in place, and the sealed-card badge. */
+.mapping-canvas .mc-item-lineage {
+    display: inline-grid; place-items: center; width: 18px; height: 18px; padding: 0;
+    border: 0; border-radius: 5px; background: transparent; color: #94A3B8; cursor: pointer;
+    flex-shrink: 0;
+}
+.mapping-canvas .mc-item-lineage svg { width: 13px; height: 13px; }
+.mapping-canvas .mc-item-lineage:hover { background: #EDEAF8; color: #4A3D96; }
+.mapping-canvas .mc-badge.calc { background: #DDD6F2; color: #241F52; }
+
+/* SOURCING S6 — take the typed heading as a column.
+   A full-width row at the head of the left column, present only while something
+   is typed that nothing answers to. Dashed, because it is an offer rather than a
+   card: it must not read as one more column that already exists. */
+.mapping-canvas .mc-col-add {
+    display: flex; align-items: center; gap: 7px; width: 100%;
+    margin: 0 0 6px; padding: 8px 10px; text-align: left;
+    border: 1px dashed var(--i-border, #CBC2EE); border-radius: 8px;
+    background: var(--i-wash, #F8FAFC); color: var(--i600, #4A3D96);
+    font-size: 12px; font-weight: 650; cursor: pointer;
+}
+.mapping-canvas .mc-col-add:hover { background: var(--i-soft, #EDEAF8); border-style: solid; }
+.mapping-canvas .mc-col-add__ic { display: inline-grid; place-items: center; flex-shrink: 0; }
+.mapping-canvas .mc-col-add__ic svg { width: 12px; height: 12px; }
+.mapping-canvas .mc-col-add__t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.mapping-canvas .mc-lin { padding: 4px 2px 2px; }
+.mapping-canvas .mc-lin__sum {
+    font-size: 12.5px; color: #241F52; line-height: 1.45; padding: 4px 10px 10px;
+}
+.mapping-canvas .mc-lin__sec {
+    font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    color: #94A3B8; padding: 8px 10px 3px;
+}
+.mapping-canvas .mc-lin__row {
+    font-size: 12px; color: #241F52; padding: 3px 10px;
+    font-family: "SFMono-Regular", ui-monospace, monospace;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mapping-canvas .mc-lin__none { font-size: 12px; color: #94A3B8; font-style: italic; padding: 3px 10px; }
+.mapping-canvas .mc-lin__open {
+    margin: 10px 10px 4px; padding: 6px 12px; border-radius: 8px; border: 1px solid #CBC2EE;
+    background: #EDEAF8; color: #4A3D96; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.mapping-canvas .mc-lin__open:hover { background: #DDD6F2; }
+
+/* The fallback is a SENTENCE, not a field path: the monospace ellipsis rule above
+   is right for `Actual_Pay_Hour` and wrong for "Nothing is written for that
+   employee." — which it cut off mid-word on the live board. */
+.mapping-canvas .mc-lin__row.prose {
+    font-family: inherit; white-space: normal; overflow: visible; text-overflow: clip;
+    color: #475569; line-height: 1.4;
+}
+
+/* ================================================================= JOURNEY J3
+   Three additions, all opt-in from the adapter's payload, so every board that
+   does not send the keys is byte-identical to what it rendered before.
+   ========================================================================= */
+
+/* S1 — the SECOND arrowhead. A board whose rows genuinely run both ways draws
+   both ends. It inherits `currentColor` and the hover/dim transitions from
+   `.mc-w` exactly as the forward head does (see `.mc-w .mc-head` above), so a
+   focused, dimmed or errored wire keeps ONE appearance rather than growing a
+   head that ignores the state of its own line. */
+.mapping-canvas .mc-head.back { transition: opacity .14s ease; }
+
+/* S1 — the direction sentence, on the LEFT card. It sits in the same footnote
+   register as `.mc-item-note` (which is the right column's different fact) and
+   is deliberately clamped to two lines: a two-clause sentence is the most a card
+   may spend, and beyond that the `title` carries the rest. */
+.mapping-canvas .mc-item-dir {
+    font-size: 10.5px; line-height: 1.35; color: var(--i-slate, #64748B);
+    margin-top: 3px; cursor: help;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.mapping-canvas .mc-item-dir__g {
+    font-weight: 800; margin-right: 4px; color: var(--i600, #4A3D96);
+}
+/* A one-way row must not be able to LOOK two-way at a glance. The glyph already
+   differs (→ vs ⇆); the tone differs too, so the distinction survives a reader
+   who is scanning rather than reading. */
+.mapping-canvas .mc-item-dir.to_record .mc-item-dir__g { color: var(--i-slate, #64748B); }
+
+/* S2 — "something else also feeds this". Amber, because unlike `.mc-badge` this
+   one IS a caution: two live sources means one of them is not being read, and
+   the reader is entitled to find that surprising. */
+.mapping-canvas .mc-conflict {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .04em;
+    padding: 1px 6px; border-radius: 999px; line-height: 1.5; cursor: help;
+    background: var(--i-amber-wash, #FEF3C7); color: var(--i-amber-ink, #B45309);
+    border: 1px solid var(--i-amber-border, #FDE68A);
+    max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

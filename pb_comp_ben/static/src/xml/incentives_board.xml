@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Awards lens.
+
+       Comments ruled with `=`, never a doubled hyphen (R35). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       award loop is `aw`, the preview loop is `pv`, the person loop is `pp`.
+       ==================================================================== -->
+  <t t-name="pb_comp_ben.PbIncentivesBoard">
+    <div class="pbim pbim-page inc"
+         t-att-class="{ 'inc--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the awards…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel inc-locked">
+          <div class="inc-locked-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>This one is deliberately locked</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="inc-head">
+            <div class="inc-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Awards</h1>
+              <p class="pbim-sub">A bonus, an incentive or a spot award —
+                 agreed, put in writing, and paid with the next salary.</p>
+            </div>
+            <div class="inc-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openAll">
+                <t t-out="ic('list',15)"/> All awards
+              </button>
+              <button t-if="state.canApprove" class="pbim-btn ghost"
+                      t-on-click="openQueue">
+                <t t-out="ic('send',15)"/> Put into a pay run
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn"
+                      t-on-click="openCreate">
+                <t t-out="ic('plus',15)"/> New award
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================= the numbers ======================= -->
+          <div class="pbim-stats inc-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.waiting || 0"/><span>waiting for a decision</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('award',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.to_queue || 0"/><span>agreed, not in a run</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('send',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.queued || 0"/><span>in a pay run</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('banknote',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.paid_mtd || 0"/><span>paid this month</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================= the filters ======================= -->
+          <div class="inc-filters">
+            <div class="inc-search">
+              <t t-out="ic('search',15)"/>
+              <input type="text" placeholder="Find a person or a reason"
+                     t-att-value="state.q" t-on-input="onSearch"/>
+            </div>
+            <div class="pbim-chips">
+              <button class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.stateFilter === 'all' }"
+                      t-on-click="() => this.setStateFilter('all')">Any status</button>
+              <button t-foreach="state.states" t-as="st" t-key="st.key"
+                      class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.stateFilter === st.key }"
+                      t-on-click="() => this.setStateFilter(st.key)"
+                      t-esc="st.label"/>
+            </div>
+            <div class="pbim-chips">
+              <button class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.kindFilter === 'all' }"
+                      t-on-click="() => this.setKindFilter('all')">Any kind</button>
+              <button t-foreach="state.kinds" t-as="kd" t-key="kd.key"
+                      class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.kindFilter === kd.key }"
+                      t-on-click="() => this.setKindFilter(kd.key)"
+                      t-esc="kd.label"/>
+            </div>
+            <span class="inc-count" t-esc="countLine"/>
+          </div>
+
+          <!-- ======================== the board ======================== -->
+          <div t-if="!visibleRows.length" class="pbim-empty inc-empty">
+            <div class="inc-empty-ic"><t t-out="ic('award',30)"/></div>
+            <h3 t-if="!state.rows.length">Nothing has been awarded yet</h3>
+            <h3 t-else="">Nothing matches what you are looking for</h3>
+            <p t-if="!state.rows.length">
+              Raise an award for somebody, get it agreed, and it is paid with the
+              next salary — with a letter they can keep.
+            </p>
+            <p t-else="">Clear the search or pick a different status.</p>
+            <button t-if="state.canWrite and !state.rows.length"
+                    class="pbim-btn" t-on-click="openCreate">New award</button>
+          </div>
+
+          <div t-else="" class="pbim-tablewrap inc-tablewrap">
+            <table class="pbim-table inc-table">
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>Kind</th>
+                  <th class="num">Amount</th>
+                  <th>Paid in</th>
+                  <th>Approval</th>
+                  <th>Where it has got to</th>
+                  <th>Pay run</th>
+                  <th class="acts"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="visibleRows" t-as="aw" t-key="aw.id">
+                  <td>
+                    <span class="inc-who">
+                      <span class="inc-av" t-esc="aw.initials"/>
+                      <span t-esc="aw.employee"/>
+                    </span>
+                  </td>
+                  <td><span class="pbim-chip" t-esc="aw.kind_label"/></td>
+                  <td class="num" t-esc="money(aw)"/>
+                  <td t-esc="aw.month_label"/>
+                  <td>
+                    <span class="pbim-badge"
+                          t-att-class="{ 'ok': aw.state === 'approved',
+                                         'warn': aw.state === 'submitted',
+                                         'err': aw.state === 'refused' }"
+                          t-esc="aw.state_label"/>
+                  </td>
+                  <td>
+                    <span t-if="aw.fulfilment" class="pbim-badge"
+                          t-att-class="{ 'ok': aw.fulfilment === 'paid',
+                                         'info': aw.fulfilment === 'queued' }"
+                          t-esc="aw.fulfilment_label"/>
+                    <span t-else="" class="inc-dash">—</span>
+                  </td>
+                  <td>
+                    <span t-if="aw.run" t-esc="aw.run"/>
+                    <span t-else="" class="inc-dash">—</span>
+                  </td>
+                  <td class="acts">
+                    <button t-if="state.canWrite and aw.state === 'draft'"
+                            class="pbim-btn-sm ghost"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.submitRow(aw)">Send for approval</button>
+                    <button t-if="state.canApprove and aw.state === 'submitted'"
+                            class="pbim-btn-sm"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.approveRow(aw)">Approve</button>
+                    <button t-if="state.canApprove and aw.state === 'submitted'"
+                            class="pbim-btn-sm ghost"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.refuseRow(aw)">Do not approve</button>
+                    <button t-if="state.canWrite and aw.state === 'approved'"
+                            class="pbim-btn-sm ghost"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.letterRow(aw)"
+                            title="Prepare the letter again">
+                      <t t-out="ic('fileText',13)"/>
+                    </button>
+                    <span t-if="aw.has_letter" class="inc-letter"
+                          title="A letter is on file"><t t-out="ic('check',13)"/></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p t-if="state.capped" class="pbim-note">
+              Only the most recent awards are shown. Open “All awards” for the
+              whole list.
+            </p>
+          </div>
+
+          <!-- ===================== the new award dialog ===================== -->
+          <div t-if="state.creating" class="pbim-modal-scrim"
+               t-on-click="closeCreate">
+            <div class="pbim-modal inc-modal" t-on-click.stop="() => {}">
+              <div class="inc-modal-head">
+                <h3>New award</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeCreate">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="inc-modal-body">
+                <label class="inc-person">
+                  <span>Who it is for</span>
+                  <input type="text" class="inc-in" placeholder="Start typing a name"
+                         t-att-value="state.draft.employee"
+                         t-on-input="onPersonSearch"/>
+                  <div t-if="state.people.length" class="inc-people">
+                    <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                            class="inc-person-row"
+                            t-on-click="() => this.pickPerson(pp)">
+                      <span t-esc="pp.name"/>
+                      <small t-if="pp.code" t-esc="pp.code"/>
+                    </button>
+                  </div>
+                </label>
+                <label>
+                  <span>Kind</span>
+                  <select class="inc-in" t-on-change="(ev) => this.onDraft('kind', ev)">
+                    <option t-foreach="state.kinds" t-as="kd" t-key="kd.key"
+                            t-att-value="kd.key" t-esc="kd.label"/>
+                  </select>
+                </label>
+                <label>
+                  <span>Amount</span>
+                  <input type="number" min="0" step="1000" class="inc-in"
+                         t-att-value="state.draft.amount"
+                         t-on-input="(ev) => this.onDraft('amount', ev)"/>
+                </label>
+                <label>
+                  <span>Pay it in</span>
+                  <input type="date" class="inc-in"
+                         t-att-value="state.draft.period_month"
+                         t-on-input="(ev) => this.onDraft('period_month', ev)"/>
+                </label>
+                <label>
+                  <span>Why</span>
+                  <textarea class="inc-in" rows="3"
+                            placeholder="What this is for, in the words the person will read."
+                            t-on-input="(ev) => this.onDraft('reason', ev)"/>
+                </label>
+              </div>
+              <div class="inc-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeCreate">Cancel</button>
+                <button class="pbim-btn" t-on-click="confirmCreate"
+                        t-att-disabled="state.busy">Raise it</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== put into a pay run: the preview ==================
+               NOTHING IS WRITTEN UNTIL THE SECOND BUTTON. The whole point of
+               this dialog is that the answer is on screen before the action. -->
+          <div t-if="state.queueing" class="pbim-modal-scrim"
+               t-on-click="closeQueue">
+            <div class="pbim-modal inc-modal inc-modal--wide"
+                 t-on-click.stop="() => {}">
+              <div class="inc-modal-head">
+                <h3>Put awards into a pay run</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeQueue">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="inc-modal-body">
+                <label>
+                  <span>Which pay run</span>
+                  <select class="inc-in" t-on-change="onRunPick">
+                    <option t-foreach="state.runs" t-as="rn" t-key="rn.id"
+                            t-att-value="rn.id"
+                            t-att-selected="rn.id === state.queueRun">
+                      <t t-esc="rn.name"/> (<t t-esc="rn.period"/>)
+                    </option>
+                  </select>
+                </label>
+                <p t-if="!state.runs.length" class="pbim-note">
+                  There is no pay run still being prepared. Awards can only be put
+                  into a run that has not been sent for approval yet.
+                </p>
+
+                <div t-if="state.preview" class="inc-preview">
+                  <div class="inc-preview-code"
+                       t-att-class="{ 'is-bad': !state.preview.code_ok }">
+                    <t t-out="ic(state.preview.code_ok ? 'checkCircle' : 'alert',16)"/>
+                    <span t-if="state.preview.code_ok">
+                      The pay scheme “<t t-esc="state.preview.scheme"/>” has a pay
+                      item called <t t-esc="state.preview.code"/>, so the money will
+                      show on the payslip.
+                    </span>
+                    <span t-else="" t-esc="state.preview.problem"/>
+                  </div>
+
+                  <div t-if="state.preview.rows.length" class="pbim-tablewrap">
+                    <table class="pbim-table inc-preview-table">
+                      <thead>
+                        <tr>
+                          <th>Who</th><th class="num">Amount</th><th>Paid in</th>
+                          <th>Goes in</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr t-foreach="state.preview.rows" t-as="pv" t-key="pv.id"
+                            t-att-class="{ 'is-skip': !pv.ok }">
+                          <td t-esc="pv.employee"/>
+                          <td class="num" t-esc="pv.amount.toLocaleString()"/>
+                          <td t-esc="pv.month"/>
+                          <td>
+                            <span t-if="pv.ok" class="pbim-badge ok">Yes</span>
+                            <span t-else="" class="pbim-badge" t-esc="pv.why"/>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <p t-if="state.preview.problem and !state.preview.rows.length"
+                     class="pbim-note" t-esc="state.preview.problem"/>
+
+                  <p t-if="state.preview.ok" class="inc-preview-sum">
+                    <t t-esc="state.preview.payable"/> of these will be added to
+                    “<t t-esc="state.preview.run"/>”, worth
+                    <t t-esc="state.preview.total.toLocaleString()"/>
+                    <t t-esc="state.preview.currency"/> in total. Nothing is written
+                    to anybody's record — the amount is added to this run and this
+                    run only.
+                  </p>
+                </div>
+              </div>
+              <div class="inc-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeQueue">Cancel</button>
+                <button class="pbim-btn" t-on-click="confirmQueue"
+                        t-att-disabled="state.busy or !(state.preview and state.preview.ok)">
+                  Add them to the run
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,153 @@
+# Vietnamese translation for pb_bank_ocr.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_change_request
+msgid "Bank Account Change Request"
+msgstr "Yêu cầu thay đổi tài khoản ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_name
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_branch
+msgid "Branch"
+msgstr "Chi nhánh"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_name
+msgid "Account Holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_number
+msgid "Account Number"
+msgstr "Số tài khoản"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__hr_review
+msgid "HR Review"
+msgstr "Nhân sự xét duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__finance_review
+msgid "Finance Review"
+msgstr "Tài chính xét duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__approved
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__refused
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"The verification results of a bank change request are system-computed and "
+"cannot be edited: %s."
+msgstr ""
+"Kết quả xác minh của yêu cầu thay đổi ngân hàng do hệ thống tính toán và "
+"không thể chỉnh sửa: %s."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR or Finance can confirm a duplicate account."
+msgstr "Chỉ Nhân sự hoặc Tài chính mới có thể xác nhận tài khoản trùng lặp."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "A decided bank change request is immutable."
+msgstr "Yêu cầu thay đổi ngân hàng đã được quyết định thì không thể thay đổi."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This request is under review — only HR or Finance may edit the submitted "
+"details now."
+msgstr ""
+"Yêu cầu này đang được xét duyệt — chỉ Nhân sự hoặc Tài chính mới có thể chỉnh "
+"sửa thông tin đã gửi lúc này."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR can re-target a bank change request."
+msgstr "Chỉ Nhân sự mới có thể chuyển yêu cầu thay đổi ngân hàng sang nhân viên khác."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "The account number must be 6-19 digits before approval."
+msgstr "Số tài khoản phải có 6-19 chữ số trước khi duyệt."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This account collides with another employee. HR must tick 'Duplicate "
+"Verified' before approval."
+msgstr ""
+"Tài khoản này trùng với một nhân viên khác. Nhân sự phải tích 'Đã xác minh "
+"trùng lặp' trước khi duyệt."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This account collides with another employee. HR must tick 'Duplicate "
+"Verified' before this request can be submitted."
+msgstr ""
+"Tài khoản này trùng với một nhân viên khác. Nhân sự phải tích 'Đã xác minh "
+"trùng lặp' trước khi gửi yêu cầu này."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "An account number is required to submit."
+msgstr "Cần có số tài khoản để gửi."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Account number must be 6-19 digits."
+msgstr "Số tài khoản phải có 6-19 chữ số."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "SWIFT/BIC format looks invalid."
+msgstr "Định dạng SWIFT/BIC có vẻ không hợp lệ."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Bank not recognised in the registry."
+msgstr "Ngân hàng không có trong danh mục."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "All format checks passed."
+msgstr "Tất cả kiểm tra định dạng đều đạt."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__duplicate_ack
+msgid "Duplicate Verified"
+msgstr "Đã xác minh trùng lặp"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__name_match_score
+msgid "Name Match %"
+msgstr "Độ khớp tên %"

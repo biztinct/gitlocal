@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * pb_schedule
+#
+# W7 — the P8 additions only. The cockpit's older strings are English-only and
+# stay that way until somebody translates the whole surface: a component that is
+# half translated is worse than one that is not (biz_week_grid's note, §1), and
+# the honest fix is one pass over the file, not a trickle. What is here is the
+# ack read-receipt vocabulary, which is entirely new.
+#
+# W80.2 — the publish sentence is ONE msgid with NAMED placeholders, built by
+# `_publishMessage` rather than assembled from template fragments, because
+# Vietnamese does not put the numbers where English does.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_schedule\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-18 00:00+0000\n"
+"PO-Revision-Date: 2026-08-18 00:00+0000\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%(acked)s of %(total)s confirmed"
+msgstr "Đã xác nhận %(acked)s trên %(total)s"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%(published)s shifts published · %(notified)s people notified."
+msgstr "Đã công bố %(published)s ca · đã báo cho %(notified)s người."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid ""
+"%(published)s shifts published · %(notified)s people notified · %(blind)s "
+"with no way to reach them."
+msgstr ""
+"Đã công bố %(published)s ca · đã báo cho %(notified)s người · %(blind)s "
+"người không có kênh liên lạc."

@@ -1,0 +1,183 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid ""
+"A guided flow — upload your file, review matches, fix any issues, then commit. The "
+"tiles below set a scheme up; this one runs a period."
+msgstr ""
+"Quy trình được hướng dẫn — tải tệp của bạn lên, xem xét kết quả phù hợp, khắc phục mọi"
+" sự cố rồi cam kết. Các ô bên dưới thiết lập sơ đồ; cái này chạy một khoảng thời gian."
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Batch"
+msgstr "Đợt"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid ""
+"Bring payroll data in from files and connected HR systems — map, validate, then "
+"commit."
+msgstr ""
+"Đưa dữ liệu bảng lương từ các tệp và hệ thống nhân sự được kết nối vào - ánh xạ, xác "
+"thực và sau đó cam kết."
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Completed"
+msgstr "Hoàn tất"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Connectors live in Settings · Integrations"
+msgstr "Trình kết nối trực tiếp trong Cài đặt · Tích hợp"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_import
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Errors"
+msgstr "Lỗi"
+
+#. module: pb_import
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+#: code:addons/pb_import/static/src/js/import.js:28
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+#: model:ir.actions.client,name:pb_import.action_pb_import
+msgid "Import Data"
+msgstr "Nhập Dữ liệu"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Import batches"
+msgstr "Nhập lô"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Import pipeline"
+msgstr "Đường ống nhập khẩu"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "In progress"
+msgstr "Đang tiến hành"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Lines"
+msgstr "Dòng"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Load pay data"
+msgstr "Tải dữ liệu thanh toán"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Load this period's pay data"
+msgstr "Tải dữ liệu thanh toán của kỳ này"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Loading import data…"
+msgstr "Đang tải dữ liệu nhập…"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Manage connectors"
+msgstr "Quản lý trình kết nối"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Matched"
+msgstr "Đã khớp"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "No batches match this filter."
+msgstr "Không có lô nào khớp với bộ lọc này."
+
+#. module: pb_import
+#: model:ir.model,name:pb_import.model_pb_import
+msgid "Payobook Import cockpit data"
+msgstr "Payobook Nhập dữ liệu buồng lái"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Recent batches"
+msgstr "Lô gần đây"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "With errors"
+msgstr "Có lỗi"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "map → validate → commit"
+msgstr "bản đồ → xác thực → cam kết"

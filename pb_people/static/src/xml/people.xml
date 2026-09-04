@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_people.PbPeople">
+    <div class="pbim emp pbim-page ppl-people" t-att-class="{ 'ppl-people--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading people…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- header -->
+        <div class="ppl-head" data-coach="pe-head">
+          <!-- The identity block, and only the identity block: inside the
+               People hub the command bar already says People > Employees, so
+               this is the one element the host owns (W17). Select, Add employee
+               and every number below stay exactly as they are — an embedded
+               mode that removed a control would be a fork. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
+            <h1 class="pbim-h1">Employees</h1>
+            <p class="pbim-sub">Your people, contract status and payroll readiness at a glance.</p>
+          </div>
+          <div class="ppl-head-actions">
+            <button t-attf-class="pbim-btn {{ state.selectMode ? 'outline' : 'ghost' }}" t-on-click="toggleSelectMode"><t t-out="ic('list',15)"/> <t t-esc="state.selectMode ? 'Done' : 'Select'"/></button>
+            <button class="pbim-btn primary" t-on-click="addEmployee"><t t-out="ic('plus',16)"/> Add employee</button>
+          </div>
+        </div>
+
+        <!-- bulk selection bar -->
+        <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar" data-coach="pe-bulk">
+          <span class="ppl-bulk-count"><t t-esc="state.selected.length"/> selected</span>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="selectAllVisible">Select all</button>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
+          <div class="ppl-bulk-sp"/>
+          <select class="ppl-bulk-dept" t-att-disabled="!state.selected.length" t-on-change="bulkSetDept">
+            <option value="">Move to department…</option>
+            <option t-foreach="state.departments" t-as="dp" t-key="dp_index" t-if="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
+          </select>
+          <button t-if="hasRecordsDesk" class="pbim-btn outline pbim-btn-sm"
+                  t-att-disabled="!state.selected.length" t-on-click="bulkUpdate"
+                  title="Change the employee, contract and bank details your pay scheme reads">
+            <t t-out="ic('pencil',14)"/> Bulk update
+          </button>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="bulkExport"><t t-out="ic('download',14)"/> Export CSV</button>
+        </div>
+
+        <!-- KPI band -->
+        <div class="ppl-kpis" data-coach="pe-kpis">
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.headcount"/><span class="l">Headcount</span></div></div>
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.expiring_soon ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring_soon"/><span class="l">Expiring ≤30d</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.new_hires"/><span class="l">New this month</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('check',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.ready_pct + '%'"/><span class="l">Payroll-ready</span></div></div>
+        </div>
+
+        <!-- filter bar -->
+        <div class="pbim-panel ppl-filters" data-coach="pe-filters">
+          <div class="ppl-filter-row">
+            <div class="pbim-chips">
+              <button t-foreach="statusChips" t-as="c" t-key="c.id"
+                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
+                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
+              </button>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input placeholder="Search name, job, department…" t-on-input="onSearch"/>
+            </div>
+          </div>
+
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
+            </div>
+            <div t-if="state.departments.length" class="pbim-chips ppl-depts">
+              <button t-foreach="state.departments" t-as="dp" t-key="dp_index"
+                      t-attf-class="pbim-fchip {{ state.dept === dp.name ? 'on' : '' }}" t-on-click="() => this.setDept(dp.name)">
+                <t t-esc="dp.name"/> <span class="c" t-esc="dp.count"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- roster -->
+        <div t-if="filteredPeople.length" class="ppl-roster" data-coach="pe-roster">
+          <div t-foreach="filteredPeople" t-as="p" t-key="p.id" t-attf-class="ppl-card {{ state.selectMode and isSelected(p.id) ? 'sel' : '' }}" t-on-click="() => this.onCard(p)">
+            <input t-if="state.selectMode" type="checkbox" class="ppl-cb" t-att-checked="isSelected(p.id)" t-on-click.stop="() => this.toggleSelect(p.id)"/>
+            <div class="ppl-av" t-attf-style="background-image:url({{ p.avatar }})"><span t-if="!p.avatar" t-esc="p.initials"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="p.name"/>
+              <div class="jb"><t t-esc="p.job"/> · <t t-esc="p.dept"/></div>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(p.state) }}"><span class="d"/><t t-esc="p.state_label"/></span>
+              <span t-if="p.days_to_expiry !== null and p.days_to_expiry >= 0 and p.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="p.days_to_expiry"/>d</span>
+            </div>
+            <div class="ppl-wage">
+              <span class="v money" t-esc="p.wage ? money(p.wage) : '—'"/>
+              <span class="k">monthly</span>
+            </div>
+            <div class="ppl-ready">
+              <span t-if="p.ready" class="ok" title="Payroll ready"><t t-out="ic('checkCircle',18)"/></span>
+              <span t-else="" class="no" t-att-title="p.bank ? 'No running contract' : 'No bank details'"><t t-out="ic('alert',18)"/></span>
+            </div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No employees match these filters.</div></div>
+
+        <div class="ppl-foot">
+          Showing <t t-esc="filteredPeople.length"/> of <t t-esc="state.peopleTotal"/> ·
+          <button class="ppl-link" t-on-click="openAllEmployees">Open full employee list →</button>
+        </div>
+      </div>
+
+      <!-- Employee 360 drawer — mounted only when the Employee Vault registered
+           its component into the soft "pb_people_drawer" registry. -->
+      <t t-if="state.drawerEmpId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
+    </div>
+  </t>
+
+</templates>

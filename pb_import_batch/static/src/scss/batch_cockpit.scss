@@ -1,0 +1,46 @@
+// Batch-detail cockpit — layout glue on top of the .pbim kit primitives.
+.pbbc {
+    .pbbc-wrap > * + * { margin-top: 14px; }
+
+    .pbbc-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+    // RECORDS R1 — the batch that changed nothing says so beside its source.
+    // Teal, shield, same vocabulary as the pay-run wizard that produced it.
+    .pbbc-chip--once { background: #ECFDF7; color: #0B5F55; box-shadow: inset 0 0 0 1px #A7E3D5; }
+
+    // hero: push the state badge to the right
+    .pbbc-hero-state { margin-left: auto; flex: 0 0 auto; }
+    .pbbc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }
+
+    .pbbc-railpanel { padding: 18px 22px; }
+    .pbbc-stats { grid-template-columns: repeat(5, 1fr); }
+    @media (max-width: 900px) { .pbbc-stats { grid-template-columns: repeat(2, 1fr); } }
+
+    // action bar
+    .pbbc-actions {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); padding: 14px 18px; box-shadow: var(--pbim-sh);
+    }
+    .pbbc-actions .left, .pbbc-actions .right { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // line table ops
+    .pbim-table th.ops-h { width: 1%; }
+    .pbbc-ops { display: flex; gap: 6px; justify-content: flex-end; white-space: nowrap; }
+    .pbbc-tw { max-height: 480px; }
+
+    // inline manual-match
+    .pbbc-match { background: #FAFBFE; padding: 12px 14px !important; }
+    .pbbc-search { width: 100%; border: 1px solid var(--pbim-line); border-radius: 9px; padding: 8px 11px; font-size: 13px; font-family: inherit; margin-bottom: 8px; background: #fff; }
+    .pbbc-search:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px rgba(169,196,250,.35); }
+    .pbbc-match-res { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-bottom: 8px; }
+    .pbbc-match-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--pbim-line); background: #fff; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-family: inherit; text-align: left; }
+    .pbbc-match-row:hover { border-color: var(--pbim-primary); background: rgba(169,196,250,.10); }
+    .pbbc-match-row .nm { font-size: 12.5px; font-weight: 700; color: var(--pbim-text); }
+    .pbbc-match-row .cd { font-size: 11px; color: var(--pbim-muted); font-family: ui-monospace, monospace; }
+
+    // busy overlay
+    .pbbc-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(244,245,251,.72);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+        color: var(--pbim-muted); font-weight: 700; }
+}

@@ -3,7 +3,6 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from pudb import set_trace
 
 class HrContractAdvantage(models.Model):
     _name = "hr.contract.advantage"
@@ -48,7 +47,7 @@ class HrContract(models.Model):
     Employee contract based on the visa, work permits
     allows to configure different Salary structure
     """
-    _inherit = 'hr.contract'
+    _inherit = ['hr.contract']
     _description = 'Employee Contract'
 
     struct_id = fields.Many2one('hr.payroll.structure', string='Salary Structure')
@@ -79,7 +78,19 @@ class HrContract(models.Model):
     location = fields.Char(string='Location',  help="Location of the employee.")
     tupart = fields.Selection([('YES', 'YES'), ('NO', 'NO')], string='TU Participation',  help="TU Participation.", default='YES')
     shuipart = fields.Selection([('YES', 'YES'), ('NO', 'NO')], string='SHUI Participation',  help="SHUI Participation.", default='YES')
-    hirestatus = fields.Selection([('long leave', 'Long Leave'), ('resignee', 'Resignee'), ('new hire', 'New Hire')], string='Hire status',  help="Hire status")
+    # SC-5 — the connected system speaks Active / Resigned / Terminated and this
+    # box only ever offered Long Leave / Resignee / New Hire, so every incoming
+    # status was silently dropped by `_coerce_mapped_value` (exact match against
+    # the selection VALUES) and all 164 abm contracts sat NULL. The vendor's three
+    # words are now the first-class options; the two legacy ones stay because
+    # `pb_hr_workforce_planning.increase_rule` still tests for 'new hire'.
+    hirestatus = fields.Selection(
+        [('active', 'Active'), ('resigned', 'Resigned'),
+         ('terminated', 'Terminated'),
+         ('long leave', 'Long Leave'), ('new hire', 'New Hire')],
+        string='Employment status',
+        help="Where this person stands today. Filled automatically when a "
+             "connected system or a pay data file supplies it.")
     costcenter = fields.Char(string='Cost center',  help="Cost center of employee.")
     def get_all_structures(self):
         """

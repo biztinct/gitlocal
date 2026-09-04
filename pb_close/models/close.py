@@ -1,0 +1,871 @@
+# Part of Payobook. See LICENSE file for full copyright and licensing details.
+"""``pb.close`` — the read model behind the Close lens (mockup C).
+
+ONE QUESTION: is this week safe to hand to payroll?
+---------------------------------------------------
+Every employee-day of the week is classified into three buckets:
+
+  * **clean**    — inside tolerance on every axis, nothing pending. It needs no
+                   human, and the stat strip says so out loud ("41 auto-approved
+                   · within 10-min tolerance"): the point of a tolerance is that
+                   somebody's attention is spent only where it changes something.
+  * **flagged**  — one or more reason chips (`missing_punch`,
+                   `missing_checkout`, `variance_over`, `unscheduled_day`,
+                   `ot_pending`, `week_variance`). A week with any of these
+                   cannot be locked.
+  * **reviewed** — a flag a manager consciously waived (`pb.close.review`). It
+                   still shows on the board, greyed, because a closed week must
+                   be able to answer "what did you decide about this?" — but it
+                   no longer blocks the lock.
+
+EVERYTHING IS DERIVED LIVE (P4 §1, and a new W-rule)
+----------------------------------------------------
+Nothing here reads the shift model's STORED compliance-status field. That field
+is stale by construction — a stored compute over ``now()`` with no cron to re-run
+it, and its ``actual_check_in`` / ``actual_check_out`` inputs are never written
+by any production code path, only by seeders. A board that decided which weeks
+reach payroll from a field nobody maintains would be confidently wrong. The
+proven shape is live derivation (``pb_today.py``:295-317), and that is what this
+does: shifts + punches + OT + the exception engine's own kinds, folded in Python
+from batched reads. A grep gate in ``pb_mission/tests/test_static.py`` keeps it
+that way — which is why that field's name is not spelled out anywhere in this
+module, including here.
+
+THE DAY IS THE EMPLOYEE'S LOCAL DAY (new W-rule)
+------------------------------------------------
+A punch is keyed by its EMPLOYEE-LOCAL calendar day, matching
+``pb.attendance.exception.engine`` and ``pb.wf.lock``, NOT by ``check_in.date()``
+the way the Week Grid and ``pb.time.hub.get_person_week`` key theirs. That is a
+deliberate, documented divergence: in VN (UTC+7) an 05:58 local punch is stored
+on the previous UTC day, so UTC keying would report a phantom missing punch
+against the early shift — precisely what C18.49 forbids — and, worse here, the
+board would flag a day that the lock chip beside it calls a different day. A
+lock and the board that offers to set it must mean the same Tuesday.
+
+SHIFT STATES: published AND completed (W24)
+--------------------------------------------
+The exception engine reads ``published`` only; Today reads published + completed.
+For a SETTLED week the second is the right question — ``pb_demo`` completes every
+past punched shift, so a published-only board would show an almost empty week and
+look broken. Same reasoning as ``pb.time.hub.get_person_week``.
+
+MONEY (W12)
+-----------
+"Est. gross" is DISPLAY MATH on ``hr.contract._pb_hourly_rate()``, published as
+an AGGREGATE only — never a per-person rate, never a payslip input, and no salary
+rule may call any of this. The payroll bridges are untouched by P4.
+"""
+
+import logging
+from collections import defaultdict
+from datetime import datetime, time, timedelta
+
+import pytz
+
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+# Who may READ the board. The attendance officer tier (the manager group
+# implies it) PLUS the payroll manager — and that second one is not generosity,
+# it is the W47 rule about a read gate and the surface that advertises it.
+#
+# The Close LENS is offered to attendance managers and payroll managers (§3.5,
+# it is gated like the locks it sets). `has_group` is evaluated against the real
+# user even under sudo — verified in core, `res_users.py`:1066 — and
+# `om_hr_payroll.group_hr_payroll_manager` does NOT imply the attendance
+# officer group. So an officer-only read gate would have put the lens on a
+# payroll manager's rail and then answered their first click with an
+# AccessError: W29's door that can only ever produce an error, offered to the
+# exact persona the whole ritual exists for ("hand the week to payroll").
+# Caught in P4's self-review, before it could be found live.
+_READ_GROUPS = (
+    'hr_attendance.group_hr_attendance_officer',
+    'om_hr_payroll.group_hr_payroll_manager',
+    'base.group_system',
+)
+
+# The shared Workforce row budget (pb_wf_kit/js/wf_rows.js `WF_ROW_CAP`, mirrored
+# by the Week Grid and the Timeline). One number across the section, so
+# "the first N employees" never means a different N depending on the lens.
+_MAX_ROWS = 200
+# The flagged TABLE is capped separately: a settled week on a 200-person
+# department legitimately produces hundreds of rows, and a payload that carries
+# all of them is a payload nobody renders. The TRUE total travels beside the
+# capped list (W45) — a capped read that reports `len(items)` tells the officer
+# the backlog is shrinking while it grows.
+_MAX_FLAGGED = 200
+# One page of the flagged table. The cap above still applies to the whole
+# result set — paging is about what travels per request, not about pretending
+# the backlog is smaller than it is (W45: the TRUE total always rides along).
+_PAGE_SIZE = 25
+# How many rows one "Review all N" click may waive. A bulk action is a promise
+# that a human made ONE decision about a homogeneous set; past a few hundred
+# rows it stops being a decision and starts being a way to empty the board, and
+# it is also a request that will time out halfway and leave the week in a state
+# nobody chose.
+_MAX_BULK = 200
+
+_PLANNED_STATES = ('published', 'completed')
+
+# kind -> (label, tone). `tone` is a class name, never a hex (W1).
+_KINDS = {
+    'missing_punch':    (lambda: _("Missing punch"), 'rose'),
+    'missing_checkout': (lambda: _("Missing punch-out"), 'rose'),
+    'variance_over':    (lambda: _("Outside tolerance"), 'amber'),
+    'unscheduled_day':  (lambda: _("Unscheduled day"), 'cyan'),
+    'ot_pending':       (lambda: _("Overtime undecided"), 'amber'),
+    'week_variance':    (lambda: _("Week outside tolerance"), 'amber'),
+}
+
+
+class PbClose(models.AbstractModel):
+    _name = 'pb.close'
+    _description = 'Weekly Close Cockpit'
+
+    # ================================================================ access
+    @api.model
+    def _require_officer(self):
+        u = self.env.user
+        for g in _READ_GROUPS:
+            try:
+                if u.has_group(g):
+                    return True
+            except (ValueError, KeyError):
+                continue
+        raise AccessError(_(
+            "The weekly Close board is restricted to attendance officers and "
+            "payroll managers."))
+
+    @api.model
+    def _company_ids(self):
+        return self.env.companies.ids or [self.env.company.id]
+
+    @api.model
+    def _monday(self, week_start):
+        """Delegated to the Week-Grid facade, so the Close board and the grid it
+        sends officers into can never disagree about which Monday a week is."""
+        return self.env['hr.attendance.weekentry']._monday(week_start)
+
+    # =============================================================== the read
+    @api.model
+    def _rows_for(self, department_id, week_start, search):
+        """Every flag row of one department-week, with its review state on it.
+
+        Extracted in P7 so the READ and the BULK WAIVE cannot disagree about
+        what is on the board. The bulk action must waive exactly the rows the
+        officer was looking at; if it rebuilt that set with its own domain, the
+        two would drift the first time either side changed — and the failure
+        would be silent and unrecoverable (rows waived that were never shown).
+        Returns ``(rows, emps, df, dt, days, today, locked_days, stats,
+        totals)``.
+        """
+        df = self._monday(week_start)
+        dt = df + timedelta(days=6)
+        days = [df + timedelta(days=i) for i in range(7)]
+        today = fields.Date.context_today(self)
+
+        emps, truncated = self._population(department_id, search)
+        locked_days = self.env['pb.wf.lock']._locked_dates(self.env.company, days)
+
+        rows, stats, totals = self._classify(emps, df, dt, days, today)
+        reviews = self._reviews(emps, df, dt)
+        for row in rows:
+            key = (row['employee_id'], row['date'], row['kind'])
+            row['reviewed'] = key in reviews
+            if row['reviewed']:
+                row['review_note'] = reviews[key]
+            row['locked'] = fields.Date.to_date(row['date']) in locked_days
+        # unreviewed first, then by day, then by name — the officer works down
+        # the list and the rows they have already dealt with sink.
+        rows.sort(key=lambda r: (r['reviewed'], r['date'], r['name']))
+        return {'rows': rows, 'emps': emps, 'truncated': truncated,
+                'df': df, 'dt': dt, 'days': days, 'today': today,
+                'locked_days': locked_days, 'stats': stats, 'totals': totals}
+
+    @api.model
+    def _kind_summary(self, rows):
+        """One line per KIND that actually occurs, with its open and reviewed
+        counts. The order is `_KINDS`' own, not frequency: a summary whose rows
+        move between two visits is a summary nobody can learn.
+
+        This is what makes a bulk action honest. "Review all 41" is a decision a
+        manager can defend only when the 41 are the SAME KIND of thing — 41
+        assorted problems is not one decision, it is a way of emptying a board.
+        """
+        counts = {}
+        for r in rows:
+            c = counts.setdefault(r['kind'], {'open': 0, 'reviewed': 0})
+            c['reviewed' if r['reviewed'] else 'open'] += 1
+        out = []
+        for kind, (label, tone) in _KINDS.items():
+            c = counts.get(kind)
+            if not c:
+                continue
+            out.append({'kind': kind, 'label': label(), 'tone': tone,
+                        'open': c['open'], 'reviewed': c['reviewed'],
+                        'total': c['open'] + c['reviewed']})
+        return out
+
+    @api.model
+    def get_close_data(self, department_id=False, week_start=False, search=False,
+                       kind=False, reviewed=False, page=1):
+        """Mockup C's whole payload for one department-week. Pure READ.
+
+        There is no write path anywhere in this method or anything it calls —
+        which is what makes it safe for a lens that re-fetches on every context
+        change to call it (W25/W41). Every mutation on this board goes through
+        `pb.wf.lock.lock_day` / `unlock_day`, `pb.close.review_flag` or
+        `review_kind`, and all four are reachable only from a click handler.
+
+        `kind`, `reviewed` and `page` are P7 additions and all three are
+        ADDITIVE: a caller that passes none of them gets the first page of the
+        same board it always got. They filter and page the TABLE only — every
+        stat, the kind summary, the checklist and `can_lock` are computed over
+        the whole week, because a filter is a way of looking at a week and must
+        never change what the week IS. (The opposite is the classic version of
+        this bug: filter to one kind, watch "can lock" turn green.)
+        """
+        self._require_officer()
+        ctx = self._rows_for(department_id, week_start, search)
+        rows, df, dt, days = ctx['rows'], ctx['df'], ctx['dt'], ctx['days']
+        today, locked_days = ctx['today'], ctx['locked_days']
+        emps, stats, totals = ctx['emps'], ctx['stats'], ctx['totals']
+
+        reviewed_n = sum(1 for r in rows if r['reviewed'])
+        missing_n = sum(1 for r in rows if not r['reviewed']
+                        and r['kind'] in ('missing_punch', 'missing_checkout'))
+        clean_n = stats['clean']
+        open_flags = sum(1 for r in rows if not r['reviewed'])
+        kinds = self._kind_summary(rows)
+
+        # --- the TABLE's own view of that set: filter, then cap, then page ---
+        shown = rows
+        if kind:
+            shown = [r for r in shown if r['kind'] == kind]
+        if reviewed == 'open':
+            shown = [r for r in shown if not r['reviewed']]
+        elif reviewed == 'done':
+            shown = [r for r in shown if r['reviewed']]
+        filtered_total = len(shown)
+        shown = shown[:_MAX_FLAGGED]
+        pages = max(1, (len(shown) + _PAGE_SIZE - 1) // _PAGE_SIZE)
+        try:
+            page = max(1, min(int(page or 1), pages))
+        except (TypeError, ValueError):
+            page = 1
+        flagged = shown[(page - 1) * _PAGE_SIZE:page * _PAGE_SIZE]
+        truncated = ctx['truncated']
+
+        # A day that has not happened yet cannot be closed, so it is not part of
+        # the denominator, not part of the "N days unlocked" tick, and not part
+        # of `all_locked`. Without this the current week always reports its own
+        # future as unfinished business — "3 days unlocked" on a Wednesday,
+        # forever, which is how a checklist teaches people to ignore it.
+        scope_days = [d for d in days if d <= today]
+        handoff = self._handoff(emps, df, dt, totals)
+        checklist = self._checklist(emps, df, dt, open_flags,
+                                    scope_days, locked_days)
+        can_manage = self.env['pb.wf.lock']._pb_can_manage()
+
+        return {
+            'week_start': df.isoformat(),
+            'week_end': dt.isoformat(),
+            'week_no': df.isocalendar()[1],
+            'department_id': int(department_id) if department_id else False,
+            'days': [{
+                'iso': d.isoformat(),
+                'label': d.strftime('%a'),
+                'sublabel': d.strftime('%b %d'),
+                'locked': d in locked_days,
+                'is_future': d > today,
+            } for d in days],
+            'stats': {
+                'clean': clean_n,
+                'flagged': open_flags,
+                'reviewed': reviewed_n,
+                'missing': missing_n,
+                'days_locked': len([d for d in scope_days if d in locked_days]),
+                'days_total': len(scope_days) or 7,
+            },
+            'flagged': flagged,
+            # W45, and now three numbers rather than one, because a paged table
+            # can lie in two directions at once. `flagged_total` is the WEEK —
+            # what the stat strip and `can_lock` are about. `filtered_total` is
+            # what the current chips select. `flagged_shown` is what is in this
+            # payload. Reporting only the last one is the classic capped-read
+            # bug: the officer watches the backlog shrink while it grows.
+            'flagged_total': len(rows),
+            'filtered_total': filtered_total,
+            'flagged_shown': len(flagged),
+            'kinds': kinds,
+            'filter_kind': kind or False,
+            'filter_reviewed': reviewed or False,
+            'page': page,
+            'pages': pages,
+            'page_size': _PAGE_SIZE,
+            # The table caps at `_MAX_FLAGGED` before paging, so a very large
+            # filtered set is reachable only down to that line. Said out loud
+            # rather than left for the officer to infer from a page count.
+            'table_capped': filtered_total > _MAX_FLAGGED,
+            'max_bulk': _MAX_BULK,
+            'handoff': handoff,
+            'checklist': checklist,
+            # `can_lock` — flags == 0, or every one of them reviewed. The CTA is
+            # DISABLED, not hidden, so the officer can see what they are working
+            # towards (the checklist beside it says what is missing).
+            'can_lock': open_flags == 0,
+            'can_manage_locks': can_manage,
+            'can_review': self.env['pb.close.review']._pb_can_review(),
+            # A week entirely in the future is not "all locked" — `all()` over an
+            # empty sequence is True, which would have rendered the handoff rail
+            # in its locked state for next week.
+            'all_locked': bool(scope_days) and all(
+                d in locked_days for d in scope_days),
+            'headcount': len(emps),
+            'truncated': truncated,
+            'tolerance': self._tolerance(),
+        }
+
+    # ============================================================ population
+    @api.model
+    def _population(self, department_id, search):
+        co_ids = self._company_ids()
+        domain = [('active', '=', True), ('company_id', 'in', co_ids)]
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        if search:
+            domain.append(('name', 'ilike', search))
+        emps = self.env['hr.employee'].sudo().search(
+            domain, order='name', limit=_MAX_ROWS + 1)
+        truncated = 0
+        if len(emps) > _MAX_ROWS:
+            truncated = len(emps) - _MAX_ROWS
+            emps = emps[:_MAX_ROWS]
+        return emps, truncated
+
+    @api.model
+    def _tolerance(self):
+        mins, week_h = self.env['pb.attendance.rule']._variance_for_company(
+            self.env.company)
+        return {'minutes': mins, 'hours_week': week_h}
+
+    # ========================================================== the classifier
+    @api.model
+    def _classify(self, emps, df, dt, days, today):
+        """The whole board, from batched reads folded in Python.
+
+        Returns ``(rows, stats, totals)`` where `rows` is one dict per FLAG (a
+        day with two problems produces two rows, because the officer waives
+        problems, not days).
+        """
+        Grid = self.env['hr.attendance.weekentry']
+        Rule = self.env['pb.attendance.rule']
+        var_min, var_week = Rule._variance_for_company(self.env.company)
+        if not emps:
+            return [], {'clean': 0}, {'regular': 0.0, 'overtime': 0.0,
+                                      'bonus': 0.0, 'emp_hours': {}}
+
+        emp_ids = emps.ids
+        # The board and the exception engine must answer "is this punch a
+        # missing check-out?" the same way — see `_open_punch_is_stale`.
+        now = fields.Datetime.now()
+        open_h_cache = {}
+
+        # --- shifts (1 query) — published AND completed (W24) --------------
+        shifts = self.env['hr.shift.planning'].sudo().search([
+            ('employee_id', 'in', emp_ids),
+            ('date', '>=', df), ('date', '<=', dt),
+            ('state', 'in', _PLANNED_STATES),
+        ])
+        shift_by = defaultdict(list)
+        for s in shifts:
+            shift_by[(s.employee_id.id, s.date)].append(s)
+
+        # --- punches (1 query, a day of slack each side for the tz shift) ---
+        atts = self.env['hr.attendance'].sudo().search([
+            ('employee_id', 'in', emp_ids),
+            ('check_in', '>=', datetime.combine(df - timedelta(days=1), time.min)),
+            ('check_in', '<=', datetime.combine(dt + timedelta(days=1), time.max)),
+        ])
+        tz_cache = {}
+        att_by = defaultdict(list)
+        for a in atts:
+            d = self._local_day(a.employee_id, a.check_in, tz_cache)
+            if d and df <= d <= dt:
+                att_by[(a.employee_id.id, d)].append(a)
+
+        # --- overtime (1 query) --------------------------------------------
+        ot_rows = self.env['hr.overtime.request'].sudo().search_read(
+            [('employee_id', 'in', emp_ids),
+             ('date', '>=', df), ('date', '<=', dt)],
+            ['employee_id', 'date', 'state', 'approved_hours', 'bonus_hours'])
+        ot_pending = set()
+        ot_approved = ot_bonus = 0.0
+        for r in ot_rows:
+            eid = r['employee_id'][0] if r['employee_id'] else False
+            if r['state'] == 'submitted':
+                ot_pending.add((eid, r['date']))
+            elif r['state'] == 'approved':
+                ot_approved += r['approved_hours'] or 0.0
+                ot_bonus += r['bonus_hours'] or 0.0
+
+        # --- days that are legitimately empty --------------------------------
+        Engine = self.env['pb.attendance.exception.engine']
+        trip_map = Engine._trip_days(emp_ids, df, dt)
+        leave_map = Engine._leave_days(emp_ids, df, dt)
+        first_contract = Engine._first_contract_day(emp_ids)
+
+        rows = []
+        clean = 0
+        total_regular = 0.0
+        emp_hours = {}
+
+        for emp in emps:
+            week_dev = 0.0
+            worst = (0.0, None)
+            emp_actual = 0.0
+            for d in days:
+                if d > today:
+                    continue
+                iso = d.isoformat()
+                fc = first_contract.get(emp.id)
+                if fc and d < fc:
+                    continue
+                excused = (iso in trip_map.get(emp.id, ())
+                           or iso in leave_map.get(emp.id, ()))
+
+                day_shifts = shift_by.get((emp.id, d), [])
+                day_atts = att_by.get((emp.id, d), [])
+                # Nothing scheduled and nothing happened is not a fact about
+                # this week — it is a rest day. Counting it CLEAN would put two
+                # hundred Sundays into "auto-approved" and make the headline
+                # number meaningless; counting it flagged would make every
+                # weekend an exception.
+                #
+                # A PENDING OVERTIME REQUEST is the exception to that: it says
+                # somebody claims to have worked, and a claim with neither a
+                # shift nor a punch behind it is the most anomalous row of the
+                # week — exactly the one a rest-day skip would have swallowed.
+                if not day_shifts and not day_atts and (emp.id, d) not in ot_pending:
+                    continue
+                sched = round(sum(s.planned_hours or 0.0 for s in day_shifts), 2)
+                actual = round(sum(Grid._att_hours(a) for a in day_atts), 2)
+                emp_actual += actual
+                delta = round(actual - sched, 2)
+
+                if excused:
+                    # An approved trip or a validated leave IS the explanation.
+                    # Counting it clean would inflate the "auto-approved" number
+                    # with days nobody worked; counting it flagged would make
+                    # every holiday an exception. It is simply not a row.
+                    continue
+
+                kinds = []
+                if day_shifts and not day_atts:
+                    kinds.append('missing_punch')
+                if any(self._open_punch_is_stale(a, now, Rule, open_h_cache)
+                       for a in day_atts):
+                    kinds.append('missing_checkout')
+                if day_atts and not day_shifts and actual > 0:
+                    kinds.append('unscheduled_day')
+                if (emp.id, d) in ot_pending:
+                    kinds.append('ot_pending')
+
+                dev = self._punch_deviation(day_shifts, day_atts)
+                if dev is not None and dev > var_min:
+                    kinds.append('variance_over')
+
+                # Only a day that raised NO flag of its own feeds the weekly
+                # rollup. That is what the rollup is FOR (W54): drift that no
+                # single day caught. Letting a flagged day contribute too would
+                # double-count it — a missing punch is an 8 h delta, so one
+                # absence would bust any weekly tolerance and every missing
+                # punch would arrive with a redundant "week outside tolerance"
+                # beside it. (Found by the P4 test run: two flags where the
+                # matrix expected one.)
+                if day_shifts and not kinds:
+                    week_dev += abs(delta)
+                    if abs(delta) > abs(worst[0]):
+                        worst = (delta, d)
+
+                base = {
+                    'employee_id': emp.id,
+                    'name': emp.name,
+                    'job': emp.job_title or (emp.job_id.name if emp.job_id
+                                             else '') or '',
+                    'dept': emp.department_id.name if emp.department_id else '',
+                    'avatar_url': '/web/image/hr.employee/%s/avatar_128' % emp.id,
+                    'date': iso,
+                    'day_label': d.strftime('%a %b %d'),
+                    'sched': sched,
+                    'actual': actual,
+                    'delta': delta,
+                    'deviation': int(dev) if dev is not None else 0,
+                }
+                if kinds:
+                    for kind in kinds:
+                        label, tone = _KINDS[kind]
+                        rows.append({**base, 'kind': kind,
+                                     'kind_label': label(), 'tone': tone})
+                else:
+                    clean += 1
+
+            total_regular += emp_actual
+            emp_hours[emp.id] = emp_actual
+
+            # --- the WEEK-level tolerance (§3.3) -----------------------------
+            # ONE row per employee, not one per day (deviation D2, see the
+            # module note below): a person eight minutes off on each of seven
+            # days is INSIDE the per-punch tolerance every single time and 56
+            # minutes off over the week. That is one fact about one person, and
+            # surfacing it as seven identical rows the manager must waive one by
+            # one would bury the days that really do need attention.
+            if worst[1] and week_dev > var_week:
+                label, tone = _KINDS['week_variance']
+                rows.append({
+                    'employee_id': emp.id,
+                    'name': emp.name,
+                    'job': emp.job_title or (emp.job_id.name if emp.job_id
+                                             else '') or '',
+                    'dept': emp.department_id.name if emp.department_id else '',
+                    'avatar_url': '/web/image/hr.employee/%s/avatar_128' % emp.id,
+                    'date': worst[1].isoformat(),
+                    'day_label': worst[1].strftime('%a %b %d'),
+                    'sched': 0.0,
+                    'actual': 0.0,
+                    'delta': round(week_dev, 2),
+                    'deviation': 0,
+                    'kind': 'week_variance',
+                    'kind_label': label(),
+                    'tone': tone,
+                })
+
+        return (rows, {'clean': clean},
+                {'regular': round(total_regular, 2),
+                 'overtime': round(ot_approved, 2),
+                 'bonus': round(ot_bonus, 2),
+                 'emp_hours': emp_hours})
+
+    @api.model
+    def _open_punch_is_stale(self, att, now, Rule, cache):
+        """Is this still-open punch a MISSING CHECK-OUT, or just somebody at work?
+
+        Until P5 the board answered "open punch → flag", with no threshold at
+        all. On a live day that is not a defect you can argue about: at 09:00
+        every single person who has clocked in is an exception, ~50 of the 66
+        flags on the P6 cohort were people standing at their machines, and the
+        one row that really was a forgotten Friday punch is buried under them.
+
+        ``pb.attendance.exception.engine`` has never done that — it gates the
+        same kind on ``open_checkout_hours`` (attendance_exception.py:214). Two
+        surfaces that disagree about what an exception IS are worse than either
+        of them being wrong on its own, because the officer cannot tell which
+        one to believe. So the threshold is READ FROM THE SAME PLACE, per
+        company, with the same ``>=`` comparison and the same
+        "hours the punch has been open" arithmetic.
+
+        Consequence, stated because it is the point: a punch opened this morning
+        stops being a flag until it has been open longer than the company's
+        threshold (16 h by default), whatever day it sits on. A settled day's
+        forgotten punch is hours past that by definition and still flags.
+        """
+        if att.check_out or not att.check_in:
+            return False
+        company = att.employee_id.company_id
+        cid = company.id if company else False
+        if cid not in cache:
+            cache[cid] = Rule._grace_for_company(company)[2]
+        hours_open = (now - att.check_in).total_seconds() / 3600.0
+        return hours_open >= cache[cid]
+
+    @api.model
+    def _local_day(self, employee, dt_utc, cache):
+        """See the module docstring: the EMPLOYEE-LOCAL day, so the board and
+        the lock chip beside it mean the same Tuesday."""
+        if not dt_utc:
+            return False
+        tzinfo = cache.get(employee.id)
+        if tzinfo is None:
+            try:
+                tzinfo = pytz.timezone(employee.tz or 'UTC')
+            except Exception:
+                tzinfo = pytz.UTC
+            cache[employee.id] = tzinfo
+        return pytz.UTC.localize(dt_utc).astimezone(tzinfo).date()
+
+    @api.model
+    def _punch_deviation(self, day_shifts, day_atts):
+        """max(|first check-in − shift start|, |last check-out − shift end|) in
+        MINUTES, or None when the comparison is not available.
+
+        This is what "|punch vs shift| ≤ variance_minutes" means: the tolerance
+        is about the EDGES of the day, not about its total. Two hours short in
+        the middle of a shift is a break, not a compliance question; twenty
+        minutes late is.
+        """
+        if not day_shifts or not day_atts:
+            return None
+        starts = [s.start_datetime for s in day_shifts if s.start_datetime]
+        ends = [s.end_datetime for s in day_shifts if s.end_datetime]
+        ins = [a.check_in for a in day_atts if a.check_in]
+        outs = [a.check_out for a in day_atts if a.check_out]
+        devs = []
+        if starts and ins:
+            devs.append(abs((min(ins) - min(starts)).total_seconds()) / 60.0)
+        if ends and outs:
+            devs.append(abs((max(outs) - max(ends)).total_seconds()) / 60.0)
+        return max(devs) if devs else None
+
+    # ============================================================== reviews
+    @api.model
+    def _reviews(self, emps, df, dt):
+        """{(employee_id, iso, kind): note} for the week — the waived flags."""
+        if not emps:
+            return {}
+        rows = self.env['pb.close.review'].sudo().search_read(
+            [('employee_id', 'in', emps.ids),
+             ('date', '>=', df), ('date', '<=', dt)],
+            ['employee_id', 'date', 'kind', 'note'])
+        return {
+            ((r['employee_id'][0] if r['employee_id'] else False),
+             r['date'].isoformat(), r['kind']): (r['note'] or '')
+            for r in rows
+        }
+
+    # ======================================================= payroll handoff
+    @api.model
+    def _handoff(self, emps, df, dt, totals):
+        """The right rail's totals. AGGREGATES ONLY (W12).
+
+        `est_gross` multiplies each person's hours by their own rate and then
+        SUMS — a company average would be wrong per person by construction (the
+        exact trap `hr.contract._pb_hourly_rate` was written to replace). The
+        individual rates never leave this method, and the payload reports how
+        many people had no resolvable rate rather than printing a confident,
+        wrong total (the P2 cost-strip posture).
+
+        What it deliberately does NOT do: apply the overtime MULTIPLIER. The OT
+        rate lives on `hr.overtime.config` and is a payroll fact; reaching for
+        it here would make this look like a payslip preview, which it is not and
+        must never become (W12). The figure is labelled "Est." on the rail and
+        is a floor, not a forecast — the real number comes from the run.
+        """
+        out = {
+            'regular': totals.get('regular', 0.0),
+            'overtime': totals.get('overtime', 0.0),
+            'bonus': totals.get('bonus', 0.0),
+            'est_gross': 0.0,
+            'rate_missing': 0,
+            'currency': self.env.company.currency_id.symbol or '',
+        }
+        emp_hours = totals.get('emp_hours') or {}
+        if not emps or not emp_hours:
+            return out
+        try:
+            rates = self.env['hr.shift.planning.grid']._pb_rates(list(emp_hours))
+        except Exception:
+            _logger.debug('pb.close: rates unavailable', exc_info=True)
+            rates = {}
+        gross = 0.0
+        missing = 0
+        ot_hours = out['overtime'] + out['bonus']
+        # OT is distributed pro-rata over the population's rates rather than
+        # attributed per person: the OT total is already an aggregate here, and
+        # inventing a per-person split just to multiply it back up would be a
+        # more precise-looking number that is no more true.
+        avg_rate = 0.0
+        rated = [r for r in rates.values() if r]
+        if rated:
+            avg_rate = sum(rated) / len(rated)
+        for eid, hours in emp_hours.items():
+            rate = rates.get(eid) or 0.0
+            if not rate:
+                # Only somebody who actually worked can be MISSING from the
+                # total — footnoting an unrated person who worked zero hours
+                # would report a gap that changes nothing.
+                if hours:
+                    missing += 1
+                continue
+            gross += rate * hours
+        gross += avg_rate * ot_hours
+        out['est_gross'] = round(gross, 2)
+        out['rate_missing'] = missing
+        return out
+
+    # ============================================================= checklist
+    @api.model
+    def _checklist(self, emps, df, dt, open_flags, days, locked_days):
+        """Mockup C's four ticks. Each one is a QUESTION the officer would
+        otherwise have to go and check on another screen.
+
+        `days` here is the week's days that have HAPPENED — see the caller.
+        """
+        ot_open = corr_open = 0
+        if emps:
+            ot_open = self.env['hr.overtime.request'].sudo().search_count([
+                ('employee_id', 'in', emps.ids),
+                ('date', '>=', df), ('date', '<=', dt),
+                ('state', '=', 'submitted')])
+            if 'hr.attendance.correction' in self.env:
+                corr_open = self.env['hr.attendance.correction'].sudo(
+                ).search_count([
+                    ('employee_id', 'in', emps.ids),
+                    ('date', '>=', df), ('date', '<=', dt),
+                    ('state', '=', 'submitted')])
+        unlocked = [d for d in days if d not in locked_days]
+        return [
+            {'key': 'ot', 'done': ot_open == 0,
+             'label': (_("Overtime all decided") if ot_open == 0
+                       else _("%s overtime request(s) undecided", ot_open))},
+            {'key': 'corrections', 'done': corr_open == 0,
+             'label': (_("Corrections all decided") if corr_open == 0
+                       else _("%s correction(s) awaiting approval", corr_open))},
+            {'key': 'flags', 'done': open_flags == 0,
+             'label': (_("No exceptions open") if open_flags == 0
+                       else _("%s exception(s) open", open_flags))},
+            {'key': 'locks', 'done': not unlocked,
+             'label': (_("Every day locked") if not unlocked
+                       else _("%s day(s) unlocked", len(unlocked)))},
+        ]
+
+    # ================================================================ writes
+    # Everything below is a MUTATION and is reachable only from a click handler
+    # in the lens (W21.1). None of it is called by `get_close_data`.
+    @api.model
+    def review_flag(self, employee_id, day, kind, note=False):
+        """"Approve as-is" — record a manager waiving one flag.
+
+        Idempotent: waiving the same flag twice returns the existing row rather
+        than raising, because the officer's second click is the same decision,
+        and a UNIQUE violation is not a message anybody can act on.
+        """
+        self._require_officer()
+        Review = self.env['pb.close.review']
+        Review._pb_check_review()
+        if kind not in dict(Review._fields['kind'].selection):
+            raise UserError(_("Unknown flag type."))
+        emp = self.env['hr.employee'].sudo().browse(int(employee_id)).exists()
+        if not emp or (emp.company_id
+                       and emp.company_id.id not in self._company_ids()):
+            raise UserError(_("That employee is not available in this company."))
+        day = fields.Date.to_date(day)
+        existing = Review.sudo().search([
+            ('employee_id', '=', emp.id), ('date', '=', day),
+            ('kind', '=', kind)], limit=1)
+        if existing:
+            return existing.id
+        # created AS THE REAL USER: the model's gate and the no-self-review rule
+        # must see who is actually clicking (W12 — the pb.team.act posture).
+        return Review.create({
+            'company_id': emp.company_id.id or self.env.company.id,
+            'week_start': Review._monday(day),
+            'employee_id': emp.id,
+            'date': day,
+            'kind': kind,
+            'note': (note or '').strip() or False,
+        }).id
+
+    @api.model
+    def review_kind(self, kind, note=False, department_id=False,
+                    week_start=False, search=False):
+        """"Review all N…" — waive every OPEN flag of ONE kind on this board.
+
+        WHY IT IS PER-KIND AND NOT "REVIEW ALL". A review records that a human
+        looked at a flag and accepted it, and that record is the evidence the
+        week is defensible. One note stretched over forty assorted problems is
+        not evidence of a decision, it is evidence of a button. Forty instances
+        of the SAME problem is a decision somebody can actually make and defend
+        ("the gate reader was down on Tuesday"), which is why the board groups
+        by kind first and the batch is offered per group.
+
+        THE SET IS THE ONE ON SCREEN. It is rebuilt through `_rows_for` — the
+        exact call `get_close_data` makes — rather than from a domain of this
+        method's own. A second opinion about which rows are on the board would
+        waive things the officer never saw, and nothing would ever surface it.
+
+        NOTHING IS SILENTLY SKIPPED. The no-self-review rule is enforced per
+        ROW by the model (a manager may not waive a flag on their own
+        attendance), and it must survive a batch — so each row is created in its
+        own savepoint and a refusal is COLLECTED, not swallowed. The caller gets
+        back what landed and what did not and why; a batch that reports "40
+        reviewed" when 39 landed is worse than one that refuses outright.
+        """
+        self._require_officer()
+        Review = self.env['pb.close.review']
+        # The manager gate is checked ONCE up front so an unauthorised click is
+        # refused before it writes anything — the model re-checks it on every
+        # create anyway (W31: the gate is on the model), so this is the early
+        # exit, never the enforcement.
+        Review._pb_check_review()
+        if kind not in dict(Review._fields['kind'].selection):
+            raise UserError(_("Unknown flag type."))
+
+        ctx = self._rows_for(department_id, week_start, search)
+        targets = [r for r in ctx['rows']
+                   if r['kind'] == kind and not r['reviewed']]
+        if len(targets) > _MAX_BULK:
+            raise UserError(_(
+                "That is %(n)s flags. A single review note can cover at most "
+                "%(cap)s — narrow the department or the search first, so the "
+                "decision you are recording is one somebody could defend.",
+                n=len(targets), cap=_MAX_BULK))
+
+        note = (note or '').strip() or False
+        done, skipped = 0, []
+        for row in targets:
+            try:
+                with self.env.cr.savepoint():
+                    Review.create({
+                        'company_id': (self.env['hr.employee'].sudo().browse(
+                            row['employee_id']).company_id.id
+                            or self.env.company.id),
+                        'week_start': ctx['df'],
+                        'employee_id': row['employee_id'],
+                        'date': fields.Date.to_date(row['date']),
+                        'kind': kind,
+                        'note': note,
+                    })
+                done += 1
+            except (AccessError, UserError, ValidationError) as e:
+                # The message is the MODEL's own words, not a summary of them:
+                # "you cannot waive a flag on your own attendance" is the whole
+                # point of the refusal and paraphrasing it loses it (W40).
+                skipped.append({'name': row['name'], 'date': row['date'],
+                                'reason': str(e)})
+            except Exception:       # pragma: no cover - defensive
+                _logger.exception('pb.close: bulk review row failed')
+                skipped.append({'name': row['name'], 'date': row['date'],
+                                'reason': _("Unexpected error.")})
+        label, _tone = _KINDS.get(kind, (lambda: kind, ''))
+        return {'kind': kind, 'kind_label': label(),
+                'reviewed': done, 'skipped': skipped,
+                'requested': len(targets)}
+
+    @api.model
+    def lock_days(self, days, reason=False):
+        """Lock a list of days — the CTA's "Lock week & send to payroll".
+
+        A loop over `pb.wf.lock.lock_day`, which re-checks the manager gate for
+        every one of them. Stops on the first refusal and reports what landed,
+        rather than pretending a partial close succeeded.
+        """
+        self._require_officer()
+        done = []
+        for d in (days or []):
+            self.env['pb.wf.lock'].lock_day(
+                self.env.company.id, fields.Date.to_date(d), reason)
+            done.append(fields.Date.to_date(d).isoformat())
+        return {'locked': done}
+
+    @api.model
+    def unlock_days(self, days, reason):
+        """Reopen — the reason is required, and it is recorded (W42)."""
+        self._require_officer()
+        done = []
+        for d in (days or []):
+            if self.env['pb.wf.lock'].unlock_day(
+                    self.env.company.id, fields.Date.to_date(d), reason):
+                done.append(fields.Date.to_date(d).isoformat())
+        return {'unlocked': done}

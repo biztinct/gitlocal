@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- GROSS PAY -->
+        <record id="rule_indonesia_gross" model="hr.salary.rule">
+            <field name="name">Gross Pay</field>
+            <field name="code">IDN_GROSS</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="categ_indonesia_gross"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- PPh 21 (Income Tax) -->
+        <record id="rule_indonesia_pph21" model="hr.salary.rule">
+            <field name="name">PPh 21</field>
+            <field name="code">PPH21</field>
+            <field name="sequence">200</field>
+            <field name="category_id" ref="categ_indonesia_tax"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- BPJS Kesehatan - Employee -->
+        <record id="rule_indonesia_bpjs_kesehatan_employee" model="hr.salary.rule">
+            <field name="name">BPJS Kesehatan - Employee</field>
+            <field name="code">BPJS_KES_EMP</field>
+            <field name="sequence">210</field>
+            <field name="category_id" ref="categ_indonesia_bpjs"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- BPJS TK JHT - Employee -->
+        <record id="rule_indonesia_bpjs_tk_jht_employee" model="hr.salary.rule">
+            <field name="name">BPJS TK JHT - Employee</field>
+            <field name="code">BPJS_JHT_EMP</field>
+            <field name="sequence">220</field>
+            <field name="category_id" ref="categ_indonesia_bpjs"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- BPJS TK JP - Employee -->
+        <record id="rule_indonesia_bpjs_tk_jp_employee" model="hr.salary.rule">
+            <field name="name">BPJS TK JP - Employee</field>
+            <field name="code">BPJS_JP_EMP</field>
+            <field name="sequence">230</field>
+            <field name="category_id" ref="categ_indonesia_bpjs"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Union Dues -->
+        <record id="rule_indonesia_union_dues" model="hr.salary.rule">
+            <field name="name">Union Dues</field>
+            <field name="code">UNION_DUES</field>
+            <field name="sequence">240</field>
+            <field name="category_id" ref="categ_indonesia_deductions"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Loan/Co-op Deductions -->
+        <record id="rule_indonesia_loan_deduction" model="hr.salary.rule">
+            <field name="name">Loan/Co-op Deductions</field>
+            <field name="code">LOAN_DED</field>
+            <field name="sequence">250</field>
+            <field name="category_id" ref="categ_indonesia_deductions"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- EMPLOYER CONTRIBUTIONS -->
+        
+        <!-- BPJS TK JHT - Employer -->
+        <record id="rule_indonesia_bpjs_tk_jht_employer" model="hr.salary.rule">
+            <field name="name">BPJS TK JHT - Employer</field>
+            <field name="code">BPJS_JHT_COMP</field>
+            <field name="sequence">300</field>
+            <field name="category_id" ref="categ_indonesia_employer"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+        
+        <!-- BPJS TK JKM -->
+        <record id="rule_indonesia_bpjs_tk_jkm" model="hr.salary.rule">
+            <field name="name">BPJS TK JKM</field>
+            <field name="code">BPJS_JKM</field>
+            <field name="sequence">310</field>
+            <field name="category_id" ref="categ_indonesia_employer"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+        
+        <!-- BPJS TK JKK -->
+        <record id="rule_indonesia_bpjs_tk_jkk" model="hr.salary.rule">
+            <field name="name">BPJS TK JKK</field>
+            <field name="code">BPJS_JKK</field>
+            <field name="sequence">320</field>
+            <field name="category_id" ref="categ_indonesia_employer"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+        
+        <!-- BPJS TK JP - Employer -->
+        <record id="rule_indonesia_bpjs_tk_jp_employer" model="hr.salary.rule">
+            <field name="name">BPJS TK JP - Employer</field>
+            <field name="code">BPJS_JP_COMP</field>
+            <field name="sequence">330</field>
+            <field name="category_id" ref="categ_indonesia_employer"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+        
+        <!-- BPJS Kesehatan - Employer -->
+        <record id="rule_indonesia_bpjs_kesehatan_employer" model="hr.salary.rule">
+            <field name="name">BPJS Kesehatan - Employer</field>
+            <field name="code">BPJS_KES_COMP</field>
+            <field name="sequence">340</field>
+            <field name="category_id" ref="categ_indonesia_employer"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+        
+        <!-- NET PAY -->
+        <record id="rule_indonesia_net" model="hr.salary.rule">
+            <field name="name">Net Pay</field>
+            <field name="code">NET</field>
+            <field name="sequence">500</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+    </data>
+</odoo>

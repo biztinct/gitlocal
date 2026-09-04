@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Payroll Comparison Wizard Form -->
+    <record id="view_payroll_comparison_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.comparison.wizard.form</field>
+        <field name="model">payroll.comparison.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Comparison Analysis">
+                <div class="alert alert-info" role="alert">
+                    <h4><i class="fa fa-bar-chart"/> Payroll Comparison Wizard</h4>
+                    <p>Compare payroll data across different periods to identify trends and anomalies.</p>
+                </div>
+                
+                <group>
+                    <group string="Current Period">
+                        <field name="country" required="1"/>
+                        <field name="current_date_from" required="1"/>
+                        <field name="current_date_to" required="1"/>
+                    </group>
+                    <group string="Comparison Period">
+                        <field name="comparison_type" required="1"/>
+                        <field name="previous_date_from" attrs="{'invisible': [('comparison_type', '!=', 'custom')], 'required': [('comparison_type', '=', 'custom')]}"/>
+                        <field name="previous_date_to" attrs="{'invisible': [('comparison_type', '!=', 'custom')], 'required': [('comparison_type', '=', 'custom')]}"/>
+                    </group>
+                </group>
+                
+                <group string="Analysis Options">
+                    <group>
+                        <field name="include_charts"/>
+                        <field name="include_variance_analysis"/>
+                    </group>
+                    <group>
+                        <field name="variance_threshold"/>
+                        <field name="export_format"/>
+                    </group>
+                </group>
+                
+                <footer>
+                    <button string="Generate Comparison" name="action_generate_comparison" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Payroll Comparison Wizard Action -->
+    <record id="action_payroll_comparison_wizard" model="ir.actions.act_window">
+        <field name="name">Payroll Comparison Analysis</field>
+        <field name="res_model">payroll.comparison.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,39 @@
+// Government Reports cockpit — base layout/palette come from the pbim kit.
+.gov-board {
+    .gov-period {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 6px 10px; background: #fff; font-weight: 600;
+        color: var(--pbim-ink);
+    }
+    .gov-period input { border: none; outline: none; font: inherit; background: transparent; color: inherit; }
+
+    .gov-countries { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+    .gov-clabel { font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+    .pbim-chip.active { background: var(--pbim-primary-strong); color: #fff; border-color: var(--pbim-primary-strong); }
+
+    .gov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+    .gov-tile {
+        display: flex; align-items: center; gap: 12px;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        padding: 14px; background: #fff; transition: border-color .15s, box-shadow .15s;
+    }
+    .gov-tile:hover { border-color: var(--pbim-primary); box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+    .gov-tile-ic { color: var(--pbim-primary-strong); display: flex; flex: none; }
+    .gov-tile-tx { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+    .gov-tile-tx .nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gov-tile-tx .jb { font-size: 12px; color: var(--pbim-muted); }
+    .gov-gen { margin-left: auto; flex: none; }
+}
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. The identity block is suppressed in the template, so the head is
+   only the period picker and it goes to the right on its own rather than
+   sitting where a `space-between` used to put it against a title. `.gov` is a
+   `pbim-page`, whose `min-height: 100%; overflow: auto` resolves against the
+   definite-height lens box the hub hands it (W20) — no scrollport surgery. */
+.gov-board.gov-board--embedded {
+    padding: 20px 22px 36px;
+
+    .ppl-head { justify-content: flex-end; }
+}

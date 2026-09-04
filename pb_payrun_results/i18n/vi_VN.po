@@ -1,0 +1,503 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "All departments"
+msgstr "Tất cả phòng ban"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Browse all pay runs"
+msgstr "Duyệt qua tất cả các lần trả lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Browse payruns"
+msgstr "Duyệt các kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Card view"
+msgstr "Xem thẻ"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Choose a payrun"
+msgstr "Chọn một kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Clear filters"
+msgstr "Bỏ bộ lọc"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Cycle"
+msgstr "Chu kỳ"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "Dept"
+msgstr "Phòng"
+
+#. module: pb_payrun_results
+#: model:ir.model.fields,field_description:pb_payrun_results.field_pb_payrun_results__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Division"
+msgstr "Phép chia"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Every employee's computed components ·"
+msgstr "Các thành phần tính toán của mỗi nhân viên ·"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Export to Excel"
+msgstr "Xuất để Excel"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "From date"
+msgstr "Từ ngày"
+
+#. module: pb_payrun_results
+#: model:ir.model.fields,field_description:pb_payrun_results.field_pb_payrun_results__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "List view"
+msgstr "Chế độ xem danh sách"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Net"
+msgstr "Thực lãnh"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:180
+msgid "Net pay"
+msgstr "Lương thực nhận"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Newest"
+msgstr "Mới nhất"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Next ›"
+msgstr "Tiếp theo >"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "No pay runs found."
+msgstr "Không tìm thấy kỳ lương nào."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "No payruns for"
+msgstr "Không có kỳ lương cho"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "No payruns match these filters."
+msgstr "Không có kỳ lương nào phù hợp với các bộ lọc này."
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "Nothing to export for this run."
+msgstr "Không có gì để xuất cho lần chạy này."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Oldest"
+msgstr "Cũ nhất"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Open results"
+msgstr "Kết quả mở"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+#: model:ir.actions.client,name:pb_payrun_results.action_pb_payrun_results
+msgid "Pay Run Results"
+msgstr "Kết quả Tính lương"
+
+#. module: pb_payrun_results
+#: model:ir.model,name:pb_payrun_results.model_pb_payrun_results
+msgid "Pay Run Results Grid"
+msgstr "Lưới kết quả tính lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Payruns"
+msgstr "Tính lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Pick a pay run to see every employee's computed results."
+msgstr "Chọn một kỳ lương để xem kết quả tính toán của mỗi nhân viên."
+
+#. module: pb_payrun_results
+#: model:pb.sidebar.item,name:pb_payrun_results.item_payrun_results
+msgid "Results Grid"
+msgstr "Lưới kết quả"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "Run #%s"
+msgstr "Chạy #%s"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Search employee…"
+msgstr "Tìm kiếm nhân viên…"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Search payruns…"
+msgstr "Tìm kiếm các kỳ lương…"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Sort"
+msgstr "Sắp xếp"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "This run has no formula-calculated payslips."
+msgstr "Lần chạy này không có phiếu lương được tính theo công thức."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "To date"
+msgstr "Đến nay"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "You do not have access to payroll results."
+msgstr "Bạn không có quyền truy cập vào kết quả bảng lương."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "employees"
+msgstr "nhân viên"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "net pay"
+msgstr "lương ròng"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "openpyxl is not available on the server."
+msgstr "openpyxl không có sẵn trên máy chủ."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "payrun"
+msgstr "kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "payruns"
+msgstr "kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-python
+#: code:addons/pb_payrun_results/models/payrun_results.py:0
+msgid "previous slip of the same config, per employee"
+msgstr "phiếu trước của cùng một cấu hình, cho mỗi nhân viên"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "s"
+msgstr "s"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "vs previous run"
+msgstr "so với lần chạy trước"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "yet — switch company to view its runs."
+msgstr "chưa — chuyển đổi công ty để xem hoạt động của nó."
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
+msgid "‹ Prev"
+msgstr "‹ Trước đó"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:46
+msgid "Could not load pay runs"
+msgstr "Không thể tải các kỳ lương"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:110
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:110
+msgid "Last month"
+msgstr "Tháng trước"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:111
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:111
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:112
+msgid "Last year"
+msgstr "Năm ngoái"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:181
+msgid "Gross"
+msgstr "Tổng thu nhập"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "Jan"
+msgstr "tháng một"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "Feb"
+msgstr "tháng hai"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "Mar"
+msgstr "tháng 3"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "Apr"
+msgstr "tháng tư"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "May"
+msgstr "Th5"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
+msgid "Jun"
+msgstr "tháng sáu"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Jul"
+msgstr "tháng 7"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Aug"
+msgstr "tháng 8"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Sep"
+msgstr "tháng 9"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Oct"
+msgstr "Tháng 10"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Nov"
+msgstr "tháng 11"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
+msgid "Dec"
+msgstr "Tháng mười hai"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:282
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:292
+msgid "Export failed"
+msgstr "Xuất Thất bại"
+
+#. module: pb_payrun_results
+#. odoo-javascript
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:290
+msgid "Results exported to Excel"
+msgstr "Kết quả được xuất sang Excel"

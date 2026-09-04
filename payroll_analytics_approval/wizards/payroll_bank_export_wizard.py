@@ -1,5 +1,10 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 import csv
 import io
 import base64
@@ -120,8 +125,12 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
 
     def _get_payslip_run_domain(self):
         domain = []
-        if self.formula_config_id and self.formula_config_id.structure_id:
-            domain.append(('slip_ids.struct_id', '=', self.formula_config_id.structure_id.id))
+        # Match on the config itself, not its optional legacy structure link:
+        # formula payslips carry formula_config_id but almost never struct_id,
+        # so a struct_id filter silently matched nothing whenever a config
+        # happened to have structure_id set.
+        if self.formula_config_id:
+            domain.append(('slip_ids.formula_config_id', '=', self.formula_config_id.id))
         if self.date_from:
             domain.append(('date_start', '>=', self.date_from))
         if self.date_to:
@@ -183,13 +192,14 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             ('date_to', '<=', self.date_to),
             ('state', '=', 'done')
         ]
-        if self.formula_config_id and self.formula_config_id.structure_id:
-            domain.append(('struct_id', '=', self.formula_config_id.structure_id.id))
+        if self.formula_config_id:
+            domain.append(('formula_config_id', '=', self.formula_config_id.id))
         if self.payslip_run_id:
             domain.append(('payslip_run_id', '=', self.payslip_run_id.id))
 
         return self.env['hr.payslip'].search(domain)
     
+    @require_license
     def action_generate_export(self):
         """Generate bank export file"""
         self.ensure_one()
@@ -344,10 +354,15 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         return net_pay
 
     def _get_structure_slug(self):
-        structure = self.formula_config_id.structure_id if self.formula_config_id else False
-        if not structure:
+        # Name the export after the configuration. The legacy structure link is
+        # optional and usually unset, which made every file 'structure_*'.
+        config = self.formula_config_id
+        if not config:
             return 'structure'
-        base = structure.code or structure.name or 'structure'
+        base = config.code or config.name or (
+            config.structure_id.code or config.structure_id.name
+            if config.structure_id else ''
+        ) or 'structure'
         slug = ''.join(ch if ch.isalnum() and ch.isascii() else '_' for ch in base).strip('_').lower()
         return slug or 'structure'
     
@@ -432,8 +447,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             domain.append(('date_from', '>=', self.date_from))
         if self.date_to:
             domain.append(('date_to', '<=', self.date_to))
-        if self.formula_config_id and self.formula_config_id.structure_id:
-            domain.append(('struct_id', '=', self.formula_config_id.structure_id.id))
+        if self.formula_config_id:
+            domain.append(('formula_config_id', '=', self.formula_config_id.id))
 
         return {
             'type': 'ir.actions.act_window',

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         Two emails, both sent with the recipient passed EXPLICITLY in
+         `email_values` (R6: a template's OWN rendered `email_to` reaches
+         `mail.mail` empty on this build — the message is created, queued and
+         addressed to nobody, with no error anywhere). The `email_to` field
+         below is kept as documentation of who the mail is for.
+
+         Outgoing debranding is automatic (biz_mail_debrand), so nothing here
+         has to think about it.
+         ================================================================== -->
+
+    <record id="mail_template_cutoff_reminder" model="mail.template">
+        <field name="name">Payroll cut-off reminder</field>
+        <field name="model_id" ref="model_pb_payroll_calendar"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Payroll {{ object.name }} — changes close {{ object.cutoff_date }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0;">
+                <p>Hello,</p>
+                <p>
+                    Changes to <strong><t t-out="object.name or ''"/></strong> payroll
+                    close on <strong><t t-out="object.cutoff_date or ''"/></strong>.
+                    People are paid on <t t-out="object.pay_date or ''"/>.
+                </p>
+                <p>
+                    Anything that has to be in this month's pay — new starters, leavers,
+                    overtime, awards, changes to pay — needs to be in before the closing
+                    date. After that it moves to the following month.
+                </p>
+                <p t-if="object.notes"><t t-out="object.notes"/></p>
+                <br/>
+                Thank you,<br/>
+                The payroll team<br/>
+            </div>
+        </field>
+    </record>
+
+    <record id="mail_template_finance_pack" model="mail.template">
+        <field name="name">Finance pack for an approved pay run</field>
+        <field name="model_id" ref="om_hr_payroll.model_hr_payslip_run"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Approved: {{ object.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.name or ''"/></strong> has been approved
+                    (<t t-out="object.date_start or ''"/> to <t t-out="object.date_end or ''"/>).
+                </p>
+                <p>
+                    Attached is the transfer file for the bank and a one-page summary of
+                    the run.
+                </p>
+                <br/>
+                Thank you,<br/>
+                The payroll team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

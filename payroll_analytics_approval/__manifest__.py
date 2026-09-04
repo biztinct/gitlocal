@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Analytics & Approval',
-    'version': '16.0.1.0.0',
+    # 19.0.1.1.0 — Sudima Phase M cleanup: gradient/global CSS replaced by a
+    # scoped design-system sheet and the CDN Chart.js loader removed. The
+    # model, the payroll.analytics JSON/state contract, the level2
+    # auto-generation hook, the approval workflow, menus and security are
+    # BYTE-UNTOUCHED.
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Advanced Payroll Analytics, Approval Dashboard & Bank Export',
     'description': """
@@ -35,7 +40,6 @@
         'pb_hr_payroll_base',  # Required for payroll.dashboard model
         'pb_hr_payroll_formula',
         'web',
-        'spreadsheet_oca',
     ],
     'data': [
         # Security
@@ -64,12 +68,17 @@
     ],
     'assets': {
         'web.assets_backend': [
-            # CSS Files
+            # Minimal, fully-scoped design-system sheet (Phase M rewrite).
             'payroll_analytics_approval/static/src/css/payroll_analytics.css',
-            
-            # JavaScript Files
-            'payroll_analytics_approval/static/src/js/payroll_charts.js',
-            'payroll_analytics_approval/static/src/js/payroll_dashboard.js',
+
+            # NO JavaScript. `payroll_charts_v19.js` used to live here and it
+            # pulled Chart.js 3.9.1 from cdn.jsdelivr.net at runtime — an
+            # external request on every backend page load, and a dead feature
+            # offline. It (and the two legacy odoo.define chart files) were
+            # DELETED in Sudima Phase M; charting now lives in the bespoke,
+            # fully-local Insights cockpit (pb_insights). Do not reintroduce a
+            # CDN asset — vendor it under static/lib/ if a library is ever
+            # genuinely needed.
         ],
         'web.assets_frontend': [
             # Frontend assets if needed

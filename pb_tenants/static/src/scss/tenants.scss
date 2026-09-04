@@ -1,0 +1,1313 @@
+// Tenant Mission Control — scoped under .tnx, consumes pb_import_kit tokens (--pbim-*).
+.tnx {
+    // ---------------- fleet header
+    .tnx-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+    .tnx-head-actions { display: flex; gap: 10px; }
+    .tnx-new { box-shadow: 0 6px 18px var(--pbim-ring); }
+
+    // ---------------- go-live checklist
+    .tnx-golive { margin-bottom: 18px; overflow: hidden; padding: 0; }
+    .tnx-golive-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; }
+    .tnx-golive-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; }
+    .tnx-golive-tt { display: flex; flex-direction: column; b { font-size: 14.5px; } span { font-size: 12px; color: var(--pbim-muted); } }
+    .tnx-golive-count { margin-left: auto; font-weight: 800; font-size: 13px; color: var(--pbim-primary-strong); background: var(--pbim-soft); border-radius: 999px; padding: 3px 11px; }
+    .tnx-chev { color: var(--pbim-muted); transition: transform .18s ease; display: flex; svg { transform: rotate(90deg); } }
+    .tnx-chev.open svg { transform: rotate(-90deg); }
+    .tnx-golive-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 4px 18px 18px; border-top: 1px solid var(--pbim-line-2); }
+    @media (max-width: 900px) { .tnx-golive-body { grid-template-columns: 1fr; } }
+    .tnx-checks { display: flex; flex-direction: column; gap: 9px; padding-top: 12px; }
+    .tnx-check { display: flex; gap: 10px; align-items: flex-start; }
+    .tnx-check-ic { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; margin-top: 1px;
+        &.ok { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.todo { background: #FEF3C7; color: #D97706; } }
+    .tnx-check-tx { display: flex; flex-direction: column; b { font-size: 13px; } span { font-size: 12px; color: var(--pbim-muted); } }
+    .tnx-records { padding-top: 12px; }
+    .tnx-records-h { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted); display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+    .tnx-record { display: flex; align-items: center; gap: 8px; background: var(--pbim-bg); border: 1px solid var(--pbim-line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; flex-wrap: wrap;
+        code { background: #fff; border: 1px solid var(--pbim-line); border-radius: 6px; padding: 2px 8px; font-size: 12.5px; } }
+    .tnx-rec-type { font-weight: 800; font-size: 11.5px; color: var(--pbim-primary-strong); background: var(--pbim-soft); border-radius: 6px; padding: 2px 8px; }
+    .tnx-rec-why { flex-basis: 100%; font-size: 11.5px; color: var(--pbim-muted); }
+    .tnx-rec-note { margin: 8px 0 10px; }
+
+    .tnx-live-strip { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; color: var(--pbim-green, #2E7D4F);
+        background: var(--pbim-green-soft, #E3F2E9); border: 1px solid rgba(46,125,79,.25); border-radius: 12px; padding: 9px 14px; margin-bottom: 18px;
+        .tnx-live-ip { margin-left: auto; font-weight: 500; color: var(--pbim-muted); code { font-size: 12px; } } }
+    .tnx-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pbim-green, #2E7D4F); box-shadow: 0 0 0 4px rgba(46,125,79,.15); }
+
+    // ---------------- KPI band
+    .tnx-stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px; }
+    .tnx-pct { font-size: 12px; color: var(--pbim-muted); font-weight: 600; }
+
+    // ---------------- tenant grid
+    .tnx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
+    .tnx-card { background: #fff; border: 1px solid var(--pbim-line); border-radius: 16px; padding: 16px 18px; cursor: pointer;
+        box-shadow: var(--pbim-sh); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+        &:hover { transform: translateY(-2px); box-shadow: var(--pbim-sh-lg); border-color: var(--pbim-primary-light); } }
+    .tnx-card-top { display: flex; align-items: center; gap: 12px; }
+    .tnx-av { width: 40px; height: 40px; border-radius: 12px; background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center; font-weight: 800; font-size: 17px; flex: none;
+        &.lg { width: 46px; height: 46px; font-size: 19px; } }
+    .tnx-card-id { display: flex; flex-direction: column; min-width: 0; b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
+    .tnx-card-top .pbim-badge { margin-left: auto; flex: none; }
+    .tnx-url { font-size: 12px; color: var(--pbim-primary-strong); cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+        &:hover { text-decoration: underline; } }
+    .tnx-card-stats { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0 12px; font-size: 12.5px; color: var(--pbim-muted);
+        span { display: inline-flex; align-items: center; gap: 5px; } }
+    .tnx-hd { width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        &.hd-ok { background: var(--pbim-green, #2E7D4F); box-shadow: 0 0 0 3px rgba(46,125,79,.18); }
+        &.hd-warn { background: #D97706; box-shadow: 0 0 0 3px rgba(217,119,6,.18); }
+        &.hd-down { background: #DC2668; box-shadow: 0 0 0 3px rgba(220,38,104,.18); }
+        &.hd-unknown { background: var(--pbim-muted); opacity: .5; } }
+    .tnx-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--pbim-line-2); padding-top: 11px; }
+    .tnx-foot-note { font-size: 11.5px; color: var(--pbim-muted); display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+    .tnx-errtx { color: #DC2668; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+    .tnx-card-actions { display: flex; gap: 6px; flex: none; }
+
+    .tnx-empty { text-align: center; padding: 70px 20px; background: #fff; border: 1px dashed var(--pbim-line); border-radius: 18px;
+        h3 { font-size: 18px; font-weight: 800; margin: 14px 0 6px; }
+        p { color: var(--pbim-muted); font-size: 13.5px; max-width: 420px; margin: 0 auto 18px; } }
+    .tnx-empty-ic { width: 64px; height: 64px; border-radius: 50%; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: inline-grid; place-items: center; }
+
+    // ---------------- wizard
+    .tnx-wiz-card { width: 880px; }
+    .tnx-urlprev { background: var(--pbim-ink, #1B1733); border-radius: 14px; padding: 18px 22px; margin-bottom: 18px;
+        font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 20px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px;
+        .tnx-urlprev-proto { color: #8A84A8; font-size: 15px; }
+        .tnx-urlprev-slug { color: #fff; font-weight: 700; border-bottom: 2px dashed var(--pbim-primary-light); padding-bottom: 1px; }
+        .tnx-urlprev-dom { color: #B9B3D6; }
+        .tnx-urlprev-st { margin-left: auto; font-family: inherit; } }
+    .tnx-avail { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 3px 10px; display: inline-flex; align-items: center; gap: 5px; font-family: system-ui, sans-serif;
+        &.ok { background: rgba(46,125,79,.2); color: #7BD8A5; }
+        &.bad { background: rgba(220,38,104,.18); color: #F594BA; } }
+    .tnx-slug-in { font-family: "SF Mono", ui-monospace, Menlo, monospace; }
+    .tnx-what { display: flex; flex-direction: column; gap: 7px; margin-top: 16px;
+        b { font-size: 12px; } span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 500; } }
+
+    .tnx-review { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
+    .tnx-rev-row { display: flex; gap: 14px; padding: 10px 2px; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; align-items: baseline;
+        > span { width: 130px; flex: none; color: var(--pbim-muted); font-size: 12px; font-weight: 600; }
+        b { font-weight: 700; } }
+    .tnx-rev-url { color: var(--pbim-primary-strong); font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 13px; }
+
+    .tnx-prov-body { min-height: 300px; }
+    .tnx-prov { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+    .tnx-pstep { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; transition: background .2s ease;
+        &.run { background: var(--pbim-soft); }
+        &.fail { background: #FCE7EF; } }
+    .tnx-pdot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none;
+        background: #fff; border: 2px solid var(--pbim-line); color: var(--pbim-muted); }
+    .tnx-pstep.done .tnx-pdot { background: var(--pbim-green, #2E7D4F); border-color: var(--pbim-green, #2E7D4F); color: #fff; }
+    .tnx-pstep.fail .tnx-pdot { background: #DC2668; border-color: #DC2668; color: #fff; }
+    .tnx-pstep.run .tnx-pdot { border-color: var(--pbim-primary); }
+    .tnx-pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--pbim-primary); animation: tnxPulse 1.1s ease-in-out infinite; }
+    .tnx-plab { font-size: 14px; font-weight: 600; }
+    .tnx-pstep.run .tnx-plab { color: var(--pbim-primary-strong); }
+    .tnx-pms { margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--pbim-green, #2E7D4F); background: var(--pbim-green-soft, #E3F2E9); border-radius: 999px; padding: 2px 9px; }
+
+    .tnx-console { background: var(--pbim-ink, #1B1733); border-radius: 12px; padding: 12px 14px; max-height: 190px; overflow-y: auto;
+        font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 12px; line-height: 1.7; }
+    .tnx-console-h { color: #8A84A8; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .tnx-cline { color: #D6D2EA; white-space: pre-wrap;
+        &.warn { color: #F5C77B; }
+        &.error { color: #F594BA; } }
+    .tnx-proverr { display: flex; gap: 9px; align-items: flex-start; background: #FCE7EF; color: #B3164F; border-radius: 10px; padding: 11px 14px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    .tnx-prov-wait { display: inline-flex; align-items: center; gap: 10px; color: var(--pbim-muted); font-size: 13px; }
+
+    .tnx-done-ic { animation: tnxPop .4s cubic-bezier(.2,1.4,.4,1); }
+    .tnx-creds { display: flex; flex-direction: column; gap: 8px; max-width: 480px; margin: 16px auto 0; text-align: left; }
+    .tnx-cred { display: flex; align-items: center; gap: 10px; background: var(--pbim-bg); border: 1px solid var(--pbim-line); border-radius: 10px; padding: 9px 12px;
+        > span { width: 80px; flex: none; font-size: 11.5px; font-weight: 700; color: var(--pbim-muted); text-transform: uppercase; letter-spacing: .05em; }
+        code { flex: 1; font-size: 13px; overflow-wrap: anywhere; } }
+
+    // ---------------- detail
+    .tnx-det-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap;
+        h2 { font-size: 20px; font-weight: 800; margin: 0; } }
+    .tnx-det-id { display: flex; flex-direction: column; min-width: 0; }
+    .tnx-tabs { margin-bottom: 18px; }
+    .tnx-danger-tab.on { background: #DC2668 !important; border-color: #DC2668 !important; }
+    .tnx-info { padding: 6px 18px 10px; margin-top: 4px; }
+    .tnx-staging-on a { color: var(--pbim-primary-strong); font-weight: 700; }
+    .tnx-danger-link { color: #DC2668 !important; }
+    .tnx-tab-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tnx-inline-note { flex: 1; min-width: 240px; }
+    .tnx-restored { margin-bottom: 12px; a { font-weight: 700; color: var(--pbim-primary-strong); } }
+    .tnx-row-actions { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+    .tnx-bnote { display: block; font-size: 11px; color: var(--pbim-muted); }
+    .tnx-dom-in { max-width: 280px; }
+    .tnx-dom-note { margin-bottom: 14px; code { background: #fff; border: 1px solid var(--pbim-line); border-radius: 5px; padding: 1px 6px; } }
+    .tnx-dom-msg { font-size: 12px; color: var(--pbim-muted); max-width: 260px; }
+    .tnx-dangerzone { max-width: 680px; }
+    .tnx-danger-card { border-color: rgba(220,38,104,.4); padding: 20px 22px;
+        h3 { display: flex; align-items: center; gap: 8px; color: #B3164F; font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+        p { font-size: 13.5px; color: var(--pbim-text); margin-bottom: 12px; code { background: var(--pbim-bg); border-radius: 5px; padding: 1px 6px; } } }
+
+    .tnx-minispin { width: 14px; height: 14px; border-width: 2px; }
+
+    // ---------------- in step with master
+    .tnx-sync-master { display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+        code { background: #fff; border: 1px solid var(--pbim-line); border-radius: 5px; padding: 1px 6px; } }
+    .tnx-sync-slug { display: block; code { font-size: 11.5px; color: var(--pbim-muted); } }
+    .tnx-sync-err { display: block; font-size: 11.5px; color: var(--pbim-muted); margin-top: 3px; }
+    .tnx-sync-detail > td { background: var(--pbim-bg); }
+    .tnx-sync-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 18px; padding: 6px 2px 10px; }
+    .tnx-sync-col h4 { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .05em; color: var(--pbim-muted); margin: 0 0 9px; }
+    .tnx-sync-item { background: #fff; border: 1px solid var(--pbim-line); border-radius: 9px; padding: 8px 12px; margin-bottom: 7px;
+        b { display: block; font-size: 13px; }
+        code { font-size: 11px; color: var(--pbim-muted); } }
+    .tnx-sync-item.held { border-color: rgba(220,38,104,.28); }
+    .tnx-sync-why { display: block; font-size: 12px; color: var(--pbim-text); margin-top: 5px; line-height: 1.45; }
+    .tnx-sync-never { margin-top: 20px; padding: 18px 22px;
+        h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+        p { font-size: 13px; color: var(--pbim-muted); margin-bottom: 12px; } }
+
+    // ---------------- FLEET P1: drift, versions and the release stamp
+    .tnx-sync-btn { position: relative; }
+    .tnx-count { min-width: 19px; height: 19px; padding: 0 6px; border-radius: 999px; background: var(--pbim-amber, #D97706);
+        color: #fff; font-size: 11px; font-weight: 800; display: inline-grid; place-items: center; margin-left: 2px; }
+    .tnx-kbd { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--pbim-muted); align-self: center;
+        kbd { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 10.5px; background: #fff; border: 1px solid var(--pbim-line);
+              border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; } }
+
+    // the hero
+    .tnx-rel { display: flex; align-items: center; gap: 20px; background: var(--pbim-ink, #1B1733); color: #fff;
+        border-radius: 18px; padding: 20px 24px; margin-bottom: 18px; box-shadow: var(--pbim-sh-lg);
+        animation: tnxRise .34s cubic-bezier(.2,.9,.3,1);
+        &.none { background: #fff; color: var(--pbim-text); border: 1px dashed var(--pbim-line); box-shadow: none; } }
+    .tnx-rel-ring { position: relative; width: 66px; height: 66px; flex: none;
+        svg { transform: rotate(-90deg); }
+        .tnx-ring-bg { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 6; }
+        .tnx-ring-fg { fill: none; stroke: #7BD8A5; stroke-width: 6; stroke-linecap: round;
+            transition: stroke-dasharray .7s cubic-bezier(.2,.9,.3,1); }
+        .tnx-ring-n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 15px; font-weight: 800;
+            small { font-size: 9px; font-weight: 700; opacity: .7; } } }
+    .tnx-rel-tx { min-width: 0; flex: 1; }
+    .tnx-rel-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .12em; text-transform: uppercase; color: #B9B3D6; margin-bottom: 3px; }
+    // `color` is stated on the heading itself: the page's own h2 rule is more
+    // specific than the panel's inherited colour, and without this the release
+    // name renders indigo-on-indigo — invisible, which is the one thing the
+    // hero must never be.
+    .tnx-rel .tnx-rel-name { color: #fff; font-size: 24px; font-weight: 800; margin: 0 0 4px;
+        letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+    .tnx-rel.none .tnx-rel-name { color: var(--pbim-text); font-size: 19px; }
+    .tnx-rel .tnx-rel-line { font-size: 13.5px; color: #D6D2EA; b { color: #fff; } }
+    .tnx-rel.none .tnx-rel-line { color: var(--pbim-muted); max-width: 640px; }
+    .tnx-rel-notes { margin-top: 8px; font-size: 13px; color: #EFEDF7; background: rgba(255,255,255,.08);
+        border-radius: 10px; padding: 8px 12px; max-width: 720px; }
+    .tnx-rel-moved { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600;
+        color: #F5C77B; background: rgba(217,119,6,.16); border-radius: 999px; padding: 5px 13px; }
+    .tnx-rel-side { margin-left: auto; align-self: flex-start; }
+    .tnx-rel-master { font-size: 11.5px; color: #B9B3D6; display: inline-flex; align-items: center; gap: 6px;
+        code { background: rgba(255,255,255,.1); border-radius: 5px; padding: 1px 6px; font-size: 11px; color: #fff; } }
+    .tnx-rel-invite-ic { width: 52px; height: 52px; border-radius: 14px; background: var(--pbim-soft);
+        color: var(--pbim-primary-strong); display: grid; place-items: center; flex: none; }
+
+    // the master is behind its own files — the one card that stops everything
+    .tnx-blocked { border-color: rgba(220,38,104,.45); background: #FFF6F9; padding: 18px 22px; margin-bottom: 18px;
+        h3 { display: flex; align-items: center; gap: 8px; color: #B3164F; font-size: 15.5px; font-weight: 800; margin-bottom: 7px; }
+        p { font-size: 13.5px; max-width: 780px; margin-bottom: 12px; } }
+    .tnx-blocked-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    .tnx-blocked-item { background: #fff; border: 1px solid rgba(220,38,104,.28); border-radius: 8px; padding: 5px 10px;
+        b { font-size: 12.5px; } code { font-size: 11px; color: var(--pbim-muted); margin-left: 6px; } }
+    .tnx-blocked-cmd { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 12.5px; color: var(--pbim-muted);
+        code { background: var(--pbim-ink, #1B1733); color: #D6D2EA; border-radius: 8px; padding: 7px 12px;
+               font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 12.5px; } }
+
+    // what the button is doing, and what it did
+    .tnx-runpanel { padding: 16px 20px; margin-bottom: 16px; animation: tnxRise .3s cubic-bezier(.2,.9,.3,1); }
+    .tnx-runpanel-h { display: flex; align-items: center; gap: 10px; font-size: 13.5px; margin-bottom: 10px; }
+    .tnx-runpanel-f { margin-top: 8px; }
+    .tnx-result { padding: 0; margin-bottom: 18px; overflow: hidden; animation: tnxRise .3s cubic-bezier(.2,.9,.3,1); }
+    .tnx-result-h { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--pbim-line-2); }
+    .tnx-result-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        &.good { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.bad { background: #FCE7EF; color: #B3164F; } }
+    .tnx-result-tt { display: flex; flex-direction: column; min-width: 0;
+        b { font-size: 14.5px; } span { font-size: 12.5px; color: var(--pbim-muted); } }
+    .tnx-result-h .pplw-x { margin-left: auto; }
+    .tnx-result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px;
+        background: var(--pbim-line-2); border-bottom: 1px solid var(--pbim-line-2); }
+    .tnx-result-cell { background: #fff; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px;
+        .n { font-size: 21px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .l { font-size: 11.5px; color: var(--pbim-muted); font-weight: 600; }
+        &.good .n { color: var(--pbim-green, #2E7D4F); }
+        &.bad { background: #FFF6F9; .n { color: #B3164F; } } }
+    .tnx-result-bad { padding: 12px 18px; font-size: 13px; background: #FFF6F9; color: #B3164F;
+        border-bottom: 1px solid var(--pbim-line-2);
+        code { background: #fff; border: 1px solid rgba(220,38,104,.25); border-radius: 5px; padding: 1px 6px; } }
+    .tnx-next { display: block; margin-top: 5px; font-weight: 500; color: var(--pbim-text); }
+    .tnx-result-log { background: var(--pbim-ink, #1B1733); padding: 11px 16px; max-height: 200px; overflow-y: auto;
+        font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.75; }
+
+    // the table
+    .tnx-sync-table .tnx-n { text-align: right; font-variant-numeric: tabular-nums; }
+    .tnx-hot { font-weight: 800; color: var(--pbim-amber, #D97706); }
+    .tnx-zero { color: var(--pbim-muted); opacity: .55; }
+    // The tint is on the ROW, not only on its cells: the actions cell is a flex
+    // container, so its own background paints only as tall as the button inside
+    // it and left a white notch across the template's row.
+    .tnx-tpl-row, .tnx-tpl-row > td { background: var(--pbim-soft); }
+    .tnx-tpl-row > td:first-child { border-left: 3px solid var(--pbim-primary); }
+    .tnx-tpl-eyebrow { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800;
+        letter-spacing: .1em; text-transform: uppercase; color: var(--pbim-primary-strong); margin-bottom: 3px; }
+    .tnx-sync-when { display: block; font-size: 11px; color: var(--pbim-muted); margin-top: 3px; }
+    .tnx-sync-err.bad { color: #B3164F; font-weight: 700; }
+    .tnx-sync-item.ahead { border-color: rgba(37,99,235,.28); }
+    .tnx-vdelta { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 11.5px;
+        font-variant-numeric: tabular-nums; font-family: "SF Mono", ui-monospace, Menlo, monospace;
+        .old { color: var(--pbim-muted); text-decoration: line-through; }
+        .new { color: var(--pbim-green, #2E7D4F); font-weight: 700; } }
+
+    // cut a release
+    .tnx-cut { display: flex; gap: 24px; align-items: flex-start; padding: 18px 22px; margin-top: 20px; flex-wrap: wrap;
+        h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+        p { font-size: 13px; color: var(--pbim-muted); margin-bottom: 12px; max-width: 640px; } }
+    .tnx-cut-tx { flex: 1; min-width: 300px; }
+    .tnx-cut-notes { width: 100%; max-width: 640px; resize: vertical; }
+    .tnx-cut-note { margin-top: 10px; }
+    .tnx-cut-act { display: flex; flex-direction: column; gap: 7px; align-items: flex-end; padding-top: 26px; }
+    .tnx-cut-blocked { font-size: 11.5px; color: #B3164F; max-width: 200px; text-align: right; }
+
+    // the release chip on a fleet card
+    .tnx-relchip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+        border-radius: 999px; padding: 2px 9px; font-variant-numeric: tabular-nums;
+        &.ok { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.warn { background: #FEF3C7; color: #B45309; }
+        &.muted { background: var(--pbim-bg); color: var(--pbim-muted); } }
+
+    // "what did that button do", weeks later
+    .tnx-lastsync { margin-top: 14px; padding: 0; overflow: hidden; }
+    .tnx-lastsync-h { display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--pbim-line-2);
+        b { font-size: 13.5px; } .pplw-x { margin-left: auto; } }
+    .tnx-more { margin-left: 8px; font-size: 12px; font-weight: 700; color: var(--pbim-primary-strong); }
+
+    // ---------------- FLEET P2A: the notice on a customer's overview row
+    .tnx-notice-ttl { margin-left: 8px; font-weight: 700; }
+    // Two links side by side need a gap of their own: `.tnx-more` carries one
+    // and `.tnx-danger-link` did not, so "replace" and "take it down" ran
+    // together into one unreadable word.
+    .tnx-rev-row .tnx-danger-link { margin-left: 10px; }
+}
+
+// =============================================================================
+// FLEET P2A — the notice composer.
+//
+// Root-scoped rather than nested in `.tnx`, because the scrim is portalled to
+// the top of the page and never matches a selector rooted at the cockpit.
+//
+// FLEET P3 added two more dialogs to the same list. They share the field, help
+// and error styles below — a label above its box, help underneath it — and the
+// first cut of the settings dialog shipped without them: every label sat on the
+// same line as its input and the whole form read as a paragraph.
+// =============================================================================
+.tnx-notice, .tnx-settings, .tnx-resolve {
+    .tnx-notice-ic { width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0); }
+
+    .tnx-notice-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .tnx-notice-f { display: flex; flex-direction: column; gap: 5px;
+        .pplw-label small { font-weight: 500; color: var(--pbim-muted, #64748B); } }
+    .tnx-notice-help { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+    .tnx-notice-ta { resize: vertical; min-height: 54px; font-family: inherit; }
+    .tnx-notice-when { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tnx-notice-seg { align-self: flex-start; }
+
+    .tnx-notice-err { display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+        font-weight: 600; color: var(--pbim-rose, #DC2668);
+        background: var(--pbim-rose-soft, #FCE7EF); border-radius: 10px; padding: 9px 12px; }
+
+    // ---- the hero. A window frame around the live bar, so it reads as
+    // "somebody else's screen" rather than as a control on this one.
+    .tnx-notice-prev { margin-top: 4px; }
+    .tnx-notice-prev-h { display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+        font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); }
+    .tnx-notice-prev-frame { border-radius: 12px; padding: 10px;
+        background: var(--pbim-bg, #F5F6FA); border: 1px solid var(--pbim-line, #E2E8F0); }
+    .tnx-notice-prev-note { margin-top: 8px; font-size: 11.5px;
+        color: var(--pbim-muted, #64748B); }
+
+    .tnx-notice-reach { font-size: 12.5px; color: var(--pbim-muted, #64748B);
+        b { color: var(--pbim-ink, #1B1733); } }
+
+    // ---- it went
+    .tnx-notice-done { display: flex; flex-direction: column; align-items: center;
+        text-align: center; gap: 7px; padding: 26px 10px;
+        b { font-size: 15.5px; }
+        animation: tnxRise .32s cubic-bezier(.2,.8,.3,1) both; }
+    .tnx-notice-done-ic { color: var(--pbim-green, #2E7D4F); animation: tnxPop .34s cubic-bezier(.2,.8,.3,1) both; }
+    .tnx-notice-done-who { font-size: 13px; font-weight: 600; }
+    .tnx-notice-done-sub { font-size: 12.5px; color: var(--pbim-muted, #64748B); max-width: 44ch; }
+    .tnx-notice-skip { width: 100%; margin-top: 12px; text-align: left;
+        background: var(--pbim-amber-soft, #FEF3C7); border-radius: 10px; padding: 11px 13px;
+        b { font-size: 12.5px; color: #92400E; } }
+    .tnx-notice-skip-row { display: flex; flex-direction: column; margin-top: 6px; font-size: 12.5px;
+        small { color: #92400E; opacity: .85; } }
+
+    @media (max-width: 640px) {
+        .tnx-notice-when { grid-template-columns: 1fr; }
+    }
+
+    // ================================================================ FLEET P2B
+    // The waves. Read left to right like a sentence: a practice run, the
+    // template, one customer, a few, everybody. Only the wave that is actually
+    // happening moves.
+    .tnx-ro { margin-bottom: 18px; padding: 16px 18px; animation: tnxRise .3s ease both; }
+    .tnx-ro.none { display: flex; align-items: center; gap: 16px; }
+    .tnx-ro-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .tnx-ro-ic { width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        &.running { background: var(--pbim-soft); color: var(--pbim-primary); }
+        &.paused { background: #FCE7EF; color: #B3164F; }
+        &.done { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.waiting { background: #FEF3C7; color: #92400E; } }
+    .tnx-ro-tt { display: flex; flex-direction: column; min-width: 0;
+        b { font-size: 14.5px; } span { font-size: 12.5px; color: var(--pbim-muted); } }
+    .tnx-ro.none .tnx-ro-tt span { max-width: 720px; }
+    .tnx-ro.none button { margin-left: auto; flex: none; }
+
+    .tnx-ro-stop, .tnx-ro-watch { display: flex; align-items: center; gap: 11px; border-radius: 12px;
+        padding: 11px 14px; margin-bottom: 14px; }
+    .tnx-ro-stop { background: #FCE7EF; color: #B3164F; }
+    .tnx-ro-watch { background: #FEF3C7; color: #92400E; }
+    .tnx-ro-stop-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;
+        b { font-size: 13px; } }
+    .tnx-ro-stop .tnx-next, .tnx-ro-watch .tnx-next { font-size: 12px; font-weight: 500; opacity: .85; }
+    .tnx-ro-stop button, .tnx-ro-watch button { flex: none; }
+    .tnx-ro-hg { display: flex; }
+
+    .tnx-rings { display: flex; align-items: stretch; gap: 6px; overflow-x: auto; padding: 4px 0 10px; }
+    .tnx-ring { flex: 1 1 0; min-width: 172px; border: 1px solid var(--pbim-line); border-radius: 14px;
+        background: var(--pbim-bg); padding: 11px 12px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &.past { opacity: .72; }
+        &.on { background: #fff; border-color: var(--pbim-primary-light); transform: translateY(-4px);
+               box-shadow: 0 10px 24px var(--pbim-ring); } }
+    .tnx-ring-h { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .tnx-ring-lab { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+        color: var(--pbim-muted); }
+    .tnx-ring.on .tnx-ring-lab { color: var(--pbim-primary-strong); }
+    .tnx-ring-count { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--pbim-muted);
+        background: #fff; border: 1px solid var(--pbim-line); border-radius: 999px; padding: 0 7px;
+        position: static; }
+    .tnx-ring-chips { display: flex; flex-direction: column; gap: 5px; }
+    .tnx-ring-foot { margin-top: 8px; font-size: 11.5px; color: var(--pbim-muted); }
+    .tnx-ring-arrow { display: flex; align-items: center; color: var(--pbim-line-2); flex: none; }
+
+    .tnx-chip { display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 12px; min-width: 0;
+        &.d { border-color: rgba(46,125,79,.35); }
+        &.f { border-color: rgba(220,38,104,.45); background: #FFF5F8; }
+        &.s { opacity: .55; .tnx-chip-nm { text-decoration: line-through; } } }
+    .tnx-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--pbim-line-2); }
+    .tnx-chip.d .tnx-chip-dot { background: var(--pbim-green, #2E7D4F); }
+    .tnx-chip.f .tnx-chip-dot { background: #DC2668; }
+    .tnx-chip.r .tnx-chip-dot { background: var(--pbim-primary); animation: tnxPulse 1.1s ease-in-out infinite; }
+    .tnx-chip-av { width: 18px; height: 18px; border-radius: 6px; flex: none; display: grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); font-weight: 800; font-size: 10px; }
+    .tnx-chip-nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tnx-chip-now { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+        color: #92400E; background: #FEF3C7; border-radius: 999px; padding: 1px 6px; flex: none; }
+
+    .tnx-ro-steps { display: flex; flex-direction: column; border-top: 1px solid var(--pbim-line-2); }
+    .tnx-ro-step { display: flex; align-items: center; gap: 10px; padding: 9px 2px; font-size: 12.5px;
+        border-bottom: 1px solid var(--pbim-line-2); }
+    .tnx-ro-step:last-child { border-bottom: 0; }
+    .tnx-ro-step-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--pbim-line-2); }
+    .tnx-ro-step.done .tnx-ro-step-dot { background: var(--pbim-green, #2E7D4F); }
+    .tnx-ro-step.failed .tnx-ro-step-dot { background: #DC2668; }
+    .tnx-ro-step.running .tnx-ro-step-dot { background: var(--pbim-primary); animation: tnxPulse 1.1s ease-in-out infinite; }
+    .tnx-ro-step-nm { display: flex; align-items: baseline; gap: 8px; min-width: 210px;
+        code { font-size: 11.5px; color: var(--pbim-muted); } }
+    .tnx-ro-step-mid { color: var(--pbim-muted); flex: 1; min-width: 0; }
+    .tnx-ro-step-act { display: flex; gap: 6px; flex: none; }
+
+    .tnx-ro-done { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 11px 14px;
+        border-radius: 12px; font-size: 13px;
+        background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    .tnx-ro-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+    .tnx-ro-abort-in { width: 250px; font-size: 12px; }
+    .tnx-ro-log { margin-top: 10px; max-height: 220px; }
+    .tnx-cline-ts { color: var(--pbim-muted); margin-right: 8px; font-variant-numeric: tabular-nums; }
+
+    .tnx-ro-past { margin-bottom: 18px;
+        h3 { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin: 0 0 10px; } }
+    .tnx-ro-past-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px;
+        padding: 7px 0; border-top: 1px solid var(--pbim-line-2); }
+
+    // ---------------- the plan dialog
+    .tnx-plan-body { display: flex; flex-direction: column; gap: 14px; }
+    .tnx-plan-notes { display: flex; flex-direction: column; gap: 4px; background: var(--pbim-soft);
+        border-radius: 10px; padding: 10px 13px; font-size: 13px; }
+    .tnx-plan-notes-h { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+        color: var(--pbim-primary-strong); }
+    .tnx-plan-block { flex-direction: row; align-items: flex-start; }
+    .tnx-plan-block-row { margin-top: 5px; font-weight: 500; }
+    .tnx-plan-steps { display: flex; flex-direction: column; border: 1px solid var(--pbim-line);
+        border-radius: 12px; overflow: hidden; }
+    .tnx-plan-step { display: flex; align-items: center; gap: 11px; padding: 10px 13px; font-size: 13px;
+        border-bottom: 1px solid var(--pbim-line-2); &:last-child { border-bottom: 0; } }
+    .tnx-plan-n { width: 21px; height: 21px; border-radius: 50%; flex: none; display: grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong); font-weight: 800; font-size: 11px; }
+    .tnx-plan-tx { display: flex; align-items: baseline; gap: 8px; flex: 1; min-width: 0;
+        code { font-size: 11.5px; color: var(--pbim-muted); } }
+    .tnx-plan-ring { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        color: var(--pbim-muted); border: 1px solid var(--pbim-line); border-radius: 999px; padding: 1px 7px;
+        cursor: help; }
+    .tnx-plan-when { display: flex; flex-direction: column; text-align: right; flex: none; font-size: 12.5px;
+        small { font-size: 10.5px; color: var(--pbim-muted); } }
+    .tnx-plan-out { font-size: 12.5px; }
+    .tnx-plan-out-row { display: flex; gap: 8px; margin-top: 5px; color: var(--pbim-muted); }
+    .tnx-plan-warn { margin: 0; }
+    .tnx-plan-watch { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tnx-plan-num { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--pbim-muted);
+        input { width: 84px; } }
+    .tnx-plan-say { font-size: 12.5px; color: var(--pbim-muted); line-height: 1.6; margin: 0;
+        b { color: var(--pbim-text); } }
+
+    // ---------------- the Updates tab
+    .tnx-upd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-bottom: 18px;
+        h4 { display: flex; align-items: center; gap: 7px; font-size: 12.5px; margin: 0 0 6px; }
+        p { margin: 0 0 10px; } }
+    @media (max-width: 1000px) { .tnx-upd { grid-template-columns: 1fr; } }
+    .tnx-upd-col { display: flex; flex-direction: column; min-width: 0; }
+    .tnx-upd-seg { flex-wrap: wrap; }
+    .tnx-upd-mean { margin-top: 9px; font-size: 11.5px; color: var(--pbim-muted); line-height: 1.55; }
+    .tnx-upd-win { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12.5px;
+        label { display: inline-flex; align-items: center; gap: 6px; }
+        input { width: 68px; } }
+    .tnx-upd-tz { display: inline-flex; align-items: center; gap: 5px; color: var(--pbim-muted); font-size: 11.5px; }
+    .tnx-upd-next { margin-top: 10px; font-size: 12.5px; }
+
+    .tnx-tl { h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0 0 12px; } }
+    .tnx-tl-row { display: flex; align-items: center; gap: 11px; padding: 10px 0; font-size: 12.5px;
+        border-top: 1px solid var(--pbim-line-2); }
+    .tnx-tl-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--pbim-line-2); }
+    .tnx-tl-row.done .tnx-tl-dot { background: var(--pbim-green, #2E7D4F); }
+    .tnx-tl-row.failed .tnx-tl-dot { background: #DC2668; }
+    .tnx-tl-main { display: flex; align-items: baseline; gap: 8px; min-width: 240px; }
+    .tnx-tl-mid { flex: 1; color: var(--pbim-muted); min-width: 0; }
+    .tnx-tl-detail { padding: 4px 0 14px 20px; animation: tnxRise .22s ease both; }
+    .tnx-tl-health { margin-top: 10px; font-size: 12px; color: var(--pbim-muted); }
+
+}
+
+
+
+// ============================================================================
+// FLEET P3 — alerts, the capacity gauge, the settings dialog.
+//
+// ROOT-SCOPED, NOT NESTED IN `.tnx`, and that is not a style choice: the two
+// dialogs are scrims that sit outside the cockpit's own wrapper, exactly like
+// the notice composer above. Nesting these under `.tnx` is how the capacity
+// bar shipped four pixels tall and invisible the first time.
+// ============================================================================
+
+// ---------------- the chip in the fleet header
+//
+// `.pbim` on the front is load-bearing. The shared kit styles its buttons as
+// `.pbim .pbim-btn.outline`, which out-specifies a bare `.tnx-alertchip.bad`
+// — so the first cut of this chip stayed indigo with a rose number on it while
+// a customer was unreachable.
+.pbim .tnx-alertchip {
+    &.warn { border-color: #D9760699; color: #B45309; background: #FEF3C7; }
+    &.bad { border-color: #DC266899; color: #B4184C; background: #FDE7EF;
+        .tnx-count { background: #DC2668; color: #fff; } }
+}
+
+// ---------------- the alert that cannot email itself
+.tnx-channeldown { display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    background: #FDE7EF; border: 1px solid #DC266840; border-left: 3px solid #DC2668;
+    border-radius: var(--pbim-radius, 14px); padding: 13px 16px; animation: tnxRise .24s ease both; }
+.tnx-cd-ic { color: #DC2668; display: flex; }
+.tnx-cd-tx { display: flex; flex-direction: column; flex: 1; min-width: 0;
+    b { font-size: 13.5px; color: #8C1039; }
+    span { font-size: 12px; color: #8C1039CC; line-height: 1.5; } }
+
+// ---------------- checklist rows that can be proven
+.tnx-check-act { display: flex; gap: 8px; margin-top: 6px; }
+.tnx-check-res { margin-top: 6px; font-size: 12px; font-weight: 600;
+    &.ok { color: var(--pbim-green, #2E7D4F); }
+    &.bad { color: #DC2668; } }
+
+// ---------------- the capacity gauge
+.tnx-cap { position: relative;
+    .tnx-capbar { display: block; height: 4px; border-radius: 999px; background: var(--pbim-line-2);
+        margin-top: 7px; overflow: hidden;
+        i { display: block; height: 100%; border-radius: 999px; background: var(--pbim-green, #2E7D4F);
+            transition: width .5s cubic-bezier(.4,0,.2,1); } }
+    &.warn .tnx-capbar i { background: #D97706; }
+    &.full .tnx-capbar i { background: #DC2668; } }
+
+// The wizard's own warning, before a form is filled in that would be refused.
+.tnx-caproom { display: flex; gap: 12px; padding: 13px 16px; border-radius: 12px; margin-bottom: 16px;
+    background: #FEF3C7; border: 1px solid #D9760640;
+    div { display: flex; flex-direction: column; gap: 3px; }
+    b { font-size: 13.5px; color: #92400E; }
+    span { font-size: 12px; color: #92400ECC; line-height: 1.5; }
+    &.full { background: #FDE7EF; border-color: #DC266840;
+        b { color: #8C1039; } span { color: #8C1039CC; } } }
+.tnx-caproom-ic { color: #D97706; display: flex; align-items: flex-start; padding-top: 2px; }
+.tnx-caproom.full .tnx-caproom-ic { color: #DC2668; }
+.tnx-caproom-run { opacity: .85; }
+
+// ---------------- the alerts view
+.tnx-back { align-self: flex-start; margin-bottom: 8px; }
+.tnx-alert-tabs { margin-bottom: 16px; }
+.tnx-alert-grp { margin-bottom: 22px; }
+.tnx-alert-h { display: flex; align-items: center; gap: 9px; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted); margin: 0 0 10px;
+    &.critical { color: #DC2668; }
+    &.warning { color: #D97706; } }
+.tnx-alert { display: flex; gap: 13px; align-items: flex-start; padding: 15px 17px; margin-bottom: 10px;
+    background: var(--pbim-card, #fff); border: 1px solid var(--pbim-line-2);
+    border-left: 3px solid var(--pbim-line-2); border-radius: 13px;
+    animation: tnxRise .22s ease both; outline: none;
+    &:focus-visible, &:focus { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    &.critical { border-left-color: #DC2668; }
+    &.warning { border-left-color: #D97706; }
+    &.info { border-left-color: #2563EB; }
+    &.ack { opacity: .72; } }
+.tnx-alert-ic { width: 34px; height: 34px; border-radius: 10px; flex: none; display: grid; place-items: center;
+    background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+.tnx-alert.critical .tnx-alert-ic { background: #FDE7EF; color: #DC2668; }
+.tnx-alert.warning .tnx-alert-ic { background: #FEF3C7; color: #D97706; }
+.tnx-alert-tx { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;
+    b { font-size: 14px; } }
+.tnx-alert-meta { font-size: 11.5px; color: var(--pbim-muted); }
+.tnx-alert-next { font-size: 12.5px; line-height: 1.55; color: var(--pbim-ink-2, #4a4a5a); }
+.tnx-alert-btns { display: flex; gap: 7px; align-items: center; flex: none; flex-wrap: wrap;
+    justify-content: flex-end; max-width: 320px; }
+.tnx-alert-keys { font-size: 11.5px; display: flex; align-items: center; gap: 7px; }
+.tnx-alert-none { text-align: center; padding: 54px 20px; display: flex; flex-direction: column;
+    align-items: center; gap: 7px;
+    h3 { margin: 4px 0 0; font-size: 17px; }
+    p { margin: 0; color: var(--pbim-muted); font-size: 13.5px; max-width: 460px; } }
+.tnx-alert-none-ic { color: var(--pbim-green, #2E7D4F); animation: tnxPop .3s ease both; }
+.tnx-alert-none-sub { font-size: 12px; color: var(--pbim-muted); max-width: 430px; margin-top: 8px; }
+.tnx-hist { border: 1px solid var(--pbim-line-2); border-radius: 13px; overflow: hidden;
+    background: var(--pbim-card, #fff); }
+.tnx-hist-row { display: flex; gap: 11px; align-items: flex-start; padding: 12px 16px;
+    border-top: 1px solid var(--pbim-line-2); &:first-child { border-top: 0; } }
+.tnx-hist-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none;
+    background: var(--pbim-line-2);
+    &.critical { background: #DC2668; } &.warning { background: #D97706; } }
+.tnx-hist-tx { display: flex; flex-direction: column; gap: 2px;
+    b { font-size: 13px; } span { font-size: 11.5px; color: var(--pbim-muted); } }
+
+// ---------------- alert settings
+.tnx-settings { max-width: 720px; }
+.tnx-set-body { display: flex; flex-direction: column; gap: 13px; padding: 18px 22px;
+    // NOT `min(64vh, 640px)`: the stylesheet compiler reads `min()` as its own
+    // function and refuses to mix vh with px, which fails the WHOLE bundle and
+    // paints the cockpit as unstyled HTML with a red banner.
+    max-height: 64vh; overflow-y: auto; }
+.tnx-set-h { margin: 8px 0 0; font-size: 11.5px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--pbim-muted); }
+// `align-items: end` and not a fixed label height: two of these labels wrap
+// onto a second line at this width, and without it every box in the row sat
+// at a different height, which reads as a broken form rather than a dense one.
+.tnx-set-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    align-items: end; }
+@media (max-width: 700px) { .tnx-set-grid { grid-template-columns: 1fr 1fr; } }
+.tnx-set-cap { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 11px 14px;
+    border-radius: 11px; background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F);
+    &.warn { background: #FEF3C7; color: #92400E; }
+    &.full { background: #FDE7EF; color: #8C1039; } }
+
+// ---------------- the public tick on the notice composer
+.tnx-notice-pub { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+    border: 1px solid var(--pbim-line-2); border-radius: 11px; cursor: pointer;
+    input { margin-top: 2px; }
+    b { display: block; font-size: 13px; }
+    small { display: block; font-size: 11.5px; color: var(--pbim-muted); line-height: 1.5; margin-top: 2px; }
+    &:hover { border-color: var(--pbim-primary); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .tnx-notice .tnx-notice-done, .tnx-notice .tnx-notice-done-ic { animation: none; }
+}
+
+@keyframes tnxPulse { 0%, 100% { transform: scale(.7); opacity: .6; } 50% { transform: scale(1.15); opacity: 1; } }
+@keyframes tnxPop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes tnxRise { 0% { transform: translateY(8px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+    .tnx .tnx-card { transition: none; }
+    .tnx .tnx-pulse, .tnx .tnx-done-ic { animation: none; }
+    .tnx .tnx-rel, .tnx .tnx-result, .tnx .tnx-runpanel { animation: none; }
+    .tnx .tnx-ring-fg { transition: none; }
+    // FLEET P2B: the waves still change colour and still raise, they simply do
+    // not animate their way there.
+    .tnx .tnx-ro, .tnx .tnx-tl-detail { animation: none; }
+    .tnx .tnx-ring { transition: none; }
+    // FLEET P3: a new alert still enters, it simply does not slide in, and the
+    // capacity bar still moves, it simply arrives already there.
+    .tnx .tnx-alert, .tnx .tnx-channeldown, .tnx .tnx-alert-none-ic { animation: none; }
+    .tnx .tnx-capbar i { transition: none; }
+    .tnx .tnx-chip.r .tnx-chip-dot, .tnx .tnx-ro-step.running .tnx-ro-step-dot { animation: none; }
+}
+
+// =====================================================================
+//  FLEET P4 — WHAT EACH CUSTOMER GETS.
+//
+//  ITS OWN ROOT SECTION, and that is not a stylistic choice. This file has
+//  TWO root blocks already (`.tnx` and the `.tnx-notice, .tnx-settings,
+//  .tnx-resolve` scrims), and a block appended "at the end" compiles inside
+//  whichever one happens to be last — which is how P3's capacity bar shipped
+//  0 px tall with no error anywhere (ledger F35). Everything below is scoped
+//  from the root on purpose, and the two dialogs are scrims, exactly like the
+//  notice composer.
+//
+//  `--pbim-*` tokens only, flat fills, no gradients, and the promoted
+//  semantics for on (green) and off (muted) — never an invented hex.
+// =====================================================================
+.tnx .tnx-fnote {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 12px 15px; margin-bottom: 16px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-left: 3px solid var(--pbim-primary, #5A4BB0);
+    border-radius: 12px;
+    background: var(--pbim-surface, #fff);
+    font-size: 12.5px; line-height: 1.55; color: var(--pbim-ink-2, #4a4a5a);
+    b { color: var(--pbim-ink, #1B1733); }
+}
+.tnx .tnx-fnote-ic { color: var(--pbim-primary, #5A4BB0); display: flex; padding-top: 1px; flex: none; }
+
+// The grid and the preview, side by side. The preview is fixed-width because
+// it is a REPLICA of a 76px-ish rail with labels; letting it stretch would
+// make it a diagram of nothing.
+.tnx .tnx-fwrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+@media (max-width: 1200px) { .tnx .tnx-fwrap { grid-template-columns: minmax(0, 1fr); } }
+
+.tnx .tnx-fgrid-card { padding: 0; overflow: hidden; }
+.tnx .tnx-fgrid-scroll { overflow-x: auto; }
+.tnx .tnx-fgrid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tnx .tnx-fcorner {
+    position: sticky; left: 0; z-index: 2;
+    background: var(--pbim-surface, #fff);
+    text-align: left; padding: 12px 16px; min-width: 230px;
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--pbim-muted, #64748B);
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.tnx .tnx-fhead {
+    padding: 10px 8px; vertical-align: bottom; min-width: 96px;
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.tnx .tnx-fhead-in { display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; }
+.tnx .tnx-fhead-n { font-size: 11.5px; font-weight: 800; color: var(--pbim-ink, #1B1733); line-height: 1.3; }
+.tnx .tnx-fhead-m { font-size: 10.5px; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fbulk { display: inline-flex; gap: 3px; margin-top: 2px; }
+.tnx .tnx-fbulk-b {
+    border: 1px solid var(--pbim-line, #E2E8F0); background: transparent;
+    border-radius: 7px; padding: 1px 7px; font: inherit; font-size: 10.5px; font-weight: 700;
+    color: var(--pbim-muted, #64748B); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
+    &.on:hover { background: var(--pbim-green, #2E7D4F); border-color: var(--pbim-green, #2E7D4F); color: #fff; }
+    &.off:hover { background: var(--pbim-muted, #64748B); border-color: var(--pbim-muted, #64748B); color: #fff; }
+}
+
+.tnx .tnx-frow { border-bottom: 1px solid var(--pbim-line-2, #F1F5F9); }
+.tnx .tnx-frow.cur { background: var(--pbim-soft, #EDEAF8); }
+.tnx .tnx-frow.ro { background: var(--pbim-bg, #F5F6FA); }
+.tnx .tnx-fname {
+    position: sticky; left: 0; z-index: 1;
+    background: inherit;
+    text-align: left; padding: 11px 16px; min-width: 230px; cursor: pointer;
+    display: table-cell;
+}
+.tnx .tnx-frow.ro .tnx-fname { background: var(--pbim-bg, #F5F6FA); }
+.tnx .tnx-fname-n { display: block; font-size: 13px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+.tnx .tnx-fname-s { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 1px; }
+.tnx .tnx-fnever { display: block; font-size: 11.5px; font-weight: 700; color: #D97706; margin-top: 2px;
+    a { color: inherit; text-decoration: underline; } }
+.tnx .tnx-fpushed { display: block; font-size: 11px; color: var(--pbim-muted, #64748B); margin-top: 2px; }
+
+.tnx .tnx-fcellwrap { position: relative; text-align: center; padding: 9px 8px; }
+
+// THE SWITCH. A real switch and not a tick: the reader is setting a state that
+// stays set, and the knob moving left to right is the only affordance that
+// says so without a word.
+.tnx .tnx-fcell {
+    width: 42px; height: 23px; border-radius: 12px; border: 1px solid transparent;
+    background: var(--pbim-line, #E2E8F0); position: relative; cursor: pointer; padding: 0;
+    transition: background .16s ease, box-shadow .12s;
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+    &.on { background: var(--pbim-green, #2E7D4F); }
+    &.cur { box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    &.rng { box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8); }
+    &[disabled] { opacity: .5; cursor: default; }
+    // "Somebody decided this" versus "it follows the catalogue": a dotted ring
+    // rather than a second colour, because colour is already saying on/off and
+    // a screen that says two things with one channel says neither.
+    &.own { border-color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-fknob {
+    position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 2px rgba(16, 12, 40, .25);
+    transition: transform .16s ease;
+}
+.tnx .tnx-fcell.on .tnx-fknob { transform: translateX(19px); }
+.tnx .tnx-fdot {
+    position: absolute; top: 4px; right: 4px; border: 0; background: transparent; padding: 0;
+    color: var(--pbim-line, #E2E8F0); cursor: pointer; line-height: 0;
+    transition: color .12s;
+    &:hover, &:focus-visible { color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-fsrc { font-size: 11.5px; color: var(--pbim-muted, #64748B); font-weight: 600; }
+
+.tnx .tnx-fkeys {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+    font-size: 11.5px; color: var(--pbim-muted, #64748B);
+}
+.tnx .tnx-frangetag { color: var(--pbim-primary, #5A4BB0); font-weight: 700; }
+
+// ---------------------------------------------------------- the hero
+.tnx .tnx-fpreview { padding: 16px; position: sticky; top: 12px; }
+.tnx .tnx-fprev-h { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;
+    b { display: block; font-size: 13px; color: var(--pbim-ink, #1B1733); } }
+.tnx .tnx-fprev-ic { color: var(--pbim-primary, #5A4BB0); display: flex; padding-top: 1px; }
+.tnx .tnx-fprev-s { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-railprev {
+    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 12px; overflow: hidden;
+    background: var(--pbim-surface, #fff);
+}
+.tnx .tnx-railitem {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    font-size: 12.5px; font-weight: 700; color: var(--pbim-ink, #1B1733);
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    animation: tnxRise .22s ease both;
+    &:last-child { border-bottom: 0; }
+    &.locked { color: var(--pbim-muted, #64748B); background: var(--pbim-bg, #F5F6FA); }
+}
+.tnx .tnx-railic { display: flex; color: var(--pbim-primary, #5A4BB0); }
+.tnx .tnx-railitem.locked .tnx-railic { color: var(--pbim-muted, #64748B); }
+.tnx .tnx-railtx { flex: 1; min-width: 0; }
+.tnx .tnx-raillock { display: flex; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fprev-f { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--pbim-muted, #64748B); }
+.tnx .tnx-fprev-warn {
+    display: flex; gap: 8px; align-items: flex-start; margin-top: 12px;
+    padding: 10px 12px; border-radius: 10px; background: #FEF3C7; color: #7c5109;
+    font-size: 11.5px; line-height: 1.5;
+    a { color: inherit; text-decoration: underline; }
+}
+
+// ------------------------------------------------------- the catalogue
+.tnx .tnx-fcat { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .tnx .tnx-fcat { grid-template-columns: minmax(0, 1fr); } }
+.tnx .tnx-fcat-list, .tnx .tnx-fcat-form { padding: 0; }
+.tnx .tnx-fcat-h {
+    padding: 14px 17px; border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    b { display: block; font-size: 13px; color: var(--pbim-ink, #1B1733); }
+    span { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 2px; line-height: 1.5; }
+}
+.tnx .tnx-fcatrow {
+    display: flex; align-items: center; gap: 10px; padding: 12px 17px; cursor: pointer;
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    transition: background .12s;
+    &:hover { background: var(--pbim-bg, #F5F6FA); }
+    &.cur { background: var(--pbim-soft, #EDEAF8); }
+    &:last-child { border-bottom: 0; }
+}
+.tnx .tnx-fcatrow-n { flex: 1; min-width: 0;
+    b { display: block; font-size: 12.5px; color: var(--pbim-ink, #1B1733); }
+    span { display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 1px; line-height: 1.45; } }
+.tnx .tnx-fcat-form { padding: 0 0 16px; }
+.tnx .tnx-flab {
+    display: block; padding: 11px 17px 0; font-size: 11.5px; font-weight: 700;
+    color: var(--pbim-muted, #64748B);
+    .pbim-input, input, textarea { display: block; width: 100%; margin-top: 5px; font: inherit; font-size: 12.5px;
+        font-weight: 500; color: var(--pbim-ink, #1B1733);
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 9px; padding: 7px 10px;
+        background: var(--pbim-surface, #fff); }
+    .pbim-seg { margin-top: 5px; }
+}
+.tnx .tnx-fcat-actions { display: flex; gap: 8px; justify-content: flex-end; padding: 15px 17px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    // The menu still changes, it simply arrives already there.
+    .tnx .tnx-railitem { animation: none; }
+    .tnx .tnx-fcell, .tnx .tnx-fknob { transition: none; }
+}
+
+// =============================================================================
+// FLEET P5 — Billing: the month strip, the customer table, the plans, and the
+// two dialogs that decide what a customer is charged.
+//
+// EVERY RULE BELOW IS WRITTEN FROM `.tnx` OUTWARDS, at the root of the file.
+// Ledger F35: this stylesheet has more than one root block, and a rule
+// appended "at the end" without its own scope lands inside whichever block
+// happened to be last and matches nothing at all — a bar that shipped 0 px
+// tall with no error anywhere. Ledger F37: any state colour on a shared-kit
+// control carries `.pbim` on the front, or the kit's three-class rule wins.
+// =============================================================================
+
+.tnx .tnx-bill { display: flex; flex-direction: column; gap: 14px; }
+
+.tnx .tnx-billchip.bad {
+    border-color: #F3CBD6; color: #DC2668;
+}
+.pbim .tnx-billchip.bad .tnx-count { background: #DC2668; color: #fff; }
+
+// ----------------------------------------------------------- the month strip
+.tnx .tnx-strip {
+    display: flex; align-items: stretch; gap: 22px; padding: 14px 18px;
+    flex-wrap: wrap;
+}
+.tnx .tnx-strip-months { display: flex; align-items: flex-end; gap: 5px; }
+.tnx .tnx-month {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border: 0; background: none; cursor: pointer; padding: 4px 3px 2px;
+    border-radius: 8px; position: relative;
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+
+    .tnx-month-bar {
+        width: 20px; height: 42px; border-radius: 5px;
+        background: var(--pbim-line-soft, #F1F0F7);
+        display: flex; align-items: flex-end; overflow: hidden;
+        i {
+            display: block; width: 100%;
+            background: var(--pbim-primary, #5A4BB0); opacity: .34;
+            border-radius: 5px;
+            transition: height .5s cubic-bezier(.2,.7,.3,1);
+        }
+    }
+    .tnx-month-l { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    .tnx-month-n {
+        position: absolute; top: -4px; right: -2px;
+        font-size: 9px; font-weight: 700; line-height: 1;
+        padding: 2px 4px; border-radius: 20px;
+        background: var(--pbim-primary, #5A4BB0); color: #fff;
+    }
+    &.on {
+        background: var(--pbim-soft, #EDEAF8);
+        .tnx-month-bar i { opacity: 1; }
+        .tnx-month-l { color: var(--pbim-primary, #5A4BB0); font-weight: 700; }
+    }
+    &.late .tnx-month-n { background: #DC2668; }
+}
+
+.tnx .tnx-strip-now {
+    display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    flex: 1; min-width: 240px;
+}
+.tnx .tnx-strip-tt {
+    display: flex; align-items: center; gap: 9px;
+    b { font-size: 18px; letter-spacing: -.3px; }
+}
+.tnx .tnx-strip-figs { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.tnx .tnx-strip-due {
+    display: flex; flex-direction: column;
+    b { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-strip-late {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #DC2668; font-weight: 700; font-size: 13px;
+}
+.tnx .tnx-strip-clear {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #2E7D4F; font-weight: 600; font-size: 13px;
+}
+
+// -------------------------------------------------------- the customer table
+.tnx .tnx-billtbl { padding: 0; overflow-x: auto; }
+.tnx .tnx-billrow {
+    display: grid;
+    grid-template-columns: 190px 120px 110px 90px 110px 170px minmax(230px, 1fr);
+    align-items: center; gap: 12px; padding: 12px 18px; min-width: 1080px;
+    border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    &:last-child { border-bottom: 0; }
+    &:hover:not(.head) { background: var(--pbim-hover, #FAF9FD); }
+
+    &.head {
+        font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); font-weight: 700;
+        background: var(--pbim-hover, #FAF9FD);
+    }
+}
+.tnx .tnx-bill-cust {
+    display: flex; flex-direction: column; gap: 3px; min-width: 0;
+    b { font-size: 14px; }
+    small { display: flex; align-items: center; gap: 6px; font-size: 11px;
+            color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-bill-plan { font-size: 13px; }
+.tnx .tnx-bill-noplan { color: #D97706; font-weight: 600; cursor: pointer;
+                        text-decoration: underline; }
+.tnx .tnx-bill-seat {
+    display: flex; flex-direction: column;
+    b { font-size: 15px; font-weight: 700; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    &.warn b { color: #D97706; }
+    &.bad  b { color: #DC2668; }
+}
+.tnx .tnx-bill-slips { font-size: 15px; font-weight: 600; }
+.tnx .tnx-bill-spark {
+    svg { width: 100%; height: 22px; display: block; }
+    polyline { fill: none; stroke: var(--pbim-primary, #5A4BB0);
+               stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round;
+               vector-effect: non-scaling-stroke; }
+}
+.tnx .tnx-bill-inv {
+    display: flex; flex-direction: column; gap: 3px;
+    b { font-size: 14px; font-weight: 700; }
+    small { display: flex; align-items: center; gap: 5px; font-size: 11px;
+            color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-bill-none { color: var(--pbim-muted, #64748B); font-size: 12px; }
+.tnx .tnx-billacts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+// ---------------------------------------------------------- what was raised
+.tnx .tnx-raised { padding: 14px 18px; }
+.tnx .tnx-raised-h {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 9px;
+    .tnx-raised-ic { color: #2E7D4F; display: flex; }
+    b { font-size: 14px; }
+    button { margin-left: auto; }
+}
+.tnx .tnx-raised-row, .tnx .tnx-raised-skip {
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+    padding: 5px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    .tnx-raised-amt { margin-left: auto; font-weight: 700; }
+}
+.tnx .tnx-raised-skip { color: var(--pbim-muted, #64748B); }
+
+// ------------------------------------------------------------------ the plans
+.tnx .tnx-plans {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px; align-items: start;
+}
+.tnx .tnx-plan {
+    display: flex; flex-direction: column; gap: 10px; padding: 17px 19px;
+    &.off { opacity: .62; }
+}
+.tnx .tnx-plan-h {
+    display: flex; align-items: flex-start; gap: 12px;
+    b { font-size: 17px; letter-spacing: -.2px; }
+    .tnx-plan-blurb { display: block; font-size: 12.5px;
+                      color: var(--pbim-muted, #64748B); margin-top: 2px; }
+    .tnx-plan-price { margin-left: auto; text-align: right; font-size: 13px;
+                      font-weight: 700; color: var(--pbim-primary, #5A4BB0); }
+}
+.tnx .tnx-plan-facts {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px;
+    color: var(--pbim-muted, #64748B);
+    span { display: inline-flex; align-items: center; gap: 5px; }
+}
+.tnx .tnx-plan-tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.tnx .tnx-plan-tier {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 20px;
+    background: var(--pbim-hover, #FAF9FD);
+    border: 1px solid var(--pbim-line, #E6E4F0);
+}
+.tnx .tnx-plan-feats { display: flex; flex-wrap: wrap; gap: 5px; }
+.tnx .tnx-plan-feat {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 20px;
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary, #5A4BB0); font-weight: 600;
+}
+.tnx .tnx-plan-acts { display: flex; gap: 7px; margin-top: 2px; }
+
+// ------------------------------------------------------- the preview dialog
+.tnx .tnx-previewbox { width: 880px; max-width: 94vw; }
+.tnx .tnx-planbox   { width: 800px; max-width: 94vw; }
+.tnx .tnx-billsetbox { width: 740px; max-width: 94vw; }
+.tnx .tnx-smallbox  { width: 480px; max-width: 94vw; }
+
+// THE KIT'S DIALOG BODY HAS NO PADDING OF ITS OWN — only the head and the
+// foot do (`pb_import_kit/static/src/scss/modal.scss`). Every dialog supplies
+// its own, and a dialog that forgets reads as broken: the content runs flush
+// to both edges while the title above it sits inset by 22 px.
+.tnx .tnx-previewbox > .pbim-modal__body,
+.tnx .tnx-planbox > .pbim-modal__body,
+.tnx .tnx-billsetbox > .pbim-modal__body,
+.tnx .tnx-smallbox > .pbim-modal__body { padding: 16px 22px 18px; }
+
+.tnx .tnx-prev-warn {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 14px; border-radius: 11px; margin-bottom: 14px;
+    border: 1px solid #F6E4C8; background: #FDF6EC; color: #7C4A05;
+    font-size: 13px; line-height: 1.55;
+}
+.tnx .tnx-prev-sum {
+    display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap;
+    padding-bottom: 11px; margin-bottom: 6px;
+    border-bottom: 1px solid var(--pbim-line, #E6E4F0);
+    font-size: 13px;
+    .tnx-prev-tot b { font-size: 19px; font-weight: 800; letter-spacing: -.4px; }
+    .tnx-prev-skipn { color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-prev-row {
+    padding: 11px 0; border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    animation: tnx-previn .26s cubic-bezier(.2,.7,.3,1) both;
+    &.skipped { opacity: .68; }
+    &:last-child { border-bottom: 0; }
+}
+.tnx .tnx-prev-h {
+    display: flex; align-items: baseline; gap: 10px;
+    b { font-size: 14px; }
+    .tnx-prev-plan { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    .tnx-prev-amt { font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+    .tnx-prev-why { font-size: 12.5px; color: var(--pbim-muted, #64748B);
+                    text-align: right; max-width: 60%; }
+}
+.tnx .tnx-prev-lines { margin-top: 7px; }
+.tnx .tnx-prev-line {
+    display: grid; grid-template-columns: minmax(0,1fr) 190px 130px;
+    gap: 10px; align-items: baseline; padding: 4px 0 4px 14px;
+    border-left: 2px solid var(--pbim-line, #E6E4F0);
+    font-size: 12.5px;
+    .tnx-prev-lab small { display: block; font-size: 11px;
+                          color: var(--pbim-muted, #64748B); }
+    .tnx-prev-q { color: var(--pbim-muted, #64748B); text-align: right; }
+    .tnx-prev-a { text-align: right; font-weight: 700; }
+    &.vat { color: var(--pbim-muted, #64748B); }
+}
+@keyframes tnx-previn {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: none; }
+}
+
+// ------------------------------------------------------- the plan editor
+.tnx .tnx-planform {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 11px; margin-bottom: 13px;
+}
+.tnx .tnx-planfield { display: flex; flex-direction: column; gap: 4px;
+                      &.wide { grid-column: 1 / -1; } }
+.tnx .tnx-priceseg { margin-bottom: 13px; flex-wrap: wrap; }
+.tnx .tnx-tiers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 13px; }
+.tnx .tnx-tier {
+    display: flex; align-items: center; gap: 8px;
+    .tnx-tier-l { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    .tnx-tier-n { width: 100px; }
+    .tnx-tier-p { width: 150px; }
+}
+.tnx .tnx-tier-add { display: flex; align-items: center; gap: 10px;
+                     .tnx-tier-cur { width: 120px; } }
+.tnx .tnx-planfeats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.tnx .tnx-planfeat {
+    font-size: 12px; padding: 5px 11px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-surface, #fff); color: var(--pbim-muted, #64748B);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+    &.on {
+        background: var(--pbim-soft, #EDEAF8);
+        border-color: var(--pbim-primary, #5A4BB0);
+        color: var(--pbim-primary, #5A4BB0); font-weight: 700;
+    }
+}
+.tnx .tnx-ta { resize: vertical; font-family: inherit; }
+.tnx .tnx-setsec { margin: 16px 0 8px; font-size: 13px; }
+
+// --------------------------------- the one switch that needs a paragraph
+.tnx .tnx-autosus {
+    display: flex; gap: 13px; align-items: flex-start;
+    padding: 13px 16px; border-radius: 12px; margin-bottom: 16px;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-hover, #FAF9FD);
+    &.on { border-color: #F3CBD6; background: #FDF1F5; }
+
+    .tnx-autosus-tx { display: flex; flex-direction: column; gap: 5px;
+                      b { font-size: 13.5px; }
+                      span { font-size: 12.5px; line-height: 1.6;
+                             color: var(--pbim-muted, #64748B); } }
+    .tnx-autosus-red { color: #DC2668 !important; font-weight: 600; }
+}
+.tnx .tnx-switch {
+    flex: 0 0 42px; width: 42px; height: 24px; border-radius: 20px;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-line-soft, #F1F0F7); cursor: pointer;
+    padding: 0; position: relative; margin-top: 1px;
+    transition: background .18s ease, border-color .18s ease;
+    i {
+        position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+        border-radius: 50%; background: #fff; display: block;
+        box-shadow: 0 1px 3px rgba(30,27,46,.28);
+        transition: transform .18s cubic-bezier(.2,.7,.3,1);
+    }
+    &[aria-pressed="true"] {
+        background: #DC2668; border-color: #DC2668;
+        i { transform: translateX(18px); }
+    }
+}
+
+// ============================================================ one customer's
+// plan tab
+.tnx .tnx-standing {
+    display: flex; align-items: center; gap: 13px; padding: 15px 18px;
+    margin-bottom: 14px; flex-wrap: wrap;
+    .tnx-standing-ic { color: #2E7D4F; display: flex; }
+    .tnx-standing-tx { display: flex; flex-direction: column; gap: 3px;
+                       b { font-size: 15px; }
+                       span { font-size: 12.5px; line-height: 1.55;
+                              color: var(--pbim-muted, #64748B); } }
+    &.suspended { border-color: #F3CBD6; background: #FDF1F5;
+                  .tnx-standing-ic { color: #DC2668; } }
+    &.trial { border-color: #CFE0FA; background: #F4F8FE;
+              .tnx-standing-ic { color: #2563EB; } }
+    &.pending_deletion { .tnx-standing-ic { color: var(--pbim-muted, #64748B); } }
+}
+.tnx .tnx-plangrid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 14px; align-items: start; margin-bottom: 14px;
+}
+.tnx .tnx-plancard { padding: 17px 19px; display: flex; flex-direction: column; gap: 10px;
+                     h4 { display: flex; align-items: center; gap: 7px; margin: 0;
+                          font-size: 14px; } }
+.tnx .tnx-planpick { display: flex; flex-direction: column; gap: 7px; }
+.tnx .tnx-planopt {
+    display: flex; flex-direction: column; gap: 2px; text-align: left;
+    padding: 10px 13px; border-radius: 11px; cursor: pointer;
+    border: 1px solid var(--pbim-line, #E6E4F0);
+    background: var(--pbim-surface, #fff);
+    transition: border-color .15s ease, background .15s ease;
+    b { font-size: 13.5px; }
+    span { font-size: 12px; color: var(--pbim-primary, #5A4BB0); font-weight: 600; }
+    small { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+    &.on { border-color: var(--pbim-primary, #5A4BB0);
+           background: var(--pbim-soft, #EDEAF8); }
+}
+.tnx .tnx-planrow { display: flex; flex-direction: column; gap: 4px;
+                    label { font-size: 11.5px; color: var(--pbim-muted, #64748B);
+                            font-weight: 600; } }
+.tnx .tnx-pushed { font-size: 11.5px; }
+.tnx .tnx-seatbar {
+    height: 9px; border-radius: 20px; overflow: hidden;
+    background: var(--pbim-line-soft, #F1F0F7);
+    i { display: block; height: 100%; border-radius: 20px;
+        background: var(--pbim-primary, #5A4BB0);
+        transition: width .6s cubic-bezier(.2,.7,.3,1); }
+    &.near i { background: #D97706; }
+    &.full i { background: #DC2668; }
+}
+.tnx .tnx-usagelist { display: flex; flex-direction: column; }
+.tnx .tnx-usagerow {
+    display: flex; align-items: baseline; gap: 8px; font-size: 12.5px;
+    padding: 6px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    small { color: var(--pbim-muted, #64748B); font-size: 11px; }
+    .tnx-usagewhen { margin-left: auto; font-size: 11px;
+                     color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-planinv { padding: 17px 19px; margin-bottom: 14px;
+                    h4 { display: flex; align-items: center; gap: 7px;
+                         margin: 0 0 8px; font-size: 14px; } }
+.tnx .tnx-planinvrow {
+    display: flex; align-items: center; gap: 11px; font-size: 13px;
+    padding: 8px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    .tnx-planinvamt { font-weight: 700; }
+    .tnx-planinvwhen { margin-left: auto; font-size: 11.5px;
+                       color: var(--pbim-muted, #64748B); }
+}
+.tnx .tnx-planrisk {
+    padding: 17px 19px; border-color: #F3CBD6;
+    h4 { display: flex; align-items: center; gap: 7px; margin: 0 0 10px;
+         font-size: 14px; color: #DC2668; }
+}
+.tnx .tnx-planrisk-row {
+    display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap;
+    padding: 11px 0; border-top: 1px solid var(--pbim-line-soft, #F1F0F7);
+    > div:first-child { flex: 1 1 320px;
+        b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+        span { font-size: 12.5px; line-height: 1.55;
+               color: var(--pbim-muted, #64748B); } }
+}
+.tnx .tnx-planrisk-form {
+    display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
+    input { width: 190px; }
+    .tnx-days { width: 80px; }
+}
+
+// ---------------------------------------------------- the wizard's plan step
+.tnx .tnx-wizplan { margin-top: 16px; }
+.tnx .tnx-trialtoggle {
+    display: flex; gap: 9px; align-items: flex-start; margin-top: 11px;
+    font-size: 12.5px; line-height: 1.55; color: var(--pbim-muted, #64748B);
+    cursor: pointer;
+    input { margin-top: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tnx .tnx-prev-row { animation: none; }
+    .tnx .tnx-month-bar i, .tnx .tnx-seatbar i, .tnx .tnx-switch i { transition: none; }
+}
+
+// THE SCRIM CLASS IS `pbim-modal-scrim`, WITH ONE HYPHEN, and this comment is
+// here because the rest of the kit's popup primitive is BEM with double
+// underscores — `__head`, `__body`, `__foot`, `__x`, `__sp`. Writing the
+// outermost one the same way (`pbim-modal__scrim`) matches no rule at all, so
+// the dialog renders INLINE, in the flow of the page, with no overlay, no
+// centring and no error anywhere. It looked like a layout bug in the dialog.
+// The five dialogs this phase adds all had it.
+
+// =============================================================================
+// FLEET P6 — support access.
+//
+// ROOT-SCOPED FOR THE DIALOG, `.tnx`-scoped for the row and the history, and
+// the split is not cosmetic: the scrim is drawn at the top of the page and the
+// row is drawn inside the cockpit. Appending either to the wrong root is the
+// silent nothing ledger F35 describes.
+// =============================================================================
+.tnx-support {
+    .tnx-notice-ic.rose {
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+    }
+    .tnx-supreason { resize: vertical; min-height: 52px; font-family: inherit; }
+    .tnx-supseg { align-self: flex-start; }
+    .tnx-supblurb { font-size: 11.5px; color: var(--pbim-muted, #64748B);
+        margin-top: -6px; }
+}
+
+// ---- the Overview row, and the record under it
+.tnx .tnx-sup-blocked {
+    display: block; font-size: 11.5px; line-height: 1.55;
+    color: var(--pbim-muted, #64748B); margin-top: 3px; max-width: 62ch;
+}
+.tnx .tnx-suphist { margin-top: 14px; padding: 0 0 4px; }
+.tnx .tnx-suprow {
+    border-top: 1px solid var(--pbim-line, #EDEBF4);
+}
+.tnx .tnx-supline {
+    display: grid;
+    grid-template-columns: 132px 118px 140px minmax(120px, 1fr) 96px 18px;
+    align-items: center; gap: 10px;
+    padding: 9px 18px; cursor: pointer; font-size: 12.5px;
+    transition: background .14s ease;
+
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+}
+.tnx .tnx-supwhen { font-variant-numeric: tabular-nums;
+    color: var(--pbim-muted, #64748B); }
+.tnx .tnx-supwho { font-weight: 600; }
+.tnx .tnx-supwhy { color: var(--pbim-muted, #64748B);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tnx .tnx-supscr { color: var(--pbim-muted, #64748B); }
+.tnx .tnx-supcar { color: var(--pbim-muted, #64748B); transition: transform .16s ease; }
+.tnx .tnx-suprow.open .tnx-supcar { transform: rotate(180deg); }
+.tnx .tnx-supdet { padding: 2px 18px 14px; }
+.tnx .tnx-supfacts {
+    display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 8px;
+    font-size: 11.5px; color: var(--pbim-muted, #64748B);
+    b { color: var(--pbim-text, #1E1B2E); }
+}
+.tnx .tnx-supchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tnx .tnx-supchip {
+    display: inline-flex; align-items: center; padding: 2px 9px;
+    border-radius: 999px; font-size: 11.5px;
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary-strong, #5A4BB0);
+}
+.tnx .tnx-supnone { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+
+@media (max-width: 1100px) {
+    .tnx .tnx-supline { grid-template-columns: 132px 1fr 18px; }
+    .tnx .tnx-supwhy, .tnx .tnx-supscr { grid-column: 1 / span 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .tnx .tnx-supcar { transition: none; }
+}

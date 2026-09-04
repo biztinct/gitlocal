@@ -1,0 +1,153 @@
+// Young Worker Guard cockpit — calm compliance tint (.pbyw) over --pbim-*.
+.pbyw {
+    --pbyw-primary: #0f766e;       // teal-700 — protective, calm
+    --pbyw-primary-soft: #f0fdfa;  // teal-50
+    --pbyw-ink: #1e293b;
+    --pbyw-muted: #64748b;
+    --pbyw-line: #e2e8f0;
+    --pbyw-ok: #16a34a;
+    --pbyw-amber: #d97706;
+    --pbyw-rose: #e11d48;
+
+    position: relative;
+    height: 100%;
+    overflow: auto;
+
+    // Inline Lucide SVGs (pbyw_icons.js) — flush-baseline, never squashed by flex.
+    .pbyw-ic { display: inline-block; vertical-align: middle; flex: 0 0 auto; }
+    .pbyw-loading .pbyw-ic { animation: pbyw-spin 1s linear infinite; }
+    background: var(--pbim-bg, #f8fafc);
+    color: var(--pbyw-ink);
+    font-size: 14px;
+
+    // ---- hero ----
+    .pbyw-hero {
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 16px; padding: 22px 26px;
+        background: #fff; border-bottom: 1px solid var(--pbyw-line);
+    }
+    .pbyw-hero__l { display: flex; align-items: center; gap: 14px; }
+    .pbyw-hero__badge {
+        width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--pbyw-primary-soft); color: var(--pbyw-primary); font-size: 1.3rem;
+    }
+    .pbyw-hero__title { font-size: 1.5rem; font-weight: 800; margin: 0; }
+    .pbyw-hero__sub { color: var(--pbyw-muted); margin: 2px 0 0; }
+    .pbyw-hero__kpis { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pbyw-kpi {
+        display: flex; flex-direction: column; align-items: center;
+        min-width: 96px; padding: 10px 16px; border-radius: 12px;
+        background: var(--pbyw-primary-soft);
+    }
+    .pbyw-kpi__v { font-size: 1.5rem; font-weight: 800; color: var(--pbyw-primary); line-height: 1.1; }
+    .pbyw-kpi__v--ok { color: var(--pbyw-ok); }
+    .pbyw-kpi__v--amber { color: var(--pbyw-amber); }
+    .pbyw-kpi__v--rose { color: var(--pbyw-rose); }
+    .pbyw-kpi__l { font-size: .68rem; color: var(--pbyw-muted); text-transform: uppercase; letter-spacing: .04em; text-align: center; margin-top: 2px; }
+
+    // ---- layout ----
+    .pbyw-loading { padding: 40px 26px; color: var(--pbyw-muted); }
+    .pbyw-cols { display: flex; gap: 20px; padding: 20px 26px; align-items: flex-start; }
+    .pbyw-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+    .pbyw-side { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 18px; }
+
+    // ---- cards ----
+    .pbyw-card { background: #fff; border: 1px solid var(--pbyw-line); border-radius: 16px; padding: 16px 18px; }
+    .pbyw-card__hd {
+        font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+        i { color: var(--pbyw-primary); }
+    }
+    .pbyw-card__hd--amber i { color: var(--pbyw-amber); }
+    .pbyw-card__n { background: var(--pbyw-primary-soft); color: var(--pbyw-primary); border-radius: 999px; padding: 0 9px; font-size: .78rem; font-weight: 700; }
+    .pbyw-card__n--amber { background: #fffbeb; color: var(--pbyw-amber); }
+    .pbyw-card__sub { color: var(--pbyw-muted); font-weight: 400; font-size: .78rem; }
+    .pbyw-card__act { margin-left: auto; }
+    .pbyw-empty { color: var(--pbyw-muted); padding: 10px 2px; .pbyw-ic { color: var(--pbyw-ok); } }
+
+    // ---- roster ----
+    .pbyw-roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .pbyw-rcard {
+        display: flex; gap: 12px; padding: 12px 14px;
+        border: 1px solid var(--pbyw-line); border-radius: 14px; background: #fff;
+        transition: border-color .12s, box-shadow .12s;
+        &:hover { border-color: var(--pbyw-primary); box-shadow: 0 4px 14px rgba(15, 118, 110, .1); }
+    }
+    .pbyw-rcard__av { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .pbyw-rcard__body { flex: 1; min-width: 0; }
+    .pbyw-rcard__top { display: flex; align-items: center; gap: 8px; }
+    .pbyw-rcard__name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbyw-rcard__meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+    .pbyw-band { font-size: .74rem; color: var(--pbyw-primary); background: var(--pbyw-primary-soft); border-radius: 999px; padding: 2px 8px; }
+    .pbyw-chip { font-size: .74rem; color: var(--pbyw-muted); background: #f1f5f9; border-radius: 999px; padding: 2px 8px; }
+    .pbyw-chip--soon { color: var(--pbyw-amber); background: #fffbeb; font-weight: 600; }
+    .pbyw-badge { font-size: .72rem; border-radius: 999px; padding: 1px 8px; font-weight: 700; }
+    .pbyw-badge--rose { color: var(--pbyw-rose); background: #fff1f2; }
+
+    // ---- gauge ----
+    .pbyw-gauge { display: flex; align-items: center; gap: 8px; }
+    .pbyw-gauge__track { flex: 1; height: 8px; border-radius: 999px; background: #f1f5f9; overflow: hidden; }
+    .pbyw-gauge__fill { height: 100%; border-radius: 999px; transition: width .3s ease; }
+    .pbyw-gauge__fill--ok { background: var(--pbyw-ok); }
+    .pbyw-gauge__fill--amber { background: var(--pbyw-amber); }
+    .pbyw-gauge__fill--rose { background: var(--pbyw-rose); }
+    .pbyw-gauge__lbl { font-size: .72rem; color: var(--pbyw-muted); white-space: nowrap; }
+
+    // ---- feed ----
+    .pbyw-feed { display: flex; flex-direction: column; }
+    .pbyw-feedrow {
+        display: flex; align-items: center; gap: 12px; padding: 10px 2px;
+        border-bottom: 1px solid var(--pbyw-line);
+        &:last-child { border-bottom: none; }
+    }
+    .pbyw-feedrow__ic {
+        width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: #f1f5f9; color: var(--pbyw-muted);
+    }
+    .pbyw-feedrow__ic--day_cap, .pbyw-feedrow__ic--week_cap { background: #fffbeb; color: var(--pbyw-amber); }
+    .pbyw-feedrow__ic--ot, .pbyw-feedrow__ic--night { background: #fff1f2; color: var(--pbyw-rose); }
+    .pbyw-feedrow__body { flex: 1; min-width: 0; }
+    .pbyw-feedrow__top { display: flex; align-items: center; gap: 8px; }
+    .pbyw-feedrow__name { font-weight: 600; }
+    .pbyw-feedrow__kind { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--pbyw-muted); }
+    .pbyw-feedrow__detail { font-size: .82rem; color: var(--pbyw-muted); }
+    .pbyw-feedrow__date { font-size: .74rem; color: var(--pbyw-muted); white-space: nowrap; }
+
+    // ---- rules ----
+    .pbyw-rules { margin-bottom: 10px; }
+    .pbyw-rules__co { font-weight: 600; font-size: .8rem; color: var(--pbyw-muted); margin-bottom: 4px; }
+    .pbyw-bandtable {
+        width: 100%; border-collapse: collapse; font-size: .82rem;
+        th { text-align: left; color: var(--pbyw-muted); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; padding: 4px 6px; }
+        td { padding: 6px; border-top: 1px solid var(--pbyw-line); }
+    }
+    .pbyw-ok { color: var(--pbyw-ok); }
+    .pbyw-x { color: var(--pbyw-rose); }
+    .pbyw-rules__night { font-size: .78rem; color: var(--pbyw-muted); margin-top: 8px; .pbyw-ic { color: var(--pbyw-primary); } }
+    .pbyw-rules__cap { font-size: .72rem; color: var(--pbyw-muted); font-style: italic; margin-top: 6px; }
+
+    // ---- missing birthdays ----
+    .pbyw-miss__hint { font-size: .78rem; color: var(--pbyw-muted); margin-bottom: 10px; }
+    .pbyw-miss { display: flex; flex-direction: column; gap: 6px; }
+    .pbyw-missrow { display: flex; align-items: center; gap: 8px; }
+    .pbyw-missrow__av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+    .pbyw-missrow__name { font-weight: 600; font-size: .84rem; }
+    .pbyw-missrow__dep { font-size: .74rem; color: var(--pbyw-muted); margin-left: auto; }
+    .pbyw-miss__more { font-size: .76rem; color: var(--pbyw-muted); margin-top: 8px; }
+
+    // ---- buttons ----
+    .pbyw-btn { border: 1px solid var(--pbyw-line); background: #fff; border-radius: 10px; padding: 4px 10px; font-size: .8rem; cursor: pointer; color: var(--pbyw-ink); }
+    .pbyw-btn--ghost:hover { border-color: var(--pbyw-primary); color: var(--pbyw-primary); }
+}
+
+@keyframes pbyw-spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbyw` is `height: 100%; overflow: auto` already, so the lens
+   box's definite height is enough (W20); with the identity block suppressed
+   the hero is only its KPI row. */
+.pbyw.pbyw--embedded {
+    .pbyw-hero { padding: 16px 22px 4px; justify-content: flex-start; }
+    .pbyw-cols { padding: 16px 22px; }
+}

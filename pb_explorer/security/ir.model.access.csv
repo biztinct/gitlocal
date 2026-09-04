@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_fact_run_analytics,pb.fact.run analytics read,model_pb_fact_run,pb_hr_payroll_base.group_payroll_analytics_user,1,0,0,0
+access_pb_fact_run_manager,pb.fact.run manager read,model_pb_fact_run,pb_hr_payroll_base.group_payroll_base_manager,1,0,0,0
+access_pb_fact_run_admin,pb.fact.run super admin,model_pb_fact_run,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_pb_fact_line_analytics,pb.fact.line analytics read,model_pb_fact_line,pb_hr_payroll_base.group_payroll_analytics_user,1,0,0,0
+access_pb_fact_line_manager,pb.fact.line manager read,model_pb_fact_line,pb_hr_payroll_base.group_payroll_base_manager,1,0,0,0
+access_pb_fact_line_admin,pb.fact.line super admin,model_pb_fact_line,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_pb_fact_emp_analytics,pb.fact.emp analytics read,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_analytics_user,1,0,0,0
+access_pb_fact_emp_manager,pb.fact.emp manager read,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_base_manager,1,0,0,0
+access_pb_fact_emp_admin,pb.fact.emp super admin,model_pb_fact_emp,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1

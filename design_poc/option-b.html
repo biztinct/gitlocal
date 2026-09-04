@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook — Option B · Hybrid (Smashing)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css"/>
+<link rel="stylesheet" href="assets/palettes.css"/>
+<link rel="stylesheet" href="assets/app.css"/>
+<style>
+  /* ============================================================
+     Option B — Hybrid, dialled up to "smashing":
+     B's command-centre home + split-view run cockpit + Run-Payroll
+     wizard, fused with Option C's flair (score rings, bespoke
+     formula cards, Business Impact analytics, PayAI assistant).
+     ============================================================ */
+  body.opt-b .pb-content{padding:22px 28px 90px;}
+  .b-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+  /* ---- Gradient hero ---- */
+  .b-hero{position:relative;overflow:hidden;border-radius:var(--r-xl);
+    background:var(--pb-hero);
+    color:#fff;padding:28px 32px;box-shadow:var(--sh-lg);margin-bottom:20px;}
+  .b-hero::after{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);}
+  .b-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#C9BEF0;}
+  .b-hero h1{font-size:29px;font-weight:800;color:#fff;margin-top:8px;letter-spacing:-.02em;position:relative;}
+  .b-hero .sub{color:#C9BEF0;font-size:14px;margin-top:6px;position:relative;}
+  .b-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;position:relative;z-index:1;flex-wrap:wrap;}
+  .b-glass{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);
+    padding:8px 15px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .b-glass:hover{background:rgba(255,255,255,.22);}
+  .b-hero-blue{background:var(--pb-hero-blue);}
+  .b-hero-blue::after{background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), rgba(255,255,255,0) 70%);}
+  .b-hero-blue .eyebrow,.b-hero-blue .sub{color:#DCE6FF;}
+
+  /* dark segmented toggle (on hero) */
+  .b-seg-dark{display:inline-flex;gap:3px;background:rgba(255,255,255,.12);border-radius:11px;padding:4px;backdrop-filter:blur(4px);}
+  .b-seg-dark button{border:none;background:none;color:rgba(255,255,255,.8);padding:6px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .b-seg-dark button.active{background:#fff;color:var(--pb-brand);box-shadow:var(--sh-xs);}
+  .b-hero-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.10);color:#fff;padding:7px 14px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .b-hero-btn:hover{background:rgba(255,255,255,.2);}
+
+  /* ---- cockpit cards (home) ---- */
+  .b-cockpit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;}
+  .b-cockpit{background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-xl);padding:20px 22px;box-shadow:var(--sh-md);transition:transform var(--t-med) var(--ease),box-shadow var(--t-med);}
+  .b-cockpit:hover{transform:translateY(-3px);box-shadow:var(--sh-lg);}
+  .cc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+  .cc-title{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+  .cc-meta{color:var(--pb-muted);font-size:12.5px;margin-top:3px;}
+  .b-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .b-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:var(--r-pill);}
+  .b-pill .d{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .b-pill.ok{background:var(--pb-success-tint);color:#0F8A63;} .b-pill.warn{background:var(--pb-warn-tint);color:#B7791F;}
+  .b-pill.info{background:var(--pb-info-tint);color:#2563EB;} .b-pill.muted{background:#EEF1F5;color:#64748B;}
+  .b-mini{display:flex;gap:22px;margin-top:16px;padding-top:14px;border-top:1px solid var(--pb-border-soft);flex-wrap:wrap;}
+  .b-mini .mv{font-size:18px;font-weight:800;letter-spacing:-.02em;} .b-mini .ml{font-size:11px;color:var(--pb-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+  .b-link{display:inline-flex;align-items:center;gap:6px;color:var(--pb-brand);font-weight:700;font-size:13px;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+  .b-link:hover{gap:9px;}
+
+  /* ---- current-run cockpit preview ---- */
+  .cockpit-prev{padding:22px 24px;}
+  .mini-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0;}
+  .mini-kpi{background:var(--pb-surface-2);border:1px solid var(--pb-border);border-radius:var(--r-md);padding:12px 14px;}
+  .mini-kpi .l{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);}
+  .mini-kpi .v{font-size:19px;font-weight:800;margin-top:5px;font-variant-numeric:tabular-nums;}
+
+  /* ---- run cockpit split ---- */
+  .cockpit-split{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start;}
+  .slip-list{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow-y:auto;padding-right:4px;}
+  .slip-card{background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-md);padding:13px 14px;cursor:pointer;transition:all var(--t-fast);box-shadow:var(--sh-xs);border-left:3px solid transparent;}
+  .slip-card:hover{border-color:var(--pb-brand-400);transform:translateY(-1px);box-shadow:var(--sh-sm);}
+  .slip-card.sel{border-color:var(--pb-brand);border-left-color:var(--pb-brand);background:var(--pb-brand-tint);box-shadow:var(--sh-sm);}
+  .slip-card .top{display:flex;align-items:center;gap:10px;}
+  .slip-card .nm{font-weight:700;font-size:13.5px;line-height:1.2;}
+  .slip-card .meta{font-size:11.5px;color:var(--pb-muted);margin-top:2px;}
+  .slip-card .net{margin-left:auto;text-align:right;}
+  .slip-card .net .amt{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;}
+  .slip-card .net .cap{font-size:10px;color:var(--pb-muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;}
+  .slip-card .pbar{margin-top:10px;} .slip-card .pbar .pl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--pb-muted);font-weight:600;margin-bottom:4px;}
+  .slip-card .foot{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap;}
+  .flag-chip{display:inline-flex;align-items:center;gap:5px;background:var(--pb-warn-tint);color:#B7791F;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:var(--r-pill);}
+  .detail-pane{background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);overflow:hidden;position:sticky;top:74px;}
+  .detail-hero{display:flex;align-items:center;gap:14px;padding:20px 22px;background:var(--pb-hero-detail);color:#fff;position:relative;overflow:hidden;}
+  .detail-hero::after{content:"";position:absolute;right:-30px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.05);}
+  .detail-hero .av{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;flex:none;}
+  .detail-hero .h-title{font-size:18px;font-weight:800;} .detail-hero .h-sub{color:#C9BEF0;font-size:12.5px;margin-top:2px;}
+  .detail-hero .h-net{margin-left:auto;text-align:right;} .detail-hero .h-net .cap{font-size:11px;color:#C9BEF0;} .detail-hero .h-net .amt{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .bk-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--pb-border-soft);font-size:13px;}
+  .bk-row:last-child{border-bottom:none;} .bk-row .amt{font-variant-numeric:tabular-nums;font-weight:600;}
+  .bk-row.sub{border-top:1px solid var(--pb-border);font-weight:700;} .bk-row.net{border-top:2px solid var(--pb-border);font-weight:800;font-size:14.5px;}
+
+  /* ---- score cards (formula / approvals) ---- */
+  .b-score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+  .b-score-card{background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh-sm);transition:all var(--t-med) var(--ease);}
+  .b-score-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+  .b-statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .b-statpill{background:var(--pb-surface-2);border:1px solid var(--pb-border);border-radius:10px;padding:8px 12px;text-align:center;min-width:60px;}
+  .b-statpill .n{font-size:16px;font-weight:800;} .b-statpill .l{font-size:10px;color:var(--pb-muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:1px;}
+  .b-cfg-rows{display:flex;flex-direction:column;} .b-cfg-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--pb-border-soft);}
+  .b-cfg-row:last-child{border-bottom:none;} .b-cfg-row .k{color:var(--pb-muted);font-size:12.5px;font-weight:600;} .b-cfg-row .v{font-size:13.5px;font-weight:600;}
+  .b-rule-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;border:1px solid var(--pb-border-soft);background:var(--pb-surface-2);}
+  .b-rule-row .col{width:34px;height:30px;border-radius:8px;background:var(--pb-brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px;flex:none;}
+  .b-rule-row .cn{flex:1;font-weight:600;font-size:13px;}
+
+  /* ---- analytics extras ---- */
+  .b-chart-wrap{width:100%;} .b-chart-wrap svg{width:100%;height:auto;display:block;}
+  .b-ai-tag{display:inline-flex;align-items:center;gap:7px;background:var(--pb-brand-tint);color:var(--pb-brand);border:1px solid var(--pb-brand-tint-2);padding:7px 13px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;}
+  .b-bignum{font-size:30px;font-weight:900;letter-spacing:-.03em;} .b-bignum.up{color:var(--pb-accent-600);}
+  .b-summary{background:linear-gradient(120deg,var(--pb-brand-tint),#fff);border:1px solid var(--pb-brand-tint-2);border-radius:var(--r-lg);padding:18px 20px;}
+  .b-dept-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--pb-border-soft);} .b-dept-row:last-child{border-bottom:none;}
+  .b-dept-row .dn{width:130px;font-weight:600;font-size:13px;flex:none;} .b-dept-row .db{flex:1;} .b-dept-row .dc{width:90px;text-align:right;font-weight:700;font-size:13px;flex:none;}
+  .b-askbar{margin-top:22px;background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-pill);display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;box-shadow:var(--sh-md);}
+  .b-askbar .ip{flex:1;border:none;background:none;outline:none;font-family:inherit;font-size:13.5px;color:var(--pb-ink);}
+  .b-askbar .orb{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--pb-brand);color:#fff;}
+
+  /* ---- Run Payroll wizard (hybrid modal) ---- */
+  .b-wiz-scrim{position:fixed;inset:0;background:rgba(20,15,40,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:80;padding:24px;}
+  .b-wiz-scrim.open{display:flex;animation:fadeUp .25s var(--ease);}
+  .b-wiz{background:var(--pb-surface);border-radius:var(--r-xl);box-shadow:var(--sh-lg);width:780px;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
+  .b-wiz-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--pb-border);}
+  .b-wiz-head .x{border:none;background:var(--pb-surface-2);width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--pb-muted);font-size:15px;}
+  .b-wiz-body{padding:24px;overflow-y:auto;} .b-wiz-rail{margin-bottom:24px;justify-content:center;}
+  .b-wiz-foot{padding:16px 24px;border-top:1px solid var(--pb-border);display:flex;justify-content:space-between;gap:10px;background:var(--pb-surface-2);}
+
+  /* ---- Floating PayAI assistant ---- */
+  .b-ai-fab{position:fixed;right:24px;bottom:24px;z-index:55;display:flex;align-items:center;gap:11px;padding:11px 18px 11px 13px;
+    background:var(--pb-side-bg-1);color:#fff;border-radius:var(--r-pill);box-shadow:var(--sh-lg);cursor:pointer;border:1px solid var(--pb-brand-500);}
+  .b-ai-fab:hover{transform:translateY(-2px);}
+  .b-ai-fab .orb{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:15px;background:var(--pb-brand);}
+  .b-ai-fab .nm{font-size:13px;font-weight:700;line-height:1.15;} .b-ai-fab .st{font-size:11px;color:#7CF0C2;display:flex;align-items:center;gap:5px;}
+  .b-ai-fab .st .d{width:6px;height:6px;border-radius:50%;background:#34D399;animation:bpulse 2s infinite;}
+  @keyframes bpulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6);}70%{box-shadow:0 0 0 7px rgba(52,211,153,0);}100%{box-shadow:0 0 0 0 rgba(52,211,153,0);}}
+</style>
+</head>
+<body>
+<div id="app-root"></div>
+<script src="assets/data.js"></script>
+<script>
+const $ = (id)=>document.getElementById(id);
+
+const PAYSLIP_STATES=[{k:"draft",l:"Draft"},{k:"level1",l:"HR Manager pending"},{k:"level2",l:"GM pending"},{k:"done",l:"Done"}];
+const NEXT_STATE={draft:"level1",level1:"level2",level2:"done",done:"done"};
+const NEXT_LABEL={draft:"Submit for HR review →",level1:"Approve & advance →",level2:"Approve & advance →",done:"Approved"};
+
+function statusbar(state){
+  const order=PAYSLIP_STATES.map(s=>s.k), cur=order.indexOf(state);
+  return `<div class="statusbar">`+PAYSLIP_STATES.map((s,i)=>{
+    const cls=i<cur?"done-st":(i===cur?"cur":"");
+    return `<div class="st ${cls}">${s.l}</div>`;
+  }).join("")+`</div>`;
+}
+function runRail(){
+  const done=PB.payslips.filter(p=>p.state==="done").length;
+  const approved = done===PB.payslips.length;
+  return `<div class="rail">
+    <div class="step done"><div class="dot">✓</div><div class="lab">Draft</div></div><div class="bar"></div>
+    <div class="step done"><div class="dot">✓</div><div class="lab">Computed</div></div><div class="bar"></div>
+    <div class="step ${approved?'done':'cur'}"><div class="dot">${approved?'✓':'3'}</div><div class="lab">Approved</div></div><div class="bar"></div>
+    <div class="step ${approved?'cur':''}"><div class="dot">4</div><div class="lab">Paid</div></div>
+  </div>`;
+}
+function slipLines(p){
+  const basic=Math.round(p.gross*0.72),allow=Math.round(p.gross*0.16),ot=Math.round(p.gross*0.07),bonus=p.gross-basic-allow-ot;
+  return {basic,allow,ot,bonus};
+}
+/* big SVG line chart (ported from Option C) */
+function bigLineChart(arr,opts={}){
+  const w=opts.w||640,h=opts.h||220,pad=opts.pad||34;
+  const max=Math.max(...arr)*1.08,min=Math.min(...arr)*0.9,span=(max-min)||1;
+  const iw=w-pad*2,ih=h-pad*1.4;
+  const X=i=>pad+(i/(arr.length-1))*iw, Y=v=>pad*0.5+ih-((v-min)/span)*ih;
+  const pts=arr.map((v,i)=>`${X(i)},${Y(v)}`);
+  const line=`M ${pts.join(" L ")}`, area=`M ${X(0)},${Y(min)} L ${pts.join(" L ")} L ${X(arr.length-1)},${Y(min)} Z`;
+  const ty=Y(arr[arr.length-1]); const months=["Oct","Nov","Dec","Jan","Feb","Mar","Apr"];
+  let grid=""; for(let g=0;g<=3;g++){const gy=pad*0.5+(ih/3)*g; grid+=`<line x1="${pad}" y1="${gy}" x2="${w-pad}" y2="${gy}" stroke="#EDEBF5" stroke-width="1"/>`;}
+  const dots=arr.map((v,i)=>`<circle cx="${X(i)}" cy="${Y(v)}" r="${i===arr.length-1?5:3.5}" fill="${i===arr.length-1?'var(--pb-chart-dot)':'var(--pb-chart-line)'}" stroke="#fff" stroke-width="2"/>`).join("");
+  const labels=arr.map((v,i)=>`<text x="${X(i)}" y="${h-6}" text-anchor="middle" font-size="11" fill="#9B97AE" font-weight="600">${months[i]}</text>`).join("");
+  return `<div class="b-chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="bgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--pb-chart-line)" stop-opacity="0.22"/><stop offset="100%" stop-color="var(--pb-chart-line)" stop-opacity="0"/></linearGradient></defs>
+    ${grid}
+    <line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="var(--pb-chart-dot)" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="${w-pad}" y="${ty-7}" text-anchor="end" font-size="10.5" fill="#0F8A63" font-weight="700">target ₫520M</text>
+    <path d="${area}" fill="url(#bgrad)"/><path d="${line}" fill="none" stroke="var(--pb-chart-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}${labels}</svg></div>`;
+}
+
+/* ============================================================
+   B — interactive controller
+   ============================================================ */
+const B = {
+  selId:null,
+  _syncSeg(id,val){ const el=$(id); if(!el) return; el.querySelectorAll("button").forEach(b=>b.classList.toggle("active", b.dataset.v===val)); },
+
+  /* ---------- RUN cockpit (split view) ---------- */
+  runMount(){ const f=PB.payslips.find(p=>p.flag); B.selId=f?f.id:PB.payslips[0].id; B.renderList(); B.renderDetail(); B.refreshKpis(); },
+  selectSlip(id){ B.selId=id; B.renderList(); B.renderDetail(); },
+  renderList(){
+    const el=$("slip-list"); if(!el) return;
+    el.innerHTML=PB.payslips.map(p=>{
+      const pct=Math.round(p.net/p.gross*100);
+      return `<div class="slip-card ${p.id===B.selId?'sel':''}" onclick="B.selectSlip(${p.id})">
+        <div class="top">${PB.avatar(p.emp,p.color,'sm')}
+          <div style="min-width:0"><div class="nm">${p.emp}</div><div class="meta">${p.title} · ${p.dept}</div></div>
+          <div class="net"><div class="cap">Net</div><div class="amt">${PB.fmtVND(p.net)}</div></div></div>
+        <div class="pbar"><div class="pl"><span>Net / gross</span><span class="mono">${pct}%</span></div><div class="prog green"><span style="width:${pct}%"></span></div></div>
+        <div class="foot">${PB.badge(p.state)}${p.flag?`<span class="flag-chip">${PB.icon('alert',14)} ${p.flag.length>20?'Exception':p.flag}</span>`:''}</div>
+      </div>`;}).join("");
+  },
+  renderDetail(){
+    const el=$("slip-detail"); if(!el) return;
+    const p=PB.payslips.find(x=>x.id===B.selId), ln=slipLines(p), isDone=p.state==="done";
+    el.innerHTML=`
+      <div class="detail-hero"><div class="av" style="background:${p.color}">${PB.initials(p.emp)}</div>
+        <div style="min-width:0"><div class="h-title">${p.emp}</div><div class="h-sub">${p.title} · ${p.dept} · ${PB.run.period}</div></div>
+        <div class="h-net"><div class="cap">Net pay</div><div class="amt">${PB.fmtFull(p.net)}</div></div></div>
+      <div style="padding:18px 22px">
+        ${p.flag?`<div class="card-pad" style="border:1px solid var(--pb-warn);background:var(--pb-warn-tint);border-radius:var(--r-md);margin-bottom:16px;padding:12px 16px"><strong style="color:#B7791F">${PB.icon('alert',14)} Needs attention:</strong> ${p.flag}</div>`:''}
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:6px">Salary breakdown</div>
+        <div class="bk-row"><span>Lương cơ bản (Basic salary)</span><span class="amt">${ln.basic.toLocaleString('en-US')}</span></div>
+        <div class="bk-row"><span>Phụ cấp (Allowances)</span><span class="amt">${ln.allow.toLocaleString('en-US')}</span></div>
+        <div class="bk-row"><span>Lương tăng ca (Overtime)</span><span class="amt">${ln.ot.toLocaleString('en-US')}</span></div>
+        <div class="bk-row"><span>Thưởng HQCV (Performance bonus)</span><span class="amt">${ln.bonus.toLocaleString('en-US')}</span></div>
+        <div class="bk-row sub"><span>Tổng thu nhập (Gross)</span><span class="amt">${p.gross.toLocaleString('en-US')}</span></div>
+        <div class="bk-row"><span>− BHXH-BHYT-BHTN (Social insurance)</span><span class="amt" style="color:var(--pb-danger)">−${p.si.toLocaleString('en-US')}</span></div>
+        <div class="bk-row"><span>− Thuế TNCN (Income tax)</span><span class="amt" style="color:var(--pb-danger)">−${p.pit.toLocaleString('en-US')}</span></div>
+        <div class="bk-row net"><span>Thực nhận (Net pay)</span><span class="amt" style="color:var(--pb-accent-600)">${p.net.toLocaleString('en-US')}</span></div>
+        <div class="mt-5">${statusbar(p.state)}</div>
+        <div class="b-actions mt-5"><button class="btn btn-ghost btn-sm">${PB.icon('printer',14)} Print</button><button class="btn btn-soft btn-sm">${PB.icon('refresh',14)} Recompute</button>
+          <div style="flex:1"></div>
+          ${isDone?`<button class="btn btn-accent" disabled style="opacity:.7;cursor:default">✓ Approved</button>`:`<button class="btn btn-primary" onclick="B.advance(${p.id})">${NEXT_LABEL[p.state]}</button>`}</div>
+      </div>`;
+  },
+  advance(id){ const i=PB.payslips.findIndex(x=>x.id===id); if(i<0)return;
+    PB.payslips[i].state=NEXT_STATE[PB.payslips[i].state]; if(PB.payslips[i].state==="done")PB.payslips[i].flag=undefined;
+    B.renderList(); B.renderDetail(); B.refreshKpis(); },
+  approveAllClean(){ PB.payslips.forEach(p=>{ if(!p.flag)p.state="done"; }); B.renderList(); B.renderDetail(); B.refreshKpis(); },
+  refreshKpis(){ const done=PB.payslips.filter(p=>p.state==="done").length;
+    const el=$("run-progress-note"); if(el) el.textContent=`${done} / ${PB.payslips.length} payslips approved`;
+    const rg=$("run-ring"); if(rg) rg.innerHTML=PB.ring(Math.round(done/PB.payslips.length*100),52); },
+
+  /* ---------- RUN PAYROLL wizard ---------- */
+  wiz:{step:1},
+  runWizard(){ B.wiz={step:1}; B.renderWiz(); $("b-wiz-scrim").classList.add("open"); },
+  wizClose(){ $("b-wiz-scrim").classList.remove("open"); },
+  wizGo(n){ B.wiz.step=n; B.renderWiz(); },
+  renderWiz(){
+    const s=B.wiz.step,r=PB.run, steps=["Select period","Compute","Review exceptions","Approve"];
+    const stepper=`<div class="rail b-wiz-rail">`+steps.map((t,i)=>{const n=i+1,cls=n<s?"done":(n===s?"cur":"");
+      return `<div class="step ${cls}" onclick="B.wizGo(${n})" style="cursor:pointer"><div class="dot">${n<s?"✓":n}</div><div class="lab">${t}</div></div>`+(i<steps.length-1?`<div class="bar"></div>`:``);}).join("")+`</div>`;
+    let body="",foot="";
+    if(s===1){
+      body=`<div class="grid-2">
+        <div class="sec-card"><h4>Period</h4><div class="b-cfg-rows">
+          <div class="b-cfg-row"><span class="k">Batch name</span><span class="v">${r.name}</span></div>
+          <div class="b-cfg-row"><span class="k">Period</span><span class="v">${r.period}</span></div>
+          <div class="b-cfg-row"><span class="k">Structure</span><span class="v">${r.structure}</span></div>
+          <div class="b-cfg-row"><span class="k">Cycle</span><span class="v">End-Cycle (VEC)</span></div></div></div>
+        <div class="sec-card"><h4>Scope</h4><div class="b-cfg-rows">
+          <div class="b-cfg-row"><span class="k">Company</span><span class="v">${r.company}</span></div>
+          <div class="b-cfg-row"><span class="k">Headcount</span><span class="v">${r.headcount} employees</span></div>
+          <div class="b-cfg-row"><span class="k">Data source</span><span class="v">Excel connector <span class="field-auto">ready</span></span></div>
+          <div class="b-cfg-row"><span class="k">Currency</span><span class="v">VND</span></div></div></div></div>`;
+      foot=`<button class="btn btn-ghost" onclick="B.wizClose()">Cancel</button><button class="btn btn-primary" onclick="B.wizGo(2)">Continue →</button>`;
+    } else if(s===2){
+      body=`<div style="text-align:center;padding:10px 0 4px">${PB.ring(96,120,"96%")}
+        <h3 style="margin-top:14px">Computing 7 payslips…</h3>
+        <p class="muted">Applying 86 rules · 32 formulas across Vietnam Standard Payroll.</p></div>
+        ${[["Loading employee inputs (7)"],["Applying 86 formula rules"],["Calculating BHXH / BHYT / BHTN"],["Calculating PIT (TNCN)"],["Building 7 payslips"]].map(x=>`<div class="bk-row"><span>✓ ${x[0]}</span><span class="badge b-done">done</span></div>`).join("")}
+        <div class="mt-4 muted" style="font-size:12.5px">Computed in 1.8s · 7/7 built · <strong style="color:#B7791F">${r.exceptions} need review</strong></div>`;
+      foot=`<button class="btn btn-ghost" onclick="B.wizGo(1)">← Back</button><button class="btn btn-primary" onclick="B.wizGo(3)">Review exceptions →</button>`;
+    } else if(s===3){
+      const fl=PB.payslips.filter(p=>p.flag);
+      body=`<div class="muted mb-3" style="font-size:13px">${fl.length} payslip${fl.length===1?"":"s"} need a look before approval. Resolve now, or flag for the approver.</div>
+        <div style="display:flex;flex-direction:column;gap:10px">${fl.map(p=>`<div class="slip-card" style="cursor:default">
+          <div class="top">${PB.avatar(p.emp,p.color,"sm")}<div><div class="nm">${p.emp}</div><div class="meta">${p.title} · ${p.dept}</div></div>
+          <div class="net"><div class="cap">Net</div><div class="amt">${PB.fmtVND(p.net)}</div></div></div>
+          <div class="foot"><span class="flag-chip">${PB.icon('alert',14)} ${p.flag}</span><div style="flex:1"></div><button class="btn btn-ghost btn-sm">Open</button><button class="btn btn-soft btn-sm">Acknowledge</button></div></div>`).join("")}</div>`;
+      foot=`<button class="btn btn-ghost" onclick="B.wizGo(2)">← Back</button><button class="btn btn-primary" onclick="B.wizGo(4)">Continue to approval →</button>`;
+    } else {
+      body=`<div style="text-align:center;padding:6px 0">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--pb-accent-tint);color:var(--pb-accent-600);display:grid;place-items:center;font-size:34px;margin:0 auto 14px;animation:fadeUp .4s var(--ease)">✓</div>
+        <h2 style="margin:0 0 6px">Run ready for approval</h2>
+        <div class="muted" style="font-size:13px">${r.name} · ${r.headcount} payslips · net ${PB.fmtVND(r.totalNet)}</div>
+        <div class="mini-kpis" style="margin-top:18px">
+          <div class="mini-kpi"><div class="l">Gross</div><div class="v">${PB.fmtVND(r.totalGross)}</div></div>
+          <div class="mini-kpi"><div class="l">Net</div><div class="v" style="color:var(--pb-accent-600)">${PB.fmtVND(r.totalNet)}</div></div>
+          <div class="mini-kpi"><div class="l">Insurance</div><div class="v">${PB.fmtVND(r.totalSI)}</div></div>
+          <div class="mini-kpi"><div class="l">Tax</div><div class="v">${PB.fmtVND(r.totalPIT)}</div></div></div></div>`;
+      foot=`<button class="btn btn-ghost" onclick="B.wizClose()">Close</button><button class="btn btn-accent" onclick="B.wizClose(); PB.go('run')">Open run cockpit →</button>`;
+    }
+    $("b-wiz-body").innerHTML=stepper+body; $("b-wiz-foot").innerHTML=foot;
+  },
+
+  /* ---------- FORMULA (bespoke score-ring cards) ---------- */
+  expandedCfg:null,
+  toggleCfg(code){ B.expandedCfg=B.expandedCfg===code?null:code; WF.formula.repaint(); },
+  importDrawer(){
+    PB.openDrawer(`<div><strong>Import payroll data</strong><div class="muted" style="font-size:12px">Excel connector → ${PB.run.name}</div></div>`,`
+      <div class="rail mb-4"><div class="step done"><div class="dot">✓</div><div class="lab">Upload</div></div><div class="bar"></div>
+        <div class="step cur"><div class="dot">2</div><div class="lab">Map</div></div><div class="bar"></div>
+        <div class="step"><div class="dot">3</div><div class="lab">Validate</div></div></div>
+      <div class="card card-pad mb-3" style="border:2px dashed var(--pb-border);text-align:center"><div style="font-size:30px">${PB.icon('file-text',15)}</div>
+        <div style="font-weight:600">April_2026_VPTQ.xlsx</div><div class="muted" style="font-size:12px">7 rows · color-coded import ✓</div></div>
+      <div class="sec-card mb-3"><h4>Column mapping</h4><div class="b-cfg-rows">
+        <div class="b-cfg-row"><span class="k">Column G</span><span class="v">→ MCLNGHL <span class="field-auto">matched</span></span></div>
+        <div class="b-cfg-row"><span class="k">Column H</span><span class="v">→ PHCPPCCC <span class="field-auto">matched</span></span></div>
+        <div class="b-cfg-row"><span class="k">Column Y</span><span class="v">→ LNGNGYTH <span class="field-auto">matched</span></span></div></div></div>
+      <button class="btn btn-primary btn-lg" style="width:100%" onclick="PB.closeDrawer()">Validate &amp; import 7 rows →</button>`);
+  },
+
+  /* ---------- ANALYTICS (Business Impact Dashboard) ---------- */
+  anaRange:"MTD",
+  setAnaRange(r){ B.anaRange=r; B._syncSeg("b-ana-range",r); },
+};
+
+/* ============================================================
+   Workflow panels
+   ============================================================ */
+const WF = {
+  /* ---------- HOME — command centre + cockpit cards ---------- */
+  home: { alwaysRender:true, render(){
+    const r=PB.run;
+    return `
+    <div class="b-hero">
+      <div class="b-hero-row">
+        <div><div class="eyebrow">Payobook · April 2026 cycle</div><h1>Good afternoon, Mai</h1>
+          <div class="sub">Your April run is computed and waiting for approval. ${r.exceptions} payslips flagged for review.</div></div>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <button class="b-glass" onclick="B.runWizard()">${PB.icon('zap',15)} Run Payroll</button>
+          <button class="b-glass" onclick="PB.go('run')">${PB.icon('receipt',15)} Open run cockpit</button>
+          <button class="b-glass" onclick="PB.go('analytics')">${PB.icon('trending-up',16)} Analytics</button></div>
+      </div>
+    </div>
+
+    <div class="b-cockpit-grid mb-6">
+      <div class="b-cockpit">
+        <div class="cc-head"><div><div class="cc-title">April 2026 Run</div><div class="cc-meta">Vietnam Standard Payroll · Apr 1 – Apr 30</div></div>${PB.ring(96,66)}</div>
+        <div class="b-pills"><span class="b-pill ok"><span class="d"></span>7/7 COMPUTED</span><span class="b-pill warn"><span class="d"></span>${r.exceptions} NEED REVIEW</span><span class="b-pill info"><span class="d"></span>GM PENDING</span></div>
+        <div class="b-mini"><div><div class="mv mono">${PB.fmtVND(r.totalNet)}</div><div class="ml">Net total</div></div>
+          <div><div class="mv mono">${PB.fmtVND(r.totalGross)}</div><div class="ml">Gross</div></div>
+          <div><div class="mv">${r.exceptions}</div><div class="ml">Exceptions</div></div></div>
+        <div class="mt-4"><button class="b-link" onclick="PB.go('run')">Open run cockpit →</button></div>
+      </div>
+      <div class="b-cockpit">
+        <div class="cc-head"><div><div class="cc-title">Company overview</div><div class="cc-meta">Payobook · all departments · monthly</div></div>${PB.ring(72,66)}</div>
+        <div class="b-pills"><span class="b-pill muted"><span class="d"></span>${PB.analytics.headcount} HEADCOUNT</span><span class="b-pill warn"><span class="d"></span>3 APPROVALS</span><span class="b-pill ok"><span class="d"></span>100% COVERAGE</span></div>
+        <div class="b-mini"><div><div class="mv mono">${PB.fmtVND(PB.analytics.payroll)}</div><div class="ml">Monthly payroll</div></div>
+          <div><div class="mv mono">${PB.fmtVND(PB.analytics.avgNet)}</div><div class="ml">Avg net</div></div>
+          <div><div class="mv">↗ ${PB.analytics.payrollTrendPct}%</div><div class="ml">Trend</div></div></div>
+        <div class="mt-4"><button class="b-link" onclick="PB.go('analytics')">Open analytics →</button></div>
+      </div>
+      <div class="b-cockpit">
+        <div class="cc-head"><div><div class="cc-title">Formula engine</div><div class="cc-meta">Excel-driven · VEC + VMC configs</div></div>${PB.ring(90,66)}</div>
+        <div class="b-pills"><span class="b-pill info"><span class="d"></span>2 CONFIGS ACTIVE</span><span class="b-pill warn"><span class="d"></span>PENDING VALIDATION</span></div>
+        <div class="b-mini"><div><div class="mv">171</div><div class="ml">Rules</div></div><div><div class="mv">62</div><div class="ml">Formulas</div></div><div><div class="mv">9</div><div class="ml">Tests</div></div></div>
+        <div class="mt-4"><button class="b-link" onclick="PB.go('formula')">Open formula engine →</button></div>
+      </div>
+    </div>
+
+    <div class="card cockpit-prev">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><div class="card-title" style="font-size:16px">${PB.icon('calendar',16)} Current payroll run · ${r.name}</div><div class="card-sub">${r.structure} · ${r.period}</div></div>
+        <div class="row" style="gap:10px">${PB.badge(r.state)}<button class="btn btn-primary" onclick="B.runWizard()">${PB.icon('zap',15)} Run Payroll</button></div>
+      </div>
+      <div class="mt-5 mb-4">${runRail()}</div>
+      <div class="mini-kpis">
+        <div class="mini-kpi"><div class="l">Total gross</div><div class="v">${PB.fmtVND(r.totalGross)}</div></div>
+        <div class="mini-kpi"><div class="l">Total net</div><div class="v" style="color:var(--pb-accent-600)">${PB.fmtVND(r.totalNet)}</div></div>
+        <div class="mini-kpi"><div class="l">Insurance (SI)</div><div class="v">${PB.fmtVND(r.totalSI)}</div></div>
+        <div class="mini-kpi"><div class="l">Tax (PIT)</div><div class="v">${PB.fmtVND(r.totalPIT)}</div></div>
+      </div>
+      <div class="mt-5" style="display:flex;justify-content:flex-end"><button class="btn btn-primary btn-lg" onclick="PB.go('run')">Review &amp; approve →</button></div>
+    </div>`;
+  }},
+
+  /* ---------- RUN — split-view command centre ---------- */
+  run: { alwaysRender:true, render(){
+    const r=PB.run;
+    return `
+    <div class="page-head">
+      <div class="row" style="gap:14px"><div id="run-ring">${PB.ring(70,52)}</div>
+        <div><h1>Payroll Run command center</h1><div class="desc">${r.name} · ${r.period} · ${r.structure}</div></div></div>
+      <div class="b-actions">${PB.badge(r.state)}
+        <button class="btn btn-primary" onclick="B.runWizard()">${PB.icon('zap',15)} Run Payroll</button>
+        <button class="btn btn-accent" onclick="B.approveAllClean()">✓ Approve all clean</button></div>
+    </div>
+    <div class="card card-pad mb-4"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:14px">${runRail()}<div class="muted" id="run-progress-note" style="font-size:12.5px;font-weight:600"></div></div></div>
+    <div class="kpi-grid mb-4">
+      <div class="kpi"><div class="lbl">Total gross<span class="ico">${PB.icon('banknote',16)}</span></div><div class="val">${PB.fmtVND(r.totalGross)}</div><div class="sub">${r.headcount} payslips</div></div>
+      <div class="kpi k-green"><div class="lbl">Total net<span class="ico">${PB.icon('wallet',16)}</span></div><div class="val">${PB.fmtVND(r.totalNet)}</div><div class="sub">take-home</div></div>
+      <div class="kpi k-blue"><div class="lbl">Insurance (SI)<span class="ico">${PB.icon('shield',16)}</span></div><div class="val">${PB.fmtVND(r.totalSI)}</div><div class="sub">BHXH+BHYT+BHTN</div></div>
+      <div class="kpi k-amber"><div class="lbl">Tax (PIT)<span class="ico">${PB.icon('bar-chart',16)}</span></div><div class="val">${PB.fmtVND(r.totalPIT)}</div><div class="sub">TNCN withheld</div></div>
+      <div class="kpi k-blue"><div class="lbl">Headcount<span class="ico">${PB.icon('users',16)}</span></div><div class="val">${r.headcount}</div><div class="sub">${r.computed} computed</div></div>
+    </div>
+    <div class="cockpit-split">
+      <div><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:10px">Payslips · click to review</div>
+        <div class="slip-list" id="slip-list"></div></div>
+      <div class="detail-pane" id="slip-detail"></div>
+    </div>`;
+  }, mounted(){ B.runMount(); } },
+
+  /* ---------- FORMULA — bespoke score-ring cards ---------- */
+  formula: { alwaysRender:true, render(){
+    return `
+    <div class="page-head"><div><h1>Formula Configurations</h1><div class="desc">Excel-driven payroll formula engine</div></div>
+      <div class="b-actions"><button class="btn btn-ghost" onclick="B.importDrawer()">${PB.icon('upload',15)} Import data</button><button class="btn btn-primary">${PB.icon('plus',14)} New config</button></div></div>
+    <div id="b-formula-body"></div>`;
+  }, mounted(){ WF.formula.repaint(); },
+  repaint(){
+    const body=$("b-formula-body"); if(!body) return; const health={VEC:92,VMC:88};
+    body.innerHTML=`<div class="b-score-grid">${PB.formulaConfigs.map(c=>{
+      const open=B.expandedCfg===c.code;
+      return `<div class="b-score-card" style="${open?'grid-column:1/-1':''}">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <div class="row" style="gap:12px;align-items:flex-start"><span style="font-size:24px">${PB.icon('calculator',16)}</span>
+            <div><div style="font-weight:800;font-size:15px">${c.name} <span class="mono" style="color:var(--pb-brand);font-weight:700">${c.code}</span></div>
+              <div class="muted" style="font-size:12px;margin-top:2px">${c.cycle} · ${c.country} · ${c.structure}</div>
+              <div class="b-statpills"><div class="b-statpill"><div class="n">${c.rules}</div><div class="l">Rules</div></div>
+                <div class="b-statpill"><div class="n">${c.formulas}</div><div class="l">Formulas</div></div>
+                <div class="b-statpill"><div class="n">${c.tests}</div><div class="l">Tests</div></div></div></div></div>
+          <div style="text-align:center">${PB.ring(health[c.code]||90,60)}<div class="muted" style="font-size:10px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Health</div></div></div>
+        <div class="b-pills">${PB.badge(c.state)}<span class="b-pill warn"><span class="d"></span>${c.validation}</span></div>
+        <div class="mt-4"><button class="b-link" onclick="B.toggleCfg('${c.code}')">${open?'Close config ▲':'Open config →'}</button></div>
+        ${open?WF.formula._detail(c):''}</div>`;
+    }).join("")}</div>`;
+  },
+  _detail(c){
+    return `<div class="mt-5" style="border-top:1px solid var(--pb-border);padding-top:18px">
+      <div class="grid-2 mb-4">
+        <div class="sec-card"><h4>Configuration</h4><div class="b-cfg-rows">
+          <div class="b-cfg-row"><span class="k">Reference code</span><span class="v mono">${c.code}</span></div>
+          <div class="b-cfg-row"><span class="k">Country</span><span class="v">${c.country}</span></div>
+          <div class="b-cfg-row"><span class="k">Structure</span><span class="v">${c.structure}</span></div>
+          <div class="b-cfg-row"><span class="k">Cycle type</span><span class="v">${c.cycle}</span></div>
+          <div class="b-cfg-row"><span class="k">Currency</span><span class="v">${c.currency}</span></div></div></div>
+        <div class="sec-card"><h4>Status</h4><div class="b-cfg-rows">
+          <div class="b-cfg-row"><span class="k">Validation</span><span class="v">${c.validation}</span></div>
+          <div class="b-cfg-row"><span class="k">Last validated</span><span class="v">Feb 21, 6:14 PM</span></div>
+          <div class="b-cfg-row"><span class="k">Validated by</span><span class="v">Mitchell Admin</span></div>
+          <div class="b-cfg-row"><span class="k">Data source</span><span class="v">Excel connector <span class="field-auto">auto</span></span></div></div></div></div>
+      <h4 style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:12px">Formula rules (${c.rules})</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">${PB.formulaRules.map(r=>`<div class="b-rule-row">
+        <span class="col">${r.col}</span><span class="cn">${r.name}</span><span class="mono muted" style="font-size:12px">${r.code}</span>
+        ${r.type==='calc'?'<span class="badge b-violet">Calculated</span>':'<span class="badge b-info">Input</span>'}</div>`).join("")}</div></div>`;
+  }},
+
+  /* ---------- ANALYTICS — Business Impact Dashboard ---------- */
+  analytics: { alwaysRender:true, render(){
+    const a=PB.analytics;
+    return `
+    <div class="b-hero b-hero-blue mb-5">
+      <div class="b-hero-row">
+        <div><div class="eyebrow">${PB.icon('bar-chart',16)} Payobook · April 2026</div><h1>Business Impact Dashboard</h1>
+          <div class="sub">Vietnam region · Ho Chi Minh · monthly payroll performance</div></div>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <div class="b-seg-dark" id="b-ana-range">
+            <button data-v="Today" onclick="B.setAnaRange('Today')">Today</button>
+            <button data-v="WTD" onclick="B.setAnaRange('WTD')">WTD</button>
+            <button class="active" data-v="MTD" onclick="B.setAnaRange('MTD')">MTD</button>
+            <button data-v="QTD" onclick="B.setAnaRange('QTD')">QTD</button></div>
+          <button class="b-hero-btn">${PB.icon('sparkles',15)} AI Insights</button><button class="b-hero-btn">${PB.icon('refresh',14)}</button></div>
+      </div>
+    </div>
+    <div class="kpi-grid mb-5">
+      <div class="kpi"><div class="lbl">Monthly payroll<span class="ico">${PB.icon('wallet',16)}</span></div><div class="val mono">${PB.fmtVND(a.payroll)}</div><div class="sub"><span class="up">↗ ${a.payrollTrendPct}%</span> vs prev month</div></div>
+      <div class="kpi k-blue"><div class="lbl">Headcount<span class="ico">${PB.icon('users',16)}</span></div><div class="val">${a.headcount}</div><div class="sub">across 6 departments</div></div>
+      <div class="kpi k-amber"><div class="lbl">Avg net<span class="ico">${PB.icon('calculator',16)}</span></div><div class="val mono">${PB.fmtVND(a.avgNet)}</div><div class="sub">${a.conversionNote}</div></div>
+      <div class="kpi k-red"><div class="lbl">Contributions<span class="ico">${PB.icon('shield',16)}</span></div><div class="val mono">${PB.fmtVND(a.contributions)}</div><div class="sub">statutory SI+HI+UI</div></div>
+      <div class="kpi k-green"><div class="lbl">Coverage<span class="ico">${PB.icon('clipboard-check',16)}</span></div><div class="val">100%</div><div class="sub">7/7 payslips reported</div></div>
+    </div>
+    <div class="grid-2 mb-5">
+      <div class="card card-pad">
+        <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('search',16)} Root Cause Analysis</div><button class="btn btn-soft btn-sm">${PB.icon('file-text',15)} Full AI Report</button></div>
+        <div class="card-sub mb-3">Payroll up <strong>${PB.fmtVND(54200000)}</strong> month-over-month (+4.2% growth).</div>
+        <div class="b-ai-tag mb-3">${PB.icon('sparkles',15)} Commission spike — Sales</div>
+        <div class="row" style="gap:16px;align-items:baseline"><span class="b-bignum up mono">+₫25.3M</span><span class="muted" style="font-size:12.5px">from 18% higher commission per Sales head</span></div>
+        <div class="mt-4" style="display:flex;gap:8px;flex-wrap:wrap"><span class="b-ai-tag" style="background:var(--pb-surface-2);color:var(--pb-ink-2);border-color:var(--pb-border)">Overtime ↑ 7%</span><span class="b-ai-tag" style="background:var(--pb-surface-2);color:var(--pb-ink-2);border-color:var(--pb-border)">HQCV bonus stable</span></div>
+      </div>
+      <div class="card card-pad">
+        <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('trending-up',16)} Cost trend</div><span class="badge b-done">on target · 100%</span></div>
+        <div class="card-sub mb-3">Last 7 months · net payroll (₫M) vs target line</div>${bigLineChart(a.trend)}
+      </div>
+    </div>
+    <div class="card card-pad mb-5">
+      <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('building',16)} Department performance</div><span class="muted" style="font-size:12px">6 departments · April</span></div>
+      <div class="mt-3">${a.departments.map(d=>{const max=Math.max(...a.departments.map(x=>x.cost)),pct=Math.round(d.cost/max*100);
+        return `<div class="b-dept-row"><span class="dn">${d.name}</span><span class="db"><div class="prog"><span style="width:${pct}%"></span></div></span><span class="dc mono">${PB.fmtVND(d.cost)}</span><button class="btn btn-ghost btn-sm">Details</button></div>`;}).join("")}</div>
+    </div>
+    <div class="mb-5"><div class="card-title mb-3">${PB.icon('clipboard-check',16)} Approval Queue</div>
+      <div class="b-score-grid">${a.approvals.map(ap=>`<div class="b-score-card">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <div style="flex:1"><div style="font-weight:800;font-size:14px;line-height:1.3">${ap.name}</div>
+            <div class="muted" style="font-size:12px;margin-top:3px">${ap.headcount} payslips · <span class="mono">${PB.fmtVND(ap.amount)}</span></div></div>${PB.ring(ap.score,54)}</div>
+        <div class="b-pills"><span class="badge b-level2">${ap.stage}</span></div>
+        <div class="mt-4"><button class="btn btn-primary btn-sm" style="width:100%">Approve</button></div></div>`).join("")}</div>
+    </div>
+    <div class="b-summary mb-3"><div class="card-title mb-3">${PB.icon('brain',16)} Executive Summary</div>
+      <p style="margin:0;color:var(--pb-ink-2);font-size:13.5px;line-height:1.6">April 2026 payroll totals <strong>${PB.fmtVND(a.payroll)}</strong> across <strong>${a.headcount} employees</strong>, up <strong>${a.payrollTrendPct}%</strong> month-over-month — driven primarily by a commission spike in Sales (<strong>+₫25.3M</strong>). Statutory contributions of <strong>${PB.fmtVND(a.contributions)}</strong> remain within expected bands and coverage is complete at <strong>100%</strong>. Three runs await approval; the Vietnam run scores <strong>96</strong> on readiness and is ready for GM sign-off.</p></div>
+    <div class="b-askbar"><span class="orb">${PB.icon('sparkles',15)}</span><input class="ip" placeholder="Ask AI about performance… e.g. why did Sales payroll rise?"/><button class="btn btn-primary btn-sm">Ask</button></div>`;
+  }},
+};
+
+PB.mountShell({ tag:"OPTION B", name:"Hybrid · Smashing", bodyClass:"opt-b", role:"officer", start:"home", workflows: WF });
+
+/* Run Payroll wizard overlay (injected once) */
+document.body.insertAdjacentHTML("beforeend", `
+  <div class="b-wiz-scrim" id="b-wiz-scrim">
+    <div class="b-wiz">
+      <div class="b-wiz-head"><div><strong>Run Payroll · ${PB.run.name}</strong>
+        <div class="muted" style="font-size:12px">${PB.run.structure} · ${PB.run.company}</div></div>
+        <button class="x" onclick="B.wizClose()">✕</button></div>
+      <div class="b-wiz-body" id="b-wiz-body"></div>
+      <div class="b-wiz-foot" id="b-wiz-foot"></div>
+    </div>
+  </div>`);
+
+/* Floating PayAI assistant (global) */
+document.body.insertAdjacentHTML("beforeend", `
+  <div class="b-ai-fab" onclick="PB.openDrawer('<strong>PayAI Assistant</strong>','<p class=&quot;muted&quot;>Ask me anything about this run, exceptions, or analytics — e.g. <em>“why is Võ Thị Tú Trinh flagged?”</em> (Decorative in this prototype.)</p>')">
+    <div class="orb">${PB.icon('sparkles',15)}</div><div><div class="nm">PayAI</div><div class="st"><span class="d"></span>Online</div></div>
+  </div>`);
+</script>
+</body>
+</html>

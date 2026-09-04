@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_today.PbToday">
+    <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
+         surface, not the viewport (it must not cover the rail or breadcrumb). -->
+    <div class="pbim pbtd" t-att-class="{ 'pbtd--embedded': props.embedded }">
+
+      <!-- ================= header: title + shared context bar ============= -->
+      <div class="pbtd-head">
+        <!-- W17: `embedded` suppresses ONLY the chrome Mission Control already
+             owns — this title row and its context bar. The meta row, the tile
+             strip and every door below are untouched. -->
+        <div class="pbtd-row" t-if="!props.embedded">
+          <h1 class="pbtd-title">Today</h1>
+          <!-- §2.3: Today is the `day` segment's first and only consumer. No
+               week nav and no person typeahead — a day board does not page
+               weeks, and the person pin is what the drawer already is. -->
+          <WfContextBar className="'pbtd-ctx'"
+                        features="{ department: true, week: false, person: false,
+                                    day: true, search: true }"/>
+        </div>
+
+        <div class="pbtd-meta">
+          <span class="pbtd-count">
+            <t t-out="ic('users', 13)"/>
+            <b t-esc="total"/><span> on the board</span>
+          </span>
+          <span class="pbtd-sep">·</span>
+          <span class="pbtd-upd" t-if="updatedAt">
+            Updated <t t-esc="updatedAt"/>
+          </span>
+          <button class="pbtd-icbtn" t-on-click="() => this.refresh()"
+                  title="Refresh now" aria-label="Refresh now">
+            <span t-out="ic('refresh', 14)"/>
+          </button>
+
+          <span class="pbtd-spacer"/>
+
+          <!-- board / map switch: the map card's "Open map →" lands here -->
+          <div class="pbtd-seg" role="tablist">
+            <button class="pbtd-seg__b" role="tab"
+                    t-att-class="{ 'is-on': state.view === 'board' }"
+                    t-att-aria-selected="state.view === 'board' ? 'true' : 'false'"
+                    t-on-click="() => this.setView('board')">
+              <span t-out="ic('list', 13)"/><span>Board</span>
+            </button>
+            <button class="pbtd-seg__b" role="tab"
+                    t-att-class="{ 'is-on': state.view === 'map' }"
+                    t-att-aria-selected="state.view === 'map' ? 'true' : 'false'"
+                    t-on-click="() => this.setView('map')">
+              <span t-out="ic('mapPin', 13)"/><span>Map</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================== tile strip (mockup B) ==================== -->
+        <div class="pbtd-tiles" t-if="state.view === 'board'">
+          <!-- ONE class attribute: t-att-class and t-attf-class both target
+               `class`, so an element carrying both is an element whose styling
+               depends on compiler order. -->
+          <button t-foreach="tiles" t-as="t" t-key="t.key"
+                  t-attf-class="pbtd-tile pbtd-tile--{{ t.tone }} {{ state.filter === t.key ? 'is-on' : '' }}"
+                  t-att-aria-pressed="state.filter === t.key ? 'true' : 'false'"
+                  t-on-click="() => this.setFilter(t.key)">
+            <span class="pbtd-tile__v" t-esc="t.n"/>
+            <span class="pbtd-tile__l"><i/><t t-esc="t.label"/></span>
+          </button>
+
+          <!-- P8 Team pulse. NOT a filter tile and not a button: an average
+               drills into nothing, and a door that opens onto an empty room is
+               worse than no door (W5/W29). Rendered only when the server
+               cleared the anonymity floor — below it the payload carries no
+               figures at all, so there is nothing here to leak. -->
+          <div class="pbtd-pulse" t-if="pulse" t-att-title="pulseTitle">
+            <span class="pbtd-pulse__f" t-out="ic(pulseFace, 20)"/>
+            <span class="pbtd-pulse__b">
+              <span class="v"><t t-esc="pulse.avg"/><small>/5</small></span>
+              <span class="l" t-esc="pulseLabel"/>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== body ============================= -->
+      <div class="pbtd-body" t-att-class="{ 'pbtd-body--fill': state.view === 'map' }">
+
+        <!-- ============================ board ============================ -->
+        <t t-if="state.view === 'board'">
+          <div class="pbtd-load" t-if="state.loading and !state.data">
+            <span t-out="ic('loader', 22)"/><span>Loading the day…</span>
+          </div>
+
+          <div class="pbtd-canvas" t-else="">
+
+            <!-- people list, filtered by the drilled tile -->
+            <div class="pbtd-list">
+              <div class="pbtd-list__h">
+                <span class="t" t-esc="listTitle"/>
+                <span class="n"><t t-esc="rows.length"/> people</span>
+                <button class="pbtd-clear" t-if="state.filter"
+                        t-on-click="() => this.clearFilter()">
+                  <span t-out="ic('x', 11)"/><span>Clear</span>
+                </button>
+                <span class="hint" t-else="">click a tile to re-filter</span>
+              </div>
+
+              <div class="pbtd-trunc" t-if="truncated">
+                <span t-out="ic('alert', 13)"/>
+                <span>Showing the first <t t-esc="rowCap"/> —
+                  <t t-esc="truncated"/> more match this day. Narrow by
+                  department or search to see them.</span>
+              </div>
+
+              <div class="pbtd-empty" t-if="emptyState">
+                <span t-out="ic(emptyState.icon, 28)"/>
+                <div class="t" t-esc="emptyState.title"/>
+                <div class="s" t-esc="emptyState.sub"/>
+              </div>
+
+              <div class="pbtd-rows" t-else="">
+                <div t-foreach="rows" t-as="r" t-key="r.id"
+                     class="pbtd-prow" t-att-class="{ 'is-late': r.is_late }">
+                  <!-- every avatar is a door to the person drawer (W5) -->
+                  <button class="pbtd-who" t-on-click="() => this.openPerson(r.id)"
+                          t-attf-title="Open {{ r.name }}'s week">
+                    <img class="pbtd-av" t-att-src="r.avatar_url" alt=""/>
+                    <span class="pbtd-who__txt">
+                      <span class="n" t-esc="r.name"/>
+                      <span class="s"><t t-esc="r.job"/><t t-if="r.job and r.dept"> · </t><t t-esc="r.dept"/></span>
+                    </span>
+                  </button>
+
+                  <span class="pbtd-story" t-esc="rowStory(r)"/>
+
+                  <span t-if="r.is_late" class="wfpw-pill wfpw-pill--rose pbtd-latepill">
+                    <t t-esc="r.minutes_late"/> min late
+                  </span>
+                  <span t-else="" t-attf-class="wfpw-pill wfpw-pill--{{ stateTone(r) }}"
+                        t-esc="stateLabel(r)"/>
+
+                  <!-- the second door: this person's exceptions, in the Time
+                       hub, already filtered to them (§2.4) -->
+                  <button class="pbtd-icbtn pbtd-rowact" t-if="r.can_correct"
+                          t-on-click="() => this.fileCorrection(r)"
+                          t-attf-title="File a correction for {{ r.name }} in Time">
+                    <span t-out="ic('fileText', 14)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- compact driver map card — the SAME DriverMap component, mounted
+                 embedded (W17). W20: the card gives it a definite height. -->
+            <div class="pbtd-mapcard">
+              <div class="pbtd-mapcard__h">
+                <span t-out="ic('mapPin', 13)"/>
+                <span class="t">Field</span>
+                <button class="pbtd-open" t-on-click="() => this.setView('map')">
+                  <span>Open map</span><span t-out="ic('arrow', 12)"/>
+                </button>
+              </div>
+              <div class="pbtd-mapcard__b">
+                <DriverMap t-key="'map-card'" embedded="true" initialView="'map'"/>
+              </div>
+            </div>
+          </div>
+        </t>
+
+        <!-- ======================= full map view ==========================
+             An explicit t-if, not a t-else: a comment between the branches is
+             enough to break the t-if/t-else pairing. -->
+        <div class="pbtd-lensbody pbtd-lensbody--map" t-if="state.view === 'map'">
+          <DriverMap t-key="'map-full'" embedded="true" initialView="'full'"/>
+        </div>
+      </div>
+
+      <!-- ======================= person drawer =========================== -->
+      <!-- Body is the kit's shared panel — the identical drawer the Time hub
+           opens, imported not forked (W6). -->
+      <WfDrawer t-if="drawerOpen" title="drawerTitle" subtitle="drawerSubtitle"
+                onClose="() => this.closePerson()">
+        <WfPersonWeek data="state.person"
+                      onFileCorrection="_h.onFileCorrection"
+                      onOpenProfile="_h.onOpenProfile"/>
+      </WfDrawer>
+    </div>
+  </t>
+
+</templates>

@@ -6,7 +6,7 @@ from odoo.tools import float_compare, float_is_zero
 
 
 class HrPayslipLine(models.Model):
-    _inherit = 'hr.payslip.line'
+    _inherit = ['hr.payslip.line']
 
     def _get_partner_id(self, credit_account):
         """
@@ -14,7 +14,15 @@ class HrPayslipLine(models.Model):
         """
         # use partner of salary rule or fallback on employee's address
         register_partner_id = self.salary_rule_id.register_id.partner_id
-        partner_id = register_partner_id.id or self.slip_id.employee_id.address_home_id.id
+        employee = self.slip_id.employee_id
+        # Odoo 19: address_home_id removed; fallback chain
+        employee_partner_id = (
+            getattr(employee, 'work_contact_id', False) and employee.work_contact_id.id
+            or getattr(employee, 'address_id', False) and employee.address_id.id
+            or getattr(employee, 'user_partner_id', False) and employee.user_partner_id.id
+            or False
+        )
+        partner_id = register_partner_id.id or employee_partner_id
         if credit_account:
             if register_partner_id or self.salary_rule_id.account_credit.account_type in ('asset_receivable', 'liability_payable'):
                 return partner_id
@@ -25,12 +33,12 @@ class HrPayslipLine(models.Model):
 
 
 class HrPayslip(models.Model):
-    _inherit = 'hr.payslip'
+    _inherit = ['hr.payslip']
 
-    date = fields.Date('Date Account', states={'draft': [('readonly', False)]}, readonly=True,
+    date = fields.Date('Date Account', readonly=True,
         help="Keep empty to use the period of the validation(Payslip) date.")
     journal_id = fields.Many2one('account.journal', 'Salary Journal', readonly=True, required=True,
-        states={'draft': [('readonly', False)]}, default=lambda self: self.env['account.journal'].search([('type', '=', 'general')], limit=1))
+        default=lambda self: self.env['account.journal'].search([('type', '=', 'general')], limit=1))
     move_id = fields.Many2one('account.move', 'Accounting Entry', readonly=True, copy=False)
 
     @api.model_create_multi
@@ -164,7 +172,7 @@ class HrContract(models.Model):
 
 
 class HrPayslipRun(models.Model):
-    _inherit = 'hr.payslip.run'
+    _inherit = ['hr.payslip.run']
 
-    journal_id = fields.Many2one('account.journal', 'Salary Journal', states={'draft': [('readonly', False)]}, readonly=True,
+    journal_id = fields.Many2one('account.journal', 'Salary Journal', readonly=True,
         required=True, default=lambda self: self.env['account.journal'].search([('type', '=', 'general')], limit=1))

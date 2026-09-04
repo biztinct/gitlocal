@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- Module Category for Access Rights section header -->
+    <record id="module_category_hr_development" model="ir.module.category">
+        <field name="name">Employee Development</field>
+        <field name="description">AI-driven employee development and performance coaching</field>
+        <field name="sequence">22</field>
+    </record>
+
+    <!-- HR Development Privilege (appears as a row in Access Rights tab) -->
+    <record id="res_groups_privilege_hr_development" model="res.groups.privilege">
+        <field name="name">Employee Development</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_hr_development"/>
+    </record>
+
+    <!-- BFSI Performance Coaching Privilege (separate row in Access Rights tab) -->
+    <record id="res_groups_privilege_bfsi_coaching" model="res.groups.privilege">
+        <field name="name">AI Performance Coaching</field>
+        <field name="sequence">20</field>
+        <field name="category_id" ref="module_category_hr_development"/>
+    </record>
+
+    <!-- BFSI users need to read partner/contact records (employees, managers) -->
+    <record id="bfsi_partner_access_rule" model="ir.rule">
+        <field name="name">BFSI: Read all partners</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_banker'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Banker: See only own Performance KPIs -->
+    <record id="bfsi_kpi_banker_rule" model="ir.rule">
+        <field name="name">BFSI: Banker sees own KPIs only</field>
+        <field name="model_id" ref="model_bfsi_performance_kpi"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_banker'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Banker: See only own Coaching Sessions -->
+    <record id="bfsi_coaching_session_banker_rule" model="ir.rule">
+        <field name="name">BFSI: Banker sees own coaching sessions only</field>
+        <field name="model_id" ref="model_hr_coaching_session"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_banker'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Banker: See only own Action Plans -->
+    <record id="bfsi_action_plan_banker_rule" model="ir.rule">
+        <field name="name">BFSI: Banker sees own action plans only</field>
+        <field name="model_id" ref="model_bfsi_action_plan"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_banker'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Manager: See team Performance KPIs (same branch) -->
+    <record id="bfsi_kpi_manager_rule" model="ir.rule">
+        <field name="name">BFSI: Manager sees team KPIs (same branch)</field>
+        <field name="model_id" ref="model_bfsi_performance_kpi"/>
+        <field name="domain_force">[('employee_id.branch_id.id', '=', user.employee_id.branch_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_branch_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Manager: See team Coaching Sessions (same branch) -->
+    <record id="bfsi_coaching_session_manager_rule" model="ir.rule">
+        <field name="name">BFSI: Manager sees team coaching sessions (same branch)</field>
+        <field name="model_id" ref="model_hr_coaching_session"/>
+        <field name="domain_force">[('employee_id.branch_id.id', '=', user.employee_id.branch_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_branch_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Manager: See team Action Plans (same branch) -->
+    <record id="bfsi_action_plan_manager_rule" model="ir.rule">
+        <field name="name">BFSI: Manager sees team action plans (same branch)</field>
+        <field name="model_id" ref="model_bfsi_action_plan"/>
+        <field name="domain_force">[('employee_id.branch_id.id', '=', user.employee_id.branch_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_bfsi_branch_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>

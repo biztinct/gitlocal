@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Payobook Learn — v2 Implementation Design (Pay Run first)</title>
+<style>
+/* Payobook Learn v2 design doc — tokens mirror pb_theme/primary_variables.scss.
+   Solid colours only, Lucide SVG only, self-contained (no external requests). */
+:root {
+  --pb-primary:#5A4BB0; --pb-primary-hover:#4A3D96; --pb-primary-dark:#241F52;
+  --pb-primary-light:#CBC2EE; --pb-primary-soft:#EDEAF8;
+  --pb-accent:#0891B2; --pb-accent-soft:#E0F4F9;
+  --pb-money:#0F8A63; --pb-money-soft:#E7F8F1;
+  --pb-warn:#B7791F; --pb-warn-soft:#FDF3E0;
+  --pb-danger:#C0332A; --pb-danger-soft:#FDECEC;
+  --pb-ink:#212121; --pb-ink-2:#424242; --pb-muted:#64748B;
+  --pb-border:#E2E8F0; --pb-canvas:#F4F5FB; --pb-card:#FFFFFF;
+  --pb-radius:14px;
+  --pb-shadow:0 1px 2px rgba(36,31,82,.06), 0 8px 24px rgba(36,31,82,.08);
+  --pb-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{font-family:var(--pb-font);color:var(--pb-ink);background:var(--pb-canvas);font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+a{color:var(--pb-primary);text-decoration-color:var(--pb-primary-light);text-underline-offset:3px}
+a:hover{color:var(--pb-primary-hover)}
+:focus-visible{outline:2px solid var(--pb-accent);outline-offset:3px;border-radius:4px}
+.ic{width:16px;height:16px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;flex:none;vertical-align:-3px}
+.ic.lg{width:20px;height:20px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px 96px;display:grid;grid-template-columns:238px 1fr;gap:40px;align-items:start}
+.mast{grid-column:1/-1;padding:40px 0 26px;border-bottom:1px solid var(--pb-border);margin-bottom:34px}
+.mast .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;color:var(--pb-primary-dark);margin-bottom:18px}
+.mast .brand .dot{width:30px;height:30px;border-radius:9px;background:var(--pb-primary);color:#fff;display:flex;align-items:center;justify-content:center}
+.mast .brand .thin{font-weight:600;color:var(--pb-primary)}
+.mast h1{font-size:34px;line-height:1.18;letter-spacing:-.022em;color:var(--pb-primary-dark);max-width:24ch}
+.mast .standfirst{margin-top:12px;font-size:16.5px;color:var(--pb-ink-2);max-width:66ch}
+.mast .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;background:var(--pb-primary-soft);color:var(--pb-primary)}
+.chip.green{background:var(--pb-money-soft);color:var(--pb-money)}
+.chip.amber{background:var(--pb-warn-soft);color:var(--pb-warn)}
+.chip.cyan{background:var(--pb-accent-soft);color:var(--pb-accent)}
+.chip.slate{background:#EEF2F7;color:var(--pb-muted)}
+.chip.solid{background:var(--pb-primary);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:10px;padding:9px 15px;font-weight:600;font-size:13.5px;border:1px solid transparent;text-decoration:none;transition:background .15s}
+.btn.primary{background:var(--pb-primary);color:#fff}
+.btn.primary:hover{background:var(--pb-primary-hover);color:#fff}
+.btn.outline{background:#fff;color:var(--pb-primary);border-color:var(--pb-primary-light)}
+.btn.outline:hover{background:var(--pb-primary-soft)}
+.toc{position:sticky;top:24px}
+.toc .toc-h{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pb-muted);padding:0 12px 8px}
+.toc a{display:flex;gap:10px;align-items:baseline;padding:6px 12px;border-radius:9px;font-size:13px;font-weight:500;color:var(--pb-ink-2);text-decoration:none}
+.toc a:hover{background:var(--pb-primary-soft);color:var(--pb-primary)}
+.toc a .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pb-primary);min-width:14px}
+.toc .toc-foot{margin-top:16px;padding:12px;border-top:1px solid var(--pb-border);display:flex;flex-direction:column;gap:8px}
+.doc{min-width:0}
+section{scroll-margin-top:24px;margin-bottom:46px}
+h2{font-size:23px;letter-spacing:-.015em;color:var(--pb-primary-dark);display:flex;align-items:center;gap:11px;margin-bottom:6px}
+h2 .h-ic{width:34px;height:34px;border-radius:10px;background:var(--pb-primary-soft);color:var(--pb-primary);display:flex;align-items:center;justify-content:center;flex:none}
+h2 .n{font-size:13px;font-weight:800;color:var(--pb-primary);font-variant-numeric:tabular-nums}
+h3{font-size:17px;color:var(--pb-primary-dark);margin:26px 0 8px;letter-spacing:-.01em}
+h4{font-size:13.5px;color:var(--pb-ink-2);margin:16px 0 6px}
+p{margin:10px 0;max-width:78ch}
+.lede{color:var(--pb-ink-2);max-width:74ch}
+ul,ol{margin:10px 0 10px 22px;max-width:76ch}
+li{margin:5px 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.875em;background:var(--pb-primary-soft);color:var(--pb-primary-dark);padding:1.5px 6px;border-radius:5px}
+pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.55;background:var(--pb-primary-dark);color:#E6E2F7;border-radius:12px;padding:16px 18px;overflow-x:auto;margin:14px 0;max-width:100%}
+pre code{background:none;color:inherit;padding:0}
+strong{color:var(--pb-ink)}
+.small{font-size:13px}.muted{color:var(--pb-muted)}
+.card{background:var(--pb-card);border:1px solid var(--pb-border);border-radius:var(--pb-radius);box-shadow:var(--pb-shadow);padding:20px 22px}
+.callout{border-radius:var(--pb-radius);padding:16px 18px;display:flex;gap:12px;margin:16px 0;font-size:14px}
+.callout .ic{margin-top:2px}
+.callout.rec{background:var(--pb-primary-soft);color:var(--pb-primary-dark);border-left:4px solid var(--pb-primary)}
+.callout.warn{background:var(--pb-warn-soft);color:#7A5310;border-left:4px solid var(--pb-warn)}
+.callout.info{background:var(--pb-accent-soft);color:#0A5B70;border-left:4px solid var(--pb-accent)}
+.callout.good{background:var(--pb-money-soft);color:#0B5C44;border-left:4px solid var(--pb-money)}
+.tbl-scroll{overflow-x:auto;margin:16px 0;border:1px solid var(--pb-border);border-radius:var(--pb-radius);background:#fff;box-shadow:var(--pb-shadow)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--pb-muted);font-weight:800;padding:11px 14px;border-bottom:1px solid var(--pb-border);background:#FBFBFE}
+td{padding:11px 14px;border-bottom:1px solid #F0F2F8;vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.group td{background:var(--pb-primary-soft);font-weight:800;color:var(--pb-primary-dark);font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:8px 14px}
+tbody tr:not(.group):hover td{background:#FAFAFE}
+td.win{background:var(--pb-money-soft)!important;font-weight:700;color:#0B5C44}
+.delta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.delta>div{border-radius:11px;padding:14px 16px;font-size:13.5px}
+.delta .was{background:#EEF2F7;color:var(--pb-ink-2)}
+.delta .now{background:var(--pb-money-soft);color:#0B5C44}
+.delta h4{margin:0 0 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:inherit;opacity:.8}
+.phases{display:flex;flex-direction:column;margin:18px 0;padding-left:26px;position:relative}
+.phases::before{content:"";position:absolute;left:7px;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--pb-primary-soft)}
+.phase{position:relative;padding:14px 0 14px 4px}
+.phase::before{content:"";position:absolute;left:-26px;top:20px;width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--pb-primary)}
+.phase h4{margin:0 0 3px;font-size:14.5px;color:var(--pb-primary-dark);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.phase p{margin:4px 0 0;font-size:13.5px;color:var(--pb-ink-2)}
+ol.qs{counter-reset:q;list-style:none;margin-left:0}
+ol.qs li{counter-increment:q;position:relative;padding-left:34px;margin:11px 0;max-width:78ch}
+ol.qs li::before{content:counter(q);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:50%;background:var(--pb-primary-soft);color:var(--pb-primary);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+ol.qs li.open::before{background:var(--pb-warn-soft);color:var(--pb-warn)}
+footer.doc-foot{grid-column:1/-1;border-top:1px solid var(--pb-border);margin-top:20px;padding-top:22px;font-size:12.5px;color:var(--pb-muted);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+@media (max-width:940px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  .toc{position:static;margin-bottom:30px;border:1px solid var(--pb-border);border-radius:var(--pb-radius);background:#fff;padding:12px}
+  .toc-list{display:flex;flex-wrap:wrap;gap:4px}
+  .mast h1{font-size:27px}
+  .delta{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff;font-size:11pt}
+  .toc,.mast .meta{display:none}
+  .wrap{grid-template-columns:1fr;padding:0;max-width:none}
+  .card,.tbl-scroll{box-shadow:none;break-inside:avoid}
+  section{break-inside:avoid-page}
+}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><defs>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><line x1="9" y1="13" x2="9" y2="15"/><line x1="15" y1="13" x2="15" y2="15"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v6.34L5.34 16.4A2 2 0 0 0 7.07 20h9.86a2 2 0 0 0 1.73-3.6L14 8.34V2"/><line x1="7.5" y1="14" x2="16.5" y2="14"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-git-branch" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17.01"/></symbol>
+  <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="m3 7 2 2 4-4"/><path d="m3 17 2 2 4-4"/><line x1="13" y1="6" x2="21" y2="6"/><line x1="13" y1="12" x2="21" y2="12"/><line x1="13" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17.01"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-anchor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></symbol>
+  <symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="brand"><span class="dot"><svg class="ic lg"><use href="#i-zap"/></svg></span> Payobook <span class="thin">Learn</span></div>
+    <h1>v2 Implementation Design — per-screen coaching, Pay&nbsp;Run first</h1>
+    <p class="standfirst">The v1 strategy (three surfaces, one content spine) has since been implemented end-to-end for
+      health19 as <code>addons/health_learn</code>, and the implementation taught us things the prototype could not.
+      This document back-ports that proven architecture to Payobook and defines exactly what we build first:
+      the <strong>Pay Run</strong> menu and all its sub-menus.</p>
+    <div class="meta">
+      <span class="chip solid"><svg class="ic"><use href="#i-book-open"/></svg> Implementation design</span>
+      <span class="chip cyan">Phase A scope: Pay Run (7 screens + import wizard)</span>
+      <span class="chip green">EN / VI</span>
+      <span class="chip amber">Supersedes the delivery plan in analysis.html §5–§8</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <div class="toc-h">Contents</div>
+    <div class="toc-list">
+      <a href="#delta"><span class="n">1</span> What changed since v1</a>
+      <a href="#coach"><span class="n">2</span> The always-on Coach</a>
+      <a href="#module"><span class="n">3</span> The pb_learn module</a>
+      <a href="#screens"><span class="n">4</span> Pay Run screen catalog</a>
+      <a href="#content"><span class="n">5</span> Pay Run content plan</a>
+      <a href="#intel"><span class="n">6</span> Coach intelligence &amp; AI seams</a>
+      <a href="#honesty"><span class="n">7</span> Honesty machinery</a>
+      <a href="#pipeline"><span class="n">8</span> Authoring pipeline</a>
+      <a href="#pbcoach"><span class="n">9</span> What happens to pb_coach</a>
+      <a href="#phases"><span class="n">10</span> Rollout phases</a>
+      <a href="#accept"><span class="n">11</span> Phase A acceptance</a>
+      <a href="#questions"><span class="n">12</span> Decisions &amp; open questions</a>
+    </div>
+    <div class="toc-foot">
+      <a class="btn primary" href="index.html"><svg class="ic"><use href="#i-play"/></svg> v1 prototype</a>
+      <a class="btn outline" href="analysis.html"><svg class="ic"><use href="#i-book-open"/></svg> v1 analysis</a>
+    </div>
+  </nav>
+
+  <article class="doc">
+
+    <!-- ================================================================ 1 -->
+    <section id="delta">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-git-branch"/></svg></span><span><span class="n">01</span><br/>What changed since v1</span></h2>
+      <p class="lede">v1 (this folder) proved the strategy. The health19 port
+        (<code>health19/docs/tutorial_crm</code> → <code>health19/addons/health_learn</code>, 31 screens,
+        12 lessons, 8 missions, 32 intents, live in the product) proved the <em>implementation</em> — and made five
+        decisions the v1 plan didn't have. v2 adopts all five.</p>
+
+      <div class="delta">
+        <div class="was"><h4>v1 said</h4>
+          The Companion is one of three surfaces, opened from a hub/dock; delivery order Journey → Companion → Simulator;
+          content in a future <code>pb.learn.content</code> model; anchors linted by a grep script; progress "per-user
+          records" (unspecified); coach answers "grounded LLM".</div>
+        <div class="now"><h4>v2 (as implemented in health_learn)</h4>
+          The Coach is <strong>always on, on every screen</strong> — a launcher + <code>?</code> key opening a
+          non-blocking drawer, mounted <em>once</em> in the web-client shell. Journey, Coach and missions ship
+          <strong>together per menu section</strong>, screen by screen. Content = <strong>generated Odoo records</strong>
+          (18 <code>learn.*</code> models) from the prototype via a generator + <code>.po</code>. Anchors = a JSON
+          registry enforced by <strong>unit tests</strong> against real product templates. Progress/telemetry =
+          <strong>server models</strong> (<code>learn.progress</code>, append-only <code>learn.event</code>,
+          <code>learn.confidence</code>). Coach = <strong>deterministic retrieval</strong> with two declared LLM seams.</div>
+      </div>
+
+      <div class="callout rec"><svg class="ic lg"><use href="#i-check-circle"/></svg>
+        <span><strong>The v2 rule: coverage is per-screen, not per-surface.</strong> A menu item is "covered" when its
+        screen has (a) anchors, (b) a Coach context + suggested intents, (c) a station on the Journey map with at least
+        an outline, and (d) its risky actions taught with consequence cards. We ship the Pay Run section to that bar
+        first, then repeat for the other sections.</span></div>
+
+      <p><strong>Porting economics:</strong> health_learn's engine
+        (<code>engine/spotlight.js · runtime.js · screens.js · visuals.js</code>, <code>journey/</code>,
+        <code>coach/</code> + <code>coach_patch</code>), its models, its generator
+        (<code>tools/gen_learn_data.py</code>, 835 lines) and its test suite (7 files) are all product-agnostic by
+        construction — content arrives as records, screens resolve via sidebar metadata, anchors via a registry. We port
+        them near-verbatim and keep the <code>learn.*</code> model names identical so diffs against health_learn stay
+        meaningful. What we re-derive is exactly what DESIGN_SPEC §8 lists: menus, anchors, worked example, risky
+        actions, roles, terminology, brand.</p>
+    </section>
+
+    <!-- ================================================================ 2 -->
+    <section id="coach">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-bot"/></svg></span><span><span class="n">02</span><br/>The always-on Coach</span></h2>
+      <p class="lede">The Coach is not a place you navigate to. Every in-scope screen gets a persistent
+        <strong>"Stuck?" launcher</strong> (bottom-right) and the <strong><code>?</code> shortcut</strong>; both open a
+        drawer <strong>grounded in the current screen</strong>.</p>
+
+      <h3>Behaviour (per the health_learn implementation)</h3>
+      <ul>
+        <li><strong>Mounted once, works everywhere.</strong> A <code>CoachHost</code> OWL component patched into the
+          web client next to <code>MainComponentsContainer</code> (health_learn's <code>coach_patch.js/xml</code>
+          pattern). Zero per-screen wiring — new screens get the Coach for free.</li>
+        <li><strong>The drawer never dims or blocks the page.</strong> No backdrop, no focus trap; the screen behind
+          stays clickable. The user reads the answer <em>while doing the work</em>. (Lessons are the one exception —
+          there the spotlight card <em>is</em> the coaching, so the launcher hides.)</li>
+        <li><strong>Screen resolution is metadata, not code.</strong> The Coach listens on
+          <code>ACTION_MANAGER:UI-UPDATED</code> and resolves the active screen in three passes — action tag/xml_id →
+          declared extra tags/xmlids → <code>res_model</code> — against matchers derived from the sidebar leaf.
+          Payobook's <code>pb.sidebar.item</code> already carries exactly the needed fields
+          (<code>action_tag</code>, <code>match_action_tags</code>, <code>match_action_xmlids</code>,
+          <code>match_models</code> — pb_sidebar/data/pb_sidebar_data.xml), so <code>learn.screen.sidebar_key</code>
+          points at a <code>pb.sidebar.item</code> xml-id and the matchers come from it.</li>
+        <li><strong>Drawer anatomy</strong> (single template, used by both the live drawer and the Journey's demo dock —
+          "do not fork it"): header <em>"Grounded in this screen: &lt;title&gt;"</em> → honesty banner → context card
+          (<em>YOU'RE ON: …</em> + screen blurb) → <em>Suggested for this screen</em> chips → answers → composer.</li>
+        <li><strong>Answer modes:</strong> <em>Show me</em> (sequenced highlight rings over real controls; if an anchor
+          is not on this screen the Coach says so instead of flashing nothing), <em>Simpler</em>,
+          <em>Let me practise</em> (hands off to the mission), <em>Open lesson</em> (when the screen's station has one).</li>
+        <li><strong>Keyboard:</strong> <code>?</code> toggles (ignored while typing), <code>Esc</code> closes drawer
+          before modals. During a mission the step panel relocates rather than being buried
+          (<code>body.coach-open</code>).</li>
+      </ul>
+
+      <h3>Payobook honesty banner</h3>
+      <div class="callout info"><svg class="ic"><use href="#i-shield-check"/></svg>
+        <span>"I guide — you act. I never compute a run, approve a payslip or change a record for you." /
+        "Tôi hướng dẫn — bạn thao tác. Tôi không bao giờ tự tính lương, phê duyệt phiếu lương hay sửa dữ liệu thay bạn."</span></div>
+
+      <h3>Launcher coexistence (Payobook-specific)</h3>
+      <p>Payobook's bottom-right corner is already occupied: the <strong>PayAI pill</strong>
+        (<code>pb_payroll_ai_insights</code>) and, for demo users, the <strong>pb_coach "Getting Started" FAB</strong>.
+        v2 rule: <strong>at most two floating controls, ever.</strong></p>
+      <ul>
+        <li>The <strong>Learn launcher replaces the pb_coach FAB</strong> in its slot (bottom-right, stacked above the
+          PayAI pill). pb_coach's FAB remains only for demo-tenant users until Phase C (§9).</li>
+        <li><strong>PayAI stays the data copilot</strong> (numbers, records, actions); the <strong>Coach is the learning
+          surface</strong> (how/why/what-if). Each links to the other: the Coach's fallback offers "Ask PayAI about your
+          data"; PayAI's system prompt gains a "how do I…" hand-off to the Coach (it already launches tours via the
+          sanctioned action envelope — <code>payroll_ai_engine.py:302-318</code>).</li>
+      </ul>
+    </section>
+
+    <!-- ================================================================ 3 -->
+    <section id="module">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-database"/></svg></span><span><span class="n">03</span><br/>The <code>pb_learn</code> module</span></h2>
+      <p class="lede">One new module, mirroring <code>health_learn</code> file-for-file. Model names stay
+        <code>learn.*</code> (the two products never share a database; identical names keep the port diffable).</p>
+
+<pre><code>pb_learn/
+  __manifest__.py            depends: pb_sidebar, pb_theme, pb_hr_payroll_base,
+                             pb_payrun_wizard, pb_payruns, pb_payslip_review,
+                             pb_import, pb_import_wizard, pb_payrun_ledgers
+                             (soft, undeclared: pb_payroll_ai_insights)
+  models/                    learn_station.py  learn_lesson.py  learn_quiz.py
+                             learn_intent.py   learn_mission.py learn_progress.py
+                             learn_string.py   learn_glossary.py learn_tenant_override.py
+  data/                      GENERATED — learn_strings, learn_glossary,
+                             learn_tenant_slots, learn_stations, learn_lessons,
+                             learn_intents, learn_screens, learn_columns,
+                             learn_missions, learn_sidebar_item
+  i18n/vi_VN.po              GENERATED
+  security/                  group_learn_author; own-records rules on
+                             progress/event/confidence; company rule on overrides
+  static/src/
+    anchors.json             the anchor registry (kinds: product | pattern | practice)
+    engine/                  spotlight.js  runtime.js  screens.js  visuals.js  fixture.js
+    journey/                 journey.js/.xml/.scss  icons.xml     (client action "learn_journey")
+    coach/                   coach.js/.xml/.scss  coach_patch.js/.xml  (mounted in WebClient)
+  tests/                     test_anchor_registry  test_assets  test_bundle  test_coach
+                             test_mission  test_progress_security  test_tenant_override
+  views/                     learn_actions, learn_content_views, learn_override_views, learn_menus</code></pre>
+
+      <h3>Model catalog (ported unchanged from health_learn)</h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:26%">Model</th><th>Purpose / key fields</th></tr></thead>
+        <tbody>
+          <tr class="group"><td colspan="2">Content (read-only to users, CRUD for group_learn_author)</td></tr>
+          <tr><td><code>learn.station</code> (+<code>.mistake</code>)</td><td>Journey map node per menu item: key, line, section, kind (lesson/outline/mission), <code>sidebar_key</code> → <code>pb.sidebar.item</code> xml-id, outline what/why/when/prereq, mistakes. Bundle marks stations <em>visible</em>/<em>missing</em> from the user's real sidebar rather than hiding them.</td></tr>
+          <tr><td><code>learn.lesson</code> / <code>learn.step</code> / <code>learn.step.line</code></td><td>Lesson steps: kicker/title/body (+inline <code>&lt;b&gt;/&lt;i&gt;</code>), tip, <strong>consequence</strong> ("Before you do this" card), screen, anchor, visual (none/trace/morph/calc/pipeline/list) + moment fields; step lines for morph before/after + bullet/warn/ok rows (values never translated).</td></tr>
+          <tr><td><code>learn.quiz</code> / <code>.option</code></td><td>One correct option enforced by constraint; <strong>every option requires feedback</strong> (recovery, not rejection). Completion = correct judgement, never Next.</td></tr>
+          <tr><td><code>learn.screen</code> / <code>learn.column</code></td><td>Screen registry: key, blurb, next_step, <code>sidebar_key</code>, suggested intents (M2M). Columns = per-screen micro-glossary of KPI tiles/chips ("what does <em>Need review</em> mean here?").</td></tr>
+          <tr><td><code>learn.intent</code> (+<code>.phrase</code>/<code>.block</code>/<code>.step</code>)</td><td>Coach Q&amp;A: screens scope (<code>'*'</code> or CSV), match phrases (<strong>deliberately untranslated</strong> — EN+VI in one bag), blocks with kinds p/steps/calc/calc_kpi/ok/warn/refusal/who/how/source, per-block <strong>capability gate</strong>, dynamic intents (screen_blurb/next_step), show_me anchor CSV, simpler text, practice hand-off key.</td></tr>
+          <tr><td><code>learn.mission</code> (+<code>.step</code>/<code>.option</code>/<code>.note</code>)</td><td>Practice missions: 4-field consequence card (title/scope/reversible/verify), seeded anomaly, decision steps with per-wrong-option recovery text (constraint-enforced), undo step, debrief did/check notes. Constraint: full missions must be complete. <strong>Payobook adds <code>kind = live</code></strong> (§5): fixture missions for every tenant, live capstones demo-gated.</td></tr>
+          <tr><td><code>learn.string</code> / <code>learn.glossary.term</code></td><td>Bilingual UI chrome (not <code>_t()</code> — the bundle ships both languages so switching is live) and domain glossary.</td></tr>
+          <tr><td><code>learn.tenant.override</code></td><td><code>{{token}}</code> slots: shipped defaults (company_id = False) + per-company overrides; constraint rejects undeclared keys.</td></tr>
+          <tr class="group"><td colspan="2">Per-user (own-record rules; author group sees all)</td></tr>
+          <tr><td><code>learn.progress</code></td><td>Per user × station/mission: state, step_index, attempts, first_try_correct, lang. Whitelisted <code>record()</code> writes, never sudo. <strong>Replaces v1's localStorage progress</strong> — localStorage keeps only <code>{lang, motion}</code> prefs.</td></tr>
+          <tr><td><code>learn.event</code></td><td>Append-only telemetry (write/unlink raise): journey_open, lesson_start, step_view, quiz_answer, coach_open, coach_hit, <strong>coach_miss</strong>, mission_recover… The §6-metrics event log ships in release 1.</td></tr>
+          <tr><td><code>learn.confidence</code></td><td>Per skill key; <code>award()</code> halves the gain when recovery was needed.</td></tr>
+        </tbody>
+      </table></div>
+
+      <p><strong>No controllers.</strong> The frontend calls model methods via ORM only:
+        <code>learn.station.get_bundle</code> (one ormcached bundle carrying <em>both languages</em> for every
+        translatable leaf + progress + tenant tokens + a version hash), <code>learn.intent.ask</code> /
+        <code>coach_bundle</code>, <code>learn.progress.record</code>, <code>learn.event.log</code>,
+        <code>learn.confidence.award</code>.</p>
+
+      <h3>Anchors: keep <code>data-coach</code></h3>
+      <div class="callout warn"><svg class="ic"><use href="#i-anchor"/></svg>
+        <span>health_learn introduced <code>data-a</code>; Payobook already has <strong>40+ live
+        <code>data-coach</code> anchors</strong> across 6 modules, referenced by pb_coach tours and PayAI. Decision:
+        <strong>the registry attribute stays <code>data-coach</code></strong> — the registry/tests/spotlight read one
+        configurable attribute name, so the port is a one-line constant. Renaming would churn every template for zero
+        behaviour.</span></div>
+      <p><code>static/src/anchors.json</code> lists every anchor as
+        <code>{screen, file, desc, kind: product|pattern|practice}</code> — <em>pattern</em> for per-record variants
+        (e.g. <code>t-attf-data-coach="pk-card-#{record.id}"</code>), <em>practice</em> for fixture-only anchors.
+        <code>test_anchor_registry.py</code> enforces all three directions: every registry entry exists in its template,
+        every template anchor is registered, every content reference resolves.</p>
+    </section>
+
+    <!-- ================================================================ 4 -->
+    <section id="screens">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-grid"/></svg></span><span><span class="n">04</span><br/>Pay Run screen catalog (Phase A)</span></h2>
+      <p class="lede">Seven sidebar leaves + the import wizard sub-screen. All are OWL client actions or OWL-enhanced
+        native views — good news: every screen is anchorable in our own templates. Anchor names proposed below;
+        <em>existing</em> anchors are kept as-is.</p>
+
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:15%">Screen key</th><th style="width:22%">Resolution (from <code>pb.sidebar.item</code>)</th><th style="width:28%">Template to anchor</th><th>Anchors (■ = exists today)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>runpayroll</strong></td><td>tag <code>pb_payrun_wizard</code></td><td>pb_payrun_wizard/static/src/xml/payrun_wizard.xml</td><td>■ <code>pw-division</code> · ■ <code>pw-compute</code> · <code>pw-rail</code> (4-dot stepper) · <code>pw-scope</code> (period/name grid) · <code>pw-summary</code> (config + eligible count card) · <code>pw-result</code> · <code>pw-pills</code> (Payslips/Computed/Need review) · <code>pw-exceptions</code></td></tr>
+          <tr><td><strong>payruns</strong></td><td>xmlid <code>pb_payruns.action_pb_payruns_kanban</code> + model <code>hr.payslip.run</code></td><td>pb_payruns/static/src/xml/payruns_kanban.xml (OWL band) + views/hr_payslip_run_kanban.xml (card arch)</td><td><code>pk-kpis</code> · <code>pk-run</code> · <code>pk-tabs</code> (status) · <code>pk-datechips</code> · <code>pk-divchips</code> · <code>pk-card</code> (pattern, per-record) · <code>pk-card-actions</code> (Submit/Approve/Reject/Bank file…)</td></tr>
+          <tr><td><strong>payslips</strong></td><td>tag <code>pb_payslip_review</code> + model <code>hr.payslip</code></td><td>pb_payslip_review/static/src/xml/payslip_review.xml</td><td><code>ps-runsel</code> · <code>ps-kpis</code> · <code>ps-chips</code> (All/Need review/HR pending/GM pending/Done) · <code>ps-list</code> · <code>ps-detail</code> · <code>ps-status</code> (approval stepper) · <code>ps-breakdown</code></td></tr>
+          <tr><td><strong>import</strong></td><td>tag <code>pb_import</code></td><td>pb_import/static/src/xml/import.xml</td><td><code>im-kpis</code> · <code>im-cta</code> (start wizard) · <code>im-launches</code> · <code>im-pipe</code> (map→validate→commit strip) · <code>im-batches</code></td></tr>
+          <tr><td><strong>importwizard</strong> <span class="muted small">(sub-screen, no leaf — resolved by tag)</span></td><td>tag <code>pb_import_wizard</code></td><td>pb_import_wizard/static/src/xml/import_wizard.xml</td><td><code>iw-steps</code> · <code>iw-source</code> · <code>iw-review</code> · <code>iw-fixrows</code> (Match/Retry/Skip) · <code>iw-outcome</code> · <code>iw-commit</code> (footer primary)</td></tr>
+          <tr><td><strong>fullfinal</strong></td><td>tag <code>pb_fullfinal</code></td><td rowspan="3">pb_payrun_ledgers/static/src/xml/ledger.xml — <strong>one shared template</strong>: anchors are shared, the screen key comes from the action tag (health_learn's <em>pattern</em> kind)</td><td rowspan="3"><code>lg-kpis</code> · <code>lg-facets</code> (chips + date row) · <code>lg-rows</code> · <code>lg-rowaction</code> (pattern) · <code>lg-openfull</code> ("Open full list →")</td></tr>
+          <tr><td><strong>proration</strong></td><td>tag <code>pb_proration</code></td></tr>
+          <tr><td><strong>retro</strong></td><td>tag <code>pb_retro</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <p class="small muted">Server-side blast radius: adding anchors touches only XML templates (attribute additions) —
+        no logic changes. The kanban card arch (<code>hr_payslip_run_kanban.xml</code>) is <code>ir.ui.view</code> data,
+        reloaded by <code>-u pb_payruns</code>, not assets (known gotcha).</p>
+    </section>
+
+    <!-- ================================================================ 5 -->
+    <section id="content">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-map"/></svg></span><span><span class="n">05</span><br/>Pay Run content plan</span></h2>
+
+      <h3>Stations (8) — line <code>payrun</code>, section <code>payroll</code></h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th>Station</th><th>Kind</th><th>Content</th></tr></thead>
+        <tbody>
+          <tr><td>runpayroll</td><td class="win">lesson ★ L1</td><td>"Run Payroll — your first pay run": 8 steps (what/why → division = rulebook → period &amp; cycle → read the preview before computing → <strong>consequence card on Compute</strong> → reading results + the Need-review pill → where the run lands (pipeline visual) → three mistakes prevented) + scenario quiz (fix the input and recompute vs edit the net vs approve now). Ported from the v1 prototype's L1, re-anchored to the real wizard.</td></tr>
+          <tr><td>payruns</td><td class="win">lesson ★ L2</td><td>"The board and the gates": KPI band → status tabs → the card's action footer → <strong>pipeline moment</strong> (draft → level0 Officer → level1 HR → level2 GM → done — the real selection keys from <code>pb_payruns/models/hr_payslip_run.py</code>) → rejection returns to draft <em>with a written reason</em> (<code>pb_reject_note/uid/date</code>) → Done unlocks Bank file / Journals / Payments. Quiz: who unblocks a run stuck at level1.</td></tr>
+          <tr><td>payslips</td><td>lesson L3</td><td>"Read a payslip like an auditor": run selector → filter chips → detail hero → approval stepper → breakdown table with a <strong>calc visual</strong> (Mai's July numbers, §7 worked example). Quiz: why insurance didn't move when overtime did.</td></tr>
+          <tr><td>import</td><td>lesson L4</td><td>"Import with confidence": the 4-step pipe → confidence score → fix rows (Match/Retry/Skip) → <strong>consequence card on Commit</strong> → why you never fix imports on payslips. Quiz: low score, commit anyway?</td></tr>
+          <tr><td>fullfinal</td><td>outline</td><td>What/why/when/prereq + mistakes (leaver also in the monthly run = paid twice).</td></tr>
+          <tr><td>proration</td><td>outline</td><td>+ mistake: calendar days vs working days from the division's config.</td></tr>
+          <tr><td>retro</td><td>outline</td><td>+ mistake: editing an approved payslip instead of a retro line; closed months stay closed.</td></tr>
+          <tr><td>importwizard</td><td><span class="chip slate">screen only</span></td><td>No station (it's a flow, not a destination): coach context + intents + anchors; L4 walks it.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Missions — the practice ladder (decided 2026-08-09)</h3>
+      <p>Missions come in <strong>two kinds</strong>, forming a ladder every tenant climbs as far as its type allows:
+        <em>learn</em> (lessons on real screens, read-only) → <em>practise</em> (fixture missions, isolated) →
+        <em>prove</em> (a live capstone, demo tenant only).</p>
+      <ul>
+        <li><strong>Fixture missions are universal — including the demo tenant.</strong> Prospects practise on the
+          JS fixture exactly like customers: they can fail safely, the seeded anomaly is always there (another user
+          can't have "fixed" it), and random practice computes never dirty the shared demo world. Customer/production
+          tenants get <em>only</em> this kind.</li>
+        <li><strong>Live capstone missions (<code>kind = live</code>) exist only on the demo tenant</strong>, gated by
+          the demo group. Steps validate <em>real actions on real records</em> — the upgraded guided-trial climax:
+          consequence interception before a real Compute, a real run travelling the real approval chain.
+          <strong>Collision answer: per-user division</strong> — each demo signup is assigned one of the 12 divisions
+          as theirs for the capstone (the pb_demo generator already regenerates per division), so two prospects never
+          fight over the same run.</li>
+        <li><strong>Soft gate between rungs:</strong> the capstone card nudges "do the practice mission first" but does
+          not hard-lock — an AE driving a live demo can jump straight to the climax. The gate can harden to a flag if
+          demo hygiene demands it.</li>
+      </ul>
+      <h4>Phase A fixture missions (2 full + 1 outline)</h4>
+      <ul>
+        <li><strong>m1 · Run the July pay run</strong> (full, confidence <code>run</code> +25): open wizard → choose
+          Retail (wrong choice coached) → consequence interception before Compute (scope 48 drafts / reversible yes /
+          verify import committed) → <strong>seeded anomaly</strong>: Trần Văn Hùng's OT at 282% of June — decision step
+          where <em>Accept as correct</em> triggers recovery ("4.6h → 46h is a classic") → flag → submit → pipeline →
+          debrief + pre-finalise checklist.</li>
+        <li><strong>m2 · Review &amp; approve like a manager</strong> (full, confidence <code>approve</code> +20): the
+          run waiting at HR review → sample 3 slips + every flag → variance vs June → decision: approve vs reject; reject
+          path requires the written reason (mirrors <code>pb_reject_note</code>) → undo step (a rejection is reversible;
+          a Done run is not) → debrief.</li>
+        <li><strong>m3 · Fix a bad import before it becomes salaries</strong> (outline): duplicate rows + one orphan
+          employee; score drops; fix vs commit-anyway.</li>
+      </ul>
+      <h4>Phase B live capstone (demo only)</h4>
+      <ul>
+        <li><strong>mL1 · Run your division's June payroll — for real</strong>: the pb_coach hero-tour climax
+          re-expressed as a live mission on the user's assigned division: real consequence card → real Compute →
+          open a real flagged payslip → submit → approve through level0/level1/level2 → Done. Debrief compares their
+          run to the fixture rehearsal. Until this ships, the existing pb_coach hero tour keeps delivering the live
+          climax — nothing regresses during Phase A.</li>
+      </ul>
+      <div class="callout warn"><svg class="ic"><use href="#i-alert-triangle"/></svg>
+        <span><strong>Isolation stays testable in both directions:</strong> fixture missions keep health_learn's
+        "never call a product method" test; live missions get the inverse — a test asserting <code>kind=live</code>
+        content refuses to run unless the company is the demo tenant and the user is in the demo group.</span></div>
+
+      <h3>Coach intents (~14 for Phase A)</h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:16%">Key</th><th style="width:22%">Screens</th><th>Answer shape</th></tr></thead>
+        <tbody>
+          <tr><td><code>whatpage</code></td><td><code>*</code> (dynamic screen_blurb)</td><td>Blurb + station outline (why/when/watch-out) + Open lesson link.</td></tr>
+          <tr><td><code>whatnext</code></td><td><code>*</code> (dynamic next_step)</td><td>Role-aware: officer → compute July; HR → the run waiting at your gate; viewer → read-only honesty.</td></tr>
+          <tr><td><code>needreview</code></td><td>runpayroll, payslips</td><td><strong>The urgency-score analog:</strong> "why does this payslip need review?" — p + <strong>calc block</strong> (the flag conditions with the worked numbers) + warn ("a flag is a question, not an error") + source.</td></tr>
+          <tr><td><code>whydiff</code></td><td>payslips</td><td>June→July decomposition calc (OT +900,000 → PIT −45,000 → net +855,000); insurance flat because base-registered.</td></tr>
+          <tr><td><code>approve</code></td><td>payruns, payslips</td><td><strong>Capability-gated blocks</strong> (§6): any → the gate model; no_access → refusal + who + how.</td></tr>
+          <tr><td><code>reject</code></td><td>payruns</td><td>Steps + warn: a rejection needs a written reason and returns the run to draft — nothing is lost.</td></tr>
+          <tr><td><code>checkfinal</code></td><td>payruns, payslips</td><td>The pre-finalise checklist (headcount, flags, variance, statutory lines, bank details).</td></tr>
+          <tr><td><code>fixerror</code></td><td><code>*</code></td><td>Fix the input, never the output; Done runs → retro. show_me sequence across screens.</td></tr>
+          <tr><td><code>affectrun</code></td><td>runpayroll, import</td><td>Drafts only; submitted runs untouchable except via the chain.</td></tr>
+          <tr><td><code>confidence</code></td><td>import, importwizard</td><td>What the score measures, the commit threshold, why warnings beat payslip edits.</td></tr>
+          <tr><td><code>bhxh</code></td><td>payslips</td><td>Glossary answer + calc (8% × registered base) + simpler variant.</td></tr>
+          <tr><td><code>prorata</code></td><td>proration, payslips</td><td>Working-days factor calc for the mid-month joiner in the worked example.</td></tr>
+          <tr><td><code>retroq</code></td><td>retro, payruns</td><td>When retro vs recompute; closed months stay closed.</td></tr>
+          <tr><td><code>practice</code></td><td><code>*</code></td><td>Links to m1/m2 (practice hand-off).</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>Plus <strong>columns</strong> for every KPI tile / chip row on the 8 screens (~30 <code>learn.column</code>
+        records — "what does <em>In pipeline</em> count?"), <strong>glossary</strong> (BHXH, BHYT, BHTN, thuế TNCN,
+        formula config, pay run, cycle, proration, retro — from v1), and <strong>tenant slots</strong>
+        (~8: <code>{{payDay}}</code>, <code>{{hrTierName}}</code>, <code>{{gmTierName}}</code>,
+        <code>{{importCutoff}}</code>, <code>{{bankFileFormat}}</code>…) — overrides fill named slots only, never a
+        lesson step or quiz option.</p>
+
+      <h3>The worked example (one, everywhere)</h3>
+      <p>Carried over from v1 and already internally consistent: <strong>Nguyễn Thị Mai, July 2026</strong> — base
+        12,000,000 ₫ + allowance 780,000 + OT 1,500,000 = gross 14,280,000; BHXH 960,000 / BHYT 180,000 / BHTN 120,000
+        on the registered base; taxable 2,020,000; PIT 101,000; net 12,919,000. June variant nets 12,064,000. Hùng
+        carries the OT anomaly. Every lesson calc, coach calc-block and mission fact reuses these numbers so the three
+        surfaces never disagree.</p>
+    </section>
+
+    <!-- ================================================================ 6 -->
+    <section id="intel">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-message-circle"/></svg></span><span><span class="n">06</span><br/>Coach intelligence &amp; AI seams</span></h2>
+
+      <h3>Deterministic retrieval first</h3>
+      <p>Ported unchanged from <code>learn_intent.py</code>: diacritic-folding normaliser (EN+VI stop-words), scoring
+        (exact 100+len · substring 40+2·len · reverse 20+len · loose overlap needs ≥2 topic words), <strong>+25
+        on-screen bonus</strong>, −5 for <code>'*'</code> intents, floor 20 else <strong>honest fallback</strong>
+        (per-screen: "I don't have that — try a chip, or ask PayAI about your data"). Misses are logged as
+        <code>coach_miss</code> events — the question-clustering input for new content.</p>
+
+      <h3>Capability gating → Payobook groups</h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th>Block capability</th><th>Resolves true when user has</th></tr></thead>
+        <tbody>
+          <tr><td><code>any</code></td><td>—</td></tr>
+          <tr><td><code>operator</code></td><td><code>pb_hr_payroll_base.group_payroll_base_officer</code></td></tr>
+          <tr><td><code>manager</code></td><td><code>group_payroll_base_manager</code> or <code>group_payroll_final_approver</code></td></tr>
+          <tr><td><code>owner</code></td><td><code>group_payroll_super_admin</code></td></tr>
+          <tr><td><code>no_access</code></td><td>none of the above → refusal/who/how blocks render</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>The deny list (Payobook's "clinical markers")</h3>
+      <p>health_learn refuses clinical questions before retrieval. Payobook's equivalent: <strong>tax/legal-advice
+        markers</strong> ("giảm đóng BHXH", "khai thấp", "avoid tax", "under-declare", "trốn thuế"…) route to a fixed
+        <code>compliance</code> intent — teach where the statutory rates live and who owns policy, never advise on
+        minimising obligations.</p>
+
+      <h3>Data boundaries — what leaves the server (audited 2026-08-09)</h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:18%">System</th><th style="width:30%">Sends to an external LLM?</th><th>Detail (verified in code)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>pb_coach</strong></td><td class="win">Never</td><td>Pure JS tours; no LLM, no network calls beyond one ORM read of <code>res.users.login_date</code> for first-run detection.</td></tr>
+          <tr><td><strong>pb_learn</strong> (Phases A–C)</td><td class="win">Never</td><td>Deterministic retrieval over authored records; the bundle is served by your own Odoo. No provider is even configured.</td></tr>
+          <tr><td><strong>pb_learn</strong> (Phase D <code>_compose</code>, off by default)</td><td>Scrubbed question + authored corpus only</td><td>The prompt contains the user's question (regex-scrubbed of emails/phones/#ids/long numbers, 400-char cap) and the module's own teaching content — <strong>never a database record</strong>. That's a testable contract: the composer has no ORM access to payroll models. Residual risk: a person's name typed into the question survives regex scrubbing → mitigation below.</td></tr>
+          <tr><td><strong>PayAI</strong> (existing)</td><td style="background:var(--pb-warn-soft);color:#7A5310;font-weight:700">Yes — by design</td><td>Data queries fetch real records and embed them as JSON in the provider prompt (<code>payroll_ai_engine.py:216-220</code>). Most intents send aggregates (per-department totals/averages), but <code>_query_individual_data</code> (<code>payroll_data_query.py:573-604</code>) sends <strong>employee names, job titles and individual salaries</strong> (up to 20), and the query engine runs <code>.sudo()</code> throughout. Conversation history is also forwarded.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><svg class="ic"><use href="#i-alert-triangle"/></svg>
+        <span><strong>PayAI hardening (recommended, independent of pb_learn):</strong> (1) drop the <code>.sudo()</code>
+        in <code>payroll.data.query</code> so answers respect the asking user's access rights — today a user without
+        contract access can extract salaries through chat; (2) pseudonymise the individual path (send tokens, re-substitute
+        names in the reply) or gate it to managers; (3) if data residency matters, a self-hosted provider slots into the
+        existing factory. pb_learn's Phase D composer will reuse whatever provider policy PayAI lands on.</span></div>
+
+      <h3>Two LLM seams, both optional</h3>
+      <ol>
+        <li><strong><code>_resolve_hook</code></strong> — may only <em>choose an intent key from the scored
+          candidates</em>; it never authors text. Ships as a no-op.</li>
+        <li><strong><code>_compose</code></strong> — an LLM composer over the module's own corpus, for questions
+          retrieval can't place. Payobook has a provider already: the <strong>PayAI engine</strong>
+          (<code>pb_payroll_ai_insights</code>, OpenAI-backed). Same contract as health_learn: scrub the question
+          (names, amounts, emails, phones; 400-char cap), corpus-capped prompt that forbids inventing rates/amounts and
+          requires literal <code>NO_ANSWER</code>, discard empty/overlong replies, and badge the answer
+          <em>"Composed from the guide"</em>. Any failure → the deterministic fallback. Phase D, behind a config flag.</li>
+      </ol>
+    </section>
+
+    <!-- ================================================================ 7 -->
+    <section id="honesty">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-shield-check"/></svg></span><span><span class="n">07</span><br/>Honesty machinery</span></h2>
+      <p class="lede">The health19 lesson: a tutorial rots silently unless drift has a price. Three enforcement layers,
+        all ported.</p>
+
+      <h3>1 · Contract checker — taught facts verified against source</h3>
+      <p><code>tools/check_contract.py</code> + <code>contract.json</code>: every teachable product fact is a checked
+        entry <code>{id, why, kind, file, expect, taughtIn}</code>. Payobook's first contract (~12 checks):</p>
+      <ul>
+        <li>Approval selection keys <code>draft/level0/level1/level2/done</code> and the level0-before-level1 insertion
+          (<code>pb_payruns/models/hr_payslip_run.py</code> <code>selection_add</code>) — taught in L2, m2.</li>
+        <li>Rejection testimony fields <code>pb_reject_note/uid/date</code> exist and are readonly — taught in L2, m2.</li>
+        <li>The four security-group xmlids used by capability gating exist in <code>pb_hr_payroll_base</code>.</li>
+        <li>The 7 sidebar-leaf xmlids + action tags the screens resolve by (<code>pb_sidebar_data.xml</code>).</li>
+        <li>Done-state actions <code>action_pb_bank_export/_journals/_payments</code> exist — taught in L2.</li>
+        <li>Import wizard's 4-step flow + confidence surface exist — taught in L4.</li>
+        <li>PayAI's <code>_KNOWN_TOURS</code> whitelist matches what the Coach hands off to (until §9 retires it).</li>
+        <li>VI <code>.po</code> spot-checks: shipped sidebar labels the content quotes ("Chạy bảng lương"…).</li>
+      </ul>
+
+      <h3>2 · Anchor lint as unit tests</h3>
+      <p><code>test_anchor_registry.py</code>: registry ↔ templates ↔ content, three directions + no stray anchors.
+        A PR that renames a button without updating the lesson step fails CI, not the learner.</p>
+
+      <h3>3 · Token lint + generated-file discipline</h3>
+      <p>Undeclared <code>{{slots}}</code> fail the build; every generated data file carries
+        <em>"GENERATED FILE. Do not edit. Source: docs/tutorial_poc/"</em>; the generator's <code>--check</code> mode
+        runs in CI so module data can never drift from the authored content.</p>
+
+      <div class="callout good"><svg class="ic"><use href="#i-check-circle"/></svg>
+        <span><strong>Practice isolation is also a test:</strong> health_learn's
+        <code>test_12_missions_never_call_a_product_method</code> pattern — Payobook missions run on the generated JS
+        fixture and are structurally incapable of touching <code>hr.payslip</code>.</span></div>
+    </section>
+
+    <!-- ================================================================ 8 -->
+    <section id="pipeline">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-git-branch"/></svg></span><span><span class="n">08</span><br/>Authoring pipeline</span></h2>
+      <p class="lede">Content is authored where it's cheapest to iterate — the prototype in this folder — and delivered
+        as generated module data. One direction, never hand-edit the output.</p>
+
+<pre><code>docs/tutorial_poc/                    (authoring surface — this folder)
+  data.js            content spine    ──┐
+  practice-data.js   fixture + slots  ──┤   tools/dump_content.js   (Node/VM → normalised JSON)
+  contract.json      taught facts     ──┤   tools/gen_learn_data.py (→ XML records + vi_VN.po
+                                        │                             + engine/fixture.js
+                                        ▼                             + anchors.json practice kind)
+pb_learn/data/*.xml + i18n/vi_VN.po   (GENERATED — the module ships these)
+tools/check_contract.py + --check      (CI: facts still true, output not drifted)</code></pre>
+
+      <p><strong>Migration task inside this step:</strong> the v1 prototype's <code>data.js</code> predates the 1.1
+        schema. Bringing it up to health19's shape means: blocks become <code>{k, v}</code> objects; add
+        <code>SCREEN_CTX</code>-per-screen + <code>QA_SUGGEST</code>; add <code>COLUMNS</code>; intents gain
+        <code>screens</code>/<code>phrases</code>/<code>capability</code>; missions gain the 4-field consequence +
+        per-option recovery; add <code>TENANT_DEFAULTS</code> and the <code>{{token}}</code> resolver; and the prototype
+        itself gains the <strong>always-on Coach drawer + "Stuck?" + <code>?</code></strong> so the per-screen
+        experience is authored and reviewed in the same place it's written. The three generator tools are copied from
+        <code>health19/docs/tutorial_crm/tools/</code> and re-pointed (sidebar xml-ids, module name, source banner).</p>
+    </section>
+
+    <!-- ================================================================ 9 -->
+    <section id="pbcoach">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-layers"/></svg></span><span><span class="n">09</span><br/>What happens to pb_coach</span></h2>
+      <p class="lede"><code>pb_coach</code> (6 JS tours, welcome modal, launcher FAB, no persistence) keeps working —
+        it owns the <strong>demo-world guided trial</strong> and PayAI's "Show me" envelope depends on it. It is not
+        extended further.</p>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th>Phase</th><th>pb_coach</th><th>pb_learn</th></tr></thead>
+        <tbody>
+          <tr><td>A (Pay Run)</td><td>Untouched. Demo FAB shows only for demo-group users.</td><td>Ships the always-on Coach + Journey for Pay Run. Learn launcher owns the bottom-right slot for non-demo users.</td></tr>
+          <tr><td>B (Setup)</td><td>Frozen. <code>tour_formula</code>/<code>tour_import</code> content re-expressed as pb_learn lessons.</td><td>Setup section content (statutory lesson + BHYT mission from v1).</td></tr>
+          <tr><td>C (convergence)</td><td><strong>Retired.</strong> hero_path becomes the Journey's welcome path; the spotlight engine is pb_learn's; PayAI's action envelope re-targets <code>learn_journey</code> lessons (<code>_KNOWN_TOURS</code> → lesson keys; contract-checked).</td><td>Owns all guidance, demo world included (demo disclaimer chip moves into the Coach drawer for demo users).</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ================================================================ 10 -->
+    <section id="phases">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-calendar"/></svg></span><span><span class="n">10</span><br/>Rollout phases</span></h2>
+      <div class="phases">
+        <div class="phase">
+          <h4>Phase A — Pay Run, end to end <span class="chip slate">~4–5 weeks</span></h4>
+          <p><em>A1 Port (wk 1):</em> pb_learn skeleton — models/tests/generator/engine/coach/journey copied from
+            health_learn, attribute constant set to <code>data-coach</code>, sidebar resolution re-pointed at
+            <code>pb.sidebar.item</code>. <em>A2 Anchors (wk 1):</em> the §4 catalog added to the 6 templates +
+            anchors.json + tests green. <em>A3 Content (wk 2–3):</em> data.js migrated to schema 1.1; L1–L4, 3 outlines,
+            m1/m2 full + m3 outline, 14 intents, columns, glossary, slots; VI written natively; generator emits module
+            data + .po. <em>A4 Wire &amp; verify (wk 4):</em> Coach mounted, Journey leaf in the sidebar (Pay Run
+            section, after Retro), progress/events/confidence live, contract checker green, Chrome-validated on all 8
+            screens in both languages. <em>Demo world included (coexisting):</em> demo users get the always-on Coach,
+            Journey and fixture missions from day one, while the pb_coach hero tour keeps delivering the live June-run
+            climax untouched.</p>
+        </div>
+        <div class="phase">
+          <h4>Phase B — Setup section + live capstone <span class="chip slate">~4 weeks</span></h4>
+          <p>Formula Engine, Salary Structures, Statutory, Integrations: anchors (most exist in pb_formula_studio),
+            statutory lesson + BHYT-versioning mission from v1, ~10 intents, contract entries for taught statutory
+            facts. <em>Demo track:</em> the mission engine learns to drive real screens; mL1 live capstone replaces the
+            pb_coach climax; the pb_demo generator gains per-user division assignment; the <strong>live-value
+            resolver</strong> lands (lesson/coach calc cards read real run totals and flag reasons via whitelisted
+            read-only methods, static worked example as fallback).</p>
+        </div>
+        <div class="phase">
+          <h4>Phase C — remaining sections + convergence <span class="chip slate">~3 weeks</span></h4>
+          <p>Overview/People/Insights screens; pb_coach retirement per §9; demo world switches to pb_learn.</p>
+        </div>
+        <div class="phase">
+          <h4>Phase D — intelligence <span class="chip slate">ongoing</span></h4>
+          <p><code>_compose</code> via the PayAI provider behind a flag; coach_miss clustering → new intents;
+            per-language comprehension deltas; author UI polish for <code>group_learn_author</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 11 -->
+    <section id="accept">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-list-checks"/></svg></span><span><span class="n">11</span><br/>Phase A acceptance</span></h2>
+      <ul>
+        <li>[ ] On every Pay Run screen (7 leaves + import wizard): "Stuck?" launcher + <code>?</code> open the drawer,
+          grounded with the right context card and suggested chips; drawer never dims/blocks; Esc/? behave.</li>
+        <li>[ ] Screen resolution correct for all 8 (including the three shared-template ledgers resolving to distinct
+          screens by tag) and cleared when leaving the section.</li>
+        <li>[ ] Journey leaf shows the 7 stations with live progress; L1–L4 playable with spotlight/pipeline/calc/morph
+          moments over the practice replica shell inside the Journey action (the health_learn pattern —
+          <code>journey.js:372</code>; real-screen anchors belong to the Coach's <em>Show me</em> and, later, live
+          missions); quizzes credit only correct judgement; resume works server-side. <em>The <code>trace</code> moment
+          ships with Phase B's Statutory lesson — its natural home (rate → payslip line); the engine support lands in
+          Phase A.</em></li>
+        <li>[ ] m1/m2 run on the fixture; consequence interception, anomaly recovery, undo, debrief, halved-gain rule;
+          the missions-never-touch-product test passes.</li>
+        <li>[ ] <em>Show me</em> flashes real controls; off-screen anchors produce the honest "not on this screen".</li>
+        <li>[ ] Capability gating verified for officer / manager / final-approver / admin / none.</li>
+        <li>[ ] EN ⇄ VI live switch on every surface incl. drawer answers and number formats.</li>
+        <li>[ ] anchors.json tests, contract checker, generator <code>--check</code>, and progress-security tests green
+          in CI.</li>
+        <li>[ ] Events flowing: coach_open/hit/miss, lesson/step/quiz, mission_recover — visible to
+          <code>group_learn_author</code>.</li>
+        <li>[ ] Reduced-motion (media query + toggle) and keyboard paths on lesson player and drawer.</li>
+      </ul>
+    </section>
+
+    <!-- ================================================================ 12 -->
+    <section id="questions">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-help-circle"/></svg></span><span><span class="n">12</span><br/>Decisions taken &amp; open questions</span></h2>
+      <p class="small muted">All questions resolved in review, 2026-08-09.</p>
+      <ol class="qs">
+        <li><strong>Model names stay <code>learn.*</code></strong> (not <code>pb.learn.*</code>) — maximum diffability
+          against health_learn; the products never share a DB.</li>
+        <li><strong>Anchor attribute stays <code>data-coach</code></strong> — 40+ live anchors keep working; the engine
+          reads a constant.</li>
+        <li><strong>The Learn launcher replaces pb_coach's FAB slot</strong>; PayAI pill unchanged; two floating
+          controls maximum.</li>
+        <li><strong>Import wizard is a screen without a station</strong> — coached and anchored, walked by L4, absent
+          from the map.</li>
+        <li><strong>The three ledgers share anchors</strong> (one template) but are three screens/stations — resolution
+          by action tag makes this free.</li>
+        <li><strong>Authoring stays prototype-first</strong> (this folder) with the generator, exactly like health19 —
+          not hand-written XML.</li>
+        <li><strong>The practice ladder (decided 2026-08-09):</strong> fixture missions are universal — customers and
+          demo prospects alike practise on isolated JS data; <strong>live missions are demo-tenant-only</strong>
+          (<code>kind=live</code>, demo-group gated, inverse isolation test), delivered as the Phase B capstone.</li>
+        <li><strong>Demo collisions → per-user division:</strong> each demo signup owns one of the 12 divisions for its
+          capstone; the pb_demo generator regenerates per division.</li>
+        <li><strong>Live values in lesson/coach cards land in Phase B</strong> (whitelisted read-only resolver, static
+          worked example as fallback); Phase A ships static content.</li>
+        <li><strong>Demo world adopts pb_learn in Phase A, coexisting</strong> with the pb_coach hero tour until the
+          Phase B capstone replaces the climax and Phase C retires pb_coach.</li>
+        <li><strong>Journey placement (decided 2026-08-09):</strong> a leaf in the Pay Run section through Phases A–B;
+          promoted to a top-level "Learn" section of its own once all sections are implemented (Phase C).</li>
+        <li><strong>Progress privacy (decided 2026-08-09):</strong> <code>learn.progress</code> /
+          <code>learn.confidence</code> stay private + author-only, exactly as health_learn ships. No manager
+          visibility.</li>
+        <li><strong>Data boundaries (decided 2026-08-09):</strong> pb_learn never sends database records to any LLM in
+          any phase (§6 audit table); the Phase D composer sends only the scrubbed question + authored corpus, behind a
+          flag that ships off. PayAI's existing data-egress and <code>.sudo()</code> issues are tracked as an
+          independent hardening task (§6).</li>
+      </ol>
+      <p class="small muted">No open questions remain — the design is fully decided and ready for Phase A.</p>
+    </section>
+
+  </article>
+
+  <footer class="doc-foot">
+    <span><svg class="ic"><use href="#i-git-branch"/></svg> Payobook Learn · v2 implementation design (2026-08)</span>
+    <span class="muted">Provenance: health19/addons/health_learn + docs/tutorial_crm · gitlocal pb_sidebar / pb_payruns / pb_payrun_wizard / pb_payslip_review / pb_import(_wizard) / pb_payrun_ledgers / pb_coach / pb_payroll_ai_insights</span>
+    <a href="analysis.html">v1 analysis <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+  </footer>
+
+</div>
+</body>
+</html>

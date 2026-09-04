@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Company scoping for the audit log. Consumers may extend read access with
+         their own model-specific rules; this baseline keeps the trail within the
+         user's allowed companies (blank company = global, always visible). -->
+    <record id="biz_approval_log_company_rule" model="ir.rule">
+        <field name="name">Approval Log: company</field>
+        <field name="model_id" ref="model_biz_approval_step_log"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

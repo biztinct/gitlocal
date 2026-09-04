@@ -1,0 +1,146 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_payroll_malaysia
+#: model:ir.ui.view,string:pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia
+msgid "Malaysia Payroll Dashboard"
+msgstr "Bảng điều khiển tiền lương của Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_dashboard
+msgid "Malaysia Dashboard"
+msgstr "Bảng điều khiển Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_epf
+msgid "Malaysia EPF/SOCSO Submission"
+msgstr "Đệ trình EPF/SOCSO của Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: field:hr.payslip,malaysia_epf_employee:0
+msgid "EPF - Employee"
+msgstr "EPF - Nhân viên"
+
+#. module: pb_hr_payroll_malaysia
+#: field:hr.payslip,malaysia_epf_company:0
+msgid "EPF - Company"
+msgstr "EPF - Công ty"
+
+#. module: pb_hr_payroll_malaysia
+#: field:hr.payslip,malaysia_socso_employee:0
+msgid "SOCSO - Employee"
+msgstr "SOCSO - Nhân viên"
+
+#. module: pb_hr_payroll_malaysia
+#: field:hr.payslip,malaysia_socso_company:0
+msgid "SOCSO - Company"
+msgstr "SOCSO - Công ty"
+
+#. module: pb_hr_payroll_malaysia
+#: field:hr.payslip,malaysia_eis:0
+msgid "Employment Insurance System"
+msgstr "Hệ thống bảo hiểm việc làm"
+
+#. module: pb_hr_payroll_malaysia
+#: button:hr.payslip,action_compute_malaysia_tax:0
+msgid "Compute Malaysia Tax"
+msgstr "Tính thuế Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: view:hr.payslip:0
+msgid "Malaysia Payslip"
+msgstr "Phiếu lương Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: view:hr.payslip:0
+msgid "Malaysia Salary Rules"
+msgstr "Quy tắc lương của Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: view:hr.payslip:0
+msgid "Malaysia Insurance Components"
+msgstr "Linh kiện bảo hiểm Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#. odoo-python
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:50
+msgid "Malaysia tax computed successfully"
+msgstr "Thuế Malaysia được tính thành công"
+
+#. module: pb_hr_payroll_malaysia
+#. odoo-python
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:60
+msgid "Error computing Malaysia tax: %s"
+msgstr "Lỗi tính thuế Malaysia: %s"
+
+#. module: pb_hr_payroll_malaysia
+#: help:hr.payslip,malaysia_epf_employee:0
+msgid "11% deducted from employee salary for EPF (Employees Provident Fund)"
+msgstr "11% dTrừ lương nhân viên cho EPF (Quỹ tiết kiệm dành cho nhân viên)"
+
+#. module: pb_hr_payroll_malaysia
+#: help:hr.payslip,malaysia_epf_company:0
+msgid "12-13% paid by company for EPF (Employees Provident Fund)"
+msgstr "Công ty đóng 12–13% cho EPF (Quỹ Tiết kiệm Nhân viên)"
+
+#. module: pb_hr_payroll_malaysia
+#: help:hr.payslip,malaysia_socso_employee:0
+msgid "0.5% deducted from employee salary for SOCSO"
+msgstr "0,5% dTrừ vào lương nhân viên của SOCSO"
+
+#. module: pb_hr_payroll_malaysia
+#: help:hr.payslip,malaysia_socso_company:0
+msgid "1.75% paid by company for SOCSO"
+msgstr "Công ty đóng 1,75% cho SOCSO"
+
+#. module: pb_hr_payroll_malaysia
+#: res.groups,name:pb_hr_payroll_malaysia.group_malaysia_payroll_officer
+msgid "Malaysia Payroll Officer"
+msgstr "Cán bộ tiền lương Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: button:payroll.dashboard,action_process_malaysia_payroll:0
+msgid "Process Malaysia Payroll"
+msgstr "Quy trình tính lương Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: button:payroll.dashboard,action_submit_epf:0
+msgid "Submit EPF/SOCSO"
+msgstr "Gửi EPF/SOCSO"
+
+#. module: pb_hr_payroll_malaysia
+#: button:payroll.dashboard,action_export_malaysia_data:0
+msgid "Export Malaysia Data"
+msgstr "Xuất dữ liệu Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: dashboard.payroll:0
+msgid "Malaysia Payroll Management System"
+msgstr "Hệ thống quản lý tiền lương của Malaysia"
+
+#. module: pb_hr_payroll_malaysia
+#: dashboard.payroll:0
+msgid "EPF Management and Submission"
+msgstr "Quản lý và gửi EPF"
+
+#. module: pb_hr_payroll_malaysia
+#: dashboard.payroll:0
+msgid "SOCSO and EIS Management"
+msgstr "Quản lý SOCSO và EIS"
+
+#. module: pb_hr_payroll_malaysia
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "Xử lý bảng lương hàng tháng"

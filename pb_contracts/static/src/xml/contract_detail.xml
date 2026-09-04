@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_contracts.PbContractDetail">
+    <div class="pbim con pbim-page ppl-detail ppl-cdetail">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contract…</span></div>
+
+      <div t-elif="d.error" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Contracts</button></div></div>
+      </div>
+
+      <div t-else="" class="pbim-wrap ppl-d-wrap">
+
+        <div class="ppl-d-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Contracts</button>
+          <div class="sp"/>
+          <button class="pbim-btn outline" t-on-click="openEmployee"><t t-out="ic('user',15)"/> Employee</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <!-- hero -->
+        <div class="pbim-hero ppl-d-hero">
+          <div class="pbim-hero-av ppl-d-av" t-attf-style="background-image:url({{ d.avatar }})"><span t-if="!d.avatar" t-esc="initials()"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.employee"/>
+            <div class="mt"><t t-esc="d.name"/><t t-if="d.dept"> · <t t-esc="d.dept"/></t></div>
+            <div class="pbim-hero-chips">
+              <span t-if="d.structure" class="pbim-chip"><t t-out="ic('sigma',13)"/> <t t-esc="d.structure"/></span>
+              <span t-if="d.job" class="pbim-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="d.job"/></span>
+              <span t-if="d.date_start" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="d.date_start"/> → <t t-esc="d.date_end or 'indefinite'"/></span>
+            </div>
+          </div>
+          <div class="ppl-d-state">
+            <span t-attf-class="pbim-badge {{ cCls(d.state) }}"><span class="d"/><t t-esc="d.state_label"/></span>
+          </div>
+        </div>
+
+        <!-- stat tiles -->
+        <div class="ppl-d-stats">
+          <div class="pbim-stat"><span class="n money" t-esc="money(d.wage)"/><span class="l">Monthly wage</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="d.tenure_label"/><span class="l">Tenure</span></div>
+          <div t-attf-class="pbim-stat {{ d.days_to_expiry !== null and d.days_to_expiry &lt;= 30 ? 'err' : '' }}">
+            <span class="n" t-esc="d.days_to_expiry !== null ? d.days_to_expiry + 'd' : '—'"/><span class="l">To contract end</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="d.trial_end or '—'"/><span class="l">Trial ends</span></div>
+        </div>
+
+        <!-- lifecycle rail + actions -->
+        <div class="pbim-panel ppl-d-railpanel">
+          <div class="pbim-panel-h"><h2 class="pbim-h2">Lifecycle</h2></div>
+          <div class="pbim-rail">
+            <t t-foreach="d.pipeline" t-as="s" t-key="s.key">
+              <div t-attf-class="pbim-rail-step {{ s.current ? 'cur' : (s.done ? 'done' : '') }}">
+                <span class="pbim-rail-dot"><t t-if="s.done"><t t-out="ic('check',14)"/></t><t t-else="" t-esc="s_index+1"/></span>
+                <span class="pbim-rail-lab" t-esc="s.label"/>
+              </div>
+              <div t-if="!s_last" t-attf-class="pbim-rail-bar {{ s.done ? 'done' : '' }}"/>
+            </t>
+          </div>
+          <div t-if="d.next_actions.length" class="ppl-d-actions">
+            <button t-foreach="d.next_actions" t-as="a" t-key="a.method"
+                    t-attf-class="pbim-btn {{ a.kind }}" t-on-click="() => this.runAction(a.method)">
+              <t t-out="ic(a.icon,15)"/> <t t-esc="a.label"/>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div t-if="state.busy" class="ppl-overlay"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+    </div>
+  </t>
+
+</templates>

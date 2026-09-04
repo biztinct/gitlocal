@@ -1,0 +1,1459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Access home.
+
+       Comments ruled with `=`, never a doubled hyphen (R35/W22). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       role loop is `pf`, the holder loop is `hd`, the hand-over loop is `hv`,
+       the area chip loop is `ar`, the person-picker loop is `pp`, the
+       my-profiles loop is `mp`, the lens loop is `ln`, the opened-screen loop
+       is `op`, the ability loop is `ab`, the ability-area loop is `aa`, the
+       start-from-a-role loop is `sr`, the person loop is `ps`, the
+       roles-they-carry loop is `rl`, the role-to-give loop is `gr`; the passport
+       header is `ph` (the roles lens already uses `hd` for a holder). The
+       Screens lens adds: the section loop is `sc`, the entry loop is `it`, the
+       sub-entry loop is `kd`, the gate loop is `ga` and the who-sees-it loop is
+       `ws`; the opened-out entry is `dt` (a `t-set`, like the roles lens's).
+
+       R33 — `.pbim-badge` capitalises every word, which is right for a status
+       word and wrong for a sentence. The "what this lets someone do" line is
+       NOT a badge; it is prose, in its own class, with `text-transform: none`.
+
+       R82 — people are drawn with `avatar_128`. `image_128` renders a grey
+       camera when the field is unset, answers 200, and looks broken only to a
+       person.
+       ==================================================================== -->
+  <t t-name="biz_access.PbAccessBoard">
+    <div class="pbim pbim-page pbva pbva-access"
+         t-att-class="{ 'pbva--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading who can do what…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty pbva-empty">
+          <div class="pbva-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>The access board could not be read</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="reload">Try again</button>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbva-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="pbva-head">
+          <div class="pbva-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h2 t-if="!props.embedded" class="pbva-h">Access</h2>
+            <p class="pbva-s" t-esc="board.headline"/>
+          </div>
+          <div class="pbva-head-actions">
+
+            <!-- ========================= see it as… =========================
+                 A PAIR OF SPECTACLES, NOT A LOGIN. It repaints what the lenses
+                 SAY and changes nothing about what the person wearing them can
+                 do — which is why it is safe to hand to the access team, and
+                 why the banner underneath never lets anybody forget it is on.
+
+                 ABSENT, NOT DISABLED, for anybody who may not look at somebody
+                 else's access. The server refuses it as well; this is the
+                 courtesy, not the rail. -->
+            <div t-if="canManage" class="pbva-sim">
+              <button t-attf-class="pbva-simchip {{ state.seeing ? 'is-on' : '' }}"
+                      t-on-click="toggleSim"
+                      t-attf-aria-expanded="{{ state.simOpen ? 'true' : 'false' }}"
+                      title="Look at these screens as somebody else. It changes nothing.">
+                <t t-out="ic('monitor',14)"/>
+                <span class="pbva-simchip-l">See it as</span>
+                <b t-esc="seeingName"/>
+                <t t-out="ic('chevronDown',13)"/>
+              </button>
+
+              <div t-if="state.simOpen" class="pbva-simscrim"
+                   t-on-click="toggleSim"/>
+              <div t-if="state.simOpen" class="pbva-simmenu" role="dialog"
+                   aria-label="See it as somebody else">
+                <p class="pbva-simmenu-h">
+                  Everything on this screen is drawn as they would see it.
+                  Nothing you do changes because of it.
+                </p>
+                <button class="pbva-pick" t-on-click="() => this.seeAs(null)">
+                  <span><t t-out="ic('user',14)"/> You</span>
+                  <small>Back to your own view</small>
+                </button>
+                <label class="pbva-field pbva-field--search pbva-simfield">
+                  <span class="pbva-in-ic"><t t-out="ic('search',14)"/></span>
+                  <input class="pbva-in" type="search"
+                         t-att-value="state.simSearch"
+                         t-on-input="onSimSearch"
+                         placeholder="Start typing a name"/>
+                </label>
+                <div t-if="state.people.length" class="pbva-picker">
+                  <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                          class="pbva-pick" t-on-click="() => this.seeAs(pp)">
+                    <img class="pbva-face" t-att-src="pp.avatar"
+                         t-att-alt="pp.name"/>
+                    <span t-esc="pp.name"/><small t-esc="pp.login"/>
+                  </button>
+                </div>
+                <p t-elif="state.simSearch.length >= 2" class="pbva-hint">
+                  Nobody with a login matches that.
+                </p>
+              </div>
+            </div>
+
+            <button class="pbim-btn ghost" t-on-click="reload"
+                    title="Read it again">
+              <t t-out="ic('refresh',15)"/>
+            </button>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.exportFile('roles')"
+                    t-att-disabled="state.busy"
+                    title="One line per person per role">
+              <t t-out="ic('download',15)"/> Who holds what
+            </button>
+            <button t-if="canManage" class="pbim-btn ghost"
+                    t-on-click="() => this.exportFile('history')"
+                    t-att-disabled="state.busy"
+                    title="Every hand-over, grant and removal, ever">
+              <t t-out="ic('download',15)"/> History
+            </button>
+            <button t-if="canManage" class="pbim-btn ghost" t-on-click="runRevert"
+                    t-att-disabled="state.busy"
+                    title="Do now exactly what the nightly check does">
+              <t t-out="ic('clock',15)"/> Take back what has ended
+            </button>
+            <!-- Sits with the other actions, at the top. It was at the FOOT of
+                 the roles list, which on a long list meant scrolling past every
+                 role to reach the one control that changes the list itself. -->
+            <button t-if="canManage" class="pbim-btn ghost" t-on-click="openRoleList"
+                    title="Add a role, rename one, or change what it says">
+              <t t-out="ic('list',15)"/> Edit the list of roles
+            </button>
+            <button class="pbim-btn ghost" t-on-click="openDelegate">
+              <t t-out="ic('arrowLeftRight',15)"/> Hand my access over
+            </button>
+            <!-- ABSENT, NOT DISABLED, for anybody who cannot use it. A greyed
+                 button is a promise the screen has no intention of keeping. -->
+            <button t-if="canManage" class="pbim-btn primary"
+                    t-on-click="() => this.openComposer(null)">
+              <t t-out="ic('plus',15)"/> New role
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================== the spectacles are on =====================
+             A MODE NOBODY CAN BE IN BY ACCIDENT. The chip above says who; this
+             says what it means and how to stop, in the same breath. -->
+        <div t-if="state.seeing" class="pbva-simbar">
+          <img class="pbva-face" t-att-src="state.seeing.avatar"
+               t-att-alt="state.seeing.name"/>
+          <span class="pbva-simbar-tx">
+            <b t-esc="'Looking at this as ' + state.seeing.name"/>
+            <small>
+              Roles they hold are tagged, and the People lens is on their
+              passport. You still have exactly your own access.
+            </small>
+          </span>
+          <button class="pbva-linkbtn" t-on-click="seeAsMe">
+            <t t-out="ic('undo',13)"/> Back to your own view
+          </button>
+        </div>
+
+        <!-- =========================== the numbers =========================== -->
+        <div class="pbim-stats pbva-kpis">
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('idCard',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.profiles"/>
+              <div class="l">roles written down</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic blue"><t t-out="ic('users',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.people"/>
+              <div class="l">people hold one</div>
+            </div>
+          </div>
+          <div t-attf-class="pbim-stat {{ kpis.active ? 'warn' : '' }}">
+            <div class="pbim-stat-ic"><t t-out="ic('arrowLeftRight',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.active"/>
+              <div class="l">hand-overs running now</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic green"><t t-out="ic('user',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.mine"/>
+              <div class="l">you hold yourself</div>
+            </div>
+          </div>
+          <!-- The fifth number turns a list of roles into a picture of the
+               product: how many doors there are down the side of the screen
+               for any of this to open. -->
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('layers',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.entries"/>
+              <div class="l">entries on the left menu</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ the lenses ============================ -->
+        <div class="pbva-bar">
+          <div class="pbva-tabs" role="tablist">
+            <button t-foreach="lenses" t-as="ln" t-key="ln.key"
+                    t-attf-class="pbva-tab {{ state.lens === ln.key ? 'is-on' : '' }}"
+                    role="tab" t-attf-aria-selected="{{ state.lens === ln.key ? 'true' : 'false' }}"
+                    t-on-click="() => this.setLens(ln.key)">
+              <t t-out="ic(ln.icon,15)"/> <t t-esc="ln.label"/>
+            </button>
+          </div>
+
+          <label t-if="state.lens === 'roles'"
+                 class="pbva-field pbva-field--search">
+            <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
+            <input class="pbva-in" type="search" t-att-value="state.search"
+                   t-on-input="onSearch"
+                   placeholder="Search a role, or what it lets someone do"/>
+          </label>
+
+          <div t-if="state.lens === 'roles'" class="pbva-chips">
+            <button t-foreach="board.areas or []" t-as="ar" t-key="ar.key"
+                    t-attf-class="pbva-chip {{ state.area === ar.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setArea(ar.key)">
+              <span t-esc="ar.label"/><b t-esc="ar.n"/>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================ the roles ============================ -->
+        <div t-if="state.lens === 'roles'" class="pbva-body">
+
+          <div t-if="!profiles.length" class="pbim-empty pbva-empty">
+            <div class="pbva-empty-ic"><t t-out="ic('idCard',30)"/></div>
+            <h3>No roles written down yet</h3>
+            <p>
+              A role here is a permission this product already has, given a name
+              somebody can say out loud and one sentence explaining what it lets
+              them do. It is what makes "give Mai the payroll thing" a decision
+              instead of a guess.
+            </p>
+          </div>
+
+          <div t-else="" class="pbva-roles">
+            <div t-foreach="profiles" t-as="pf" t-key="pf.id"
+                 t-attf-class="pbva-role {{ state.open === pf.id ? 'is-open' : '' }}"
+                 t-attf-style="--pbva-i: {{pf_index}}">
+
+              <div class="pbva-role-h" role="button" tabindex="0"
+                   t-attf-aria-expanded="{{ state.open === pf.id ? 'true' : 'false' }}"
+                   t-on-click="() => this.toggleRole(pf.id)"
+                   t-on-keydown="(ev) => this.onRoleKey(ev, pf.id)">
+                <div class="pbva-role-ic"><t t-out="ic('idCard',18)"/></div>
+                <div class="pbva-role-id">
+                  <span class="pbva-role-top">
+                    <span class="pbva-role-n" t-esc="pf.name"/>
+                    <span class="pbva-role-a" t-esc="pf.area_label"/>
+                    <span t-if="pf.i_hold" class="pbva-badge pbva-badge--mine">
+                      You hold this
+                    </span>
+                    <!-- The spectacles, on a card. Never shown for "you" — the
+                         badge above already says it. -->
+                    <span t-if="simHolds(pf.id)"
+                          class="pbva-badge pbva-badge--seen"
+                          t-esc="simTag()"/>
+                    <span t-if="pf.restricted"
+                          class="pbva-badge pbva-badge--quiet"
+                          title="Only shown to the people this concerns">
+                      Restricted
+                    </span>
+                  </span>
+                  <!-- THE SENTENCE IS THE HERO. Every mistake this screen
+                       exists to prevent starts with somebody granting a thing
+                       they could not name, so the description is prose at full
+                       size and never a badge (R33 — `.pbim-badge` capitalises
+                       every word). -->
+                  <p class="pbva-role-d" t-esc="pf.description"/>
+                </div>
+                <div class="pbva-role-side">
+                  <div class="pbva-faces">
+                    <span t-foreach="pf.holders.slice(0,4)" t-as="hd"
+                          t-key="hd.id" class="pbva-face"
+                          t-att-title="hd.name">
+                      <img t-att-src="hd.avatar" t-att-alt="hd.name"/>
+                    </span>
+                  </div>
+                  <span class="pbva-role-count" t-esc="pf.holder_count"/>
+                  <span class="pbva-role-caret">
+                    <t t-out="ic('chevronDown',16)"/>
+                  </span>
+                </div>
+              </div>
+
+              <!-- ================= opened out: the three questions =================
+                   What does it OPEN, what does it LET THEM DO, and who HOLDS it —
+                   in the order somebody asks them. Every one of the three is
+                   worked out on the server; none of it is stored on the role. -->
+              <div t-if="state.open === pf.id" class="pbva-role-body">
+
+                <div t-if="state.detailBusy === pf.id" class="pbim-busy pbva-detail-busy">
+                  <div class="pbim-spin"/><span>Working out what this opens…</span>
+                </div>
+
+                <t t-elif="detailOf(pf.id)">
+                  <t t-set="dt" t-value="detailOf(pf.id)"/>
+
+                  <div t-if="dt.failed" class="pbva-mini-empty">
+                    <t t-out="ic('alert',22)"/>
+                    <p t-esc="dt.failed"/>
+                  </div>
+
+                  <div t-else="" class="pbva-cols">
+
+                    <!-- ========================= what it opens ========================= -->
+                    <div class="pbva-col">
+                      <h4><t t-out="ic('layers',13)"/> Opens on the left menu</h4>
+
+                      <div t-if="dt.opens.length" class="pbva-scrchips">
+                        <span t-foreach="dt.opens" t-as="op" t-key="op.id"
+                              class="pbva-scrchip">
+                          <t t-out="ic('layers',13)"/>
+                          <b t-esc="op.label"/>
+                          <small t-if="op.subs.length"
+                                 t-esc="'· ' + op.subs.join(', ')"/>
+                          <span t-if="op.locked" class="pbva-scrchip-lock"
+                                title="People without this role still see this entry, locked, with a note about what it is.">
+                            <t t-out="ic('lock',12)"/>
+                          </span>
+                        </span>
+                      </div>
+
+                      <!-- NO DEAD END. An empty column has to say WHY it is
+                           empty, because "nothing here" and "nothing is set up
+                           yet" are different answers and only one of them is a
+                           reason to go and do something. -->
+                      <p t-elif="!dt.any_gated" class="pbva-col-empty">
+                        No entry on the left menu is limited to a permission
+                        yet, so nothing here changes what somebody SEES down
+                        the side of the screen. What this role changes is what
+                        they can do once they are inside.
+                      </p>
+                      <p t-else="" class="pbva-col-empty">
+                        This role does not unlock any entry on the left menu.
+                        It changes what somebody can do inside the screens they
+                        already have.
+                      </p>
+
+                      <p t-if="dt.opens.length and dt.everyone.length"
+                         class="pbva-col-note" t-esc="everyoneLine(dt)"/>
+                    </div>
+
+                    <!-- ========================= what it lets them do ================== -->
+                    <div class="pbva-col">
+                      <h4><t t-out="ic('check',13)"/> Lets them</h4>
+
+                      <div t-if="!dt.abilities.length" class="pbva-col-empty">
+                        Nothing is written against this role yet, so it hands
+                        out nothing. Open the list of roles to say what it
+                        should let somebody do.
+                      </div>
+                      <div t-else="" t-foreach="dt.abilities" t-as="ab"
+                           t-key="ab.id" class="pbva-verb">
+                        <span class="pbva-verb-ic"><t t-out="ic('check',14)"/></span>
+                        <span class="pbva-verb-tx">
+                          <b t-esc="ab.name"/>
+                          <small t-if="ab.description" t-esc="ab.description"/>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- ========================= who holds it ========================== -->
+                    <div class="pbva-col">
+                      <h4><t t-out="ic('users',13)"/> <t t-esc="heldByLine(dt)"/></h4>
+
+                      <div t-if="!dt.holders.length" class="pbva-col-empty">
+                        Nobody holds this yet. It is written down and ready —
+                        give it to somebody when you need to.
+                      </div>
+
+                      <div t-foreach="dt.holders" t-as="hd" t-key="hd.id"
+                           class="pbva-prow">
+                        <img class="pbva-face" t-att-src="hd.avatar"
+                             t-att-alt="hd.name"/>
+                        <span class="pbva-prow-who">
+                          <b t-esc="hd.name"/>
+                          <small t-esc="holderNote(hd)"/>
+                        </span>
+                        <span t-if="hd.source === 'lent'"
+                              class="pbva-badge pbva-badge--lent">Lent</span>
+                        <button t-if="canManage and hd.source === 'lent'"
+                                class="pbva-linkbtn"
+                                t-att-disabled="state.busy"
+                                t-on-click="() => this.revoke({ id: hd.delegation_id })">
+                          End the hand-over
+                        </button>
+                        <button t-elif="canManage" class="pbva-linkbtn"
+                                t-on-click="() => this.openRemove(pf, hd)">
+                          Take back
+                        </button>
+                      </div>
+
+                      <p t-if="dt.more" class="pbva-col-note"
+                         t-esc="'and ' + dt.more + ' more — the spreadsheet has the whole list.'"/>
+
+                      <button t-if="canManage" class="pbim-btn ghost pbva-grant"
+                              t-on-click="() => this.openGrant(pf)">
+                        <t t-out="ic('plus',14)"/> Give this to somebody
+                      </button>
+
+                      <!-- PUT IT AWAY — the way out of two roles that have come
+                           to mean the same thing (ledger B7). It is offered
+                           whatever the holder count is, on purpose: pressing it
+                           on a role somebody still holds answers with their
+                           NAMES, which is the instruction. A button that were
+                           simply absent would leave somebody wondering whether
+                           the action exists at all. -->
+                      <button t-if="canManage" class="pbva-linkbtn pbva-archive"
+                              t-att-disabled="state.busy"
+                              t-on-click="() => this.archiveRole(pf)"
+                              title="Take it off the board. It hands out nothing, nobody loses a permission, and the history keeps every mention of it.">
+                        <t t-out="ic('archive',13)"/> Put this role away
+                      </button>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================ the people ============================
+             WHAT DOES THIS PERSON HAVE. A list of colleagues on the left, and
+             on the right their PASSPORT: their left menu drawn as they see it,
+             then every role they carry with the reason they carry it.
+
+             THE MENU COMES FIRST, ABOVE THE ROLES, ON PURPOSE. "I cannot find
+             the pay run screen" is the sentence this lens exists to answer, and
+             a picture of the menu answers it in one look where a list of
+             permission names does not answer it at all.
+
+             THE STATES ARE THE LEFT MENU'S OWN. They are worked out by the very
+             code that draws the real menu for the real person — not by a copy
+             of that rule living here, which would one day disagree and would
+             disagree by promising somebody a screen they cannot open. -->
+        <div t-if="state.lens === 'people'" class="pbva-body pbva-people">
+
+          <!-- ============================ the list ============================ -->
+          <aside class="pbva-plist">
+            <label class="pbva-field pbva-field--search pbva-plist-search">
+              <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
+              <input class="pbva-in" type="search"
+                     t-att-value="state.peopleSearch"
+                     t-on-input="onPeopleSearch"
+                     placeholder="Search a name"/>
+            </label>
+
+            <div t-if="state.peopleBusy and !peopleRows.length" class="pbim-busy">
+              <div class="pbim-spin"/><span>Reading the list…</span>
+            </div>
+
+            <div t-elif="!peopleRows.length" class="pbva-mini-empty">
+              <t t-out="ic('users',22)"/>
+              <p>
+                Nobody with a login matches that. Try part of a name, or clear
+                the box to see everybody.
+              </p>
+            </div>
+
+            <div t-else="" class="pbva-prows">
+              <button t-foreach="peopleRows" t-as="ps" t-key="ps.id"
+                      t-attf-class="pbva-personrow {{ state.personId === ps.id ? 'is-on' : '' }}"
+                      t-on-click="() => this.loadPassport(ps.id)">
+                <img class="pbva-face" t-att-src="ps.avatar" t-att-alt="ps.name"/>
+                <span class="pbva-personrow-tx">
+                  <b>
+                    <t t-esc="ps.name"/>
+                    <span t-if="ps.is_me" class="pbva-badge pbva-badge--mine">
+                      You
+                    </span>
+                  </b>
+                  <small t-if="ps.title" t-esc="ps.title"/>
+                  <small t-else="" t-esc="ps.login"/>
+                </span>
+                <span class="pbva-personrow-n">
+                  <span t-esc="personNote(ps)"/>
+                  <span t-if="ps.lent_count" class="pbva-badge pbva-badge--lent">
+                    Lent
+                  </span>
+                </span>
+              </button>
+            </div>
+          </aside>
+
+          <!-- ========================== the passport ========================== -->
+          <section class="pbva-passport">
+
+            <div t-if="state.passportBusy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Working out what they can see…</span>
+            </div>
+
+            <div t-elif="state.passportFailed" class="pbva-mini-empty">
+              <t t-out="ic('alert',22)"/>
+              <p t-esc="state.passportFailed"/>
+            </div>
+
+            <t t-elif="passport">
+              <t t-set="ph" t-value="passport.header"/>
+
+              <div class="pbva-pass-h">
+                <img class="pbva-pass-face" t-att-src="ph.avatar"
+                     t-att-alt="ph.name"/>
+                <div class="pbva-pass-id">
+                  <h3>
+                    <t t-esc="ph.name"/>
+                    <span t-if="ph.is_me" class="pbva-badge pbva-badge--mine">
+                      You
+                    </span>
+                  </h3>
+                  <p class="pbva-pass-sub">
+                    <span t-if="ph.title" t-esc="ph.title"/>
+                    <span t-else="" t-esc="ph.login"/>
+                    <span class="pbva-dot">·</span>
+                    <span t-esc="rolesLine(ph)"/>
+                  </p>
+                  <p class="pbva-pass-sees" t-esc="seesLine(ph)"/>
+                </div>
+                <div class="pbva-pass-actions">
+                  <button class="pbim-btn ghost"
+                          t-on-click="() => this.openPersonHistory(ph)">
+                    <t t-out="ic('history',14)"/> Their history
+                  </button>
+                  <button t-if="passport.can_manage" class="pbim-btn primary"
+                          t-on-click="() => this.openGiveRole(ph)">
+                    <t t-out="ic('plus',14)"/> Give a role
+                  </button>
+                </div>
+              </div>
+
+              <div class="pbva-pass-cols">
+
+                <!-- ===================== their menu ===================== -->
+                <div class="pbva-pass-rail">
+                  <p class="pbva-colhead">
+                    <t t-out="ic('layers',13)"/>
+                    <t t-esc="'The menu, as ' + callName(ph.name) + ' sees it'"/>
+                  </p>
+
+                  <PbMiniRail t-if="passport.rail.length"
+                              sections="passport.rail" legend="true"/>
+
+                  <p t-else="" class="pbva-col-empty">
+                    There is no left menu written down on this system, so there
+                    is nothing to draw here yet.
+                  </p>
+
+                  <p t-if="passport.rail.length and ph.is_admin"
+                     class="pbva-note">
+                    <t t-out="ic('shieldCheck',14)"/>
+                    <span>
+                      They are an administrator, so every entry is open to them
+                      whatever roles they hold. Roles change what they can do
+                      inside a screen, not whether they can reach it.
+                    </span>
+                  </p>
+                  <p t-elif="passport.rail.length and !passport.any_gated"
+                     class="pbva-note">
+                    <t t-out="ic('info',14)"/>
+                    <span>
+                      No entry on the left menu is limited to a permission yet,
+                      so everybody with a login sees the same menu. What a role
+                      changes today is what somebody can do once they are
+                      inside a screen.
+                    </span>
+                  </p>
+                </div>
+
+                <!-- =================== the roles they carry =================== -->
+                <div class="pbva-pass-roles">
+                  <p class="pbva-colhead">
+                    <t t-out="ic('idCard',13)"/> Roles they carry
+                  </p>
+
+                  <!-- NO DEAD END. An empty passport says what it MEANS —
+                       they still have a login and still see the entries
+                       everybody sees — and offers the one action that changes
+                       it. -->
+                  <div t-if="!passport.roles.length" class="pbva-mini-empty">
+                    <t t-out="ic('idCard',22)"/>
+                    <p>
+                      No roles yet. They see only the entries every account
+                      gets, and can do only what comes with having a login.
+                    </p>
+                    <button t-if="passport.can_manage" class="pbim-btn primary"
+                            t-on-click="() => this.openGiveRole(ph)">
+                      <t t-out="ic('plus',14)"/> Give a role
+                    </button>
+                  </div>
+
+                  <div t-else="" class="pbva-passroles">
+                    <div t-foreach="passport.roles" t-as="rl"
+                         t-key="rl.profile_id"
+                         t-attf-class="pbva-passrole pbva-area--{{rl.area}}">
+                      <div class="pbva-passrole-ic">
+                        <t t-out="ic('idCard',16)"/>
+                      </div>
+                      <div class="pbva-passrole-tx">
+                        <b>
+                          <t t-esc="rl.name"/>
+                          <span class="pbva-role-a" t-esc="rl.area_label"/>
+                          <span t-if="rl.source === 'lent'"
+                                class="pbva-badge pbva-badge--lent">Lent</span>
+                        </b>
+                        <p t-if="rl.description" t-esc="rl.description"/>
+                        <small t-esc="roleSourceLine(rl)"/>
+                      </div>
+                      <!-- A LENT ROLE IS ENDED, NEVER TAKEN BACK (ledger B3):
+                           removing it from the borrower would leave the
+                           hand-over record pointing at access that is gone. -->
+                      <button t-if="passport.can_manage and rl.source === 'lent'"
+                              class="pbva-linkbtn"
+                              t-att-disabled="state.busy"
+                              t-on-click="() => this.revoke({ id: rl.delegation_id })">
+                        End the hand-over
+                      </button>
+                      <button t-elif="rl.can_take_back" class="pbva-linkbtn"
+                              t-on-click="() => this.takeBackRole(rl)">
+                        Take back
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <div t-else="" class="pbim-empty pbva-empty">
+              <div class="pbva-empty-ic"><t t-out="ic('users',30)"/></div>
+              <h3>Pick somebody</h3>
+              <p>
+                Choose a name on the left and this side shows their left menu
+                exactly as they see it, and every role they carry.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- ============================ the screens ============================
+             WHO SEES THIS SCREEN — and the menu is drawn AS THE MENU.
+
+             Not a table of entries with a column of permission names: the
+             left-hand pane is the rail, in the rail's own order, with its
+             sections and its icons, because that is the thing everybody in the
+             company is already looking at. A gate is a ROLE chip on the row — a
+             name and a sentence — and each row says, in the same glance,
+             whether the person in the "See it as" picker can open it.
+
+             AND IT IS THE ONLY PLACE A GATE IS EDITED. Before this lens the
+             only way to change one was a list view of permission-group names,
+             which is exactly why the live menu ended up with no gates at all:
+             the screen that could change them was unreadable, so nobody did.
+
+             NO PERMISSION-GROUP NAME APPEARS ANYWHERE HERE. An older permission
+             that is part of a role is named as THAT ROLE; one that belongs to
+             no role is a count. Both are true; neither is a technical name on
+             a screen about plain English. -->
+        <div t-if="state.lens === 'screens'" class="pbva-body pbva-screens">
+
+          <div t-if="state.screensBusy and !state.screens" class="pbim-busy">
+            <div class="pbim-spin"/><span>Reading the left menu…</span>
+          </div>
+
+          <div t-elif="state.screensFailed" class="pbim-empty pbva-empty">
+            <div class="pbva-empty-ic"><t t-out="ic('alert',30)"/></div>
+            <h3>The left menu could not be read</h3>
+            <p t-esc="state.screensFailed"/>
+            <button class="pbim-btn primary" t-on-click="loadScreens">
+              Try again
+            </button>
+          </div>
+
+          <t t-elif="state.screens and !screenSections.length">
+            <div class="pbim-empty pbva-empty">
+              <div class="pbva-empty-ic"><t t-out="ic('compass',30)"/></div>
+              <h3>There is no left menu on this system</h3>
+              <p>
+                Nothing is written down for the menu down the side of the
+                screen, so there is nothing here to gate or reorder yet.
+              </p>
+            </div>
+          </t>
+
+          <t t-elif="state.screens">
+
+            <!-- ========================= the menu itself ========================= -->
+            <section class="pbva-scrlist">
+              <div class="pbva-scrlist-h">
+                <span class="pbva-scrlist-who">
+                  <t t-out="ic('monitor',14)"/>
+                  <span t-esc="seeingLine()"/>
+                </span>
+                <span t-if="screensCanManage" class="pbva-scrlist-hint">
+                  <t t-out="ic('moreVertical',13)"/> Drag an entry to move it, or hold
+                  Alt and press the up and down arrows
+                </span>
+              </div>
+
+              <div t-foreach="screenSections" t-as="sc" t-key="sc.id"
+                   class="pbva-scrsec">
+                <p class="pbva-scrsec-h">
+                  <span t-esc="sc.label"/>
+                  <span t-if="sc.restricted" class="pbva-badge pbva-badge--quiet"
+                        title="This whole block is shown locked to people who are not administrators.">
+                    Locked block
+                  </span>
+                </p>
+
+                <div t-foreach="sc.items" t-as="it" t-key="it.id"
+                     t-attf-class="pbva-scrrow {{ state.screenId === it.id ? 'is-on' : '' }} {{ it.active ? '' : 'is-off' }} {{ state.dragOver === it.id ? 'is-over' : '' }}"
+                     role="button" tabindex="0"
+                     t-attf-aria-selected="{{ state.screenId === it.id ? 'true' : 'false' }}"
+                     t-att-draggable="screensCanManage ? 'true' : 'false'"
+                     t-on-click="() => this.loadScreen(it.id)"
+                     t-on-keydown="(ev) => this.onScreenKey(ev, sc, it)"
+                     t-on-dragstart="(ev) => this.onDragStart(ev, sc, it)"
+                     t-on-dragover="(ev) => this.onDragOver(ev, sc, it)"
+                     t-on-drop="(ev) => this.onDrop(ev, sc, it)"
+                     t-on-dragend="onDragEnd">
+
+                  <span t-if="screensCanManage" class="pbva-scrgrip"
+                        title="Drag to move this entry">
+                    <t t-out="ic('moreVertical',14)"/>
+                  </span>
+                  <span class="pbva-scrico"><t t-out="railIcon(it.icon,15)"/></span>
+
+                  <span class="pbva-scrtx">
+                    <b t-esc="it.label"/>
+                    <span class="pbva-scrgates">
+                      <span t-if="it.everyone" class="pbva-gate pbva-gate--all">
+                        everyone with a login
+                      </span>
+                      <span t-foreach="it.gates.slice(0,2)" t-as="ga"
+                            t-key="ga.id"
+                            t-attf-class="pbva-gate pbva-area--{{ga.area}} {{ ga.archived ? 'is-gone' : '' }}"
+                            t-att-title="ga.description">
+                        <t t-esc="ga.name"/>
+                      </span>
+                      <span t-if="it.gates.length > 2" class="pbva-gate"
+                            t-esc="'+' + (it.gates.length - 2)"/>
+                      <span t-if="it.restricted" class="pbva-gate pbva-gate--lock"
+                            title="People who cannot open it still see it, locked, with a note.">
+                        <t t-out="ic('lock',10)"/> teaser
+                      </span>
+                      <span t-if="it.dead" class="pbva-gate pbva-gate--bad">
+                        nobody can open it
+                      </span>
+                      <span t-elif="it.orphan" class="pbva-gate pbva-gate--warn">
+                        nobody holds this role yet
+                      </span>
+                    </span>
+                  </span>
+
+                  <span t-attf-class="pbva-scrstate is-{{ it.active ? it.state : 'gone' }}">
+                    <t t-out="stateIcon(it)"/>
+                    <span t-esc="stateWord(it)"/>
+                  </span>
+
+                  <!-- A SWITCH, NOT A DELETE. Off means "not on the menu"; the
+                       screen behind it and everything on it are untouched, and
+                       it goes back on with the same click. -->
+                  <button t-if="screensCanManage"
+                          t-attf-class="pbva-switch {{ it.active ? 'is-on' : '' }}"
+                          role="switch"
+                          t-attf-aria-checked="{{ it.active ? 'true' : 'false' }}"
+                          t-att-disabled="state.busy"
+                          t-att-title="it.active ? 'On the left menu — press to take it off' : 'Off the left menu — press to put it back'"
+                          t-on-click.stop="() => this.setScreenActive(it, !it.active)"/>
+                </div>
+              </div>
+
+              <div class="pbva-scrfoot">
+                <button class="pbva-linkbtn" t-on-click="openAdvancedList">
+                  <t t-out="ic('list',13)"/> The plain table of entries
+                </button>
+              </div>
+            </section>
+
+            <!-- ======================= one entry, opened out ======================= -->
+            <section class="pbva-scrdetail">
+
+              <div t-if="state.screenBusy" class="pbim-busy">
+                <div class="pbim-spin"/><span>Working out who can open it…</span>
+              </div>
+
+              <t t-elif="state.screen">
+                <t t-set="dt" t-value="state.screen"/>
+
+                <div class="pbva-scrdet-h">
+                  <span class="pbva-scrico pbva-scrico--big">
+                    <t t-out="railIcon(dt.icon,19)"/>
+                  </span>
+                  <div class="pbva-scrdet-id">
+                    <h3 t-esc="dt.label"/>
+                    <p class="pbva-scrdet-sub">
+                      <span t-esc="dt.section_label"/>
+                      <span class="pbva-dot">·</span>
+                      <span t-esc="seenByLine(dt)"/>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- ====================== nobody can get in ======================
+                     TWO DIFFERENT KINDS OF NOBODY, and they need two different
+                     sentences: a gate whose roles have all been put away is a
+                     mistake, and a gate whose role nobody holds is a role
+                     waiting to be given to somebody. Both offer the way out
+                     rather than stating the problem and stopping. -->
+                <div t-if="dt.dead" class="pbva-scrwarn is-bad">
+                  <t t-out="ic('alert',15)"/>
+                  <span>
+                    The only role that opened this entry has been put away, so
+                    nobody but an administrator can reach it. Put another role
+                    on it below, or take the gate off to open it to everybody
+                    again.
+                  </span>
+                </div>
+                <div t-elif="dt.orphan" class="pbva-scrwarn is-warn">
+                  <t t-out="ic('alert',15)"/>
+                  <span>
+                    Nobody holds the role this entry asks for, so nobody but an
+                    administrator sees it. Give the role to somebody, or put a
+                    role people already hold on it.
+                  </span>
+                </div>
+
+                <!-- ========================== unlocked by ========================== -->
+                <p class="pbva-colhead"><t t-out="ic('key',13)"/> Unlocked by</p>
+
+                <div t-if="dt.everyone" class="pbva-scrempty">
+                  Nothing is asked for, so every person with a login sees this
+                  entry. Put a role on it and only the people who hold that role
+                  will.
+                </div>
+
+                <div t-else="" class="pbva-scrgates pbva-scrgates--big">
+                  <div t-foreach="dt.gates" t-as="ga" t-key="ga.id"
+                       t-attf-class="pbva-gaterow pbva-area--{{ga.area}} {{ ga.archived ? 'is-gone' : '' }}">
+                    <span class="pbva-gaterow-ic"><t t-out="ic('idCard',15)"/></span>
+                    <span class="pbva-gaterow-tx">
+                      <b>
+                        <t t-esc="ga.name"/>
+                        <span t-if="ga.archived"
+                              class="pbva-badge pbva-badge--quiet">Put away</span>
+                      </b>
+                      <small t-if="ga.description" t-esc="ga.description"/>
+                      <small t-if="!ga.holders" class="pbva-gaterow-none">
+                        Nobody holds this yet.
+                      </small>
+                    </span>
+                    <button t-if="dt.can_manage and !ga.holders and !ga.archived"
+                            class="pbva-linkbtn"
+                            t-on-click="() => this.giveGateRole(ga)">
+                      Give this role to somebody
+                    </button>
+                    <button t-if="dt.can_manage" class="pbva-linkbtn"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.toggleGate(ga)">
+                      Take it off
+                    </button>
+                  </div>
+                </div>
+
+                <p t-if="legacyLine(dt)" class="pbva-scrnote">
+                  <t t-out="ic('info',14)"/>
+                  <span t-esc="legacyLine(dt)"/>
+                </p>
+
+                <!-- ========================= add a role ========================= -->
+                <div t-if="dt.can_manage" class="pbva-scradd">
+                  <button class="pbim-btn ghost" t-on-click="togglePicker">
+                    <t t-out="ic('plus',14)"/>
+                    <t t-if="state.picking">Never mind</t>
+                    <t t-else="">Let another role in</t>
+                  </button>
+
+                  <div t-if="state.picking" class="pbva-scrpick">
+                    <label class="pbva-field pbva-field--search">
+                      <span class="pbva-in-ic"><t t-out="ic('search',14)"/></span>
+                      <input class="pbva-in" type="search"
+                             t-att-value="state.pickSearch"
+                             t-on-input="onPickSearch"
+                             placeholder="Search a role"/>
+                    </label>
+                    <div t-if="!gateOptions.length" class="pbva-scrempty">
+                      Every role on the board already opens this entry.
+                    </div>
+                    <div t-else="" class="pbva-picks pbva-picks--tall">
+                      <button t-foreach="gateOptions" t-as="ga" t-key="ga.id"
+                              class="pbva-pickable"
+                              t-att-disabled="state.busy"
+                              t-on-click="() => this.toggleGate(ga)">
+                        <span class="pbva-pickable-go">
+                          <t t-out="ic('idCard',15)"/>
+                        </span>
+                        <span class="pbva-pickable-tx">
+                          <b t-esc="ga.name"/>
+                          <small t-esc="ga.description"/>
+                        </span>
+                        <small class="pbva-cap-opens">
+                          <t t-if="ga.holders === 1">1 person holds it</t>
+                          <t t-elif="ga.holders" t-esc="ga.holders + ' people hold it'"/>
+                          <t t-else="">nobody holds it yet</t>
+                        </small>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ========================= what is inside ========================= -->
+                <t t-if="dt.children.length">
+                  <p class="pbva-colhead">
+                    <t t-out="ic('layers',13)"/>
+                    <t t-esc="'Inside ' + dt.label"/>
+                  </p>
+                  <div t-foreach="dt.children" t-as="kd" t-key="kd.id"
+                       class="pbva-subgate">
+                    <b t-esc="kd.label"/>
+                    <span class="pbva-scrgates">
+                      <span t-if="kd.everyone" class="pbva-gate pbva-gate--all"
+                            t-esc="'everyone who sees ' + dt.label"/>
+                      <span t-foreach="kd.gates" t-as="ga" t-key="ga.id"
+                            t-attf-class="pbva-gate pbva-area--{{ga.area}}"
+                            t-esc="ga.name"/>
+                    </span>
+                  </div>
+                </t>
+
+                <!-- ======================== who sees it today ======================== -->
+                <p class="pbva-colhead">
+                  <t t-out="ic('users',13)"/> Who sees it today
+                </p>
+
+                <div t-if="dt.who.everyone" class="pbva-scrempty">
+                  Everybody with a login. Nothing is asked for, so there is no
+                  list to show.
+                </div>
+
+                <div t-elif="!dt.who.rows.length" class="pbva-scrempty">
+                  Nobody. Not one person on this system holds what this entry
+                  asks for, so only an administrator can reach it.
+                </div>
+
+                <t t-else="">
+                  <div t-foreach="dt.who.rows" t-as="ws" t-key="ws.id"
+                       class="pbva-prow">
+                    <img class="pbva-face" t-att-src="ws.avatar"
+                         t-att-alt="ws.name"/>
+                    <span class="pbva-prow-who">
+                      <b t-esc="ws.name"/>
+                      <small t-esc="ws.why"/>
+                    </span>
+                  </div>
+                  <p t-if="dt.who.more" class="pbva-col-note"
+                     t-esc="'and ' + dt.who.more + ' more.'"/>
+                </t>
+
+                <!-- ===================== what the others see =====================
+                     A CHOICE WITH ITS CONSEQUENCE WRITTEN NEXT TO IT. "Hidden"
+                     and "shown locked" are both reasonable answers, and the
+                     only way somebody picks the right one is by reading what
+                     each does to the person who cannot get in. -->
+                <t t-if="dt.can_manage and !dt.everyone">
+                  <p class="pbva-colhead">
+                    <t t-out="ic('lock',13)"/> Everybody else
+                  </p>
+                  <div class="pbva-chips pbva-chips--wrap">
+                    <button t-attf-class="pbva-chip {{ dt.restricted ? '' : 'is-on' }}"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.setScreenRestricted(dt, false)">
+                      Do not show it at all
+                    </button>
+                    <button t-attf-class="pbva-chip {{ dt.restricted ? 'is-on' : '' }}"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.setScreenRestricted(dt, true)">
+                      Show it locked, with a note
+                    </button>
+                  </div>
+                  <p class="pbva-hint" t-if="dt.restricted">
+                    They see the entry with a padlock on it. Clicking it shows
+                    the note below instead of opening anything.
+                  </p>
+                  <p class="pbva-hint" t-else="">
+                    The entry is simply not on their menu. They will not know it
+                    exists — which is right for something that is none of their
+                    business, and wrong for something they may need to ask for.
+                  </p>
+                  <p t-if="dt.restricted and dt.restriction_reason"
+                     class="pbva-scrnote">
+                    <t t-out="ic('info',14)"/>
+                    <span t-esc="dt.restriction_reason"/>
+                  </p>
+                </t>
+              </t>
+
+              <div t-else="" class="pbim-empty pbva-empty">
+                <div class="pbva-empty-ic"><t t-out="ic('compass',30)"/></div>
+                <h3>Pick an entry</h3>
+                <p>
+                  Choose one on the left and this side shows who can open it,
+                  through which role, and what is inside it.
+                </p>
+              </div>
+            </section>
+          </t>
+        </div>
+
+        <!-- ========================== the hand-overs ==========================
+             `t-if`, not `t-else`: a body that said "everything that is not the
+             roles lens" would quietly become the wrong one the day another
+             lens arrives — which it now has, twice. -->
+        <div t-if="state.lens === 'handovers'" class="pbva-body">
+
+          <div t-if="!delegations.length" class="pbim-empty pbva-empty">
+            <div class="pbva-empty-ic"><t t-out="ic('arrowLeftRight',30)"/></div>
+            <h3>Nobody is covering for anybody</h3>
+            <p>
+              Going away? Hand what you can do to whoever is covering, until a
+              date. Only what you actually hold is added, exactly what was
+              added is written down, and it is taken back on the morning
+              after — nobody has to remember.
+            </p>
+            <button class="pbim-btn primary" t-on-click="openDelegate">
+              Hand my access over
+            </button>
+          </div>
+
+          <div t-else="" class="pbva-handovers">
+            <div t-foreach="delegations" t-as="hv" t-key="hv.id"
+                 t-attf-class="pbva-hand pbva-hand--{{hv.state}}"
+                 t-attf-style="--pbva-i: {{hv_index}}">
+
+              <div class="pbva-hand-h">
+                <div class="pbva-hand-who">
+                  <b t-esc="hv.from"/>
+                  <span class="pbva-arrow"><t t-out="ic('arrow',14)"/></span>
+                  <b t-esc="hv.to"/>
+                </div>
+                <span class="pbva-badge" t-esc="hv.state_label"/>
+              </div>
+
+              <div class="pbva-hand-what">
+                <span t-foreach="hv.profiles" t-as="mp" t-key="mp"
+                      class="pbva-tag" t-esc="mp"/>
+              </div>
+
+              <div class="pbva-hand-f">
+                <span class="pbva-when">
+                  <t t-out="ic('calendar',13)"/>
+                  <t t-esc="hv.date_end ? day(hv.date_start) + ' to ' + day(hv.date_end) : 'From ' + day(hv.date_start)"/>
+                </span>
+                <span class="pbva-hand-days" t-esc="daysLine(hv)"/>
+              </div>
+
+              <p t-if="hv.reason" class="pbva-hand-note" t-esc="hv.reason"/>
+              <p t-if="hv.ended_note" class="pbva-hand-note"
+                 t-esc="hv.ended_note"/>
+
+              <div class="pbva-hand-actions"
+                   t-if="hv.state === 'active' and (hv.mine or canManage)">
+                <button class="pbim-btn ghost"
+                        t-on-click="() => this.revoke(hv)"
+                        t-att-disabled="state.busy">
+                  <t t-out="ic('undo',14)"/> Take it back now
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbva-foot" t-if="canManage">
+            <button class="pbim-btn ghost" t-on-click="openHistory">
+              <t t-out="ic('history',14)"/> The full history, including every
+              role given and taken away
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== grant / take away dialog ====================== -->
+      <div t-if="state.granting" class="pbim-modal-scrim" t-on-click="closeGrant">
+        <div class="pbim-modal pbva-modal" t-on-click.stop="">
+        <div class="pbva-modal-h">
+          <h3 t-if="state.granting.mode === 'remove'">Take this role away</h3>
+          <h3 t-elif="state.granting.person"
+              t-esc="'Give a role to ' + state.granting.person.name"/>
+          <h3 t-else="">Give this role to somebody</h3>
+          <button class="pbim-btn ghost" t-on-click="closeGrant">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b">
+          <!-- THE SENTENCE BEFORE THE BUTTON, ALWAYS. Coming from a person's
+               passport the role is not chosen yet, so the list IS the sentences
+               — and the one that is picked stays on screen above the button. -->
+          <div t-if="state.granting.profile" class="pbva-what">
+            <h4 t-esc="state.granting.profile.name"/>
+            <p t-esc="state.granting.profile.description"/>
+            <button t-if="state.granting.person" class="pbva-linkbtn"
+                    t-on-click="() => this.pickRoleToGive(null)">
+              Choose a different role
+            </button>
+          </div>
+
+          <t t-if="state.granting.mode === 'remove'">
+            <p class="pbva-hint pbva-hint--lead">
+              <t t-esc="state.grantTarget.name + ' will no longer be able to do this. Anything they have already done stays exactly as it is.'"/>
+            </p>
+          </t>
+          <t t-elif="state.granting.person and !state.granting.profile">
+            <label class="pbva-lbl">Which role</label>
+            <div t-if="!givableRoles.length" class="pbva-mini-empty">
+              <t t-out="ic('idCard',22)"/>
+              <p>
+                They already hold every role on this board. There is nothing
+                left to give them here.
+              </p>
+            </div>
+            <div t-else="" class="pbva-picks pbva-picks--tall">
+              <button t-foreach="givableRoles" t-as="gr" t-key="gr.id"
+                      class="pbva-pickable"
+                      t-on-click="() => this.pickRoleToGive(gr)">
+                <span class="pbva-pickable-go">
+                  <t t-out="ic('idCard',15)"/>
+                </span>
+                <span class="pbva-pickable-tx">
+                  <b t-esc="gr.name"/>
+                  <small t-esc="gr.description"/>
+                </span>
+              </button>
+            </div>
+          </t>
+          <t t-elif="!state.granting.person">
+            <label class="pbva-lbl">Who is it for</label>
+            <input class="pbva-in" t-att-value="state.grantTarget.name"
+                   t-on-input="onPersonSearch"
+                   placeholder="Start typing a name"/>
+            <div t-if="state.people.length" class="pbva-picker">
+              <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                      class="pbva-pick" t-on-click="() => this.pickPerson(pp)">
+                <img class="pbva-face" t-att-src="pp.avatar" t-att-alt="pp.name"/>
+                <span t-esc="pp.name"/><small t-esc="pp.login"/>
+              </button>
+            </div>
+          </t>
+          <t t-else="">
+            <p class="pbva-hint pbva-hint--lead">
+              <t t-esc="state.granting.person.name + ' will be able to do this from the moment you press the button, and it goes in the history.'"/>
+            </p>
+          </t>
+
+          <label class="pbva-lbl">Why</label>
+          <textarea class="pbva-in pbva-area" rows="2"
+                    t-on-input="onGrantReason"
+                    placeholder="It goes in the history and cannot be deleted."
+                    t-esc="state.grantReason"/>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeGrant">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="confirmGrant"
+                  t-att-disabled="state.busy or !state.granting.profile"
+                  t-esc="state.granting.mode === 'remove' ? 'Take it away' : 'Give it to them'"/>
+        </div>
+      </div>
+      </div>
+
+      <!-- ============================ the role builder ============================
+           NAME IT, SAY WHAT IT DOES, TICK WHAT IT LETS SOMEBODY DO — and watch
+           the left menu, drawn small, light up beside you as you tick. Nobody
+           has to imagine the outcome, which is the only reliable way to stop
+           somebody handing out more than they meant to.
+
+           THE LIST OFFERS ABILITIES AND NOTHING ELSE. There is no way to reach
+           a raw permission from this dialog, so a role can only ever be built
+           out of things that carry a sentence somebody can read. -->
+      <div t-if="state.composer" class="pbim-modal-scrim"
+           t-on-click="closeComposer">
+        <div class="pbim-modal pbva-modal pbva-modal--wide" t-on-click.stop=""
+             role="dialog" aria-modal="true" aria-label="New role">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic('plus',17)"/></div>
+            <div class="pbva-modal-t">
+              <h3>New role</h3>
+              <p>Name it, say what it lets somebody do, tick the abilities. The
+                 menu beside you updates as you tick.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeComposer"
+                    title="Close without creating anything">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div class="pbva-comp">
+
+            <!-- ============================== the left ============================== -->
+            <div class="pbva-comp-l">
+              <label class="pbva-lbl">What it is called</label>
+              <input class="pbva-in" t-att-value="state.composer.name"
+                     t-on-input="(ev) => this.onComposerField('name', ev)"
+                     placeholder="Payroll auditor"/>
+
+              <label class="pbva-lbl">
+                What this lets someone do — one honest sentence
+              </label>
+              <textarea class="pbva-in pbva-area" rows="2"
+                        t-on-input="(ev) => this.onComposerField('description', ev)"
+                        placeholder="Read every pay run and payslip, and explore the numbers. Changes nothing."
+                        t-esc="state.composer.description"/>
+
+              <!-- Chips, not a drop-down: the answer is already worked out and
+                   the chips SHOW which one it is, where a closed drop-down
+                   would hide it behind a click. -->
+              <label class="pbva-lbl">Where it belongs</label>
+              <div class="pbva-chips pbva-chips--wrap">
+                <button t-attf-class="pbva-chip {{ !state.composer.area ? 'is-on' : '' }}"
+                        t-on-click="() => this.setComposerArea('')">
+                  <t t-if="state.preview and state.preview.area_label"
+                     t-esc="'Worked out — ' + state.preview.area_label"/>
+                  <t t-else="">Worked out for you</t>
+                </button>
+                <button t-foreach="state.options.areas or []" t-as="ar"
+                        t-key="ar.key"
+                        t-attf-class="pbva-chip {{ state.composer.area === ar.key ? 'is-on' : '' }}"
+                        t-on-click="() => this.setComposerArea(ar.key)"
+                        t-esc="ar.label"/>
+              </div>
+
+              <div class="pbva-caps">
+                <div t-foreach="abilityAreas" t-as="aa" t-key="aa.key"
+                     class="pbva-cap-area">
+                  <h5 t-esc="aa.label"/>
+                  <div t-foreach="aa.abilities" t-as="ab" t-key="ab.id"
+                       t-attf-class="pbva-cap {{ hasAbility(ab.id) ? 'is-on' : '' }}"
+                       role="checkbox" tabindex="0"
+                       t-attf-aria-checked="{{ hasAbility(ab.id) ? 'true' : 'false' }}"
+                       t-on-click="() => this.toggleAbility(ab.id)"
+                       t-on-keydown="(ev) => this.onAbilityKey(ev, ab.id)">
+                    <span class="pbva-cap-box">
+                      <t t-if="hasAbility(ab.id)" t-out="ic('check',12)"/>
+                    </span>
+                    <span class="pbva-cap-tx">
+                      <b t-esc="ab.name"/>
+                      <small t-if="ab.description" t-esc="ab.description"/>
+                    </span>
+                    <small class="pbva-cap-opens" t-esc="ab.opens_hint"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================== the right ============================= -->
+            <div class="pbva-comp-r">
+              <p class="pbva-colhead">
+                <t t-out="ic('layers',13)"/> A holder of this role would see
+              </p>
+
+              <PbMiniRail sections="composerRail" legend="true"/>
+
+              <p class="pbva-comp-count" t-esc="countLine()"/>
+
+              <p t-if="state.preview and !state.preview.any_gated"
+                 class="pbva-note">
+                <t t-out="ic('info',14)"/>
+                <span>
+                  Every entry on this menu is open to everybody with a login
+                  today, so ticking abilities does not change this picture yet.
+                  What a role changes is what somebody can do once they are
+                  inside a screen.
+                </span>
+              </p>
+
+              <!-- HOW THIS DIFFERS FROM A ROLE THAT ALREADY EXISTS. Worked
+                   out in the browser from what the builder already read, and
+                   shown WHILE they tick rather than refused on Create. Two
+                   roles that grant the same things are the one mistake this
+                   screen can make that nobody notices for a year. -->
+              <p t-if="comparison and comparison.same"
+                 class="pbva-note pbva-note--warn">
+                <t t-out="ic('alert',14)"/>
+                <span>
+                  This is exactly <b t-esc="comparison.name"/> again. Two roles
+                  that let people do the same things are two things to keep in
+                  step forever — give that one out instead, or tick something
+                  else.
+                </span>
+              </p>
+              <p t-elif="comparison" class="pbva-note pbva-note--diff">
+                <t t-out="ic('gitMerge',14)"/>
+                <span>
+                  Next to <b t-esc="comparison.name"/>: <t
+                    t-if="comparison.adds.length">this also lets somebody <b
+                    t-esc="listOf(comparison.adds)"/></t><t
+                    t-if="comparison.adds.length and comparison.drops.length">, and </t><t
+                    t-if="comparison.drops.length">this leaves out <b
+                    t-esc="listOf(comparison.drops)"/></t>.
+                </span>
+              </p>
+
+              <p class="pbva-note pbva-note--shield">
+                <t t-out="ic('shieldCheck',14)"/>
+                <span>
+                  The administrator permission for the whole system can never be
+                  put in a role, and you can only ever hand out what you hold
+                  yourself.
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div class="pbva-modal-f pbva-modal-f--split">
+            <div class="pbva-comp-from">
+              <button class="pbva-linkbtn" t-on-click="togglePicking">
+                <t t-out="ic('copy',13)"/>
+                <t t-if="state.composer.picking">Never mind</t>
+                <t t-else="">Start from an existing role instead</t>
+              </button>
+              <div t-if="state.composer.picking" class="pbva-picker pbva-picker--up">
+                <button t-foreach="state.options.roles or []" t-as="sr"
+                        t-key="sr.id" class="pbva-pick"
+                        t-on-click="() => this.prefillFrom(sr)">
+                  <span t-esc="sr.name"/>
+                  <small t-esc="sr.description"/>
+                </button>
+              </div>
+            </div>
+            <div class="pbva-modal-f-actions">
+              <span t-if="!state.composer.abilities.length" class="pbva-hint">
+                Tick at least one thing it lets somebody do.
+              </span>
+              <button class="pbim-btn ghost" t-on-click="closeComposer">
+                Cancel
+              </button>
+              <button class="pbim-btn primary" t-on-click="createRole"
+                      t-att-disabled="state.creating or !state.composer.abilities.length">
+                <t t-out="ic('check',15)"/> Create role
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= the hand-over dialog ========================= -->
+      <div t-if="state.delegating" class="pbim-modal-scrim" t-on-click="closeDelegate">
+        <div class="pbim-modal pbva-modal" t-on-click.stop="">
+        <div class="pbva-modal-h">
+          <h3>Hand your access over</h3>
+          <button class="pbim-btn ghost" t-on-click="closeDelegate">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b">
+          <p class="pbva-hint pbva-hint--lead">
+            You can only hand over what you hold yourself, so this list is
+            yours. Both of you get an email, and everything here is written down
+            in a history nobody can delete.
+          </p>
+
+          <label class="pbva-lbl">Who is covering for you</label>
+          <input class="pbva-in" t-att-value="state.hand.delegate"
+                 t-on-input="onDelegateSearch"
+                 placeholder="Start typing a name"/>
+          <div t-if="state.people.length" class="pbva-picker">
+            <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                    class="pbva-pick" t-on-click="() => this.pickDelegate(pp)">
+              <img class="pbva-face" t-att-src="pp.avatar" t-att-alt="pp.name"/>
+              <span t-esc="pp.name"/><small t-esc="pp.login"/>
+            </button>
+          </div>
+
+          <label class="pbva-lbl">What they should be able to do</label>
+          <div t-if="!mine.length" class="pbva-mini-empty">
+            <t t-out="ic('idCard',22)"/>
+            <p>
+              You do not hold any of the roles on this board, so there is
+              nothing to hand over. That is not a fault — most people's access
+              comes from their job rather than from a role.
+            </p>
+          </div>
+          <div t-else="" class="pbva-picks">
+            <button t-foreach="mine" t-as="mp" t-key="mp.id"
+                    t-attf-class="pbva-pickable {{ hasProfile(mp.id) ? 'is-on' : '' }}"
+                    t-on-click="() => this.toggleProfile(mp.id)">
+              <span class="pbva-pickable-tick">
+                <t t-out="ic('check',14)"/>
+              </span>
+              <span class="pbva-pickable-tx">
+                <b t-esc="mp.name"/>
+                <small t-esc="mp.description"/>
+              </span>
+            </button>
+          </div>
+
+          <label class="pbva-lbl">For how long</label>
+          <div class="pbva-chips">
+            <button t-attf-class="pbva-chip {{ state.hand.kind === 'temporary' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setKind('temporary')">
+              For a while
+            </button>
+            <button t-attf-class="pbva-chip {{ state.hand.kind === 'permanent' ? 'is-on' : '' }}"
+                    t-on-click="() => this.setKind('permanent')">
+              For good
+            </button>
+          </div>
+
+          <div class="pbva-two">
+            <div>
+              <label class="pbva-lbl">From</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.hand.date_start"
+                     t-on-input="(ev) => this.onHandField('date_start', ev)"/>
+            </div>
+            <div t-if="state.hand.kind === 'temporary'">
+              <label class="pbva-lbl">Until</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.hand.date_end"
+                     t-on-input="(ev) => this.onHandField('date_end', ev)"/>
+            </div>
+          </div>
+          <p t-if="state.hand.kind === 'temporary'" class="pbva-hint">
+            On the morning after that date, exactly what was given is taken
+            back — and only what is still there. Nobody has to remember.
+          </p>
+          <p t-else="" class="pbva-hint">
+            There is no end date, so it stays until somebody takes it back. If
+            they are covering for a fortnight, choose "For a while" instead.
+          </p>
+
+          <label class="pbva-lbl">Why</label>
+          <textarea class="pbva-in pbva-area" rows="2"
+                    t-on-input="(ev) => this.onHandField('reason', ev)"
+                    placeholder="Two weeks in Da Nang"
+                    t-esc="state.hand.reason"/>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeDelegate">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="confirmDelegate"
+                  t-att-disabled="state.busy">Hand it over</button>
+        </div>
+      </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

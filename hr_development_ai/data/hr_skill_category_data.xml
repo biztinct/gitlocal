@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="skill_category_technical" model="hr.skill.category">
+        <field name="name">Technical Skills</field>
+        <field name="description">Programming, software development, and technical expertise</field>
+        <field name="sequence">10</field>
+        <field name="color">1</field>
+    </record>
+
+    <record id="skill_category_soft" model="hr.skill.category">
+        <field name="name">Soft Skills</field>
+        <field name="description">Communication, leadership, and interpersonal skills</field>
+        <field name="sequence">20</field>
+        <field name="color">2</field>
+    </record>
+
+    <record id="skill_category_domain" model="hr.skill.category">
+        <field name="name">Domain Knowledge</field>
+        <field name="description">Industry-specific knowledge and expertise</field>
+        <field name="sequence">30</field>
+        <field name="color">3</field>
+    </record>
+
+    <record id="skill_category_tools" model="hr.skill.category">
+        <field name="name">Tools &amp; Technologies</field>
+        <field name="description">Specific software, platforms, and tools</field>
+        <field name="sequence">40</field>
+        <field name="color">4</field>
+    </record>
+
+    <record id="skill_category_language" model="hr.skill.category">
+        <field name="name">Languages</field>
+        <field name="description">Spoken and programming languages</field>
+        <field name="sequence">50</field>
+        <field name="color">5</field>
+    </record>
+
+    <record id="skill_category_certification" model="hr.skill.category">
+        <field name="name">Certifications &amp; Licenses</field>
+        <field name="description">Professional certifications and licenses</field>
+        <field name="sequence">60</field>
+        <field name="color">6</field>
+    </record>
+
+</odoo>

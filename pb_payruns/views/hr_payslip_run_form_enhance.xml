@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Enhance the native Payslip Batch form (kept editable + VU-skinned):
+        - swap the plain statusbar for the pb_pipeline approval widget
+        - inject a KPI summary band (gross / deductions / net / employees)
+        - tag the <form> for scoped styling (pb-payrun-form)
+        - show employee on the embedded payslip list
+    -->
+    <record id="hr_payslip_run_form_pb_enhance" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.pb-enhance</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="pb-payrun-form" separator=" "/>
+            </xpath>
+
+            <!-- Phase L: the Officer tier the legacy header knows nothing about.
+                 Its label says "Submit for HR Manager" on the draft button; the
+                 run now lands on Officer review first, so relabel it and add the
+                 officer advance. (Server-side _pb_require_tier is the guard —
+                 these invisible= rules are only tidiness.) -->
+            <xpath expr="//header/button[@name='done_payslip_run']" position="attributes">
+                <attribute name="string">Submit for approval</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_level1_done']" position="before">
+                <button name="action_payslip_run_level0_done" type="object"
+                        string="Payroll Officer Approve" invisible="state != 'level0'"
+                        class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_level2_done']" position="attributes">
+                <attribute name="string">Finance Approve</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="attributes">
+                <attribute name="invisible">state not in ('draft', 'level0', 'level1', 'level2')</attribute>
+            </xpath>
+
+            <!-- hide the cramped native statusbar; render the workflow as a
+                 full-width numbered stepper (health19 vu_progress_rail) on the
+                 row below the action buttons -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Starting the period again without deleting the run. Deleting
+                 the run is what used to leave 152 drafts loose for the next
+                 run to adopt, so the safe way needs to be the visible one.
+                 Hidden once the run is past draft: by then the payslips are
+                 somebody's decision, not a working copy. -->
+            <xpath expr="//form/header" position="inside">
+                <button name="action_pb_delete_draft_payslips"
+                        type="object"
+                        string="Delete Draft Payslips"
+                        invisible="state != 'draft' or not slip_ids"
+                        confirm="This deletes every DRAFT payslip on this pay run. The run itself, and any payslip already approved, are kept. Continue?"/>
+            </xpath>
+
+            <xpath expr="//sheet/label[@for='name']" position="before">
+                <widget name="vu_progress_rail"
+                        steps="draft,level0,level1,level2,done"
+                        labels="Draft,Officer review,HR review,Finance approval,Done"
+                        state_field="state"/>
+            </xpath>
+
+            <!-- VALUEKIND P5 — payroll that ran on no data must not be able to
+                 look like payroll that ran. Above the KPI band, because the
+                 band is exactly what it is warning you not to believe. -->
+            <xpath expr="//sheet/group" position="after">
+                <div class="alert alert-warning pb-payrun-nodata" role="alert"
+                     invisible="not pb_unsourced_count">
+                    <b><field name="pb_unsourced_count" nolabel="1" readonly="1"
+                              class="pb-nodata-n"/> payslip(s) were computed with no
+                        source data.</b>
+                    Every value came from a scheme default — no file, no connected
+                    system, no contract, no employee record — so the figures below
+                    are not this period's pay. Run payroll again with this period's
+                    pay data, or sync the connected system first.
+                </div>
+                <div class="pb-payrun-kpis">
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Total gross</span>
+                        <field name="pb_total_gross" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Deductions</span>
+                        <field name="pb_total_deductions" nolabel="1" class="pb-pk-v amber"/>
+                    </div>
+                    <!-- What the company pays on top of gross. Shown only when
+                         the scheme actually has employer contributions, so a
+                         run that has none keeps the tighter four-tile band. -->
+                    <div class="pb-pk" invisible="not pb_total_employer_cost">
+                        <span class="pb-pk-l">Employer cost</span>
+                        <field name="pb_total_employer_cost" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk hero">
+                        <span class="pb-pk-l">Total net</span>
+                        <field name="pb_total_net" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Employees</span>
+                        <field name="pb_employee_count" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='slip_ids']" position="replace">
+                <field name="slip_ids" invisible="not slip_ids">
+                    <list decoration-muted="state == 'cancel'" create="false">
+                        <field name="employee_id"/>
+                        <field name="name" optional="hide"/>
+                        <field name="number" optional="show"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="state" widget="badge"
+                               decoration-success="state == 'done'"
+                               decoration-info="state in ('level1','level2')"
+                               decoration-muted="state == 'cancel'"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

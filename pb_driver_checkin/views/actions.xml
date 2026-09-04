@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ir.actions.client has no group field in Odoo 19; access is enforced by
+         pb.driver.map._require_officer() on every RPC (a driver opening this
+         action gets an AccessError on data load) and the sidebar item is
+         group-gated so drivers never see it. -->
+    <record id="action_pb_driver_map" model="ir.actions.client">
+        <field name="name">Driver Tracking</field>
+        <field name="tag">pb_driver_map</field>
+    </record>
+</odoo>

@@ -16,7 +16,7 @@
                         <group>
                             <field name="payroll_country" widget="selection"/>
                             <field name="processing_status"/>
-                            <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                            <field name="error_message" invisible="processing_status != 'error'"/>
                         </group>
                         <group>
                             <field name="processed_date" readonly="1"/>
@@ -25,7 +25,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="Vietnam Specific" name="vietnam" attrs="{'invisible': [('payroll_country', '!=', 'VN')]}">
+                <page string="Vietnam Specific" name="vietnam" invisible="payroll_country != 'VN'">
                     <group>
                         <group string="Vietnam Tax &amp; Social Security">
                             <field name="payroll_country" widget="selection"/>
@@ -51,7 +51,7 @@
                     </group>
                 </page>
                 
-                <page string="Indonesia Specific" name="indonesia" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
+                <page string="Indonesia Specific" name="indonesia" invisible="payroll_country != 'ID'">
                     <group>
                         <group string="Indonesia Tax &amp; BPJS">
                             <field name="id_pph21_tax"/>
@@ -77,7 +77,7 @@
                     </group>
                 </page>
                 
-                <page string="India Specific" name="india" attrs="{'invisible': [('payroll_country', '!=', 'IN')]}">
+                <page string="India Specific" name="india" invisible="payroll_country != 'IN'">
                     <group>
                         <group string="India Tax &amp; Deductions">
                             <field name="in_income_tax"/>
@@ -116,7 +116,7 @@
         <field name="inherit_id" ref="om_hr_payroll.zoho_staging_data_tree_view"/>
         <field name="arch" type="xml">
             <!-- Add country and status columns -->
-            <xpath expr="//tree" position="attributes">
+            <xpath expr="//list" position="attributes">
                 <attribute name="decoration-success">processing_status=='processed'</attribute>
                 <attribute name="decoration-danger">processing_status=='error'</attribute>
                 <attribute name="decoration-warning">processing_status=='draft'</attribute>
@@ -127,7 +127,7 @@
                 <field name="processing_status"/>
             </xpath>
             
-            <xpath expr="//tree" position="inside">
+            <xpath expr="//list" position="inside">
                 <field name="processed_date"/>
                 <field name="created_employee_id"/>
             </xpath>
@@ -197,15 +197,15 @@
                         </group>
                     </group>
 
-                    <group string="Country-Specific Mapping" attrs="{'invisible': [('target_country', '=', False)]}">
+                    <group string="Country-Specific Mapping" invisible="not target_country">
                         <field name="country_mapping_ids">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="source_field"/>
                                 <field name="target_field"/>
                                 <field name="data_type"/>
                                 <field name="required"/>
                                 <field name="default_value"/>
-                            </tree>
+                            </list>
                         </field>
                     </group>
                 </sheet>
@@ -224,7 +224,7 @@
     <record id="action_zoho_staging_data_enhanced" model="ir.actions.act_window">
         <field name="name">Zoho Staging Data (Multi-Country)</field>
         <field name="res_model">zoho.staging.data</field>
-        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="view_mode">list,form,pivot,graph</field>
         <field name="view_id" ref="view_zoho_staging_data_tree_enhanced"/>
         <field name="search_view_id" ref="view_zoho_staging_data_search_enhanced"/>
         <field name="context">{'search_default_draft': 1}</field>
@@ -234,7 +234,7 @@
             </p>
             <p>
                 Use the import wizard to bring employee data from Zoho into the staging area,
-                then process it to create employees and contracts in Odoo.
+                then process it to create employees and contracts in Payobook.
             </p>
         </field>
     </record>
@@ -250,7 +250,7 @@
     <record id="action_zoho_staging_vietnam" model="ir.actions.act_window">
         <field name="name">Vietnam Staging Data</field>
         <field name="res_model">zoho.staging.data</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('payroll_country', '=', 'VN')]</field>
         <field name="context">{'default_payroll_country': 'VN', 'search_default_vietnam': 1}</field>
     </record>
@@ -258,7 +258,7 @@
     <record id="action_zoho_staging_indonesia" model="ir.actions.act_window">
         <field name="name">Indonesia Staging Data</field>
         <field name="res_model">zoho.staging.data</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('payroll_country', '=', 'ID')]</field>
         <field name="context">{'default_payroll_country': 'ID', 'search_default_indonesia': 1}</field>
     </record>
@@ -266,7 +266,7 @@
     <record id="action_zoho_staging_india" model="ir.actions.act_window">
         <field name="name">India Staging Data</field>
         <field name="res_model">zoho.staging.data</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('payroll_country', '=', 'IN')]</field>
         <field name="context">{'default_payroll_country': 'IN', 'search_default_india': 1}</field>
     </record>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'HR Workflow Flow',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'summary': 'Interactive circular workflow dashboard for HR operations',
     'description': """
@@ -36,16 +36,16 @@ Technical Features:
         'hr',
         'hr_contract',
         'hr_holidays',
-        'hr_holidays_public',
+        # 'hr_holidays_public',  # Not available in Odoo 19
     ],
     'data': [
         'security/ir.model.access.csv',
         'views/hr_flow_views.xml',
         'views/hr_payslip_line_analytics_views.xml',
-        'views/menu_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
+            'pb_hr_flow/static/src/css/hr_flow_dashboard.css',
             'pb_hr_flow/static/src/js/hr_flow_hover.js',
         ],
     },

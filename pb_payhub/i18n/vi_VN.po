@@ -1,0 +1,191 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:115
+msgid "Adjust"
+msgstr "điều chỉnh"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:75
+msgid "Adjust — retro & proration"
+msgstr "Điều chỉnh - retro & tỷ lệ"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:109
+msgid "Deliver"
+msgstr "Giao hàng"
+
+#. module: pb_payhub
+#: model:ir.model.fields,field_description:pb_payhub.field_pb_pay_hub__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:132
+msgid "Full & Final"
+msgstr "Quyết toán thôi việc"
+
+#. module: pb_payhub
+#: model:ir.model.fields,field_description:pb_payhub.field_pb_pay_hub__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:97
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:71
+msgid "Import Data"
+msgstr "Nhập Dữ liệu"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:73
+msgid "Pay & Deliver"
+msgstr "Thanh toán và giao hàng"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: model:pb.sidebar.item,name:pb_payhub.item_pay_run
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:70
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:105
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:218
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:57
+msgid "Pay Run"
+msgstr "Đợt lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: model:ir.actions.client,name:pb_payhub.action_pb_pay_hub
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:41
+msgid "Pay Run Hub"
+msgstr "Trung tâm tính lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:65
+msgid "Pay Runs"
+msgstr "kỳ lương"
+
+#. module: pb_payhub
+#: model:ir.model,name:pb_payhub.model_pb_pay_hub
+msgid "Payobook Pay Run hub — period tracker"
+msgstr "Trung tâm Payobook Pay Run — theo dõi chu kỳ kinh nguyệt"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:57
+msgid "Payroll operations"
+msgstr "Hoạt động tính lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:92
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:67
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:121
+msgid "Proration"
+msgstr "Phân bổ theo tỷ lệ"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:94
+msgid "Results"
+msgstr "Kết quả"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:69
+msgid "Results Grid"
+msgstr "Lưới kết quả"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:119
+msgid "Retro"
+msgstr "Truy thu"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:81
+msgid "Run"
+msgstr "Chạy"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:63
+msgid "Run Payroll"
+msgstr "Chạy bảng lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:86
+msgid "Runs"
+msgstr "Chạy"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:127
+msgid "Settle"
+msgstr "giải quyết"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:77
+msgid "Settle — full & final"
+msgstr "Giải quyết - đầy đủ & cuối cùng"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:174
+msgid "This month"
+msgstr "Tháng này"

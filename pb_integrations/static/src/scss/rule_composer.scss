@@ -1,0 +1,417 @@
+// =====================================================================
+//  The Rule Composer — Integrations Cycle 8, WP-3
+//  ---------------------------------------------------------------------
+//  `.itgrc-*`. The prefix was grepped across the whole tree before it was
+//  claimed and had no other owner: a root class name is a GLOBAL name, and two
+//  components that pick the same one do not clash loudly — the more specific
+//  selector silently wins, property by property (W151).
+//
+//  The scrim, the card and its three rails come from the kit's `.pbim-modal*`
+//  primitive; the form chrome (`.pplw-in`, `.pplw-label`) from the shared
+//  wizard shell; the chips and buttons from `.pbim-*`. What is left here is
+//  the two-column layout, the step-cards and the proof rail — nothing this
+//  file declares belongs in another module.
+//
+//  Only pbim tokens (W1), no gradients (W3), every var() carrying the correct
+//  pbim hex as its fallback (W14). No number in here was measured at one
+//  viewport and written down as a rule (W155): the columns are fractional and
+//  the rail has a minimum, so 1450px and 1920px are the same layout.
+// =====================================================================
+
+.itgrc {
+    // The card is 1040px from the primitive. The body is the scroll container
+    // — the popup scrolls INSIDE itself and the board behind it never moves.
+    .itgrc-body { padding: 0; }
+
+    .itgrc-hic {
+        width: 34px; height: 34px; border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0);
+        display: grid; place-items: center; flex: 0 0 auto;
+    }
+
+    .itgrc-sp { flex: 1; }
+
+    // ------------------------------------------------- borrowed chrome, rescoped
+    //
+    // Two vocabularies this popup speaks that are declared NESTED somewhere it
+    // does not live:
+    //
+    //   `.pplw-in` / `.pplw-label` are inside `.pplw-root` in the kit
+    //   (`wizard_shell.scss`), and `.pplw-root` is a full-page shell — a
+    //   min-height, page padding, a background and a centring flex — which is
+    //   not something a dialog can wear;
+    //   `.itg-select` is inside `.itg-board` in this module, so the popup would
+    //   be relying on being a DOM descendant of the board that opened it.
+    //
+    // Both are restated here, inside this root, matching the originals. That
+    // keeps ONE vocabulary across the product rather than inventing a third
+    // input class, and it claims no global name: nothing outside `.itgrc` is
+    // touched by any of it (W151).
+    .pplw-label {
+        display: block; font-size: 11.5px; color: var(--pbim-muted, #64748B);
+        font-weight: 600; margin: 10px 0 4px;
+    }
+    .pplw-in {
+        width: 100%; border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 9px;
+        padding: 8px 11px; font-size: 13.5px; font-family: inherit;
+        background: var(--pbim-surface, #fff); color: var(--pbim-text, #1B1733);
+
+        &:focus { outline: none; border-color: var(--pbim-primary, #5A4BB0); box-shadow: 0 0 0 3px rgba(0, 0, 0, .05); }
+        &:disabled { background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-muted, #64748B); }
+    }
+    .itg-select {
+        max-width: 260px; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px; padding: 5px 12px; font-family: inherit;
+        font-size: 12px; font-weight: 700; color: #475569;
+        background: var(--pbim-surface, #ffffff);
+
+        &:disabled { background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-muted, #64748B); }
+    }
+
+    .itgrc-err {
+        margin: 12px 20px; padding: 10px 12px; border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668);
+        font-size: 12.5px; font-weight: 600;
+    }
+
+    .itgrc-note {
+        font-size: 12px; color: var(--pbim-muted, #64748B); margin-top: 8px; line-height: 1.5;
+    }
+
+    // =================================================== the front door
+    .itgrc-front { padding: 20px 22px 26px; }
+
+    .itgrc-h {
+        font-size: 12px; font-weight: 800; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+        margin: 18px 0 10px;
+    }
+
+    .itgrc-ai {
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        background: var(--pbim-soft, #EDEAF8);
+        border-radius: var(--pbim-r, 14px); padding: 14px 16px;
+    }
+    .itgrc-ai__h {
+        display: flex; align-items: center; gap: 8px; font-size: 13px;
+        font-weight: 800; color: var(--pbim-primary-strong, #5A4BB0); margin-bottom: 10px;
+    }
+    .itgrc-ai__row {
+        display: flex; gap: 10px; align-items: center;
+        .pplw-in { flex: 1 1 auto; min-width: 0; }
+        .pbim-btn { flex: 0 0 auto; }
+    }
+
+    .itgrc-cxs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .itgrc-cx {
+        display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-surface, #fff);
+        border-radius: var(--pbim-r, 14px); padding: 12px 14px; font-family: inherit;
+        .ic { color: var(--pbim-primary-strong, #5A4BB0); display: flex; }
+        .nm { font-size: 13.5px; font-weight: 700; color: var(--pbim-ink, #1B1733); }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    .itgrc-recipes {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;
+    }
+    .itgrc-recipe {
+        display: grid; gap: 4px; text-align: left; cursor: pointer; font-family: inherit;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-surface, #fff);
+        border-radius: var(--pbim-r, 14px); padding: 14px 16px;
+
+        .ic {
+            width: 32px; height: 32px; border-radius: var(--pbim-r-sm, 10px);
+            background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0);
+            display: grid; place-items: center; margin-bottom: 6px;
+        }
+        .tt { font-size: 13.5px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+        .bl { font-size: 12px; color: var(--pbim-muted, #64748B); line-height: 1.45; }
+        .vd {
+            font-size: 10.5px; font-weight: 800; letter-spacing: .05em;
+            text-transform: uppercase; color: var(--pbim-primary-strong, #5A4BB0); margin-top: 4px;
+        }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07)); }
+
+        // A recipe that already exists on this connector is shown, not hidden:
+        // "you already have that one" is an answer, and an absent card is not.
+        &.is-taken {
+            cursor: default; background: var(--pbim-line-2, #F1F5F9); opacity: .72;
+            .ic { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-muted, #64748B); }
+            .vd { color: var(--pbim-muted, #64748B); }
+            &:hover { border-color: var(--pbim-line, #E2E8F0); box-shadow: none; }
+        }
+    }
+
+    // =================================================== the two columns
+    // Fractional, with a floor on the rail: the steps take whatever is left, so
+    // the same rule holds at 1450px and at 1920px.
+    .itgrc-cols {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+        align-items: start;
+        gap: 0;
+    }
+    @media (max-width: 900px) {
+        .itgrc-cols { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .itgrc-steps { padding: 18px 18px 24px 22px; display: grid; gap: 12px; min-width: 0; }
+
+    .itgrc-ribbon {
+        display: flex; align-items: flex-start; gap: 10px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        background: var(--pbim-soft, #EDEAF8);
+        border-radius: var(--pbim-r-sm, 10px); padding: 10px 12px;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary-strong, #5A4BB0);
+        .sub { font-weight: 500; color: var(--pbim-muted, #64748B); margin-top: 3px; }
+    }
+    .itgrc-ribbon__x {
+        border: 0; background: none; cursor: pointer; color: var(--pbim-muted, #64748B);
+        margin-left: auto; padding: 0; display: flex;
+    }
+
+    .itgrc-ro {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-line-2, #F1F5F9);
+        border-radius: var(--pbim-r-sm, 10px); padding: 10px 12px;
+        font-size: 12.5px; color: var(--pbim-muted, #64748B); line-height: 1.5;
+    }
+
+    // ------------------------------------------------------- a step-card
+    .itgrc-card {
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-surface, #fff);
+        border-radius: var(--pbim-r, 14px); padding: 14px 16px;
+    }
+    .itgrc-card__h {
+        display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+        font-size: 12px; font-weight: 800; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--pbim-ink, #1B1733);
+
+        .n {
+            width: 22px; height: 22px; border-radius: 999px;
+            background: var(--pbim-primary, #5A4BB0); color: #fff;
+            display: grid; place-items: center; font-size: 11px; letter-spacing: 0;
+            flex: 0 0 auto;
+        }
+    }
+    .itgrc-chip {
+        font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: none;
+        color: var(--pbim-muted, #64748B); background: var(--pbim-line-2, #F1F5F9);
+        border-radius: 999px; padding: 2px 9px;
+    }
+
+    .itgrc-feeds { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+    .itgrc-seg { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+
+    .itgrc-row {
+        display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .itgrc-lbl { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    .itgrc-val { width: 150px; flex: 0 0 auto; }
+    .itgrc-mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12.5px;
+    }
+
+    .itgrc-x {
+        border: 0; background: none; cursor: pointer; color: var(--pbim-muted, #64748B);
+        width: 26px; height: 26px; border-radius: var(--pbim-r-sm, 10px);
+        display: grid; place-items: center; flex: 0 0 auto;
+        &:hover { background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668); }
+    }
+
+    // A value step is ONE line. Left to wrap, its remove button dropped onto a
+    // line of its own, landing dead centre between two fields — the one place
+    // on this screen where a glyph is read as arithmetic, and it was read as
+    // one. The pieces shrink instead; the button keeps the right edge.
+    .itgrc-steprow {
+        flex-wrap: nowrap;
+        > .itgrc-x { margin-left: auto; }
+        > .itgrc-lbl { flex: 0 0 auto; white-space: nowrap; }
+        > .itg-select { flex: 0 1 auto; min-width: 0; }
+    }
+
+    // The operator between value steps. Steps are summed, so it says so.
+    .itgrc-op {
+        display: flex; align-items: center; gap: 6px;
+        margin: 2px 0 6px 10px; font-size: 12px; font-weight: 700;
+        color: var(--pbim-primary-strong, #5A4BB0);
+        .sign {
+            display: grid; place-items: center; width: 20px; height: 20px;
+            border-radius: 999px; background: var(--pbim-soft, #EDEAF8);
+        }
+    }
+
+    .itgrc-add {
+        border: 1px dashed var(--pbim-primary-light, #CBC2EE); background: none;
+        color: var(--pbim-primary-strong, #5A4BB0); cursor: pointer; font-family: inherit;
+        font-size: 12px; font-weight: 700; border-radius: var(--pbim-r-sm, 10px);
+        padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;
+        &:hover { background: var(--pbim-soft, #EDEAF8); border-style: solid; }
+    }
+
+    // Naming a field the catalogue has never listed. It sits inside the picker,
+    // under the sentence explaining why the list is empty, so the user reads the
+    // reason before they are offered the way round it.
+    .itgrc-usetyped {
+        margin-top: 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .itgrc-lane {
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-surface, #fff);
+        color: var(--pbim-primary-strong, #5A4BB0); cursor: pointer; font-family: inherit;
+        font-size: 11.5px; font-weight: 700; letter-spacing: 0; text-transform: none;
+        border-radius: 999px; padding: 5px 11px;
+        display: inline-flex; align-items: center; gap: 6px;
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    .itgrc-fns { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+    .itgrc-fn {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11px; font-weight: 700; color: var(--pbim-muted, #64748B);
+        background: var(--pbim-line-2, #F1F5F9); border-radius: 6px; padding: 2px 7px;
+        cursor: help;
+    }
+
+    // --------------------------------------------- the searchable picker
+    .itgrc-pick { position: relative; flex: 1 1 200px; min-width: 0; }
+    .itgrc-pickbtn {
+        width: 100%; display: flex; align-items: center; gap: 8px; text-align: left;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-surface, #fff);
+        border-radius: 9px; padding: 8px 11px; font-family: inherit; font-size: 13px;
+        color: var(--pbim-text, #1B1733); cursor: pointer;
+        > span:first-child { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cv { color: var(--pbim-muted, #64748B); display: flex; flex: 0 0 auto; }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &:disabled { background: var(--pbim-line-2, #F1F5F9); cursor: default; }
+        &.is-ghost { border-style: dashed; color: var(--pbim-primary-strong, #5A4BB0); font-weight: 700; }
+    }
+    .itgrc-pop {
+        position: absolute; z-index: 5; top: calc(100% + 4px); left: 0;
+        width: 340px; max-width: 92vw;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
+        padding: 8px;
+    }
+    .itgrc-popq { margin-bottom: 6px; }
+    // The list scrolls INSIDE the popover — a picker that grows the card is a
+    // card that scrolls the reader away from the row they were editing.
+    .itgrc-popscroll { max-height: 260px; overflow-y: auto; }
+    .itgrc-popgrp {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B); padding: 8px 8px 4px;
+    }
+    .itgrc-popitem {
+        width: 100%; display: flex; align-items: baseline; gap: 8px; text-align: left;
+        border: 0; background: none; font-family: inherit; cursor: pointer;
+        padding: 6px 8px; border-radius: 8px;
+        .nm { font-size: 12.5px; font-weight: 600; color: var(--pbim-text, #1B1733); }
+        // The sample sits beside the label because "which field is this?" is
+        // answered by a VALUE far more often than by a name.
+        .sm {
+            font-size: 11px; color: var(--pbim-muted, #64748B); margin-left: auto;
+            max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    // ------------------------------------------- the advanced lane, read only
+    .itgrc-summary { font-size: 14px; font-weight: 700; color: var(--pbim-ink, #1B1733); line-height: 1.5; }
+    .itgrc-prov { margin-top: 12px; display: grid; gap: 7px; }
+    .itgrc-kv {
+        display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 10px; font-size: 12.5px;
+        .k { color: var(--pbim-muted, #64748B); }
+        .v {
+            color: var(--pbim-text, #1B1733); word-break: break-word;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px;
+        }
+    }
+    .itgrc-code {
+        margin-top: 14px;
+        summary { font-size: 12px; font-weight: 700; color: var(--pbim-muted, #64748B); cursor: pointer; }
+        pre {
+            margin-top: 8px; padding: 12px; border-radius: var(--pbim-r-sm, 10px);
+            background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-text, #1B1733);
+            font-size: 12px; overflow-x: auto; white-space: pre;
+        }
+    }
+
+    // ==================================================== the proof rail
+    .itgrc-rail {
+        position: sticky; top: 0; align-self: start;
+        border-left: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-bg, #F5F6FA);
+        padding: 18px 20px 24px; min-width: 0;
+        display: grid; gap: 10px; align-content: start;
+    }
+    .itgrc-rail__h {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 11.5px; font-weight: 800; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+    }
+    .itgrc-rail__busy { margin-left: auto; }
+    .itgrc-rail__sent {
+        font-size: 14px; font-weight: 800; color: var(--pbim-ink, #1B1733); line-height: 1.5;
+    }
+    .itgrc-rail__err {
+        border: 1px solid var(--pbim-rose, #DC2668); background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668); border-radius: var(--pbim-r-sm, 10px);
+        padding: 10px 12px; font-size: 12px; font-weight: 600; line-height: 1.5;
+    }
+
+    // The illustration banner. Amber, because it is a caution and not an error:
+    // a sample presented as received data is the one thing the sample field's
+    // own docstring forbids, and this is that rule made visible.
+    .itgrc-synth {
+        display: flex; align-items: flex-start; gap: 8px;
+        border: 1px solid var(--pbim-amber, #D97706); background: var(--pbim-amber-soft, #FEF3C7);
+        color: var(--pbim-amber, #D97706); border-radius: var(--pbim-r-sm, 10px);
+        padding: 10px 12px; font-size: 12px; font-weight: 600; line-height: 1.5;
+    }
+
+    .itgrc-rows { display: grid; gap: 5px; max-height: 320px; overflow-y: auto; }
+    .itgrc-prow {
+        display: flex; align-items: baseline; gap: 8px;
+        background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 9px; padding: 6px 9px; font-size: 11.5px;
+
+        .cells { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; flex: 1 1 auto; }
+        .cell { color: var(--pbim-text, #1B1733); }
+        .cell b { color: var(--pbim-muted, #64748B); font-weight: 700; }
+        .val {
+            font-weight: 800; color: var(--pbim-primary-strong, #5A4BB0); flex: 0 0 auto;
+        }
+        // A row the conditions dropped is struck through rather than removed:
+        // watching a row LEAVE is how the reader learns what the condition did.
+        &.is-out {
+            .cells, .val { text-decoration: line-through; color: var(--pbim-muted, #64748B); }
+            .cell, .cell b, .val { color: var(--pbim-muted, #64748B); }
+            background: var(--pbim-line-2, #F1F5F9);
+        }
+    }
+
+    .itgrc-result {
+        display: flex; align-items: baseline; gap: 10px; margin-top: 4px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0); padding-top: 12px;
+        .l {
+            font-size: 11px; font-weight: 800; letter-spacing: .07em;
+            text-transform: uppercase; color: var(--pbim-muted, #64748B);
+        }
+        .n {
+            margin-left: auto; font-size: 30px; font-weight: 800;
+            color: var(--pbim-primary-strong, #5A4BB0); line-height: 1.1;
+        }
+    }
+
+    // ========================================================= the footer
+    .itgrc-confirm { font-size: 12.5px; font-weight: 700; color: var(--pbim-rose, #DC2668); }
+    .itgrc-foot__sum {
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52%;
+    }
+}

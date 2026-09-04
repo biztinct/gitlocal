@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from markupsafe import Markup
 from odoo.exceptions import UserError, ValidationError
 import json
 import logging
+
+from . import input_provenance
+from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -12,7 +16,8 @@ class HrPayslipFormula(models.Model):
     """
     Extends hr.payslip to support formula-based computation.
     """
-    _inherit = 'hr.payslip'
+    _name = 'hr.payslip'  # Explicitly set for Odoo 19 inheritance compatibility
+    _inherit = ['hr.payslip']
 
     # ==========================================
     # FORMULA COMPUTATION FIELDS
@@ -27,6 +32,7 @@ class HrPayslipFormula(models.Model):
     formula_config_id = fields.Many2one(
         'hr.formula.config',
         string='Formula Configuration',
+        ondelete='restrict',
         help="Formula configuration used for computation"
     )
 
@@ -39,6 +45,35 @@ class HrPayslipFormula(models.Model):
     formula_input_values = fields.Text(
         string='Input Values (JSON)',
         help="Input values used for formula computation"
+    )
+
+    # SOURCING S1 — the sibling of the blob above: for each input code, WHERE its
+    # value came from on the run that produced this payslip. Text-holding-JSON and
+    # not `fields.Json`, deliberately: it is always read together with
+    # `formula_input_values`, which is Text, and two fields that are always read
+    # together must not need two different accessors.
+    #
+    # Absent or empty means "this payslip predates the feature" — which is a
+    # different statement from "this component has no source", and no reader may
+    # collapse the two.
+    formula_input_sources = fields.Text(
+        string='Input Sources (JSON)',
+        readonly=True,
+        help="Where each input value came from on the run that produced this payslip."
+    )
+    # How many of those inputs actually CAME from somewhere. A payslip where
+    # this is 0 was computed entirely on scheme defaults — no file, no feed, no
+    # contract, no employee record — and on the reference tenant that produced
+    # 36 payslips, a gross of ₫243,000,000 (one component's default value,
+    # repeated) and a KPI band that looked perfectly healthy. The provenance to
+    # detect it was already being written; nothing was counting it.
+    #
+    # Stored as an integer beside the blob rather than re-parsed on demand:
+    # the run's banner has to be cheap enough to compute over every payslip.
+    pb_sourced_inputs = fields.Integer(
+        string='Inputs With A Source', readonly=True, copy=False,
+        help="How many input values came from a file, a feed, a contract or a "
+             "record. Zero means the payslip was computed entirely on defaults."
     )
 
     formula_computed_values = fields.Text(
@@ -101,8 +136,14 @@ class HrPayslipFormula(models.Model):
                 ) % config.name)
 
             # Get input values
-            input_values = payslip._get_formula_input_values(config)
+            # SOURCING S1 — provenance is filled in the same pass and written beside
+            # the values, never derived afterwards: re-deriving would have to guess
+            # which branch won, which is the whole class of bug this replaces.
+            input_sources = {}
+            input_values = payslip._get_formula_input_values(config, provenance=input_sources)
             payslip.formula_input_values = json.dumps(input_values, indent=2)
+            payslip.formula_input_sources = json.dumps(input_sources, indent=2)
+            payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
 
             # Get rules in order (display) but compute using dependency sorting
             rules = config.rule_ids.sorted(key=lambda r: r.sequence)
@@ -242,43 +283,208 @@ class HrPayslipFormula(models.Model):
             })
         return payload
 
-    def _find_formula_config(self):
-        """Find appropriate formula configuration for this payslip"""
-        self.ensure_one()
+    def _inactive_formula_configs(self):
+        """Schemes this company HAS, but which are not Active.
 
-        # Try to find config based on structure
+        The difference between "there is no scheme" and "the scheme is in
+        Draft" is the difference between an afternoon of assignment work and
+        one button. Every rung of `_find_formula_config` filters on
+        `state = 'active'`, so it cannot tell them apart — this can.
+        """
+        self.ensure_one()
+        Config = self.env['hr.formula.config']
+        domain = [('state', 'not in', ('active', 'archived'))]
+        if self.company_id:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', '=', self.company_id.id)]
+        return Config.search(domain, order='id')
+
+    def _find_formula_config(self):
+        """Find the formula configuration for a payslip that has none set.
+
+        Only reached when ``formula_config_id`` is empty — everything created by
+        the pay-run wizard or the import batch sets it explicitly.
+
+        Ordered most-specific first. Note that ``struct_id`` is a WEAK signal:
+        several configs legitimately share one ``hr.payroll.structure`` (a
+        mid-cycle and an end-cycle config for the same structure is the normal
+        shape), and a payslip carries no cycle marker of its own to tell them
+        apart. So a structure match is used only when it is unambiguous;
+        otherwise we fall through rather than silently pick the wrong cycle.
+
+        Every lookup is company-scoped: without it, a multi-company database
+        can hand a payslip a config belonging to another company.
+        """
+        self.ensure_one()
+        Config = self.env['hr.formula.config']
+        # Company-less configs are shared, so include them — a strict equality
+        # filter would resolve to nothing at all for such a config, which is
+        # worse than the cross-company match this replaces.
+        company_domain = [
+            '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)
+        ] if self.company_id else []
+
+        # 1. A sibling payslip in the same run already resolved this. Strongest
+        #    signal available and free of the ambiguity below.
+        if self.payslip_run_id:
+            sibling = self.payslip_run_id.slip_ids.filtered(
+                lambda s: s.id != self.id and s.formula_config_id
+            )[:1]
+            if sibling:
+                return sibling.formula_config_id
+
+            # 2. The import batch that produced the run records the config it
+            #    was run with.
+            batch = self.env['hr.payroll.import.batch'].search(
+                [('payslip_run_id', '=', self.payslip_run_id.id)], limit=1
+            )
+            if batch.formula_config_id:
+                return batch.formula_config_id
+
+        # 3. Payroll structure — only when it identifies exactly one config.
         if self.struct_id:
-            config = self.env['hr.formula.config'].search([
+            configs = Config.search(company_domain + [
                 ('structure_id', '=', self.struct_id.id),
                 ('state', '=', 'active'),
-            ], limit=1)
-            if config:
-                return config
+            ])
+            if len(configs) == 1:
+                return configs
+            if len(configs) > 1:
+                _logger.warning(
+                    "Payslip %s: structure %s maps to %s active formula configs (%s) — "
+                    "ambiguous, ignoring the structure and falling back.",
+                    self.id, self.struct_id.display_name, len(configs),
+                    ", ".join(configs.mapped('name')),
+                )
 
-        # Try to find config based on employee's country
+        # 4. Employee's country.
         if self.employee_id and self.employee_id.country_id:
-            country_code = self.employee_id.country_id.code
-            config = self.env['hr.formula.config'].search([
-                ('country_code', '=', country_code),
+            config = Config.search(company_domain + [
+                ('country_code', '=', self.employee_id.country_id.code),
                 ('state', '=', 'active'),
             ], limit=1)
             if config:
                 return config
 
-        # Try to find any active config for this company
-        config = self.env['hr.formula.config'].search([
-            ('company_id', '=', self.company_id.id),
-            ('state', '=', 'active'),
-        ], limit=1)
+        # 5. Any active config for this company.
+        return Config.search(company_domain + [('state', '=', 'active')], limit=1)
 
-        return config
+    def _j3_feed_hits_by_rule(self, config):
+        """What this employee's connected-system data delivers, per component.
 
-    def _get_formula_input_values(self, config):
+        JOURNEY J3 S4 — the batch-free half of the connector story.
+
+        The blob is built exactly the way the import batch builds it
+        (`action_load_from_data_store`): the connector's `hr.api.data.store` rows
+        for this employee, `data_type` in employee/salary, merged through
+        `get_mappable_data()` so a transformation rule's `computed_data` overrides
+        the raw `extracted_data` of the same name. Rows are merged OLDEST FIRST so
+        the newest version of a key wins, and `employee` is merged before `salary`
+        so compensation beats master data where they collide — the same precedence
+        the batch loader applies by its `employee_external_id, data_type` ordering.
+
+        Preference, in order: `state='extracted'` rows (ready for mapping) if there
+        are any, else whatever is there apart from `archived`/`error`. A `consumed`
+        row is data an import batch has already used — still true, still readable,
+        and refusing it would mean a live payrun stopped working the moment
+        somebody ran an import.
+
+        Then `_feed_values_for` — the SAME function the import pre-pass calls —
+        applies the wires, their transforms and J3's empty-value guard. There is no
+        second implementation of "what did the feed say" anywhere in this codebase,
+        which is the whole point of the helper existing.
+
+        Returns `{rule_id: {'value', 'key', 'kind'}}`; `{}` on any absence, and it
+        never raises: a payslip must compute even when the integration layer is
+        misconfigured, missing or mid-migration.
+        """
+        self.ensure_one()
+        if not (config and config.connector_id and self.employee_id):
+            return {}
+        Store = self.env.get('hr.api.data.store')
+        FieldMapping = self.env.get('hr.integration.field.mapping')
+        if Store is None or FieldMapping is None:
+            return {}
+        try:
+            connector = config.connector_id.sudo()
+            mappings = connector._sync_mapping_ids()
+            if not mappings:
+                return {}
+            # EVERY kind of feed the wires point at, not just employee and
+            # salary. Hours live on the attendance feed and overtime on a
+            # `custom` one, so a resolver reading two data types could not see
+            # them: on the reference tenant `STANWORKHOUR` (expected working
+            # hours) resolved to its default even with 168 June attendance rows
+            # sitting against the right people, and `ACTUBASISALA` —
+            # ROUND(BASESALARY / STANWORKHOUR * ACTUWORKHOUR, 0) — divided by
+            # that zero and produced no basic pay, so every deduction taken as
+            # a percentage of it came out ₫0 too.
+            kinds = [k for k in mappings.mapped('endpoint_id.data_type') if k]
+            kinds = list(dict.fromkeys(kinds)) or ['employee', 'salary']
+            base = [('connector_id', '=', connector.id),
+                    ('employee_id', '=', self.employee_id.id),
+                    ('data_type', 'in', kinds)]
+            rows = Store.sudo().search(
+                base + [('state', '=', 'extracted')], order='version asc, id asc')
+            if not rows:
+                rows = Store.sudo().search(
+                    base + [('state', 'not in', ('archived', 'error'))],
+                    order='version asc, id asc')
+            if not rows:
+                return {}
+            # Merged in an EXPLICIT precedence, not alphabetically. The old
+            # `data_type asc` happened to order employee before salary, which
+            # is the rule the docstring states — but it is a coincidence of
+            # spelling, and adding `attendance` and `custom` to the same sort
+            # would have silently put them first and let master data overwrite
+            # this period's hours.
+            order = {'employee': 0, 'salary': 1, 'leave': 2,
+                     'attendance': 3, 'custom': 4}
+            blob = {}
+            for row in rows.sorted(key=lambda r: order.get(r.data_type, 9)):
+                data = row.get_mappable_data()
+                if isinstance(data, dict):
+                    blob.update(data)
+            computed = FieldMapping._computed_output_keys(connector)
+            out = {}
+            for hit in FieldMapping._feed_values_for(mappings, blob):
+                out[hit['rule'].id] = {
+                    'value': hit['value'], 'key': hit['key'],
+                    'kind': 'rule' if hit['key'] in computed else 'feed',
+                }
+            return out
+        except Exception:       # noqa: BLE001
+            _logger.warning(
+                "J3 S4: could not read connected-system data for payslip %s",
+                self.id, exc_info=True)
+            return {}
+
+    @api.model
+    def pb_count_sourced(self, input_sources):
+        """How many provenance entries actually came from somewhere.
+
+        `src == 'none'` means the resolver found nothing and the component fell
+        to its default. Counting them is the difference between "payroll ran"
+        and "payroll ran on nothing".
+        """
+        return sum(1 for v in (input_sources or {}).values()
+                   if isinstance(v, dict) and (v.get('src') or 'none') != 'none')
+
+    def _get_formula_input_values(self, config, provenance=None):
         """
         Get input values for formula computation from various sources:
         - Contract data (wage, allowances)
         - Worked days
         - External integration (Zoho, etc.)
+
+        SOURCING S1: ``provenance`` is an optional caller-supplied dict, filled with
+        one `input_provenance.entry` per code. It is an OUT-PARAMETER rather than a
+        second return value so that every existing caller — and any out-of-tree one
+        — keeps today's signature and today's return exactly.
+
+        This is the batch-free producer: the path taken when a payslip has no import
+        line, so there is no spreadsheet and no feed to attribute anything to. Its
+        sources are the contract, the worked-days lines, or nothing at all.
         """
         self.ensure_one()
         values = {}
@@ -286,8 +492,94 @@ class HrPayslipFormula(models.Model):
         # Get input rules
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input')
 
+        # SC-3 — the scheme's source lanes and their order, on THIS path too.
+        # The two resolvers drifting apart is the defect RD45 closed; a lane
+        # config only one of them honoured would reopen it.
+        try:
+            lane_rank = (config._source_kind_rank()
+                         if 'source_priority' in config._fields else ())
+        except Exception:       # noqa: BLE001 — a bad token must not stop a run
+            lane_rank = ()
+        if not lane_rank:
+            lane_rank = (self.env['hr.formula.rule']._SOURCE_RANK
+                         + ('contract_component',))
+        api_lane_ok = 'feed' in lane_rank
+        records_lane_ok = 'employee_field' in lane_rank
+        records_first = records_lane_ok and (
+            not api_lane_ok
+            or lane_rank.index('employee_field') < lane_rank.index('feed'))
+
+        # JOURNEY J3 S4 — read the connected system's data ONCE, not per rule.
+        # `_feed_hits_by_rule` returns {rule_id: hit} for the wires that actually
+        # delivered something for THIS employee; empty dict when there is no
+        # connector, no data, or nothing matched, in which case every branch below
+        # behaves exactly as it did before this phase.
+        feed_hits = self._j3_feed_hits_by_rule(config) if api_lane_ok else {}
+
+        # RECORDS RD45/RD46 — ranks 4 and 5, which this path never had.
+        #
+        # `_declared_source_walk` (payroll_import_batch.py:2696) defines the
+        # order ONCE: feed > rule > excel > employee_field/contract_field >
+        # contract_component > tail. Every rung of it is reachable from the
+        # import batch; on THIS path — a run computed with no pay-data file —
+        # only the first two were, and the walk simply stopped there. So a
+        # component mapped to a field on the employee or the contract fell to
+        # its default however plainly the record answered, and the Source Atlas
+        # said so honestly: "Payobook records — nothing in this run came this
+        # way", on a tenant with 21 such mappings.
+        #
+        # On ABM that cost the whole deduction side. `SHUIPARTICIP` is mapped
+        # to `hr.contract.shuipart`, which reads YES on all 152 contracts, and
+        # every insurance line is `IF(SHUIPARTICIP="YES", …, 0)`. The component
+        # resolved to its default of 0, every gate took the zero leg, and a run
+        # of 36 payslips reported ₫0.00 of deductions.
+        #
+        # The rungs are the SAME functions the batch resolver's tail calls —
+        # `_mapped_record_value` and `_contract_component_amounts` — not a
+        # second reading of a record. Nothing here decides an ORDER; it fills in
+        # rungs the order already named.
+        #
+        # RANK 5 (the contract component) IS HERE TOO, and it was the owner's
+        # call rather than this fix's. Adding it is what finally makes the two
+        # resolvers agree: before, the SAME month produced a different gross
+        # depending only on whether a pay-data file had been uploaded, and no
+        # screen could explain the difference.
+        #
+        # It was held back for one round because it does not add a source — it
+        # REPLACES a component's declared default with whatever the contract's
+        # advantage line says, zeros included. On the reference tenant 612 of
+        # 756 such cells read zero and `PAIDLEAVUNUS` lost a ₫6,750,000 default,
+        # ₫243,000,000 off a 36-payslip run. That default turned out to be one
+        # resigning employee's leave payout, copied out of the setup workbook
+        # into the box that means "use this for everyone"; the owner cleared it,
+        # and the rung then costs nothing and closes the inconsistency.
+        Batch = self.env['hr.payroll.import.batch']
+        mapping_by_rule, component_amounts = {}, {}
+        try:
+            if config.rule_ids:
+                # `destination_type = 'field'` only, exactly as the batch
+                # resolver's `mapping_by_rule` (payroll_import_batch.py:3902):
+                # a bank destination is three columns assembling ONE account
+                # and is never a value a component reads.
+                mappings = self.env['hr.payslip.import.mapping'].sudo().search([
+                    ('salary_structure_id', '=', config.id),
+                    ('destination_type', '=', 'field'),
+                    ('component_id', 'in', config.rule_ids.ids),
+                ])
+                mapping_by_rule = {m.component_id.id: m
+                                   for m in mappings if m.component_id}
+            component_amounts = Batch._contract_component_amounts(self.contract_id)
+        except Exception:       # noqa: BLE001
+            # Same rail as `_j3_feed_hits_by_rule`: a payslip must compute even
+            # when the mapping layer is misconfigured or mid-migration.
+            _logger.warning(
+                "RD45: could not read record sources for payslip %s",
+                self.id, exc_info=True)
+            mapping_by_rule, component_amounts = {}, {}
+
         for rule in input_rules:
             value = rule.default_value
+            src, key, via = 'none', None, 'default'
 
             # Try to get from contract
             if self.contract_id:
@@ -298,7 +590,13 @@ class HrPayslipFormula(models.Model):
                 }
                 contract_field = contract_mapping.get(rule.code.upper())
                 if contract_field and hasattr(self.contract_id, contract_field):
-                    value = getattr(self.contract_id, contract_field) or value
+                    # Split out of the original one-liner so provenance can see WHICH
+                    # branch of the `or` won. The resulting `value` is identical:
+                    # `raw or value` is exactly what was here before.
+                    raw_contract = getattr(self.contract_id, contract_field)
+                    if raw_contract:
+                        src, key, via = 'employee_field', contract_field, 'contract_field'
+                    value = raw_contract or value
 
             # Try to get from worked days
             if rule.code.startswith('WD_') or rule.code.startswith('HOURS'):
@@ -311,19 +609,92 @@ class HrPayslipFormula(models.Model):
                         value = worked_day.number_of_hours
                     else:
                         value = worked_day.number_of_days
+                    src, key, via = 'employee_field', wd_code, 'worked_days'
 
-            # Try to get from integration connector
-            if config.connector_id:
-                # Get from mapped field
-                mapping = config.connector_id.field_mapping_ids.filtered(
-                    lambda m: m.target_rule_id == rule
-                )[:1]
-                if mapping:
-                    # TODO: Get actual value from synced data
-                    pass
+            # Get from integration connector (only confirmed 'active' mappings are
+            # load-bearing — F114/D114.2).
+            #
+            # JOURNEY J3 S4 — this was `if mapping: # TODO … pass`. A live pay run
+            # with no import batch could not read API data AT ALL: every wire on
+            # the API mapping board was decorative on this path, and the only way
+            # to get a feed value into a payslip was to route it through an import
+            # batch. The component silently fell to its contract wage or its
+            # default and the provenance said so, truthfully and unhelpfully.
+            #
+            # The wire wins over the contract/worked-days branches above for the
+            # same reason it does inside the import resolver: it is the one thing
+            # here a PERSON declared. And it wins only when it DELIVERED —
+            # `_feed_values_for` applies J3's empty-value guard identically, so an
+            # empty feed leaves the contract/worked-days/default tail exactly as it
+            # was, which is what makes "keep the other source as a fallback" true
+            # on this path as well as on the batch one.
+            # RECORDS RD45/RD46 + SC-3 — the feed rung and the record rungs,
+            # read in the SCHEME'S configured order. Laziness is unchanged in
+            # kind: the lower-ranked source is reached only when the higher
+            # one delivered nothing — what SC-3 makes configurable is which
+            # one is higher. `_blob_is_empty` is THE emptiness test (0 and
+            # False are values); the `False`-is-NULL guard is the batch
+            # resolver's, for the same reason it exists there.
+            hit = feed_hits.get(rule.id)
+            mapping = (mapping_by_rule.get(rule.id)
+                       if records_lane_ok else None)
+
+            def _from_api(hit=hit):
+                if not hit:
+                    return None
+                return (hit['value'],
+                        'rule' if hit['kind'] == 'rule' else 'feed',
+                        hit['key'], 'connector_mapping')
+
+            def _from_records(rule=rule, mapping=mapping):
+                if not records_lane_ok:
+                    return None
+                mapped = Batch._mapped_record_value(
+                    mapping, contract=self.contract_id,
+                    employee=self.employee_id) if mapping else None
+                if mapped is False \
+                        and not Batch._record_dest_is_boolean(mapping):
+                    mapped = None
+                if not Batch._blob_is_empty(mapped):
+                    return (mapped, 'employee_field',
+                            mapping.target_field_id.name or None,
+                            'employee_mapping')
+                # Rank 5, spelled exactly as the batch resolver's tail spells
+                # it: PRESENCE in the contract's advantage lines wins, not
+                # truthiness, because a contract line saying zero has answered
+                # the question (MJ15).
+                code = Batch._normalize_header_key(rule.code) \
+                    if rule.code else ''
+                if code and code in component_amounts:
+                    return (component_amounts[code], 'contract_component',
+                            rule.code, 'contract')
+                return None
+
+            readers = ((_from_records, _from_api) if records_first
+                       else (_from_api, _from_records))
+            resolved = None
+            for reader in readers:
+                resolved = reader()
+                if resolved:
+                    break
+            if resolved:
+                value, src, key, via = resolved
+            elif records_lane_ok and rule.is_contract_component:
+                code = Batch._normalize_header_key(rule.code) \
+                    if rule.code else ''
+                value = component_amounts.get(code, 0.0)
+                src, key, via = ('contract_component', rule.code,
+                                 'contract_default')
 
             values[rule.code] = value
+            if provenance is not None:
+                provenance[rule.code] = input_provenance.entry(src, key=key, via=via)
 
+        # NOTE constants are deliberately NOT added here. On this path they never
+        # enter `input_values` (the rule evaluator reads `constant_value` directly),
+        # and the invariant this blob is verified against is that its key set EQUALS
+        # `input_values`' key set — an invariant worth more than the extra entry,
+        # because S4 derives "Fixed value" from the component's own type anyway.
         return values
 
     def _create_payslip_lines_from_formulas(self, rules, computed_values):
@@ -334,9 +705,34 @@ class HrPayslipFormula(models.Model):
         self.line_ids.unlink()
 
         lines_to_create = []
+        skipped_non_numeric = []
 
         for rule in rules:
             if not rule.appears_on_payslip:
+                continue
+
+            # ==========================================================
+            # VALUEKIND P2 — a payslip line has a Float `total`, so only a
+            # NUMBER can be one.
+            #
+            # `appears_on_payslip` is not a print flag: this loop is what
+            # creates the `hr.payslip.line` row, and every downstream total
+            # sums those rows (`pb_total_*`, the Explorer's fact tables, the
+            # payroll report, GL). On ABM, `EMPBANKACCOA` and `INSBOOKNO` —
+            # a bank account and an insurance book number — had the flag set,
+            # so 152 lines each carried the account number AS AN AMOUNT and
+            # contributed 1,084,804,462,467,690 to the line totals. That is
+            # the 1086T the Analytics Explorer was reporting.
+            #
+            # The rail is the component's own kind, not a name heuristic: an
+            # identifier, a date, a piece of text and a yes/no have no `total`
+            # by construction. Reported once per run rather than in silence
+            # (C7) — a component that stops printing is something a person
+            # must be able to see they did.
+            # ==========================================================
+            if not value_kind_classifier.wants_number(
+                    getattr(rule, 'value_kind', None)):
+                skipped_non_numeric.append(rule.code)
                 continue
 
             amount = computed_values.get(rule.code, 0.0)
@@ -344,11 +740,22 @@ class HrPayslipFormula(models.Model):
             # Find or create salary rule
             salary_rule = rule.salary_rule_id
             if not salary_rule:
-                # Try to find existing rule with same code
-                salary_rule = self.env['hr.salary.rule'].search([
-                    ('code', '=', rule.code),
-                    ('company_id', '=', self.company_id.id),
-                ], limit=1)
+                # Try to find existing rule with same code. When computing many
+                # payslips (the Run Payroll wizard) a shared cache is passed via
+                # context to avoid repeating this search per-rule per-payslip
+                # (an N+1 that was ~45k queries for a 900-slip run). Cache is
+                # keyed by (code, company) so results are identical either way.
+                cache = self.env.context.get('pb_salary_rule_cache')
+                key = (rule.code, self.company_id.id)
+                if cache is not None and key in cache:
+                    salary_rule = cache[key]
+                else:
+                    salary_rule = self.env['hr.salary.rule'].search([
+                        ('code', '=', rule.code),
+                        ('company_id', '=', self.company_id.id),
+                    ], limit=1)
+                    if cache is not None:
+                        cache[key] = salary_rule
 
             line_data = {
                 'slip_id': self.id,
@@ -364,8 +771,22 @@ class HrPayslipFormula(models.Model):
                 'employee_id': self.employee_id.id,
                 'report_visible': rule.report_visible or False,
                 'component_type': rule.component_type or False,
+                # NETROLE — same copy the batch producer makes, for the same
+                # reason: the run's totals must count each dong once.
+                'component_detail': bool(rule.net_role_detail),
+                # VALUEKIND P4 — and WHAT it is, so a report never has to read
+                # `hr_salary_rule_category.category_type`, which nobody
+                # maintains because nobody sees it.
+                'pay_role': rule.net_role or False,
             }
             lines_to_create.append(line_data)
+
+        if skipped_non_numeric:
+            _logger.info(
+                "VALUEKIND: payslip %s — %s component(s) marked 'appears on "
+                "payslip' hold a non-numeric value and cannot be a payslip "
+                "line: %s", self.id, len(skipped_non_numeric),
+                ', '.join(sorted(set(skipped_non_numeric))))
 
         if lines_to_create:
             self.env['hr.payslip.line'].create(lines_to_create)
@@ -373,12 +794,77 @@ class HrPayslipFormula(models.Model):
     # ==========================================
     # OVERRIDE STANDARD COMPUTE
     # ==========================================
+    def _adopt_scheme_when_structureless(self):
+        """Give a payslip with no salary structure the scheme that governs it.
+
+        The standard engine computes a payslip by walking its structure's salary
+        rules. With no `struct_id` there are no rules, so it walks nothing,
+        writes nothing, and returns True — a payslip of zero lines and no
+        complaint. On a tenant whose payroll is defined by a formula scheme
+        rather than by salary structures that is EVERY payslip the Run Payroll
+        wizard makes, and it is how ABM's June 2026 run reported 146 employees
+        and a total net of 0.00.
+
+        So: no structure and a scheme that resolves means the scheme is what
+        this payslip is for. Nothing here touches a payslip that HAS a
+        structure — that one has a real standard computation to do and keeps it.
+
+        Returns the payslips promoted, for the caller's own bookkeeping.
+        """
+        promoted = self.browse()
+        for payslip in self:
+            if payslip.struct_id or payslip.calculation_method == 'formula':
+                continue
+            config = payslip._find_formula_config()
+            if not config:
+                continue
+            payslip.write({
+                'calculation_method': 'formula',
+                'formula_config_id': config.id,
+            })
+            promoted |= payslip
+        if promoted:
+            _logger.info(
+                "Computing %s payslip(s) with no salary structure through their "
+                "payroll scheme instead of the structure engine, which has no "
+                "rules to run for them.", len(promoted))
+        return promoted
+
     def compute_sheet(self):
         """Override to support formula-based computation"""
+        self._adopt_scheme_when_structureless()
         formula_payslips = self.filtered(
             lambda p: p.calculation_method == 'formula' and p.formula_config_id
         )
         standard_payslips = self - formula_payslips
+        # What is left with neither a structure nor a scheme cannot compute at
+        # all. Saying so is the point: it used to return True and write nothing.
+        stranded = standard_payslips.filtered(lambda p: not p.struct_id)
+        if stranded:
+            # Say WHICH of the two things is missing. Every rung of
+            # `_find_formula_config` filters on `state = 'active'`, so a scheme
+            # sitting in Draft is invisible to all of them — and the message
+            # then reported it as ABSENT. On the reference tenant that produced
+            # a run of 36 payslips with no lines and a KPI band of zeros, over
+            # a scheme that was one lifecycle step from working, and sent two
+            # people looking for an assignment that was never the problem.
+            blocked = stranded[0]._inactive_formula_configs()
+            if blocked:
+                raise UserError(_(
+                    "Payroll scheme '%(scheme)s' is %(state)s, so payroll "
+                    "cannot run on it — a scheme has to be Active before a pay "
+                    "run can use it. Open it in the Formula Studio, take it "
+                    "through to Active, then run payroll again.",
+                    scheme=blocked[0].display_name,
+                    state=blocked[0]._pb_state_label(),
+                ))
+            raise UserError(_(
+                "%(count)s payslip(s) cannot be computed: %(who)s has neither a "
+                "salary structure on the contract nor a payroll scheme for this "
+                "company. Assign one and run payroll again.",
+                count=len(stranded),
+                who=stranded[0].employee_id.display_name or _('this employee'),
+            ))
 
         # Compute formula payslips
         if formula_payslips:
@@ -412,23 +898,68 @@ class HrPayslipFormula(models.Model):
             input_values = None
             if import_line and import_line.batch_id:
                 batch = import_line.batch_id
+                input_sources = {}
                 input_values = batch._transform_data_to_formula_inputs(
                     import_line.get_raw_data(),
                     contract=payslip.contract_id,
                     employee=payslip.employee_id,
+                    provenance=input_sources,
+                    topup_data=import_line.get_topup_data(),
                 )
                 payslip.formula_input_values = json.dumps(input_values)
+                payslip.formula_input_sources = json.dumps(input_sources)
+                payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:
-                if payslip.formula_input_values:
-                    try:
-                        input_values = json.loads(payslip.formula_input_values or '{}')
-                    except Exception:
-                        input_values = {}
-                else:
-                    input_values = payslip._get_formula_input_values(config)
-                    payslip.formula_input_values = json.dumps(input_values, indent=2)
+                # RECORDS RD45 — RE-READ THE SOURCES, don't just re-run the
+                # arithmetic over yesterday's inputs.
+                #
+                # This branch used to reuse `formula_input_values` verbatim
+                # whenever it held anything, and only resolve when it was empty.
+                # So the button labelled "recalculated with current settings"
+                # could not see a single CHANGED setting: the owner set SHUI
+                # participation on every ABM contract, pressed Recompute, and
+                # got the same ₫0.00 back, because the stale blob still said the
+                # component had no value. A button that cannot pick up a change
+                # is worse than no button — it answers "done" to work it did not
+                # do.
+                #
+                # WHAT THE REUSE WAS PROTECTING, and still does. The stored blob
+                # is the ONLY surviving copy of a spreadsheet's numbers once the
+                # import line is gone, and of the values `pb_demo` stages
+                # directly onto a payslip. Re-resolving unconditionally would
+                # erase both. So: a code that a LIVE source answers is refreshed
+                # from that source; a code the resolver cannot source keeps
+                # exactly what the payslip already held. Nothing is lost, and
+                # nothing is frozen.
+                stored, stored_sources = {}, {}
+                try:
+                    stored = json.loads(payslip.formula_input_values or '{}')
+                    stored_sources = json.loads(payslip.formula_input_sources or '{}')
+                except Exception:       # noqa: BLE001
+                    stored, stored_sources = {}, {}
+                if not isinstance(stored, dict):
+                    stored = {}
+                if not isinstance(stored_sources, dict):
+                    stored_sources = {}
+
+                fresh_sources = {}
+                fresh = payslip._get_formula_input_values(
+                    config, provenance=fresh_sources)
+                input_values = dict(stored)
+                input_sources = dict(stored_sources)
+                for code, value in fresh.items():
+                    entry = fresh_sources.get(code) or {}
+                    if (entry.get('src') or 'none') == 'none' and code in stored:
+                        # Nothing answers for this code today. Whatever the
+                        # payslip already carried is the better record of it.
+                        continue
+                    input_values[code] = value
+                    input_sources[code] = entry
+                payslip.formula_input_values = json.dumps(input_values, indent=2)
+                payslip.formula_input_sources = json.dumps(input_sources, indent=2)
+                payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
 
                 rules = config.rule_ids.sorted(key=lambda r: r.sequence)
                 computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
@@ -532,4 +1063,188 @@ class HrPayslipFormula(models.Model):
                 'pb_hr_payroll_formula.view_payslip_formula_log'
             ).id,
             'target': 'new',
+        }
+
+    # ==========================================
+    # W73 — themed payslip render data (WRITE-FREE by construction, D-L8)
+    # ==========================================
+    # Accent palette hex — the LOCKED sc-* keys, same values the studio preview
+    # and payslip.scss section variants use (C11; no free hex).
+    _THEME_ACCENT_HEX = {
+        'slate': '#64748B', 'indigo': '#5A4BB0', 'emerald': '#059669',
+        'amber': '#D97706', 'rose': '#E11D48', 'sky': '#0284C7', 'violet': '#7C3AED',
+    }
+    _THEME_FONT_STACK = {
+        'system': "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        'serif': "Georgia, 'Times New Roman', Times, serif",
+        'mono': "'SF Mono', 'Cascadia Code', Consolas, monospace",
+    }
+
+    def _themed_payslip_render(self):
+        """Build the F9-scheme render tree for the themed QWeb report, read-only:
+        sections by ``payslip_identifier`` ordered by sequence, lines by
+        ``payslip_sequence``, ``visibility_rule`` honored against LINE totals,
+        ``collapse_when_empty`` honored, ``label_vi`` under a Vietnamese reader,
+        theme tokens applied. Pure reads — the report never writes (D-L8/C16).
+
+        A slip with no formula config still renders (all appears-on lines fall
+        into a default 'Payslip' section) so the action never crashes (C7)."""
+        self.ensure_one()
+        lang = self.env.context.get('lang') or 'en_US'
+        is_vi = str(lang).startswith('vi')
+
+        # Line totals summed by code (mirrors the legacy report's dsal helper).
+        dsal = {}
+        for line in self.line_ids:
+            if line.code:
+                dsal[line.code] = dsal.get(line.code, 0.0) + line.total
+
+        config = self.formula_config_id
+        rules_by_code = {}
+        if config:
+            for r in config.rule_ids:
+                if r.code:
+                    rules_by_code[r.code] = r
+
+        # Accent / font / logo — theme fields with safe fallbacks.
+        accent_key = (config.theme_accent if config else False) or 'slate'
+        font_key = (config.theme_font if config else False) or 'system'
+        show_logo = bool(config.theme_show_logo) if config else True
+        logo = False
+        if show_logo:
+            logo = (config.theme_logo if config else False) or (
+                self.company_id.logo if self.company_id else False)
+
+        def _line_name(r, code):
+            if r:
+                nm = (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code
+                return nm or code
+            return code
+
+        def _visible(r, total):
+            rule_vis = r.visibility_rule if r else 'always'
+            if rule_vis == 'never':
+                return False
+            if rule_vis == 'when_nonzero':
+                return abs(total) > 0.0000001
+            return True
+
+        Section = self.env['hr.payslip.config']
+        sections = Section.search(
+            [('salary_structure_id', '=', config.id)], order='sequence, id'
+        ) if config else Section.browse()
+        currency = (config.currency_id.symbol if (config and config.currency_id)
+                    else (self.company_id.currency_id.symbol if self.company_id else ''))
+        values_by_rule = {
+            rule.id: dsal.get(rule.code) for rule in config.rule_ids
+        } if config else {}
+        rich_blocks = []
+        if config:
+            rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '',
+                           config.payslip_layout_html or '']
+            rich_blocks.extend(section.note_html or '' for section in sections)
+        embedded_value_ids = set()
+        for block in rich_blocks:
+            embedded_value_ids.update(
+                config._payslip_content_rule_ids(block, amount_only=True))
+
+        # Which config rules belong to each section; the rest (appears_on_payslip
+        # but unsectioned) fall into a synthetic default section (C7).
+        sectioned_codes = set()
+        out_sections = []
+        for s in sections:
+            comps = [r for r in config.rule_ids
+                     if r.payslip_identifier.id == s.id and r.appears_on_payslip
+                     and r.id not in embedded_value_ids]
+            comps.sort(key=lambda r: (r.payslip_sequence or 0, r.sequence))
+            lines = []
+            for r in comps:
+                sectioned_codes.add(r.code)
+                total = dsal.get(r.code, 0.0)
+                if not _visible(r, total):
+                    continue
+                lines.append({'name': _line_name(r, r.code), 'total': total,
+                              'is_deduction': total < 0})
+            section_embedded_ids = config._payslip_content_rule_ids(
+                s.note_html or '', amount_only=True)
+            embedded_total = 0.0
+            embedded_visible = False
+            for rule in config.rule_ids.filtered(lambda r: r.id in section_embedded_ids):
+                total = dsal.get(rule.code, 0.0)
+                if _visible(rule, total):
+                    embedded_visible = True
+                    embedded_total += total
+            if not lines and not embedded_visible and s.collapse_when_empty:
+                continue
+            title = (s.label_vi if (is_vi and s.label_vi) else False) or s.label or s.identifier or ''
+            out_sections.append({
+                'title': title,
+                'color_hex': self._THEME_ACCENT_HEX.get(s.color_key or 'slate', '#64748B'),
+                'note_html': config._render_payslip_content(
+                    s.note_html or '', values_by_rule, currency),
+                'lines': lines,
+                'subtotal': sum(l['total'] for l in lines) + embedded_total,
+            })
+
+        # Default 'Payslip' section: config rules that appear on the payslip but
+        # carry no section (never silently dropped).
+        default_lines = []
+        for r in config.rule_ids if config else []:
+            if (r.code in sectioned_codes or not r.appears_on_payslip
+                    or r.payslip_identifier or r.id in embedded_value_ids):
+                continue
+            total = dsal.get(r.code, 0.0)
+            if not _visible(r, total):
+                continue
+            default_lines.append({'name': _line_name(r, r.code), 'total': total,
+                                  'is_deduction': total < 0})
+        # No config at all → every coded line is a default line.
+        if not config:
+            for code, total in dsal.items():
+                default_lines.append({'name': code, 'total': total,
+                                      'is_deduction': total < 0})
+        if default_lines:
+            out_sections.append({
+                'title': _('Payslip'),
+                'color_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
+                'note_html': Markup(''),
+                'lines': default_lines,
+                'subtotal': sum(l['total'] for l in default_lines),
+            })
+
+        # The slip's own NET line is the only trustworthy net — summing visible
+        # section subtotals double-counts totals (GROSS, NET itself) and adds
+        # positive employer contributions (WP-L review M1: 42.2M printed vs the
+        # real 12.1M). No NET line and no NET-category line → hide the card
+        # rather than print a derived number on an employee-facing PDF.
+        net = dsal.get('NET')
+        if net is None:
+            net_lines = self.line_ids.filtered(
+                lambda l: l.category_id and l.category_id.code == 'NET')
+            net = sum(net_lines.mapped('total')) if net_lines else None
+        meta = {
+            'employee_name': self.employee_id.name or '',
+            'employee_id': (self.employee_id.employee_id
+                            or self.employee_id.barcode or ''),
+            'department': self.employee_id.department_id.name or '',
+            'date_from': self.date_from.strftime('%d/%m/%Y') if self.date_from else '',
+            'date_to': self.date_to.strftime('%d/%m/%Y') if self.date_to else '',
+        }
+        meta['period'] = ('From %s to %s' % (meta['date_from'], meta['date_to'])
+                          if meta['date_from'] or meta['date_to'] else '')
+        return {
+            'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
+            'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
+            'show_logo': show_logo and bool(logo),
+            'logo': logo,
+            'header_html': config._render_payslip_content(
+                config.payslip_header_html or '', values_by_rule, currency) if config else Markup(''),
+            'footer_html': config._render_payslip_content(
+                config.payslip_footer_html or '', values_by_rule, currency) if config else Markup(''),
+            'layout_html': config._render_payslip_content(
+                config.payslip_layout_html or '', values_by_rule, currency, meta) if config else Markup(''),
+            'sections': out_sections,
+            'net': net,
+            'has_net': net is not None,
+            'currency': currency,
         }

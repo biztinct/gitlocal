@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No menuitem and no pb.sidebar.item, on purpose: the cog in every hub's
+         command bar and the global Command-K palette are the only two doors
+         until the rail cutover (Cycle 5). A record exists so the hub can be
+         opened by URL and so it can carry a NAME — which is what puts "Settings"
+         in the breadcrumb, and the breadcrumb is the way back from the native
+         admin actions this hub opens. -->
+    <record id="action_pb_settings_hub" model="ir.actions.client">
+        <field name="name">Settings</field>
+        <field name="tag">pb_settings_hub</field>
+    </record>
+</odoo>

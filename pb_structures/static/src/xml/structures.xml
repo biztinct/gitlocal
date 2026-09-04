@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_structures.PbStructures">
+    <div class="pbim sal pbim-page ppl-people sal-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading structures…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
+          <div>
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Salary Structures</h1>
+            <p class="pbim-sub">Pay structures, their rules and category make-up across countries.</p>
+          </div>
+          <button class="pbim-btn primary" data-coach="sr-new" t-on-click="newStructure"><t t-out="ic('plus',16)"/> New structure</button>
+        </div>
+
+        <div class="ppl-kpis" data-coach="sr-kpis">
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('layers',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.structures"/><span class="l">Structures</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('list',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.rules"/><span class="l">Salary rules</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.categories"/><span class="l">Categories</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.employees"/><span class="l">Employees covered</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('cloud',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.countries"/><span class="l">Countries</span></div></div>
+        </div>
+
+        <div class="pbim-panel ppl-filters" data-coach="sr-filters">
+          <div class="ppl-filter-row">
+            <div class="pbim-chips">
+              <button t-foreach="statusChips" t-as="c" t-key="c.id"
+                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
+                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
+              </button>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input placeholder="Search name or code…" t-on-input="onSearch"/>
+            </div>
+          </div>
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
+            </div>
+            <div class="pbim-chips ppl-depts">
+              <button t-foreach="state.countries" t-as="c" t-key="c_index"
+                      t-attf-class="pbim-fchip {{ state.country === c.name ? 'on' : '' }}" t-on-click="() => this.setCountry(c.name)">
+                <t t-esc="c.name"/> <span class="c" t-esc="c.count"/>
+              </button>
+              <button t-foreach="schedules" t-as="sc" t-key="sc"
+                      t-attf-class="pbim-fchip {{ state.schedule === sc ? 'on' : '' }}" t-on-click="() => this.setSchedule(sc)">
+                <t t-out="ic('calendar',12)"/> <t t-esc="sc"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div t-if="filtered.length" class="ppl-roster" data-coach="sr-roster">
+          <div t-foreach="filtered" t-as="s" t-key="s.id" class="ppl-card" t-on-click="() => this.openStructure(s.id)">
+            <div class="ppl-av"><t t-out="ic('layers',20)"/></div>
+            <div class="ppl-id">
+              <div class="nm"><t t-esc="s.name"/> <span t-if="s.is_base" class="sal-base">base</span></div>
+              <div class="jb"><t t-esc="s.code"/> · <t t-esc="s.country"/> · <t t-esc="s.schedule"/></div>
+            </div>
+            <div class="ppl-period sal-counts"><t t-esc="s.rules"/> rules · <t t-esc="s.employees"/> employees</div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(s.state) }}"><span class="d"/><t t-esc="s.state_label"/></span>
+            </div>
+            <div class="ppl-wage"><span class="v" t-esc="s.updated"/><span class="k">updated</span></div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No structures match these filters.</div></div>
+
+        <div class="ppl-foot">
+          Showing <t t-esc="filtered.length"/> of <t t-esc="state.total"/> ·
+          <button class="ppl-link" data-coach="sr-openall" t-on-click="openAll">Open full structures list →</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

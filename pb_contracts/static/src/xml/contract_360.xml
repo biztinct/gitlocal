@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       CD-2/CD-3 — the contract drawer. CD-2 read; CD-3 edits in place.
+
+       W22: an XML comment may NOT contain a double hyphen; OWL templates are
+       XML, and one such comment is a parse error that kills every t-name in
+       the file and blanks the whole backend bundle. Separators use "====".
+
+       W23: one `class` attribute per element. `t-att-class` and `t-attf-class`
+       compile to the SAME attribute and the last one wins, so a static
+       class="..." is only ever paired with a t-att-class object.
+
+       W96: no expression is evaluated here that is not a component method; a
+       template is compiled against the component and nothing else.
+
+       No `t-model` anywhere: every editor is `t-att-value` plus `t-on-input`,
+       because the handler has to coerce, diff against the record so a dirty
+       key can be deleted, and kick the debounced preview.
+       ================================================================== -->
+
+  <!-- ==================================================================
+       The picker: one filterable list, used by a selection cell, a
+       many2one cell and the "add a component" control.
+
+       `position: fixed`, placed from the anchor cell's own bounding box.
+       The drawer body is `overflow-y: auto`, so a popover laid out inside
+       it is clipped the moment the list is taller than the room under the
+       cell. Fixed takes it out of the scroller; the cost is that it has to
+       re-place itself on scroll, which `place()` does.
+       ================================================================== -->
+  <t t-name="pb_contracts.CdPicker">
+    <div class="pbc-pick" t-ref="root" tabindex="-1" t-att-style="posStyle"
+         t-on-keydown="onKey" t-on-click.stop="">
+      <div class="pbc-pick-s" t-if="filterable">
+        <span class="ic"><t t-out="ic('search',14)"/></span>
+        <input t-ref="input" type="text" t-att-value="state.term"
+               t-att-placeholder="placeholder"
+               t-on-input="onInput" t-on-keydown="onKey"/>
+        <span t-if="state.loading" class="pbc-pick-spin"/>
+      </div>
+      <div class="pbc-pick-l" t-on-keydown="onKey">
+        <button t-foreach="allRows" t-as="row" t-key="row_index" type="button"
+                class="pbc-pick-r" t-att-class="rowClass(row_index)"
+                t-on-mouseenter="() => this.setActive(row_index)"
+                t-on-click="() => this.pick(row)">
+          <span class="lb" t-esc="row.label"/>
+          <span class="ck" t-out="ic('check',13)"/>
+        </button>
+        <div t-if="!allRows.length" class="pbc-pick-e" t-esc="emptyLabel"/>
+      </div>
+      <button t-if="props.allowClear" t-ref="clear" type="button"
+              class="pbc-pick-c" t-on-click="clear" t-on-keydown="onKey"
+              t-esc="clearText"/>
+    </div>
+  </t>
+
+  <!-- ==================================================================
+       One value being typed into. One component, one nine-way switch:
+       every kind owes the drawer the same commit / cancel / move-on
+       contract, and nine copies of that contract is how two of them end
+       up disagreeing about what Escape does.
+       ================================================================== -->
+  <t t-name="pb_contracts.CdEditor">
+    <div class="pbc-ed" t-ref="root" tabindex="-1" t-att-class="edClass"
+         t-on-keydown="onKey" t-on-click.stop="">
+
+      <t t-if="kind === 'toggle'">
+        <div class="pbc-bool">
+          <button t-foreach="toggleOptions" t-as="o" t-key="o.value" type="button"
+                  class="pbc-bool-b" t-att-class="toggleClass(o)"
+                  t-on-click="() => this.onToggle(o)">
+            <t t-esc="o.label"/>
+          </button>
+        </div>
+      </t>
+
+      <t t-elif="kind === 'select'">
+        <span class="pbc-resting" t-esc="restingText"/>
+        <CdPicker rows="pickerRows" allowClear="allowClear" anchorEl="props.anchorEl"
+                  onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+
+      <t t-elif="kind === 'm2o'">
+        <span class="pbc-resting" t-esc="restingText"/>
+        <CdPicker lookup="props.lookup" allowClear="allowClear" anchorEl="props.anchorEl"
+                  onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+
+      <t t-elif="kind === 'date'">
+        <input t-ref="input" type="date" class="pbc-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <t t-elif="kind === 'money'">
+        <span class="pbc-cur" t-esc="currencyPrefix"/>
+        <input t-ref="input" type="text" class="pbc-in num" t-att-inputmode="inputMode"
+               t-att-value="state.draft" t-on-input="onInput"
+               t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <t t-elif="kind === 'number' or kind === 'integer'">
+        <input t-ref="input" type="text" class="pbc-in num" t-att-inputmode="inputMode"
+               t-att-value="state.draft" t-on-input="onInput"
+               t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <t t-else="">
+        <input t-ref="input" type="text" class="pbc-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+    </div>
+  </t>
+
+  <!-- ================================================================== -->
+  <t t-name="pb_contracts.Contract360Drawer">
+    <div class="pbc pbim">
+      <div class="pbc-scrim" t-att-class="{ 'shown': state.shown }" t-on-click="close"/>
+      <aside class="pbc-drawer" t-att-class="{ 'shown': state.shown }" t-on-click.stop="">
+
+        <!-- ==================== loading / gone ==================== -->
+        <div t-if="!state.loaded" class="pbc-busy"><div class="pbc-spin"/><span>Opening the contract…</span></div>
+
+        <t t-elif="d.error">
+          <div class="pbc-head">
+            <div class="pbc-head-id"><div class="pbc-head-tx"><h2>Contract</h2></div></div>
+            <div class="pbc-head-side">
+              <button class="pbc-x" title="Close" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+          </div>
+          <div class="pbc-empty"><t t-out="ic('alert',30)"/><p t-esc="d.error"/></div>
+        </t>
+
+        <t t-else="">
+          <!-- ==================== header ==================== -->
+          <div class="pbc-head">
+            <div class="pbc-head-id">
+              <div class="pbc-ava" t-att-style="header.avatar ? ('background-image:url(' + header.avatar + ')') : ''">
+                <span t-if="!header.avatar" t-esc="header.initials || '?'"/>
+              </div>
+              <div class="pbc-head-tx">
+                <h2 t-esc="header.employee || '—'"/>
+                <div class="pbc-ref" t-esc="header.reference || '—'"/>
+                <div class="pbc-chips">
+                  <span class="pbc-chip" t-if="header.job"><t t-out="ic('briefcase',13)"/> <t t-esc="header.job"/></span>
+                  <span class="pbc-chip" t-if="header.dept"><t t-out="ic('building',13)"/> <t t-esc="header.dept"/></span>
+                  <span t-attf-class="pbc-chip tone-{{ header.ends_tone || 'muted' }}">
+                    <t t-out="ic('calendar',13)"/> <t t-esc="header.ends_label || '—'"/>
+                  </span>
+                  <span t-attf-class="pbc-chip tone-{{ stateTone(header.state) }}">
+                    <t t-out="ic('fileText',13)"/> <t t-esc="header.state_label || '—'"/>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="pbc-head-side">
+              <div class="pbc-wage">
+                <span class="l">Monthly wage</span>
+                <span class="v" t-att-class="{ 'masked': header.wage_masked, 'staged': wageStaged }"
+                      t-att-title="header.wage_masked ? 'Visible to payroll managers only' : ''"
+                      t-esc="wageDisplay || '—'"/>
+              </div>
+              <button class="pbc-x" title="Close" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+          </div>
+
+          <!-- ==================== tabs ==================== -->
+          <div class="pbc-tabs">
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'terms' }" t-on-click="() => this.setTab('terms')">
+              <t t-out="ic('fileText',15)"/> Terms
+            </button>
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'components' }" t-on-click="() => this.setTab('components')">
+              <t t-out="ic('banknote',15)"/> Components
+              <span class="pbc-tab-c" t-if="compCount" t-esc="compCount"/>
+            </button>
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'history' }" t-on-click="() => this.setTab('history')">
+              <t t-out="ic('history',15)"/> History
+              <span class="pbc-tab-c" t-if="histCount" t-esc="histCount"/>
+            </button>
+            <span class="pbc-tab-ink" t-att-style="inkStyle"/>
+          </div>
+
+          <div class="pbc-body">
+
+            <!-- ==================== TERMS ==================== -->
+            <t t-if="state.tab === 'terms'">
+
+              <!-- One honest sentence, instead of disabled controls scattered
+                   through the panel. -->
+              <div class="pbc-locked" t-if="!canWrite">
+                <t t-out="ic('lock',15)"/> <span t-esc="lockedLine"/>
+              </div>
+
+              <div class="pbc-rail" t-if="pipeline.length">
+                <t t-foreach="pipeline" t-as="st" t-key="st.key">
+                  <div class="pbc-rail-step" t-att-class="{ 'done': st.done, 'current': st.current }">
+                    <span class="pbc-dot"/><span class="lbl" t-esc="st.label"/>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pbc-acts" t-if="nextActions.length and canWrite">
+                <span class="pbc-acts-l">Next step</span>
+                <t t-foreach="nextActions" t-as="act" t-key="act.method">
+                  <button class="pbim-btn" t-att-class="actClass(act)"
+                          t-att-title="actTitle(act)" t-att-disabled="state.busy"
+                          t-on-click="() => this.runAction(act)">
+                    <t t-out="ic(act.icon,14)"/> <t t-esc="act.label"/>
+                  </button>
+                </t>
+              </div>
+
+              <t t-foreach="terms" t-as="grp" t-key="grp.key">
+                <div class="pbc-sec" t-if="grp.fields.length">
+                  <div class="pbc-sec-h"><t t-out="groupIcon(grp.key)"/> <span t-esc="grp.label"/></div>
+                  <div class="pbc-grid">
+                    <t t-foreach="grp.fields" t-as="f" t-key="f.name">
+                      <div class="pbc-cell" t-att-class="cellClass(f)"
+                           t-att-data-cdkey="cellKey(f)" t-att-tabindex="cellTab(f)"
+                           t-on-click="(ev) => this.startTerm(f, ev)"
+                           t-on-keydown="(ev) => this.onCellKey(f, ev)">
+                        <span class="k">
+                          <t t-out="fieldIcon(f.name)"/> <t t-esc="f.label"/>
+                          <span class="pen" t-if="canEdit(f)" t-out="ic('pencil',12)"/>
+                        </span>
+
+                        <t t-if="isEditing('term', f.name)">
+                          <CdEditor entry="f" value="termEditValue(f)" currency="currency"
+                                    resting="termDisplay(f)"
+                                    lookup="termLookup(f)" anchorEl="anchorEl"
+                                    onCommit="(v, l) => this.commitTerm(f, v, l)"
+                                    onCancel.bind="cancelEdit"
+                                    onMove="(dir) => this.moveTerm(f, dir)"/>
+                        </t>
+                        <t t-else="">
+                          <span class="v" t-esc="termDisplay(f)"/>
+                        </t>
+
+                        <span class="pbc-was" t-if="termWas(f)">
+                          was <t t-esc="termWas(f)"/>
+                        </span>
+                        <span class="pbc-hint" t-if="f.hint and !isTermDirty(f.name)" t-esc="f.hint"/>
+                        <span class="pbc-refuse" t-if="hasRefusal('term', f.name)">
+                          <span class="pbc-dot"/><span t-esc="refusalFor('term', f.name)"/>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+              </t>
+
+              <div class="pbc-stats" t-if="readiness.length">
+                <t t-foreach="readiness" t-as="chip" t-key="chip.key">
+                  <span class="pbc-stat" t-att-class="{ 'ok': chip.ok, 'off': !chip.ok }">
+                    <t t-out="readyIcon(chip.key)"/> <t t-esc="chip.label"/>
+                  </span>
+                </t>
+              </div>
+            </t>
+
+            <!-- ==================== COMPONENTS ==================== -->
+            <t t-if="state.tab === 'components'">
+              <div class="pbc-explain" t-if="components.explainer">
+                <t t-out="ic('alert',16)"/> <span t-esc="components.explainer"/>
+              </div>
+
+              <div class="pbc-comps" t-if="compRows.length">
+                <t t-foreach="compRows" t-as="row" t-key="row.id">
+                  <div class="pbc-comp-w" t-att-class="compClass(row)">
+                    <div class="pbc-comp" t-att-data-cdkey="compKey(row)"
+                         t-on-click="(ev) => this.startComp(row, ev)"
+                         t-att-tabindex="compTab(row)"
+                         t-on-keydown="(ev) => this.onCompKey(row, ev)">
+                      <span class="pbc-comp-code" t-esc="row.code || '—'"/>
+                      <div class="pbc-comp-id">
+                        <span class="n" t-esc="row.name || '—'"/>
+                        <span class="pbc-comp-tags">
+                          <span t-attf-class="pbc-comp-from tone-{{ row.fills_tone || 'muted' }}" t-esc="row.fills_label || '—'"/>
+                          <span class="pbc-comp-warn" t-if="row.requires_new_contract">usually starts a new contract</span>
+                        </span>
+                      </div>
+                      <div class="pbc-comp-r">
+                        <t t-if="isEditing('comp', row.id)">
+                          <CdEditor entry="compEntry(row)" value="compEditValue(row)"
+                                    currency="currency" anchorEl="anchorEl"
+                                    onCommit="(v) => this.commitComp(row, v)"
+                                    onCancel.bind="cancelEdit"
+                                    onMove="(dir) => this.moveComp(row, dir)"/>
+                        </t>
+                        <t t-else="">
+                          <span class="pbc-comp-v" t-esc="compDisplay(row)"/>
+                        </t>
+                        <span class="pbc-was" t-if="compWas(row)">was <t t-esc="compWas(row)"/></span>
+                        <span class="pbc-comp-b" t-if="row.bounded and row.bounds_hint and !isCompDirty(row.id)" t-esc="row.bounds_hint"/>
+                      </div>
+                      <button class="pbc-comp-x" t-if="canWrite and !isRemoved(row.id)"
+                              title="Remove this component from the contract"
+                              t-on-click.stop="() => this.stageRemove(row)">
+                        <t t-out="ic('trash',14)"/>
+                      </button>
+                      <button class="pbc-comp-u" t-if="isRemoved(row.id)"
+                              t-on-click.stop="() => this.undoRemove(row)">
+                        <t t-out="ic('undo',13)"/> Undo
+                      </button>
+                    </div>
+
+                    <div class="pbc-note" t-foreach="compWarnings(row)" t-as="w" t-key="w_index">
+                      <t t-out="ic('info',13)"/> <span t-esc="w"/>
+                    </div>
+                    <div class="pbc-refuse full" t-if="hasRefusal('comp', row.id)">
+                      <span class="pbc-dot"/><span t-esc="refusalFor('comp', row.id)"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div t-else="" class="pbc-empty">
+                <t t-out="ic('banknote',30)"/>
+                <p>This contract carries no components.</p>
+                <small>Components are the named amounts a pay run reads off a contract.</small>
+              </div>
+
+              <!-- ==================== staged new rows ==================== -->
+              <div class="pbc-comps new" t-if="addRows.length">
+                <t t-foreach="addRows" t-as="add" t-key="add.template_id">
+                  <div class="pbc-comp-w staged" t-att-class="addClass(add)">
+                    <div class="pbc-comp" t-att-data-cdkey="'comp:' + add.template_id"
+                         t-on-click="(ev) => this.startAdd(add_index, ev)">
+                      <span class="pbc-comp-code" t-esc="add.code || '—'"/>
+                      <div class="pbc-comp-id">
+                        <span class="n" t-esc="add.name || '—'"/>
+                        <span class="pbc-comp-tags">
+                          <span class="pbc-comp-new">New — not saved yet</span>
+                        </span>
+                      </div>
+                      <div class="pbc-comp-r">
+                        <t t-if="isEditing('add', add_index)">
+                          <CdEditor entry="addEntry(add)" value="addValue(add)"
+                                    currency="currency" anchorEl="anchorEl"
+                                    onCommit="(v) => this.commitAdd(add_index, v)"
+                                    onCancel.bind="cancelEdit"/>
+                        </t>
+                        <t t-else="">
+                          <span class="pbc-comp-v" t-esc="add.label"/>
+                        </t>
+                      </div>
+                      <button class="pbc-comp-x" title="Do not add this component"
+                              t-on-click.stop="() => this.dropAdd(add_index)">
+                        <t t-out="ic('trash',14)"/>
+                      </button>
+                    </div>
+                    <div class="pbc-refuse full" t-if="hasRefusal('comp', add.template_id)">
+                      <span class="pbc-dot"/><span t-esc="refusalFor('comp', add.template_id)"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <!-- Rendered only when there is something to add: a button that
+                   can never do anything is a dead end, and on a live contract
+                   every template already has a row. -->
+              <div class="pbc-comp-add" t-if="addable.length and canWrite">
+                <button class="pbim-btn ghost" t-on-click="(ev) => this.openAdd(ev)">
+                  <t t-out="ic('plus',15)"/> Add a component
+                </button>
+                <CdPicker t-if="state.addOpen" rows="addPickerRows" anchorEl="addAnchorEl"
+                          onPick.bind="pickAdd" onCancel.bind="closeAdd"/>
+              </div>
+            </t>
+
+            <!-- ==================== HISTORY ==================== -->
+            <t t-if="state.tab === 'history'">
+              <div t-if="!(history.rows || []).length" class="pbc-empty">
+                <t t-out="ic('history',30)"/>
+                <p>Nothing has changed on this contract yet.</p>
+                <small>Every change made from now on is listed here.</small>
+              </div>
+
+              <t t-else="">
+                <div class="pbc-tl">
+                  <t t-foreach="historyRows()" t-as="row" t-key="row.key">
+                    <div t-if="row.sep" class="pbc-tl-sep"><span t-esc="row.label"/></div>
+                    <div t-else="" t-attf-class="pbc-tl-item tone-{{ row.tone || 'indigo' }}">
+                      <span class="pbc-tl-ic" t-out="kindIcon(row.kind)"/>
+                      <div class="pbc-tl-body">
+                        <div class="pbc-tl-l1">
+                          <span class="t" t-esc="row.title || '—'"/>
+                          <span class="when" t-esc="row.when_label || '—'" t-att-title="row.when"/>
+                        </div>
+                        <div class="pbc-tl-d" t-if="hasDelta(row)">
+                          <span class="from" t-esc="row.from || '—'"/>
+                          <span class="arr" t-out="ic('arrow',13)"/>
+                          <span class="to" t-esc="row.to || '—'"/>
+                        </div>
+                        <div class="pbc-tl-a">
+                          <span class="src" t-esc="row.source || '—'"/>
+                          <span class="who" t-if="row.actor" t-esc="row.actor"/>
+                        </div>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+                <div class="pbc-tl-more" t-if="hasMoreHistory" t-esc="historyCountLabel()"/>
+              </t>
+            </t>
+
+          </div>
+
+          <!-- ==================== footer ====================
+               Two rows in one box. The resting row carries the escape hatch;
+               the Save bar slides up over it the moment something is staged,
+               so the panel never changes height. Both keep clear of the
+               floating assistant pill that owns the bottom-right corner of
+               every screen (ledger CD9). -->
+          <div class="pbc-foot">
+            <div class="pbc-foot-rest" t-att-class="restClass">
+              <button class="pbim-btn ghost" t-on-click="openFullForm">
+                <t t-out="ic('external',15)"/> Full form
+              </button>
+            </div>
+
+            <div class="pbc-savebar" t-att-class="saveBarClass" t-att-aria-hidden="saveBarHidden">
+              <button class="pbc-link" t-on-click="openFullForm">Full form</button>
+              <span class="pbc-grow"/>
+              <button class="pbim-btn ghost" t-on-click="discard" t-esc="discardLabel"/>
+              <button class="pbim-btn primary" t-att-disabled="saveDisabled"
+                      title="Saves onto this contract. Ctrl+Enter does the same."
+                      t-on-click="save">
+                <t t-out="ic('save',15)"/> <t t-esc="saveLabel"/>
+              </button>
+            </div>
+          </div>
+        </t>
+      </aside>
+    </div>
+  </t>
+
+</templates>

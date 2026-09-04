@@ -1,23 +1,34 @@
 # -*- coding:utf-8 -*-
 
 {
-    'name': 'Odoo 16 HR Payroll',
+    'name': 'HR Payroll',
     'category': 'Generic Modules/Human Resources',
-    'version': '16.0.1.0.2',
+    # 19.0.1.0.2 — W105: hr.payslip.line record rules mirroring the two
+    # hr.payslip rules in security/hr_payroll_security.xml.
+    # 19.0.1.3.0 — ACCESS P7: declare the report_xlsx dependency the payslip
+    # spreadsheet report has always had, and stop the root Payroll menu
+    # pointing at pb_hr_flow (a module that depends on this one).
+    'version': '19.0.1.3.0',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
-    'summary': 'Payroll For Odoo 16 Community Edition',
+    'summary': 'Generic Payroll system',
     'live_test_url': 'https://www.youtube.com/watch?v=0kaHMTtn7oY',
-    'description': "Odoo 16 Payroll, Payroll Odoo 16, Odoo Community Payroll",
+    'description': "Odoo 19 Payroll, Payroll Odoo 19, Odoo Community Payroll",
     'website': 'https://www.odoomates.tech',
     'license': 'LGPL-3',
     'depends': [
         'mail',
         'hr_contract',
         'hr_holidays',
-        'spreadsheet_oca',
         'web_notify',
-        'account'
+        'account',
+        # models/hr_payslip.py PayslipLinesXlsx does
+        # _inherit = ['report.report_xlsx.abstract'], which report_xlsx defines.
+        # Undeclared, the registry only happened to build because report_xlsx
+        # sits shallower in the dependency graph whenever something else pulled
+        # it in; on a fresh database that installs om_hr_payroll on its own it
+        # is simply absent and the registry build fails.
+        'report_xlsx',
     ],
     'data': [
         'security/hr_payroll_security.xml',
@@ -29,8 +40,9 @@
         'views/hr_contract_type_views.xml',
         'views/hr_contract_views.xml',
         'views/hr_salary_rule_views.xml',
-        'views/hr_zoho_staging_views.xml',
-        'views/hr_zoho_views.xml',
+        # Zoho/Spreadsheet views disabled - user no longer uses these
+        # 'views/hr_zoho_staging_views.xml',
+        # 'views/hr_zoho_views.xml',
         'views/hr_payroll_report.xml',
         'views/hr_payslip_views.xml',
         'views/hr_employee_views.xml',
@@ -47,9 +59,13 @@
     'images': ['static/description/banner.png'],
     'application': True,
     'assets': {
+        'web.assets_backend': [
+            'om_hr_payroll/static/src/js/smart_float_field.js',
+        ],
         'web.assets_frontend': [
-            'om_hr_payroll/static/src/js/payslip_portal_sidebar.js',
-            'om_hr_payroll/static/src/js/payslip_portal.js',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'om_hr_payroll/static/src/js/payslip_portal_sidebar.js',
+            # 'om_hr_payroll/static/src/js/payslip_portal.js',
         ],
      },
 

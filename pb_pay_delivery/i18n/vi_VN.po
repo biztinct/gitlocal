@@ -1,0 +1,988 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "%s row(s) excluded"
+msgstr "Đã loại trừ (các) hàng %s"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "(optional)"
+msgstr "(tùy chọn)"
+
+#. module: pb_pay_delivery
+#: model:mail.template,body_html:pb_pay_delivery.mail_template_payslip_delivery
+msgid ""
+"<div style=\"margin:0; padding:0;\">\n"
+"                    <p>Dear <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                    <p>Please find attached your payslip for the period\n"
+"                        <t t-out=\"object.date_from or ''\"/> — <t t-out=\"object.date_to or ''\"/>.</p>\n"
+"                    <p>The attachment is password-protected for your privacy. If you are\n"
+"                        unsure of the password, please contact your HR/payroll team.</p>\n"
+"                    <br/>\n"
+"                    Best regards,<br/>\n"
+"                    HR &amp; Payroll Team<br/>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin:0; padding:0;\">\n"
+"                    <p>DKính gửi <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                    <p>Vui lòng xem phiếu lương đính kèm của bạn trong kỳ\n"
+"                        <t t-out=\"object.date_from or ''\"/> — <t t-out=\"object.date_to or ''\"/>.</p>\n"
+"                    <p>Tệp đính kèm được bảo vệ bằng mật khẩu để đảm bảo quyền riêng tư của bạn. Nếu bạn là\n"
+"                        không chắc chắn về mật khẩu, vui lòng liên hệ với nhóm nhân sự/nhân sự của bạn.</p>\n"
+"                    <br/>\n"
+"                    Trân trọng,<br/>\n"
+"                    Nhóm nhân sự &amp;<br/>\n"
+"                </div>\n"
+"            "
+
+#. module: pb_pay_delivery
+#: model:ir.model.constraint,message:pb_pay_delivery.constraint_pb_bank_file_layout_format_uniq
+msgid "A bank-file layout already exists for this bank_format key."
+msgstr "Bố cục tệp ngân hàng đã tồn tại cho khóa định dạng ngân hàng này."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__vietnam_bank_export_wizard__bank_format__acb
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_acb
+msgid "ACB"
+msgstr "ACB"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:199
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_bidv
+msgid "BIDV"
+msgstr "BIDV"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Back to runs"
+msgstr "Quay lại phần chạy"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__bank_format
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__bank_format
+msgid "Bank Format"
+msgstr "Định dạng ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_bank_file_column
+msgid "Bank Transfer File Column"
+msgstr "Cột Tệp Chuyển Khoản Ngân Hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_bank_file_layout
+msgid "Bank Transfer File Layout"
+msgstr "Bố cục tệp chuyển khoản ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:115
+msgid "Bank file generated."
+msgstr "Tệp ngân hàng được tạo."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__batch_id
+msgid "Batch"
+msgstr "Đợt"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__account_name
+msgid "Beneficiary Account Holder"
+msgstr "Chủ tài khoản thụ hưởng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__account_number
+msgid "Beneficiary Account Number"
+msgstr "Số tài khoản của người thụ hưởng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_branch
+msgid "Beneficiary Bank Branch"
+msgstr "Chi nhánh ngân hàng thụ hưởng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__bank_name
+msgid "Beneficiary Bank Name"
+msgstr "Tên ngân hàng thụ hưởng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__file_type__csv
+msgid "CSV"
+msgstr "CSV"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid ""
+"Cannot derive a PDF password for this employee (no bank account, birthday or employee "
+"code on file)."
+msgstr ""
+"Không thể lấy được mật khẩu PDF cho nhân viên này (không có tài khoản ngân hàng, ngày "
+"sinh hoặc mã nhân viên trong hồ sơ)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Choose a pay run to send its money files and payslips."
+msgstr "Chọn một kỳ lương để gửi tệp tiền và phiếu lương của nó."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__header
+msgid "Column header emitted when the layout has a header row."
+msgstr "Tiêu đề cột được phát ra khi bố cục có hàng tiêu đề."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__column_ids
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__company_account_number
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__company_account
+msgid "Company Debit Account"
+msgstr "Tài khoản ghi nợ của công ty"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Company debit account"
+msgstr "Tài khoản ghi nợ của công ty"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__literal_value
+msgid "Constant emitted when source = Literal."
+msgstr "Không đổi phát ra khi nguồn = Literal."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Couldn't open this run"
+msgstr "Không thể mở đường chạy này"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__create_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__create_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__create_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__create_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__create_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__create_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__delimiter
+msgid "Delimiter"
+msgstr "Dấu phân cách"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__line_ids
+msgid "Deliveries"
+msgstr "Giao hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "Delivery"
+msgstr "Giao hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:143
+msgid "Delivery complete — %s sent, %s failed, %s skipped."
+msgstr "Đã gửi xong — %s đã gửi, %s không thành công, %s bị bỏ qua."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0
+msgid "Delivery — %s"
+msgstr "Giao hàng — %s"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_pay_delivery__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__display_name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery_batch__state__done
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery_batch__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Each PDF is locked with a per-employee password"
+msgstr "Mỗi tệp PDF được khóa bằng mật khẩu cho mỗi nhân viên"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__with_header
+msgid "Emit a first row of column headers."
+msgstr "Phát ra hàng tiêu đề cột đầu tiên."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__employee_code
+msgid "Employee Code"
+msgstr "Nhân viên Mã"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__employee_name
+msgid "Employee Name"
+msgstr "Nhân viên Tên"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__encoding
+msgid "Encoding"
+msgstr "Mã hóa"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__error
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid ""
+"Every payslip failed validation — fix the excluded bank accounts, then regenerate."
+msgstr ""
+"Mọi lần xác thực phiếu lương đều không thành công - hãy sửa các tài khoản ngân hàng bị"
+" loại trừ, sau đó tạo lại."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__file_type__xlsx
+msgid "Excel (XLSX)"
+msgstr "Excel (XLSX)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__excluded_note
+msgid "Excluded Rows"
+msgstr "Hàng bị loại trừ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery__state__failed
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:182
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__failed_count
+msgid "Failed Count"
+msgstr "Thất bại Số lượng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__delimiter
+msgid "Field delimiter for CSV files (ignored for txt/xlsx)."
+msgstr "Dấu phân cách trường cho tệp CSV (bị bỏ qua đối với txt/xlsx)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__file_type
+msgid "File Type"
+msgstr "Loại tệp"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_layout__file_type__txt
+msgid "Fixed-width TXT"
+msgstr "TXT có chiều rộng cố định"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__width
+msgid "Fixed-width TXT column width. 0 = no padding (variable width)."
+msgstr ""
+"Chiều rộng cột TXT có chiều rộng cố định. 0 = không có phần đệm (có chiều rộng thay "
+"đổi)."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Generate"
+msgstr "Tạo"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Generate the bank transfer file"
+msgstr "Tạo tập tin chuyển khoản ngân hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__export_file
+msgid "Generated File"
+msgstr "Tệp đã tạo"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__export_filename
+msgid "Generated Filename"
+msgstr "Tên tệp đã tạo"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_generic
+msgid "Generic CSV"
+msgstr "CSV chung"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Go back and pick a pay run."
+msgstr "Quay lại và chọn một kỳ lương."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__header
+msgid "Header"
+msgstr "Tiêu đề"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__with_header
+msgid "Header Row"
+msgstr "Dòng tiêu đề"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_pay_delivery__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__int
+msgid "Integer (no separator)"
+msgstr "Số nguyên (không có dấu phân cách)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__int_grouped
+msgid "Integer (thousands separator)"
+msgstr "Số nguyên (dấu phân cách hàng nghìn)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__bank_format
+msgid ""
+"Key matching the export wizard's bank_format selection (vietcombank, bidv, "
+"techcombank, mb_bank, vietinbank, acb, generic)."
+msgstr ""
+"Khóa khớp với lựa chọn định dạng ngân hàng của trình hướng dẫn xuất khẩu (vietcombank,"
+" bidv, techcombank, mb_bank, vietinbank, acb, generic)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__write_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__write_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__write_uid
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__write_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__write_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__write_date
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__layout_id
+msgid "Layout"
+msgstr "Bố cục"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__pad__right
+msgid "Left-justify (pad right, spaces)"
+msgstr "Căn lề trái (pad phải, dấu cách)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__literal
+msgid "Literal / Constant"
+msgstr "Nghĩa đen / Hằng số"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__literal_value
+msgid "Literal Value"
+msgstr "Giá trị chữ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Loading Pay & Deliver…"
+msgstr "Đang tải thanh toán và giao hàng…"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_mb_bank
+msgid "MB Bank"
+msgstr "Ngân hàng MB"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Money out"
+msgstr "Hết tiền"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__name
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__net_amount
+msgid "Net Amount"
+msgstr "Số tiền ròng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid ""
+"No bank-file layout is configured for '%s'. A layout is a data record "
+"(pb.bank.file.layout) — add one to support this bank."
+msgstr ""
+"Không có bố cục tệp ngân hàng nào được định cấu hình cho '%s'. Bố cục là một bản ghi "
+"dữ liệu (pb.bank.file.layout) — thêm một bản ghi để hỗ trợ ngân hàng này."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "No confirmed (Done) payslips in this pay run to deliver."
+msgstr ""
+"Không có phiếu lương nào được xác nhận (Hoàn thành) trong kỳ lương này để phân phối."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:183
+msgid "No email"
+msgstr "Không có email"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "No pay runs yet"
+msgstr "Chưa có lần trả lương nào"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "No payable rows"
+msgstr "Không có hàng phải trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid ""
+"No valid rows to export — every payslip failed validation (check the employee bank "
+"accounts). %s row(s) were excluded."
+msgstr ""
+"Không có hàng hợp lệ để xuất — mọi phiếu lương đều không được xác thực (kiểm tra tài "
+"khoản ngân hàng của nhân viên). (Các) hàng %s đã bị loại trừ."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "No work email on the employee record."
+msgstr "Không có email công việc trong hồ sơ nhân viên."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_layout__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__number_format
+msgid "Number Format"
+msgstr "Định dạng số"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__number_format
+msgid ""
+"Numeric rendering for amount columns. Account numbers must stay 'Raw text' to preserve"
+" leading zeros."
+msgstr ""
+"Hiển thị số cho các cột số lượng. Số tài khoản phải ở dạng 'Văn bản thô' để giữ nguyên"
+" các số 0 đứng đầu."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Open the employee record to fix the bank account"
+msgstr "Mở hồ sơ nhân viên sửa tài khoản ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid ""
+"PDF encryption is unavailable on this server (PyPDF2 not installed) — payslips are "
+"never sent unprotected."
+msgstr ""
+"Mã hóa PDF không khả dụng trên máy chủ này (PyPDF2 chưa được cài đặt) — phiếu lương "
+"không bao giờ được gửi mà không được bảo vệ."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__pad
+msgid "Pad"
+msgstr "đệm"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_column__pad
+msgid "Padding direction for fixed-width TXT."
+msgstr "Hướng đệm cho TXT có chiều rộng cố định."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Password-protected PDFs by email"
+msgstr "Tệp PDF được bảo vệ bằng mật khẩu qua email"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+#: model:ir.actions.client,name:pb_pay_delivery.action_pb_pay_delivery
+#: model:pb.sidebar.item,name:pb_pay_delivery.item_pay_deliver
+msgid "Pay & Deliver"
+msgstr "Thanh toán và giao hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_pay_delivery
+msgid "Pay & Deliver Cockpit"
+msgstr "Thanh toán và giao buồng lái"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__run_id
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_vietnam_bank_export_wizard__payslip_run_id
+msgid "Pay Run"
+msgstr "Đợt lương"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__period
+msgid "Payroll Period"
+msgstr "Bảng lương Kỳ"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__slip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_hr_payslip_run__delivery_batch_ids
+msgid "Payslip Deliveries"
+msgstr "Giao phiếu lương"
+
+#. module: pb_pay_delivery
+#: model:mail.template,name:pb_pay_delivery.mail_template_payslip_delivery
+msgid "Payslip Delivery (Password PDF)"
+msgstr "Gửi phiếu lương (PDF mật khẩu)"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_payslip_delivery_batch
+msgid "Payslip Delivery Batch"
+msgstr "Lô giao phiếu lương"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_pb_payslip_delivery
+msgid "Payslip Delivery Line"
+msgstr "Đường dây giao phiếu lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Payslips out"
+msgstr "Phiếu lương ra"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__note
+msgid ""
+"Provenance of this layout (bank template doc, or inferred — flag inferred layouts for "
+"client confirmation)."
+msgstr ""
+"Nguồn gốc của bố cục này (tài liệu mẫu ngân hàng hoặc được suy ra - gắn cờ bố cục được"
+" suy ra để xác nhận của khách hàng)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__mail_id
+msgid "Queued Mail"
+msgstr "Thư xếp hàng"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__number_format__none
+msgid "Raw text"
+msgstr "Văn bản thô"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Resend all"
+msgstr "Gửi lại tất cả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Resend failures"
+msgstr "Gửi lại thất bại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Resolved privately per employee — never shown, logged, or stored."
+msgstr ""
+"Được giải quyết riêng tư cho mỗi nhân viên — không bao giờ được hiển thị, ghi lại hoặc"
+" lưu trữ."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__pad__left
+msgid "Right-justify (pad left, spaces)"
+msgstr "Căn phải (pad trái, dấu cách)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__pad__zero
+msgid "Right-justify (pad left, zeros)"
+msgstr "Căn phải (pad trái, số không)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_bank_file_column__source__row_number
+msgid "Row Number (STT)"
+msgstr "Số hàng (STT)"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Run payroll first — completed runs appear here to pay and deliver."
+msgstr ""
+"kỳ lương trước — các lần chạy đã hoàn thành sẽ xuất hiện ở đây để thanh toán và phân "
+"phối."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Send payslips"
+msgstr "Gửi phiếu lương"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery_batch__state__sending
+msgid "Sending"
+msgstr "Đang gửi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery__state__sent
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:182
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__sent_count
+msgid "Sent Count"
+msgstr "Số lượng đã gửi"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery__state__skipped_no_email
+msgid "Skipped (no email)"
+msgstr "Đã bỏ qua (không có email)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__skipped_count
+msgid "Skipped Count"
+msgstr "Số lượng bị bỏ qua"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Skipped — no work email"
+msgstr "Đã bỏ qua - không có email công việc"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__source
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery__state
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_payslip_delivery_batch__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_techcombank
+msgid "Techcombank (TCB)"
+msgstr "Ngân hàng Techcombank (TCB)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_pb_bank_file_layout__encoding
+msgid ""
+"Text encoding. VN banks that open the file in Excel usually need utf-8-sig so "
+"diacritics render (a BOM)."
+msgstr ""
+"Mã hóa văn bản. Các ngân hàng VN mở file bằng Excel thường cần utf-8-sig để hiển thị "
+"dấu phụ (BOM)."
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,help:pb_pay_delivery.field_vietnam_bank_export_wizard__company_account_number
+msgid ""
+"The company account debited for the transfer (optional; used by layouts that carry a "
+"company_account column)."
+msgstr ""
+"Tài khoản công ty được ghi nợ cho việc chuyển khoản (tùy chọn; được sử dụng bởi các bố"
+" cục mang cột company_account)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "The payslip delivery mail template is missing."
+msgstr "Mẫu thư gửi phiếu lương bị thiếu."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid ""
+"The xlsxwriter library is required for this bank's Excel format. Please install it or "
+"choose a CSV/TXT bank layout."
+msgstr ""
+"Thư viện xlsxwriter là bắt buộc đối với định dạng Excel của ngân hàng này. Vui lòng "
+"cài đặt nó hoặc chọn bố cục ngân hàng CSV/TXT."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "There are no confirmed (Done) payslips to export for this selection."
+msgstr "Không có phiếu lương nào được xác nhận (Xong) để xuất cho lựa chọn này."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Total net"
+msgstr "Tổng số tiền ròng"
+
+#. module: pb_pay_delivery
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_vietcombank
+msgid "Vietcombank (VCB)"
+msgstr "Ngân hàng VCB (VCB)"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields.selection,name:pb_pay_delivery.selection__vietnam_bank_export_wizard__bank_format__vietinbank
+#: model:pb.bank.file.layout,name:pb_pay_delivery.layout_vietinbank
+msgid "VietinBank"
+msgstr "VietinBank"
+
+#. module: pb_pay_delivery
+#: model:ir.model,name:pb_pay_delivery.model_vietnam_bank_export_wizard
+msgid "Vietnam Bank Transfer Export"
+msgstr "Xuất khẩu chuyển khoản ngân hàng Việt Nam"
+
+#. module: pb_pay_delivery
+#: model:ir.model.fields,field_description:pb_pay_delivery.field_pb_bank_file_column__width
+msgid "Width"
+msgstr "Chiều rộng"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid ""
+"You are not allowed to generate bank payment files. This requires the Payroll Manager "
+"or a Finance role."
+msgstr ""
+"Bạn không được phép tạo các tập tin thanh toán ngân hàng. Điều này đòi hỏi phải có vai"
+" trò Người quản lý tiền lương hoặc Tài chính."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0
+msgid ""
+"You are not allowed to open Pay & Deliver. This requires the Payroll Manager or a "
+"Finance role."
+msgstr ""
+"Bạn không được phép mở Thanh toán & Giao hàng. Điều này đòi hỏi phải có vai trò Người "
+"quản lý tiền lương hoặc Tài chính."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid ""
+"You are not allowed to send payslips. This requires the Payroll Manager or a Finance "
+"role."
+msgstr ""
+"Bạn không được phép gửi phiếu lương. Điều này đòi hỏi phải có vai trò Người quản lý "
+"tiền lương hoặc Tài chính."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "e.g. 0011000123456"
+msgstr "ví dụ: 0011000123456"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "excluded"
+msgstr "bị loại trừ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "failed"
+msgstr "thất bại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "file"
+msgstr "tập tin"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "invalid account"
+msgstr "tài khoản không hợp lệ"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "missing account holder"
+msgstr "chủ tài khoản mất tích"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "no net pay"
+msgstr "không có lương ròng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "payslips"
+msgstr "phiếu lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "payslips ready"
+msgstr "phiếu lương đã sẵn sàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "recipients"
+msgstr "người nhận"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "row(s) excluded — not in file"
+msgstr "(các) hàng bị loại trừ - không có trong tệp"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "rows"
+msgstr "hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "sent"
+msgstr "đã gửi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "skipped"
+msgstr "bỏ qua"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "unknown bank"
+msgstr "ngân hàng không xác định"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "without email"
+msgstr "không có email"
+
+#. module: pb_pay_delivery
+#: model:mail.template,subject:pb_pay_delivery.mail_template_payslip_delivery
+msgid "{{ object.name }}"
+msgstr "{{ object.name }}"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "— view"
+msgstr "— xem"

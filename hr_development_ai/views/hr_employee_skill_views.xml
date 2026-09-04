@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_employee_skill_form" model="ir.ui.view">
+        <field name="name">hr.employee.skill.form</field>
+        <field name="model">hr.employee.skill</field>
+        <field name="arch" type="xml">
+            <form string="Employee Skill">
+                <header>
+                    <button name="action_view_endorsements" string="View Endorsements" type="object" class="oe_highlight" invisible="endorsement_count == 0"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_endorsements" type="object" class="oe_stat_button" icon="fa-thumbs-up">
+                            <field name="endorsement_count" widget="statinfo" string="Endorsements"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="skill_id"/>
+                            <field name="skill_category_id"/>
+                            <field name="level_id"/>
+                        </group>
+                        <group>
+                            <field name="proficiency_score" widget="progressbar"/>
+                            <field name="source"/>
+                            <field name="confidence" widget="progressbar" invisible="source != 'ai_inferred'"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Source Scores">
+                            <group>
+                                <group string="Assessment Scores">
+                                    <field name="self_assessment_score" widget="progressbar"/>
+                                    <field name="manager_assessment_score" widget="progressbar"/>
+                                    <field name="peer_endorsement_score" widget="progressbar"/>
+                                </group>
+                                <group string="Inferred Scores">
+                                    <field name="ai_inference_score" widget="progressbar"/>
+                                    <field name="course_completion_score" widget="progressbar"/>
+                                    <field name="certification_score" widget="progressbar"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Evidence &amp; Notes">
+                            <group>
+                                <field name="acquired_date"/>
+                                <field name="last_used_date"/>
+                                <field name="is_outdated"/>
+                            </group>
+                            <group>
+                                <field name="evidence_text" colspan="2" placeholder="Projects, tasks, or achievements demonstrating this skill..."/>
+                                <field name="notes" colspan="2" placeholder="Additional notes..."/>
+                            </group>
+                        </page>
+                        <page string="Endorsements">
+                            <field name="endorsement_ids">
+                                <list>
+                                    <field name="endorser_id"/>
+                                    <field name="endorsement_type"/>
+                                    <field name="proficiency_rating"/>
+                                    <field name="is_verified"/>
+                                    <field name="create_date"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_employee_skill_list" model="ir.ui.view">
+        <field name="name">hr.employee.skill.list</field>
+        <field name="model">hr.employee.skill</field>
+        <field name="arch" type="xml">
+            <list string="Employee Skills">
+                <field name="employee_id"/>
+                <field name="skill_id"/>
+                <field name="skill_category_id"/>
+                <field name="level_id"/>
+                <field name="proficiency_score" widget="progressbar"/>
+                <field name="source"/>
+                <field name="endorsement_count"/>
+                <field name="last_used_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search view removed - using base hr.employee.skill search view -->
+
+    <!-- hr.skill.endorsement Views -->
+    <record id="view_hr_skill_endorsement_form" model="ir.ui.view">
+        <field name="name">hr.skill.endorsement.form</field>
+        <field name="model">hr.skill.endorsement</field>
+        <field name="arch" type="xml">
+            <form string="Skill Endorsement">
+                <header>
+                    <button name="action_verify" string="Verify" type="object" class="oe_highlight" invisible="is_verified"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="skill_id"/>
+                            <field name="endorser_id"/>
+                            <field name="endorsement_type"/>
+                        </group>
+                        <group>
+                            <field name="is_verified" widget="boolean"/>
+                            <field name="proficiency_rating" widget="priority"/>
+                            <field name="verified_by_id" invisible="not is_verified"/>
+                            <field name="verified_date" invisible="not is_verified"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="comment" placeholder="Why are you endorsing this skill?" colspan="2"/>
+                    </group>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_skill_endorsement_list" model="ir.ui.view">
+        <field name="name">hr.skill.endorsement.list</field>
+        <field name="model">hr.skill.endorsement</field>
+        <field name="arch" type="xml">
+            <list string="Skill Endorsements">
+                <field name="employee_id"/>
+                <field name="skill_id"/>
+                <field name="endorser_id"/>
+                <field name="endorsement_type"/>
+                <field name="proficiency_rating" widget="priority"/>
+                <field name="is_verified" widget="boolean_toggle"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_employee_skill" model="ir.actions.act_window">
+        <field name="name">Employee Skills</field>
+        <field name="res_model">hr.employee.skill</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_employee': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No employee skills found
+            </p>
+            <p>
+                Employee skills will appear here after assessment or AI inference.
+            </p>
+        </field>
+    </record>
+
+</odoo>

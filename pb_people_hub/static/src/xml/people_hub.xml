@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================== the People hub
+       Section comments use `=` rules and never spell a CSS custom property,
+       because a doubled hyphen inside an XML comment is a parse error that
+       takes every t-name in the file down with it (W22/W72). -->
+  <t t-name="pb_people_hub.PbPeopleHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+  <!-- ================================================== the Plan launcher
+       A card grid over the SEVEN EXISTING Planning screens. No embedding, no
+       re-skin, no descriptor — every Open below hands straight to the action
+       the retired PLANNING rail item used to hand to. -->
+  <t t-name="pb_people_hub.PlanLauncher">
+    <div class="pbim pbpl">
+      <!-- NOTHING may sit between these three branches, not even a comment:
+           `t-elif` / `t-else` bind to the immediately preceding sibling and a
+           comment silently breaks the chain into a runtime template error
+           (W23). -->
+      <div t-if="!state.resolved" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading planning…</span>
+      </div>
+      <div t-elif="!cards.length" class="pbpl-none">
+        <span class="pbpl-none__ic" t-out="ic('lock', 22)"/>
+        <span class="pbpl-none__t" t-esc="emptyTitle"/>
+        <span class="pbpl-none__s" t-esc="emptyNote"/>
+      </div>
+      <div t-else="" class="pbpl-wrap">
+        <h1 class="pbpl-h">Workforce Planning</h1>
+        <p class="pbpl-blurb">The planning screens, unchanged. Each one opens where it always did.</p>
+
+        <div class="pbpl-cards">
+          <div t-foreach="cards" t-as="k" t-key="k.id" class="pbpl-card">
+            <span class="pbpl-card__ic" t-out="ic(k.icon, 17)"/>
+            <span class="pbpl-card__tx">
+              <span class="pbpl-card__l" t-esc="k.label"/>
+              <span class="pbpl-card__s" t-esc="k.sub"/>
+            </span>
+            <button class="pbim-btn primary pbpl-go"
+                    t-att-title="k.label"
+                    t-on-click="() => this.openCard(k)">Open</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

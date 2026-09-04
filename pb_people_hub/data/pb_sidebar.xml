@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+
+    <!-- OPERATE › People.
+
+         It absorbs Employees and Contracts (its first two lenses) and the whole
+         PLANNING section (its third, which is a LAUNCHER over those seven
+         screens unchanged — owner ruling). Every one of those nine rail records
+         survives, retired into the 900 band, and every one of their actions
+         still works, so this item claims their tags and xmlids: the two
+         cockpits' tags plus the two DETAIL cockpits nothing on the rail ever
+         claimed (`pb_employee_detail`, `pb_contract_detail` — opening an
+         employee from anywhere used to leave the rail blank), the Planning
+         dashboard's client-action TAG, and the six planning act_window xmlids.
+
+         `hr.employee` and `hr.contract` are claimed here and nowhere else. That
+         is the second of the two double-claims Cycle 1 found and pinned rather
+         than fixed: `item_employees` and `item_contracts` both claimed
+         `hr.contract`, and the rail's active-item index is FLAT and
+         last-writer-wins (W71), so Contracts won by ordering accident.
+
+         GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the other lane (the roles) is written by
+         `pb_vendor_access` onto the row.
+
+         `hr.group_hr_user` and not the pb_hr_payroll_base tiers the two retired
+         items carried: this entry is about `hr.employee` and `hr.contract`, and
+         the group whose ACL actually opens those records is the HR one. It is
+         also implied by every tier above it, so a manager keeps the door.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module.
+
+         The shell still gates its lenses from the ACL of the model behind each
+         one (W95), which stays the narrower and more honest answer about what
+         somebody can do once they are inside. -->
+    <record id="item_people" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="name">People</field>
+        <field name="icon">users</field>
+        <field name="sequence">20</field>
+        <field name="action_xmlid">pb_people_hub.action_pb_people_hub</field>
+        <field name="action_tag">pb_people_hub</field>
+        <field name="match_action_tags">pb_people_hub,pb_people,pb_contracts,pb_employee_detail,pb_contract_detail,wfp_dashboard</field>
+        <field name="match_action_xmlids">pb_hr_workforce_planning.action_wfp_scenario,pb_hr_workforce_planning.action_wfp_forecast,pb_hr_workforce_planning.action_wfp_grade,pb_hr_workforce_planning.action_wfp_merit_matrix,pb_hr_workforce_planning.action_wfp_cycle,pb_hr_workforce_planning.action_wfp_tagging_wizard</field>
+        <field name="match_models">hr.employee,hr.contract</field>
+    </record>
+
+</odoo>

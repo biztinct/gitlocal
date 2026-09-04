@@ -1,0 +1,191 @@
+// Statutory — module-specific bits (layout + steel-blue theme come from the kit).
+
+// ==================================================================== W99
+// A page-shaped cockpit is not a containing block, so the kit's drawer scrolls
+// away inside it: `WfDrawer`'s scrim is `position: absolute; inset: 0` and
+// `.pbim-page` is `min-height: 100%; overflow: auto` with no `position`, so on
+// a standalone cockpit the scrim resolves against the initial containing block
+// and an absolute child of a scrolling box scrolls WITH the content.
+//
+// Same fix as C3's `.itg-board`: the root stops scrolling and becomes a
+// definite-height flex column, the scrolling moves inside to `.pbim-wrap`, and
+// that wrap needs `width: 100%` beside its `max-width` or `margin: 0 auto`
+// cancels its stretch (W39).
+//
+// TWO selector classes so this wins over `.pbim.pbim-page`'s own `overflow`;
+// no z-index anywhere, because the scrim carries the kit's 60 and this box must
+// not become a stacking context (W37).
+.pbim.sta-board {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    > .pbim-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        min-width: 0;
+        width: 100%;
+        overflow-y: auto;
+        padding: 26px 26px 40px;
+    }
+    > .pbim-busy { flex: 1 1 auto; }
+}
+
+.sta-board, .sta-detail {
+    .money { color: var(--pbim-green); font-variant-numeric: tabular-nums; }
+    .ppl-av svg { width: 20px; height: 20px; }
+    .sta-rate { font-weight: 800; color: var(--pbim-primary-strong); }
+
+    .sta-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; align-items: start; }
+    @media (max-width: 980px) { .sta-cols { grid-template-columns: 1fr; } }
+    .sta-slabs { max-height: 320px; }
+    .sta-totrow td { font-weight: 800; border-top: 2px solid var(--pbim-line); }
+    .sta-totals { min-width: 180px; font-size: 12px; color: var(--pbim-muted); }
+
+    .sta-waivers { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--pbim-line-2); }
+    .sta-wlabel { font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+}
+
+// ============================================================ the Data view
+// A clone of C3's `.itg-*` ledger shape rather than an import of it: the grid
+// is two hundred lines that look alike, and importing them would mean this
+// Setup-area cockpit could not install without `pb_integrations`' connector
+// tables. The DRAWER is the shared kit component and is never forked (W6).
+.sta-board {
+    .sta-views { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .sta-ledger { padding: 16px 18px; }
+
+    .sta-tabs {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .sta-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 13px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: #fff;
+        color: #475569;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .14s;
+
+        svg { display: block; }
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .sta-tab__ic { display: inline-flex; flex: none; }
+    .sta-tabsub { margin-left: auto; font-size: 12px; color: var(--pbim-muted, #64748B); }
+
+    .sta-lfilters {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .sta-facets { flex: 0 1 auto; min-width: 0; }
+    // Capped: a facet dropdown stretched across the whole filter row reads as a
+    // search box, and the row already has one.
+    .sta-select {
+        max-width: 260px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        background: #fff;
+    }
+    .sta-clear { border-style: dashed; }
+
+    // The wrapper is bounded and scrolls, so the kit's sticky `thead` actually
+    // sticks: a sticky header resolves against its nearest SCROLLPORT, and a
+    // wrapper exactly as tall as its content never scrolls — which is how a
+    // sticky header ends up inert while looking fine (W34).
+    .sta-tw { max-height: 60vh; overflow: auto; }
+    .sta-th-wide { min-width: 240px; }
+    .sta-th-badge, .sta-td-badge { text-align: right; white-space: nowrap; }
+
+    .sta-foot {
+        margin-top: 12px;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    // ======================================================== drawer body
+    .sta-dr { display: flex; flex-direction: column; gap: 16px; }
+    .sta-dr__load {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--pbim-muted, #64748B);
+        font-size: 12.5px;
+        svg { display: block; animation: sta-dr-spin 1s linear infinite; }
+    }
+
+    .sta-dr__h {
+        margin-bottom: 7px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .sta-dr__kv {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 0;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 12.5px;
+
+        .k { flex: none; color: var(--pbim-muted, #64748B); }
+        .v {
+            min-width: 0;
+            text-align: right;
+            font-weight: 700;
+            color: var(--pbim-text, #1B1733);
+            overflow-wrap: anywhere;
+        }
+        .v.err { color: var(--pbim-rose, #DC2668); }
+        .v.ok { color: var(--pbim-green, #2E7D4F); }
+
+        // A note is prose, not a figure: it gets the full width rather than
+        // being squeezed into the right-hand column and ellipsised.
+        &.is-wrap {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 4px;
+            .v {
+                text-align: left;
+                font-weight: 500;
+                white-space: pre-wrap;
+            }
+        }
+    }
+}
+
+@keyframes sta-dr-spin { to { transform: rotate(360deg); } }

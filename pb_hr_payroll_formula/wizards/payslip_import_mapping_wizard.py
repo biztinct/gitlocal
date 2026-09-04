@@ -38,22 +38,31 @@ class HrPayslipImportMappingWizard(models.TransientModel):
         existing = mapping_model.search([
             ('salary_structure_id', '=', self.salary_structure_id.id),
         ])
-        existing_keys = {
-            (mapping.target_model_id.id, mapping.target_field_id.id)
-            for mapping in existing
-        }
+        # COLROLES P3 — the identity of a mapping is now its DESTINATION, not just a
+        # model/field pair: two bank rows both have (False, False) there and would
+        # have collapsed into one. The bank role joins the key so a structure can be
+        # copied with its account number, bank name and holder name intact.
+        def destination_key(mapping):
+            return (mapping.destination_type,
+                    mapping.target_model_id.id,
+                    mapping.target_field_id.id,
+                    mapping.bank_role or False)
+
+        existing_keys = {destination_key(mapping) for mapping in existing}
         source_mappings = mapping_model.search([
             ('salary_structure_id', '=', source_structure.id),
         ])
         vals_list = []
         for mapping in source_mappings:
-            key = (mapping.target_model_id.id, mapping.target_field_id.id)
+            key = destination_key(mapping)
             if key in existing_keys:
                 continue
             vals_list.append({
                 'salary_structure_id': self.salary_structure_id.id,
+                'destination_type': mapping.destination_type,
                 'target_model_id': mapping.target_model_id.id,
                 'target_field_id': mapping.target_field_id.id,
+                'bank_role': mapping.bank_role,
                 'component_id': False,
             })
             existing_keys.add(key)

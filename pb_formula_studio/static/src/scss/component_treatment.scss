@@ -1,0 +1,193 @@
+// How each component is treated — VALUEKIND P5.
+//
+// Deliberately plain: this is a settings surface, not a dashboard. The only
+// colour is on a row whose stored value contradicts its source, or whose pay
+// role contradicts its own value type. Rendered in two hosts (Mappings, and the
+// Source Atlas read-only) so every rule here is scoped under `.pct` and borrows
+// the shared kit's tokens rather than either host's palette.
+
+// Two hosts, two scroll models, one rule.
+//
+// Mappings puts this inside `.pbms-canvas`, which is `flex: 1; min-height: 0`
+// inside a `height: 100%; overflow: hidden` column — a frame with a DEFINITE
+// height and no scrolling of its own, because every other board on that shell
+// scrolls internally. This one did not, so 99 rows rendered into a box that
+// showed the first six and offered no way to reach the rest, in either axis.
+//
+// The Source Atlas puts it in a `.psa-card` on a page that scrolls normally.
+//
+// `max-height: 100%` is what serves both: against an auto-height parent a
+// percentage max-height resolves to `none`, so in the Atlas the board simply
+// flows and the page scrolls as it always did; in Mappings it binds, and the
+// body below the header takes the overflow.
+.pct {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    min-height: 0;
+    padding: 20px 22px 0;
+}
+// Everything above the table holds still; only the rows move.
+.pct-head, .pct-note, .pct-filters, .pct-warn { flex: 0 0 auto; }
+
+.pct-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap; margin-bottom: 14px;
+
+    h2 { margin: 0; font-size: 1.05rem; font-weight: 650; }
+}
+.pct-sub {
+    margin: 0 0 14px; max-width: 78ch; font-size: .82rem; line-height: 1.5;
+    color: var(--pbim-muted, #64748B);
+}
+.pct-act { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+.pct-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 15px; border-radius: var(--pbim-r-sm, 8px);
+    border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+    font-size: .8rem; font-weight: 600; cursor: pointer; color: inherit;
+
+    &.primary {
+        background: var(--pbim-primary, #5A4BB0); border-color: transparent;
+        color: #fff;
+    }
+    &[disabled] { opacity: .5; cursor: default; }
+    svg { flex: 0 0 auto; }
+}
+.pct-linkb {
+    border: 0; background: none; padding: 0; margin-left: 4px; cursor: pointer;
+    font-size: inherit; font-weight: 600; color: inherit; text-decoration: underline;
+    &[disabled] { opacity: .6; cursor: default; }
+}
+
+.pct-empty {
+    padding: 34px 0; text-align: center;
+    color: var(--pbim-muted, #64748B); font-size: .85rem;
+}
+
+.pct-note, .pct-warn {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin: 0 0 16px; padding: 11px 14px;
+    border-radius: var(--pbim-r-sm, 10px);
+    font-size: .82rem; line-height: 1.5;
+    svg { flex: 0 0 auto; margin-top: 1px; }
+}
+.pct-note {
+    background: var(--pbim-line-2, #F1F5F9);
+    color: var(--pbim-muted, #64748B);
+}
+.pct-warn {
+    background: var(--pbim-amber-soft, #FEF3C7);
+    color: var(--pbim-amber-ink, #92400E);
+}
+
+.pct-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.pct-fchip {
+    padding: 5px 12px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+    font-size: .76rem; font-weight: 600; color: var(--pbim-muted, #64748B);
+
+    &.on { background: var(--pbim-primary, #5A4BB0); border-color: transparent; color: #fff; }
+    &.warn:not(.on) {
+        border-color: var(--pbim-amber, #D97706);
+        color: var(--pbim-amber-ink, #92400E);
+    }
+}
+
+// The rows are the only thing that scrolls, in both axes: seven columns of
+// selects do not fit a narrow window, and a table that clips sideways hides
+// the Value type column — the one this whole board is about. The filter chips
+// and the two banners stay put, because they say what you are looking at and
+// what to do about it.
+.pct-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.pct-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 24px;
+}
+
+// The Source Atlas host scrolls its own page, so the board flows to full
+// height. The `overflow` MUST go with it: an `overflow: auto` box that never
+// scrolls is still the sticky header's scroll container, and the header then
+// pins itself to the top of a 7,000px box nobody can see.
+.pct.is-flow {
+    max-height: none;
+    .pct-scroll { overflow: visible; }
+}
+
+.pct-table {
+    width: 100%; min-width: 1040px;
+    border-collapse: collapse; font-size: .82rem;
+
+    th {
+        position: sticky; top: 0; z-index: 2;
+        // A sticky header over scrolling rows must be opaque, or the rows read
+        // straight through it.
+        background: var(--pbim-bg, #F8FAFC);
+        text-align: left; padding: 9px 12px; font-size: .68rem;
+        letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
+        color: var(--pbim-muted, #64748B);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    td {
+        padding: 10px 12px; vertical-align: middle;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    }
+    th.c, td.c { text-align: center; }
+    td.c input { cursor: pointer; }
+
+    // A row can be both; the clash is the one to act on, so it wins.
+    tr.drift td { background: var(--pbim-amber-soft, #FEF3C7); }
+    tr.clash td { background: var(--pbim-amber-soft, #FEF3C7); }
+    tr.dirty  td { background: var(--pbim-primary-soft, #EEEBFA); }
+}
+.pct-name b { display: block; font-weight: 600; }
+.pct-code {
+    display: inline-block; margin-top: 2px;
+    font-family: var(--pbim-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: .7rem; color: var(--pbim-muted, #64748B);
+}
+.pct-lane {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: .68rem; font-weight: 600;
+    background: #EEF1F5; color: #64748B;
+
+    &.l-feed  { background: #E5EDFD; color: #2563EB; }
+    &.l-excel { background: #E3F2E9; color: #2E7D4F; }
+    &.l-contract_component { background: #FEF3C7; color: var(--pbim-amber-ink, #92400E); }
+}
+.pct-eg { max-width: 320px; }
+.pct-chip {
+    display: inline-block; margin: 0 5px 3px 0; padding: 2px 7px;
+    border-radius: 6px; background: var(--pbim-line-2, #F1F5F9);
+    font-family: var(--pbim-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: .7rem;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    vertical-align: bottom;
+}
+.pct-stored {
+    display: block; margin-top: 2px; font-size: .7rem;
+    color: var(--pbim-amber-ink, #92400E);
+}
+.pct-why {
+    display: block; margin-top: 3px; font-size: .68rem;
+    color: var(--pbim-muted, #64748B);
+    max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pct-select, .pct-input {
+    width: 100%; padding: 6px 9px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: var(--pbim-r-sm, 8px);
+    background: #fff; font-size: .8rem; color: inherit;
+
+    &:focus { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 1px; }
+}
+.pct-select { max-width: 210px; }
+.pct-input { max-width: 168px; }

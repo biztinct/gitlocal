@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="shift_template_morning" model="hr.shift.template">
+            <field name="name">Morning Shift</field>
+            <field name="code">AM</field>
+            <field name="shift_type">morning</field>
+            <field name="start_hour">8.0</field>
+            <field name="end_hour">17.0</field>
+            <field name="break_duration">1.0</field>
+            <field name="is_overnight">False</field>
+            <field name="sequence">1</field>
+            <field name="color">4</field>
+        </record>
+
+        <record id="shift_template_afternoon" model="hr.shift.template">
+            <field name="name">Afternoon Shift</field>
+            <field name="code">PM</field>
+            <field name="shift_type">afternoon</field>
+            <field name="start_hour">14.0</field>
+            <field name="end_hour">22.0</field>
+            <field name="break_duration">0.5</field>
+            <field name="is_overnight">False</field>
+            <field name="sequence">2</field>
+            <field name="color">2</field>
+        </record>
+
+        <record id="shift_template_night" model="hr.shift.template">
+            <field name="name">Night Shift</field>
+            <field name="code">NT</field>
+            <field name="shift_type">night</field>
+            <field name="start_hour">22.0</field>
+            <field name="end_hour">6.0</field>
+            <field name="break_duration">0.5</field>
+            <field name="is_overnight">True</field>
+            <field name="sequence">3</field>
+            <field name="color">1</field>
+        </record>
+
+        <record id="shift_template_office" model="hr.shift.template">
+            <field name="name">Office Hours</field>
+            <field name="code">OFF</field>
+            <field name="shift_type">morning</field>
+            <field name="start_hour">8.5</field>
+            <field name="end_hour">17.5</field>
+            <field name="break_duration">1.0</field>
+            <field name="is_overnight">False</field>
+            <field name="sequence">4</field>
+            <field name="color">10</field>
+        </record>
+
+        <record id="shift_template_split" model="hr.shift.template">
+            <field name="name">Split Shift</field>
+            <field name="code">SPL</field>
+            <field name="shift_type">split</field>
+            <field name="start_hour">7.0</field>
+            <field name="end_hour">19.0</field>
+            <field name="break_duration">3.0</field>
+            <field name="is_overnight">False</field>
+            <field name="sequence">5</field>
+            <field name="color">3</field>
+        </record>
+
+    </data>
+</odoo>

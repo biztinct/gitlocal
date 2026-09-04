@@ -1,0 +1,172 @@
+// Manager Live-Map cockpit. The root carries the shared `.pbim` class, so the
+// --pbim-* CSS custom props are already in scope (emitted by import_kit.scss).
+// One indigo primary for the driver domain too (W1). Map pins/popups styled
+// here (Leaflet); the pin rules render OUTSIDE the .pbim root, so their var()
+// fallbacks are what actually paint.
+
+.dm-cockpit {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--pbim-bg);
+    color: var(--pbim-text);
+
+    .pbim-busy {
+        height: 100%; display: flex; align-items: center; justify-content: center;
+        gap: 12px; color: var(--pbim-muted);
+    }
+    .pbim-spin {
+        width: 26px; height: 26px; border-radius: 50%;
+        border: 3px solid var(--pbim-line); border-top-color: var(--pbim-primary, #5A4BB0);
+        animation: dm-spin .8s linear infinite;
+    }
+    @keyframes dm-spin { to { transform: rotate(360deg); } }
+
+    .dm-wrap { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+
+    // ---- KPI strip ----
+    .dm-kpis {
+        display: flex; align-items: center; gap: 14px;
+        padding: 16px 20px; background: #fff; border-bottom: 1px solid var(--pbim-line);
+    }
+    .dm-kpi {
+        min-width: 88px;
+        &__v { font-size: 24px; font-weight: 800; color: var(--pbim-primary, #5A4BB0); line-height: 1; }
+        &__v--warn { color: var(--pbim-amber); }
+        &__v--muted { color: var(--pbim-muted); }
+        &__l { font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+               color: var(--pbim-muted); margin-top: 5px; }
+    }
+    .dm-kpi__spacer { flex: 1; }
+    .dm-demo {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 15px; border-radius: 999px; cursor: pointer; font-weight: 700;
+        font-size: 13px; background: #fff; color: var(--pbim-amber);
+        border: 1.5px solid var(--pbim-amber);
+        .dm-demo__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+        &.is-on { background: var(--pbim-amber-soft); }
+        &.is-on .dm-demo__dot { animation: dm-pulse 1.4s infinite; }
+    }
+    @keyframes dm-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, .5); }
+        70% { box-shadow: 0 0 0 7px rgba(217, 119, 6, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+    }
+
+    // ---- body ----
+    .dm-body { flex: 1; display: flex; min-height: 0; }
+
+    .dm-rail {
+        width: 320px; flex: 0 0 320px; background: #fff;
+        border-right: 1px solid var(--pbim-line); display: flex; flex-direction: column; min-height: 0;
+    }
+    .dm-rail__head {
+        padding: 16px 18px; font-weight: 700; font-size: 14px; border-bottom: 1px solid var(--pbim-line-2);
+    }
+    .dm-rail__count {
+        display: inline-block; margin-left: 6px; padding: 1px 9px; border-radius: 999px;
+        background: var(--pbim-soft); color: var(--pbim-primary); font-size: 12px; font-weight: 700;
+    }
+    .dm-list { overflow-y: auto; flex: 1; padding: 8px; }
+
+    .dm-card {
+        display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+        border-radius: 12px; cursor: pointer; transition: background .12s ease;
+        &:hover { background: var(--pbim-bg); }
+        &.is-sel { background: var(--pbim-soft); }
+        &__avatar {
+            position: relative; width: 40px; height: 40px; border-radius: 50%; flex: 0 0 auto;
+            background: var(--pbim-soft) center/cover no-repeat; border: 1px solid var(--pbim-line);
+        }
+        &__main { min-width: 0; flex: 1; }
+        &__name { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px;
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        &__meta { font-size: 12px; color: var(--pbim-muted); margin-top: 2px; }
+        &__play {
+            border: 0; background: transparent; color: var(--pbim-muted); cursor: pointer;
+            padding: 6px; border-radius: 8px;
+            &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+        }
+    }
+    .dm-fresh {
+        position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px;
+        border-radius: 50%; border: 2px solid #fff;
+        &--fresh { background: #2E7D4F; }
+        &--warm  { background: #D97706; }
+        &--stale { background: #94A3B8; }
+        &--off   { background: #CBD5E1; }
+    }
+    .dm-simchip {
+        font-size: 9px; font-weight: 800; letter-spacing: .5px;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+        padding: 1px 6px; border-radius: 4px;
+    }
+
+    .dm-empty { padding: 40px 24px; text-align: center; color: var(--pbim-muted);
+        &__icon { color: var(--pbim-primary); opacity: .6; }
+        &__title { font-weight: 700; color: var(--pbim-text); margin: 12px 0 6px; }
+        &__sub { font-size: 13px; line-height: 1.5; }
+    }
+
+    .dm-mapwrap { flex: 1; position: relative; min-width: 0; }
+    .dm-map { position: absolute; inset: 0; }
+    .dm-simbanner {
+        position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber); font-weight: 800;
+        font-size: 11px; letter-spacing: 1px; padding: 6px 14px; border-radius: 999px;
+        border: 1px solid var(--pbim-amber);
+    }
+
+    // ---- embedded (W17): the host owns the page chrome ----
+    // The root keeps height:100% in BOTH modes; W20 makes that the HOST's
+    // problem — a lens whose cockpit owns its own scrolling must be given a box
+    // with a definite height, or (here) a Leaflet map collapses to zero.
+    &.dm-cockpit--embedded {
+        background: transparent;
+    }
+    // Compact map card on the Today board: map only, rounded, with the card's
+    // own legend floating over the bottom edge.
+    &.dm-cockpit--maponly {
+        .dm-body { border-radius: inherit; overflow: hidden; }
+        // Lift Leaflet's own bottom row (attribution + any bottom control)
+        // clear of the card legend, which is pinned to the same edge. Without
+        // this the "© OpenStreetMap contributors" credit sits ON the legend and
+        // both become unreadable — and the attribution is not optional, so the
+        // legend is what has to make room for it.
+        // 40px, not 32: the legend measures 33.5px live (two text rows can wrap
+        // at narrow widths), and 32 left the attribution overlapping it by 1.5px.
+        .leaflet-bottom { bottom: 40px; }
+    }
+    .dm-cardlegend {
+        position: absolute; left: 0; right: 0; bottom: 0; z-index: 500;
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 8px 14px;
+        background: var(--pbim-surface, #ffffff);
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 11px; font-weight: 700; color: var(--pbim-muted, #64748B);
+        &__k {
+            display: inline-flex; align-items: center; gap: 5px;
+            i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+        }
+        &__k--live { color: var(--pbim-green, #2E7D4F); }
+        &__k--idle { color: var(--pbim-amber, #D97706); }
+        &__k--off  { color: var(--pbim-muted, #64748B); }
+    }
+}
+
+// ---- Leaflet marker pins (global, rendered outside .dm-cockpit root) ----
+.bgeo-pin__dot {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--bgeo-pin-color, #5A4BB0); color: #fff;
+    font-size: 12px; font-weight: 800; border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+}
+.bgeo-pin--sim .bgeo-pin__dot { border-style: dashed; border-color: #D97706; }
+
+.bgeo-popup {
+    .dm-pop__selfie { width: 100%; border-radius: 8px; margin-bottom: 8px; max-height: 120px; object-fit: cover; }
+    .dm-pop__name { font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .dm-pop__row { font-size: 12px; color: #64748B; }
+    .dm-simchip { font-size: 9px; font-weight: 800; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 4px; }
+}

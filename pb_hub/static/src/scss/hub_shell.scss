@@ -1,0 +1,684 @@
+// =====================================================================
+//  The hub shell — pb_mission's workspace, generalised.
+//
+//  Every metric, every token and every z-index in this file is COPIED from
+//  `pb_mission/static/src/scss/pb_mission.scss`, on purpose: a kit whose fifth
+//  hub looks different from the first is not a kit. Nothing new is invented.
+//
+//  Strictly --pbim-* tokens (W1), flat fills (W3), and every declaration
+//  carries the correct pbim hex as its var() fallback — a fallback is a real
+//  colour, not a comment (W14/W19). `#fff` is the only literal here, as it is
+//  in pb_mission.
+//
+//  Z-DISCIPLINE (W37): shell chrome never exceeds 20. Below 1920px the biz
+//  sidebar is a 60px absolute hover-overlay at z-25 that must paint OVER this
+//  workspace, and an embedded cockpit's own modals live at 1050. So: the
+//  command bar is 2, the rail is 1, and the canvas and the lens box create NO
+//  stacking context at all — otherwise a lens's `position: fixed` modal would
+//  be trapped inside one and 1050 would mean nothing.
+// =====================================================================
+
+.pbim.pbhub {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+
+    // ==================================================== command bar
+    .pbhub-top {
+        flex: 0 0 auto;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 9px 16px;
+        // NOT overflow:hidden — a hub's context segments may open an absolute
+        // popover that has to escape the bar.
+        background: var(--pbim-primary-dark, #241F52);
+        color: #fff;
+    }
+
+    .pbhub-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        flex: none;
+        font-weight: 800;
+        font-size: 13.5px;
+        letter-spacing: -.01em;
+    }
+    .pbhub-brand__ic {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        svg { display: block; }
+    }
+    .pbhub-brand__tx { white-space: nowrap; }
+
+    // The back chip's dark styles live at ROOT scope — see the block after
+    // this one. They have two hosts, and only one of them is `.pbhub`.
+
+    // ------------------------------------------------- the hub's own context
+    // 0 1: the segments keep their natural size and shrink under pressure; the
+    // ⌘K launcher is the one that GROWS, otherwise a wrapping context block
+    // silently doubles the bar's height instead.
+    .pbhub-ctx {
+        flex: 0 1 auto;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    // ------------------------------------------------------ period tracker
+    // Option B's rail tracker, moved to the command bar: same uppercase
+    // 9.5px/800 on a 6%-white pill, so it reads as STATUS rather than as a
+    // control. It is a <button> only so a hub can make it a door; with no
+    // handler it does not pretend to be one (`is-live`).
+    .pbhub-trk {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 28px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: color-mix(in srgb, #fff 6%, transparent);
+        color: color-mix(in srgb, #fff 78%, transparent);
+        font: inherit;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        cursor: default;
+        // stage numbers line up as the stage advances
+        font-variant-numeric: tabular-nums;
+
+        b { color: var(--pbim-primary-light, #CBC2EE); font-weight: 800; }
+
+        &.is-live {
+            cursor: pointer;
+            &:hover { background: color-mix(in srgb, #fff 13%, transparent); }
+        }
+    }
+    .pbhub-trk__s { display: inline-flex; gap: 2px; }
+
+    // ------------------------------------------------------- ⌘K launcher
+    // A BUTTON, not an input: what it opens searches the whole product, and a
+    // text field would promise that the typing happens here.
+    .pbhub-search {
+        flex: 1 1 auto;
+        min-width: 150px;
+        max-width: 360px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 32px;
+        padding: 0 9px;
+        border: 1px solid color-mix(in srgb, #fff 17%, transparent);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: color-mix(in srgb, #fff 9%, transparent);
+        color: color-mix(in srgb, #fff 70%, transparent);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background .12s, border-color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: color-mix(in srgb, #fff 15%, transparent);
+            border-color: color-mix(in srgb, #fff 28%, transparent);
+            color: #fff;
+        }
+    }
+    .pbhub-search__ic { display: inline-flex; flex: none; }
+    .pbhub-search__tx {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: left;
+    }
+    .pbhub-search__kbd {
+        flex: none;
+        padding: 1px 6px;
+        border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+        border-radius: 5px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .03em;
+    }
+
+    .pbhub-cog {
+        flex: none;
+        display: inline-flex;
+        padding: 6px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: color-mix(in srgb, #fff 70%, transparent);
+        cursor: pointer;
+        transition: background .12s, color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: color-mix(in srgb, #fff 14%, transparent);
+            color: #fff;
+        }
+    }
+
+    .pbhub-user {
+        flex: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        cursor: default;
+    }
+
+    // ==================================================== rail + canvas
+    .pbhub-low {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }
+
+    .pbhub-rail {
+        z-index: 1;
+        flex: 0 0 76px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: var(--pbim-surface, #fff);
+        border-right: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbhub-rail__b {
+        width: 60px;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        padding: 9px 3px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: center;
+        cursor: pointer;
+        transition: background .12s, color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-ink, #1B1733);
+        }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .pbhub-rail__ic { display: inline-flex; }
+    .pbhub-rail__l { display: block; }
+
+    // FLEET P4 — a part of the product this company has not bought, kept on
+    // screen on purpose. It has to read as an OFFER and not as a fault: muted
+    // rather than greyed to the point of looking broken, with a small padlock
+    // in the corner of the icon. It still hovers and it still answers a click
+    // (with the sentence), so it never feels like a dead control.
+    .pbhub-rail__b.is-locked {
+        position: relative;
+        color: var(--pbim-muted, #64748B);
+        opacity: .72;
+
+        .pbhub-rail__ic { color: var(--pbim-muted, #64748B); }
+        &:hover { opacity: 1; }
+    }
+    .pbhub-rail__lock {
+        position: absolute;
+        top: 6px;
+        right: 9px;
+        display: inline-flex;
+        color: var(--pbim-muted, #64748B);
+        svg { display: block; }
+    }
+
+    // The canvas of a locked lens: the same empty primitive, one tone quieter,
+    // and the sentence rather than a placeholder line.
+    .pbhub-lockpane {
+        .pbhub-empty__ic {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-muted, #64748B);
+        }
+        .pbhub-empty__s { max-width: 420px; line-height: 1.5; }
+    }
+
+    // W20/W39: the lens box is DEFINITE-HEIGHT and hands that height straight
+    // to the guest. `min-height: 0` + `min-width: 0` + `width: 100%` on the
+    // guest are the belt and braces — a flex child's min-size resolves against
+    // its min-CONTENT by default, and a centred `max-width` wrap sizes to its
+    // CAP unless it is told to fill.
+    // `position: relative` with NO z-index: a containing block for a lens's own
+    // absolute scrim, without becoming a stacking context (W37).
+    .pbhub-canvas {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .pbhub-lens {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+
+        > * {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+            width: 100%;
+        }
+    }
+
+    .pbhub-empty {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 40px 16px;
+        color: var(--pbim-muted, #64748B);
+        text-align: center;
+    }
+    .pbhub-empty__ic {
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbhub-empty__t {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-empty__s { font-size: 12px; }
+
+    // ============================================ FLEET P4 — not switched on
+    //
+    // The whole hub, for a company that has not got it. Written INSIDE this
+    // root block on purpose: `.pbhub-off` is a second class on the same element
+    // as `.pbhub`, so everything under it is a descendant of this selector.
+    // A block appended at the end of the file would compile against whatever
+    // root happened to be last there, which is how a 0px-tall bar shipped on
+    // another cockpit (ledger F35).
+    &.pbhub-off .pbhub-top { border-bottom: 1px solid var(--pbim-line, #E2E8F0); }
+
+    .pbhub-offbox {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+        overflow: auto;
+    }
+    .pbhub-offcard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 460px;
+        padding: 34px 32px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-lg, 18px);
+        background: var(--pbim-surface, #ffffff);
+        text-align: center;
+    }
+    .pbhub-offic {
+        display: inline-flex;
+        width: 58px;
+        height: 58px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+        svg { display: block; }
+    }
+    .pbhub-offt {
+        margin: 4px 0 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-offs {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-offh {
+        margin: 0 0 6px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ---------------------------------------------------------- right dock
+    // The pb_mission dock's width, so a dock built for one hub fits the next.
+    // It owns its own scrolling; the shell only gives it a definite height.
+    .pbhub-dock {
+        flex: 0 0 268px;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--pbim-surface, #fff);
+        border-left: 1px solid var(--pbim-line, #E2E8F0);
+
+        > * { flex: 1 1 auto; min-height: 0; width: 100%; }
+    }
+
+    // ==================================================== the demo surface
+    // Only ever rendered by `pb_hub.action_pb_hub_demo` (hidden client action).
+    // It lives here rather than in its own file because it is three cards, and a
+    // fourth SCSS entry in the bundle costs more than it explains.
+    .pbhub-demo {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        overflow-y: auto;
+        padding: 22px;
+    }
+    .pbhub-demo__card {
+        max-width: 720px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px 22px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #fff);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+    }
+    .pbhub-demo__t {
+        margin: 0 0 6px;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhub-demo__n {
+        margin: 0 0 12px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+        b { color: var(--pbim-ink, #1B1733); }
+    }
+    .pbhub-demo__row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pbhub-demo__b {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 32px;
+        padding: 0 12px;
+        border: 1px solid var(--pbim-primary, #5A4BB0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+
+        svg { display: block; }
+        &:hover { background: var(--pbim-primary-hover, #4A3D96); }
+
+        &--ghost {
+            background: var(--pbim-surface, #fff);
+            color: var(--pbim-primary, #5A4BB0);
+            &:hover { background: var(--pbim-soft, #EDEAF8); }
+        }
+    }
+
+    .pbhub-demo-dock {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 14px;
+    }
+    .pbhub-demo-dock__h {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+        svg { display: block; }
+    }
+    .pbhub-demo-dock__n {
+        margin: 0;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------- narrow screens
+    // Below the small-laptop breakpoint the labels cost more than they inform;
+    // the rail keeps the icons and the tooltip carries the name.
+    @media (max-width: 1099px) {
+        .pbhub-rail { flex-basis: 56px; }
+        .pbhub-rail__b { width: 46px; }
+        .pbhub-rail__l { display: none; }
+        .pbhub-brand__tx { display: none; }
+        .pbhub-search { min-width: 0; max-width: 120px; }
+        .pbhub-search__tx { display: none; }
+        .pbhub-back__tx { display: none; }
+        .pbhub-dock { display: none; }
+    }
+}
+
+// =====================================================================
+//  The back chip on a LIGHT surface (Cycle 3).
+//
+//  Everything above is scoped inside `.pbim.pbhub`, because a hub owns its own
+//  command bar. Cycle 3's one-door law puts the same chip in cockpits that are
+//  NOT hubs — Integrations, Structures, Statutory, Tenants, the Settings hub
+//  itself — where nothing matches `.pbhub` and the whole block above therefore
+//  does not apply. Left to inherit, the chip would render white-on-white: a
+//  control that is present, clickable and invisible, which is worse than one
+//  that is missing (W40's failure shape, arrived at through CSS).
+//
+//  So this block is ROOT-SCOPED and COMPLETE — it restates the geometry rather
+//  than extending it, because the base it would extend is unreachable from
+//  here. Sizes stay identical to the dark chip on purpose: one chip, two
+//  backgrounds, not two chips.
+// =====================================================================
+// ------------------------------------------------------------ the back chip
+// DARK tone. It sits at root scope, listing BOTH dark Payobook command bars it
+// can mount on: pb_hub's shell (`.pbhub`) and Mission Control's workspace
+// (`.pbms`), which is its own shell and, from IA Cycle 6, mounts this same kit
+// chip so a drill into the Workforce lenses has a way home.
+//
+// It is ONE copy with two hosts rather than two copies, deliberately (W6). The
+// alternative — pb_mission restating twenty lines — is how two return doors
+// start looking different, and the failure would be silent: an unmatched
+// selector renders an unstyled button, not an error (W14's shape, which is
+// exactly what this chip's own header comment warns about for the light tone).
+//
+// ---------------------------------------------------------------------------
+// Integrations Cycle 6 — `:not(.pbhub-back--lite)`, and why it is load-bearing.
+//
+// `.pbms` is not one class. pb_mission's workspace is `<div class="pbim pbms">`
+// (pb_mission/static/src/xml/pb_mission.xml:8) and so is the MAPPING STUDIO
+// (pb_formula_studio/static/src/xml/mapping_studio.xml:5) — two components, two
+// modules, two different backgrounds, one class name. The studio is a LIGHT surface
+// (`background: var(--pbim-bg)`), it mounts this chip with `tone="'light'"`,
+// and it therefore matched BOTH blocks. Specificity settled it the wrong way:
+// `.pbim.pbms .pbhub-back` is (0,3,0) and `.pbhub-back--lite` is (0,1,0), so
+// the DARK tone won and the studio's way home rendered `color: #fff` on a
+// `#F5F6FA` bar — a measured **1.08:1**, which is not "hard to see", it is
+// invisible. It is the owner's complaint, and it is the exact failure shape
+// this block's own header comment warns about, arrived at from the other side:
+// there, an unmatched selector left the chip unstyled; here, an over-matched
+// one styled it for the wrong background.
+//
+// The guard is the honest fix rather than a specificity war: a host that has
+// explicitly declared its surface LIGHT must never be handed the dark tone, and
+// stating that as `:not()` means a third `.pbms` cannot re-open the bug. See
+// W151.
+.pbim.pbhub, .pbim.pbms {
+    .pbhub-back:not(.pbhub-back--lite) {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 200px;
+        height: 30px;
+        padding: 0 12px 0 9px;
+        // 22% white measured 2.01:1 against a #241F52 command bar — under
+        // WCAG 1.4.11's 3:1 for a control boundary, which is the line between
+        // "a button" and "some text that happens to be clickable". 42% is
+        // 3.82:1. The fill stays quiet on purpose: the BORDER is what has to
+        // carry the boundary, and a fill loud enough to do it alone would make
+        // the way back compete with the page's own primary action.
+        border: 1px solid color-mix(in srgb, #fff 42%, transparent);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: color-mix(in srgb, #fff 16%, transparent);
+        color: #fff;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .12s, border-color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: color-mix(in srgb, #fff 28%, transparent);
+            border-color: color-mix(in srgb, #fff 62%, transparent);
+        }
+        &:active { background: color-mix(in srgb, #fff 36%, transparent); }
+        // A focus ring the keyboard can find. `:focus-visible`, not `:focus`,
+        // so a mouse click does not leave a ring behind it.
+        &:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+    }
+    .pbhub-back__ic { display: inline-flex; flex: none; }
+    .pbhub-back__tx {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+// ------------------------------------------------- the back chip, LIGHT tone
+//
+// Cycle 6 made this read as a CONTROL rather than as a caption. What shipped
+// before was `--pbim-surface` on a `--pbim-bg` bar (1.08:1) inside a
+// `--pbim-line` border (1.14:1): a white rectangle on a near-white bar, with a
+// hairline nobody can see. The text passed AA at 6.84:1 and it did not help,
+// because a legible word is not a discoverable button — the owner's sentence
+// was "not visible intuitively because of the colour and shades".
+//
+// Now: the soft indigo wash, a FULL-strength indigo border, and indigo-hover
+// ink. Measured, not eyeballed:
+//
+//     text    --pbim-primary-hover on --pbim-soft   7.39:1  (AA needs 4.5)
+//     border  --pbim-primary on the --pbim-bg bar   6.34:1  (needs 3.0)
+//     border  --pbim-primary on white               6.84:1  (needs 3.0)
+//     hover   #fff on --pbim-primary                6.84:1  (needs 4.5)
+//
+// It is deliberately NOT a solid primary button at rest: it would then outrank
+// every real action on the page it sits above. Filled on hover, so it announces
+// itself when reached for and stays second in the hierarchy when it is not.
+// Every colour is a `--pbim-*` token (W1) and the shape is flat (W3).
+.pbhub-back--lite {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 240px;
+    height: 32px;                       // 32px: a real hit area, not a caption
+    padding: 0 14px 0 11px;
+    border: 1px solid var(--pbim-primary, #5A4BB0);
+    border-radius: var(--pbim-r-sm, 10px);
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary-hover, #4A3D96);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .12s, border-color .12s, color .12s;
+
+    svg { display: block; }
+    &:hover {
+        background: var(--pbim-primary, #5A4BB0);
+        border-color: var(--pbim-primary-hover, #4A3D96);
+        color: var(--pbim-surface, #ffffff);
+    }
+    &:active { background: var(--pbim-primary-hover, #4A3D96); }
+    &:focus-visible {
+        outline: 2px solid var(--pbim-primary, #5A4BB0);
+        outline-offset: 2px;
+    }
+    .pbhub-back__ic { display: inline-flex; flex: none; }
+    .pbhub-back__tx {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+// Every light-surface chip so far sits above a cockpit title, inside the kit's
+// shared `.ppl-head` primitive. The air belongs HERE rather than in each of the
+// four cockpits, so a fifth one gets it by adding the component and nothing
+// else. Scoped to that primitive, so the chip stays vertically centred in a
+// flex header that is not one (the Settings hub's own bar).
+.ppl-head .pbhub-back--lite { margin-bottom: 9px; }

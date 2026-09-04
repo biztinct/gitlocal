@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Integrations Cycle 3 — the legacy ABM aggregations, as data.
+         =============================================================
+         Eight numbers the legacy application computed with inline arithmetic in
+         `om_hr_payroll/models/hr_zoho_staging.py`, none of which existed
+         anywhere a payroll officer could read them. They are rules now.
+
+         CYCLE 8: EVERY ROW BELOW IS A SENTENCE NOW.
+         =============================================================
+         All eight carry `builder_mode = guided` and a structured spec —
+         `filter_conditions`, `value_steps`, `record_source` — so the engine
+         evaluates them NATIVELY on plain dicts and a payroll manager can open
+         any of them in the Rule Composer and read what they do. The vendor
+         catalogue is no longer a place python arrives from.
+
+         The `filter_expression` and `python_code` fields are LEFT IN PLACE and
+         are INERT: `_execute_single` routes a guided rule away from safe_eval
+         before either is looked at. They stay as PROVENANCE — the next person
+         to ask "is the sentence really what the legacy did?" can read both and
+         compare, and `test_rule_composer.py` does exactly that for all eight.
+
+         The 19.0.1.60.0 migration is what reaches the rows that already exist,
+         because `noupdate` lives in the DATABASE and Odoo never refreshes a
+         frozen row whatever this file later says (W13.1).
+
+         THE NAMESPACE, for the expressions that remain as provenance.
+         `filter_expression` was evaluated by
+         `hr.api.transformation.rule._execute_single` with exactly four names in
+         scope: `rec` (the record's extracted_data dict), `env`, `datetime` and
+         `date`. It is `rec`, NOT `record` — a filter written against `record`
+         raises NameError, the engine's `except Exception: pass` swallows it,
+         and the row is simply dropped from the aggregate. A whole feed would
+         sum to zero with nothing in the log. Every expression below uses `rec`.
+
+         THE DROPPED DATE FILTER. The legacy re-parsed each overtime record's
+         `OT_Date` and re-checked it against the same window it had just asked
+         the API for (:497-557). The endpoint is date-scoped by
+         fromDate/toDate, so that second check could only ever remove records
+         Zoho had already excluded — while silently dropping any record whose
+         date string did not parse as dd-MM-yyyy. Dropped, deliberately; the
+         window lives in the pull, which is the only place it can be enforced.
+
+         THE TWO THAT USED TO BE PYTHON, AND WHY THEY ARE NOT ANY MORE.
+         DEPCOUNT counts rows inside a TABULAR SECTION of one employee record,
+         which no `count` over RECORDS could express — counting store rows
+         answers 1 for an employee with four dependants. `record_source =
+         nested` is that missing idea, so DEPCOUNT is an ordinary count with a
+         table path. WORKEDHRS had to add an integer count of SECONDS to an
+         "H:MM" string, in one payload, in two different units; `value_steps`
+         is that missing idea, because steps inside one record are added and
+         each one declares what its field CONTAINS. Two shapes the engine did
+         not have, rather than two programs it needed. -->
+    <data noupdate="1">
+
+        <!-- ========== Zoho People — overtime bands ==========
+             Legacy: hr_zoho_staging.py:497-557. One `sum_of_ot_hours_*`
+             accumulator per band, all six reading `Actual_Pay_Hour` off the
+             overtime_request form and all six requiring ApprovalStatus
+             "Approved" — an unapproved request is a request, not an hour. -->
+
+        <record id="trt_zoho_ot150" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS150</field>
+            <field name="name">Overtime 150% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '150%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '150%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">10</field>
+            <field name="description">Approved overtime at the 150% band (normal weekday overtime
+under Vietnamese labour law). Legacy: hr_zoho_staging.py:497-511.</field>
+        </record>
+
+        <record id="trt_zoho_ot200" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS200</field>
+            <field name="name">Overtime 200% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '200%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '200%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">20</field>
+            <field name="description">Approved overtime at the 200% band (weekend). Legacy:
+hr_zoho_staging.py:513.</field>
+        </record>
+
+        <record id="trt_zoho_ot210" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS210</field>
+            <field name="name">Overtime 210% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '210%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '210%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">30</field>
+            <field name="description">Approved overtime at the 210% band (night shift). Legacy:
+hr_zoho_staging.py:531.</field>
+        </record>
+
+        <record id="trt_zoho_ot270" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS270</field>
+            <field name="name">Overtime 270% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '270%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '270%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">40</field>
+            <field name="description">Approved overtime at the 270% band (night shift, weekend).
+Legacy: hr_zoho_staging.py:540.</field>
+        </record>
+
+        <record id="trt_zoho_ot300" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS300</field>
+            <field name="name">Overtime 300% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '300%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '300%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">50</field>
+            <field name="description">Approved overtime at the 300% band (public holiday). Legacy:
+hr_zoho_staging.py:522.</field>
+        </record>
+
+        <record id="trt_zoho_ot390" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">OTHRS390</field>
+            <field name="name">Overtime 390% — hours</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">custom</field>
+            <field name="aggregate_field">Actual_Pay_Hour</field>
+            <field name="filter_expression">rec.get('OT_Type') == '390%' and rec.get('ApprovalStatus') == 'Approved'</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'OT_Type', 'op': 'is', 'value': '390%'}, {'field': 'ApprovalStatus', 'op': 'is', 'value': 'Approved'}]}"/>
+            <field name="value_steps" eval="[{'field': 'Actual_Pay_Hour', 'contains': 'number'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">60</field>
+            <field name="description">Approved overtime at the 390% band (night shift, public
+holiday). Legacy: hr_zoho_staging.py:550.</field>
+        </record>
+
+        <!-- ========== Zoho People — dependants ========== -->
+        <record id="trt_zoho_depcount" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">DEPCOUNT</field>
+            <field name="name">Dependants with a PIT number</field>
+            <field name="rule_type">count</field>
+            <field name="source_data_type">employee</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">nested</field>
+            <field name="nested_table_path">tabularSections.Dependent and Dependent Health Insurance</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': [{'field': 'Dependent_PIT_Number', 'op': 'present'}]}"/>
+            <field name="value_steps" eval="[]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">70</field>
+            <field name="python_code">deps = 0
+for r in records:
+    rows = (r.get('tabularSections') or {}).get('Dependent and Dependent Health Insurance') or []
+    for d in rows:
+        if d.get('Dependent_PIT_Number'):
+            deps = deps + 1
+result = deps
+</field>
+            <field name="description">Dependants claimable against personal income tax — the ones
+that carry a PIT number. A dependant without one is registered but not yet
+deductible, and counting it would over-relieve the tax.
+
+WHY PYTHON. This is not a count of RECORDS. Zoho returns dependants as a
+TABULAR SECTION inside the employee's own record — employee_data
+["tabularSections"]["Dependent and Dependent Health Insurance"] — so there is
+one store row, holding a list. `rule_type=count` counts store rows and would
+answer 1 for an employee with four dependants, or 0 for one with none, which
+is a wrong number that looks like a right one. Legacy:
+hr_zoho_staging.py:367-373.</field>
+        </record>
+
+        <!-- ========== Zoho People — worked hours ========== -->
+        <record id="trt_zoho_workedhrs" model="hr.api.transformation.rule.template">
+            <field name="connector_type">zoho</field>
+            <field name="output_key">WORKEDHRS</field>
+            <field name="name">Actual working hours incl. paid leave</field>
+            <field name="rule_type">sum</field>
+            <field name="source_data_type">attendance</field>
+            <field name="builder_mode">guided</field>
+            <field name="record_source">records</field>
+            <field name="filter_conditions" eval="{'join': 'all', 'rows': []}"/>
+            <field name="value_steps" eval="[{'field': 'totalWorkedHours', 'contains': 'seconds'}, {'field': 'paidLeaveHours', 'contains': 'hmm'}]"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">80</field>
+            <field name="python_code">total = 0.0
+for r in records:
+    worked = str(r.get('totalWorkedHours') or 0).strip()
+    secs = float(worked) if worked.replace('.', '', 1).isdigit() else 0.0
+    parts = str(r.get('paidLeaveHours') or '').split(':')
+    if len(parts) == 2 and parts[0].strip().isdigit() and parts[1].strip().isdigit():
+        secs = secs + int(parts[0].strip()) * 3600 + int(parts[1].strip()) * 60
+    total = total + secs / 3600.0
+result = total
+</field>
+            <field name="description">The legacy `actual_working_hours_incl_paid_leave`:
+(paidLeaveSeconds + totalWorkedHours) / 3600. Legacy:
+hr_zoho_staging.py:559-577.
+
+WHY PYTHON. The attendance summary returns the two halves of this number in
+two different UNITS in one payload: `totalWorkedHours` is an integer count of
+SECONDS despite its name, and `paidLeaveHours` is an "H:MM" string. No
+aggregate + transform ladder can add those, because the ladder operates on one
+already-numeric value.
+
+Both parses are guarded by `isdigit` rather than by try/except: a malformed
+value contributes zero and the rest of the day still counts, which is what the
+legacy did with its `except ValueError` — without needing exception opcodes
+inside safe_eval.</field>
+        </record>
+
+    </data>
+</odoo>

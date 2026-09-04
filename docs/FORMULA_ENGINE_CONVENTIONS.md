@@ -1,0 +1,1638 @@
+# Formula Engine — Conventions & Gotcha Ledger
+
+The single shared ledger every Formula Engine handover references. Rules here are **binding** for any
+implementation session (Opus or otherwise). When a new gotcha is hit during a build, add it here —
+do not restate ledger content inside individual phase docs; link to the entry.
+
+Sibling docs: `PHASE1_FORMULA_ENGINE_PLAN.md` (F1–F5) · `PHASE2_3_FORMULA_ENGINE_DESIGN.md` (F6–F15, B1–B9)
+· `FEATURES_111_114_DESIGN.md` (F111–F114) · `PHASE4_MOONSHOTS_DESIGN.md` (M1–M7) · `PHASE5_FORMULA_ENGINE_DESIGN.md` (W-features).
+
+---
+
+## C1 — Module boundary (headless engine / studio UI)
+
+Engine, wizard, and mapping **server** code lives in `pb_hr_payroll_formula` (must stay installable
+headless, no studio dependency). All cockpit UI, OWL components, and studio RPCs live in
+`pb_formula_studio` (model `pb.formula.studio`, an AbstractModel RPC facade). AI provider plumbing
+lives in `pb_payroll_ai_insights`; the studio's `_llm_chat(messages, json_mode=False)`
+(`pb_formula_studio.py:4179`) is the LLM entry point for studio features and **always** ships with a
+deterministic fallback. Engine-side code may only reach the LLM guarded by
+`'pb.formula.studio' in self.env` + try/except (pattern: `multisheet_import_preview.py:206-213`).
+
+## C2 — Odoo 19 asset caching
+
+Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
+(current: `pb_formula_studio` 19.0.1.60.0, `pb_hr_payroll_formula` 19.0.1.37.0). Develop with
+`--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
+render — add it in the same commit that creates it.
+
+- **Sass `min()`/`max()` with MIXED units silently breaks the WHOLE bundle (WP-H, W98):** a rule like
+  `width: min(640px, 96vw)` (px + vw) makes Dart Sass evaluate its OWN `min()` and die with
+  `Internal Error: Incompatible units: 'vw' and 'px'` — this fails the ENTIRE `web.assets_backend`
+  compile, so *none* of that module's new SCSS rules apply (the feature looks styled-but-broken with
+  no obvious cause). `odoo-bin -u --stop-after-init` does NOT surface it (SCSS compiles lazily at
+  page load); the error is only in `/var/log/odoo/odoo-server.log` (`assetsbundle: Internal Error`).
+  Fix: use `width: 96vw; max-width: 640px;` (or `#{}`-interpolate to force CSS passthrough).
+  Always Chrome-MCP a page + check the CSSOM for a new rule after any SCSS deploy.
+
+- **Live-server validation double-cache:** after rsync + `DELETE FROM ir_attachment WHERE url LIKE
+  '/web/assets/%'` (server bundle), the BROWSER may still serve a cached bundle on a plain reload. When
+  driving Chrome via CDP, do a `Page.reload {ignoreCache:true}` (+ `Network.clearBrowserCache`) — a
+  bare `Page.navigate` re-ran the OLD compiled template (W14 fix looked un-deployed until a hard reload).
+- **Odoo `odoo-bin shell` breaks dict/list comprehensions** fed on stdin (`exec()` with split
+  globals/locals → `NameError` on the comprehension's own loop var). Write plain `for` loops in shell
+  scripts. Registry boot is ~60–90 s, so batch server-side checks and run them via `run_in_background`.
+- **An `if`/statement inside an inline `t-on-*` arrow handler breaks the WHOLE OWL template compile
+  (WP-I, W65):** `t-on-keydown="(ev) => { if (ev.key === 'Enter') this.save(); }"` makes the QWeb→JS
+  compiler emit invalid JS (`Failed to compile template … Unexpected identifier 'vNNN'`), which fails
+  the ENTIRE component template at first render — the cockpit goes blank with only a browser-console
+  error. Expression/call arrows are fine (`(ev) => ev.stopPropagation()`, even multi-call
+  `{ a(); b(); }`); it is the `if`/statement keyword the compiler mishandles. Like the SCSS mixed-unit
+  trap above, `odoo-bin -u --stop-after-init` does NOT surface it (templates compile lazily in the
+  browser) — always Chrome-MCP the cockpit after a template change. Fix: hoist to a named component
+  method (`t-on-keydown="onFooKey"`).
+- **`odoo-bin shell` deadlocks on `access_roles._update_role_groups_view` while the service is up
+  (WP-I):** the shell rebuilds the registry, whose `_register_hook` rewrites the role-groups
+  `ir_ui_view` arch; if the live service is concurrently up (or a stale detached `odoo-bin` still
+  holds the row) it dies with `LockNotAvailable: … updating tuple in "ir_ui_view"`. Prefer validating
+  against the RUNNING registry over JSON-RPC (`/web/dataset/call_kw`, public methods only) — no
+  registry rebuild, no lock. If you must use the shell, stop the service AND confirm zero `odoo-bin`
+  procs first (kill stale ones by PID — never `pkill -f odoo-bin`, it self-matches). Registry reload
+  is ~150 s here because that view rebuild is slow (non-fatal warnings during boot).
+
+## C3 — OWL grid state invariants
+
+- Grid-local UI state (focus/selection/editing) is keyed by **component id, never array index** —
+  the parent replaces `state.components` wholesale after every save (`grid_studio.js:46-69`).
+- Property rows are the fixed vocabulary `["name","category","type","formula","value","status"]`
+  (`grid_studio.js:7`); only `formula` is cell-editable — other fields edit via the bulk popover.
+- Display order = `sequence`; **column letters are frozen identities** that no longer track position
+  (F111). Never renumber/reuse letters — a config-level high-water mark guarantees a freed letter is
+  never reissued (`formula_rule.py:1129-1154`). Code renames are metadata-only; letter renames are forbidden.
+- Cell editing uses a single overlay `<input>` (no contenteditable); Vietnamese IME commits on
+  `compositionend`, never raw `keydown` (`ui.composing` guard).
+- **Child studio components read inputs via `props.X`, never `state.X`.** A studio child (grid,
+  find/replace, palette, hover) receives data through props; `this.state` is its OWN local `useState`.
+  Referencing `state.canEdit` where `canEdit` is a prop silently reads `undefined` → the feature looks
+  built but is dead (W14 find/replace shipped with `state.canEdit` and the replace UI never rendered
+  until caught in live validation). Grep new child templates + getters for `state.<propName>`.
+- **`_afterPatch` seeds the editor in an early-`return` block (W104 gotcha):** the grid
+  seeds the overlay `<input>` value once, in a block that `return`s before the rest of
+  `_afterPatch`. Any action that must run *after the editor mounts* (e.g. inserting a
+  palette-queued snippet at the caret) has to be invoked INSIDE that block, not only at
+  the tail of `_afterPatch` — otherwise it never fires on the mount patch (no further
+  patch is scheduled) and the feature silently no-ops (found in W104 live validation).
+- **Column virtualization (W109):** the grid windows COLUMNS only above 60 components (`.g2-virt`,
+  `--g2-colw`); below that it renders everything (DOM identical to before). Any new grid feature that
+  changes `ordered.length` (grouping/collapse/pinned rows) must let `_recomputeWindow` re-run and must
+  keep the transient-UI owner in `_pinnedIds` so its cell never unmounts mid-interaction.
+- **Overlays that don't take focus must close on Escape via a CAPTURE-phase window listener.** The
+  grid navigator consumes Escape unconditionally (clear-selection + `stopPropagation`), so Odoo's
+  bubble-phase `useHotkey("escape")` ladder never fires while the grid scroller has focus. The W18
+  shortcuts overlay shipped un-closable on exactly the natural `?`-from-grid path (review Major).
+  Either focus the overlay on mount, or intercept in capture phase gated on the overlay being open.
+
+## C4 — F7 version capture funnel (all rule mutations)
+
+Every write to a `VERSIONED_FIELDS` member (`formula_rule.py:14-20`) snapshots the **outgoing** state
+via the `write()` override (`formula_rule.py:1157-1194`). Contract for any new feature that writes rules:
+
+- Set `formula_version_reason` in context — one of
+  `edit / bulk / import / fill / restore / lifecycle / rename / legislation / merge / sync`.
+  Add a new enum value to `hr.formula.rule.version.reason` *and* `_VALID_VERSION_REASONS` if none fits.
+- Batch operations (drag-fill, find-&-replace): N rules changed → exactly **N version rows, one
+  reason** (not 1, not 2N). Use the shared `formula_version_seen` set in context to dedupe multiple
+  writes to one rule inside a single logical operation.
+- `skip_formula_version` opts a write out entirely — engine-internal recomputes only, never user edits.
+- Version rows store the state **before** the edit; "formula live at time T" = earliest version row
+  captured at-or-after T, else current (`pb_formula_studio.py:1027-1034` `_formula_at`).
+
+## C5 — Formula code & converter contract
+
+> **Corrected by MAPFIX A.** This section previously said codes must be "underscore-free **and
+> non-substring** of each other", which contradicts C13 below and is empirically wrong. C13 is
+> right; what follows is the verified contract. There is now exactly one generator
+> (`pb_hr_payroll_formula/models/component_code.py`) and every path uses it.
+
+**HARD rules — a code that breaks one of these computes the wrong number:**
+
+- **Underscore-free**, no spaces, uppercase alphanumeric, first character a letter:
+  `^[A-Z][A-Z0-9]*$`, enforced by `@api.constrains('code')` on `hr.formula.rule`. The converter's
+  code pass matches `[A-Z][A-Z0-9]{1,}`, which excludes `_`, so `SI_EMP` survives raw into the eval
+  → `NameError` → silent 0.
+- **Never equal to a `column_letter` used in the same config.** `rename_component` skips its
+  formula rewrite when the old code coincides with a letter (`=GM` is then a letter reference), and
+  the converter's letter pass hijacks the token.
+
+**PREFERENCES — cosmetic, never worth breaking a name for:**
+
+- **Substring collisions are SAFE.** `_convert_excel_to_python` (`formula_rule.py:871-884`) is
+  greedy/maximal-munch with a `(?<!')` lookbehind, so `SI`/`SIEMP` and `AMOUNT`/`AMOUNTX` all
+  resolve. Non-substring is taken only when a short LETTER suffix achieves it. The constraint
+  deliberately does NOT enforce it.
+- **Readable and ≤ 12 characters** (MF-A1): accent-folded (`strip_accents`, which handles `đ`),
+  noise words dropped from the FRONT only, acronyms and numbers kept whole.
+
+**FLOORS:**
+
+- **≥ 6 normalized characters** keeps a code inside the importer's fuzzy header-match fallback
+  (`payroll_import_batch.py:2478`, `:2509`). Below that, exact and normalized matching still work —
+  it is a degradation, not a break — so a label with fewer letters than six is left short rather
+  than padded with filler.
+- **≥ 3 characters** keeps it visible to `_compute_dependencies`' `code_refs`
+  (`formula_rule.py:1247`); **≥ 2** for the converter's code pass.
+
+Generate every code through `component_code.build_component_code(label, existing_codes, reserved)`
+(or `normalize_code` when carrying a code in from elsewhere). Rename through
+`hr.formula.rule._rename_code`, which moves the matching `hr.contract.advantage.template` — global
+and matched by STRING — in the same transaction; `pb_formula_studio.rename_component` and
+`rename_components` both delegate to it. Validate engine behaviour via
+`_evaluate_rules_with_dependencies`, **not** `evaluate_all` directly.
+
+## C6 — Import wizard: mixin only, capture in context
+
+Never grow the 3,816-line `multisheet_import_wizard.py`. All import-preview behaviour is added in
+mixin classes (`multisheet_import_preview.py` pattern: `_inherit` the wizard). Odoo 19 recordsets use
+`__slots__` — instance attributes (`self._x = []`) raise; carry mutable capture state in **context**
+(`_import_capture` pattern, `multisheet_import_preview.py:41-53`). The base wizard destroys original
+formulas at resolution time (base lines 1238-1240) — the wrapper methods around
+`_resolve_same_sheet_formula` / `_resolve_cross_sheet_formula` are the only place pre-resolution text
+is visible. Broken refs must degrade **visibly** (red row / warning), never silently
+(`no silent zeros` — W66 principle).
+
+## C6b — Import join-key semantics (verified for W37)
+
+The multi-sheet import join keys rows by `str(pk_value).strip()`, skipping falsy
+values (`multisheet_import_wizard.py:2927-2961`). Any code measuring or altering the
+join (health, diff, normalize) MUST mirror this exactly, or it measures a fake join.
+Two verified facts:
+- **The Excel connector coerces integral floats to int** (`1041.0` → `1041`) before
+  values reach the wizard (`ExcelConnector.load_sheet_with_detection`), so the classic
+  `123.0` float artifact is auto-normalized by the join itself — it never produces a
+  key mismatch here. The fixable mismatch that actually SURVIVES is case/whitespace.
+  Test join-key features with case-different keys (`EMP1` vs `emp1`), not int-vs-float.
+- Parsed rows are NOT stored on the wizard — re-read via
+  `connector.load_workbook_multisheet(b64decode(import_file))` then
+  `load_sheet_with_detection(sheet_name)['data_rows']` (list of `{col: value}`).
+
+## C7 — Silent failures are bugs
+
+Any mapping/import/eval path that would produce `0` for an unresolvable reference must surface an
+error row, warning pill, or loud log instead. Confidence scoring (40/25/20/15 weights,
+`multisheet_import_preview.py:117-151`) must be *extended*, not forked, when new signals are added —
+one score, one breakdown JSON.
+
+## C8 — Performance guards
+
+- Don't stack `compute_preview` + live validation on one keystroke: reuse the studio's debounce
+  (260 ms) + monotonic supersede-token pattern (`grid_studio.js:80-81`).
+- Batch server work in ~50-payslip chunks driven by the client, following the simulation pattern
+  (`sim_prepare` work-list → `sim_batch` chunks → `sim_finalize`; `pb_formula_studio.py:2068-2098`).
+- Cap import-preview rendering (~500 lines) with expanders; never a frozen tab.
+
+## C9 — Odoo 19 breakages (recurring)
+
+`safe_eval` nocopy · `res.users.group_ids` (not `groups_id`) · `res.groups.category_id` changes ·
+`hr.employee.sex` · stateless recordsets (`__slots__`, see C6) · `ir_ui_view` lock via shell vs UI ·
+`fields.Selection(selection_add=...)` **requires an `ondelete` policy that the base field can honor** —
+`'set default'` asserts at registry load if the base field has no `default` (`ondelete policy of type
+'set default' is invalid … does not define a default!`); use `'set null'` for a plain optional Selection
+(WP-G used `ondelete={'generated': 'set default'}` safely because `hr.formula.sample.data.source_type`
+defines `default='manual'`). **Import order for `_inherit`-only extension files matters** — Odoo 19 adds
+model classes to the registry in *import order*, so a file that does `_inherit='hr.formula.sample.data'`
+without a `_name` MUST be imported in `models/__init__.py` **after** the file that defines the base model,
+or load aborts with `TypeError: Model 'hr.formula.sample.data' does not exist in registry` (WP-G:
+`formula_boundary` had to move below `formula_sample_data`). **`_sql_constraints` is silently
+IGNORED in Odoo 19** — `model_classes.py:162` only logs a warning ("no longer supported") and the
+constraint NEVER reaches the database: every legacy list in the codebase produced tables with no
+unique constraints at all (found in the WP-H review — `hr_formula_budget_line` accepted duplicate
+codes; the sweep showed ZERO unique constraints across all `hr_formula_*` tables). The Odoo 19 form
+is a class attribute: `_code_uniq = models.Constraint('unique(config_id, code)', 'message')`. All
+13 engine constraints were converted 2026-07-14 (dup-checked live first — all clean). ~28 more
+files elsewhere in the repo still carry dead `_sql_constraints`; convert on touch. **An unset Char
+field reads as `False` from the ORM** — `raw is None or raw == ''` misses it and `float(False)` is
+silently `0.0`; empty-checks on ORM Chars must be `if not raw` (bit the W62 preview fix TWICE
+before landing). Full list in the memory ledger (odoo19-payroll-gotchas); check it before touching
+core-model overrides.
+
+## C10 — Verification & delivery rituals
+
+- Every feature is validated against the **pb_demo VN world** (4,512 employees, 30.5k formula-computed
+  payslips, 2 configs, EN/VI) via Chrome MCP — reuse persistent demo schemes, never throwaway records.
+- The regression anchor is a **batch recompute** of the VN demo payruns
+  (`hr.payslip.run.action_recompute_formula_lines_batch`, `hr_payslip_run.py:10`) — zero value drift
+  expected after any engine-side change.
+- One **feature-scoped commit** after each feature is built + validated (explicit file staging,
+  reviewer-focused message). Don't batch features into one commit; don't push unless asked.
+- Payslip **Confirm is payroll-approval only** — GL auto-posting stays gated behind the
+  `post_payslip_gl` context flag (off). `struct_id` is not required for formula payslips.
+
+## C11 — Design system
+
+Locked Payobook palette; no gradients, no emoji in UI; Lucide/SVG icons only. Studio tokens live in
+`studio.scss:1-5` (`--i` indigo family, `--amber/--cyan` = upstream/downstream tint pair). New
+overlays reuse the existing fixed-position primitives (`.g2-ac` autocomplete, `.g2-bulkpop` popover
+scrim) rather than inventing new stacking contexts.
+
+## C12 — Excel semantics: one source of truth, one regression gate
+
+`formula_engine/excel_semantics.py` is the ONLY place Excel-vs-Python semantics live. Both evaluation
+paths — `hr.formula.rule._run_formula` (payslips, sample tests, studio workbench) and
+`FormulaEvaluator.evaluate_single` (studio fast paths, config Run Tests, sample-baseline generation) —
+delegate every helper (`_if/_iferror/_round/_streq/…`) there. **Never implement an Excel function
+inline in either path** — the pre-2026-07 duplicate helpers had already diverged (evaluator AVERAGE
+excluded zeros; `self._if` didn't even resolve on the evaluator → silent 0s).
+
+Converter contract (in `_convert_excel_to_python`):
+- `IF` compiles to a **lazy Python ternary**, `IFERROR` to `self._iferror(lambda: …, fallback)` —
+  Excel does not evaluate the untaken branch; eager helper calls exploded on `IF(B=0,0,A/B)`.
+  Because of the lambda, eval passes the safe context as **globals** (lambdas resolve free names via
+  globals at call time — locals-only eval NameErrors inside them).
+- `ROUND/ROUNDUP/ROUNDDOWN` are Decimal-based half-away-from-zero / away / toward zero — Python's
+  builtin `round()` is banker's rounding and drifts money on .5 boundaries. `CEILING/FLOOR` take a
+  significance argument. All via excel_semantics.
+- `<>` → `!=`, `^` → `**` (known edge: `-2^2`, right-assoc chains), `TRUE/FALSE` → `True/False`,
+  `NOT(` stays a **call** (`self._not`) for precedence.
+- Text equality routes through `self._streq` (case-insensitive, trimmed) on `raw_values`; `ISBLANK`
+  reads `raw_values` (coerced `values` maps blank→0, making ISBLANK unsatisfiable).
+- The "redundant parens" normalizer has a `(?<![A-Za-z0-9_])` lookbehind — without it `ISBLANK(G1)`
+  → `ISBLANKG1` → `values.get('ISBLANKG',0)` → silent 0 for EVERY one-arg fn over a cell ref.
+- **Unsupported constructs fail LOUDLY at conversion** (ValueError → `# Error:` python_formula +
+  `has_evaluation_error`), never silently: `&` concatenation is currently in this class.
+- Every eval is preceded by `excel_semantics.assert_safe_expression()` — formulas are user input;
+  the deny-list blocks `__`/ORM/interpreter tokens outside string literals.
+
+`python_formula` is a STORED compute — after changing the converter, regenerate it server-side (the
+payslip path converts fresh per evaluation, but `evaluate_all` consumers read the cache).
+
+**Regression gate:** `python3 pb_hr_payroll_formula/tools/excel_semantics_battery.py` (runs the real
+converter/evaluator with odoo shimmed; 70 primary + 8 evaluator cases with hand-computed Excel
+expectations, exit 0 = green). Run it after ANY change to formula_rule.py conversion/helpers,
+evaluator.py, or excel_semantics.py, and add a case for every new Excel function or operator.
+
+## C13 — Import resolution: degrade visibly, generate C5-safe codes (WP-E)
+
+The stage between openpyxl and the stored `excel_formula` (`multisheet_import_wizard.py`
+resolution + code generation) must never lose a formula silently. Binding rules:
+
+- **Unresolved references become `#REF!`, never `0`.** The four resolver fallbacks
+  (`_resolve_cross_sheet_formula` VLOOKUP/SUMIF/direct + `_resolve_same_sheet_formula` VLOOKUP) return
+  `self._UNRESOLVED_MARK` (`#REF!`). The marker's trailing `!` makes the preview mixin's
+  `SHEET_REF_RE` red-line it, and the converter refuses it loudly (`has_evaluation_error`). Returning
+  `"0"` — the pre-WP-E behaviour — produced a silently-wrong component (C7 violation).
+- **The direct cross-sheet regex is anchored.** Sheet token = `(?:'[^']+'|[A-Za-z_À-￿]
+  [\w.À-￿]*)` with a `(?<![\w!.'])` left boundary. The old `'?([^'!]+)'?` greedily ate a
+  preceding `=IF(` so `=IF(Sheet2!B2>0,1,0)` was shredded to `0>0,1,0)`. The token now covers unquoted
+  **Vietnamese** sheet names (`Lương!A1`) and refuses to cross operators.
+- **Generated codes are underscore-free and unique** (`_generate_code` → `_dedupe_code_c5`). The
+  underscore is the actual converter-breaker; **substring collisions do NOT break the converter** —
+  its code substitution is greedy/maximal-munch, so `AMOUNT`/`AMOUNTX`/`SI`/`SIEMP` all resolve
+  correctly (empirically verified). Non-substring is therefore a *cosmetic preference*, taken only when
+  a short letter suffix achieves it (impossible when the base equals an existing code — every
+  superstring contains it). De-dup suffixes are **letters** (`AMOUNT` → `AMOUNTA`), never `_1`
+  (underscore + substring). `FORMULACOL`/`COL2024`, never `FORMULA_COL`/`COL_2024`.
+- **Blue-constant scan excludes data rows** (`_collect_constants_for_sheet`: `scan_up_to_row =
+  data_start_row`, not `+2`) — otherwise employee #1's value freezes into a workbook-wide constant.
+- **Non-numeric constants surface loudly.** Constant values parse via `excel_semantics.coerce_number`
+  (handles `8%`, thousands); genuinely non-numeric (text/date) values still import as `0.0` but are
+  collected and shown in a **sticky warning** on the completion notice (not a silent success).
+- **Positional lookups and cross-row refs warn.** `_diagnose` flags a resolved VLOOKUP/SUMIF
+  (`warning`: lookup key was dropped — verify per-employee row) and a same-column-two-rows reference
+  (`warning`: running total may be flattened). Structural fix for lookup keys is W37.
+
+All import-preview behaviour stays in the **mixin** (`multisheet_import_preview.py`, C6); base-wizard
+edits are confined to the regex/`return "0"` sites and code-gen. **Regression gate:**
+`python3 pb_hr_payroll_formula/tools/import_resolution_battery.py` (19 cases over the real resolver /
+code-gen / diagnose, self-contained odoo shim, exit 0 = green).
+
+## C14 — Milestone boundaries are version-id, not timestamp (WP-C / W86)
+
+"What changed since milestone M" must be answered by a **version-id high-water mark**, never a
+`create_date >= milestone_date` timestamp comparison. Odoo's `fields.Datetime.now()` is
+**second-precision** while `hr.formula.rule.version.create_date` carries microseconds, and — worse —
+**Odoo truncates sub-second precision when a datetime is used as a domain value**. So a milestone
+sealed in the same wall-clock second as the edits it caps cannot be separated from them by timestamp.
+This is invisible for B3 releases (sealed in a separate request from their edits, seconds apart) but
+**fatal for one-action rollback** (W86), which edits AND seals in one transaction — a
+rollback-of-a-rollback read its own sealing writes as "unreleased changes" and refused.
+
+Binding rules:
+- `hr.formula.config.milestone` carries `version_hwm` (max version id at seal time). `_seal_milestone`
+  sets it; `_ms_hwm(ms)` resolves it (legacy milestones with `version_hwm = -1` fall back to the
+  timestamp boundary — safe there, per above).
+- All "changed since / between milestones" logic uses the id-based helpers `_formula_at_ver` /
+  `_constant_at_ver` / `_changes_between_ver` (id `>` from_hwm, `<=` to_hwm), which compare **both**
+  `excel_formula` and `constant_value` (so a legislation-pack constant change is releasable and
+  therefore rollback-able — D-C5).
+- Rollback restores each changed rule's formula+constant in **one savepoint** (all-or-nothing; a
+  restored formula that no longer converts raises and aborts — C7), records a milestone + audit release
+  row, and re-runs sample tests (W82 — a rollback is a save).
+
+## C15 — Payrun value reads fall back to line totals (WP-C / W97, F6, F8)
+
+Any feature that reads a payslip's computed component values (period comparison, shadow run,
+simulation) must read `formula_computed_values` (JSON) **with a fallback to the paid line totals**
+(`{pl.code: pl.total for pl in slip.line_ids if pl.code}`). The JSON snapshot is populated only on the
+studio compute path; **historical and bulk-imported slips store their result as `hr.payslip.line`
+rows, not the JSON** (in the VN demo, only 28 of 26.5k formula slips carry the JSON). Reading only the
+JSON silently yields empty folds. Helper: `_slip_computed(slip)`.
+
+## C16 — Progressive-chain detector (WP-J / W52·W54·W42)
+
+The nested-`IF` progressive-tax detector is `formula_engine/if_chain.py` — **pure, no ORM**, the
+single source shared by W54 (studio) and W42 (import mixin); never re-implement chain parsing in a
+caller (D-J1). `detect(expr)` returns `None` for a non-chain, else a dict with `brackets`,
+`deductions`, `span` (char offsets), `consistent`, `bad_band`, `reason`. Binding facts hit building it:
+
+- **The VN demo PIT parses to 8 value-branches but 7 statutory brackets.** `=-MAX(0,IF(TXBASE<=0,0,
+  IF(TXBASE<=5M,…)))` has a leading `<=0 → 0` non-negative guard plus 7 rate bands. The guard is NOT a
+  bracket — `BRACKET()`'s own `MAX(0,…)` reproduces it — so the rate table has **7** brackets
+  (0/5%…80M/35%), and the rewrite is `=-MAX(0,BRACKET(<code>,TXBASE))` with the guard folded away. The
+  design's "8 brackets" prose (TJ.1/TJ.3 AC) counts branches; the table is 7 (matches the explicit
+  statutory list at design:1892). (WP-J's other deviation: D-J7 said "no new models", but TJ.4 added the
+  transient `hr.formula.import.rate.proposal` + 2 ACLs for the wizard proposal list — accepted in review.)
+- **The guard fold is exact ONLY at threshold 0.** A leading `IF(D<=T,0,…)` with `T>0` must NOT fold
+  into the first bracket's lower bound: the chain's first rate band taxes the FULL driver (`v*rate`)
+  while `compile_brackets_excel` emits marginal `rate*(v−lower)` — divergent for every `v>T` (at T=1M,
+  x=2M: chain 100k vs BRACKET 50k). W54's probes would catch it, but **W42 rewrites staged text with no
+  evaluation gate**, so the detector itself returns `None` for non-zero guard thresholds (WP-J review
+  M1; battery case 14).
+- **Detection RPCs must be write-free — sample evaluation included.** `_evaluate_rules_with_dependencies`
+  by default stamps `write_date` on EVERY rule of the config (`_compute_dependencies()` compute-field
+  assignment + `evaluate()`'s `write_diagnostics=True`). Any read-only path (the W54 rail detection runs
+  on every Problems-panel open) must call it with `readonly=True`, which skips the dependency refresh and
+  evaluates via the `_run_formula(…, write_diagnostics=False)` overlay (WP-J review M2 — live-proven:
+  one rail open bumped write_date on all 50 rules of a production config).
+- **Equivalence is proven, never assumed.** W54 offers a rewrite only after `_run_formula` overlays
+  match (|Δ|<0.005) on every sample PLUS edge probes at each bracket boundary −1/0/+1. Probes inject
+  `{driver_code: x}` and work for ANY **single-token** driver — computed helper included (demo TXBASE
+  is a helper formula, driver_kind `computed`) — because the chain references the driver only as a
+  looked-up value. Only a COMPOUND driver expression (`MIN(A,B)`) is samples-only. For the demo that is
+  8 edges × 3 = **24 probes** (7 lowers + one synthetic top edge). This reading of D-J3's "single input
+  component" (= single reference, not literally an input column) is what makes the AC's 24 probes hold.
+- **The equivalence draft must compile the SAME Excel the committed BRACKET emits.** Use the pure
+  `formula_rate_table.compile_brackets_excel(brackets, value_expr)` (extracted from `compile_excel`),
+  inlined into the span, so the proof matches the apply exactly — no table is persisted during
+  detection.
+- **`hr.formula.config.copy()` clones the unique `code`** → `ValidationError: Configuration code must
+  be unique per company`. Always pass an override `code` in the copy defaults when cloning a config
+  (validation harnesses: `copy(id, {'name':…, 'code':'ZZ…'})`).
+- **Battery-shim upkeep:** `tools/if_chain_battery.py` is pure (no shim). `tools/w42_promotion_check.py`
+  exercises the preview-mixin promotion logic offline (call_kw can't reach private mixin methods). Any
+  new `from ..formula_engine import X` in a shimmed file must be mirrored in the battery's fake package
+  (`import_resolution_battery`), and the `excel_semantics_battery` odoo shim needs `models.Constraint`
+  (class-attribute constraints since the C9 conversion).
+
+## C17 — Excel bridge & payslip branding (WP-L / W41·W17·W73)
+
+The row machinery and the live-validation lessons hit building the export/paste/theme trio:
+
+- **One row helper, two directions.** `formula_engine/cell_refs.shift_rows(formula, to_row)` is the ONLY
+  place cell-ref row digits move — W41 shifts stored row-2 formulas OUT to the sheet data row at export,
+  W17 normalizes any pasted row back IN to the canonical row 2. Same `_CELL` regex, same string-literal
+  mask (mask FIRST so `IF(A2="X2",…)` keeps its literal). Never a second regex (S-I1 / D-J1). Battery:
+  `tools/cell_refs_battery.py` (pure, 20 cases incl. the OUT→IN round-trip invariant). The studio wraps it
+  as `_shift_rows`.
+- **W41 places by LETTER, not sequence.** The xlsx column position MUST equal `_col_num(column_letter)`
+  (A→1, AB→28) so a stored `=A2+AB2` is a real Excel formula in the sheet; letters are frozen identities
+  that no longer track sequence (F111). A reordered/gap-lettered config leaves blank xlsx columns — fine,
+  the refs still land. A leading meta column would break the 1:1 map — the "Sample" name column trails the
+  last letter. **openpyxl number formats are openpyxl's, not Odoo's:** currency/integer ⇒ `#,##0` (VND has
+  no minor units), percentage ⇒ `0.00%` and our values are FRACTIONS (0.05) so do NOT pre-multiply.
+  `wb.defined_names[name] = DefinedName(name, attr_text=ref)` on openpyxl ≥3.1 (`DefinedNameDict`).
+- **QWeb widgets never on `<td>`.** `t-field` directly on a `<td>` raises `AssertionError: QWeb widgets do
+  not work correctly on 'td' elements` (only surfaces at PDF render, not `-u`). Wrap: `<td><span t-field=…/></td>`.
+- **The themed payslip is a NEW report; the legacy one is byte-untouched.** Clone the shadow-certificate
+  wiring (explicit `<record model="ir.actions.report">`, binding_model hr.payslip, NEVER the removed
+  `<report>` shortcut — see [[payobook-deploy]]). Render data comes from a WRITE-FREE model helper
+  (`hr.payslip._themed_payslip_render`) reading line totals + the F9 scheme; `om_hr_payroll.report_payslip`
+  and the portal binding stay put (binding swap is a separate product decision).
+- **Live-validation gotchas (cost me real time — read before Chrome-MCP'ing an edit UI):**
+  - **can_edit gates every edit affordance.** The default studio session user in pb_demo is `ash@ashsohani.com`
+    (uid 20) — NOT a formula manager/system admin, so `_can_edit()` is False and the grid paste handler, the
+    Theme panel button, Add/Delete, drag-fill, etc. are ALL hidden/short-circuited. Validate editor UIs as
+    **`ash@biztinct.com` / `admin1234` (Mitchell Admin, uid 2, system)** — authenticate via a
+    `/web/session/authenticate` fetch, then reload. (`get_session_info` tells you who you are.)
+  - **OWL `t-on-paste` IS drivable headlessly — build the event correctly.** (The original WP-L claim
+    that it needs a trusted event was WRONG; the reviewer drove the whole ghost flow in Chrome MCP.)
+    `new ClipboardEvent('paste', {clipboardData: new DataTransfer(), bubbles: true})` with
+    `ev.clipboardData.setData('text/plain', tsv)` dispatched on the grid scroller invokes the OWL handler
+    end-to-end (ghosts, invalid states, Escape, Enter commit). What does NOT work is CDP
+    `press_key("Meta+v")` (no clipboard pipeline on a non-editable `<div>`) or a ClipboardEvent without a
+    real `DataTransfer`. Never mark a UI path "unvalidatable" without trying the synthetic-event route
+    first — a false "can't drive" claim skips real validation for every future session.
+  - Prod Odoo strips `__owl__` off DOM nodes — you can't read a component's props/state from the page;
+    verify wiring by grepping the loaded `web.assets_web.min.js` (via `fetch`) and by calling the RPCs.
+- **Review lessons (WP-L, 2026-07-21):**
+  - **Never re-derive money the slip already states.** The themed print originally summed visible section
+    subtotals for "Net pay" — double-counting GROSS/NET and adding employer contributions (printed 42.2M
+    vs the real 12.1M on an employee-facing PDF). The slip's own NET line (code, then category `NET`) is
+    the only trustworthy figure; with neither, HIDE the card — never print a derived number. Any rendered
+    money must be traced to a stored line, and "the PDF renders" is NOT validation — check the figures.
+  - **Round-trip fidelity includes VALUES, not just formulas.** The multisheet importer used to drop
+    uniform value columns to `input`/default 0 — a re-imported config recomputed 28/53 letters wrong while
+    every formula matched. Uniform columns now seed `default_value` (varying columns stay 0: seeding a
+    first-row value would silently pay it to employees missing the input). When an AC says "recompute
+    identically", verify on a config whose samples actually EXERCISE the constant-driven branches.
+    Trap inside the trap: the W41 two-header layout puts the CODE row where the importer sees the first
+    data row, so a constant column reads `['DAYSTD', 26, 26, …]` — `_column_uniform_value` tolerates
+    exactly ONE leading non-numeric cell and the seed is the detected `uniform_value`, NEVER
+    `sample_value` (which IS that code string). The first fix attempt seeded from sample_value and
+    silently seeded nothing; only re-driving the exact wizard round-trip caught it (53/53 parity after).
+  - **`if_chain.detect` recognizes BOTH canonical forms:** the hand-written progressive `v*rate − ded`
+    ascending-`<=` chain AND the marginal `base + rate*(v−lower)` descending-`>=` form that
+    `compile_brackets_excel` itself emits (`form: 'progressive'|'marginal'`). Without the second, a W41
+    export (BRACKET expanded) could never re-earn its rate-table offer on re-import. The WP-J M1 zero-guard
+    conservatism applies to the PROGRESSIVE fold only — a marginal chain with a non-zero first lower is
+    exact by construction (battery cases 15-18).
+
+## C18 — Sudima field-HR program (Phases A–E: driver GPS, OT grid, trips, bank OCR, young workers)
+
+Binding for every `docs/handovers/SUDIMA_PHASE_*.md` implementation session. Sub-points are cited by
+number from the handovers — keep the numbering stable.
+
+1. **Engine/overlay split.** Reusable engines are `biz_*` modules with ZERO Payobook deps (no
+   `pb_sidebar`, no `--pbim-*` scss imports, no Vietnam fields) — `biz_geo_tracking`, `biz_week_grid`,
+   `biz_approval_chain`, `biz_doc_ocr`. All cockpit UI, sidebar items, theme tints, VN/payroll
+   bindings live in the consuming `pb_*` overlay (same convention as [[biz-theme-base]] → pb_theme).
+   Widgets in `biz_*` style themselves through their own CSS custom props (`--bwg-*`, `--bac-*`,
+   `--bdo-*`) with defaults; overlays override.
+2. **Formula-input override convention + code registry.** New payroll inputs do NOT ride the
+   `WD_`/`HOURS_` worked-days branch (`hr_payslip_formula.py:305-306` strips only underscored
+   prefixes — an underscore-free code never matches it). Instead: `_inherit` `hr.payslip` in a GLUE
+   module (`pb_workforce_payroll_bridge`, `pb_trip_payroll_bridge`), override
+   `_get_formula_input_values`, call super, inject ONLY codes present in the config's input rules.
+   Codes must be underscore-free + pairwise non-substring (see [[formula-converter-contract]]).
+   **Registry (check before adding any new code):** `OTHRS150 OTHRS200 OTHRS300 OTHRSNGT`
+   (approved hr.overtime.request hours by type) · `TRIPDAYS PERDIEM` (approved pb.business.trip).
+   Each bridge ships a post_init collision warning against existing `hr.formula.rule` codes.
+3. **One OT source per formula config.** The legacy Zoho path (`om_hr_payroll/hr_payslip.py:483-491`)
+   emits OT worked-day lines (`OT15/OT2/OT3/…`); the bridge feeds `OTHRS*` from approved OT requests.
+   A config may consume ONE of these, never both — double-count is silent money.
+4. **Trip presence is a virtual overlay, never materialized `hr.attendance`.** Trip days are injected
+   at read time (timecard/grid/dashboard overrides via `pb.business.trip.get_trip_day_map`) and
+   excluded from missing-punch logic by the same helper. Materialized rows would double-count payroll
+   worked days (WORK100), pollute GPS/attendance analytics, and need cancellation cleanup.
+5. **Realtime = polling, not bus.bus.** No Payobook module uses the bus; live surfaces poll
+   (driver map 5 s, other cockpits 30 s) with `{silent:true}` orm context and `clearInterval` on
+   unmount. Do not introduce websocket/bus dependencies for these features (deployment risk on
+   client boxes).
+6. **Provider-vision contract.** `BaseAIProvider.generate_vision(prompt, images, …)` +
+   `supports_vision()` (default False); `images = [{'mime', 'data_b64'}]`; providers registered in
+   `PROVIDER_REGISTRY` (`provider_factory.py`). All provider SDK imports are try/except-guarded —
+   a missing pip package must degrade to `is_available() == False`, never an ImportError at registry
+   load. `payroll.ai.config` is the ONLY AI config model (extended via selection_add + `purpose`);
+   consumers resolve by purpose with fallback. Every AI consumer ships a deterministic no-AI path (C1).
+7. **Demo tooling is quarantined.** Simulated data is always flagged at the row level
+   (`biz.geo.ping.source='sim'`), excluded from real analytics/payroll by default, labeled SIMULATED
+   in any UI that shows it, and activated only by admin-gated toggles on records shipped
+   `active=False`. The simulator must exercise the REAL pipeline (same endpoints/models) — a demo
+   that bypasses the product path validates nothing.
+
+### Phase-A findings (driver GPS PWA — 2026-07-22, WP-Sudima-A). Numbering continues C18.
+
+8. **Odoo 19 `res.groups` has NO `category_id` field** (replaced by `privilege_id` → `res.groups.privilege`).
+   A `<field name="category_id">` on a `res.groups` record aborts the registry load with
+   `ValueError: Invalid field 'category_id' in 'res.groups'`. Ship groups without it (a plain technical
+   group is fine) or set `privilege_id`. This is the concrete form of C9's "res.groups.category_id changes".
+9. **`ir.actions.client` has NO group field in Odoo 19** — neither `groups_id` nor `group_ids` exists on
+   the client-action model (only `ir.act.window`/`ir.act.server` carry `group_ids`). You cannot gate a
+   client action by group on the action record. Enforce access in the RPC facade instead (a `_require_*`
+   guard on the AbstractModel's public methods that raises `AccessError`), and hide the launcher via the
+   sidebar item's own `groups_id`. A driver hitting `/odoo/action-<tag>` then gets the themed access-error
+   dialog on data load.
+10. **A standalone page CANNOT load an Odoo asset bundle via `t-call-assets`.** Odoo wraps every compiled
+    bundle in module-loader boilerplate that references the `odoo` global; a bare page that doesn't boot
+    the webclient dies with `Uncaught ReferenceError: odoo is not defined`, and the whole bundle (Leaflet
+    included) fails to execute. For a no-webclient PWA, serve the plain library + a plain-IIFE app as
+    direct static tags: `<link href="/module/static/.../x.css?v=N">` + `<script src="/module/static/.../x.js?v=N">`.
+    Odoo serves anything under `/{module}/static/` publicly; bump the `?v=` query on change (there is no
+    bundle hash to bust). Never mark such a page "can't be built" — the static-tag route is the pattern.
+11. **Company-scoped OWL cockpits see the web client's SELECTED companies, not all allowed.** An
+    `orm.call` carries `allowed_company_ids` from the company switcher (`cids` cookie), so a cockpit that
+    scopes to `self.env.companies` shows nothing for records in a company the user hasn't selected — even
+    though a context-free `call_kw` (which defaults differently) returns them. Seed demo records into the
+    demo's OPERATING company, not the install-time default (records created by data XML with no
+    `company_id` land in "Your Company"/id 1, which the VN demo user never views). Resolve it with no
+    hard-coded id via a `post_init_hook` that assigns the seed records to the company with the most
+    employees (the real operating company; the pb_demo world runs in **Payobook Vietnam JSC**). Existing
+    records on an already-installed module need a one-off RPC/data migration — a plain `-u` with
+    `noupdate="1"` will not move them.
+12. **`_attendance_action_change(geo_information)` maps dict keys straight onto `in_<key>`/`out_<key>`.**
+    Passing `{'latitude':…, 'longitude':…, 'mode':'gps'}` writes `in_mode='gps'` on check-in and
+    `out_mode='gps'` on check-out with no post-hoc write — the ⚠ in the Phase-A handover §2 resolves to
+    "mode is a first-class key". The base field's `default='manual'` makes `selection_add=[('gps','GPS')]`
+    with `ondelete={'gps':'set default'}` valid (C9: `'set default'` only asserts when the base has no default).
+13. **Records shipped `active=False` are invisible to a plain `search`** (the ORM auto-injects
+    `active=True`); pass `context={'active_test': False}` to find them. The product path is unaffected when
+    it resolves the record by xmlid (`env.ref`) rather than searching — which is why `toggle_demo` finds the
+    inactive seed route sims but a test harness `search([...])` must set `active_test=False`. Also: Odoo's
+    `ir.attachment` image post-processing (Pillow) rejects a hand-crafted 1×1 PNG with
+    `OSError: Truncated File Read` — generate a real ≥2×2 PNG for any attachment-create test.
+14. **NEVER ship a `<field name="password">` on a `res.users` record in a manifest `data` file** (Phase-A
+    review Major). Seed users that must resolve by xmlid (demo drivers for `toggle_demo`/route sims) ride
+    `data`, so a literal password becomes a live internal-user credential on EVERY production install —
+    documented in the repo, guessable, and grants a backend RPC session, not just the PWA. Ship such users
+    with NO password field (login stays impossible until an admin sets one at demo time, and clears it
+    after). If a record does not need xmlid resolution from product code, put it under the manifest `demo`
+    key instead. Related data-quality rule from the same review: never default missing GPS to `0,0` —
+    build the `geo_information` dict with only the keys you actually have (`{'mode': 'gps'}` alone is a
+    valid punch); a null-island coordinate is worse than no coordinate.
+
+### Phase-B findings (OT weekly-entry grid — 2026-07-22, WP-Sudima-B). Numbering continues C18.
+
+15. **Odoo 19 `hr.attendance.worked_hours` SUBTRACTS the calendar lunch interval** (unless the resource
+    `_is_flexible()`) — `_get_worked_hours_in_range` does `Intervals([(ci,co)]) - lunch_intervals`. So
+    writing `check_out = check_in + hours` stores a `worked_hours` LESS than the entered figure whenever
+    the span crosses the schedule's lunch window (enter 8 → `worked_hours` 7). Any grid that treats the
+    entered number as the net figure must READ BACK the wall-clock span (`check_out − check_in`), NOT
+    `worked_hours`, or the round-trip is lossy and looks like data loss. The Weekly Entry grid displays the
+    span (`_att_hours`) and its "no lunch arithmetic" write rule (§3.2) is exactly this convention.
+16. **A parent cockpit that mutates its OWN reactive state inside a child's adapter `fetch()` remounts the
+    child in an infinite fetch loop.** Pattern: an adapter-driven OWL child fetches in `onWillStart`; the
+    adapter closure sets the PARENT `useState` (ceilings/summary). Parent re-render → child RECREATED (not
+    patched) → onWillStart → fetch → parent state → … a fetch storm that renders the action BLANK with NO
+    console error (invisible to `-u`; only a pile of repeated notifications hints at it). Fixes, all three:
+    (a) the parent pre-fetches in its own `onWillStart` and serves the child a cached bootstrap on the first
+    `fetch`; (b) pass STABLE prop references — bind handlers once in setup, a stable `params` object — and an
+    explicit `t-key` so OWL reuses the child; (c) guard any live-delta state write behind a change check so
+    the empty mount-time `onDirty([])` emit doesn't setState. ALWAYS Chrome-MCP an adapter-driven cockpit.
+17. **Concurrency/stale tokens must be MICROSECOND-precise.** A per-cell snapshot token from
+    `fields.Datetime.to_string(write_date)` is SECOND precision (the C14 trap in another guise), so a
+    fetch+edit inside the same wall-clock second slips past stale detection. Use `str(write_date)` (keeps
+    microseconds) for the token compared on save (`_att_token`). AND the comparison must be
+    unconditional: `if token and token != current` lets an EMPTY token (cell had no record at fetch) or an
+    omitted key bypass the check entirely — a record created concurrently then gets silently mutated
+    (Phase-B review F5). Compare `(token or '') != current` so "no record at fetch, record exists now" is
+    stale too.
+    **Companion rail (review F1/F2): every RPC facade must keep its reads and writes in ONE permission
+    world.** The weekentry cockpit wrote via `sudo()` (gated by `_require_officer` + company scope) while
+    reading WITHOUT sudo — but the officer record rule on `hr.overtime.request` is own-records-only, so a
+    plain officer saw blank editable chips over other people's locked requests, zeroed ceilings, and
+    `submit_week` couldn't find the drafts its own sudo path created. Same trap in the payroll bridge: a
+    non-sudo `hr.overtime.request` search inside `_get_formula_input_values` silently computed **0 OT
+    hours** for every other employee when a non-manager ran payroll (money path). If the facade gate is
+    the auth model, sudo BOTH sides; never mix.
+18. **Company-scoped OWL cockpits render EVERY selected company** (the read side of C18.11). The grid shows
+    company-1 "Your Company" demo employees (Abigail Peterson &c., English names sorting first under
+    `order='name'`) alongside VN whenever the browser's `cids` cookie has more than the VN company selected.
+    Verification RPCs must use the SAME company scope the cockpit used, or saved records "vanish" (a save to
+    a company-1 employee is invisible to an `allowed_company_ids=[5]` search). Seed/validate against the VN
+    operating company, and the demo employees carry a single `Europe/Brussels` resource calendar (no VN tz
+    anywhere), so synthesized punches land at Brussels-local 08:00 — a demo-data limitation, not a code bug.
+
+### Phase-C findings (business trips + virtual attendance — 2026-07-22, WP-Sudima-C). Numbering continues C18.
+
+19. **Trip presence is ONE virtual overlay helper, read sudo.** `pb.business.trip._get_trip_day_map`
+    (`pb_business_trip/models/pb_business_trip.py`) is the single source every presence surface reads —
+    the Timecards Gantt inherit, the Weekly-Entry grid inherit (row `flags.trip_days` + REG lock +
+    server-side `'trip'` refusal in `_save_reg`), the Workforce dashboard KPI, and the payroll bridge.
+    It searches `state='approved'` trips **sudo** (trip presence is system-derived and must be visible to
+    whoever is looking — the C18.17 one-permission-world rail). Never materialize `hr.attendance` rows for
+    trip days (C18.4): a day the traveller ALSO punched keeps its real bars + a `is_trip` tag; an empty
+    trip day gets a full-width violet (`#7c3aed`) bar injected at read time.
+20. **A "company-specific else global" resolver must do TWO searches, never `order='company_id desc'`.**
+    Postgres sorts NULLs **FIRST** on `DESC`, so a single ordered `search([... '|' company=X, company=False],
+    order='company_id desc', limit=1)` returns the GLOBAL (`company_id` NULL) fallback row AHEAD of the
+    company-specific one — every company silently gets the fallback caps. `pb.ot.ceiling._for_company` had
+    this latent bug (masked in the demo, which ships only a global ceiling, and by a Phase-B test whose
+    global cap happened to equal the company cap); the F8 per-company ceiling test exposed it. Fix: search
+    `company_id = X` first, then `company_id = False`. Applies to any per-diem-policy / ceiling / rate
+    fallback resolver.
+21. **Odoo 19 search-view group-by container must be `<group name="group_by">`** — NOT `<group expand="0"
+    string="Group By">`. The `expand`/`string` combo fails RNG validation with a *generic*
+    `ValidationError: Invalid view <name> definition` (no field/attribute named, '-no context-'), which
+    aborts the whole module install. Match the existing working pattern (`overtime_request_views.xml`).
+    Surfaces only at load, and even `--log-handler odoo.tools.convert:DEBUG` gives only the generic message
+    — diff against a known-good search view rather than hunting the RNG detail.
+22. **`hr.leave.type.requires_allocation` is a Boolean in Odoo 19** (default `True`), not a Selection —
+    pass `False` to create a leave with no allocation; a truthy string like `'no'` is `True` and
+    `hr.leave.create` raises `ValidationError: You do not have any allocation for this time off type`
+    (via `_check_validity`, through the `hr_work_entry_holidays` / `hr_holidays_attendance` create stack).
+23. **Deploy: a `-u` dies with `LockNotAvailable: … updating tuple … in ir_ui_view`** when a stale detached
+    `odoo-bin` worker still holds the `access_roles._update_role_groups_view` row (the C2 role-groups view
+    rebuild). `service odoo-server stop` + a 2 s sleep is NOT enough — leftover worker PIDs survive. Before
+    any `-u`: stop the service, `pgrep -af odoo-bin`, and `sudo kill <PID>` each leftover BY PID (never
+    `pkill -f odoo-bin` — it self-matches), confirm zero, THEN run. `--stop-after-init` test runs cause
+    `EXIT=255` (registry init failure) on this lock, distinct from `EXIT=1` (a genuine test failure).
+24. **A state machine is decorative unless `write()` enforces it — and client context is FORGEABLE.**
+    (Phase-C review C1/C2.) Server-side `_approval_can` gates mean nothing while any ACL+rule-writable user
+    can `call_kw write({'state': 'approved'})` and skip every tier (the payroll bridge pays on `state`
+    alone). `biz.approval.chain.mixin` now blocks `state` in `create`/`write` unless the context carries a
+    **module-level Python `object()` sentinel** set only by `_chain_state_write()` (used by
+    `_advance_state`, `action_refuse_chain`, and consumer reset/cancel actions); su/admin exempt. NEVER gate
+    a rail on a plain boolean context key — `call_kw` merges the CLIENT-supplied context, so
+    `{'trip_bypass_lock': 1}` from a browser would have unlocked an authorized trip (that escape is now
+    su-only). Corollaries: lock child LINES too, not just the header (rail-2 "dates/rate/lines"); a no-sudo
+    audit log still needs `create()` to force `user_id`/`stamp` server-side or any user can forge a trail
+    row in someone else's name; a sudo `@api.model` helper is a call_kw endpoint — underscore-prefix it
+    (`_get_trip_day_map`) unless it is deliberately public and gated.
+25. **`ir.attachment` orphans are creator-only readable — sudo cross-user copies.** An employee-uploaded
+    receipt bound via a plain `Many2one('ir.attachment')` has no `res_model`, so an HR approver's
+    `attachment.copy()` in the authorization hook raises AccessError mid-transition (works in tests, which
+    create receipt and approve as the same superuser env). `pb_trip_expense_bridge` sudo's the copy and the
+    line-link writes (the line is rail-2-locked by then).
+
+### Phase-D findings (AI bank-account validation — 2026-07-22, WP-Sudima-D). Numbering continues C18.
+
+26. **`res.users.employee_id` is COMPANY-DEPENDENT — a cockpit that defaults to it fails cross-company.**
+    `self.env.user.employee_id` resolves through the user's *active* company (the `cids`/`allowed_company_ids`
+    context), so a create that defaults `employee_id = self.env.user.employee_id.id` returns `False` — and
+    raises "No employee is linked to your user." — whenever the browser is in a company where the user has no
+    employee (Mitchell Admin's employee lives in "Your Company"/1; the web client opened company 2). Same
+    root as C18.11. Pass `allowed_company_ids` explicitly, or resolve the employee with `active_test`/company
+    context, before relying on `env.user.employee_id`.
+27. **An own-only CREATE record rule blocks create-on-behalf; reviewer groups need their own create grant.**
+    `pb.bank.change.request`'s employee rule is `perm_create` with `employee_id.user_id = user.id`, and the
+    HR/finance reviewer rules ship `perm_create=False` (least privilege). Net effect: the request must be
+    created by the EMPLOYEE themself — HR cannot upload on an employee's behalf, and even a payroll-manager
+    (who holds the ACL create) is blocked by the row rule for another employee's record. This is the intended
+    self-serve flow (handover §3.3), but any "HR uploads for the worker" variant needs an explicit
+    create rule keyed to the reviewer groups.
+28. **Deterministic bank-name matching must be token-SUBSET, not substring.** A real VN document reads
+    "NGAN HANG TMCP NGOAI THUONG VIET NAM"; the registry alias "Ngan hang Ngoai thuong" is NOT a contiguous
+    substring (the interposed "TMCP" breaks it), so a `folded_alias in folded_target` test returns no match.
+    `pb.bank.registry.match` folds + splits into word tokens and matches when ALL alias tokens are present in
+    the target set (most-letters-matched wins) — order-independent and robust to interposed legal-form words.
+    Whitespace tokenization keeps "SAIGON" distinct from "SAI GON" so short aliases don't over-match.
+29. **`payroll.ai.config` resolver name collision.** The handover asked for an `@api.model get_provider(purpose)`
+    returning a *config*, but the module already has an instance `get_provider()` returning a *provider*. Adding
+    the classmethod would shadow the existing insights call path. Named the resolver `get_config_for_purpose`
+    instead (insights byte-untouched). Rule: never overload an existing provider-layer method name with a
+    different return type; pick a distinct name and note the deviation.
+30. **`pytesseract` (pip) ≠ the `tesseract` binary (apt).** `is_available()` must probe the binary
+    (`get_tesseract_version()` in a try/except), not just the import — the pip package installs cleanly while
+    `tesseract` is absent from PATH, and only the binary probe distinguishes "provider ready" from
+    "keyless-but-unusable" on the settings card (C18.6 guarded-import doctrine, extended to the runtime).
+    Provider PDF handling: Anthropic reads PDFs natively (`accepts_pdf()==True`); OpenAI / Ollama / Tesseract
+    gate PDFs on `accepts_pdf()==False` and return a clear "upload an image" message rather than half-working.
+
+### Phase-D review findings (2026-07-23, Fable review of WP-Sudima-D). Numbering continues C18.
+
+31. **The approver approves what the FIELDS show — every system-derived verification field needs the C18.24
+    sentinel, not just `state`.** `readonly=True` on an Odoo field does NOT block `call_kw write`; with an
+    own-record `perm_write` rule, a requester could forge `name_match_score/band`, `v_format_ok`, the `cur_*`
+    diff snapshot, `confidence_json`, clear `duplicate_ids`, self-tick `duplicate_ack` — and swap
+    `x_account_number` between HR review and finance approval (TOCTOU), redirecting the master write to a
+    fraudulent account. Rails (pb.bank.change.request): `_SYS_FIELDS` writable only via a module-level
+    `object()` token (`_sys_write`); `_REVIEW_FIELDS` (x_*, attachment, employee) frozen to the owner once
+    out of draft, immutable for all once decided; `duplicate_ack` = HR/finance testimony only; and the
+    approve transition RE-RUNS `action_validate()` against the final values plus the hard gates, so a stale
+    green gauge can never authorize the write. Corollary: the audit-skip context (`from_bank_request`) is
+    also an `object()` sentinel — a client-forged truthy flag still logs the 'manual' history row.
+32. **A generic service that sudo-reads attachments (or any record) and RETURNS their content must be
+    underscore-private.** `biz.doc.ocr.extract` as a public `@api.model` method was an
+    arbitrary-attachment-exfiltration endpoint over call_kw (pass any attachment id → get its OCR text back);
+    renamed `_extract` (Python-only; consumers gate access on their own record first — same class as
+    Phase C's `_get_trip_day_map`). And the JOB rows that persist extraction results are PII: they need an
+    own-only (`create_uid`) record rule, or any employee `search_read`s every colleague's extracted bank
+    account — proven live with a leftover test job. Test residue rule: an end-to-end test on the live DB must
+    clean up EVERY row it created, including engine-side job/log rows, not just the domain records.
+
+### Phase-E findings (young worker rules — 2026-07-23, WP-Sudima-E). Numbering continues C18.
+
+33. **An advisory wrapper around `pb.payrun.wizard` must be MRO-OUTER of `pb_demo`.** `pb_demo` REPLACES
+    `create_and_compute`/`compute_batch` for its division path and does NOT call `super()`, so a wrapper that
+    only `super()`-appends to `exceptions` runs only if it sits before `pb_demo` in the MRO. It does: `pb_young_worker`
+    (via the deep `pb_hr_workforce` chain) loads AFTER `pb_demo`, so its class is the more-derived override — a
+    test asserts `type(env['pb.payrun.wizard']).mro()` places the young-worker class before the pb_demo class, and
+    the demo path's warnings surface. **No `pb_demo` dependency was needed** (keeping the guard demo-agnostic); if a
+    future refactor changes module depths and the MRO test fails, add `pb_demo` to `depends` to force the order.
+34. **App-wide `@api.constrains` gates need a `_has_any_rule()` short-circuit + sudo birthday reads.** The under-18
+    OT/daily/night gates constrain `hr.overtime.request`/`hr.attendance`/`hr.shift.planning`, which fire on EVERY
+    write system-wide; guard the hot path with a cheap `search_count` so the general population pays ~one query,
+    and resolve the band per (employee, local-day). `birthday` IS a real readable column on `hr.employee` in
+    Odoo 19, but it's `hr.group_hr_user`-scoped — the engine reads it via `.sudo()` (never guess an age). Corollary
+    surfaced in test: the base grid's `get_ot_ceilings` reads `e.company_id`, which triggers hr's `_check_private_fields`
+    and raises AccessError for a plain attendance officer on a VN employee (many private `vietnam_*` fields) — grid
+    users need `hr.group_hr_user`, not just the attendance-officer group.
+35. **Seed country defaults via `post_init_hook` per-company, not static XML — the demo company is not
+    base.main_company.** The live demo runs under 'Payobook Vietnam JSC' (a non-main company), so a data-XML rule
+    on `base.main_company` would leave the demo employees ungated. The hook seeds an editable VN rule for every
+    company lacking one (caps stay data — a module constant — and remain deactivatable per company). Test isolation:
+    that seeded rule collides with a test's own rule, so `setUpClass` must deactivate pre-existing rules first (same
+    class as the bank test's `payroll.ai.config` isolation).
+36. **`check_period` bounds violations to ≤ `date_to`; the week gauge sums the full ISO week.** A future-dated
+    over-cap day shows on the cockpit's week-hours gauge (`check_week_hours`, whole Mon–Sun) but NOT in the 30-day
+    violation feed (`check_period`, clipped to `[from, to]`) — correct (a past-window feed must not count future
+    days). When validating the feed live, seed a fully-PAST complete week, or the gauge lights up while the feed
+    stays empty.
+
+### Phase-E review findings (2026-07-23, Fable review of WP-Sudima-E). Numbering continues C18.
+
+37. **Overlays sharing a payload dict must MERGE, never REPLACE.** Two independent `get_week_entries` overlays
+    (trip badges, young-worker locks) both populate the per-row `flags` dict; the MRO-outer one ran last and did
+    `row['flags'] = {...}`, wiping the trip overlay's keys for a minor on a business trip. Rule: any inherit that
+    contributes to a shared payload key uses `row.setdefault('flags', {}).update(...)` — assume you are not alone
+    in the chain. Same doctrine as override-and-super for formula inputs (C18 code registry).
+38. **"Report, don't retro-enforce" means corrective REDUCTIONS must always pass.** The grid week-cap check gated
+    every non-zero REG write, so an over-cap week seeded before the rule existed could not be walked down (10→8
+    still failed the cap). Gate only a POSITIVE delta (`new > current`); a reduction commits even when the week
+    stays over cap. Applies to any cap-style guard over historical data.
+39. **Config seeded per-company at install needs a `res.company` create hook too** — otherwise a company created
+    after install has no rule, no gates, and nothing hints at the gap (the rule lookup is deliberately
+    company-only, no global fallback). Pair every per-company `post_init_hook` seed with a `res.company.create`
+    override calling the same idempotent `_seed_*` helper, and make its has-one check `active_test=False` so a
+    manager's deliberate deactivation survives a reinstall.
+40. **Retention vacuums key on `write_date` (terminal date), not `create_date`** — a job created 31 days ago but
+    decided yesterday must not be purged on day one. And on live: NEVER run `--test-tags` without a scoping `-u` —
+    a bare test run imports the test packages of EVERY installed module, and legacy `om_hr_payroll`'s own tests
+    import a misspelled `odoo.addons.om_om_hr_payroll`, crashing the whole DB init (EXIT=255,
+    "Failed to initialize database"). The `-u`-scoped form only imports the updated modules' tests.
+
+### F4 ops closure (2026-07-23, access_roles registry-reload storm — root causes). Numbering continues C18.
+
+41. **Generated-view writers must compare NORMALIZED, and store-what-you-search.** The F4 storm was two bugs
+    compounding in `access_roles`: (a) `_update_role_groups_view` compared `etree.tostring(...)` (which appends a
+    trailing newline) against the stored arch (which loses it on read-back) — a guaranteed-true `!=` meant a 1-byte
+    view rewrite on EVERY registry load, whose `['templates']` signal reloaded every other process, forever;
+    (b) the filter/groupby registries searched rows by technical name but stored the display name — labelled
+    filters were re-created on every sync (live reached 1.49M junk rows / 210 MB, and searching those tables was
+    ~215s of every 217s load). Fixes: `.strip()` both sides + log a real-change diff; search by the stored value;
+    gate all view-scan `_register_hook`s behind an ir_ui_view signature (`access.registry.sync`). Live result:
+    registry load 217s → 1.9s steady (4.1s with full resync), no self-signaling, stable single process. Lesson for
+    any module: a `_register_hook` that WRITES must be provably idempotent byte-for-byte, or it becomes a
+    self-sustaining reload storm; and a create-or-update helper must search by exactly what it stores.
+
+### Sudima F–J program rules (2026-07-24 design phase). Numbering continues C18.
+
+42. **F–J cross-phase rails** (full detail in each `docs/handovers/SUDIMA_PHASE_[F-J]_*.md`): (a) **WOW-or-upgrade**
+    — every touched surface is bespoke design-system UI, and any LEGACY screen a phase builds on (stock export
+    wizard form, stock /my portal pages, native lists on menus) is redesigned as part of that phase; native views
+    survive only off-menu as admin fallbacks (admin CONFIG forms exempt). (b) **Bank-file layouts are DATA**
+    (`pb.bank.file.layout` column vocabulary) — a new bank is a data file; generation validates via `account_ok`
+    and NEVER silently drops a row. (c) **PDF passwords are resolved in memory per employee and never logged or
+    stored.** (d) **MSS never writes state** — the My-Team facade calls each model's own gated actions as the real
+    user (C18.17/24). (e) **ESS never writes the employee master** — profile edits ride a sentinel-guarded change
+    request (bank-request clone, C18.31). (f) **The audit console is read-only** — it surfaces existing logs
+    (biz_audit_trail engine from Phase H), masked PII, capped-and-surfaced exports. Order F→G→H→I→J; I needs H;
+    J needs H; F and G independent.
+
+### Phase-F findings (Pay & Deliver — 2026-07-24, WP-Sudima-F). Numbering continues C18.
+
+43. **`hr.payslip.run` has NO `company_id` field in this om_hr_payroll (Odoo 19).** A `create({'company_id': …})`
+    or a `run.company_id` read raises `ValueError: Invalid field 'company_id' in 'hr.payslip.run'` (it aborts the
+    whole test DB init → EXIT=255, distinct from an EXIT=1 assertion failure). Scope company via `self.env.company`,
+    never off the run. The run DOES carry `date_start`/`date_end`/`state`/`name`/`slip_ids` (the pb_payruns board
+    proves those). Verify a run field against the actual model before use — several sibling models (payslip,
+    delivery batch) DO have `company_id`, so it's an easy false assumption.
+44. **A test-fixture attribute named `run` (or any `unittest.TestCase` method name) shadows the runner and dies
+    cryptically.** `cls.run = <recordset>` in `setUpClass` overrides `TestCase.run(self, result)`, so the loader
+    calls the *recordset* → `TypeError: 'hr.payslip.run' object is not callable`, reported as `Failed to initialize
+    database` (EXIT=255) with a traceback pointing at `return self.run(*args, **kwds)` — NOT at your test. Never name
+    a fixture `run`/`id`/`subTest`/`skipTest`/`assert*`; use `payrun`, `rec`, etc. Cost real cycles here.
+45. **wkhtmltopdf can't render report assets during a `--stop-after-init` test run** — there is no HTTP server for
+    it to fetch the report CSS/layout from, so `_render_qweb_pdf` returns broken bytes and PyPDF2 chokes with
+    `EOF marker not found` (the PDF has no `%%EOF`). This is NOT a code bug; the render works with the service up.
+    Any headless test that needs real PDF bytes must **mock the render** (a valid PDF via `PdfWriter.add_blank_page`
+    → `write`) and exercise the downstream logic (encrypt / attach / queue), then validate the real wkhtmltopdf
+    render live (Chrome-MCP, service up). wkhtmltopdf on Payobook19v2 is 0.12.6 (unpatched-qt) and renders fine live.
+46. **Live `pb_hr_payroll_formula` on Payobook19v2 is FAR behind the repo** — installed `19.0.1.0.0` vs repo
+    `19.0.1.48.0`; the entire Formula-Engine WP-* body (incl. `hr.payslip._themed_payslip_render`, the connector
+    `_sync_mapping_ids`, F9 theme fields) is NOT deployed there, even though the themed-report *XML template* is
+    (a data-only artifact that loads without its Python). So `action_report_payslip_themed` is **currently broken on
+    live** (`AttributeError: 'hr.payslip' object has no attribute '_themed_payslip_render'`). Any Phase-F–J feature
+    that reuses a formula-engine surface must **degrade gracefully**: `pb_pay_delivery._report_ref()` prefers the
+    themed report only when `hasattr(env['hr.payslip'], '_themed_payslip_render')`, else falls back to
+    `om_hr_payroll.action_report_payslip` (the always-present legacy report). Deploying 48 versions of
+    `pb_hr_payroll_formula` to production is a **separate, owner-signed-off decision** — do NOT slip it into a
+    feature phase. `-u pb_hr_payroll_formula` is unblocked now (the `formulas` pip dep is installed, C-deploy),
+    but the accumulated schema/data migrations make it a deliberate release, not a side effect.
+    **RESOLVED 2026-07-24:** the engine was deployed to Payobook19v2 — `-u pb_hr_payroll_formula,
+    pb_formula_studio,pb_sidebar,pb_pack_*` (1.0.0→1.48.0 / 1.65.0→1.68.0), the sole F111 migration
+    (`19.0.1.19.0` freeze-letters, idempotent) ran, registry loaded in 26s, EXIT=0. Root cause of the
+    live Formula-Engine crash was exactly this drift: `pb_formula_studio` (1.65.0) called
+    `env['hr.formula.rule.note']` which the 1.0.0 engine did not register (an orphan `ir.model` row
+    survived from a half-applied earlier upgrade, so it looked present but the class was absent →
+    `KeyError` at `get_studio_data`). Post-deploy: model registered, `get_studio_data` clean, themed
+    payslip report live (so `pb_pay_delivery` now auto-renders THEMED PDFs via its `hasattr` switch).
+47. **Live has a REAL Gmail SMTP server** (`smtp.gmail.com:587`, "Payobook Outgoing Server") and ~179 mails sitting
+    in `exception` state (dead — not dispatchable; the cron ignores them). A `send_payslips` with `force_send=False`
+    only QUEUES, but the "Mail: Email Queue Manager" cron is ACTIVE and would then dispatch to real
+    addresses — so demo/validation must NEVER trigger a live send against real employees. Validate the delivery
+    lane's UI (recipient/skip/password cards) without dispatching; the send path is covered by server tests
+    (mock-rendered PDF → mail.mail queue rows + skip + idempotence + encryption round-trip). Report SMTP posture
+    on any server before any bulk-mail feature demo (handover safety-rail: no accidental demo emails).
+48. **Clicking a live bulk-send is never a validation step** (Phase-F review, 2026-07-24). During Phase-F
+    validation, "Send payslips" was clicked on a live 500-slip run; it was mail-safe only by luck (every demo
+    employee lacked `work_email` → 500 `skipped_no_email`, 0 queued). Binding rule: exercise a live send lane
+    ONLY on a run first VERIFIED email-free (`SELECT count(*) FROM hr_employee ... work_email IS NOT NULL` over
+    its slips = 0), or with the mail queue cron paused for the demo window — and delete the residue batch
+    afterwards (demo-pristine). The password fallback is hardened too: an underivable password (no account
+    digits, no birthday, no employee code) now FAILS the slip with a surfaced reason — a static fallback
+    password is never acceptable on an encrypted payslip.
+
+### Phase-G findings (attendance workflow — 2026-07-24, WP-Sudima-G). Numbering continues C18.
+
+49. **The exception feed CONSUMES `compliance_status`; it never re-derives the tolerance.** Phase G made the
+    shift tolerance config-driven by OVERRIDING `hr.shift.planning._compute_compliance_status` (the base 15-min
+    hardcode) to read `pb.attendance.rule._grace_for_company` — grace_in for late, grace_out for early, branch
+    order byte-identical to the base so the default (15/15) is unchanged. The engine then reads the stored
+    `compliance_status` ('absent'→missing_punch, 'late', 'early_leave') plus a punchless-day guard (a shift can
+    read 'absent' while an UNLINKED punch exists — flag missing_punch ONLY when the day truly has no
+    `hr.attendance`, never invent an absence). `missing_checkout` is computed from OPEN punches older than the
+    config threshold (not a shift concept). Verified live: 4 seeded shifts computed absent/late(25m)/early(45m)
+    correctly and the cockpit classified all four kinds. Config resolver is company-else-GLOBAL via TWO searches
+    (C18.20) — a `company_id=False` seed row ships as data (visible to every company, so no per-company
+    post_init seed needed, unlike C18.35's company-only case).
+50. **The single guarded writer applies as SUDO; the sentinel is belt-and-braces.** `hr.attendance.correction`
+    rides `biz.approval.chain.mixin`; on approve, ONE writer `_apply()` creates/adjusts/deletes the punch. The
+    approval DECISION (state + `biz.approval.step.log`) runs as the real clicking user (truthful log,
+    `_approval_can` auth — a plain line-manager passes via `employee_id.parent_id.user_id`, the trip precedent),
+    but the hr.attendance MUTATION is `.sudo()` — a line-manager who may approve a report's correction has no
+    direct attendance write right. The module-level `object()` sentinel context still travels with it (opens the
+    device-delete guard for corrections), and su already opens that guard; the young-worker `@api.constrains`
+    fires under sudo too, so a cap-breaching correction still raises inside `_apply` and is CAUGHT by
+    `action_approve` (savepoint) → the request lands in `refused` with `apply_error` set, never a traceback
+    (test 7 live-equivalent). A device punch (blank `pb_entry_source`) is deletable ONLY through this path.
+51. **Completeness is enforced at SUBMIT, integrity at create.** A cockpit composer files a DRAFT first, then
+    the user picks the target punch / types the times. So the `@api.constrains` must hold only ALWAYS-VALID
+    integrity (target punch belongs to the employee+day; check_out ≥ check_in) — putting "create needs a
+    check-in" or "adjust needs a target" in `@api.constrains` makes the very act of opening the composer raise.
+    Move those completeness checks to a `_check_ready_to_submit()` called from `action_submit`. (Found live: the
+    File-correction button silently no-op'd because create-without-times tripped the constraint.)
+52. **A cockpit that FILES on behalf needs BOTH an ACL create grant AND a record-rule create grant for the
+    approver tiers** — the sharper edge of C18.27. The own+reports base rule (perm_create) only lets the
+    employee or their manager create; an officer/HR filing a correction for ANY employee from the exceptions
+    queue is blocked by BOTH the model ACL (`perm_create=0`) and the approver record rule (`perm_create=False`).
+    Grant `perm_create=1` on the officer/payroll ACL rows and `perm_create=True` on the approver `ir.rule`.
+    Approver≠requester still holds — `_approval_can` refuses self-approval by the filer, admin excepted.
+53. **A NEW asset FILE imported by a cockpit must be in the manifest `assets` list, or the whole component is
+    dead** (the concrete C2 symptom, cost real live-debug time). The cockpit imports a sibling
+    `pbaf_icons.js`; omitting it from `web.assets_backend` means the bundle DEFINES `@…/pb_attendance_flow` but
+    NOT its dependency `@…/pbaf_icons`, so the loader reports "modules … have unmet dependencies", the action
+    never registers, and `/action-<tag>` bounces to the home page with only a console error (invisible to
+    `-u --stop-after-init`). Grep new cockpit imports against the manifest asset list. **And: a manifest
+    asset-list change needs a full service RESTART, not `button_immediate_upgrade` / in-process `-u`** — the
+    manifest is cached per-process, so an in-process upgrade re-runs data files but keeps the OLD asset list;
+    only a fresh `odoo-bin` process re-reads it. (Always `service restart` after a manifest `assets` edit, then
+    clear `/web/assets/%` and hard-reload.)
+54. **`--stop-after-init` hangs on shutdown on Payobook19v2 (C18.23 in another guise) — never chain
+    `service start` AFTER it in the same script.** The `-i/-u --test-enable --stop-after-init` run completes
+    tests and prints "Initiating shutdown" but the process does not exit for many minutes (site stays DOWN if a
+    trailing `service start` waits on it). Deploy pattern that works: run odoo-bin in the BACKGROUND, poll the
+    log for completion, then `kill -9` the `odoo-bin.*stop-after-init` PID (never `pkill -f`) and `service
+    start` — do not rely on the test process exiting on its own.
+
+### Sudima K–M program rules (2026-07-24 design phase). Numbering continues C18.
+
+55. **K–M cross-phase rails** (full detail in `docs/handovers/SUDIMA_PHASE_[K-M]_*.md`): (a) **K/M facades are
+    read-and-act surfaces** — they never write a state field and never sudo a mutation; every change rides the
+    target model's OWN gated action as the real clicking user (C18.17 made explicit for cockpit facades).
+    (b) **Bonus Hours doctrine** (owner-directed, Phase K): OT beyond the `pb.ot.ceiling` period caps — daily /
+    weekly / bi-weekly (ISO-odd-anchored week pairs) / monthly / annual, **tightest remaining allowance wins** —
+    is SPLIT into `hr.overtime.request.bonus_hours`, never blocked for adults and never silently dropped;
+    `bonus_hours` has exactly TWO writers (grid save + approve-time recompute) and is readonly everywhere else;
+    minors keep the Phase-E hard block (bonus is NEVER a young-worker bypass); the allowance counter and the
+    OTHRS* payroll inputs count only `approved_hours`, while the new **`BONHRS`** input carries the bonus stream —
+    the formula-input code registry is now `OTHRS150/200/300/NGT, TRIPDAYS, PERDIEM, BONHRS`. The Bonus review
+    surface is server-gated (payroll manager tier), filterable, and capped-and-surfaced on export.
+    (c) **One limit source**: `hr.overtime.config.max_hours_per_day/month` are legacy per-type metadata — never
+    enforced a second time beside `pb.ot.ceiling`.
+    (d) **Design-time finding (Phase L's mandate)**: the payroll approval chain was gated by BUTTON VISIBILITY
+    only — `pb.approval.approve_run` and the `action_payslip_run_level*_done` methods carry no group checks, and
+    the cockpit's `submit_for_approval` called `level1_done` from draft (which writes `level2` unconditionally →
+    the HR tier was skippable). Fix doctrine: model-side `_pb_require_tier` gates on every advance/cancel, chain
+    entry only via `done_payslip_run`, and **state KEYS are frozen downstream contracts** (`done` is the approved
+    signal for pay delivery/analytics — insert `level0`, rename nothing).
+    (e) **M is read-only and CDN-free**: the analytics rebuild writes nothing, leaves the `payroll.analytics`
+    JSON/state contract and its level2 auto-generation hook untouched, vendors every asset locally (no CDN,
+    test-asserted), and existence-checks its G/K-fed tiles so phase ORDER can never crash a board.
+    Order: K, L, M mutually independent; M soft-consumes K (bonus tile) and G (pulse row); H→I→J unchanged.
+
+### Phase-H findings (Employee 360 — 2026-07-24, WP-Sudima-H). Numbering continues C18.
+
+56. **hr.employee `department_id` / `job_title` are NON-STORED related fields backed by `hr.version`** in
+    Odoo 19 (`related='version_id.department_id'` / `version_id.job_title`, `store=false` in
+    `ir_model_fields`), so a field-change audit write-hook on hr.employee NEVER captures them — the write is
+    redirected to the current version and the hr.employee override sees no old→new (proven live: after
+    `emp.write({'department_id': x})` the employee reads the new value but zero hr.employee audit rows appear;
+    parent_id / company_id / active ARE stored and audit fine). The write UPDATES the existing version in
+    place (version_id unchanged, count stays 1 — NOT a new-version create), so the correct capture point is a
+    `biz.audit.mixin` on **hr.version** watching `department_id, job_title`; the Employee 360 timeline maps
+    those entries back onto the employee via `hr.version.employee_id`. Rule of thumb before auditing ANY
+    hr.employee field: check `store` in ir_model_fields — a version/resource-related field must be audited on
+    its backing model. (`wage` on hr.contract IS stored and audits directly — contracts ≠ versions here.)
+57. **`biz.audit.mixin` on hr.employee/hr.version applies app-wide, so its rule lookup must be ormcached and
+    the entry create must never block the write.** `biz.audit.rule._watched_fields(model)` is
+    `@tools.ormcache('model_name')` (cleared via `self.env.registry.clear_cache()` on any rule create/write/
+    unlink — the only reliable Odoo-19 invalidation); an unwatched model pays one cached dict lookup +
+    empty-set intersection. Measured live: watched vs unwatched employee writes are indistinguishable
+    (Δ ≈ 0, within RPC noise). The mixin wraps its logging in try/except and swallows failures (a broken
+    audit must not break an HR write). Entries are append-only with FORCED actor/stamp — the mixin creates
+    them via `.sudo()` (it fires for any user, who may lack create rights on the entry) and `create()` sets
+    `user_id = env.uid` (sudo keeps the real uid) + pops any client stamp, so nothing client-supplied ever
+    sets who or when; write()/unlink() raise for everyone but system and the retention GC (module-level
+    `object()` sentinel). Same doctrine as the [[biz-approval-chain]] step log, hardened for a generic engine.
+58. **A soft component registry keeps a cockpit extensible without a hard dep.** The Employee 360 drawer
+    (pb_employee_vault) registers into `registry.category("pb_people_drawer")`; the People cockpit (pb_people)
+    checks `.contains("employee_360")` and mounts it via a dynamic `t-component`, else falls back to the
+    legacy full-page detail action — People stays fully installable WITHOUT the vault (same doctrine as the
+    trip `registry.category("fields")` overlay widgets). PII rails on the vault: documents are own-read for
+    employees / company-scoped for HR / manager-unlink (C18.32); `verified/verified_by/at` are HR testimony
+    behind a `_VAULT_SYS_TOKEN` sentinel (C18.31 — even HR's direct `write({'verified':True})` raises; only
+    the gated `action_verify()` sets it); the timeline RPC is HR-gated and wage VALUES are scrubbed from the
+    payload server-side for non-payroll-managers (two-tier serialization, NOT CSS hiding). Attachment upload
+    follows the C18.25 order (attachment first, bind res_model/res_id after the document exists).
+59. **A demo-seed that writes a cross-company relation crashes a company-scoped cockpit read.** Seeding an
+    employee's `department_id` from `hr.department.search([], limit=5)` grabbed a company-1 ("Your Company")
+    department onto a company-5 (VN) employee; the 360 drawer's `orm.call` carries the web client's SELECTED
+    company (`cids=5`), so reading that cross-company department raised AccessError and the drawer showed
+    "Could not load" — while a context-free RPC succeeded (the C18.11 trap in a new guise). Demo/validation
+    writes of a company-scoped relation MUST resolve the target within the record's OWN company
+    (`search([('company_id','=',emp.company_id.id)])`), never a bare `search([])`.
+
+### Phase-I findings (ESS/MSS — 2026-07-24, WP-Sudima-I). Numbering continues C18.
+
+60. **`editable` is a RESERVED website render-context variable — never reuse it as a portal template
+    key.** A `website=True` portal route rendering merges a website context that sets `editable` (the
+    editor edit-mode boolean); a controller value passed as `values['editable'] = [...]` is SHADOWED to
+    that bool, so `t-if="'x' in editable"` raises `TypeError: argument of type 'bool' is not iterable`
+    → HTTP 500 on the page (only, invisible to `-u`; the portal HttpCase never hit it because tests
+    exercised the models, not the rendered page). The qweb error's compiled line number does NOT match
+    the source line — read the `Element:`/`Path:` fields in the QWeb traceback to find the real node.
+    Fix: name the key anything else (`editable_fields`). Other reserved-ish portal context names to avoid:
+    `request`, `page_name`, `pager`, `error`, `message`. Rule: prefix ESS payload keys distinctively
+    (the profile page also renamed `requests`→`pcr_requests` defensively) and ALWAYS Chrome-MCP each
+    portal route — a green model test is not a rendered-page test.
+61. **`t-key` is OWL-only — it is INVALID in server-rendered (frontend/report) QWeb.** A `t-key` on a
+    server `t-foreach` logs `Unknown directives or unused attributes: {'t-key'}` and is ignored; keep it
+    out of portal/report templates (it belongs only in `web.assets_*` OWL `.xml`). Frontend portal icons
+    are inline `<svg>` Lucide paths (a small `ess_icon` t-call ladder), never Font Awesome `<i class="fa">`
+    or emoji (C11 extends to the portal).
+62. **An employee-owned attachment BIND needs sudo when the owner has read-only on the target record.**
+    The ESS document self-upload creates the attachment as the user, creates the `pb.employee.document`
+    (own-create rule), then binds `attachment.res_model/res_id` to the doc — but Odoo re-checks attachment
+    access against the NEW linked record, and the employee's own-doc rule is READ-only (no write), so a
+    self-user `att.write({'res_model':…})` raises `AccessError` ("not allowed to access this document") →
+    HTTP 403 on the upload POST (looks exactly like a CSRF failure in the werkzeug log — it is NOT; grep
+    for the "not allowed to access" warning to tell them apart). The bind is a system op on a record they
+    already own → `att.sudo().write(...)`. The C18.25 order (attachment first, bind after the doc exists)
+    is preserved. The model test created the doc but never exercised the bind — a live upload is required
+    to catch this.
+63. **MSS is a read-and-act facade over EXISTING model actions, not a new approval engine (C18.55a made
+    concrete).** `pb.team.act(model, res_id, action, note)` is a hard whitelist `{model: {action: method}}`
+    → the target model's own gated method, called AS THE REAL USER, no sudo. A non-whitelisted model/action
+    RAISES (`res.users`, `frobnicate`); a record outside the caller's team RAISES (team-scope defense in
+    depth); a MODEL business refusal (tier lacked, decided-record no-op) is CAUGHT and returned
+    `{ok:False,error}` so the cockpit toasts the model's own words and keeps the row. Two access facts hit
+    wiring it: (a) **OT approval needs `hr_attendance.group_hr_attendance_manager`** — unlike trips /
+    attendance-corrections (which admit the specific `employee_id.parent_id.user_id` via `_approval_can`
+    with NO group), `hr.overtime.request` has ONLY an own-records officer rule + an all-records manager
+    rule, so a plain line manager cannot approve a report's OT; the facade scopes the queue to the team,
+    the model grants the write. (b) The young-worker OT gate is a CREATE/write `@api.constrains`, and
+    `action_approve` writes only `state`+`approved_hours` (NOT in the constrains trigger set), so a minor
+    OT can NEVER become a submitted-then-refused-on-approve queue item — the E-gate blocks it at
+    submission (a STRONGER guarantee than a queue refusal). The MSS refusal-surfacing path is therefore
+    validated via the trip-tier / decided-record route, not a young-worker queue item (handover §6.11
+    prose predates this finding).
+64. **A `pb.demo.generator` extension MUST inherit `models.TransientModel`** — it is a wizard-style
+    transient; a `models.Model` `_inherit` aborts registry load with "transforms the transient model … into
+    a non-transient model." The ESS/MSS demo enablement (`demo_ess.py`) re-links three PASSWORDLESS logins
+    (C18.14) to the CURRENT demo employees on every `action_generate_all` (employees are recreated each
+    run, so linkage is rebuilt), re-parents the demo minor under the demo manager for the MSS story, and
+    seeds a couple of submitted OT for adult reports so the queue is non-empty. `clean_demo_employees` now
+    also unlinks OT / profile-change-requests / documents for is_demo employees BEFORE `emps.unlink()` (a
+    required `employee_id` on `hr.overtime.request` would otherwise block the unlink). `res.users.employee_id`
+    reads `None` in a bare `odoo-bin shell` (company-dependent, C18.26) even when `employee.user_id` is set
+    — verify the link on `hr.employee.user_id`, not `res.users.employee_id`.
+
+### Phase-J findings (Audit & Compliance console — 2026-07-24, WP-Sudima-J). Numbering continues C18.
+
+65. **A read-only CONSOLIDATION console over many log sources reads uniformly via `sudo()` behind a
+    single `_require_manager()` gate — the gate is the whole auth model, masking is the PII guarantee,
+    and only DEEP-LINKS enforce per-record access.** `pb.audit.console` (AbstractModel RPC facade, no
+    table) merges six sources — `biz.audit.entry` (fields), `biz.approval.step.log`, `pb.employee.bank.history`,
+    `bank.export.log` (optional), `pb.payslip.delivery` (optional), `res.users.log` (logins) — into one
+    day-grouped stream. A compliance manager must see the CONSOLIDATED trail regardless of which log model
+    they individually hold an ACL on, so every source is read `sudo()` AFTER the manager+system gate (C18.17
+    one-permission-world, applied to reads-only). The three safety nets that make sudo-reads correct here:
+    (a) bank accounts render MASKED (`•••• 1234`, the `pb_bank_ocr_cockpit._mask` pattern) in BOTH the
+    stream and the XLSX export; (b) navigation OUT of the console (employee/record chips) is plain
+    `action.doAction` act_window — NO sudo — so the target's own rules gate the drill-down (rail 6, live-
+    proven: an employee chip opened `hr.employee/<id>` form under normal access); (c) the console never
+    writes — its ONLY two writes are the export wizard's own transient Binary and the manager-gated
+    retention param. Live perf on Payobook19v2: unfiltered first page 43-46 ms, KPIs 29 ms, login lens
+    40 ms (data is small — 5 field / 7 approval / 3 bank / 16 login rows).
+66. **Write-free cockpit XLSX download = a TransientModel's own Binary + a `/web/content` URL, never a
+    persisted attachment.** `pb.audit.export` (TransientModel) builds the sheet in-memory (xlsxwriter →
+    base64, the pb_hr_workforce_planning precedent), stores it on its OWN `export_file` Binary, and the
+    facade returns `{'url': '/web/content/pb.audit.export/<id>/export_file?download=true&filename=...'}`.
+    The OWL cockpit triggers a hidden-anchor click on that URL. The transient is GC'd by core; no
+    `ir.attachment` row is created (keeps the console's read-only invariant intact — the transient Binary
+    is the sanctioned exception). The export reuses the console's `_collect_stream`/`get_*_lens` collectors
+    VERBATIM so the file carries identical rows + identical masking, and the hard cap (50k) is surfaced in
+    the return (`truncated`, `cap`) — never a silent truncation.
+67. **`res.users.log` is core-magic-fields-only and is NEVER vacuumed by core — surface logins from it,
+    honestly labelled, and expect unbounded (small) growth.** The model carries only `create_uid` (the
+    user) + `create_date` (login time); it records LOGINS ONLY (no logout row in core), so the login lens
+    labels its cards "Sessions started" and shows no duration. Odoo's "Base: Auto-vacuum internal data"
+    cron does NOT GC it (no `_gc` on the model), so it grows without bound — negligible in practice
+    (16 rows on live). Group internal users only (`user.share == False`). `biz.audit.entry` retention IS
+    handled (Phase-H's own "Audit Trail: retention vacuum" cron, keyed on write_date, C18.40) — the console
+    only READS the setting and exposes a manager-gated `set_param` for it (`biz_audit_trail.retention_days`).
+68. **Sort-key columns on the audit sources are NOT indexed — fine at current volume, recommend an index
+    at scale.** Each source is fetched `ORDER BY <stamp> DESC LIMIT <scan>`, but `biz.audit.entry.stamp` /
+    `biz.approval.step.log.stamp` / `pb.employee.bank.history.changed_at` / `res.users.log.create_date`
+    have no DB index (biz.audit.entry indexes model_name/res_id/user_id/company_id, NOT stamp). At 5-16 rows
+    it is 46 ms; at 100k+ entries the per-source `ORDER BY … LIMIT` wants a `stamp` index. The clean fix is
+    `index=True` on `biz.audit.entry.stamp` in **biz_audit_trail** (its owner) on next touch — NOT a
+    cross-module `CREATE INDEX` from `pb_audit`. Reported, not silently added (the sources live outside this
+    phase's module boundary, C18.1).
+69. **`read_group` is deprecation-warned in Odoo 19 but kept for codebase consistency.** `read_group`
+    logs `DeprecationWarning: Since 19.0, read_group is deprecated. Please use _read_group … or
+    formatted_read_group` but still works; the whole repo (pb_insights, pb_contracts, …) still uses it, so
+    the console matches surrounding code rather than being the lone migrator. The count key is read
+    defensively as `g.get('<field>_count') or g.get('__count')` (the key name differs across versions —
+    the established repo pattern). A future repo-wide migration to `_read_group`/`formatted_read_group` is a
+    separate sweep.
+70. **Deploy note (transient): a Postgres connection drop DURING the `access_roles._register_hook`
+    groupby-registry sync aborts registry init (`Failed to initialize database`), but the module install
+    itself has already committed and a plain re-`start` loads clean.** During the `-i pb_audit` run the
+    module loaded 191/191 and committed (state `installed`), then the post-load `access_roles` groupby
+    sync hit `server closed the connection unexpectedly` → CRITICAL. This is NOT an install failure — a
+    subsequent `service odoo-server start` loaded the registry in ~10-13 s with pb_audit live. Distinguish
+    it from a real crash by the psycopg `server closed the connection unexpectedly` line (infra) vs a Python
+    traceback in module code. The C18.54 background-run + kill-the-`stop-after-init`-PID + restart ritual
+    still applies; run the scoped `-u pb_audit --test-enable --test-tags /pb_audit` to a dedicated
+    `--logfile` so the test summary (`0 failed, 0 error(s) of 10 tests`) is not buried in the shared log.
+
+### Phase-K findings (Leave Command Center + OT limits/Bonus Hours — 2026-07-24, WP-Sudima-K). Numbering continues C18.
+
+71. **OWL compiles word-operator names into OPERATORS — a `t-foreach` loop var named `lt`/`gt`/`and`/
+    `or`/`not`/`in`/`eq`/`ne`/`le`/`ge` silently breaks the WHOLE template.** `t-as="lt"` made OWL's
+    expression compiler translate every `lt.id` → `<.id` (it maps `lt`→`<`, `gt`→`>`, `and`→`&&`, … in
+    expressions), so the generated component function is invalid JS and dies at first render with
+    `Failed to compile template …: Unexpected token '<'` — the ENTIRE cockpit goes to the "Oops" dialog,
+    and like the WP-I `if`-in-arrow trap this is INVISIBLE to `-u --stop-after-init` (templates compile
+    lazily in the browser) AND to server tests (they never render OWL). Same class: a bracket access with
+    a JS RESERVED WORD key — `p['return']` — also breaks the compile. Rules: never name a loop var (or any
+    template identifier) a word-operator or reserved word; read the FULL generated code from the browser
+    console (`list_console_messages type=error`) — the broken line shows the literal `<.id`/`<.name` which
+    pinpoints the offending `t-as`. Always Chrome-MCP each new OWL cockpit; a green `-u` and green server
+    tests prove nothing about whether the template renders.
+72. **A new field's data-XML default NEVER lands on an existing `noupdate="1"` record — it needs a
+    migration.** `pb.ot.ceiling` gained `daily_cap`; the seed row (`ot_ceiling_default`, shipped
+    `noupdate="1"`) already existed on the live DB, so the `daily_cap=4.0` added to the data file applied
+    ONLY to fresh installs — the live row stayed at the field default 0.0 (cap not enforced → the whole
+    overflow-to-bonus feature was silently inert, caught in Chrome-MCP: config gallery showed `DAILY —`
+    and a 6h entry previewed `6h → 6h`, no split). Fix = a `migrations/<version>/post-migrate.py` that sets
+    the value on the seed row (resolved via `ir_model_data`) *only when still 0* (so a deliberate user cap
+    survives) — idempotent. Bump the module version so the migration runs. Rule: any new field that must
+    carry a non-default value on a `noupdate` seed row needs a migration for already-installed DBs; the
+    data XML covers only fresh installs. Verify caps/defaults live after deploy, never assume the data XML
+    took.
+73. **A no-sudo "read-and-act" facade splits permission worlds: reads sudo BEHIND the gate, mutations stay
+    real-user — and server tests (superuser) will MISS the read-side ACL gap.** `pb.timeoff`'s officer set
+    (hr_holidays user | HR manager | payroll manager) includes members who lack a specific leave-model ACL
+    (a payroll manager — or Mitchell Admin uid 2 — has neither `hr.leave.type` read nor the hr_holidays
+    group). With the reads run as the real user, `get_board` died with `AccessError: … doesn't have 'read'
+    access to hr.leave.type`. The correct split (same doctrine as the audit console C18.65 and the OT desk):
+    gate on the real user (`_require_officer`), then collect the READ board via `self.sudo()` (company
+    scoping survives — `env.companies` is unchanged under sudo); keep the MUTATIONS (`act` /
+    `apply_on_behalf`) real-user so authorization + the model's own errors are genuine. This was invisible
+    to the server tests because a plain `TransactionCase` runs as SUPERUSER (uid 1), which bypasses all ACL
+    — only a non-superuser live login (Chrome-MCP as uid 2) surfaced it. Rule: a facade whose gate group set
+    is broader than the union of the underlying models' ACL groups MUST sudo its reads; and validate read
+    facades with a real non-superuser login, not just the superuser test env. (`test_15` accordingly asserts
+    only that MUTATIONS aren't sudo'd — `.sudo().action_*` / `.sudo().create` absent — not that the module
+    is sudo-free.)
+
+### Phase-L findings (3-tier approval chain — 2026-07-25, WP-Sudima-L). Numbering continues C18.
+
+74. **A `.po` entry needs `#. odoo-python` / `#. odoo-javascript` extracted-comment MARKERS, not just
+    `#. module:` — without them the file parses cleanly and translates NOTHING.** Odoo 19 loads code
+    translations from disk (`CodeTranslations._load_python_translations` /
+    `_load_web_translations`, `odoo/tools/translate.py:1854-1868`) with
+    `filter_func = row['value'] and PYTHON_TRANSLATION_COMMENT in row['comments']`
+    (`'odoo-python'` / `'odoo-javascript'`). A hand-written vi.po carrying only the C18-mandated
+    `#. module:` line yields `get_python_translations(module,'vi_VN') == {}` and a `_()` that silently
+    returns English — no error anywhere, `-u` is green, msgfmt is happy. Marker rules mirror the
+    exporter (`translate.py:1487-1500`): `*.py` → `odoo-python`; `static/src/**/*.js` AND
+    `static/src/**/*.xml` (OWL/QWeb templates) → `odoo-javascript`; an entry occurring in both carries
+    both. Assert it in a test (`code_translations.get_python_translations(...)` non-empty), never just
+    "the PO file is present". **Known debt: `pb_timeoff/i18n/vi_VN.po` (Phase K) has no markers and is
+    therefore inert — fix on next touch.**
+75. **The `pb_hr_payroll_base` payroll groups carry NO ACL on `hr.payslip.run` / `hr.payslip`.** Those
+    models are granted only to `om_hr_payroll.group_hr_payroll_user/manager` (+ the demo group), and the
+    pb_* ladder does NOT imply them — so a "Payroll Officer" handed the new level0 tier could not even
+    READ the board its own tier owns (live: `AccessError: … 'Payslip Batches'`), and a plain
+    `group_payroll_base_manager` is in the same position. Because the ladder is
+    `final_approver → analytics_manager → base_manager → base_officer`, ONE ACL row on
+    `group_payroll_base_officer` (read+write, never create/unlink) covers every tier. Check the ACL of
+    the model a new group-gated tier must touch — group membership in the product's own hierarchy says
+    nothing about the underlying model ACL.
+76. **C18.24 on `hr.payslip.run`: the tier gates guard the ACTIONS, `write()` must guard the STATE.**
+    Proven live as a non-superuser: `call_kw hr.payslip.run write [[id],{"state":"done"}]` jumped a
+    level1 run straight to approved, skipping every tier (and `create({'state':'done'})` likewise). The
+    seal is a module-level `object()` identity in context (`_PB_CHAIN_TOKEN`) that only the sanctioned
+    writers set via `_pb_chain_ctx()`; su/admin exempt; a client-forged `pb_chain_state_write: true`
+    cannot match an object identity. It travels ON THE RECORDSET into the legacy body
+    (`super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()`), so om_hr_payroll's
+    own `write({'state':'level2'})` passes without any edit to the legacy module. Only the FORWARD
+    states (`level0/1/2/done`) are sealed — `draft`/`cancel` stay writable because demo/cleanup paths
+    reset runs to draft right before unlinking them, and neither value can mark a run approved.
+77. **The level1→level2 advance SENDS a real mail, and om_hr_payroll_account REPLACES it without
+    `super()`.** `_notify_general_manager_for_batch_approval` (`om_hr_payroll/models/hr_payslip.py:1128`)
+    does `mail.mail.create(...).send()` — an immediate dispatch through the live Gmail server, not a
+    queue row (C18.47/48). EVERY test that crosses that tier must `patch.object(type(env['hr.payslip.run']),
+    '_notify_general_manager_for_batch_approval')`, and live validation must never click HR→Finance.
+    Separately, `om_hr_payroll_account.action_payslip_run_level1_done` fully replaces the base method
+    (no `super()`, and it inlines its own `generate_analytics` instead of calling
+    `_auto_generate_batch_analytics_on_level2`) — so a gate override only holds while pb_payruns is the
+    MORE-DERIVED class. Keep a canary test (a no-tier user must get AccessError on the level1 advance):
+    if a future load-order change puts the account module last, the gate is silently bypassed and only
+    that test says so. Corollary found in the same cascade: `pb_hr_payroll_formula.
+    _trigger_mid_cycle_carryover` searches `hr.payroll.import.batch` WITHOUT sudo, so a Finance approver
+    who lacks `group_formula_manager` cannot complete final approval (pre-existing; reported, not fixed
+    — different module, C18.1).
+78. **`.a.b` and `.b` have equal CSS specificity — a solid variant declared after a ghost variant paints
+    it.** `.pba-btn.danger { background: rose }` beat `.pba-btn.ghost { background: #fff }` (both two
+    classes, `.danger` later), while `.pba-btn.ghost.danger { color: rose }` (three classes) won the
+    colour → a "Reject" button rendered rose text on a rose fill: an INVISIBLE label that a green `-u`,
+    green tests and a passing a11y snapshot all report as present (`textContent` is correct). Write the
+    solid variant as `&.danger:not(.ghost)`. Screenshot every new button variant; the DOM says nothing
+    about whether a user can read it.
+
+### Phase-M findings (executive analytics rebuild — 2026-07-25, WP-Sudima-M). Numbering continues C18.
+
+79. **A read facade that swallows exceptions can hide a DEAD section for months.** The pre-M
+    `pb_insights` searched `hr.payslip.run` by `company_id` — a field that does not exist here
+    (C18.43) — inside a `try/except` that returned an empty recordset, so the latest-run headline,
+    the employees-paid count and the whole statutory panel silently rendered zeros on live, and the
+    "payroll trend" fell back to contracted wages. `_safe()`-style wrappers belong around a SECTION
+    (so the board still renders), never around a single query whose failure is indistinguishable
+    from "no data". Runs are company-scoped through their PAYSLIPS: `SELECT DISTINCT payslip_run_id
+    FROM hr_payslip WHERE payslip_run_id IN %s AND company_id IN %s` over a bounded newest-N scan.
+80. **The stored employee→department anchor is `hr_employee.current_version_id`, not `version_id`**
+    (sharpens C18.56). `hr.employee._inherits = {'hr.version': 'version_id'}`, but `version_id`
+    is a NON-stored compute (context-date aware) — there is no such column, and neither is there a
+    `hr_employee.department_id`. The stored column is `current_version_id`; SQL joins
+    `hr_version v ON v.id = e.current_version_id` then `v.department_id`. Probe the FIELD
+    (`_fields['x'].store`), never `information_schema` — a legacy DB keeps dead columns.
+81. **Classify payroll components by `hr.salary.rule.category.category_type`, not by code lists.**
+    The legacy `CONTRIB_CODES = ['SI_EMP','SI_COMP',…]` matched NOTHING in the formula world
+    (C5 forbids underscores, so the demo's codes are `SIEMP`/`SICOMP`), which is why the statutory
+    split read 0 on live. `category_type` (`social_security` / `employer_cost` / `tax`, defined in
+    `pb_hr_payroll_base`) is country-agnostic and survives any code convention; keep the code list
+    only as an untyped-category fallback.
+82. **A "last 6 months" line-level aggregate over the demo world IS a full-table scan, and no index
+    fixes it.** Employer contributions per run over a 6-month window = 39 runs = 27,961 payslips =
+    every row of the 711k-line table: measured 11.3 s (1 run 40 ms, 6 runs 1.28 s). A
+    `(category_id, slip_id)` index was built and measured — still 10.5 s, because Postgres correctly
+    keeps the sequential scan once the query touches the whole table. Charts over a long window must
+    read STORED per-run roll-ups (`pb_total_net/gross`, instant) — the fix for a third series is one
+    more CASE arm in `hr.payslip.run._compute_pb_totals` (a stored `pb_total_employer`), not a
+    cleverer query. **Open recommendation, owner decision** (a new stored field was a Phase-M
+    non-goal).
+83. **`_compute_pb_totals` aggregates with RAW SQL and does not flush** — inside a single test
+    transaction it can run before the payslip lines reach the database and store zeros. Any fixture
+    that asserts on the stored roll-ups must `env.flush_all()` → `runs._compute_pb_totals()` →
+    `flush_all()`. Production is unaffected (the payroll compute flushes long before), but the same
+    trap applies to any raw-SQL compute: SQL does not see the ORM's pending writes.
+84. **`BaseModel._fields` is a read-only `mappingproxy` in Odoo 19** — `patch.dict(type(m)._fields)`
+    raises `AttributeError: 'mappingproxy' object has no attribute 'pop'` (and then a second error
+    while unwinding). To simulate a missing field, swap the whole attribute for a filtered copy:
+    `patch.object(type(model), '_fields', {k: v for k, v in ... if k != 'x'})`. Removing a MODEL for
+    a soft-dep test is different — `registry.models` IS a plain dict, so `patch.dict` works there.
+85. **A CDN URL can hide in an asset LIST, not just in a file.** The live Chart.js request on every
+    backend page came from a literal `'https://cdnjs.cloudflare.com/…/chart.min.js'` entry inside
+    `pb_hr_payroll_base`'s `web.assets_backend` list — invisible to any grep of `static/`. It was
+    also pure waste: Odoo bundles Chart.js itself (`web/static/lib/Chart`), and `window.Chart`
+    already reported 4.4.6, i.e. Odoo's copy was winning over the CDN's 3.9.1. Removed; verified
+    zero cross-origin requests afterwards with `window.Chart` unchanged. Assert self-containment
+    over the MANIFESTS (`ast.literal_eval` each `assets` list) as well as the files.
+86. **Clearing `ir_attachment` does NOT bust the asset cache in Odoo 19 — the module VERSION does.**
+    After an SCSS edit the compiled bundle URL (`/web/assets/<hash>/web.assets_web.min.css`) kept the
+    same hash, so browsers served the stale CSS even through `Page.reload {ignoreCache:true}`, and
+    `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` matched ZERO rows (bundles are no
+    longer stored as attachments there). Fetching the URL with `cache:"reload"` proved the SERVER
+    had the new CSS all along. Bumping the manifest `version` changed the hash (26c8d1e → 532214e)
+    and the new rules applied immediately. This is C2's "bump the version on every asset change"
+    with teeth: without the bump, a live SCSS fix is invisible to every user with a warm cache.
+87. **`-u <base module>` cascades `--test-enable` into every reverse dependency.** `-u
+    pb_hr_payroll_base` dragged `pb_hr_payroll_formula` into the upgrade, whose
+    `tests/__init__.py` has a pre-existing circular import (`ImportError: cannot import name
+    'test_formula_engine' … partially initialized module`) — which aborts REGISTRY INIT, not just a
+    test (C18.40 in another guise: EXIT≠0, "Failed to load registry", no traceback in the module
+    under test). Keep `--test-enable` runs scoped to leaf modules, and upgrade a base module in a
+    separate test-free pass. Corollary: a manifest-only `assets` change needs a service RESTART, not
+    a `-u` at all (C18.53).
+88. **A `flex` shorthand set in a wider breakpoint changes MEANING when a later breakpoint flips the
+    axis.** `.pbin-kpi { flex: 1 1 200px }` (≤1100px, row) became a 200px HEIGHT once ≤640px turned
+    the container into a column — three KPI tiles, each half a phone tall. Both media queries match
+    at 390px. Reset the shorthand explicitly (`flex: 0 0 auto`) in the narrower block. Only the
+    screenshot showed it: every DOM assertion passed (C18.78's lesson, applied to layout).
+89. **`hr.payslip.line` is a prototype heir of `hr.salary.rule`, so a full aggregate over it is a
+    ~1 GB read.** `_inherit = ['hr.salary.rule']` (`om_hr_payroll/models/hr_payslip.py:883`) copies
+    every rule column onto the line table, including `condition_python` (required, ~700 B default)
+    and `amount_python_compute` (~650 B). At 711k lines that is ~1.3 KB of dead boilerplate per row,
+    which is the real reason the 39-run employer-cost aggregate measured 11.3 s (C18.82) and why no
+    index fixed it — the planner was right to seq-scan. The answer is not a better index, it is not
+    reading that table interactively: `pb_explorer` pre-aggregates it to `pb.fact.line`
+    (711,150 → 5,945 rows, 119:1, measured live 2026-07-26) and the same pivot then answers in
+    **3 ms**. Any new payroll analytics surface should read the fact tables, not the lines.
+90. **`hr_version.date_version` is stamped at record creation, not at the event it describes.** On
+    the live demo world 63% of payslips (17,675 of 27,989) have NO version dated on or before their
+    run's `date_end`, because employees were generated in July while the payroll history runs
+    Apr–Jun. A strict as-of join (`WHERE date_version <= date_end`) therefore silently DROPS most
+    history — the query looks correct and returns a third of the data. Resolve dimensions with a
+    preference, not a filter: newest version at/before the period end, else the EARLIEST version,
+    and COUNT which happened (`pb.fact.run.asof_fallback_count`, surfaced on the board). Still never
+    resolve through `hr_employee.current_version_id`, which means "today" and would restate history
+    on every rebuild (C18.80).
+91. **Odoo 19 removed `ir.cron.numbercall` and `doall`.** A `<field name="numbercall">-1</field>`
+    in a cron record fails the whole module install with `ValueError: Invalid field 'numbercall' in
+    'ir.cron'` → `ParseError` → EXIT=255. A cron now simply repeats on its interval until
+    deactivated. Also: `ir.cron.model_id` must point at a CONCRETE model — anchor a cron whose work
+    lives in an AbstractModel on a real one and call the abstract via `env[...]` in the `code` body.
+92. **Never name a test-fixture attribute after a `unittest.TestCase` method.** `cls.run = <a
+    payslip run recordset>` shadowed `TestCase.run()`, so the runner's `test(result)` call raised
+    `TypeError: 'hr.payslip.run' object is not callable` — reported as `0 failed, 0 error(s) of 0
+    tests` with EXIT=255 and no failing test named, which reads exactly like a broken module rather
+    than a broken fixture. `run`, `id`, `setUp`, `skipTest`, `subTest` and `fail` are all mines.
+93. **OWL templates resolve bare identifiers against the component, so `Math.min(...)` inline is not
+    safe.** Compute derived display strings in a getter and `t-esc` the getter. Same family as
+    C18.71 (word-operators in `t-as`): anything that looks like a plain JS expression in a template
+    is compiled, not evaluated in the browser's global scope.
+94. **A cockpit that computes drill keys and then discards them is a dead board.** The Phase-M
+    Insights cockpit had 10 handlers, 4 navigational, and 20+ card-like elements that looked
+    clickable and were not — while the payload was already carrying (or one line away from
+    carrying) every id needed. `_pulse_attendance` called the exception engine and threw away all
+    its rows; `_snapshots` read `payslip_run_id` and kept only `.name`. Rule: if a collector
+    resolves a record, SHIP ITS ID. The UI can ignore an id; it cannot invent one.
+95. **A falsy id makes a silent dead click.** `{'id': did or 0}` for the unassigned bucket plus a
+    handler that early-returns on a falsy id = a row that looks live and does nothing, with no
+    feedback. Emit an explicit `drillable` flag and render the inert case differently.
+96. **`widget="percentage"` multiplies by 100.** It expects a FRACTION. On a field already stored
+    in percent points it renders 1250% for +12.5% — and the "10000%" seen on the legacy analytics
+    dashboard was that bug stacked on a `100.0` sentinel meaning "100%". Check what the compute
+    stores before choosing the widget, and check the search filters agree with the display.
+97. **`invalidate_cache()` was removed in Odoo 15** (only `invalidate_recordset` exists,
+    `odoo/orm/models.py:6722`). Grep for it after any Odoo upgrade: the one in
+    `om_hr_payroll/models/hr_payslip.py:1083` sat unguarded on the batch-approval path, so
+    advancing a run to Level 2 raised AttributeError.
+98. **Comparing a half-finished period against a complete one manufactures phantom movement.** The
+    new Workforce cockpit reported "3,032 left" in a July that had only partly run — everyone whose
+    pay run had not happened yet. Detect the in-progress period and SAY so; the figure is not wrong,
+    it is meaningless, which is worse because it looks precise.
+99. **Normalise untrusted spec input to a hashable type BEFORE the membership test.** A spec that
+    arrives from an action context or URL is user input: `value not in REGISTRY` raises
+    `TypeError: unhashable type: 'dict'` when the value is a JSON object. Coerce, then test, then
+    fall back. Found by a hostile-input test, not by review — write that test.
+
+### Combined G–M review pass (2026-07-28, Fable review of the Opus batch). Numbering continues C18.
+
+100. **`readonly=True` is a UI hint, not a guard — every workflow field that feeds payroll gets an
+     ORM seal.** Phase K's `bonus_hours` comment literally said "readonly is the RPC guard"; a
+     call_kw `write({'state':'approved','approved_hours':99,'bonus_hours':99})` landed and the
+     bridge would have paid it. The pattern is the module-level `object()` sentinel on
+     create/write (forged create values dropped, forged writes raise) + a decide-tier gate on the
+     actions themselves (never the employee's own record). If a field's value reaches a payslip,
+     grep for its writers and seal them — `hr.overtime.request` now mirrors `hr.payslip.run`
+     (C18.76).
+101. **A demo group may never be a root in an ENFORCEMENT role read.** Phase L wired
+     `pb_demo.group_payobook_demo` into `_pb_user_roles` as `root` — combined with the demo
+     group's `[(1,'=',1)]` rules, any demo login could walk a REAL pay run through all three
+     tiers. Demo authority is scoped per-record to generator-stamped `is_demo` rows (gate, button
+     flags, searches); raw writes stay sealed even on demo rows. When the guided-trial stream
+     hands this group to self-signup strangers, this rule is the only thing between them and the
+     approval chain.
+102. **Tier gates pass `env.su`; seals already did.** A server-side `sudo()` caller
+     (payroll_analytics_approval's finalize) is sanctioned code and call_kw can never hand a
+     client su — a tier gate without the su exemption breaks legitimate cross-module flows the
+     moment someone below the tier triggers them.
+103. **Day-bucketing of UTC datetimes is EMPLOYEE-LOCAL, never `.date()` on the raw value.** VN is
+     UTC+7: a 05:58 local punch lives on the previous UTC day, so UTC keying invented exactly the
+     `missing_punch` C18.49 forbids — and the import wizard already converted local→UTC, so the
+     write and read sides disagreed about which day a punch belonged to. Both sides now share the
+     employee-tz conversion; widen batch windows one day EACH side.
+104. **Odd-anchored fortnight windows clamp ISO week 53 to its own ISO year.** Week 53 is odd and
+     so is next year's week 1 — unclamped, the two windows overlap and hours double-count across
+     the boundary (December OT mis-split). 2026 is a 53-week year; the boundary test exists now.
+105. **An audit hook that swallows exceptions still kills the business write unless the log call
+     runs in a SAVEPOINT.** A DB-level error in the entry INSERT poisons the transaction; the
+     except swallows the Python exception but the flush dies later with "current transaction is
+     aborted". `with self.env.cr.savepoint():` inside the try is the whole fix (biz_audit_trail,
+     H-M1).
+106. **Testimony voids on content swap.** A verification flag testifies to a SPECIFIC file on a
+     specific employee/category — swapping `attachment_id` under a verified document kept
+     "Verified by A" over a file A never saw. Either freeze the reviewed fields (bank-request
+     pattern) or auto-void the testimony when they change (vault pattern). Related: a self-served
+     create may only bind an attachment the caller OWNS and that nothing has claimed — the sudo
+     unlink cascade otherwise destroys a foreign file (I-M4).
+107. **An ACL wall you didn't build is not a gate (C18.65/73 corollary, twice re-learned).** The
+     MSS queues crashed for group-less line managers because the reads leaned on officer-only
+     ACLs; the shift grid's sudo leave read was "protected" by a missing shift ACL one model
+     earlier. Facades read sudo BEHIND their own explicit first-line gate; the gate names the
+     persona, the sudo makes the payload complete, and record rules never silently empty a board.
+108. **A truncation flag must come from the collector, not recomputed at the edge.** The audit
+     export compared `len(rows) > cap` after each source was already capped at exactly `cap` —
+     truncated=False while rows were dropped. Thread the collector's own `capped` boolean through
+     (and the import wizard's row cap was off by one AND silent — surface `truncated` + the cap in
+     every parse/validate/commit payload).
+109. **`peek_source_columns` returns every SPELLING of a column, not one row per column** (NETROLE
+     P3). `_raw_data_from_row` stores the heading AND the bare column letter, and a multisheet
+     scheme adds the `SHEET|heading` twin — so a 25-column file yields ~50-75 entries and
+     `len(cols)` shown to a user as "N columns read" is two to three times the truth. The list is
+     right (the resolver really does see all of them, and `_lookup_in_blob` must be offered all of
+     them), so keep the full set in the blob and count `preferred` for the human number. Matching a
+     binding key against a file MUST go through `hr.payroll.import.batch._lookup_in_blob` — exact,
+     then normalised, then the ≥6-char substring stage — never a string compare in the caller, or
+     the screen's idea of "fed" and the run's differ.
+110. **`hr.formula.rule.source._check_key` refuses a blank key at write time**, so "a binding that
+     names no column" is unreachable through the ORM. A gate that drops blank-key rows is defence
+     in depth against a migration or raw SQL, not the enforcement point — assert the refusal where
+     it lives, and don't write a test that manufactures the impossible state (it fails with a
+     ValidationError, which is the model being right).
+111. **Never name a test fixture attribute `run`** (NETROLE P4). `TransactionCase.run` IS unittest's
+     entry point: `cls.run = env['hr.payslip.run'].create(...)` makes the suite die with
+     `TypeError: 'hr.payslip.run' object is not callable` at `test(result)` — *before* any test
+     method executes, so the log reads `0 failed, 0 error(s) of 0 tests` and looks like a
+     test-tags typo rather than a shadowed method. Same trap for `id`, `shortDescription`,
+     `subTest`, `addCleanup`. Use `payrun`, `slip`, etc.
+112. **`payobook_template` has NO active member of `base.group_system`** (both `admin` and
+     `__system__` are archived), so **any** `res.users.create` in a test on that database raises
+     Odoo's own `ValidationError: You must have at least an administrator user.` from
+     `_check_at_least_one_administrator` — nothing to do with the module under test. An
+     access-refusal test must BORROW an existing user that holds none of the gate groups
+     (fall back to `base.public_user`) rather than create one. This is a property of the template
+     database; the other three carry live admins.
+113. **`-i <module>` on an already-installed module runs ZERO tests.** A first test run that fails
+     during the post-install suite still leaves the module `installed`, so the obvious retry with
+     `-i` silently selects nothing and reports `0 failed, 0 error(s) of 0 tests`. Retry with
+     `-u <module>`. Also: with `--logfile=<path>` the shell's `echo EXIT=$? >> <path>` can be lost
+     — capture the exit code to its OWN file if you need it as evidence.
+114. **The provenance blob covers INPUTS only** (NETROLE P4). `formula_input_sources` has one entry
+     per `column_type='input'` rule; a `formula` component (NETPAY included) and, on the batch-free
+     path, a `constant` one have no entry at all. A surface that reads only the blob therefore has
+     no NETPAY cell to click. The fix is a **declared** lane derived from the rule's own
+     `column_type` (`formula → calculated`, `constant → constant`) kept explicitly distinct from a
+     **recorded** one, never a guess written into the blob — and a `calculated` lane must never be
+     summed into a money total, because it is made of the other lanes' numbers.
+115. **`formula_dependencies` holds COLUMN LETTERS and throws the operator away**
+     (VALUEKIND P1). `_compute_dependencies` (`formula_rule.py:1417`) regex-scrapes
+     `excel_formula` into a flat comma list of refs — `NETPAY → "BP,BP5,CC,CC5,CD,CD5"` —
+     and it feeds the engine's topological order, so its output must not change. It also
+     cannot answer "is this a number", because `IF(F5="La Nga",…)` and `X5/AB5` both
+     produce a bare ref. Operator context is a SEPARATE stored field
+     (`formula_operand_roles`, from `formula_operand_context.py`) with its own
+     `@api.depends`; never widen the dependency compute to carry it.
+116. **A type default whose failure mode is DESTRUCTION is the wrong default**
+     (VALUEKIND P1). `hr.integration.field.mapping.source_data_type` defaulted to
+     `'number'`, and `transform_value` returned `default_value` (a Float, 0.0) when the
+     `float()` failed. Four wires on ABM created without an explicit type silently turned
+     `"Ho Chi Minh Branch"`, `"2025-06-02"` and `"Resigned"` into `0.0` on every run —
+     and `LOCATION` is read by the scheme's own `IF(F5="La Nga",…)`, so that comparison
+     was false for all 152 employees, in silence, for the life of the connector. When a
+     guess can destroy data, default to the option that PRESERVES it and flag the
+     disagreement instead. The default is now `'string'`, and the target component's
+     `value_kind` is what actually decides coercion.
+117. **Coercion happens in TWO places, not one** (VALUEKIND P1). Re-typing the wire is
+     not enough: `normalize_input_value` (`payroll_import_batch.py:3761`) independently
+     floats any numeric-looking string, which is why `EMPBANKACCOA` lost its leading
+     zeros despite a correctly-typed `string` mapping. Any "this value has the wrong
+     type" report must check both sites before concluding anything.
+118. **Never classify a column from `formula_input_values`.** That blob is downstream of
+     both coercion sites, so evidence drawn from it confirms its own damage. The intact
+     source material is `hr_payroll_import_line.raw_data_json`, which survives on every
+     done batch — which is also why a historic run can be repaired without re-syncing the
+     vendor. The exception is an AUDIT that deliberately compares the two: "the feed sent
+     `Ho Chi Minh Branch`, the payslip stored `0.0`" is the finding.
+119. **"Used in a formula" is NOT evidence of a number** (VALUEKIND P1). `F5="La Nga"`
+     and `X5/AB5*AD5` are both usage; only the OPERATOR tells them apart. ABM's
+     `SHUIPARTICIP` is a genuine text input to the pay calculation (`AS5="YES"`), and it
+     carries `net_role='earning'`. So a DERIVED signal (`net_role`, itself read off the
+     formula graph) must never outrank DIRECT evidence — 152 stored values reading
+     "YES". Only `CTX_ARITH` and a `formula`/`constant` column type are strong enough to
+     outrank the values themselves.
+120. **An automated re-type may only ever move TOWARD preserving the value**
+     (VALUEKIND P1). The first draft of `19.0.1.91.0` widened three correctly-typed
+     `string` wires on the demo database — `date_of_birth` among them — because the
+     classifier had returned `money` with the stated reason *"no signal — money by
+     policy"*. Acting on a DEFAULT as though it were a finding is how an automated repair
+     becomes an automated regression. Two rails now: never non-numeric → numeric
+     automatically (log it as a suggestion for a person), and never act when the
+     classifier's reason begins "no signal".
+121. **`rsync -a` preserves 0600 and the `odoo` user then cannot read the module**
+     (VALUEKIND P1). A file written locally with mode 0600 arrives on the server as 0600;
+     the service runs as `odoo`, so `__manifest__.py` became unreadable and the log said
+     only `module …: manifest not found` / `not installable, skipped`, while
+     `ir_module_module.state` sat at `to upgrade` and the test run reported
+     `0 failed, 0 error(s) of 0 tests`. Nothing anywhere says "permissions". Deploy with
+     `rsync -az --perms --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r` (the `D…,F…` short form is
+     rejected by rsync 3.x as an invalid argument), and check
+     `find <addons>/<module> ! -perm -o+r | wc -l` is 0 after every deploy.
+122. **Payslip-line creation lives in TWO places, exactly like coercion did**
+     (VALUEKIND P2, and the direct sequel to C18.117). `hr_payslip_formula.
+     _create_payslip_lines_from_formulas` is the one you find by grepping
+     `appears_on_payslip`; `payroll_import_batch._compute_and_create_payslip_lines`
+     is the one the IMPORT and the **Recompute Formulas** button actually run.
+     Guarding only the first left ABM's `EMPBANKACCOA` on the payslip after a
+     full 152-payslip recompute, and the diff looked like the fix had simply not
+     worked. Any rail about what may become a payslip line must be added to both.
+123. **`appears_on_payslip` is a line-CREATION flag, not a print flag.** It
+     decides whether an `hr.payslip.line` ROW EXISTS, and every downstream total
+     sums those rows — `pb_total_*`, the Explorer's fact tables, the payroll
+     report, GL. On ABM it was set on a bank account and an insurance book
+     number, so 152 lines each carried an account number AS AN AMOUNT and
+     contributed 1,084,804,462,467,690 — which is the 1086T the Analytics
+     Explorer reported as employer cost. A payslip statement module
+     (`pb_payslip`) styles the statement; it cannot undo a row in the database.
+     The rail is the component's `value_kind`: a Float `total` can only hold a
+     number.
+124. **Deleting a pay run ORPHANS its payslips; it does not delete them.**
+     `hr_payslip.payslip_run_id` is `ON DELETE SET NULL`
+     (`pg_constraint.confdeltype = 'n'`) and `hr.payslip.run` has no `unlink`
+     override, so every payslip survives with a null run — draft ones included.
+     A subsequently created run for the same period re-parents them, WITHOUT
+     recomputing: on ABM the "new" run 14 carried payslips whose `create_date`
+     was still the import batch's, so they held values computed before a fix
+     that had already shipped. When a fix appears not to have taken, check
+     `hr_payslip.create_date` against the deploy time before looking anywhere
+     else — only a recompute rewrites `formula_input_values`.
+125. **A module's derived data is that module's OWN migration to rebuild**
+     (VALUEKIND P4). The first attempt flagged `pb.fact.run` dirty from
+     pb_hr_payroll_formula's migration, guarded by `'pb.fact.builder' in env`.
+     That guard is False: module load order runs the migration before
+     pb_explorer's models reach the registry. Nothing was flagged, nothing was
+     logged, and the Explorer went on answering with the old classification from
+     a fact table that looked perfectly fresh — `_token()` fingerprints the
+     PAYSLIPS, and no payslip had changed. A cross-module `in env` guard in a
+     migration is a silent no-op waiting to happen.
+126. **A blanket `except` around a cross-model call turns a typo into a feature
+     that quietly does nothing** (VALUEKIND P4). `employee_signal_map` called
+     `self._normalize_header_key(...)` on `hr.formula.config`; the method lives
+     on `hr.payroll.import.batch`. The caller's `except Exception: continue`
+     swallowed the AttributeError into "this scheme has no employment signals" —
+     which is indistinguishable from a scheme that genuinely has none, so the pay
+     run wizard showed no status filter and every run silently covered everybody.
+     Catch to protect a board from ONE bad row; log loudly enough that the
+     difference between "nothing to report" and "this is broken" is visible.
+127. **New columns on a shared positional statement go on the END.**
+     `pb_fact_builder._aggregate_sql` is read positionally by two consumers (the
+     builder's `_insert` and `test_01_aggregate_parity`). Inserting `is_rollup`
+     after `category_type` shifted every index after it, and the parity test
+     failed with `could not convert string to float: 'XBAS'` — the amount column
+     was now the component name. Append, never insert. And when asserting the
+     column count, capture `cr.description` IMMEDIATELY after the execute: it
+     describes the LAST query the cursor ran, and an ORM search two lines later
+     replaces it.
+128. **`net_role_detail` is shared between the run header and the reports, so
+     "fix" it for one and you move the other** (VALUEKIND P4). ABM's
+     `TOTACOSTTOER` (total employer cost) is flagged as a subtotal, which makes
+     the Explorer's Employer cost measure read 0. Unticking it does fix the
+     Explorer — and it also adds ₫1,170,285,630 to the pay run header's
+     DEDUCTIONS, because `pb_payruns` excludes detail lines
+     (`hr_payslip_run.py:181`) and its deduction bucket would otherwise swallow
+     the Company Contribution category. The flag is load-bearing in two places
+     for two different reasons. The real fix is for the header to classify by
+     `pay_role` as the Explorer now does; until then, do not untick a subtotal on
+     an employer-cost component and expect only the report to move.
+129. **The formula graph says WHETHER a component reaches net pay; it cannot say
+     HOW** (VALUEKIND P5). NETROLE walks the scheme's own formulas and marks
+     anything with a path to net pay as an earning. On ABM that caught nine
+     `quantity` components and one `text` component, because hours reach net pay
+     through `ROUND(BASESALARY / STANWORKHOUR * ACTUWORKHOUR, 0)` — as a divisor
+     and a multiplier, not as an addend. They SCALE the money; they are not a
+     share of it. The figures were right only because all ten happened to be
+     flagged Subtotal, so untick one and hours join gross pay. `MONEY_ROLE_KINDS`
+     in `value_kind_classifier.py` is now the single test, applied at every
+     writer (`classify_net_roles`, `set_component_setup`) rather than left to the
+     reports to filter out. `decimal` and `integer` stay allowed: the gate stops
+     what is KNOWN not to be money, it does not demand proof that something is.
+130. **A component is a detail only of a roll-up that is ITSELF counted**
+     (VALUEKIND P5, and the close of C18.128). ABM's Employer cost read ₫0
+     because `TOTACOSTTOER` contains net pay and is excluded outright, `SI-HI-UI
+     Total 21.5%` and `Trade Union ER 2%` were marked details OF it, and the
+     three parts behind the 21.5% were details of that: every level deferred
+     upwards and the top level was excluded, so nothing anywhere was counted.
+     `_net_role_mark_details` now skips an excluded target when deciding. Note
+     the rule is transitive and one level is NOT enough — `SIBASE` is inside
+     `SIAMT` which is inside `DEDAGG`; a rule that only asked "is my parent
+     counted" would count SIBASE twice (test 16 pins this).
+131. **A setting whose effects outlive the screen you are on does not belong on
+     that screen** (VALUEKIND P5). The component-treatment board was reached from
+     a pay run, and it edits the SCHEME: a pay role changed while looking at June
+     changes July and every run already computed. It moved to Mappings and the
+     Atlas renders the SAME component with `readonly` plus a link. Two hosts, one
+     implementation — `pb_source_atlas` now depends on `pb_formula_studio`,
+     because a viewer may depend on the editor and never the reverse.
+132. **A read-only cell must not drop the value it is describing.** Filtering a
+     `<select>`'s options by what is now allowed made rows read "— not set —"
+     over components the database says are earnings: the screen denying the very
+     state the banner above it was asking about. Keep the stored value in its own
+     list, flag the row, and let the reader move off it.
+133. **Deleting a pay run did NOT delete its payslips, and the wizard adopts the
+     orphans** (VALUEKIND P5). `payslip_run_id` is a plain many2one, so a
+     deleted batch left every payslip alive and unattached; then
+     `pb.payrun.wizard._adopt_loose_slips` claims a period's loose drafts on
+     purpose, so that rebuilding a run does not compute a second payroll on top
+     of one that exists. Individually reasonable. Together: delete a run, build
+     a new one, and the OLD numbers walk back in unrecomputed. Caught live on
+     abm 2026-08-28 — run 15 created 03:39:32 holding 152 payslips created
+     2026-08-26, `write_date` = the moment of adoption. `hr.payslip.run.unlink`
+     now takes its drafts with it, `action_pb_delete_draft_payslips` clears a
+     period without deleting the run, and the wizard says "Reused" rather than
+     "Computed" when it adopted. When a fix looks like it did nothing, check
+     `hr_payslip.create_date` against the deploy time before anything else.
+134. **A scheme in Draft is INVISIBLE to every config lookup, and the message
+     said "no scheme"** (VALUEKIND P5). Every rung of
+     `hr.payslip._find_formula_config` filters `state = 'active'`, so a Draft
+     scheme matched nothing and `compute_sheet` reported it ABSENT — sending two
+     people hunting for a missing assignment while the scheme sat one lifecycle
+     step from working. It had never surfaced because every payslip on that
+     tenant came from the IMPORT path, which sets `formula_config_id` explicitly
+     and never reads the state; the wizard was the first thing to look it up.
+     `_inactive_formula_configs()` tells the two apart. **When a lookup filters
+     on a state, the not-found message must say which of the two it is.**
+135. **A pay run that computed on nothing looked exactly like one that worked**
+     (VALUEKIND P5). 36 payslips, gross ₫243,000,000, a clean KPI band — and all
+     54 inputs on every payslip read `src: none, via: default`. The ₫243m was one
+     component's default (`PAIDLEAVUNUS`, 6,750,000) times 36, and deductions
+     were ₫0 because they are percentages of a base salary that defaulted to
+     zero. The provenance to detect this had been written since SOURCING S1;
+     nothing counted it. `hr.payslip.pb_sourced_inputs` +
+     `hr.payslip.run.pb_unsourced_count` + a banner ABOVE the KPI band, because
+     the band is what it is warning you not to believe.
+136. **A stored compute does not re-run when its code changes.** `pb_unsourced_count`
+     shipped without the "no provenance blob means PREDATES provenance, not
+     sourced nothing" guard, and its stored values flagged 42 correct runs on the
+     demo database. Adding the guard fixed nothing by itself — the wrong answers
+     sat there being wrong until a migration called `env.add_to_compute(...)`.
+     Ship a stored-field logic change WITH the migration that asks for it again.
+137. **Sync before you compute, or you compute on whatever the last import left.**
+     The Run Payroll wizard computed first and synced never. Freshening the feed
+     is now a step of the run (`sync_plan` / `sync_step`), and it never blocks: a
+     connector that is down is NAMED on the result screen and the run goes on,
+     because the file and contract fallbacks may well be enough.
+138. **Pull per FEED, never per kind of data** (the mistake, then the fix).
+     `action_pull_data` has branches for employee / salary / dependent /
+     attendance / leave and NONE for `custom` — so ABM's Overtime requests feed
+     (six components) asked for a pull that had no branch, fetched nothing, and
+     reported success. Kind is the wrong unit anyway: a Zoho connector has TWO
+     attendance feeds and two custom ones. `action_pull_endpoint` already says
+     this in its own docstring. Also: `salary` is the expensive one
+     (`fetch_payroll_data` loops per employee, three API calls each — ~456
+     requests for 152 people), so pulling only what is mapped is faster as well
+     as correct.
+139. **A wire with no `endpoint_id` is pulled by NOTHING.** The sync plan is
+     derived from the endpoint, so a wire that names only a source field falls
+     back to its default on every run while the run reports success. The board
+     only sends an endpoint when the reader has picked ONE feed — in "All feeds"
+     it sends none — and the catalogue knew the answer the whole time.
+     `_endpoint_for_field` looks it up on create; migration 19.0.1.169.0 did the
+     same for four already saved on abm, BASESALARY among them. Silent when
+     AMBIGUOUS on purpose: guessing between two feeds carrying the same field
+     name would wire payroll to the wrong one.
+140. **One vendor spells the same field three ways across its own feeds.** Zoho
+     sends `EmployeeID` on the employee form, `Employee_ID` on the salary form,
+     `employeeId` on the attendance report — and `EmailID` / `emailId` /
+     `mailId` for the address. Exact-match candidate lists caught the first of
+     each, so attendance linked 0 of 3,064 records and salary 3 of 1,368: the
+     data arrived, attached to nobody, and every component reading it defaulted.
+     **Compare identifier keys with case and underscores removed.**
+141. **The employee feed is the ROSTER other feeds join to.** ABM's employee code
+     (`11708`) is stored nowhere on `hr.employee` — matching only ever worked by
+     email, which salary records do not carry. A record that cannot find a person
+     directly now reuses the peer `data_type='employee'` row carrying the same
+     external id, which already resolved. 5,326 rows relinked.
+142. **The payslip resolver read TWO data types.** `_j3_feed_hits_by_rule`
+     searched `data_type in ('employee', 'salary')`, so hours (attendance) and
+     overtime (custom) were invisible however well they were linked:
+     `STANWORKHOUR` defaulted with 168 correct June rows sitting against the
+     right people, `ACTUBASISALA = ROUND(BASESALARY/STANWORKHOUR*ACTUWORKHOUR,0)`
+     divided by that zero, and no basic pay reached gross. Now every kind the
+     wires point at — **and the merge order is EXPLICIT**, because
+     `data_type asc` only happened to give employee-before-salary by spelling,
+     and adding `attendance`/`custom` to that sort would have let master data
+     overwrite the period's hours.
+143. **The FROM column mixes what ARRIVED with what the vendor CLAIMS.**
+     `get_available_source_fields` merges `live` (real payloads, real samples),
+     `catalog` (the vendor's field list, illustrative samples) and `odoo`. The
+     board labelled it honestly — NOT SENT badge, "e.g." before the number — and
+     still allowed payroll to be wired to a catalogue entry. Base Salary was
+     mapped to `Salary` (catalog, never delivered) while `Base_Salary` (live,
+     12,500,000) sat in the same list. Only `live` and `computed` are mappable
+     now; before a first sync the refusal becomes an offer to fetch.
+     **Corollary for whoever is debugging: read the payload, never the
+     catalogue.** Recommending `Salary` off the catalogue cost three empty runs.
+144. **Each fault hid the next.** Draft scheme → no lines at all. Fixed: no
+     source data. Fixed: wrong feeds pulled. Fixed: records attached to nobody.
+     Fixed: resolver could not see them. Fixed: gross ₫243m → ₫624,617,018, and
+     deductions still ₫0 because `SHUIPARTICIP` is sourced `excel` and the run
+     had no pay-data file. **On a "the number is wrong" report, walk the whole
+     chain before reporting a cause** — did it sync, did it link, did the
+     resolver read it, did the formula get a value, is the value used. Each
+     answer looks like the whole answer.
+145. **The design bar is binding on every design or implementation request in this project
+     (owner mandate, 2026-08-29): "extreme WOW, intuitive, out-of-this-world experience, best in
+     class."** Concretely, every handover and every surface must: name its **hero moment**; have
+     **zero dead-ends** (empty, loading, error, partial and huge states all designed; every failure
+     names its reason and its next step); use **plain language** over code vocabulary on every
+     label, toast and summary; use **motion with purpose** (enter/exit, progress, state change —
+     never decorative jitter); offer **keyboard + bulk ergonomics** wherever rows are involved
+     (multi-select, shift-range, paste, undo); and be **measured against the best SaaS tool in
+     that category, not stock Odoo**. Lucide/SVG icons, never emoji; never the word "Odoo" in a
+     user-visible string. Paste this paragraph verbatim into every handover's Design section and
+     have the phase report score itself against it.

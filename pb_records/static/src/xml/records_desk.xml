@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- =================================================================
+       The picker: one filterable list, used by both a selection cell and
+       a many2one cell. The "create" row appears only when the card says an
+       unseen value would be created.
+       ================================================================= -->
+  <t t-name="pb_records.RdPicker">
+    <div class="rd-picker" t-on-click.stop="">
+      <div class="rd-picker-search">
+        <span class="ic"><t t-out="ic('search',14)"/></span>
+        <input t-ref="input" type="text" t-att-value="state.term"
+               t-on-input="onInput" t-on-keydown="onKey"
+               t-att-placeholder="props.lookup ? 'Type to search…' : 'Type to filter…'"/>
+        <span t-if="state.loading" class="rd-picker-spin"/>
+      </div>
+      <div class="rd-picker-list">
+        <button t-foreach="allRows" t-as="row" t-key="row_index"
+                type="button"
+                t-attf-class="rd-picker-row {{ state.active === row_index ? 'on' : '' }} {{ row.create ? 'new' : '' }}"
+                t-on-mouseenter="() => this.state.active = row_index"
+                t-on-click="() => this.pick(row)">
+          <span class="lb" t-esc="row.label"/>
+          <span t-if="row.create" class="tag">Will be created</span>
+        </button>
+        <div t-if="!allRows.length" class="rd-picker-empty" t-esc="emptyLabel"/>
+      </div>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       One cell being typed into. One component, one switch: every editor
+       owes the grid the same commit / cancel / move-on contract.
+       ================================================================= -->
+  <t t-name="pb_records.RdCellEditor">
+    <div t-attf-class="rd-editor rd-editor--{{ kind }} {{ props.wide ? 'wide' : '' }}"
+         t-on-click.stop="">
+
+      <t t-if="kind === 'boolean'">
+        <div class="rd-bool">
+          <button type="button" class="rd-bool-btn yes" t-on-click="() => this.setBool(true)">
+            <t t-out="ic('check',14)"/> <t t-esc="yesLabel"/>
+          </button>
+          <button type="button" class="rd-bool-btn no" t-on-click="() => this.setBool(false)">
+            <t t-out="ic('x',14)"/> <t t-esc="noLabel"/>
+          </button>
+        </div>
+      </t>
+
+      <t t-elif="kind === 'selection'">
+        <RdPicker col="props.col" value="props.value"
+                  onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+
+      <t t-elif="kind === 'm2o'">
+        <RdPicker col="props.col" value="props.value" lookup="props.lookup"
+                  onPick.bind="onPick" onCancel="props.onCancel"/>
+      </t>
+
+      <t t-elif="kind === 'date'">
+        <input t-ref="input" type="date" class="rd-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <t t-elif="kind === 'number'">
+        <input t-ref="input" type="text" inputmode="decimal" class="rd-in num"
+               t-att-value="state.draft" t-on-input="onInput"
+               t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <t t-else="">
+        <input t-ref="input" type="text" class="rd-in" t-att-value="state.draft"
+               t-on-input="onInput" t-on-keydown="onKey" t-on-blur="onBlur"/>
+      </t>
+
+      <button t-if="kind === 'selection' || kind === 'm2o'" type="button"
+              class="rd-editor-clear" t-on-click="clear" t-esc="clearLabel"/>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       R4 D2 — the review list, folded.
+
+       One list, used by BOTH drawers. A change that lands on three or more
+       people is one row with a count and a chevron; everything else stays
+       per person, exactly as it read before. The group head is a real
+       button, so Enter and Space open it without a keydown handler of its
+       own, and `aria-expanded` says which state it is in.
+       ================================================================= -->
+  <t t-name="pb_records.RdReviewList">
+    <div class="rd-revlist">
+      <t t-foreach="blocks" t-as="b" t-key="b.type === 'group' ? b.key : 'p' + b.id">
+
+        <div t-if="b.type === 'group'"
+             t-attf-class="rd-rev-grp {{ b.status }} {{ isOpen(b.key) ? 'open' : '' }}">
+          <button type="button" class="rd-rev-grp-head"
+                  t-att-aria-expanded="isOpen(b.key) ? 'true' : 'false'"
+                  t-on-click="() => this.toggle(b.key)">
+            <span class="cv"><t t-out="ic(isOpen(b.key) ? 'chevronDown' : 'chevron', 13)"/></span>
+            <span class="fd" t-esc="b.field_label"/>
+            <span class="ov" t-esc="b.old_label or '—'"/>
+            <span class="ar"><t t-out="ic('arrow',13)"/></span>
+            <span class="nv" t-esc="b.new_label or '—'"/>
+            <span class="ct"><t t-out="ic('users',12)"/> <t t-esc="countLabel(b.count)"/></span>
+          </button>
+          <div t-if="b.why" class="rd-rev-grp-why" t-esc="b.why"/>
+          <div t-if="isOpen(b.key)" class="rd-rev-grp-names" t-esc="namesLabel(b)"/>
+        </div>
+
+        <div t-else="" class="rd-rev-person">
+          <div class="rd-rev-name" t-esc="b.name"/>
+          <div t-foreach="b.rows" t-as="r" t-key="r.field_id"
+               t-attf-class="rd-rev-row {{ r.status }}">
+            <span class="fd" t-esc="r.field_label"/>
+            <span class="ov" t-esc="r.old_label or '—'"/>
+            <span class="ar"><t t-out="ic('arrow',13)"/></span>
+            <span class="nv" t-esc="r.new_label or '—'"/>
+            <span t-if="r.status === 'refused'" class="wy" t-esc="r.why"/>
+          </div>
+        </div>
+
+      </t>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       R3 — a file arrives. The depth counter lives in the component; this
+       template only says what the two states look like.
+       ================================================================= -->
+  <t t-name="pb_records.RdDropZone">
+    <div t-attf-class="rd-drop {{ over ? 'over' : '' }} {{ props.busy ? 'busy' : '' }}"
+         t-on-dragenter="onDragEnter" t-on-dragover="onDragOver"
+         t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+      <label class="rd-drop-in">
+        <span class="ic">
+          <t t-if="props.busy"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('upload',15)"/>
+        </span>
+        <span class="tx">
+          <span class="lb" t-esc="props.busy ? (props.busyLabel or zoneLabel) : zoneLabel"/>
+          <span t-if="!props.busy" class="sb" t-esc="zoneHint"/>
+        </span>
+        <input type="file" accept=".xlsx,.xlsm,.csv" t-on-change="onPick"
+               style="display:none"/>
+      </label>
+      <div t-if="over" class="rd-drop-over">
+        <t t-out="ic('download',16)"/> <span t-esc="overLabel"/>
+      </div>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       R4 D3 — out to a file and back from one, in the space there is.
+
+       Wide, the two directions stand side by side: an Export split button and
+       a drop zone you can also click. Under 1440px the same three commands are
+       one File menu, because the header's last inch belongs to Review — the
+       only button on this screen that writes anything. Dropping a file
+       anywhere over the grid works at every width either way.
+       ================================================================= -->
+  <t t-name="pb_records.RdFileMenu">
+    <t t-if="props.narrow">
+      <div class="rd-filemenu">
+        <button type="button" class="pbim-btn ghost rd-filemenu-btn"
+                t-att-title="'Export or import a file'"
+                t-on-click.stop="toggle">
+          <t t-if="props.exporting or props.busy"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('file',15)"/>
+          <span t-esc="fileLabel"/>
+          <t t-out="ic('chevronDown',13)"/>
+        </button>
+        <div t-if="state.open" class="rd-scheme-menu" t-on-click.stop="">
+          <button type="button" t-on-click="() => this.pickExport('data')">
+            <span class="nm">Export with data</span>
+            <span class="ct" t-esc="props.countLabel"/>
+          </button>
+          <button type="button" t-on-click="() => this.pickExport('template')">
+            <span class="nm">Export blank template</span>
+            <span class="ct">headings only</span>
+          </button>
+          <div class="rd-menu-sep"/>
+          <label class="rd-filemenu-up">
+            <span class="nm">Import a file</span>
+            <span class="ct">.xlsx or .csv</span>
+            <input type="file" accept=".xlsx,.xlsm,.csv" t-on-change="onPick"
+                   style="display:none"/>
+          </label>
+        </div>
+      </div>
+    </t>
+    <t t-else="">
+      <div class="rd-filepair">
+      <div class="rd-export">
+        <button type="button" class="pbim-btn ghost"
+                t-att-disabled="props.exporting"
+                t-on-click.stop="() => this.pickExport('data')"
+                t-att-title="'Download the people and columns on screen'">
+          <t t-if="props.exporting"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('download',15)"/>
+          <t t-esc="exportLabel"/>
+        </button>
+        <button type="button" class="pbim-btn ghost rd-export-more"
+                t-att-title="'More ways to export'"
+                t-on-click.stop="toggle">
+          <t t-out="ic('chevronDown',13)"/>
+        </button>
+        <div t-if="state.open" class="rd-scheme-menu" t-on-click.stop="">
+          <button type="button" t-on-click="() => this.pickExport('data')">
+            <span class="nm">Export with data</span>
+            <span class="ct" t-esc="props.countLabel"/>
+          </button>
+          <button type="button" t-on-click="() => this.pickExport('template')">
+            <span class="nm">Export blank template</span>
+            <span class="ct">headings only</span>
+          </button>
+        </div>
+      </div>
+      <RdDropZone onFile="props.onFile" busy="props.busy"
+                  busyLabel="props.busyLabel"/>
+      </div>
+    </t>
+  </t>
+
+  <!-- =================================================================
+       R3 — the review drawer's BODY when the changes came from a file.
+       Three tabs over what the peek found: what would change, which rows
+       found nobody, and which columns were not understood.
+       ================================================================= -->
+  <t t-name="pb_records.RdFileReview">
+    <div class="rd-file">
+
+      <div class="rd-file-tabs" role="tablist" t-on-keydown="onTabKey">
+        <button t-foreach="tabs" t-as="t" t-key="t.key" type="button"
+                role="tab" t-att-aria-selected="isOn(t.key) ? 'true' : 'false'"
+                t-att-tabindex="isOn(t.key) ? 0 : -1"
+                t-attf-class="rd-file-tab {{ isOn(t.key) ? 'on' : '' }}"
+                t-on-click="() => this.show(t.key)">
+          <span class="lb" t-esc="t.label"/>
+          <span class="ct" t-esc="t.count"/>
+        </button>
+      </div>
+
+      <!-- ============================================ what would change -->
+      <div t-if="isOn('changes')" class="rd-file-pane" role="tabpanel">
+        <div class="rd-file-note">
+          <t t-out="ic('users',13)"/> <span t-esc="matchedByLine"/>
+          <t t-if="blankLine"> <span t-esc="blankLine"/></t>
+        </div>
+        <div t-if="!rows.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Nothing to change</h3>
+          <p t-esc="emptyChanges"/>
+        </div>
+        <RdReviewList t-if="rows.length" items="props.items"/>
+      </div>
+
+      <!-- ================================================ found nobody -->
+      <div t-if="isOn('unmatched')" class="rd-file-pane" role="tabpanel">
+        <div t-if="!props.unmatched.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Every row found its person</h3>
+          <p t-esc="emptyUnmatched"/>
+        </div>
+        <div t-else="" class="rd-file-note warn">
+          <t t-out="ic('alert',13)"/>
+          <span>Nobody is created from a file. Match a row by hand, or leave
+                it — either way nothing here is added to Payobook.</span>
+        </div>
+        <div t-foreach="props.unmatched" t-as="u" t-key="u.row"
+             class="rd-unmatched">
+          <div class="rd-unmatched-top">
+            <span class="rw">Row <t t-esc="u.row"/></span>
+            <span class="nm" t-esc="rowTitle(u)"/>
+          </div>
+          <div class="rd-unmatched-why" t-esc="u.why"/>
+          <div class="rd-unmatched-ct" t-esc="valueCount(u)"/>
+          <button t-if="state.binding !== u_index" type="button"
+                  class="pbim-btn outline pbim-btn-sm"
+                  t-on-click="() => this.startBind(u_index)">
+            <t t-out="ic('search',13)"/> Find person…
+          </button>
+          <div t-else="" class="rd-unmatched-pick">
+            <RdPicker col="pickerCol" lookup="props.lookup"
+                      onPick="(picked) => this.onPicked(u_index, picked)"
+                      onCancel.bind="cancelBind"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ ignored columns -->
+      <div t-if="isOn('ignored')" class="rd-file-pane" role="tabpanel">
+        <div t-if="!ignored.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Every column was understood</h3>
+          <p t-esc="emptyIgnored"/>
+        </div>
+        <t t-else="">
+          <div class="rd-file-note">
+            <t t-out="ic('minusCircle',13)"/>
+            <span>These columns are not fields this pay scheme maps, so they
+                  were read past. Nothing in them is used.</span>
+          </div>
+          <div class="rd-ignored">
+            <span t-foreach="ignored" t-as="c" t-key="c_index"
+                  class="rd-ignored-chip" t-esc="c"/>
+          </div>
+        </t>
+      </div>
+
+    </div>
+  </t>
+
+  <!-- =================================================================
+       The grid.
+       ================================================================= -->
+  <t t-name="pb_records.RecordsGrid">
+    <div class="rd-grid" tabindex="0" t-on-keydown="onKeyDown" t-on-paste="onPaste">
+
+      <div class="rd-gridbar">
+        <button type="button" class="rd-gridbar-all" t-on-click="toggleAll">
+          <span t-attf-class="rd-cb {{ allLoadedSelected ? 'on' : '' }}">
+            <t t-if="allLoadedSelected" t-out="ic('check',11)"/>
+          </span>
+          <span t-esc="selectionLabel"/>
+        </button>
+        <button t-if="showSelectAllMatching" type="button" class="rd-link"
+                t-on-click="selectAllMatching">
+          Select all <t t-esc="st.total"/> matching
+        </button>
+        <button t-if="st.selected.length" type="button" class="rd-link muted"
+                t-on-click="() => this.st.selected.splice(0, this.st.selected.length)">
+          Clear selection
+        </button>
+        <div class="rd-sp"/>
+        <span class="rd-gridbar-hint">
+          <t t-out="ic('table',13)"/>
+          Type to edit · Enter saves the cell · Ctrl-Z undoes
+        </span>
+      </div>
+
+      <div class="rd-scroll" t-ref="scroll" t-on-scroll="onScroll">
+        <div class="rd-table">
+
+          <div class="rd-head">
+            <div class="rd-hcell rd-c-check"/>
+            <div class="rd-hcell rd-c-id">Person</div>
+            <div class="rd-hcell rd-c-code">Code</div>
+            <div class="rd-hcell rd-c-dept">Department</div>
+            <div t-foreach="st.columns" t-as="col" t-key="col.id" class="rd-hcell rd-c-data">
+              <div class="rd-hcell-in">
+                <span class="lb" t-esc="col.label"/>
+                <span t-if="!col.editable" class="lk" t-att-title="col.hint and col.hint.title">
+                  <t t-out="ic('lock',12)"/>
+                </span>
+                <button type="button" class="rd-kebab" t-att-title="'Column actions'"
+                        t-on-click.stop="() => this.toggleMenu(col_index)">
+                  <t t-out="ic('moreVertical',14)"/>
+                </button>
+              </div>
+              <div t-if="col.sub" class="rd-hcell-sub" t-esc="col.sub"/>
+              <div t-if="st.menu === col_index" class="rd-menu" t-on-click.stop="">
+                <button type="button" t-on-click="() => this.menuSetSelected(col)"
+                        t-att-disabled="!st.selected.length">
+                  <t t-out="ic('users',14)"/> Set for everyone selected…
+                </button>
+                <button type="button" t-on-click="() => this.menuSetAll(col)">
+                  <t t-out="ic('list',14)"/> Set for all <t t-esc="loadedCount"/> shown…
+                </button>
+                <button type="button" t-on-click="() => this.menuClear(col)">
+                  <t t-out="ic('x',14)"/> Clear for selected
+                </button>
+                <div class="rd-menu-sep"/>
+                <button type="button" t-on-click="() => this.menuRevert(col)">
+                  <t t-out="ic('rotate',14)"/> Undo my edits in this column
+                </button>
+                <button type="button" t-on-click="() => this.menuHide(col)">
+                  <t t-out="ic('eyeOff',14)"/> Hide this column
+                </button>
+              </div>
+            </div>
+            <div t-if="!st.columns.length" class="rd-hcell rd-c-nudge">
+              <t t-out="ic('arrowUp',13)"/> Pick a field above
+            </div>
+          </div>
+
+          <div class="rd-body" t-attf-style="height:{{ spacerAll }}px">
+            <div class="rd-rows" t-attf-style="transform: translateY({{ spacerTop }}px)">
+              <t t-foreach="windowRows" t-as="w" t-key="w.i">
+
+                <div t-if="w.row" t-attf-class="rd-row {{ isSelected(w.row.id) ? 'sel' : '' }}">
+                  <div class="rd-cell rd-c-check">
+                    <button type="button" t-attf-class="rd-cb {{ isSelected(w.row.id) ? 'on' : '' }}"
+                            t-att-title="'Select this person'"
+                            t-on-click="(ev) => this.onRowCheck(ev, w.i, w.row)">
+                      <t t-if="isSelected(w.row.id)" t-out="ic('check',11)"/>
+                    </button>
+                  </div>
+                  <div class="rd-cell rd-c-id">
+                    <span class="rd-av" t-attf-style="background-image:url({{ w.row.avatar }})">
+                      <t t-esc="ini(w.row.name)"/>
+                    </span>
+                    <span class="rd-idtx">
+                      <span class="nm" t-esc="w.row.name"/>
+                      <span class="jb" t-esc="w.row.job"/>
+                    </span>
+                  </div>
+                  <div class="rd-cell rd-c-code" t-esc="w.row.code"/>
+                  <div class="rd-cell rd-c-dept" t-esc="w.row.department"/>
+
+                  <t t-foreach="st.columns" t-as="col" t-key="col.id">
+                    <div t-attf-class="{{ cellClass(col, w.row) }} rd-c-data {{ isFocused(w.i, col_index) ? 'focus' : '' }}"
+                         t-on-click="(ev) => this.onCellClick(ev, w.i, col_index, w.row, col)"
+                         t-on-dblclick="() => this.onCellDblClick(w.i, col_index, w.row, col)">
+
+                      <t t-if="isEditing(w.i, col_index)">
+                        <RdCellEditor col="col" value="editorValue(col, w.row)"
+                                      lookup="lookupFor(col)"
+                                      onCommit.bind="commit"
+                                      onCancel.bind="cancelEdit"
+                                      onMove.bind="moveFrom"/>
+                      </t>
+                      <t t-else="">
+                        <span t-if="noContract(col, w.row)" class="rd-nocon">No contract</span>
+                        <t t-else="">
+                          <span class="rd-v" t-esc="text(col, w.row)"/>
+                          <span t-if="dirtyOf(w.row.id, col.id) and oldText(col, w.row)"
+                                class="rd-was" t-esc="oldText(col, w.row)"/>
+                        </t>
+                        <span t-if="refusalOf(w.row.id, col.id)" class="rd-bad-dot"
+                              t-att-title="refusalOf(w.row.id, col.id)"/>
+                      </t>
+                    </div>
+                  </t>
+                  <div t-if="!st.columns.length" class="rd-cell rd-c-nudge"/>
+                </div>
+
+                <div t-else="" class="rd-row skel">
+                  <div class="rd-cell rd-c-check"/>
+                  <div class="rd-cell rd-c-id"><span class="rd-sk w60"/></div>
+                  <div class="rd-cell rd-c-code"><span class="rd-sk w40"/></div>
+                  <div class="rd-cell rd-c-dept"><span class="rd-sk w50"/></div>
+                  <t t-foreach="st.columns" t-as="col" t-key="col.id">
+                    <div class="rd-cell rd-c-data"><span class="rd-sk w70"/></div>
+                  </t>
+                  <div t-if="!st.columns.length" class="rd-cell rd-c-nudge"/>
+                </div>
+
+              </t>
+            </div>
+          </div>
+
+          <div t-if="!st.total and !st.loading" class="rd-empty">
+            <span class="rd-empty-ic"><t t-out="ic('search',26)"/></span>
+            <h3>Nobody matches those filters</h3>
+            <p>Widen the search on the left, or clear the filters and start again.</p>
+            <button t-if="props.onClearFilters" type="button" class="pbim-btn outline"
+                    t-on-click="props.onClearFilters">Clear the filters</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       The desk.
+       ================================================================= -->
+  <t t-name="pb_records.PbRecordsDesk">
+    <div class="pbim emp rd-root" t-att-class="{ 'rd-root--embedded': props.embedded }">
+
+      <div t-if="state.loading" class="pbim-busy">
+        <div class="pbim-spin"/><span>Opening the desk…</span>
+      </div>
+
+      <t t-else="">
+
+        <!-- ================================================= header -->
+        <div class="rd-head-bar">
+          <div class="rd-head-id">
+            <h1 class="pbim-h1" t-if="!props.embedded" t-esc="title"/>
+            <p class="pbim-sub" t-esc="subtitle"/>
+          </div>
+          <div class="rd-head-actions">
+            <div class="rd-scheme">
+              <button type="button" class="rd-scheme-pill"
+                      t-on-click.stop="() => this.state.schemeOpen = !this.state.schemeOpen">
+                <t t-out="ic('layers',14)"/>
+                <span t-esc="schemeName"/>
+                <t t-out="ic('chevronDown',13)"/>
+              </button>
+              <div t-if="state.schemeOpen" class="rd-scheme-menu" t-on-click.stop="">
+                <button t-foreach="state.schemes" t-as="s" t-key="s.id" type="button"
+                        t-attf-class="{{ s.id === state.configId ? 'on' : '' }}"
+                        t-on-click="() => this.onScheme(s.id)">
+                  <span class="nm" t-esc="s.name"/>
+                  <span class="ct"><t t-esc="s.mapped_count"/> fields</span>
+                </button>
+              </div>
+            </div>
+            <!-- R3 — out to a file, and back from one. Side by side, because
+                 they are one gesture with two directions.
+                 R4 D3 — and under 1440px they are one FILE menu instead, so
+                 Review never has to compete with them for the last inch. -->
+            <RdFileMenu narrow="state.narrow" exporting="state.exporting"
+                        busy="state.file.busy" busyLabel="state.file.name"
+                        countLabel="exportCountLabel"
+                        onExport.bind="exportFile" onFile.bind="takeFile"/>
+            <button type="button" class="pbim-btn ghost" t-on-click="openHistory">
+              <t t-out="ic('clock',15)"/> History
+            </button>
+            <button type="button"
+                    t-attf-class="pbim-btn primary rd-review-btn {{ state.pulse ? 'pulse' : '' }}"
+                    t-att-disabled="!counts.values" t-on-click="openReview">
+              <t t-out="ic('checkCircle',15)"/> <t t-esc="reviewLabel"/>
+            </button>
+          </div>
+        </div>
+
+        <div t-if="state.error" class="pbim-note warn rd-err">
+          <t t-out="ic('alert',15)"/> <span t-esc="state.error"/>
+        </div>
+
+        <!-- =========================================== nothing mapped -->
+        <div t-if="mappedNothing" class="rd-empty big">
+          <span class="rd-empty-ic"><t t-out="ic('database',30)"/></span>
+          <h3 t-esc="emptyFieldsTitle"/>
+          <p t-esc="emptyFieldsBody"/>
+          <button type="button" class="pbim-btn primary" t-on-click="openMapping">
+            <t t-out="ic('gitMerge',15)"/> Open Mapping
+          </button>
+        </div>
+
+        <!-- ============================================= the three zones -->
+        <div t-else="" class="rd-body-wrap"
+             t-on-dragover="onDeskDragOver" t-on-dragleave="onDeskDragLeave"
+             t-on-drop="onDeskDrop">
+
+          <!-- R3 — the file can be dropped ANYWHERE over the grid, not only on
+               the small zone in the header. The veil is the answer to "where do
+               I put this?". -->
+          <div t-if="state.dragging" class="rd-veil">
+            <div class="rd-veil-card">
+              <span class="ic"><t t-out="ic('download',26)"/></span>
+              <b>Drop to review changes</b>
+              <span>Nothing is saved until you have read it.</span>
+            </div>
+          </div>
+
+          <!-- WHO -->
+          <aside t-attf-class="rd-rail {{ state.railOpen ? '' : 'closed' }}">
+            <button type="button" class="rd-rail-toggle" t-on-click="toggleRail"
+                    t-att-title="state.railOpen ? 'Hide the filters' : 'Show the filters'">
+              <t t-out="ic(state.railOpen ? 'chevronLeft' : 'chevron', 14)"/>
+            </button>
+            <t t-if="state.railOpen">
+              <div class="rd-rail-h">Who</div>
+              <div class="rd-search">
+                <span class="ic"><t t-out="ic('search',15)"/></span>
+                <input type="text" t-att-value="state.filters.q" t-on-input="onSearch"
+                       placeholder="Name, code or email…"/>
+              </div>
+
+              <div t-if="state.handPicked" class="rd-pinned">
+                <span class="rd-pin-chip">
+                  <t t-out="ic('users',13)"/> Hand-picked · <t t-esc="state.handPicked"/>
+                  <button type="button" t-on-click="clearHandPicked" title="Show everybody again">
+                    <t t-out="ic('x',12)"/>
+                  </button>
+                </span>
+              </div>
+
+              <t t-foreach="[
+                    {key: 'department_ids', label: 'Department', rows: state.facets.departments},
+                    {key: 'job_ids', label: 'Designation', rows: state.facets.jobs},
+                    {key: 'contract_states', label: 'Contract state', rows: state.facets.contract_states},
+                    {key: 'statuses', label: 'Employment status', rows: state.facets.statuses}
+                  ]" t-as="grp" t-key="grp.key">
+                <div t-if="grp.rows.length" class="rd-facet">
+                  <div class="rd-facet-h" t-esc="grp.label"/>
+                  <div class="rd-facet-chips">
+                    <button t-foreach="grp.rows" t-as="f" t-key="grp.key + '-' + f_index"
+                            type="button"
+                            t-attf-class="pbim-fchip {{ isFacetOn(grp.key, f.id) ? 'on' : '' }}"
+                            t-on-click="() => this.toggleFacet(grp.key, f.id)">
+                      <t t-esc="f.name"/> <span class="c" t-esc="f.count"/>
+                    </button>
+                  </div>
+                </div>
+              </t>
+
+              <div class="rd-rail-foot">
+                <span class="rd-match" t-esc="matchLine"/>
+                <button t-if="anyFilter" type="button" class="rd-link" t-on-click="clearFilters">
+                  Clear the filters
+                </button>
+              </div>
+            </t>
+          </aside>
+
+          <div class="rd-main">
+
+            <!-- WHAT -->
+            <div class="rd-strip-bar">
+              <button type="button" class="rd-strip-toggle" t-on-click="toggleStrip">
+                <t t-out="ic('layers',14)"/>
+                <span class="lb">Fields</span>
+                <span class="ct" t-esc="stripSummary"/>
+                <t t-out="ic(state.stripOpen ? 'chevronDown' : 'chevron', 13)"/>
+              </button>
+              <div t-if="!state.stripOpen" class="rd-strip-picked">
+                <span t-foreach="pickedCards" t-as="card" t-key="card.id" class="rd-pick-chip">
+                  <t t-esc="card.label"/>
+                  <button type="button" t-att-title="'Take this column off the grid'"
+                          t-on-click="() => this.togglePicked(card)">
+                    <t t-out="ic('x',11)"/>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div t-if="state.stripOpen" class="rd-strip">
+              <t t-foreach="state.groups" t-as="g" t-key="g.key">
+                <div class="rd-strip-grp">
+                  <div class="rd-strip-h" t-esc="g.label"/>
+                  <div class="rd-strip-cards">
+                    <button t-foreach="g.fields" t-as="card" t-key="card.id" type="button"
+                            t-attf-class="rd-card {{ isPicked(card.id) ? 'on' : '' }} {{ card.locked ? 'locked' : '' }}"
+                            t-att-title="card.hint and card.hint.title"
+                            t-on-click="() => this.togglePicked(card)">
+                      <span class="tk"><t t-out="ic(isPicked(card.id) ? 'check' : 'plus', 12)"/></span>
+                      <span class="tx">
+                        <span class="lb" t-esc="card.label"/>
+                        <span t-if="card.sub" class="sb" t-esc="card.sub"/>
+                      </span>
+                      <span t-if="card.locked" class="lk"><t t-out="ic('lock',12)"/></span>
+                    </button>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <div t-if="!state.picked.length" class="rd-nudge">
+              <t t-out="ic('arrowUp',15)"/>
+              <span><b t-esc="noFieldsPickedTitle"/> — <t t-esc="noFieldsPickedBody"/></span>
+            </div>
+
+            <!-- THE GRID -->
+            <RecordsGrid state="grid"
+                         onNeedPage.bind="onNeedPage"
+                         onChanged.bind="onGridChanged"
+                         onLookup.bind="onLookup"
+                         onSetFor.bind="openSetFor"
+                         onHideColumn.bind="hideColumn"
+                         onPasted.bind="onPasted"
+                         onSelectAllMatching.bind="onSelectAllMatching"
+                         onClearFilters.bind="clearFilters"/>
+          </div>
+        </div>
+
+        <!-- =========================================== Set for … popover -->
+        <div t-if="state.setFor" class="rd-modal" t-on-click="closeSetFor">
+          <div class="rd-setfor" t-on-click.stop="">
+            <div class="rd-setfor-h">
+              <span t-esc="setForTitle"/>
+              <button type="button" t-on-click="closeSetFor"><t t-out="ic('x',15)"/></button>
+            </div>
+            <div class="rd-setfor-b">
+              <div class="rd-setfor-lb" t-esc="setForCard and setForCard.label"/>
+              <RdCellEditor t-if="setForCard" col="setForCard" value="''" wide="true"
+                            lookup="setForLookup"
+                            onCommit.bind="applySetFor"
+                            onCancel.bind="closeSetFor"/>
+              <p class="rd-setfor-note">
+                Nothing is saved yet — this fills the cells so you can check them first.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================ Review drawer -->
+        <div t-if="state.review" class="rd-scrim" t-on-click="closeReview"/>
+        <aside t-if="state.review" class="rd-drawer">
+          <div class="rd-drawer-h">
+            <div>
+              <h2>Review your changes</h2>
+              <p t-esc="reviewSummary"/>
+            </div>
+            <button type="button" t-on-click="closeReview"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="rd-drawer-b">
+            <div t-if="state.previewing" class="pbim-busy sm">
+              <div class="pbim-spin"/><span>Checking…</span>
+            </div>
+            <RdReviewList items="state.preview.items"/>
+          </div>
+          <div class="rd-drawer-f" t-attf-style="padding-bottom:{{ 14 + state.footSafe }}px">
+            <input type="text" class="rd-note" t-att-value="state.note" t-on-input="onNote"
+                   placeholder="Why? optional — shows in History"/>
+            <button type="button" class="pbim-btn primary" t-att-disabled="!canApply or state.applying"
+                    t-on-click="apply">
+              <t t-if="state.applying"><span class="pbim-spin sm"/> Applying…</t>
+              <t t-else=""><t t-out="ic('check',15)"/> <t t-esc="applyLabel"/></t>
+            </button>
+          </div>
+        </aside>
+
+        <!-- ========================= Review drawer, in FILE mode (R3) =====
+             The SAME drawer: same chrome, same note field, same Apply. Only
+             the body differs, because what arrived is a file rather than a
+             column somebody typed down. -->
+        <div t-if="state.file.open" class="rd-scrim" t-on-click="closeFile"/>
+        <aside t-if="state.file.open" class="rd-drawer">
+          <div class="rd-drawer-h">
+            <div>
+              <h2>
+                <t t-out="ic('file',15)"/> <t t-esc="state.file.name"/>
+              </h2>
+              <p t-esc="fileSummaryLine"/>
+            </div>
+            <button type="button" t-on-click="closeFile"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="rd-drawer-b">
+            <!-- R4 D6 — a veil with a real sentence. The row count comes back
+                 from a first, cheap call, so the wait says how big the job is
+                 instead of only that there is one. -->
+            <div t-if="state.file.busy" class="pbim-busy sm">
+              <div class="pbim-spin"/><span t-esc="fileBusyLine"/>
+            </div>
+            <t t-else="">
+              <div t-if="state.file.error" class="rd-file-note warn big">
+                <t t-out="ic('alert',15)"/>
+                <span t-esc="state.file.error"/>
+              </div>
+              <div t-if="state.file.wrongScheme" class="rd-file-note warn">
+                <t t-out="ic('layers',13)"/>
+                <span t-esc="wrongSchemeLine"/>
+              </div>
+              <div t-if="state.file.truncated" class="rd-file-note warn">
+                <t t-out="ic('alert',13)"/>
+                <span>Only the first 10,000 rows of this file were read — that
+                      is the most one file carries.</span>
+              </div>
+              <RdFileReview t-if="state.file.summary and !state.file.error"
+                            summary="state.file.summary"
+                            items="state.file.items"
+                            unmatched="state.file.unmatched"
+                            identity="state.file.identity"
+                            lookup="fileLookup"
+                            onBind.bind="bindRow"/>
+            </t>
+          </div>
+          <div class="rd-drawer-f" t-attf-style="padding-bottom:{{ 14 + state.footSafe }}px">
+            <input type="text" class="rd-note" t-att-value="state.note"
+                   t-on-input="onNote"
+                   t-att-placeholder="filePlaceholder"/>
+            <button type="button" class="pbim-btn primary"
+                    t-att-disabled="!canApplyFile" t-on-click="applyFile">
+              <t t-if="state.applying"><span class="pbim-spin sm"/> Applying…</t>
+              <t t-else=""><t t-out="ic('check',15)"/> <t t-esc="fileApplyLabel"/></t>
+            </button>
+          </div>
+        </aside>
+
+        <!-- =============================================== History drawer -->
+        <div t-if="state.history" class="rd-scrim" t-on-click="closeHistory"/>
+        <aside t-if="state.history" class="rd-drawer">
+          <div class="rd-drawer-h">
+            <div>
+              <h2>History</h2>
+              <p>Every change made from this desk — and the way back from each one.</p>
+            </div>
+            <button type="button" t-on-click="closeHistory"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="rd-drawer-b">
+            <div t-if="!state.historyRows.length" class="rd-empty sm">
+              <span class="rd-empty-ic"><t t-out="ic('clock',22)"/></span>
+              <h3>Nothing has been changed here yet</h3>
+              <p>When you apply a change it is listed here, with an Undo that never expires.</p>
+            </div>
+            <div t-foreach="state.historyRows" t-as="h" t-key="h.id"
+                 t-attf-class="rd-hist {{ h.undone ? 'undone' : '' }}">
+              <div class="rd-hist-top">
+                <span class="rd-hist-ref" t-esc="h.name"/>
+                <span class="rd-hist-when" t-esc="h.date"/>
+              </div>
+              <div class="rd-hist-line">
+                <span t-esc="histLine(h)"/>
+                <span t-if="h.source === 'undo'" class="rd-tag">Undo</span>
+                <span t-if="h.source === 'import'" class="rd-tag">From a file</span>
+                <span t-if="h.undone" class="rd-tag amber">Already undone</span>
+              </div>
+              <div class="rd-hist-sub">
+                <t t-esc="h.user"/><t t-if="h.scheme"> · <t t-esc="h.scheme"/></t>
+              </div>
+              <div t-if="h.note" class="rd-hist-note" t-esc="h.note"/>
+              <button type="button" class="pbim-btn outline pbim-btn-sm"
+                      t-att-disabled="h.undone" t-on-click="() => this.undoApply(h.id)">
+                <t t-out="ic('rotate',13)"/>
+                <t t-if="h.undone">Already undone</t><t t-else="">Undo</t>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- ======================================================= toast -->
+        <div t-if="state.toast" class="rd-toast">
+          <span class="ic"><t t-out="ic('checkCircle',17)"/></span>
+          <span class="tx" t-esc="state.toast.text"/>
+          <button type="button" t-on-click="() => this.undoApply(state.toast.applyId)">Undo</button>
+          <button type="button" class="x" t-on-click="() => this.state.toast = null">
+            <t t-out="ic('x',14)"/>
+          </button>
+        </div>
+
+      </t>
+    </div>
+  </t>
+
+</templates>

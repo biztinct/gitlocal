@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The People hub.
+
+         Test URL: /odoo/action-pb_people_hub
+                   (/bizapp/action-pb_people_hub on the live server, biz_deroute)
+
+         Declared as a RECORD rather than reached by bare tag, so anything that
+         returns through a breadcrumb sees a named action instead of "Unnamed"
+         (W98) — which matters more here than in any other hub, because the Plan
+         lens opens six NATIVE list views and the breadcrumb is their only way
+         back. -->
+    <record id="action_pb_people_hub" model="ir.actions.client">
+        <field name="name">People</field>
+        <field name="tag">pb_people_hub</field>
+    </record>
+</odoo>

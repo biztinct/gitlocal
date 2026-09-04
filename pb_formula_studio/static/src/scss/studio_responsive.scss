@@ -1,0 +1,182 @@
+/* ============================================================
+   Formula Studio — responsive behavior (biz_theme breakpoints)
+
+   Header ladder (two-tier header lives in studio.scss):
+     ≤1440  secondary toolbar buttons go icon-only (.biz-icon-only-lg)
+     ≤1280  Replay/What-if/Payslip/Mapping/Tables fold into Tools ▾
+            (.biz-hide-lg on the buttons, .biz-only-lg on .pbfs-more)
+     ≤1100  view tabs go icon-only, identity chips hide (.biz-hide-md)
+     ≤768   toolbar row scrolls horizontally
+
+   Grid workbench: .pbfs-work--full drops both side panels; the outline and
+   live-preview DOM nodes become slide-in drawers (same nodes → selection,
+   dependency highlighting and sample cycling keep working untouched).
+   ============================================================ */
+
+// Slide-in drawer treatment shared by the Grid workbench (always) and the
+// Cards view below the md breakpoint.
+@mixin pbfs-drawer-panels {
+    .pbfs-outline,
+    .pbfs-test {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 30;
+        width: 340px;
+        max-width: 86vw;
+        background: #fff;
+        transition: transform 200ms cubic-bezier(.16, 1, .3, 1);
+        box-shadow: 0 18px 50px rgba(16, 12, 40, .18);
+        visibility: hidden;
+    }
+
+    .pbfs-outline {
+        left: 0;
+        border-right: 1px solid var(--line);
+        transform: translateX(-100%);
+    }
+
+    .pbfs-test {
+        right: 0;
+        border-left: 1px solid var(--line);
+        transform: translateX(100%);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .pbfs-outline.open,
+    .pbfs-test.open {
+        transform: none;
+        visibility: visible;
+    }
+
+    .ol-close, .tp-close { display: flex; }
+}
+
+.pbfs {
+
+    /* drawer close buttons only exist in drawer mode */
+    .ol-close, .tp-close { display: none; }
+
+    /* ---- grid workbench: full-width spreadsheet, panels always drawers ---- */
+    .pbfs-work--full {
+        grid-template-columns: 1fr;
+
+        // arrows overlay only makes sense in cards view
+        .pbfs-arrows { display: none; }
+
+        @include pbfs-drawer-panels;
+    }
+
+    /* ---- cards view below md: full-width card, panels become drawers ---- */
+    .pbfs-gridbar.pbfs-cardbar { display: none; margin-bottom: 14px; padding: 0; }
+
+    @include biz-down($biz-bp-md) {
+        .pbfs-gridbar.pbfs-cardbar { display: flex; }
+
+        .pbfs-work:not(.pbfs-work--full) {
+            grid-template-columns: 1fr;
+
+            .pbfs-arrows { display: none; }
+
+            @include pbfs-drawer-panels;
+        }
+    }
+
+    /* slim toolbar above the grid */
+    .pbfs-gridbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 0;
+
+        .pbfs-gridbar-spacer { flex: 1; }
+
+        .pbfs-btn.sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            gap: 6px;
+
+            svg { width: 14px; height: 14px; }
+
+            &.active {
+                background: var(--i-soft);
+                color: var(--i);
+                border-color: var(--i-border);
+            }
+        }
+    }
+
+    .tp-close { float: right; }
+
+    /* column-jump flash when a component is picked from the drawer */
+    .g2-table th.g2-jump {
+        animation: pbfs-jump-flash 1.2s ease;
+    }
+
+    /* ---- header ladder ---- */
+    @include biz-down($biz-bp-md) {
+        .pbfs-top { padding: 8px 14px; }
+
+        // view tabs: icon-only
+        .pbfs-seg button .tx { display: none; }
+        .pbfs-seg button { padding: 7px 10px; }
+    }
+
+    @include biz-down($biz-bp-sm) {
+        .pbfs-top-row2 {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .pbfs-id-right .pbfs-ring { display: none; }
+    }
+
+    /* ---- toolbar never clips (sidebar-aware) ----
+       The header ladder above keys off *viewport* width, but the left sidebar
+       is expanded (~256px) at ≥xl and rails to ~60px below it — so ≥xl with the
+       sidebar expanded is actually the *tightest* layout (widest buttons, least
+       free width) and the right-hand actions (Legislation, Releases, Share, Ask
+       PayAI) get clipped by the panel's `overflow:hidden`. Backstop: let the
+       actions cluster shrink and scroll instead of overflowing. The Tools ▾
+       popover only exists ≤lg, so restore visible overflow there. */
+    .pbfs-top-actions {
+        min-width: 0;
+        flex-shrink: 1;
+        overflow-x: auto;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+        > * { flex-shrink: 0; }
+
+        @include biz-down($biz-bp-lg) { overflow-x: visible; }
+    }
+}
+
+/* Keep the secondary toolbar buttons icon-only at ≥xl too. biz_utilities'
+   `.biz-icon-only-lg` only fires below xl, which left this 14-button toolbar
+   showing full labels on wide desktops — and with the sidebar expanded (its ≥xl
+   default) they never fit, so the right-hand actions were clipped. Icon-only
+   here (Releases + Ask PayAI keep their labels — they're the primary CTAs, not
+   tagged `.biz-icon-only-lg`) lands every action on screen at any ≥xl width,
+   sidebar expanded or railed, and matches the compact look used below xl. */
+@include biz-up($biz-bp-xl) {
+    .pbfs .pbfs-top-actions {
+        .biz-icon-only-lg > span:not(.biz-keep) { display: none; }
+        .biz-icon-only-lg { gap: 0 !important; }
+    }
+}
+
+@keyframes pbfs-jump-flash {
+    0%, 55% { box-shadow: inset 0 0 0 2px var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); }
+    100% { box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbfs .pbfs-work--full .pbfs-outline.as-drawer,
+    .pbfs .pbfs-work--full .pbfs-test.as-drawer {
+        transition: none;
+    }
+}
