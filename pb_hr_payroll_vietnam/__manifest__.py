@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Vietnam Payroll',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Vietnam-specific Payroll Implementation',
     'description': """

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+from html import unescape
 import json
 import re
 from odoo import api, fields, models, _
@@ -497,8 +498,63 @@ class HrPayslipVietnam(models.Model):
 
         return sections
 
+    #: The themed report is the ONLY one that renders a customer's own imported
+    #: payslip document (formula config -> payslip_layout_html) with its live
+    #: component values. Everything else prints a template whose amounts are
+    #: fetched by hard-coded rule codes.
+    _PB_THEMED_REPORT = 'pb_hr_payroll_formula.payslip_themed'
+
+    def _pb_imported_layout_config(self):
+        """The formula config whose imported payslip document should print, or None.
+
+        Found live on the reference tenant 2026-09-04: a customer imported their
+        own payslip workbook, mapped 15 components into it, pressed Print
+        Payslip — and got the LEGACY report, which looks up amounts by 22
+        hard-coded codes (ATI, OTTAX, ACTTAXI, MONPIT…). That payslip's 76
+        components use entirely different codes, so the overlap was ZERO and
+        every looked-up figure printed as 0. The only real number on the page
+        was the contract wage, which that template reads directly rather than
+        by code.
+
+        Deliberately narrow: a config with no imported document keeps the
+        legacy routing byte-for-byte, so this can only ever affect a payroll
+        whose owner has actually built a document to print.
+        """
+        self.ensure_one()
+        config = self.formula_config_id
+        if config and self._pb_layout_has_content(config.payslip_layout_html):
+            return config
+        return None
+
+    @staticmethod
+    def _pb_layout_has_content(raw):
+        """Is this rich-text value an actual document, or an empty editor?
+
+        A rich-text field that has merely been opened and closed holds
+        ``<p><br></p>``, which is truthy and non-empty as a STRING. Treating
+        that as an imported document would route the print at a blank page —
+        strictly worse than the wrong-but-populated legacy template it
+        replaces. So the test is on what the value would RENDER: any live
+        token, any image or table, or any real text.
+        """
+        raw = raw or ''
+        if not raw:
+            return False
+        if re.search(r'\{\{pb_(?:component|meta):', raw):
+            return True
+        if re.search(r'<(?:img|table)\b', raw, re.IGNORECASE):
+            return True
+        text = re.sub(r'<[^>]+>', '', raw)
+        # &nbsp; unescapes to U+00A0, which str.strip() does NOT strip
+        text = unescape(text).replace('\xa0', ' ')
+        return bool(text.strip())
+
     def _get_report_name(self):
         self.ensure_one()
+        # A customer's own imported document wins over both legacy templates:
+        # they built it precisely so it would be the thing that prints.
+        if self._pb_imported_layout_config():
+            return self._PB_THEMED_REPORT
         if self.struct_id and self.struct_id.name and 'vietnam' in self.struct_id.name.lower():
             return 'pb_hr_payroll_vietnam.report_payslip_vietnam'
         return 'om_hr_payroll.report_payslip'
@@ -516,17 +572,32 @@ class HrPayslipVietnam(models.Model):
             'context': self.env.context,
         }
 
-    @api.model
-    def get_payslip_report_action(self, payslip_ids):
-        payslips = self.browse(payslip_ids)
-        structures = payslips.mapped('struct_id.name')
+    def _pb_batch_report_ref(self):
+        """Which report a MULTI-slip print should use — the decision, alone.
+
+        Split out from get_payslip_report_action because report_action() does
+        not always hand back the report: when the company has never configured
+        its document layout it returns the layout configurator wizard instead,
+        which carries no report name. Asserting on that dict would be asserting
+        on company setup rather than on this routing.
+        """
+        # Same rule as the single-slip button (_get_report_name): an imported
+        # document is what its owner meant to print. Applied only when EVERY
+        # selected slip has one, so a mixed selection can never print half the
+        # batch on a template the other half does not share.
+        if self and all(p._pb_imported_layout_config() for p in self):
+            return 'pb_hr_payroll_formula.action_report_payslip_themed'
+        structures = self.mapped('struct_id.name')
         if len(set(structures)) > 1:
             raise UserError(_('Cannot print payslips with different structures together. Please select payslips with the same structure.'))
         if any(s and 'vietnam' in s.lower() for s in structures):
-            report_ref = 'pb_hr_payroll_vietnam.action_report_payslip_vietnam'
-        else:
-            report_ref = 'om_hr_payroll.action_report_payslip'
-        return self.env.ref(report_ref).report_action(payslips)
+            return 'pb_hr_payroll_vietnam.action_report_payslip_vietnam'
+        return 'om_hr_payroll.action_report_payslip'
+
+    @api.model
+    def get_payslip_report_action(self, payslip_ids):
+        payslips = self.browse(payslip_ids)
+        return self.env.ref(payslips._pb_batch_report_ref()).report_action(payslips)
 
     # ── End report helpers ───────────────────────────────────────────
 
