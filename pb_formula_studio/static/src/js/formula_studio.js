@@ -5024,7 +5024,16 @@ export class PbFormulaStudio extends Component {
         this.state.psRichTarget = target;
         this.state.psRichTitle = title;
         this.state.psRichQuery = "";
-        this.state.psRichMode = "both";
+        // An IMPORTED document already prints its own row labels — it is the
+        // customer's own spreadsheet, and every line has a name in the cell
+        // beside the one you drop a component into. Defaulting to "Label +
+        // value" there makes the name appear twice ("Actual Basic salary
+        // ₫47,491,935" in a row already headed "Contract Salary VND"), which
+        // is exactly what happened to every chip on the reference tenant's
+        // payslip (2026-09-04) — six of them before anyone noticed. Header and
+        // footer blocks are free prose with no label column, so they keep the
+        // label; the picker still offers all three either way.
+        this.state.psRichMode = target === 'layout' ? 'value' : 'both';
         this.state.psRichUsedIds = this._psRichTokenIds(htmlValue || "");
         this.state.psRichUsedMetaKeys = this._psRichMetaKeys(htmlValue || "");
         this.state.psRichTableActive = false;
