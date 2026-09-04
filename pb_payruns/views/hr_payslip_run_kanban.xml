@@ -27,6 +27,9 @@
                 <field name="pb_can_approve_hr"/>
                 <field name="pb_can_approve_gm"/>
                 <field name="pb_can_reject"/>
+                <field name="pb_can_send_back"/>
+                <field name="pb_can_undo_approval"/>
+                <field name="pb_sendback_note"/>
                 <field name="pb_is_done"/>
                 <templates>
                     <t t-name="card">
@@ -48,11 +51,19 @@
                                 </div>
                             </div>
                             <div class="pbk-jnl" t-if="!record.pb_division_label.raw_value and record.journal_id.raw_value"><field name="journal_id"/></div>
+                            <div class="pbk-sentback" t-if="record.pb_sendback_note.raw_value">
+                                <span class="hd">Sent back</span>
+                                <span class="why"><field name="pb_sendback_note"/></span>
+                            </div>
                             <div class="pbk-foot" data-coach="pk-card-actions">
                                 <button t-if="record.pb_can_submit.raw_value" type="object" name="done_payslip_run" class="pbk-btn primary">Submit for review</button>
                                 <button t-if="record.pb_can_approve_officer.raw_value" type="object" name="action_payslip_run_level0_done" class="pbk-btn primary">Approve (Officer)</button>
                                 <button t-if="record.pb_can_approve_hr.raw_value" type="object" name="action_payslip_run_level1_done" class="pbk-btn primary">Approve (HR)</button>
                                 <button t-if="record.pb_can_approve_gm.raw_value" type="object" name="action_payslip_run_level2_done" class="pbk-btn primary">Approve (Finance)</button>
+                                <!-- Send back returns the run one stage with its
+                                     payslips intact; Reject still kills it. -->
+                                <button t-if="record.pb_can_send_back.raw_value" type="object" name="action_pb_send_back" class="pbk-btn ghost"
+                                        confirm="Send this pay run back one stage? The payslips are kept as they are.">Send back</button>
                                 <button t-if="record.pb_can_reject.raw_value" type="object" name="action_payslip_run_cancel" class="pbk-btn ghost danger"
                                         confirm="Reject this pay run? All payslips in it will be cancelled.">Reject</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_open_payroll_report" class="pbk-btn primary">Report</button>
@@ -61,6 +72,11 @@
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_bank_export" class="pbk-btn ghost">Bank file</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_journals" class="pbk-btn ghost">Journals</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_payments" class="pbk-btn ghost">Payments</button>
+                                <!-- The mistaken-click escape hatch. Finance only,
+                                     and the flag goes false once the payslips have
+                                     been emailed out. -->
+                                <button t-if="record.pb_can_undo_approval.raw_value" type="object" name="action_pb_send_back" class="pbk-btn ghost"
+                                        confirm="Undo the approval of this pay run? It goes back to Finance approval for you to decide again.">Undo approval</button>
                             </div>
                         </div>
                     </t>

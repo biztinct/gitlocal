@@ -12,6 +12,15 @@ STAGE_LABEL = {
 }
 BOARD_LIMIT = 60
 
+# Where a refused run goes back to — mirrors PB_SEND_BACK on hr.payslip.run.
+# Imported rather than re-typed so the board can never offer a send-back the
+# model would not perform.
+try:
+    from .hr_payslip_run import PB_SEND_BACK
+except ImportError:  # pragma: no cover - defensive, same package
+    PB_SEND_BACK = {'level0': 'draft', 'level1': 'level0',
+                    'level2': 'level1', 'done': 'level2'}
+
 
 class PbPayruns(models.AbstractModel):
     _name = 'pb.payruns'
@@ -78,6 +87,17 @@ class PbPayruns(models.AbstractModel):
             if can_act and state in ('level0', 'level1', 'level2'):
                 my_pending += 1
 
+            # Send back one stage. Offered to the tier that holds the run — the
+            # same people who may reject it, minus draft (nothing before it).
+            # On a finished run this is the final approver's undo, and the model
+            # is asked whether it is still allowed (payslips already emailed
+            # close the door) rather than the board guessing.
+            can_send_back = can_act and state in ('level0', 'level1', 'level2')
+            if state == 'done':
+                can_send_back = has_final and self._safe(
+                    lambda r=run: bool(r.pb_can_undo_approval), default=False)
+            back_to = PB_SEND_BACK.get(state, '')
+
             net = self._safe(lambda r=run: r.pb_total_net)
             if state == 'done':
                 period_net += net or 0.0
@@ -97,6 +117,13 @@ class PbPayruns(models.AbstractModel):
                 'credit_note': bool(run.credit_note),
                 'next_action': next_action,
                 'can_act': can_act,
+                'can_send_back': can_send_back,
+                'send_back_to': back_to,
+                'send_back_label': STAGE_LABEL.get(back_to, ''),
+                # why this run is sitting where it is, if somebody sent it back
+                'sendback_note': run.pb_sendback_note or '',
+                'sendback_by': run.pb_sendback_uid.name or '',
+                'sendback_from_label': STAGE_LABEL.get(run.pb_sendback_from or '', ''),
                 'journal': self._journal_name(run),
                 # The division key the board's chips filter on. It has always
                 # been sent as the CHIP LIST ('divisions' below) with nothing on

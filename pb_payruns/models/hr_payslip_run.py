@@ -28,6 +28,48 @@ PB_TIER = {
 }
 PB_PENDING_STATES = ('level0', 'level1', 'level2')
 
+# Human stage names, one place. Used in the send-back messages below so a
+# refusal names the stage the way the board does.
+PB_STAGE_NAME = {
+    'draft': 'Draft', 'level0': 'Officer review', 'level1': 'HR review',
+    'level2': 'Finance approval', 'done': 'Done', 'cancel': 'Rejected',
+}
+
+# ---------------------------------------------------------------- Send back
+# Where a run lands when the tier holding it refuses to sign.
+#
+# "Reject" used to mean one thing only: write 'cancel' and cancel every payslip.
+# That is terminal, and nothing walks it back — but an approver who spots a
+# wrong number almost always wants the run returned to the people who can fix
+# it, not killed. So refusing now has two shapes: send back one stage (this
+# map), or reject outright (action_payslip_run_cancel, unchanged).
+#
+# 'done' is in the map on purpose. A final approver who clicks Approve by
+# mistake gets the run back into their OWN queue (level2) — an undo of the
+# click, not a re-opened chain. Walking it all the way back to draft stays
+# draft_payslip_run.
+PB_SEND_BACK = {
+    'level0': 'draft',
+    'level1': 'level0',
+    'level2': 'level1',
+    'done': 'level2',
+}
+# state -> the tier that OWNS the send-back out of it. Same as PB_TIER for the
+# pending stages; 'done' was Finance's decision, so Finance owns undoing it.
+PB_SEND_BACK_TIER = {
+    'level0': 'level0', 'level1': 'level1', 'level2': 'level2', 'done': 'level2',
+}
+# run state -> the payslip state that belongs with it. Chain entry confirms the
+# slips and each later tier cascades them, so walking the run BACK has to walk
+# the slips back too — otherwise a run sitting at Officer review would hold
+# payslips still stamped Finance-approved, and the bank export (which filters on
+# slip state 'done') would happily pay a run nobody has approved.
+PB_SLIP_STATE = {'draft': 'draft', 'level0': 'level1', 'level1': 'level1',
+                 'level2': 'level2', 'done': 'done'}
+#: payslip states in chain order — a send-back only ever moves a slip DOWN this
+#: list, never up (a stray draft slip is left alone rather than promoted).
+_PB_SLIP_ORDER = ('draft', 'level1', 'level2', 'done')
+
 # C18.24: a state machine is decorative unless write() enforces it. The tier
 # gates above guard the ACTIONS; without this, anyone holding plain write access
 # to hr.payslip.run could call_kw `write({'state': 'done'})` and skip every tier
@@ -84,6 +126,21 @@ class HrPayslipRun(models.Model):
     pb_reject_note = fields.Char(string='Rejection reason', readonly=True, copy=False)
     pb_reject_uid = fields.Many2one('res.users', string='Rejected by', readonly=True, copy=False)
     pb_reject_date = fields.Datetime(string='Rejected on', readonly=True, copy=False)
+
+    # Send-back testimony (who sent the run back, why, from which stage) —
+    # written only by action_pb_send_back, cleared the moment the run moves
+    # forward again so the note always answers "why is this run sitting here"
+    # rather than "what happened to it once, months ago".
+    pb_sendback_note = fields.Char(string='Sent back because', readonly=True, copy=False)
+    pb_sendback_uid = fields.Many2one('res.users', string='Sent back by', readonly=True, copy=False)
+    pb_sendback_date = fields.Datetime(string='Sent back on', readonly=True, copy=False)
+    # A Selection, not a Char: the form prints this field, and a raw state key
+    # ("level2") on a screen is exactly the kind of internal vocabulary a user
+    # must never be shown.
+    pb_sendback_from = fields.Selection(
+        [('level0', 'Officer review'), ('level1', 'HR review'),
+         ('level2', 'Finance approval'), ('done', 'Done')],
+        string='Sent back from', readonly=True, copy=False)
 
     @api.model
     def _pb_group_expand_state(self, values, domain):
@@ -324,6 +381,12 @@ class HrPayslipRun(models.Model):
     pb_can_approve_hr = fields.Boolean(compute='_compute_pb_perms')
     pb_can_approve_gm = fields.Boolean(compute='_compute_pb_perms')
     pb_can_reject = fields.Boolean(compute='_compute_pb_perms')
+    # "Send this back one stage" — offered wherever Reject is, minus draft
+    # (nothing sits before draft).
+    pb_can_send_back = fields.Boolean(compute='_compute_pb_perms')
+    # "Undo my approval" on a finished run — Finance only, and only while the
+    # payslips have not been emailed out yet (_pb_undo_blocker).
+    pb_can_undo_approval = fields.Boolean(compute='_compute_pb_perms')
     pb_is_done = fields.Boolean(compute='_compute_pb_perms')
     pb_awaiting_me = fields.Boolean(
         compute='_compute_pb_awaiting_me', search='_search_pb_awaiting_me')
@@ -456,6 +519,7 @@ class HrPayslipRun(models.Model):
         """
         self._pb_guard_advance('level0')
         self._pb_chain_ctx().write({'state': 'level1'})
+        self._pb_clear_sendback()
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_payslip_run_level1_done(self):
@@ -467,12 +531,16 @@ class HrPayslipRun(models.Model):
         knowing anything about it.
         """
         self._pb_guard_advance('level1')
-        return super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()
+        res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()
+        self._pb_clear_sendback()
+        return res
 
     def action_payslip_run_level2_done(self):
         """Finance approval → done — gated, then the legacy body verbatim."""
         self._pb_guard_advance('level2')
-        return super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level2_done()
+        res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level2_done()
+        self._pb_clear_sendback()
+        return res
 
     def action_payslip_run_cancel(self):
         """Reject the run from any pending tier, recording the reason.
@@ -497,6 +565,106 @@ class HrPayslipRun(models.Model):
                     'pb_reject_date': fields.Datetime.now()})
         return res
 
+    # ------------------------------------------------------------------
+    # Send back one stage (and the final approver's undo)
+    # ------------------------------------------------------------------
+    def _pb_undo_blocker(self):
+        """Why this finished run's approval can no longer be undone — or ''.
+
+        Un-approving is a safe correction right up to the moment something has
+        LEFT the building. Once employees have been emailed their payslips,
+        putting the run back into a pending state tells everyone a lie, so the
+        way out is Reject or a full reset to draft, not a quiet undo.
+        """
+        self.ensure_one()
+        if 'pb.payslip.delivery.batch' not in self.env:
+            return ''
+        try:
+            sent = self.env['pb.payslip.delivery.batch'].sudo().search_count(
+                [('run_id', '=', self.id), ('sent_count', '>', 0)])
+        except Exception as e:  # a partial install must never break the board
+            _logger.debug("pb_payruns: delivery lookup failed on run %s: %s", self.id, e)
+            return ''
+        if sent:
+            return _("its payslips have already been emailed to employees")
+        return ''
+
+    def _pb_walk_slips_back(self, target):
+        """Put this run's payslips back where stage ``target`` expects them.
+
+        Only ever moves a slip DOWN the chain: a stray draft slip on a run
+        returning to Officer review is left as it is rather than promoted, and
+        cancelled slips are never resurrected.
+        """
+        want = PB_SLIP_STATE.get(target, 'draft')
+        rank = _PB_SLIP_ORDER.index(want)
+        slips = self.mapped('slip_ids').filtered(
+            lambda s: s.state in _PB_SLIP_ORDER
+            and _PB_SLIP_ORDER.index(s.state) > rank)
+        if slips:
+            slips.write({'state': want})
+
+    def _pb_clear_sendback(self):
+        """Forget the send-back note once the run moves forward again.
+
+        The note answers "why is this run sitting here"; carrying it past the
+        stage it was returned to would turn it into stale trivia on a card that
+        has since been fixed and re-approved.
+        """
+        stale = self.filtered('pb_sendback_note')
+        if stale:
+            stale.write({'pb_sendback_note': False, 'pb_sendback_uid': False,
+                         'pb_sendback_date': False, 'pb_sendback_from': False})
+
+    def action_pb_send_back(self):
+        """Return the run to the stage before the one it is sitting in.
+
+        The reason rides the context (``pb_sendback_note``) exactly like the
+        reject note, because this is also a plain view button with no
+        arguments; the actor and timestamp are forced server-side and are never
+        client-supplied (C18.24/57).
+
+        Deliberately NOT a rejection: the payslips are walked back with the run
+        instead of being cancelled, so the officer opens the same slips, fixes
+        the numbers and resubmits.
+        """
+        note = (self.env.context.get('pb_sendback_note') or '').strip()[:512]
+        # validate the WHOLE recordset before moving any of it
+        for run in self:
+            st = run.state or 'draft'
+            target = PB_SEND_BACK.get(st)
+            if not target:
+                raise UserError(_(
+                    "“%(name)s” is at %(stage)s — there is no earlier stage to "
+                    "send it back to.", name=run.name or '',
+                    stage=_(PB_STAGE_NAME.get(st, st))))
+            if not run._pb_tier_ok(PB_SEND_BACK_TIER[st]):
+                raise AccessError(_(
+                    "“%(name)s” can only be sent back by the %(role)s tier — "
+                    "your user does not hold that role.", name=run.name or '',
+                    role=PB_TIER[PB_SEND_BACK_TIER[st]][1]))
+            if st == 'done':
+                blocker = run._pb_undo_blocker()
+                if blocker:
+                    raise UserError(_(
+                        "“%(name)s” can no longer be un-approved because "
+                        "%(why)s. Reject the run, or reset it to draft, if it "
+                        "really has to be done again.",
+                        name=run.name or '', why=blocker))
+        now = fields.Datetime.now()
+        for run in self:
+            came_from = run.state or 'draft'
+            target = PB_SEND_BACK[came_from]
+            run._pb_walk_slips_back(target)
+            run._pb_chain_ctx().write({'state': target})
+            # `pb_sendback_from` is the stage the run actually left, read off
+            # the record — never a client-supplied context value.
+            run.write({'pb_sendback_note': note or False,
+                       'pb_sendback_uid': self.env.uid,
+                       'pb_sendback_date': now,
+                       'pb_sendback_from': came_from})
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+
     @api.depends_context('uid')
     @api.depends('state')
     def _compute_pb_perms(self):
@@ -515,6 +683,12 @@ class HrPayslipRun(models.Model):
                                  or (st == 'level0' and off)
                                  or (st == 'level1' and man)
                                  or (st == 'level2' and fin))
+            # Same tiers as Reject, minus draft: there is no stage before it.
+            run.pb_can_send_back = ((st == 'level0' and off)
+                                    or (st == 'level1' and man)
+                                    or (st == 'level2' and fin))
+            run.pb_can_undo_approval = (st == 'done' and fin
+                                        and not run._pb_undo_blocker())
             run.pb_is_done = st == 'done'
 
     @api.depends_context('uid')
@@ -582,6 +756,9 @@ class HrPayslipRun(models.Model):
         standard = self - accountless
         # Payslips are confirmed ONCE here, at chain entry (unchanged); the new
         # Officer tier moves only the run, so slips keep landing on 'level1'.
+        # Resubmitting IS the fix for a send-back, so the note stops applying
+        # the moment the run re-enters the chain.
+        self._pb_clear_sendback()
         if accountless:
             accountless.slip_ids.filtered(lambda s: s.state == 'draft').write({'state': 'level1'})
             accountless._pb_chain_ctx().write({'state': 'level0'})

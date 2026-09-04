@@ -161,6 +161,56 @@ class TestApprovalCockpit(TransactionCase):
         self.assertIn('Finance', res['msg'])
         self.assertEqual(payrun.state, 'level2')
 
+    # ----------------------------------------------------------- send back
+    def test_07c_send_back_needs_a_reason_and_returns_one_stage(self):
+        """Rejecting kills the run; sending it back returns it to the people who
+        can fix it, payslips intact. The cockpit insists on a reason — a run
+        that reappears in a lane with no explanation is unactionable."""
+        payrun = self._payrun('level1')
+        res = self.Appr.with_user(self.u_hr).send_back_run(payrun.id, '  ')
+        self.assertFalse(res['ok'])
+        self.assertEqual(payrun.state, 'level1', "no reason → no state change")
+
+        res = self.Appr.with_user(self.u_hr).send_back_run(payrun.id, 'Overtime is wrong')
+        self.assertTrue(res['ok'], res.get('msg'))
+        self.assertEqual(payrun.state, 'level0')
+        self.assertEqual(payrun.pb_sendback_note, 'Overtime is wrong')
+        self.assertFalse(payrun.slip_ids.filtered(lambda s: s.state == 'cancel'))
+
+        data = self.Appr.with_user(self.u_officer).get_approvals()
+        row = [r for r in data['pending'] if r['id'] == payrun.id]
+        self.assertTrue(row, "the run reappears in the Officer lane")
+        self.assertEqual(row[0]['sendback_note'], 'Overtime is wrong')
+        self.assertEqual(row[0]['send_back_label'], 'Draft',
+                         "the card must name where a further send-back would go")
+
+    def test_07d_send_back_is_gated_by_the_owning_tier(self):
+        payrun = self._payrun('level2')
+        res = self.Appr.with_user(self.u_officer).send_back_run(payrun.id, 'not mine')
+        self.assertFalse(res['ok'])
+        self.assertEqual(payrun.state, 'level2')
+
+    def test_07e_finance_can_undo_an_approval_from_recently_decided(self):
+        payrun = self._payrun('done')
+        payrun.slip_ids.write({'state': 'done'})
+        data = self.Appr.with_user(self.u_fin).get_approvals()
+        row = [r for r in data['recent'] if r['id'] == payrun.id]
+        self.assertTrue(row)
+        self.assertTrue(row[0]['can_send_back'],
+                        "a finished run must offer the final approver a way back")
+        self.assertEqual(row[0]['send_back_label'], 'Finance approval')
+
+        res = self.Appr.with_user(self.u_fin).send_back_run(
+            payrun.id, 'Approved by mistake')
+        self.assertTrue(res['ok'], res.get('msg'))
+        self.assertEqual(payrun.state, 'level2')
+
+        # …and nobody else may
+        other = self._payrun('done')
+        res = self.Appr.with_user(self.u_hr).send_back_run(other.id, 'let me')
+        self.assertFalse(res['ok'])
+        self.assertEqual(other.state, 'done')
+
     # ------------------------------------------------------------- §6.9
     def test_09_downstream_done_contract(self):
         if 'pb.pay.delivery' not in self.env:
