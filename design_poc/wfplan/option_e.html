@@ -1,0 +1,1147 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boardroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-2:#4B4866; --muted:#64748B; --line:#E2E8F0; --canvas:#F4F5FB; --card:#FFFFFF;
+    --primary:#5A4BB0; --primary-deep:#4A3D96; --primary-soft:#EDEAF8; --primary-soft2:#CBC2EE; --primary-dark:#241F52;
+    --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
+    --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --shadow:0 1px 2px rgba(30,27,46,.04),0 8px 24px rgba(30,27,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45;padding-bottom:140px}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .num{font-variant-numeric:tabular-nums}
+  .ic{width:18px;height:18px;flex:none}
+  .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .sub{color:var(--muted);font-weight:600}
+
+  /* top bar */
+  .top{height:58px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+  .crumb{color:var(--muted);font-weight:600;white-space:nowrap}.crumb b{color:var(--ink)}
+  .spacer{flex:1}
+  .name{border:1px solid transparent;border-radius:10px;padding:7px 10px;font-weight:800;min-width:170px;background:transparent}
+  .name:hover,.name:focus{border-color:var(--line);background:var(--canvas);outline:0}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;user-select:none}
+  .btn:hover{background:var(--primary-soft)} .btn:disabled{opacity:.4;cursor:default}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
+  .btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn.hold{border-color:var(--primary-soft2);color:var(--primary-deep)} .btn.hold.on{background:var(--primary);color:#fff}
+  .btn:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .modes{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+  .modes button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font-weight:700;cursor:pointer;color:var(--muted);display:inline-flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap}
+  .modes button .ic{width:14px;height:14px}
+  .modes button.on{background:var(--primary);color:#fff}
+
+  .wrap{max-width:1500px;margin:0 auto;padding:18px 20px 0;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);min-width:0}
+
+  /* hero row */
+  .hero{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:16px;align-items:stretch}
+  @media (max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}}
+  .river-card{padding:18px 22px 10px;position:relative}
+  .river-card .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .river-card h1{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+  .river-card h1 .tail{display:block;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0;margin-top:4px}
+  #river{width:100%;height:auto;aspect-ratio:1000/400;display:block;overflow:visible;font-family:inherit;margin-top:8px;touch-action:none}
+  #river text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+  #river text.in{stroke:none}
+  #river .rib{transition:d .45s cubic-bezier(.4,0,.2,1),opacity .2s}
+  #river .rib:hover{opacity:.85!important}
+  #river .node{transition:y .45s cubic-bezier(.4,0,.2,1),height .45s cubic-bezier(.4,0,.2,1);cursor:pointer}
+  #river.dragging .node,#river.dragging .rib{transition:none}
+  #river .node.hot{stroke:var(--ink);stroke-width:2}
+  #river .node.grab{cursor:ns-resize}
+  #river .handle{fill:#fff;stroke:var(--primary);stroke-width:2;cursor:ns-resize;opacity:0;transition:opacity .15s}
+  #river g:hover .handle,#river .handle.show{opacity:1}
+  #river .nl{font-size:13px;font-weight:800;fill:var(--ink)}
+  #river .nv{font-size:12px;font-weight:700;fill:var(--muted);font-variant-numeric:tabular-nums}
+  #river .col{font-size:11px;font-weight:800;fill:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  #river .ghost{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 4;opacity:.45;pointer-events:none}
+  .river-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;flex-wrap:wrap}
+  .river-foot .ic{width:14px;height:14px}
+  .hero-r{display:grid;grid-template-rows:auto 1fr;gap:16px;min-width:0}
+  .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;background:var(--canvas)}
+  .kpi small{color:var(--muted);font-weight:700;font-size:11px}
+  .kpi b{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .delta{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px;width:max-content;margin-top:4px;background:#EEF1F6;color:var(--ink-2)}
+  .delta.good{background:var(--money-soft);color:var(--money)} .delta.bad{background:var(--rose-soft);color:var(--rose)}
+  .delta .ic{width:12px;height:12px}
+
+  /* goals */
+  .goals{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+  .goals h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .goal-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+  .goal-row label{font-weight:700;font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+  .goal-row label .ic{width:14px;height:14px;color:var(--primary)}
+  .goal-in{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;background:var(--card);padding:0 8px;height:32px;font-weight:800}
+  .goal-in input{border:0;background:transparent;width:74px;text-align:right;font-weight:800;outline:0}
+  .goal-in small{color:var(--muted);font-weight:700}
+  .goal-in.off{opacity:.55}
+  .goal-status{font-size:12px;font-weight:700;border-radius:10px;padding:8px 10px;display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+  .goal-status .ic{width:14px;height:14px;margin-top:2px}
+  .g-ok{background:var(--money-soft);color:var(--money)} .g-gap{background:var(--warn-soft);color:#92400E}
+  .sugg{display:grid;gap:6px}
+  .sugg .s{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 8px 7px 10px;font-weight:700;font-size:12px;cursor:default;transition:border-color .15s,background .15s}
+  .sugg .s:hover{border-color:var(--primary-soft2);background:#FAFAFE}
+  .sugg .s small{display:block;color:var(--muted);font-weight:600;font-size:11px}
+  .sugg .s b{color:var(--money);white-space:nowrap} .sugg .s b.bad{color:var(--rose)}
+  .sugg .s .btn{padding:4px 8px;font-size:11px}
+
+  /* board */
+  .board{padding:16px 20px 14px}
+  .board-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+  .board-head h2{font-size:16px;font-weight:800;letter-spacing:-.01em}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .lane{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed var(--primary-soft2);border-radius:12px;background:#FAFAFE;margin-bottom:10px;flex-wrap:wrap;min-height:44px}
+  .lane .lab{font-weight:800;font-size:12px;color:var(--primary-deep);display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 12px;font-weight:700;font-size:12px;animation:pop .25s ease}
+  .chip .imp{color:var(--muted);font-weight:700;font-size:11px}
+  .chip .x{border:0;background:transparent;color:#94A3B8;cursor:pointer;display:grid;place-items:center;width:22px;height:22px;border-radius:50%}
+  .chip .x:hover{background:var(--rose-soft);color:var(--rose)}
+  .lane .hint{color:var(--muted);font-weight:600;font-size:12px}
+  .months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+  @media (max-width:1300px){.months{grid-template-columns:repeat(6,minmax(0,1fr))}}
+  @media (max-width:640px){.months{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .mo{display:flex;flex-direction:column;border-radius:12px;border:1px solid var(--line);background:var(--canvas);min-height:150px;transition:border-color .15s,background .15s;position:relative}
+  .mo.over{border-color:var(--primary);background:var(--primary-soft);box-shadow:inset 0 0 0 1px var(--primary)}
+  .mo.loss{background:#FFF6F9;border-color:#F5C6D6}
+  .mo-head{padding:8px 8px 6px;display:flex;flex-direction:column;gap:5px}
+  .mo-head .m{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:12px}
+  .mo-head .tet{font-size:9px;letter-spacing:.06em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:2px 5px;font-weight:800}
+  .mo-head .pbar{height:36px;display:flex;align-items:flex-end;gap:2px}
+  .mo-head .pbar i{flex:1;border-radius:4px 4px 2px 2px;background:var(--money);transition:height .4s cubic-bezier(.2,.8,.2,1);min-height:2px}
+  .mo-head .pbar i.ghost{background:#CBD5E1;opacity:.7} .mo-head .pbar i.neg{background:var(--rose)}
+  .mo-head .pv{font-size:11px;font-weight:800;color:var(--money)} .mo.loss .pv{color:var(--rose)}
+  .mo-body{flex:1;padding:0 6px 6px;display:flex;flex-direction:column;gap:5px}
+  .mo-body .drop{flex:1;border-radius:8px;min-height:30px;display:grid;place-items:center;color:#B8BFCC;font-size:11px;font-weight:700;text-align:center;padding:4px;border:1px dashed transparent}
+  .mo.over .drop{border-color:var(--primary-soft2);color:var(--primary)}
+  .mv{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c,var(--primary));border-radius:10px;padding:7px 8px 7px 9px;font-size:12px;font-weight:700;line-height:1.3;cursor:grab;position:relative;animation:pop .25s ease}
+  .mv:hover{box-shadow:0 8px 18px rgba(90,75,176,.14);border-color:var(--primary-soft2)}
+  .mv.drag{opacity:.4}
+  .mv .t{display:flex;align-items:center;gap:6px}.mv .t .ic{width:14px;height:14px;color:var(--c,var(--primary))}
+  .mv .d{color:var(--muted);font-weight:600;font-size:11px;margin-top:2px}
+  .mv .imp{margin-top:5px;font-size:11px;font-weight:800;display:flex;gap:4px}
+  .mv .imp span{border-radius:6px;padding:2px 6px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .mv .imp .good{background:var(--money-soft);color:var(--money)} .mv .imp .bad{background:var(--rose-soft);color:var(--rose)} .mv .imp .ic{width:11px;height:11px}
+  .mv .tools{position:absolute;top:5px;right:5px;display:flex;gap:2px;opacity:0;transition:opacity .15s}
+  .mv:hover .tools,.mv:focus-within .tools{opacity:1}
+  .mv .tools button{border:0;background:var(--card);width:20px;height:20px;border-radius:6px;display:grid;place-items:center;cursor:pointer;color:var(--muted);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .mv .tools button:hover{color:var(--primary);background:var(--primary-soft)} .mv .tools .ic{width:12px;height:12px}
+  @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+
+  /* stage + rail */
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:0;overflow:hidden}
+  @media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}.rail{flex-direction:row;overflow-x:auto;border-left:0;border-top:1px solid var(--line)}}
+  .stage-main{padding:18px 22px 16px;min-width:0}
+  .stage-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+  .stage-head h2{font-size:17px;font-weight:800;letter-spacing:-.01em}
+  .stage-head p{margin:2px 0 0;color:var(--muted);font-weight:600;font-size:12px;max-width:70ch}
+  .stage-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .chart{min-height:250px}
+  .rail{border-left:1px solid var(--line);background:#FAFAFE;display:flex;flex-direction:column;padding:10px}
+  .rail button{display:flex;align-items:center;gap:10px;border:1px solid transparent;background:transparent;border-radius:11px;padding:10px 10px;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink-2);text-align:left;white-space:nowrap}
+  .rail button .ic{width:16px;height:16px;color:var(--muted)}
+  .rail button:hover{background:var(--primary-soft)}
+  .rail button.on{background:var(--card);border-color:var(--line);color:var(--primary-deep);box-shadow:var(--shadow)}
+  .rail button.on .ic{color:var(--primary)}
+  .rail .badge{margin-left:auto;font-size:10px;font-weight:800;border-radius:999px;padding:1px 7px;background:var(--rose-soft);color:var(--rose)}
+  .rail .badge.ok{background:var(--money-soft);color:var(--money)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+  .caption{color:var(--muted);font-weight:600;font-size:12px;margin-top:8px}
+  .key{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--muted);margin-top:6px}
+  .key i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:6px;vertical-align:2px}
+  .key i.dash{background:repeating-linear-gradient(90deg,currentColor 0 3px,transparent 3px 6px)}
+  .warns{display:grid;gap:8px}
+  .warn{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:10px 12px;font-weight:600;font-size:13px;line-height:1.4}
+  .warn .ic{margin-top:1px}
+  .w-ok{background:var(--money-soft);color:var(--money)} .w-warn{background:var(--warn-soft);color:#92400E} .w-crit{background:var(--rose-soft);color:#9F1239}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #F1F5F9;font-weight:600;white-space:nowrap}
+  td.r,th.r{text-align:right} tr.cur td{background:var(--primary-soft)}
+  .tbl{overflow-x:auto}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .cmp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px}
+  @media (max-width:900px){.cmp-grid{grid-template-columns:1fr}}
+  .cmp-grid h3{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  @media (max-width:900px){.room-grid{grid-template-columns:1fr}}
+  .room{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .room .t{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;margin-bottom:6px}
+  .room .t i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .room .r{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink-2);padding:3px 0}
+  .room .r b{color:var(--money);font-weight:800;white-space:nowrap}
+  .room .r b.bad{color:var(--rose)}
+  .room .r button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer}
+  .room .r button:hover{background:var(--primary-soft)}
+
+  /* drawer */
+  .drawer{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(30,27,46,.08)}
+  .drawer .in{max-width:1500px;margin:0 auto;padding:12px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+  @media (max-width:900px){.drawer .in{grid-template-columns:1fr}}
+  .drawer.min .in>*{display:none} .drawer.min .in .dhead{display:flex}
+  .dhead{display:flex;align-items:center;gap:10px;grid-column:1/-1;font-weight:800;font-size:13px}
+  .dhead .btn{margin-left:auto}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-weight:700;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .tab .ic{width:13px;height:13px}
+  .tab:hover{background:var(--primary-soft)} .tab.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .sent{font-size:18px;font-weight:700;line-height:2;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-height:40px}
+  .sent .k{color:var(--muted);font-weight:600}
+  .blank{display:inline-flex;align-items:center;border-bottom:2px solid var(--primary-soft2);background:var(--primary-soft);border-radius:8px 8px 2px 2px;padding:0 4px;color:var(--primary-deep);transition:background .15s}
+  .blank:hover,.blank:focus-within{background:#E3DEF7;border-bottom-color:var(--primary)}
+  .blank input,.blank select{border:0;background:transparent;font-weight:800;font-size:18px;color:var(--primary-deep);outline:0;padding:0 2px;cursor:pointer;appearance:none;-webkit-appearance:none;line-height:1.6}
+  .blank input[type=number]{width:3.6ch;text-align:center;-moz-appearance:textfield}
+  .blank input[type=number]::-webkit-inner-spin-button{display:none}
+  .blank .ic{width:14px;height:14px;color:var(--primary);opacity:.7}
+  .preview{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:12px;color:var(--ink-2)}
+  .preview .pill{border-radius:999px;padding:3px 9px;background:#EEF1F6;display:inline-flex;gap:5px;align-items:center}
+  .preview .good{background:var(--money-soft);color:var(--money)} .preview .bad{background:var(--rose-soft);color:var(--rose)}
+  .comp-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .dials{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;grid-column:1/-1}
+  @media (max-width:1100px){.dials{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .dial{border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+  .dial .t{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--ink-2)}
+  .dial .t .ic{width:13px;height:13px;color:var(--primary)}
+  .dial .v{font-size:16px;font-weight:800;margin:2px 0;color:var(--primary-deep)} .dial .v.zero{color:var(--muted)} .dial .v.neg{color:var(--rose)}
+  .dial select{width:100%;border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-weight:700;font-size:12px;margin-bottom:4px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;margin:0;width:100%}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-6px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab}
+  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+  .touch-help{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;grid-column:1/-1}
+  @media (max-width:900px){.touch-help{grid-template-columns:1fr}}
+  .touch-help div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:12px;color:var(--ink-2);line-height:1.4}
+  .touch-help .ic{color:var(--primary);margin-top:1px}
+  .touch-help b{display:block;color:var(--ink);font-size:13px}
+
+  /* popover */
+  .pop{position:absolute;width:360px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(30,27,46,.22);padding:14px 16px;z-index:30;display:none;animation:pop .2s ease}
+  .pop.open{display:block}
+  .pop h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:2px;padding-right:28px}
+  .pop .sub{font-size:12px;margin-bottom:8px}
+  .pop .close{position:absolute;right:8px;top:8px;border:0;background:transparent;width:28px;height:28px;border-radius:8px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+  .pop .close:hover{background:var(--primary-soft)}
+  .pop .sent{font-size:16px;line-height:1.9}
+  .pop .blank input,.pop .blank select{font-size:16px}
+  .pop .tabs{margin-bottom:6px}
+  .pop .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap}
+  .money-in{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;height:30px;padding:0 8px;gap:4px;font-weight:700}
+  .money-in input{border:0;width:80px;text-align:right;font-weight:800;outline:0;font-size:13px}
+  .money-in small{color:var(--muted)}
+  .fld{padding:7px 0;border-top:1px solid #F1F3F9;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .fld:first-of-type{border-top:0}
+  .fld .lbl{display:flex;justify-content:space-between;font-weight:700;margin-bottom:2px;color:var(--ink)}
+  .fld .lbl b{color:var(--primary-deep)}
+  .bits{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12px}
+  .bits b{text-align:right}
+
+  .toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--primary-dark);color:#fff;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13px;transition:all .25s;z-index:40;pointer-events:none;box-shadow:0 12px 30px rgba(36,31,82,.3);max-width:90vw}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media (max-width:900px){.top{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 14px;gap:8px}.crumb,.spacer{display:none}.name{min-width:0;flex:1 1 120px}.wrap{padding:12px 12px 0}.river-card,.stage-main,.board{padding:14px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media print{.top,.drawer,.rail,.mv .tools,.chip .x,.stage-tools,.sugg .btn{display:none!important}body{background:#fff;padding:0}.card{break-inside:avoid;border-color:#ccc;box-shadow:none}.wrap{padding:0}}
+</style>
+
+<header class="top">
+  <div class="brand"><span class="mark">P</span>Payobook</div>
+  <div class="crumb">People / Plan / <b>Boardroom 2026</b></div>
+  <div class="modes" id="modes" role="tablist" aria-label="How you want to make changes"></div>
+  <div class="spacer"></div>
+  <input class="name" id="name" value="My 2026 plan" aria-label="Plan name" maxlength="40">
+  <button class="btn" id="undo" title="Undo" disabled></button>
+  <button class="btn" id="redo" title="Redo" disabled></button>
+  <button class="btn" id="reset">Start over</button>
+  <button class="btn" id="save"></button>
+  <button class="btn primary" id="print"></button>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="card river-card" aria-label="Where your money flows">
+      <div class="hd"><h1 id="sentence"></h1><button class="btn hold sm" id="hold"></button></div>
+      <svg id="river" viewBox="0 0 1000 400" aria-label="Money flow from revenue through divisions to who ends up with it"></svg>
+      <div class="river-foot"><span id="river-hint"></span><span class="num" id="river-sub"></span></div>
+      <div class="pop" id="pop"></div>
+    </div>
+    <div class="hero-r">
+      <div class="card kpis" id="kpis" aria-label="This year at a glance"></div>
+      <div class="card goals" aria-label="Goals">
+        <h2 id="goalTitle"></h2>
+        <div id="goalRows"></div>
+        <div id="goalStatus"></div>
+        <div class="sugg" id="sugg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card board" aria-label="Your year">
+    <div class="board-head"><h2>Your year. Every decision on the month it happens.</h2>
+      <div class="legend"><span><i style="background:var(--money)"></i>Profit that month</span><span><i style="background:#CBD5E1"></i>Today</span><span><i style="background:var(--rose)"></i>Loses money</span><span><i style="background:var(--warn)"></i>Tet bonus</span></div></div>
+    <div class="lane" id="lane"></div>
+    <div class="months" id="months"></div>
+  </section>
+
+  <section class="card stage" aria-label="Look closer">
+    <div class="stage-main">
+      <div class="stage-head"><div><h2 id="stageTitle"></h2><p id="stageSub"></p></div><div class="stage-tools" id="stageTools"></div></div>
+      <div id="stageBody"></div>
+    </div>
+    <nav class="rail" id="rail" aria-label="Views"></nav>
+  </section>
+</main>
+
+<div class="drawer" id="drawer"><div class="in" id="drawerIn"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<div class="sr" id="live" aria-live="polite"></div>
+
+<script>
+/* ===================================================================
+   WFPLAN proof-of-concept core — shared by option A/B/C.
+   Money is held internally in ₫ millions (M). 1,000 M = ₫1 B.
+   Everything here is deliberately plain: a CEO can read the outputs,
+   an engineer can read the model. VN statutory numbers are the real
+   2026 ones, simplified to averages per role.
+   =================================================================== */
+window.WF = (() => {
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // ---- The company (mirrors the Payobook Vietnam demo: 4,502 people) ----
+  const DIVS = [
+    {key:'mfg', name:'Manufacturing', color:'#2a78d6', revenue:true, roles:[
+      {key:'op',  name:'Operators',          n:760, pay:10.8, ot:24, night:0.35},
+      {key:'tl',  name:'Team leads',         n:140, pay:15.5, ot:16, night:0.35},
+      {key:'qc',  name:'Quality inspectors', n:60,  pay:14.2, ot:12, night:0.20},
+      {key:'sup', name:'Supervisors',        n:40,  pay:22.0, ot:0,  night:0.20}]},
+    {key:'ret', name:'Retail', color:'#eb6834', revenue:true, roles:[
+      {key:'ss',  name:'Store staff',        n:640, pay:12.6, ot:14, night:0},
+      {key:'ca',  name:'Cashiers',           n:120, pay:9.4,  ot:10, night:0},
+      {key:'sm',  name:'Store managers',     n:82,  pay:24.0, ot:0,  night:0},
+      {key:'me',  name:'Merchandisers',      n:60,  pay:16.0, ot:6,  night:0}]},
+    {key:'con', name:'Construction', color:'#1baf7a', revenue:true, roles:[
+      {key:'sw',  name:'Site workers',       n:560, pay:12.4, ot:30, night:0.15},
+      {key:'fm',  name:'Foremen',            n:120, pay:18.0, ot:20, night:0.15},
+      {key:'en',  name:'Site engineers',     n:80,  pay:22.0, ot:10, night:0},
+      {key:'sa',  name:'Safety officers',    n:40,  pay:16.0, ot:8,  night:0}]},
+    {key:'log', name:'Logistics', color:'#eda100', revenue:true, roles:[
+      {key:'dr',  name:'Drivers',            n:400, pay:13.5, ot:28, night:0.40},
+      {key:'wh',  name:'Warehouse staff',    n:220, pay:10.5, ot:20, night:0.30},
+      {key:'di',  name:'Dispatchers',        n:50,  pay:15.0, ot:12, night:0.30},
+      {key:'fs',  name:'Fleet supervisors',  n:30,  pay:21.0, ot:0,  night:0}]},
+    {key:'it',  name:'IT', color:'#e87ba4', revenue:false, roles:[
+      {key:'eng', name:'Engineers',          n:380, pay:28.0, ot:4,  night:0},
+      {key:'sen', name:'Senior engineers',   n:120, pay:42.0, ot:2,  night:0},
+      {key:'pm',  name:'Project managers',   n:60,  pay:38.0, ot:0,  night:0},
+      {key:'sp',  name:'Support staff',      n:40,  pay:16.0, ot:8,  night:0}]},
+    {key:'cor', name:'Corporate', color:'#008300', revenue:false, roles:[
+      {key:'ad',  name:'Admin',              n:180, pay:14.0, ot:2,  night:0},
+      {key:'fh',  name:'Finance & HR',       n:160, pay:26.0, ot:2,  night:0},
+      {key:'sa',  name:'Sales',              n:100, pay:30.0, ot:0,  night:0},
+      {key:'mg',  name:'Managers',           n:60,  pay:48.0, ot:0,  night:0}]},
+  ];
+  const DIV = Object.fromEntries(DIVS.map(d => [d.key, d]));
+
+  // ---- Vietnam statutory (2026), simplified ----
+  const K = {
+    allowance: 0.12,      // meal / transport / phone, share of base
+    insCap: 46.8,         // ₫46.8M cap for SI/HI (20 × base salary)
+    erRate: 0.235,        // employer: SI 17.5 + HI 3 + UI 1 + union 2
+    eeRate: 0.105,        // employee: SI 8 + HI 1.5 + UI 1
+    otMult: 1.5,          // weekday overtime multiplier
+    nightPrem: 0.30,      // night-shift premium on the base hour
+    personalDed: 11,      // ₫11M personal deduction / month
+    depDed: 4.4 * 0.9,    // ₫4.4M per dependent × 0.9 avg dependents
+  };
+  const PIT = [[5,0.05],[10,0.10],[18,0.15],[32,0.20],[52,0.25],[80,0.30],[Infinity,0.35]];
+  function pitOn(taxable) {
+    if (taxable <= 0) return 0;
+    let tax = 0, prev = 0;
+    for (const [cap, rate] of PIT) {
+      const slice = Math.min(taxable, cap) - prev;
+      if (slice <= 0) break;
+      tax += slice * rate; prev = cap;
+    }
+    return tax;
+  }
+
+  // ---- The knobs (state) ----
+  function defaultState() {
+    return {
+      divs: Object.fromEntries(DIVS.map(d => [d.key, {
+        delta: 0,                 // people added (+) or removed (−)
+        month: 3,                 // month (1-12) the change lands
+        raise: null,              // % override, null = follow company raise
+        roles: Object.fromEntries(d.roles.map(r => [r.key, 0])),  // per-role delta
+      }])),
+      raise: 0,          // company-wide raise, %
+      raiseMonth: 4,     // month raise starts
+      otFactor: 1,       // overtime vs today (1 = same)
+      nightFactor: 1,    // night work vs today
+      workDays: 24,      // paid working days / month
+      bonusMonths: 1,    // Tet 13th-month
+      attrition: 12,     // % of people who leave per year
+      backfill: true,    // replace leavers?
+      recruitCost: 1,    // months of pay per hire (agency, onboarding)
+      severance: 1.5,    // months of pay per person let go
+      revenue: 2200000,  // ₫M / year  (₫2,200 B)
+      otherCosts: 260000,// ₫M / year non-people costs
+      revenueFollows: false, // does revenue grow with revenue-earning staff?
+    };
+  }
+
+  // ---- The engine ----
+  function compute(s) {
+    const months = [];
+    const byDiv = {};
+    let revHeadsBase = 0, revHeads = new Array(12).fill(0);
+    const totals = { hires:0, cuts:0, leavers:0 };
+    for (const d of DIVS) {
+      byDiv[d.key] = { name:d.name, color:d.color, heads:new Array(12).fill(0), cost:new Array(12).fill(0), baseCost:0, headsToday:0 };
+    }
+    for (let m = 0; m < 12; m++) {
+      const row = { m, heads:0, base:0, allow:0, ot:0, night:0, erc:0, bonus:0, oneOff:0, eeIns:0, pit:0, takeHome:0, total:0 };
+      for (const d of DIVS) {
+        const ds = s.divs[d.key];
+        const raisePct = (ds.raise == null ? s.raise : ds.raise);
+        for (const r of d.roles) {
+          // two kinds of change: a division-wide delta (spread across roles) landing at ds.month,
+          // and a per-role delta (number, or {n, month}) landing at its own month
+          // a role delta may be a number (lands at ds.month), {n, month}, or an array of {n, month} (option D)
+          const rd = ds.roles[r.key];
+          const rdl = Array.isArray(rd) ? rd : [typeof rd === 'object' && rd ? rd : { n: rd || 0, month: ds.month }];
+          const divShare = ds.delta * (r.n / d.roles.reduce((a, x) => a + x.n, 0));
+          let n = r.n + ((m + 1) >= ds.month ? divShare : 0) + rdl.reduce((a, x) => a + ((m + 1) >= x.month ? x.n : 0), 0);
+          const aRate = s.attrition / 100 / 12;
+          const leaversThisMonth = r.n * aRate;
+          if (!s.backfill) n -= r.n * (1 - Math.pow(1 - aRate, m + 1));
+          n = Math.max(0, n);
+          const pay = r.pay * (1 + ((m + 1) >= s.raiseMonth ? raisePct / 100 : 0));
+          const base = n * pay;
+          const allow = base * K.allowance;
+          const hourly = pay / (s.workDays * 8);
+          const ot = n * hourly * K.otMult * r.ot * s.otFactor;
+          const night = base * K.nightPrem * r.night * s.nightFactor;
+          const erc = n * Math.min(pay, K.insCap) * K.erRate;
+          const bonus = m === 0 ? base * s.bonusMonths : 0;
+          let oneOff = 0;
+          const land = (delta, month) => {
+            if ((m + 1) !== month || !delta) return;
+            if (delta > 0) { oneOff += delta * pay * s.recruitCost; totals.hires += delta; }
+            else { oneOff += -delta * pay * s.severance; totals.cuts += -delta; }
+          };
+          land(divShare, ds.month); rdl.forEach(x => land(x.n, x.month));
+          if (s.backfill) { oneOff += leaversThisMonth * pay * s.recruitCost; }
+          totals.leavers += leaversThisMonth;
+          const eeInsPP = Math.min(pay, K.insCap) * K.eeRate;
+          const grossPP = pay + allow / Math.max(n,1e-9) + (n ? ot / n : 0) + (n ? night / n : 0);
+          const pitPP = pitOn(grossPP - eeInsPP - K.personalDed - K.depDed);
+          const eeIns = n * eeInsPP, pit = n * pitPP;
+          const gross = base + allow + ot + night;
+          const total = gross + erc + bonus + oneOff;
+          row.heads += n; row.base += base; row.allow += allow; row.ot += ot; row.night += night;
+          row.erc += erc; row.bonus += bonus; row.oneOff += oneOff; row.eeIns += eeIns; row.pit += pit;
+          row.takeHome += gross - eeIns - pit; row.total += total;
+          byDiv[d.key].heads[m] += n; byDiv[d.key].cost[m] += total;
+          if (m === 0) byDiv[d.key].headsToday += r.n;
+          if (d.revenue) { revHeads[m] += n; if (m === 0) revHeadsBase += r.n; }
+        }
+      }
+      row.gross = row.base + row.allow + row.ot + row.night;
+      months.push(row);
+    }
+    // revenue + profit
+    const seasonal = [0.86,0.78,0.95,1.0,1.02,1.04,1.02,1.03,1.05,1.08,1.1,1.07]; // mild VN seasonality, sums to 12
+    for (let m = 0; m < 12; m++) {
+      const row = months[m];
+      let rev = s.revenue / 12 * seasonal[m];
+      if (s.revenueFollows) rev *= revHeads[m] / revHeadsBase;
+      row.revenue = rev;
+      row.other = s.otherCosts / 12;
+      row.profit = rev - row.total - row.other;
+      row.margin = rev ? row.profit / rev : 0;
+    }
+    const sum = k => months.reduce((a, r) => a + r[k], 0);
+    const year = {
+      cost: sum('total'), gross: sum('gross'), base: sum('base'), allow: sum('allow'), ot: sum('ot'), night: sum('night'),
+      erc: sum('erc'), bonus: sum('bonus'), oneOff: sum('oneOff'), eeIns: sum('eeIns'), pit: sum('pit'), takeHome: sum('takeHome'),
+      revenue: sum('revenue'), other: sum('other'), profit: sum('profit'),
+      headsEnd: months[11].heads, headsAvg: sum('heads') / 12,
+      peakMonth: months.reduce((b, r) => r.total > months[b].total ? r.m : b, 0),
+    };
+    year.margin = year.revenue ? year.profit / year.revenue : 0;
+    year.costPerHead = year.cost / 12 / year.headsAvg;
+    year.peopleShare = year.revenue ? year.cost / year.revenue : 0;
+    for (const d of DIVS) byDiv[d.key].year = byDiv[d.key].cost.reduce((a, b) => a + b, 0);
+    return { months, year, byDiv, totals };
+  }
+
+  let _base = null;
+  const baseline = () => _base || (_base = compute(defaultState()));
+
+  // ---- Goal seek: how far can one knob go before margin drops below target? ----
+  function maxHeadsForMargin(s, divKey, targetMargin) {
+    let lo = 0, hi = 4000;
+    const test = n => { const t = clone(s); t.divs[divKey].delta = n; return compute(t).year.margin >= targetMargin; };
+    if (!test(0)) return 0;
+    while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (test(mid)) lo = mid; else hi = mid - 1; }
+    return lo;
+  }
+  function maxRaiseForMargin(s, targetMargin) {
+    let lo = 0, hi = 60;
+    const test = p => { const t = clone(s); t.raise = p; return compute(t).year.margin >= targetMargin; };
+    if (!test(0)) return 0;
+    while (hi - lo > 0.1) { const mid = (lo + hi) / 2; if (test(mid)) lo = mid; else hi = mid; }
+    return Math.floor(lo * 2) / 2;
+  }
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const roleSum = ds => Object.values(ds.roles).reduce((a, v) => a + (Array.isArray(v) ? v.reduce((b, x) => b + x.n, 0) : (typeof v === 'object' && v ? v.n : v)), 0);
+
+  // ---- Formatting (₫, plain) ----
+  const fmt = {
+    money(v, opts = {}) {
+      const sign = v < 0 ? '−' : (opts.plus && v > 0 ? '+' : '');
+      const a = Math.abs(v);
+      if (a >= 1000) return `${sign}₫${(a / 1000).toLocaleString('en', { maximumFractionDigits: a >= 100000 ? 0 : 1 })} B`;
+      if (a >= 1) return `${sign}₫${a.toLocaleString('en', { maximumFractionDigits: a >= 100 ? 0 : 1 })} M`;
+      return `${sign}₫${(a * 1000).toLocaleString('en', { maximumFractionDigits: 0 })} K`;
+    },
+    int(v, opts = {}) { const sign = v < 0 ? '−' : (opts.plus && v > 0 ? '+' : ''); return sign + Math.round(Math.abs(v)).toLocaleString('en'); },
+    pct(v, opts = {}) { const p = v * 100; const sign = p < 0 ? '−' : (opts.plus && p > 0 ? '+' : ''); return `${sign}${Math.abs(p).toFixed(opts.d ?? 1)}%`; },
+    pts(v) { const p = v * 100; return `${p < 0 ? '−' : '+'}${Math.abs(p).toFixed(1)} pt`; },
+    month: i => MONTHS_LONG[i - 1],
+  };
+
+  // ---- Number animation ----
+  function animateNumber(el, to, format, ms = 420) {
+    const from = el._v ?? to;
+    el._v = to;
+    if (from === to) { el.textContent = format(to); return; }
+    const t0 = performance.now();
+    const tick = t => {
+      const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = format(from + (to - from) * e);
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ---- Lucide icons (stroke only, no emoji) ----
+  const ICONS = {
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    'user-plus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
+    'user-minus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" x2="16" y1="11" y2="11"/>',
+    wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+    'trending-up': '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    'trending-down': '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    minus: '<path d="M5 12h14"/>',
+    sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/>',
+    save: '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
+    columns: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/>',
+    alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    chevron: '<path d="m6 9 6 6 6-6"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    'eye-off': '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+    zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    layers: '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>',
+    'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    percent: '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+    moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+    gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+    reset: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    building: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    landmark: '<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+    chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+    info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+    grip: '<circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>',
+    trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+    play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+    home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+    'chevron-right': '<path d="m9 18 6-6-6-6"/>',
+    flag: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/>',
+    hand: '<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
+  };
+  const icon = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+
+  // ---- The plain-language summary sentence ----
+  function describe(s, r, b) {
+    const parts = [];
+    let hires = 0, cuts = 0;
+    const hireBits = [], cutBits = [];
+    for (const d of DIVS) {
+      const ds = s.divs[d.key];
+      const tot = ds.delta + roleSum(ds);
+      if (tot > 0) { hires += tot; hireBits.push(`${fmt.int(tot)} in ${d.name}`); }
+      if (tot < 0) { cuts += -tot; cutBits.push(`${fmt.int(-tot)} in ${d.name}`); }
+    }
+    if (hires) parts.push(`hiring ${hireBits.join(', ')}`);
+    if (cuts) parts.push(`letting go ${cutBits.join(', ')}`);
+    if (s.raise) parts.push(`a ${s.raise}% raise from ${fmt.month(s.raiseMonth)}`);
+    if (s.otFactor !== 1) parts.push(`${s.otFactor > 1 ? 'more' : 'less'} overtime (${fmt.pct(s.otFactor - 1, { plus: true, d: 0 })})`);
+    if (s.nightFactor !== 1) parts.push(`${s.nightFactor > 1 ? 'more' : 'fewer'} night shifts (${fmt.pct(s.nightFactor - 1, { plus: true, d: 0 })})`);
+    if (s.bonusMonths !== 1) parts.push(`${s.bonusMonths === 0 ? 'no Tet bonus' : s.bonusMonths + ' months of Tet bonus'}`);
+    if (!s.backfill) parts.push('not replacing leavers');
+    if (s.attrition !== 12) parts.push(`${s.attrition}% of people leaving a year`);
+    const dCost = r.year.cost - b.year.cost, dProfit = r.year.profit - b.year.profit;
+    if (!parts.length) return { lead: 'This is your company today.', tail: `${fmt.int(b.year.headsEnd)} people cost ${fmt.money(b.year.cost)} a year and you keep ${fmt.money(b.year.profit)} profit — a ${fmt.pct(b.year.margin)} margin.` };
+    const lead = 'With ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts.slice(-1) : parts[0]) + ',';
+    const tail = `your yearly people cost ${dCost >= 0 ? 'rises' : 'falls'} by ${fmt.money(Math.abs(dCost))} to ${fmt.money(r.year.cost)}, and profit ${dProfit >= 0 ? 'goes up' : 'goes down'} ${fmt.money(Math.abs(dProfit))} — margin ${fmt.pct(b.year.margin)} → ${fmt.pct(r.year.margin)}.`;
+    return { lead, tail };
+  }
+
+  // ---- Watch-outs (what could bite) ----
+  function warnings(s, r, b) {
+    const w = [];
+    if (r.year.margin < 0.10) w.push({ level: 'crit', text: `Margin falls to ${fmt.pct(r.year.margin)} — below the 10% floor. Cut ${fmt.money(0.10 * r.year.revenue - r.year.profit)} of cost or add revenue.` });
+    else if (r.year.margin < 0.15) w.push({ level: 'warn', text: `Margin at ${fmt.pct(r.year.margin)} is thin. Anything under 15% leaves little room for a slow quarter.` });
+    const worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]);
+    if (worst.profit < 0) {
+      const hiresThen = r.months[worst.m].oneOff > r.months[worst.m].base * 0.02;
+      const why = worst.m === 0 ? (hiresThen ? 'the Tet bonus and new hires land in the same month. Move the hires later and it recovers.' : 'the Tet bonus is paid this month. It is normal; make sure the cash is there.') : (hiresThen ? 'hiring and severance costs land together this month. Spread them out.' : 'costs outrun revenue this month.');
+      w.push({ level: 'crit', text: `${fmt.month(worst.m + 1)} loses money (${fmt.money(worst.profit)}) — ${why}` });
+    }
+    const hireMonths = DIVS.filter(d => (s.divs[d.key].delta + roleSum(s.divs[d.key])) > 0).map(d => s.divs[d.key].month);
+    if (hireMonths.length && r.totals.hires > 150) w.push({ level: 'warn', text: `${fmt.int(r.totals.hires)} new hires is a lot to recruit at once — roughly ${Math.ceil(r.totals.hires / 25)} recruiter-months of work. Spread them over two or three months.` });
+    if (s.raise >= 12) w.push({ level: 'warn', text: `A ${s.raise}% raise is well above the market average of 7–9%. Great for keeping people; check the ${fmt.money(r.year.cost - b.year.cost)} yearly bill.` });
+    if (s.attrition >= 20) w.push({ level: 'warn', text: `${s.attrition}% leaving a year means re-hiring ${fmt.int(r.totals.leavers)} people — ${fmt.money(r.totals.leavers * 15 * s.recruitCost)} in recruiting cost alone.` });
+    if (s.otFactor >= 1.5) w.push({ level: 'warn', text: `Overtime at ${fmt.pct(s.otFactor - 1, { plus: true, d: 0 })} vs today brushes the 40 h/month legal cap for factory roles. Hiring may be cheaper.` });
+    if (!w.length) w.push({ level: 'ok', text: 'Nothing to worry about. Margin, cash and hiring pace all look healthy.' });
+    return w;
+  }
+
+  // ---- Tiny SVG chart kit ----
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const nice = max => { const p = Math.pow(10, Math.floor(Math.log10(max))); const n = max / p; const s = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10; return s * p; };
+
+  function tooltip(container) {
+    let t = container.querySelector('.wf-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; container.appendChild(t); }
+    return t;
+  }
+
+  // Line/area chart: series = [{name, values[12], color, dash, area}]
+  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220 }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 24, t: 18, b: 28 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const all = series.flatMap(s => s.values).concat(band ? [band.lo, band.hi] : []);
+    let max = Math.max(...all), min = Math.min(0, ...all);
+    if (!baseline0) min = Math.min(...all);
+    const span = nice((max - min) * 1.15 || 1); max = min + span;
+    const X = i => P.l + (W - P.l - P.r) * i / (x.length - 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - (v - min) / (max - min));
+    for (let i = 0; i <= 4; i++) {
+      const v = min + (max - min) * i / 4, y = Y(v);
+      el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg);
+      el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v);
+    }
+    if (min < 0) el('line', { x1: P.l, x2: W - P.r, y1: Y(0), y2: Y(0), class: 'wf-zero' }, svg);
+    x.forEach((m, i) => { el('text', { x: X(i), y: H - 8, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = m; });
+    if (band) el('rect', { x: P.l, y: Y(band.hi), width: W - P.l - P.r, height: Y(band.lo) - Y(band.hi), class: 'wf-band' }, svg);
+    series.forEach(s => {
+      const pts = s.values.map((v, i) => `${X(i)},${Y(v)}`);
+      if (s.area) el('path', { d: `M${X(0)},${Y(Math.max(min,0))} L${pts.join(' L')} L${X(x.length - 1)},${Y(Math.max(min,0))} Z`, fill: s.color, opacity: 0.10 }, svg);
+      el('path', { d: 'M' + pts.join(' L'), fill: 'none', stroke: s.color, 'stroke-width': s.dash ? 2 : 2.5, 'stroke-dasharray': s.dash ? '5 5' : '', 'stroke-linejoin': 'round', class: 'wf-line' }, svg);
+      const last = s.values.length - 1;
+      el('circle', { cx: X(last), cy: Y(s.values[last]), r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg);
+    });
+    // hover
+    const cross = el('line', { y1: P.t, y2: H - P.b, class: 'wf-cross', opacity: 0 }, svg);
+    const dots = series.map(s => el('circle', { r: 5, fill: s.color, stroke: '#fff', 'stroke-width': 2, opacity: 0 }, svg));
+    const tip = tooltip(container);
+    const hit = el('rect', { x: P.l, y: P.t, width: W - P.l - P.r, height: H - P.t - P.b, fill: 'transparent' }, svg);
+    hit.addEventListener('mousemove', ev => {
+      const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) * W / r.width;
+      const i = Math.max(0, Math.min(x.length - 1, Math.round((px - P.l) / (W - P.l - P.r) * (x.length - 1))));
+      cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.setAttribute('opacity', 1);
+      series.forEach((s, k) => { dots[k].setAttribute('cx', X(i)); dots[k].setAttribute('cy', Y(s.values[i])); dots[k].setAttribute('opacity', 1); });
+      tip.innerHTML = `<b>${x[i]}</b>` + series.map(s => `<div><i style="background:${s.color}"></i>${s.name} <span>${fmtY(s.values[i])}</span></div>`).join('');
+      tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, X(i) * r.width / W + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px';
+    });
+    hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); tip.style.opacity = 0; });
+  }
+
+  // Grouped bars: cats[], series=[{name, values, color}]
+  function bars(container, { cats, series, fmtY = fmt.money, h = 220, colors }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 28 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const max = nice(Math.max(...series.flatMap(s => s.values)) * 1.15 || 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - v / max);
+    for (let i = 0; i <= 4; i++) { const v = max * i / 4, y = Y(v); el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg); el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v); }
+    const gw = (W - P.l - P.r) / cats.length, bw = Math.min(28, (gw * 0.7) / series.length);
+    const tip = tooltip(container);
+    cats.forEach((c, i) => {
+      const cx = P.l + gw * i + gw / 2;
+      el('text', { x: cx, y: H - 8, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = c;
+      series.forEach((s, k) => {
+        const x = cx - (series.length * bw + (series.length - 1) * 2) / 2 + k * (bw + 2);
+        const v = s.values[i], y = Y(v);
+        const rect = el('rect', { x, y, width: bw, height: Math.max(0, Y(0) - y), rx: 4, fill: colors ? colors[i] : s.color, opacity: s.ghost ? 0.35 : 1, class: 'wf-bar' }, svg);
+        rect.addEventListener('mousemove', ev => { const r = svg.getBoundingClientRect(); tip.innerHTML = `<b>${c}</b><div><i style="background:${colors ? colors[i] : s.color}"></i>${s.name} <span>${fmtY(v)}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px'; });
+        rect.addEventListener('mouseleave', () => tip.style.opacity = 0);
+      });
+    });
+  }
+
+  // Waterfall: start {label,value}, steps [{label,value}], end label
+  function waterfall(container, { start, steps, endLabel, fmtY = fmt.money, h = 240, upColor = '#DC2668', downColor = '#2E7D4F', totalColor = '#5A4BB0' }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 40 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const items = [{ label: start.label, value: start.value, total: true }];
+    let run = start.value;
+    steps.forEach(s => { items.push({ label: s.label, value: s.value, from: run }); run += s.value; });
+    items.push({ label: endLabel, value: run, total: true });
+    const vals = items.flatMap(i => i.total ? [i.value] : [i.from, i.from + i.value]);
+    const lo = Math.min(0, ...vals), hiV = Math.max(...vals);
+    const min = lo, max = min + nice((hiV - lo) * 1.1 || 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - (v - min) / (max - min));
+    for (let i = 0; i <= 4; i++) { const v = min + (max - min) * i / 4, y = Y(v); el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg); el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v); }
+    const gw = (W - P.l - P.r) / items.length, bw = Math.min(56, gw * 0.62);
+    const tip = tooltip(container);
+    items.forEach((it, i) => {
+      const cx = P.l + gw * i + gw / 2;
+      const a = it.total ? 0 : it.from, b = it.total ? it.value : it.from + it.value;
+      const y1 = Y(Math.max(a, b)), y2 = Y(Math.min(a, b));
+      const color = it.total ? totalColor : (it.value >= 0 ? upColor : downColor);
+      const r = el('rect', { x: cx - bw / 2, y: y1, width: bw, height: Math.max(2, y2 - y1), rx: 4, fill: color, class: 'wf-bar' }, svg);
+      if (!it.total && i < items.length - 1) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
+      if (it.total && i === 0) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
+      const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = it.label;
+      const val = el('text', { x: cx, y: y1 - 6, class: 'wf-val', 'text-anchor': 'middle' }, svg); val.textContent = it.total ? fmtY(it.value) : fmtY(it.value, { plus: true });
+      r.addEventListener('mousemove', ev => { const rr = svg.getBoundingClientRect(); tip.innerHTML = `<b>${it.label}</b><div><i style="background:${color}"></i>${it.total ? '' : 'Change '}<span>${fmtY(it.value, { plus: !it.total })}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(rr.width - 170, ev.clientX - rr.left + 12) + 'px'; tip.style.top = (ev.clientY - rr.top - 10) + 'px'; });
+      r.addEventListener('mouseleave', () => tip.style.opacity = 0);
+    });
+  }
+
+  // 100% horizontal stack (plain HTML)
+  function stack(container, layers, total) {
+    container.innerHTML = '';
+    container.classList.add('wf-stack');
+    const bar = document.createElement('div'); bar.className = 'wf-stack-bar';
+    const leg = document.createElement('div'); leg.className = 'wf-stack-legend';
+    layers.forEach(l => {
+      const seg = document.createElement('div'); seg.style.width = (l.value / total * 100) + '%'; seg.style.background = l.color; seg.title = `${l.name}: ${fmt.money(l.value)}`; bar.appendChild(seg);
+      const li = document.createElement('div'); li.innerHTML = `<i style="background:${l.color}"></i><span>${l.name}</span><b>${fmt.money(l.value)}</b><small>${fmt.pct(l.value / total, { d: 0 })}</small>`; leg.appendChild(li);
+    });
+    container.appendChild(bar); container.appendChild(leg);
+  }
+
+  const CHART_CSS = `
+    .wf-chart{position:relative;width:100%}
+    .wf-chart svg{display:block;overflow:visible;font-family:inherit}
+    .wf-grid{stroke:#E8EAF2;stroke-width:1}
+    .wf-zero{stroke:#94A3B8;stroke-width:1.5}
+    .wf-cross{stroke:#94A3B8;stroke-width:1;stroke-dasharray:3 3}
+    .wf-connector{stroke:#CBD5E1;stroke-width:1;stroke-dasharray:3 3}
+    .wf-ax{font-size:11px;fill:#64748B}
+    .wf-val{font-size:11px;fill:#1E1B2E;font-weight:600}
+    .wf-band{fill:#2E7D4F;opacity:.07}
+    .wf-line{transition:d .35s ease}
+    .wf-bar{transition:y .35s ease,height .35s ease}
+    .wf-tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:#1E1B2E;color:#fff;font-size:12px;border-radius:8px;padding:8px 10px;min-width:150px;z-index:5;box-shadow:0 8px 24px rgba(30,27,46,.25)}
+    .wf-tip b{display:block;margin-bottom:4px;font-weight:600}
+    .wf-tip div{display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .wf-tip div span{margin-left:auto;font-variant-numeric:tabular-nums}
+    .wf-tip i{width:8px;height:8px;border-radius:2px;display:inline-block}
+    .wf-stack-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:#fff}
+    .wf-stack-bar div{transition:width .35s ease;min-width:2px}
+    .wf-stack-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 18px;margin-top:12px;font-size:12px}
+    .wf-stack-legend div{display:flex;align-items:center;gap:6px}
+    .wf-stack-legend i{width:10px;height:10px;border-radius:3px;flex:none}
+    .wf-stack-legend b{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+    .wf-stack-legend small{color:#64748B;width:32px;text-align:right}
+    .ic{width:18px;height:18px;flex:none}
+  `;
+  const injectCss = () => { const s = document.createElement('style'); s.textContent = CHART_CSS; document.head.appendChild(s); };
+
+  return { MONTHS, MONTHS_LONG, DIVS, DIV, K, defaultState, compute, baseline, clone, roleSum, fmt, animateNumber, icon, describe, warnings,
+    maxHeadsForMargin, maxRaiseForMargin, chart: { lines, bars, waterfall, stack }, injectCss };
+})();
+</script>
+<script>
+(() => {
+  const W = window.WF, F = W.fmt, I = W.icon, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  W.injectCss();
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const TYPES = {
+    hire:  { label:'Hire',        icon:'user-plus',  monthly:true },
+    cut:   { label:'Let go',      icon:'user-minus', monthly:true },
+    raise: { label:'Pay raise',   icon:'trending-up',monthly:true },
+    ot:    { label:'Overtime',    icon:'clock' },
+    night: { label:'Night shifts',icon:'moon' },
+    tet:   { label:'Tet bonus',   icon:'gift' },
+    leave: { label:'Leavers',     icon:'users' },
+  };
+  const PLAN_COLORS = ['#5A4BB0', '#0F766E', '#D97706', '#2563EB', '#DC2668', '#7C3AED'];
+
+  // ---------- plan state ----------
+  const fresh = () => ({ name:'My 2026 plan', moves:[], revenue:2200000, other:260000, follows:false, goals:{ margin:{ on:true, v:15 }, profit:{ on:false, v:450 }, cost:{ on:false, v:1500 }, heads:{ on:false, v:4600 } } });
+  let P = fresh(), hist = [], redo = [], nextId = 1, mode = 'sentences', view = 'months', showToday = false, ghostMove = null;
+  let comp = { type:'hire', month:3, n:100, div:'con', role:'', pct:5, factor:0.8, tet:1, attr:12, backfill:true };
+
+  const baseState = () => { const s = W.defaultState(); s.revenue = P.revenue; s.otherCosts = P.other; s.revenueFollows = P.follows; return s; };
+  function share(div, n) { const roles = W.DIV[div].roles, tot = roles.reduce((a, r) => a + r.n, 0); const raw = roles.map(r => n * r.n / tot), out = raw.map(Math.floor); let rest = Math.round(n) - out.reduce((a, b) => a + b, 0); raw.map((v, i) => [v - out[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (rest > 0) { out[i]++; rest--; } }); return roles.map((r, i) => [r.key, out[i]]); }
+  function toState(moves, plan = P) {
+    const s = W.defaultState(); s.revenue = plan.revenue; s.otherCosts = plan.other; s.revenueFollows = plan.follows;
+    for (const d of W.DIVS) for (const r of d.roles) s.divs[d.key].roles[r.key] = [];
+    for (const m of moves) {
+      if (m.type === 'hire' || m.type === 'cut') { const n = m.type === 'hire' ? m.n : -m.n; const parts = m.role ? [[m.role, n]] : share(m.div, Math.abs(n)).map(([k, v]) => [k, n < 0 ? -v : v]); parts.forEach(([k, v]) => { if (v) s.divs[m.div].roles[k].push({ n: v, month: m.month }); }); }
+      else if (m.type === 'raise') { s.raise = m.pct; s.raiseMonth = m.month; }
+      else if (m.type === 'ot') s.otFactor = m.factor; else if (m.type === 'night') s.nightFactor = m.factor;
+      else if (m.type === 'tet') s.bonusMonths = m.tet; else if (m.type === 'leave') { s.attrition = m.attr; s.backfill = m.backfill; }
+    }
+    return s;
+  }
+  let S, R, B;
+  function calc() { S = toState(P.moves); R = W.compute(S); B = W.compute(baseState()); }
+  const snap = () => { hist.push(JSON.stringify(P)); if (hist.length > 60) hist.shift(); redo = []; };
+  function apply(fn, msg) { snap(); fn(); render(); if (msg) toast(msg); }
+  function undo() { if (!hist.length) return; redo.push(JSON.stringify(P)); P = JSON.parse(hist.pop()); render(); }
+  function redoIt() { if (!redo.length) return; hist.push(JSON.stringify(P)); P = JSON.parse(redo.pop()); render(); }
+
+  // ---------- words ----------
+  const roleName = (div, role) => role ? W.DIV[div].roles.find(r => r.key === role).name : 'people';
+  function title(m) { switch (m.type) {
+    case 'hire': return `Hire ${F.int(m.n)} ${roleName(m.div, m.role)}`; case 'cut': return `Let go ${F.int(m.n)} ${roleName(m.div, m.role)}`;
+    case 'raise': return `${m.pct}% raise for everyone`; case 'ot': return `Overtime ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`;
+    case 'night': return `Night shifts ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`; case 'tet': return m.tet === 0 ? 'No Tet bonus this year' : `${m.tet} month${m.tet === 1 ? '' : 's'} of Tet bonus`;
+    case 'leave': return `${m.attr}% leave a year, ${m.backfill ? 'replaced' : 'not replaced'}`; } }
+  const detail = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].name : m.type === 'raise' ? `from ${F.month(m.month)}` : 'all year';
+  const color = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].color : m.type === 'raise' ? '#5A4BB0' : '#64748B';
+  function impact(m) { const w = W.compute(toState(P.moves.filter(x => x.id !== m.id))); return { cost: R.year.cost - w.year.cost, profit: R.year.profit - w.year.profit, pts: R.year.margin - w.year.margin }; }
+  function addMove(m) { m.id = nextId++; if (!TYPES[m.type].monthly) P.moves = P.moves.filter(x => x.type !== m.type); P.moves.push(m); return m; }
+
+  // ---------- render ----------
+  function render() {
+    calc();
+    $('#name').value = P.name; $('#undo').disabled = !hist.length; $('#redo').disabled = !redo.length;
+    $('#undo').innerHTML = I('undo'); $('#redo').innerHTML = I('redo'); $('#save').innerHTML = `${I('save')} Save plan`; $('#print').innerHTML = `${I('columns')} Print brief`;
+    $('#hold').innerHTML = `${I('eye')} Hold to see today`;
+    renderModes(); renderHero(); drawRiver(showToday ? B : R); renderBoard(); renderGoals(); renderRail(); renderStage(); renderDrawer();
+    clearTimeout(render.t); render.t = setTimeout(() => $('#live').textContent = `Plan updated. Yearly people cost ${F.money(R.year.cost)}, profit ${F.money(R.year.profit)}, margin ${F.pct(R.year.margin)}.`, 400);
+  }
+  function renderModes() {
+    const M = [['sentences', 'chat', 'Sentences'], ['touch', 'hand', 'Touch the charts'], ['knobs', 'settings', 'Knobs']];
+    $('#modes').innerHTML = M.map(([k, ic, l]) => `<button class="${mode === k ? 'on' : ''}" data-mode="${k}" role="tab" aria-selected="${mode === k}">${I(ic)}${l}</button>`).join('');
+    $('#river-hint').innerHTML = mode === 'touch' ? `${I('hand')} Drag the edge of a division block to hire or let go. Click any block for the full form.` : `${I('hand')} Click a division block to hire, let go or give a raise. Click Revenue to set targets.`;
+  }
+  function renderHero() {
+    const d = W.describe(S, R, B);
+    $('#sentence').innerHTML = `${esc(d.lead)}<span class="tail">${esc(d.tail)}</span>`;
+    $('#river-sub').textContent = `${F.money(R.year.revenue)} in · ${F.money(R.year.cost)} to ${F.int(R.year.headsEnd)} people · ${F.money(R.year.other)} other · ${F.money(R.year.profit)} kept (${F.pct(R.year.margin)})`;
+    const k = [['People in December', R.year.headsEnd, B.year.headsEnd, F.int, null], ['People cost, a year', R.year.cost, B.year.cost, F.money, v => v <= 0], ['Profit, a year', R.year.profit, B.year.profit, F.money, v => v >= 0], ['Margin', R.year.margin, B.year.margin, F.pct, v => v >= 0]];
+    const box = $('#kpis'); if (!box.children.length) box.innerHTML = k.map((x, i) => `<div class="kpi"><small>${x[0]}</small><b class="num" id="k${i}"></b><span class="delta" id="d${i}"></span></div>`).join('');
+    k.forEach((x, i) => { W.animateNumber($('#k' + i), x[1], x[3]); const dv = x[1] - x[2], same = Math.abs(dv) < (i === 3 ? 0.0005 : 0.5), el = $('#d' + i); el.className = 'delta ' + (same ? '' : x[4] ? (x[4](dv) ? 'good' : 'bad') : ''); el.innerHTML = same ? 'same as today' : `${I(dv >= 0 ? 'trending-up' : 'trending-down')}${i === 3 ? F.pts(dv) : x[3](dv, { plus: true })} vs today`; });
+  }
+
+  // ---------- the river (sankey) ----------
+  const svg = $('#river'), RW = 1000, RH = 400, PAD = 24, GAP = 9, COLX = [20, 425, 830], NW = 150;
+  const BUCKETS = [{ key: 'take', name: 'Take-home pay', color: '#5A4BB0' }, { key: 'eetax', name: 'Employee insurance & tax', color: '#8B7FD1' }, { key: 'erc', name: 'Employer insurance', color: '#2E7D4F' }, { key: 'extra', name: 'Tet bonus, hiring & leaving', color: '#D97706' }, { key: 'other', name: 'Other costs', color: '#94A3B8' }, { key: 'profit', name: 'Profit you keep', color: '#0F766E' }];
+  const ribbon = (x1, y1, w1, x2, y2, w2) => { const c = (x1 + x2) / 2; return `M${x1},${y1} C${c},${y1} ${c},${y2} ${x2},${y2} L${x2},${y2 + w2} C${c},${y2 + w2} ${c},${y1 + w1} ${x1},${y1 + w1} Z`; };
+  let built = false, els = {}, lastScale = 1;
+  function layout(r) {
+    const rev = r.year.revenue, loss = Math.max(0, -r.year.profit), totalIn = rev + loss;
+    const mids = W.DIVS.map(d => ({ key: d.key, name: d.name, color: d.color, v: r.byDiv[d.key].year })).concat([{ key: 'other', name: 'Other costs', color: '#94A3B8', v: r.year.other }, { key: 'profit', name: 'Profit', color: '#0F766E', v: Math.max(0, r.year.profit) }]);
+    const bucketV = { take: r.year.takeHome, eetax: r.year.eeIns + r.year.pit, erc: r.year.erc, extra: r.year.bonus + r.year.oneOff, other: r.year.other, profit: Math.max(0, r.year.profit) };
+    const scale = (RH - 2 * PAD - GAP * (mids.length - 1)) / totalIn; lastScale = scale;
+    const yFor = list => { let y = PAD; return list.map(v => { const o = { y, h: v * scale }; y += o.h + GAP; return o; }); };
+    const inCol = loss ? [rev, loss] : [rev];
+    const inLay = yFor(inCol).map((o, i) => Object.assign(o, { key: i ? 'loss' : 'rev', name: i ? 'Loss (from reserves)' : 'Revenue', color: i ? '#DC2668' : '#2563EB', v: inCol[i] }));
+    const midLay = yFor(mids.map(m => m.v)).map((o, i) => Object.assign(o, mids[i]));
+    const rightList = BUCKETS.map(b => Object.assign({}, b, { v: bucketV[b.key] }));
+    const rightLay = yFor(rightList.map(b => b.v)).map((o, i) => Object.assign(o, rightList[i]));
+    const rib1 = []; const cur = { rev: inLay[0].y, loss: inLay[1] ? inLay[1].y : 0 }; let revLeft = rev;
+    midLay.forEach(m => { let need = m.v, my = m.y; const fromRev = Math.min(need, revLeft); if (fromRev > 0) { rib1.push({ from: 'rev', to: m.key, x1: COLX[0] + NW, y1: cur.rev, w1: fromRev * scale, x2: COLX[1], y2: my, w2: fromRev * scale, color: m.color, v: fromRev, label: `${m.name} ← Revenue` }); cur.rev += fromRev * scale; my += fromRev * scale; revLeft -= fromRev; need -= fromRev; } if (need > 0 && inLay[1]) { rib1.push({ from: 'loss', to: m.key, x1: COLX[0] + NW, y1: cur.loss, w1: need * scale, x2: COLX[1], y2: my, w2: need * scale, color: '#DC2668', v: need, label: `${m.name} ← reserves` }); cur.loss += need * scale; } });
+    const rib2 = []; const rc = Object.fromEntries(rightLay.map(b => [b.key, b.y])); const peopleTotal = r.year.cost;
+    midLay.forEach(m => { let my = m.y; const parts = (m.key === 'other' || m.key === 'profit') ? [[m.key, m.v]] : ['take', 'eetax', 'erc', 'extra'].map(k => [k, m.v * bucketV[k] / peopleTotal]); parts.forEach(([k, v]) => { if (v <= 0) return; rib2.push({ from: m.key, to: k, x1: COLX[1] + NW, y1: my, w1: v * scale, x2: COLX[2], y2: rc[k], w2: v * scale, color: m.color, v, label: `${m.name} → ${rightLay.find(b => b.key === k).name}` }); my += v * scale; rc[k] += v * scale; }); });
+    return { inLay, midLay, rightLay, rib1, rib2, scale };
+  }
+  function drawRiver(r) {
+    const L = layout(r);
+    if (!built) { svg.innerHTML = ''; [['Money in', COLX[0]], ['Where it goes', COLX[1]], ['Who ends up with it', COLX[2]]].forEach(([t, x]) => { mk('text', { x, y: 12, class: 'col' }, svg).textContent = t; }); els.g1 = mk('g', {}, svg); els.g2 = mk('g', {}, svg); els.gn = mk('g', {}, svg); els.gg = mk('g', {}, svg); built = true; }
+    const tip = (() => { let t = $('.river-card .wf-tip'); if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; $('.river-card').appendChild(t); } return t; })();
+    const syncRibs = (g, ribs, prefix) => { const seen = new Set(); ribs.forEach(rb => { const id = `${prefix}-${rb.from}-${rb.to}`; seen.add(id); let p = g.querySelector(`[data-id="${id}"]`); if (!p) { p = mk('path', { 'data-id': id, class: 'rib', fill: rb.color, opacity: prefix === 'a' ? 0.28 : 0.22 }, g); p.setAttribute('d', ribbon(rb.x1, rb.y1, 0, rb.x2, rb.y2, 0)); } requestAnimationFrame(() => p.setAttribute('d', ribbon(rb.x1, rb.y1, rb.w1, rb.x2, rb.y2, rb.w2))); p.onmousemove = ev => { const bb = $('.river-card').getBoundingClientRect(); tip.innerHTML = `<b>${rb.label}</b><div><i style="background:${rb.color}"></i><span>${F.money(rb.v)} a year</span></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 14) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; }; p.onmouseleave = () => tip.style.opacity = 0; }); g.querySelectorAll('path').forEach(p => { if (!seen.has(p.dataset.id)) p.remove(); }); };
+    syncRibs(els.g1, L.rib1, 'a'); syncRibs(els.g2, L.rib2, 'b');
+    const nodes = [...L.inLay.map(n => Object.assign({ x: COLX[0] }, n)), ...L.midLay.map(n => Object.assign({ x: COLX[1] }, n)), ...L.rightLay.map(n => Object.assign({ x: COLX[2] }, n))];
+    const seen = new Set();
+    nodes.forEach(n => {
+      const id = `n-${n.x}-${n.key}`; seen.add(id); let g = els.gn.querySelector(`[data-id="${id}"]`);
+      if (!g) { g = mk('g', { 'data-id': id }, els.gn); const rect = mk('rect', { x: n.x, width: NW, rx: 6, fill: n.color, class: 'node', y: n.y, height: 0 }, g); mk('text', { x: n.x + 8, class: 'nl' }, g); mk('text', { x: n.x + 8, class: 'nv' }, g); if (W.DIV[n.key]) { mk('rect', { x: n.x + NW / 2 - 18, width: 36, height: 6, rx: 3, class: 'handle', 'data-div': n.key }, g); } rect.addEventListener('pointerdown', ev => nodeDown(n.key, ev)); }
+      const rect = g.querySelector('rect.node'), tl = g.querySelector('.nl'), tv = g.querySelector('.nv'), hd = g.querySelector('.handle');
+      rect.setAttribute('y', n.y); rect.setAttribute('height', Math.max(2, n.h)); rect.classList.toggle('grab', mode === 'touch' && !!W.DIV[n.key]);
+      if (hd) { hd.setAttribute('y', n.y + n.h - 3); hd.classList.toggle('show', mode === 'touch'); }
+      const big = n.h >= 30, midH = n.h >= 8, light = ['#eda100', '#e87ba4', '#1baf7a', '#94A3B8', '#8B7FD1', '#D97706'].includes(n.color);
+      tl.textContent = n.name; tv.textContent = F.money(n.v); tl.classList.toggle('in', big); tv.classList.toggle('in', big);
+      if (big) { tl.setAttribute('x', n.x + 8); tv.setAttribute('x', n.x + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); tl.setAttribute('y', n.y + 18); tv.setAttribute('y', n.y + 34); tl.setAttribute('fill', light ? '#1E1B2E' : '#fff'); tv.setAttribute('fill', light ? 'rgba(30,27,46,.75)' : 'rgba(255,255,255,.85)'); }
+      else { tl.setAttribute('fill', '#1E1B2E'); tv.setAttribute('fill', '#64748B'); const y = n.y + n.h / 2 + 4; if (n.x === COLX[2]) { tl.setAttribute('x', n.x - 8); tv.setAttribute('x', n.x - 8 - n.name.length * 7 - 8); tl.setAttribute('text-anchor', 'end'); tv.setAttribute('text-anchor', 'end'); } else { tl.setAttribute('x', n.x + NW + 8); tv.setAttribute('x', n.x + NW + 8 + n.name.length * 7 + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); } tl.setAttribute('y', y); tv.setAttribute('y', y); }
+      tl.style.display = tv.style.display = midH ? '' : 'none';
+    });
+    els.gn.querySelectorAll('g').forEach(g => { if (!seen.has(g.dataset.id)) g.remove(); });
+    // ghost outlines of today's blocks when the plan differs (only while not holding)
+    els.gg.innerHTML = '';
+    if (!showToday) { const LB = layout(B); LB.midLay.forEach((n, i) => { const cur = L.midLay[i]; if (cur && Math.abs(n.h - cur.h) > 3) mk('rect', { x: COLX[1] - 3, y: cur.y - 2, width: NW + 6, height: Math.max(2, n.h + 4), rx: 7, class: 'ghost' }, els.gg); }); }
+  }
+  // drag the bottom edge of a division block = hire / let go
+  let drag = null;
+  function nodeDown(key, ev) {
+    if (!W.DIV[key]) { if (ev.button === 0) openPop(key, ev); return; }
+    const pt = svgPoint(ev); drag = { key, y0: pt.y, moved: false, snapDone: false, before: JSON.stringify(P), ev };
+    try { svg.setPointerCapture(ev.pointerId); } catch (e) {} svg.classList.add('dragging');
+  }
+  function svgPoint(ev) { const r = svg.getBoundingClientRect(); return { x: (ev.clientX - r.left) * RW / r.width, y: (ev.clientY - r.top) * RH / r.height }; }
+  svg.addEventListener('pointermove', ev => {
+    if (!drag) return; const pt = svgPoint(ev), dy = pt.y - drag.y0;
+    if (!drag.moved && Math.abs(dy) < 4) return; drag.moved = true;
+    const d = W.DIV[drag.key], perHead = B.byDiv[d.key].year / B.byDiv[d.key].headsToday; // yearly cost of one person in this division
+    const n = Math.round(dy / lastScale / perHead / 10) * 10;
+    const existing = P.moves.find(m => m.drag && m.div === drag.key);
+    const wanted = (drag.startN ?? (drag.startN = existing ? (existing.type === 'hire' ? existing.n : -existing.n) : 0)) + n;
+    P.moves = P.moves.filter(m => !(m.drag && m.div === drag.key));
+    if (wanted) P.moves.push({ id: existing ? existing.id : nextId++, type: wanted > 0 ? 'hire' : 'cut', n: Math.abs(wanted), div: drag.key, role: '', month: existing ? existing.month : 4, drag: true });
+    calc(); drawRiver(R); renderHero();
+    const tip = $('.river-card .wf-tip'), bb = $('.river-card').getBoundingClientRect();
+    if (tip) { tip.innerHTML = `<b>${d.name}</b><div><i style="background:${d.color}"></i>${wanted >= 0 ? 'Hire' : 'Let go'} <span>${F.int(Math.abs(wanted))} people</span></div><div><i style="background:#94A3B8"></i>People cost <span>${F.money(R.year.cost - B.year.cost, { plus: true })}/yr</span></div><div><i style="background:#0F766E"></i>Margin <span>${F.pct(R.year.margin)}</span></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 16) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; }
+    $('#river-sub').textContent = `${wanted >= 0 ? 'Hiring' : 'Letting go'} ${F.int(Math.abs(wanted))} people in ${d.name} · release to keep it`;
+  });
+  const dragEnd = ev => {
+    if (!drag) return; const dr = drag; drag = null; svg.classList.remove('dragging'); const tp = $('.river-card .wf-tip'); if (tp) tp.style.opacity = 0;
+    if (!dr.moved) { openPop(dr.key, dr.ev); return; }
+    const after = JSON.stringify(P); if (after !== dr.before) { hist.push(dr.before); redo = []; }
+    const m = P.moves.find(x => x.drag && x.div === dr.key);
+    render(); toast(m ? `${title(m)} in ${W.DIV[dr.key].name}, landing in ${F.month(m.month)}. It is on the board, drag it to another month.` : `${W.DIV[dr.key].name} is back to today's size.`);
+  };
+  svg.addEventListener('pointerup', dragEnd); svg.addEventListener('pointercancel', dragEnd);
+
+  // ---------- popover on a block ----------
+  function openPop(key, ev) {
+    const pop = $('#pop'), card = $('.river-card').getBoundingClientRect(); let html = '';
+    if (key === 'rev' || key === 'loss') html = `<h3>${I('wallet')} Your money this year</h3><div class="sub">Type what you expect. Profit is what is left after people and other costs.</div><div class="fld"><div class="lbl">Revenue target</div><span class="money-in">₫<input type="number" data-p="revenue" value="${P.revenue / 1000}" step="50"><small>B</small></span></div><div class="fld"><div class="lbl">Other costs <span class="sub">rent, materials, everything else</span></div><span class="money-in">₫<input type="number" data-p="other" value="${P.other / 1000}" step="10"><small>B</small></span></div><div class="fld"><label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" data-p="follows" ${P.follows ? 'checked' : ''}> Revenue grows and shrinks with revenue-earning staff</label></div>`;
+    else if (key === 'other') html = `<h3>${I('building')} Other costs</h3><div class="sub">Everything that is not people.</div><div class="fld"><span class="money-in">₫<input type="number" data-p="other" value="${P.other / 1000}" step="10"><small>B</small></span></div>`;
+    else if (key === 'profit') html = `<h3>${I('target')} Profit you keep</h3><div class="sub">${F.money(R.year.profit)} this year, a ${F.pct(R.year.margin)} margin. Set the margin you want in Goals, on the right, and the suggestions tell you how to get there.</div><div class="fld"><div class="lbl">Keep the margin at least <b>${P.goals.margin.v}%</b></div><input type="range" min="0" max="40" step="1" value="${P.goals.margin.v}" data-goal="margin"></div>`;
+    else if (W.DIV[key]) { comp.div = key; if (!['hire', 'cut', 'raise'].includes(comp.type)) comp.type = 'hire'; const d = W.DIV[key]; html = `<h3><i class="sw" style="background:${d.color}"></i>${d.name}</h3><div class="sub">${F.int(B.byDiv[key].headsToday)} people today · ${F.money(R.byDiv[key].year)} a year${R.byDiv[key].year !== B.byDiv[key].year ? ` (${F.money(R.byDiv[key].year - B.byDiv[key].year, { plus: true })})` : ''}</div><div class="tabs">${['hire', 'cut', 'raise'].map(k => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}" data-in-pop="1">${I(TYPES[k].icon)}${TYPES[k].label}</button>`).join('')}</div><div class="sent" id="popSent"></div><div class="preview" id="popPrev" style="margin-top:6px"></div><div class="row"><button class="btn primary sm" id="popAdd">${I('plus')} Add to plan</button><span class="sub" style="font-size:12px">Roles: ${d.roles.map(r => `${r.name} ₫${r.pay}M`).join(' · ')}</span></div>`; }
+    else { const b = BUCKETS.find(x => x.key === key), y = R.year; const bits = key === 'take' ? [['Gross pay', y.gross], ['− employee insurance (10.5%)', -y.eeIns], ['− personal income tax', -y.pit], ['= take-home', y.takeHome]] : key === 'eetax' ? [['Employee social, health & unemployment insurance', y.eeIns], ['Personal income tax (5–35% ladder)', y.pit]] : key === 'erc' ? [['Employer social insurance 17.5%', y.erc * 17.5 / 23.5], ['Health 3% · unemployment 1% · union 2%', y.erc * 6 / 23.5]] : [['Tet bonus (13th month)', y.bonus], ['Recruiting + severance', y.oneOff]]; html = `<h3>${I('info')} ${b.name}</h3><div class="sub">${F.money(b.key === 'take' ? y.takeHome : b.key === 'eetax' ? y.eeIns + y.pit : b.key === 'erc' ? y.erc : y.bonus + y.oneOff)} a year. This block is an outcome; change people, pay or hours to move it.</div><div class="bits">${bits.map(([l, v]) => `<span>${l}</span><b class="num">${F.money(v)}</b>`).join('')}</div>`; }
+    pop.innerHTML = `<button class="close" aria-label="Close">${I('x')}</button>` + html;
+    const sb = svg.getBoundingClientRect(), k = sb.width / RW, node = svg.querySelector(`[data-id^="n-"][data-id$="-${key}"] rect.node`), nx = +node.getAttribute('x'), ny = +node.getAttribute('y');
+    const x = Math.min(card.width - 380, Math.max(8, (nx + NW + 16) * k + (sb.left - card.left))), y = (sb.top - card.top) + ny * k;
+    pop.style.left = x + 'px'; pop.style.top = Math.max(8, Math.min(card.height - 260, y)) + 'px'; pop.classList.add('open');
+    svg.querySelectorAll('.node').forEach(r => r.classList.remove('hot')); node.classList.add('hot');
+    if (W.DIV[key]) renderComposer('#popSent', '#popPrev');
+    pop.querySelectorAll('[data-p]').forEach(c => c.addEventListener(c.type === 'checkbox' ? 'change' : 'input', () => { if (c.dataset.p === 'follows') P.follows = c.checked; else P[c.dataset.p] = Math.max(0, (+c.value || 0) * 1000); render(); }));
+    const gr = pop.querySelector('[data-goal]'); if (gr) gr.addEventListener('input', () => { P.goals.margin.v = +gr.value; P.goals.margin.on = true; pop.querySelector('.lbl b').textContent = gr.value + '%'; renderGoals(); renderStage(); });
+  }
+  const closePop = () => { $('#pop').classList.remove('open'); svg.querySelectorAll('.node').forEach(r => r.classList.remove('hot')); };
+  document.addEventListener('click', e => { if (!e.target.closest('#pop') && !e.target.closest('#river')) closePop(); });
+
+  // ---------- board ----------
+  function renderBoard() {
+    const global = P.moves.filter(m => !TYPES[m.type].monthly);
+    $('#lane').innerHTML = `<span class="lab">${I('calendar')} All year</span>` + (global.length ? global.map(m => { const imp = impact(m); return `<span class="chip">${I(TYPES[m.type].icon)}${esc(title(m))}<span class="imp num">${F.money(imp.cost, { plus: true })}/yr</span><button class="x" data-remove="${m.id}" aria-label="Remove ${esc(title(m))}">${I('x')}</button></span>`; }).join('') : `<span class="hint">Overtime, night shifts, Tet bonus and leavers apply to the whole year and appear here.${P.moves.length ? '' : ' Nothing is planned yet: this is your company today.'}</span>`);
+    const maxP = Math.max(...R.months.map(m => Math.abs(m.profit)), ...B.months.map(m => Math.abs(m.profit)), 1), h = v => Math.max(2, Math.abs(v) / maxP * 36);
+    $('#months').innerHTML = R.months.map((row, i) => { const moves = P.moves.filter(m => TYPES[m.type].monthly && m.month === i + 1); return `<div class="mo ${row.profit < 0 ? 'loss' : ''}" data-month="${i + 1}"><div class="mo-head"><div class="m"><span>${W.MONTHS[i]}</span>${i === 0 && S.bonusMonths > 0 ? '<span class="tet">Tet</span>' : ''}</div><div class="pbar" title="Profit in ${F.month(i + 1)}: ${F.money(row.profit)} (today ${F.money(B.months[i].profit)})"><i class="ghost" style="height:${h(B.months[i].profit)}px"></i><i class="${row.profit < 0 ? 'neg' : ''}" style="height:${h(row.profit)}px"></i></div><span class="pv num">${F.money(row.profit)}</span></div><div class="mo-body">${moves.map(card).join('')}<div class="drop">${moves.length ? '' : 'Drop here'}</div></div></div>`; }).join('');
+  }
+  function card(m) { const imp = impact(m), t = TYPES[m.type]; return `<div class="mv" draggable="true" data-id="${m.id}" style="--c:${color(m)}" tabindex="0" title="People cost ${F.money(imp.cost, { plus: true })} a year · profit ${F.money(imp.profit, { plus: true })} · margin ${F.pts(imp.pts)}" aria-label="${esc(title(m))}, ${esc(detail(m))}"><div class="t">${I(t.icon)}<span>${esc(title(m))}</span></div><div class="d">${esc(detail(m))} · ${F.money(imp.cost, { plus: true })}/yr</div><div class="imp num"><span class="${imp.profit >= 0 ? 'good' : 'bad'}">${I(imp.profit >= 0 ? 'trending-up' : 'trending-down')}${F.money(imp.profit, { plus: true })}</span></div><div class="tools"><button data-shift="-1" data-id="${m.id}" title="One month earlier" aria-label="One month earlier" style="transform:scaleX(-1)">${I('chevron-right')}</button><button data-shift="1" data-id="${m.id}" title="One month later" aria-label="One month later">${I('chevron-right')}</button><button data-remove="${m.id}" title="Remove" aria-label="Remove">${I('x')}</button></div></div>`; }
+
+  // ---------- goals + suggestions ----------
+  const GOALS = [['margin', 'percent', 'Keep the margin at least', '%', 1], ['profit', 'wallet', 'Make at least this profit', 'B', 1000], ['cost', 'users', 'Keep people cost under', 'B', 1000], ['heads', 'building', 'Have this many people in December', 'people', 1]];
+  function goalGap() { // positive = short of the goal
+    const g = P.goals, gaps = [];
+    if (g.margin.on) gaps.push({ k: 'margin', short: g.margin.v / 100 * R.year.revenue - R.year.profit, text: `${F.pct(R.year.margin)} margin vs ${g.margin.v}% wanted` });
+    if (g.profit.on) gaps.push({ k: 'profit', short: g.profit.v * 1000 - R.year.profit, text: `${F.money(R.year.profit)} profit vs ${F.money(g.profit.v * 1000)} wanted` });
+    if (g.cost.on) gaps.push({ k: 'cost', short: R.year.cost - g.cost.v * 1000, text: `${F.money(R.year.cost)} people cost vs ${F.money(g.cost.v * 1000)} cap` });
+    if (g.heads.on) gaps.push({ k: 'heads', short: g.heads.v - R.year.headsEnd, text: `${F.int(R.year.headsEnd)} people vs ${F.int(g.heads.v)} wanted`, people: true });
+    return gaps;
+  }
+  function suggestions() {
+    const gaps = goalGap(), need = gaps.filter(g => !g.people && g.short > 0.5), needPeople = gaps.find(g => g.people && Math.abs(g.short) >= 1);
+    const out = [], tryMove = (label, why, mutate) => { const moves = JSON.parse(JSON.stringify(P.moves)); const res = mutate(moves); if (res === false) return; const r = W.compute(toState(moves)); out.push({ label, why, moves, dProfit: r.year.profit - R.year.profit, dCost: r.year.cost - R.year.cost, dHeads: r.year.headsEnd - R.year.headsEnd, r }); };
+    if (need.length) {
+      const hires = P.moves.filter(m => m.type === 'hire');
+      if (hires.length) { tryMove('Start the hires two months later', 'Same people, less of the year on payroll.', ms => { let any = false; ms.forEach(m => { if (m.type === 'hire' && m.month <= 10) { m.month += 2; any = true; } }); return any; }); tryMove('Hire a quarter fewer people', 'Keeps the direction, trims the bill.', ms => { ms.forEach(m => { if (m.type === 'hire') m.n = Math.max(1, Math.round(m.n * 0.75 / 5) * 5); }); }); }
+      const ot = P.moves.find(m => m.type === 'ot'); tryMove(ot && ot.factor <= 0.8 ? 'Cut overtime to half of today' : 'Cut overtime by 20%', 'Overtime is paid at 1.5×; fewer hours, same people.', ms => { const f = ot && ot.factor <= 0.8 ? 0.5 : 0.8; const i = ms.findIndex(m => m.type === 'ot'); if (i >= 0) { if (ms[i].factor <= f) return false; ms[i].factor = f; } else ms.push({ type: 'ot', factor: f }); });
+      const raise = P.moves.find(m => m.type === 'raise'); if (raise) tryMove(`Halve the raise to ${(raise.pct / 2).toFixed(1)}%`, 'Still a raise, half the yearly cost.', ms => { ms.find(m => m.type === 'raise').pct = +(raise.pct / 2).toFixed(1); }); if (raise && raise.month < 7) tryMove('Start the raise in July', 'Half a year of the higher pay instead of a full one.', ms => { ms.find(m => m.type === 'raise').month = 7; });
+      tryMove('Do not replace leavers in Corporate and IT', 'Natural attrition shrinks the back office without letting anyone go.', ms => { for (const dk of ['cor', 'it']) for (const r of W.DIV[dk].roles) ms.push({ type: 'cut', month: 7, n: Math.round(r.n * 0.06), div: dk, role: r.key }); });
+      // role-aware saving: fewer seniors need to go for the same saving
+      const target = Math.max(...need.map(g => g.short));
+      [['cor', 'mg'], ['cor', 'ad'], ['it', 'sen']].forEach(([dk, rk]) => { const role = W.DIV[dk].roles.find(r => r.key === rk); const perHead = B.byDiv[dk].year / B.byDiv[dk].headsToday * (role.pay / (W.DIV[dk].roles.reduce((a, r) => a + r.pay * r.n, 0) / B.byDiv[dk].headsToday)); const n = Math.min(role.n, Math.ceil(target / (perHead * 0.75))); if (n >= 1) tryMove(`Let go ${F.int(n)} ${role.name} in ${W.DIV[dk].name} from April`, `${role.name} cost ${F.money(perHead)} a year each, so ${n} of them close the gap.`, ms => { ms.push({ type: 'cut', month: 4, n, div: dk, role: rk }); }); });
+      const tet = P.moves.find(m => m.type === 'tet'); if (!tet || tet.tet > 0.5) tryMove('Pay half a month of Tet bonus', 'A hard conversation, but it lands in January where cash is tightest.', ms => { const i = ms.findIndex(m => m.type === 'tet'); if (i >= 0) ms[i].tet = 0.5; else ms.push({ type: 'tet', tet: 0.5 }); });
+    }
+    if (needPeople) { const n = Math.round(needPeople.short); if (n > 0) { [['con', ''], ['mfg', 'op'], ['ret', 'ss']].forEach(([dk, rk]) => tryMove(`Hire ${F.int(n)} ${rk ? W.DIV[dk].roles.find(r => r.key === rk).name : 'people'} in ${W.DIV[dk].name} in April`, 'Cheapest roles first: the same headcount for the least cost.', ms => { ms.push({ type: 'hire', month: 4, n, div: dk, role: rk }); })); } else { tryMove(`Let ${F.int(-n)} people leave without replacement`, 'Attrition does the work: no severance, no hard conversations.', ms => { const i = ms.findIndex(m => m.type === 'leave'); if (i >= 0) ms[i].backfill = false; else ms.push({ type: 'leave', attr: 12, backfill: false }); }); } }
+    // rank: those that close the biggest gap first, then by least profit lost
+    const score = s => need.length ? s.dProfit : needPeople ? -Math.abs(needPeople.short - s.dHeads) : 0;
+    return out.filter(s => Math.abs(s.dProfit) > 0.5 || Math.abs(s.dHeads) >= 1).sort((a, b) => score(b) - score(a)).slice(0, 5);
+  }
+  let suggCache = [];
+  function renderGoals() {
+    $('#goalTitle').innerHTML = `${I('target')} Goals`;
+    $('#goalRows').innerHTML = GOALS.map(([k, ic, l, u]) => { const g = P.goals[k]; return `<div class="goal-row"><label><input type="checkbox" data-gon="${k}" ${g.on ? 'checked' : ''} style="accent-color:var(--primary)">${I(ic)}${l}</label><span class="goal-in ${g.on ? '' : 'off'}">${u === 'B' ? '₫' : ''}<input type="text" inputmode="decimal" data-gv="${k}" value="${g.v.toLocaleString('en')}" aria-label="${l}"><small>${u}</small></span></div>`; }).join('');
+    const gaps = goalGap(); const short = gaps.filter(g => g.people ? Math.abs(g.short) >= 1 : g.short > 0.5);
+    $('#goalStatus').innerHTML = !gaps.length ? `<div class="goal-status g-ok">${I('info')}<span>Tick a goal and the charts draw it as a dashed line. Suggestions appear here.</span></div>` : short.length ? `<div class="goal-status g-gap">${I('alert')}<span>Not there yet: ${short.map(g => g.text).join(' · ')}.${short.some(g => !g.people) ? ` You need ${F.money(Math.max(...short.filter(g => !g.people).map(g => g.short), 0))} more.` : ''}</span></div>` : `<div class="goal-status g-ok">${I('check')}<span>Every goal is met: ${gaps.map(g => g.text).join(' · ')}.</span></div>`;
+    suggCache = short.length ? suggestions() : [];
+    $('#sugg').innerHTML = suggCache.length ? `<div class="eyebrow" style="margin-top:4px">What you could do · hover to preview on the chart</div>` + suggCache.map((s, i) => `<div class="s" data-sugg="${i}" tabindex="0"><span>${esc(s.label)}<small>${esc(s.why)}</small></span><b class="num ${s.dProfit < 0 ? 'bad' : ''}">${F.money(s.dProfit, { plus: true })}${s.dHeads ? ` · ${F.int(s.dHeads, { plus: true })} people` : ''}</b><button class="btn sm primary" data-apply="${i}">Apply</button></div>`).join('') : (short.length ? `<div class="sub" style="font-size:12px">No single move closes this gap. Combine a few, or lower the goal.</div>` : '');
+  }
+
+  // ---------- rail + stage ----------
+  const VIEWS = [['months', 'trending-up', 'Month by month'], ['people', 'users', 'People over the year'], ['divisions', 'building', 'Cost by division'], ['pay', 'layers', 'What pay is made of'], ['why', 'scale', 'Why profit changed'], ['room', 'zap', 'How far can I go'], ['compare', 'columns', 'Compare plans'], ['watch', 'shield', 'Watch-outs']];
+  function renderRail() { const warns = W.warnings(S, R, B), crit = warns.filter(w => w.level !== 'ok').length; $('#rail').innerHTML = VIEWS.map(([k, ic, l]) => `<button class="${view === k ? 'on' : ''}" data-view="${k}" role="tab" aria-selected="${view === k}">${I(ic)}${l}${k === 'watch' ? `<span class="badge ${crit ? '' : 'ok'}">${crit || '✓'}</span>` : k === 'compare' && saved.length ? `<span class="badge ok">${saved.length}</span>` : ''}</button>`).join(''); }
+  function head(t, s, tools = '') { $('#stageTitle').textContent = t; $('#stageSub').textContent = s; $('#stageTools').innerHTML = tools; }
+  const targetLine = () => { const g = P.goals; if (g.profit.on) return { name: `Goal · ${F.money(g.profit.v * 1000)} a year`, values: R.months.map(m => g.profit.v * 1000 / 12 * (m.revenue / (R.year.revenue / 12))), color: '#DC2668', dash: true }; if (g.margin.on) return { name: `Goal · ${g.margin.v}% margin`, values: R.months.map(m => m.revenue * g.margin.v / 100), color: '#DC2668', dash: true }; return null; };
+  function renderStage() {
+    const body = $('#stageBody'); body.innerHTML = '';
+    if (view === 'months') { head('Profit, month by month', 'Solid line is your plan, dotted grey is today. The red dashes are your goal; an amber dashed line previews a suggestion while you hover it.'); body.innerHTML = `<div class="chart" id="c1"></div><div class="key" id="key1"></div>`; const series = [{ name: 'Today', values: B.months.map(m => m.profit), color: '#94A3B8', dash: true }, { name: 'Your plan', values: R.months.map(m => m.profit), color: '#5A4BB0', area: true }]; const t = targetLine(); if (t) series.push(t); if (ghostMove) series.push({ name: ghostMove.label, values: ghostMove.r.months.map(m => m.profit), color: '#D97706', dash: true }); W.chart.lines($('#c1'), { series, h: 260 }); $('#key1').innerHTML = series.map(s => `<span><i class="${s.dash ? 'dash' : ''}" style="color:${s.color};background:${s.dash ? '' : s.color}"></i>${esc(s.name)}</span>`).join(''); }
+    else if (view === 'people') { head('People on the payroll, month by month', 'Stacked by division. Hires step up in the month they land; leavers drain away if you choose not to replace them.'); body.innerHTML = `<div class="chart" id="c1"></div><div class="key" id="key1"></div>`; areas($('#c1'), { series: W.DIVS.map(d => ({ name: d.name, values: R.byDiv[d.key].heads, color: d.color })), ghost: B.months.map(m => m.heads), h: 260, goal: P.goals.heads.on ? P.goals.heads.v : null }); $('#key1').innerHTML = W.DIVS.map(d => `<span><i style="background:${d.color}"></i>${d.name} ${F.int(R.byDiv[d.key].heads[11])}</span>`).join('') + `<span><i class="dash" style="color:#1E1B2E"></i>Today, total</span>`; }
+    else if (view === 'divisions') { head('People cost by division, a year', 'Grey is today, colour is your plan. Click a bar to open that division on the money flow.'); body.innerHTML = `<div class="chart" id="c1"></div>`; W.chart.bars($('#c1'), { cats: W.DIVS.map(d => d.name), series: [{ name: 'Today', values: W.DIVS.map(d => B.byDiv[d.key].year), color: '#CBD5E1', ghost: true }, { name: 'Your plan', values: W.DIVS.map(d => R.byDiv[d.key].year), color: '#5A4BB0' }], colors: null, h: 260 }); $('#c1').querySelectorAll('rect.wf-bar').forEach((r, i) => { const d = W.DIVS[Math.floor(i / 2)]; if (!d) return; r.style.cursor = 'pointer'; r.addEventListener('click', ev => { const node = svg.querySelector(`[data-id="n-${COLX[1]}-${d.key}"] rect.node`); openPop(d.key, { target: node, clientX: 0, clientY: 0 }); window.scrollTo({ top: 0, behavior: 'smooth' }); }); }); }
+    else if (view === 'pay') { const y = R.year; head('What a year of pay is made of', `Of ${F.money(y.gross)} gross pay, employees take home ${F.money(y.takeHome)} after ${F.money(y.eeIns)} insurance and ${F.money(y.pit)} income tax. Employer insurance of ${F.money(y.erc)} sits on top and is the company's cost.`); body.innerHTML = `<div class="split"><div><h3 class="eyebrow" style="margin-bottom:10px">Company cost · ${F.money(y.cost)}</h3><div id="c1"></div></div><div><h3 class="eyebrow" style="margin-bottom:10px">Where gross pay ends up · ${F.money(y.gross)}</h3><div id="c2"></div></div></div>`; W.chart.stack($('#c1'), [{ name: 'Base pay', value: y.base, color: '#5A4BB0' }, { name: 'Allowances', value: y.allow, color: '#8B7FD1' }, { name: 'Overtime', value: y.ot, color: '#2563EB' }, { name: 'Night premium', value: y.night, color: '#0F766E' }, { name: 'Employer insurance', value: y.erc, color: '#2E7D4F' }, { name: 'Tet bonus', value: y.bonus, color: '#D97706' }, { name: 'Hiring & severance', value: y.oneOff, color: '#DC2668' }], y.cost); W.chart.stack($('#c2'), [{ name: 'Take-home pay', value: y.takeHome, color: '#5A4BB0' }, { name: 'Employee insurance', value: y.eeIns, color: '#8B7FD1' }, { name: 'Income tax', value: y.pit, color: '#CBC2EE' }], y.gross); }
+    else if (view === 'why') { const y = R.year; head('Why profit changed', 'From today to your plan. Green steps add profit, rose steps take it away. The bars add up exactly.'); body.innerHTML = `<div class="chart" id="c1"></div>`; const st = (l, v) => ({ label: l, value: v }); W.chart.waterfall($('#c1'), { start: { label: 'Today', value: B.year.profit }, endLabel: 'Your plan', steps: [st('Revenue', y.revenue - B.year.revenue), st('Base pay', -(y.base + y.allow - B.year.base - B.year.allow)), st('Overtime & nights', -(y.ot + y.night - B.year.ot - B.year.night)), st('Insurance', -(y.erc - B.year.erc)), st('Tet bonus', -(y.bonus - B.year.bonus)), st('Hiring & severance', -(y.oneOff - B.year.oneOff)), st('Other costs', -(y.other - B.year.other))], upColor: '#2E7D4F', downColor: '#DC2668', h: 270 }); }
+    else if (view === 'room') renderRoom(body);
+    else if (view === 'compare') renderCompare(body);
+    else if (view === 'watch') { head('Watch-outs', 'What could bite, in plain words.'); body.innerHTML = `<div class="warns">${W.warnings(S, R, B).map(w => `<div class="warn w-${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${esc(w.text)}</span></div>`).join('')}</div>`; }
+  }
+  // stacked area chart (headcount)
+  function areas(c, { series, ghost, h = 260, goal }) {
+    c.innerHTML = ''; c.classList.add('wf-chart'); const Wd = c.clientWidth || 700, P_ = { l: 56, r: 16, t: 16, b: 28 }; const s = mk('svg', { viewBox: `0 0 ${Wd} ${h}`, width: '100%', height: h }, c);
+    const totals = series[0].values.map((_, i) => series.reduce((a, sr) => a + sr.values[i], 0)); const max = Math.max(...totals, ...(ghost || []), goal || 0) * 1.08, min = 0;
+    const X = i => P_.l + (Wd - P_.l - P_.r) * i / 11, Y = v => P_.t + (h - P_.t - P_.b) * (1 - (v - min) / (max - min));
+    for (let i = 0; i <= 4; i++) { const v = min + (max - min) * i / 4; mk('line', { x1: P_.l, x2: Wd - P_.r, y1: Y(v), y2: Y(v), class: 'wf-grid' }, s); mk('text', { x: P_.l - 8, y: Y(v) + 4, class: 'wf-ax', 'text-anchor': 'end' }, s).textContent = F.int(v); }
+    W.MONTHS.forEach((m, i) => { mk('text', { x: X(i), y: h - 8, class: 'wf-ax', 'text-anchor': 'middle' }, s).textContent = m; });
+    let base = new Array(12).fill(0);
+    series.forEach(sr => { const top = sr.values.map((v, i) => base[i] + v); const d = 'M' + top.map((v, i) => `${X(i)},${Y(v)}`).join(' L') + ' L' + [...base].reverse().map((v, i) => `${X(11 - i)},${Y(v)}`).join(' L') + ' Z'; const p = mk('path', { d, fill: sr.color, opacity: .82 }, s); p.addEventListener('mousemove', ev => { const r = s.getBoundingClientRect(); const i = Math.max(0, Math.min(11, Math.round((ev.clientX - r.left) * Wd / r.width - P_.l) / (Wd - P_.l - P_.r) * 11)); tip.innerHTML = `<b>${W.MONTHS[i]}</b><div><i style="background:${sr.color}"></i>${sr.name} <span>${F.int(sr.values[i])}</span></div><div><i style="background:#1E1B2E"></i>All divisions <span>${F.int(totals[i])}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px'; }); p.addEventListener('mouseleave', () => tip.style.opacity = 0); base = top; });
+    if (ghost) mk('path', { d: 'M' + ghost.map((v, i) => `${X(i)},${Y(v)}`).join(' L'), fill: 'none', stroke: '#1E1B2E', 'stroke-width': 1.5, 'stroke-dasharray': '4 4', opacity: .6 }, s);
+    if (goal) { mk('line', { x1: P_.l, x2: Wd - P_.r, y1: Y(goal), y2: Y(goal), stroke: '#DC2668', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, s); mk('text', { x: Wd - P_.r, y: Y(goal) - 5, class: 'wf-ax', 'text-anchor': 'end', fill: '#DC2668' }, s).textContent = `Goal ${F.int(goal)} people`; }
+    let tip = c.querySelector('.wf-tip'); if (!tip) { tip = document.createElement('div'); tip.className = 'wf-tip'; c.appendChild(tip); }
+  }
+  // role-aware headroom, both directions
+  function renderRoom(body) {
+    const floor = P.goals.margin.v / 100; head('How far can I go?', `Keeping the margin at least ${P.goals.margin.v}% (change it in Goals). Limits are worked out per role: one senior costs several juniors, so fewer of them fit, and fewer of them need to go for the same saving.`);
+    const roleMax = (dk, rk) => { let lo = 0, hi = 3000; const test = n => { const s = toState([...P.moves, { type: 'hire', month: 4, n, div: dk, role: rk }]); return W.compute(s).year.margin >= floor; }; if (!test(0)) return 0; while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (test(mid)) lo = mid; else hi = mid - 1; } return lo; };
+    const saving = Math.max(0, floor * R.year.revenue - R.year.profit);
+    body.innerHTML = `<div class="room-grid">${W.DIVS.map(d => { const rows = d.roles.map(r => { const n = roleMax(d.key, r.key); const perHead = r.pay * 12 * (1 + W.K.allowance) + Math.min(r.pay, W.K.insCap) * W.K.erRate * 12 + r.pay * S.bonusMonths; const toGo = saving > 0 ? Math.min(r.n, Math.ceil(saving / (perHead * 0.85))) : 0; return `<div class="r"><span>${r.name} <small class="sub">₫${r.pay}M/mo · ${F.int(r.n)} today</small></span><span>${saving > 0 ? `<b class="bad">let go ${F.int(toGo)}</b> <button data-cutrole="${d.key}:${r.key}:${toGo}">Do it</button>` : `<b>${n ? '+' + F.int(n) : 'no room'}</b> ${n ? `<button data-hirerole="${d.key}:${r.key}:${n}">Add</button>` : ''}`}</span></div>`; }).join(''); return `<div class="room"><div class="t"><i style="background:${d.color}"></i>${d.name} <span class="sub" style="font-weight:600">· ${F.int(B.byDiv[d.key].headsToday)} people</span></div>${rows}</div>`; }).join('')}</div><p class="caption">${saving > 0 ? `You are ${F.money(saving)} below your margin floor, so each row shows how many of that role would have to go from April to close it. Seniors: fewer people, same saving.` : `You are above your floor. Each row is the most of that role you could add from April and stay there.`}</p>`;
+  }
+  // ---------- compare ----------
+  let saved = []; try { saved = JSON.parse(localStorage.getItem('wfplan.boardroom') || '[]'); } catch (e) { saved = []; }
+  const persist = () => { try { localStorage.setItem('wfplan.boardroom', JSON.stringify(saved)); return true; } catch (e) { toast('This browser will not store plans. Print a brief to keep a copy.'); return false; } };
+  function renderCompare(body) {
+    head('Compare plans', saved.length ? 'Every saved plan on the same charts. The plan on the board is drawn solid; saved plans are the coloured lines.' : 'Save a plan (top right) and it appears here next to the one on the board.', `<button class="btn sm" id="saveHere">${I('save')} Save this plan</button>`);
+    const plans = [{ name: 'Today', moves: [], revenue: P.revenue, other: P.other, follows: P.follows, color: '#94A3B8', dash: true }, { ...P, name: P.name + ' (on the board)', color: '#5A4BB0', cur: true }, ...saved.map((s, i) => ({ ...s, color: PLAN_COLORS[(i + 1) % PLAN_COLORS.length], idx: i }))];
+    const res = plans.map(p => W.compute(toState(p.moves, p)));
+    body.innerHTML = `<div class="chart" id="c1"></div><div class="key">${plans.map(p => `<span><i class="${p.dash ? 'dash' : ''}" style="color:${p.color};background:${p.dash ? '' : p.color}"></i>${esc(p.name)}</span>`).join('')}</div><div class="cmp-grid"><div><h3>People cost, a year</h3><div id="c2"></div></div><div><h3>Profit, a year</h3><div id="c3"></div></div><div><h3>People in December</h3><div id="c4"></div></div></div><div class="tbl" style="margin-top:12px"><table><thead><tr><th>Plan</th><th>Moves</th><th class="r">People</th><th class="r">People cost</th><th class="r">Profit</th><th class="r">Margin</th><th class="r">Worst month</th><th></th></tr></thead><tbody>${plans.map((p, i) => { const r = res[i], worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]); return `<tr class="${p.cur ? 'cur' : ''}"><td><i class="sw" style="background:${p.color}"></i>${esc(p.name)}</td><td style="white-space:normal;max-width:360px">${p.moves.length ? p.moves.map(title).map(esc).join(' · ') : '—'}</td><td class="r num">${F.int(r.year.headsEnd)}</td><td class="r num">${F.money(r.year.cost)}</td><td class="r num">${F.money(r.year.profit)}</td><td class="r num">${F.pct(r.year.margin)}</td><td class="r num ${worst.profit < 0 ? 'bad' : ''}" style="${worst.profit < 0 ? 'color:var(--rose)' : ''}">${W.MONTHS[worst.m]} ${F.money(worst.profit)}</td><td>${p.idx !== undefined ? `<button class="btn sm" data-load="${p.idx}">Open</button> <button class="btn sm ghost" data-del="${p.idx}" aria-label="Remove">${I('trash')}</button>` : ''}</td></tr>`; }).join('')}</tbody></table></div>`;
+    W.chart.lines($('#c1'), { series: plans.map((p, i) => ({ name: p.name, values: res[i].months.map(m => m.profit), color: p.color, dash: p.dash, area: p.cur })), h: 240 });
+    const cats = plans.map(p => { const n = p.name.replace(' (on the board)', ''); return n.length > 11 ? n.slice(0, 10) + '…' : n; }), cols = plans.map(p => p.color);
+    W.chart.bars($('#c2'), { cats, series: [{ name: 'People cost', values: res.map(r => r.year.cost) }], colors: cols, h: 170 });
+    W.chart.bars($('#c3'), { cats, series: [{ name: 'Profit', values: res.map(r => Math.max(0, r.year.profit)) }], colors: cols, h: 170 });
+    W.chart.bars($('#c4'), { cats, series: [{ name: 'People', values: res.map(r => r.year.headsEnd) }], colors: cols, fmtY: F.int, h: 170 });
+  }
+  function savePlan() { if (saved.length >= 6) { toast('Six plans saved. Remove one in Compare plans to save another.'); return; } const nm = P.name.trim() || 'Untitled plan', i = saved.findIndex(s => s.name === nm), rec = { name: nm, moves: P.moves.map(m => ({ ...m })), revenue: P.revenue, other: P.other, follows: P.follows, goals: P.goals }; if (i >= 0) saved[i] = rec; else saved.push(rec); if (persist()) toast(`“${nm}” saved. Open Compare plans on the right to see it next to the others.`); renderRail(); if (view === 'compare') renderStage(); }
+
+  // ---------- drawer (input modes) ----------
+  const sel = (key, opts, val) => `<span class="blank"><select data-c="${key}" aria-label="${key}">${opts.map(([v, l]) => `<option value="${v}" ${String(v) === String(val) ? 'selected' : ''}>${l}</option>`).join('')}</select>${I('chevron')}</span>`;
+  const num = (key, val, min, max, step = 1) => `<span class="blank"><input data-c="${key}" type="number" value="${val}" min="${min}" max="${max}" step="${step}" aria-label="${key}"></span>`;
+  const monthOpts = W.MONTHS_LONG.map((m, i) => [i + 1, m]), factorOpts = [[0.5, 'half the'], [0.75, 'a quarter less'], [0.8, '20% less'], [0.9, '10% less'], [1.1, '10% more'], [1.25, 'a quarter more'], [1.5, 'half again the']];
+  function sentenceHtml() { const divOpts = W.DIVS.map(d => [d.key, d.name]), roleOpts = [['', 'people across the division'], ...W.DIV[comp.div].roles.map(r => [r.key, r.name])]; switch (comp.type) {
+    case 'hire': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">hire</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`;
+    case 'cut': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">let go</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`;
+    case 'raise': return `<span class="k">From</span> ${sel('month', monthOpts, comp.month)} <span class="k">give everyone a</span> ${num('pct', comp.pct, 0, 40, 0.5)}<span class="k">% raise</span>`;
+    case 'ot': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">overtime of today, all year</span>`;
+    case 'night': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">night shifts of today, all year</span>`;
+    case 'tet': return `<span class="k">Pay</span> ${sel('tet', [[0, 'no'], [0.5, 'half a'], [1, 'one'], [1.5, 'one and a half'], [2, 'two']], comp.tet)} <span class="k">month${comp.tet === 1 || comp.tet === 0.5 ? '' : 's'} of Tet bonus in January</span>`;
+    case 'leave': return `<span class="k">Expect</span> ${num('attr', comp.attr, 0, 40)}<span class="k">% of people to leave this year, and</span> ${sel('backfill', [[1, 'replace them'], [0, 'leave the seats empty']], comp.backfill ? 1 : 0)}`; } }
+  function draft() { const m = { id: -1, type: comp.type, month: comp.month }; if (comp.type === 'hire' || comp.type === 'cut') Object.assign(m, { n: comp.n, div: comp.div, role: comp.role }); if (comp.type === 'raise') m.pct = comp.pct; if (comp.type === 'ot' || comp.type === 'night') m.factor = comp.factor; if (comp.type === 'tet') m.tet = comp.tet; if (comp.type === 'leave') { m.attr = comp.attr; m.backfill = comp.backfill; } return m; }
+  function renderComposer(sentSel = '#dSent', prevSel = '#dPrev') { const se = $(sentSel), pv = $(prevSel); if (!se) return; se.innerHTML = sentenceHtml(); const m = draft(), trial = W.compute(toState([...P.moves.filter(x => !(!TYPES[x.type].monthly && x.type === m.type)), m])); const dc = trial.year.cost - R.year.cost, dp = trial.year.profit - R.year.profit, dm = trial.year.margin - R.year.margin; if (pv) pv.innerHTML = `<span>If you add this:</span><span class="pill num">${F.money(dc, { plus: true })} people cost</span><span class="pill num ${dp >= 0 ? 'good' : 'bad'}">${I(dp >= 0 ? 'trending-up' : 'trending-down')} ${F.money(dp, { plus: true })} profit</span><span class="pill num">margin ${F.pts(dm)}</span>`; }
+  function renderDrawer() {
+    const d = $('#drawerIn'), minimized = $('#drawer').classList.contains('min');
+    const headHtml = (t) => `<div class="dhead">${t}<button class="btn sm" id="drawerToggle">${minimized ? I('chevron') + ' Show' : I('minus') + ' Hide'}</button></div>`;
+    if (mode === 'sentences') d.innerHTML = headHtml(`${I('sparkles')} Add a move to your plan`) + `<div><div class="tabs">${Object.entries(TYPES).map(([k, t]) => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}">${I(t.icon)}${t.label}</button>`).join('')}</div><div class="sent" id="dSent"></div><div class="preview" id="dPrev"></div></div><div class="comp-right"><button class="btn primary" id="dAdd">${I('plus')} Add to plan</button><span class="sub" style="font-size:12px;text-align:right">${TYPES[comp.type].monthly ? `Lands in ${F.month(comp.month)}. Drag it to another month later.` : 'Applies to the whole year.'}</span><div class="tabs"><span class="sub" style="font-size:12px;align-self:center">Try:</span><button class="tab" data-ex="grow">Grow Construction</button><button class="tab" data-ex="keep">Keep people happy</button><button class="tab" data-ex="lean">A lean year</button></div></div>`;
+    else if (mode === 'knobs') { const get = t => P.moves.find(m => m.type === t); d.innerHTML = headHtml(`${I('settings')} Knobs · slide and the whole page follows`) + `<div class="dials">${[['raise', 'percent', 'Raise for everyone', 0, 25, 0.5, (get('raise') || {}).pct || 0, v => v ? v + '%' : 'none'], ['ot', 'clock', 'Overtime vs today', 0.5, 1.5, 0.05, (get('ot') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['night', 'moon', 'Night shifts vs today', 0.5, 1.5, 0.05, (get('night') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['tet', 'gift', 'Tet bonus', 0, 2, 0.5, (get('tet') || {}).tet ?? 1, v => v + (v === 1 ? ' month' : ' months')], ['attr', 'user-minus', 'People leaving a year', 0, 40, 1, (get('leave') || {}).attr ?? 12, v => v + '%']].map(([k, ic, t, mn, mx, st, v, show]) => `<div class="dial"><div class="t">${I(ic)}${t}</div><div class="v num ${(k === 'raise' && !v) || (k !== 'raise' && k !== 'attr' && k !== 'tet' && v === 1) ? 'zero' : ''}" id="dv-${k}">${show(v)}</div><input type="range" min="${mn}" max="${mx}" step="${st}" value="${v}" data-knob="${k}"></div>`).join('')}<div class="dial"><div class="t">${I('users')}People in a division</div><select id="knobDiv">${W.DIVS.map(dv => `<option value="${dv.key}" ${dv.key === comp.div ? 'selected' : ''}>${dv.name}</option>`).join('')}</select>${(() => { const m = P.moves.find(x => x.drag && x.div === comp.div); const v = m ? (m.type === 'hire' ? m.n : -m.n) : 0; return `<div class="v num ${v ? (v < 0 ? 'neg' : '') : 'zero'}" id="dv-heads">${v ? F.int(v, { plus: true }) + ' people' : 'same as today'}</div><input type="range" min="-300" max="600" step="5" value="${v}" data-knob="heads">`; })()}</div></div>`; }
+    else d.innerHTML = headHtml(`${I('hand')} Touch the charts · everything you see can be changed by hand`) + `<div class="touch-help"><div>${I('layers')}<span><b>Money flow</b>Drag the bottom edge of a division block to hire or let go. Click any block for its full form. Hold "see today" to compare.</span></div><div>${I('calendar')}<span><b>Month board</b>Drag a card to the month it should land. January carries the Tet bonus, so watch it turn red.</span></div><div>${I('target')}<span><b>Goals & charts</b>Set a goal on the right and it appears as a dashed line. Hover a suggestion to preview it in amber; press Apply to take it.</span></div></div>`;
+    if (mode === 'sentences') renderComposer();
+  }
+
+  // ---------- examples ----------
+  const EX = { grow: { name: 'Grow Construction', moves: [{ type: 'hire', month: 3, n: 120, div: 'con', role: 'sw' }, { type: 'hire', month: 3, n: 20, div: 'con', role: 'fm' }, { type: 'hire', month: 5, n: 60, div: 'log', role: 'dr' }, { type: 'raise', month: 4, pct: 6 }] }, keep: { name: 'Keep people happy', moves: [{ type: 'raise', month: 4, pct: 9 }, { type: 'ot', factor: 0.8 }, { type: 'leave', attr: 8, backfill: true }, { type: 'tet', tet: 1.5 }] }, lean: { name: 'A lean year', moves: [{ type: 'cut', month: 6, n: 60, div: 'cor', role: 'ad' }, { type: 'leave', attr: 12, backfill: false }, { type: 'ot', factor: 0.75 }, { type: 'raise', month: 7, pct: 3 }] } };
+
+  // ---------- events ----------
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 3400); }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+    if (d.mode) { mode = d.mode; renderModes(); drawRiver(R); renderDrawer(); $('#drawer').classList.remove('min'); return; }
+    if (d.view) { view = d.view; ghostMove = null; renderRail(); renderStage(); return; }
+    if (d.type) { comp.type = d.type; if (d.inPop) { $$('#pop .tab').forEach(t => t.classList.toggle('on', t.dataset.type === comp.type)); renderComposer('#popSent', '#popPrev'); } else renderDrawer(); return; }
+    if (b.id === 'dAdd' || b.id === 'popAdd') { const m = draft(); apply(() => addMove(m), `${title(m)} added${TYPES[m.type].monthly ? `, landing in ${F.month(m.month)}` : ''}.`); if (b.id === 'popAdd') closePop(); return; }
+    if (d.remove) { const id = +d.remove, m = P.moves.find(x => x.id === id); apply(() => P.moves = P.moves.filter(x => x.id !== id), `${title(m)} removed.`); return; }
+    if (d.shift) { const m = P.moves.find(x => x.id === +d.id), to = m.month + +d.shift; if (to < 1 || to > 12) { toast(to < 1 ? 'January is the first month of the plan.' : 'December is the last month of the plan.'); return; } apply(() => m.month = to, `${title(m)} now lands in ${F.month(to)}.`); return; }
+    if (d.ex) { const ex = EX[d.ex]; apply(() => { P.moves = []; ex.moves.forEach(m => addMove({ ...m })); P.name = ex.name; }, `Example loaded: ${ex.name}. Change anything.`); return; }
+    if (d.apply !== undefined) { const s = suggCache[+d.apply]; apply(() => { P.moves = s.moves.map(m => ({ ...m, id: m.id || nextId++ })); ghostMove = null; }, `Applied: ${s.label}.`); return; }
+    if (d.hirerole) { const [dk, rk, n] = d.hirerole.split(':'); apply(() => addMove({ type: 'hire', month: 4, n: +n, div: dk, role: rk }), `Added ${n} ${roleName(dk, rk)} in ${W.DIV[dk].name} from April, right at your margin floor.`); return; }
+    if (d.cutrole) { const [dk, rk, n] = d.cutrole.split(':'); apply(() => addMove({ type: 'cut', month: 4, n: +n, div: dk, role: rk }), `${n} ${roleName(dk, rk)} let go in ${W.DIV[dk].name} from April.`); return; }
+    if (d.load !== undefined) { const s = saved[+d.load]; apply(() => { P = JSON.parse(JSON.stringify({ ...P, ...s })); P.moves.forEach(m => m.id = nextId++); }, `“${s.name}” is on the board.`); return; }
+    if (d.del !== undefined) { saved.splice(+d.del, 1); persist(); renderRail(); renderStage(); return; }
+    switch (b.id) {
+      case 'undo': undo(); break; case 'redo': redoIt(); break;
+      case 'reset': apply(() => { const n = P.name; P = fresh(); P.name = n; }, 'Board cleared. This is your company today.'); break;
+      case 'save': case 'saveHere': savePlan(); break;
+      case 'print': window.print(); break;
+      case 'drawerToggle': $('#drawer').classList.toggle('min'); renderDrawer(); break;
+    }
+  });
+  document.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.c) { const k = t.dataset.c, v = t.type === 'number' ? +t.value : t.value; if (k === 'n' || k === 'pct' || k === 'attr') { if (!Number.isFinite(v)) return; comp[k] = Math.max(+t.min, Math.min(+t.max, v)); } else if (k === 'month') comp.month = +v; else if (k === 'div') { comp.div = v; comp.role = ''; } else if (k === 'role') comp.role = v; else if (k === 'factor') comp.factor = +v; else if (k === 'tet') comp.tet = +v; else if (k === 'backfill') comp.backfill = v === '1';
+      const inPop = !!t.closest('#pop'); const re = () => inPop ? renderComposer('#popSent', '#popPrev') : renderDrawer(); if (t.tagName === 'SELECT') re(); else { clearTimeout(renderComposer.t); renderComposer.t = setTimeout(() => { re(); const nx = document.querySelector(`${inPop ? '#pop' : '#drawer'} [data-c="${k}"]`); if (nx) nx.focus(); }, 400); } return; }
+    if (t.dataset.knob) { const k = t.dataset.knob, v = +t.value; clearTimeout(t._t); const upd = () => { if (k === 'heads') { const dk = $('#knobDiv').value; P.moves = P.moves.filter(m => !(m.drag && m.div === dk)); if (v) P.moves.push({ id: nextId++, type: v > 0 ? 'hire' : 'cut', n: Math.abs(v), div: dk, role: '', month: 4, drag: true }); } else { const type = k === 'attr' ? 'leave' : k; P.moves = P.moves.filter(m => m.type !== type); if (k === 'raise' && v) P.moves.push({ id: nextId++, type: 'raise', month: 4, pct: v }); if ((k === 'ot' || k === 'night') && v !== 1) P.moves.push({ id: nextId++, type: k, factor: v }); if (k === 'tet' && v !== 1) P.moves.push({ id: nextId++, type: 'tet', tet: v }); if (k === 'attr') { const cur = P.moves.find(m => m.type === 'leave'); if (v !== 12) P.moves.push({ id: nextId++, type: 'leave', attr: v, backfill: cur ? cur.backfill : true }); } } }; if (!t._snap) { snap(); t._snap = true; setTimeout(() => t._snap = false, 1500); } upd(); calc(); renderHero(); drawRiver(R); renderBoard(); renderGoals(); renderStage(); const dv = $('#dv-' + k); if (dv) dv.textContent = k === 'heads' ? (v ? F.int(v, { plus: true }) + ' people' : 'same as today') : k === 'raise' ? (v ? v + '%' : 'none') : k === 'attr' ? v + '%' : k === 'tet' ? v + (v === 1 ? ' month' : ' months') : (v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })); return; }
+    if (t.dataset.gon !== undefined) { P.goals[t.dataset.gon].on = t.checked; renderGoals(); renderStage(); return; }
+    if (t.dataset.gv !== undefined) { const v = parseFloat(t.value.replace(/[^\d.]/g, '')); if (!Number.isFinite(v)) return; P.goals[t.dataset.gv].v = v; P.goals[t.dataset.gv].on = true; clearTimeout(t._t); t._t = setTimeout(() => { renderGoals(); renderStage(); const nx = document.querySelector(`[data-gv="${t.dataset.gv}"]`); if (nx) { nx.focus(); nx.setSelectionRange(nx.value.length, nx.value.length); } }, 500); return; }
+    if (t.id === 'name') { P.name = t.value; return; }
+    if (t.id === 'knobDiv') { comp.div = t.value; renderDrawer(); return; }
+  });
+  document.addEventListener('change', e => { if (e.target.id === 'knobDiv') { comp.div = e.target.value; renderDrawer(); } });
+  // suggestion hover → ghost line on the month chart
+  document.addEventListener('mouseover', e => { const s = e.target.closest('[data-sugg]'); if (!s) return; ghostMove = suggCache[+s.dataset.sugg]; if (view !== 'months') { view = 'months'; renderRail(); } renderStage(); });
+  document.addEventListener('mouseout', e => { const s = e.target.closest('[data-sugg]'); if (!s || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-sugg]') === s)) return; if (ghostMove) { ghostMove = null; renderStage(); } });
+  // hold to see today
+  const hold = $('#hold'), down = () => { showToday = true; hold.classList.add('on'); drawRiver(B); }, up = () => { if (!showToday) return; showToday = false; hold.classList.remove('on'); drawRiver(R); };
+  hold.addEventListener('pointerdown', down); window.addEventListener('pointerup', up); hold.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') down(); }); hold.addEventListener('keyup', up);
+  // board drag and drop
+  let dragId = null;
+  document.addEventListener('dragstart', e => { const c = e.target.closest('.mv'); if (!c) return; dragId = +c.dataset.id; c.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(dragId)); });
+  document.addEventListener('dragend', e => { const c = e.target.closest('.mv'); if (c) c.classList.remove('drag'); $$('.mo.over').forEach(x => x.classList.remove('over')); });
+  document.addEventListener('dragover', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; $$('.mo.over').forEach(x => x.classList.remove('over')); mo.classList.add('over'); });
+  document.addEventListener('drop', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); const m = P.moves.find(x => x.id === dragId), to = +mo.dataset.month; dragId = null; if (!m || m.month === to) { $$('.mo.over').forEach(x => x.classList.remove('over')); return; } const from = m.month; apply(() => m.month = to, `${title(m)} moved from ${F.month(from)} to ${F.month(to)}.`); });
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redoIt() : undo(); } if (e.key === 'Escape') closePop(); });
+  window.addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(() => { renderStage(); }, 150); });
+
+  // first paint: the example, so the whole page is alive on arrival
+  EX.grow.moves.forEach(m => addMove({ ...m })); P.name = 'Grow Construction';
+  render();
+})();
+</script>
