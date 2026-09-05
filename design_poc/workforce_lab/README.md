@@ -1,14 +1,16 @@
 # Workforce Futures — review prototypes
 
-Three distinct HTML concepts for a new Payobook workforce planning experience:
+Four distinct HTML concepts for a new Payobook workforce planning experience:
 
 - `public/cockpit.html` — CEO what-if cockpit, live sliders, annual metrics, monthly chart, money breakdown, scenario comparison.
 - `public/guide.html` — goal-first planning, bounded candidate search, hiring/development/blended paths, explicit infeasibility.
 - `public/studio.html` — monthly shift coverage, operator allocation, hiring, overtime, productive time and support-skill bottlenecks.
+- `public/living.html` — The Living Plan: the three concepts joined on one connected canvas. Hero stage with profit / people cost / coverage views, ±10% demand band and a month scrubber; people → coverage → profit ripple; shift balance, profit bridge and take-home tabs; compare against the baseline, a pinned plan or any saved scenario. Logic in `public/living-model.js` (pure) and `public/living.js` (page).
+- `public/living.html` — recommended connected canvas: before/after forecast, demand stress envelope, profit bridge, monthly exploration, goal paths, marginal hiring preview and pinned comparisons.
 - `public/index.html` — offline concept gallery.
 - `public/research.html` — research, comparison, recommendation and proposed production roadmap.
 
-Open `public/index.html` directly, keeping the public folder together. All three concepts work without a server, external libraries or live business data. Named scenarios are stored only in this browser. Export creates a portable HTML decision brief.
+Open `public/index.html` directly, keeping the public folder together. All four concepts work without a server, external libraries or live business data. Named scenarios are stored only in this browser. Export creates a portable HTML decision brief.
 
 Hosted preview: https://payobook-workforce-futures.groovy-pixie-4012.chatgpt.site
 
@@ -20,7 +22,7 @@ This phase creates reviewable standalone prototypes only. The existing workforce
 
 - `npm install`
 - `python3 scripts/export-html.py` regenerates offline gallery and research HTML.
-- `node --test tests/model.test.mjs` validates reconciliations, timing, capacity constraints, role effects and goal seeking.
+- `node --test tests/*.test.mjs tests/living.test.mjs` validates reconciliations, timing, capacity constraints, role effects and goal seeking.
 - `npm run dev` serves the local gallery and prototypes.
 - `npm run build` creates the Sites deployment output.
 
@@ -36,6 +38,6 @@ All rates are invented demonstration assumptions, not statutory rules. The month
 
 ## Browser review paths
 
-Cockpit: edit operators → observe metrics and chart → undo → save a named scenario → reset → reload saved plan → export brief. Guided Path: calculate a 15% growth goal → compare three paths → inspect selected plan; also test a 50% cost reduction target for explicit infeasibility. Studio: balance shift shares → transfer operators → hire into a shift → compare months before/after start. Check all three at desktop and mobile widths.
+Cockpit: edit operators → observe metrics and chart → undo → save a named scenario → reset → reload saved plan → export brief. Guided Path: calculate a 15% growth goal → compare three paths → inspect selected plan; also test a 50% cost reduction target for explicit infeasibility. Studio: balance shift shares → transfer operators → hire into a shift → compare months before/after start. Living Plan: load “Grow thoughtfully” → move the operators lever → watch the ripple → open “Why profit changed” → pin the plan as comparison → try “Help me reach a goal” → save and export. Check all four at desktop and mobile widths.
 
 Testing screenshots must not be retained. `public/og.png` is the generated social preview product asset, not a testing screenshot.
