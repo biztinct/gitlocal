@@ -1,0 +1,376 @@
+<title>Levers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-2:#4B4866; --muted:#64748B; --line:#E2E8F0; --canvas:#F4F5FB; --card:#FFFFFF;
+    --primary:#5A4BB0; --primary-deep:#4A3D96; --primary-soft:#EDEAF8; --primary-soft2:#CBC2EE;
+    --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
+    --today:#94A3B8;
+    --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .top{height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+  .crumb{color:var(--muted);font-weight:600}.crumb b{color:var(--ink)}
+  .chips{display:flex;gap:6px;margin-left:12px}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px}
+  .chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .chip .ic{width:14px;height:14px}
+  .spacer{flex:1}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s}
+  .btn:hover{background:var(--primary-soft)} .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
+  .btn:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+  .wrap{max-width:1480px;margin:0 auto;padding:20px}
+  .hero{background:var(--primary-soft);border:1px solid var(--primary-soft2);border-radius:18px;padding:22px 26px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-bottom:18px}
+  .hero .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .hero .say{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.01em;color:var(--ink);transition:opacity .2s}
+  .hero .say b{color:var(--primary-deep)}
+  .hero .say.fade{opacity:.35}
+  .hero .aside{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .hero .pill{background:#fff;border-radius:999px;padding:6px 12px;font-weight:700;color:var(--primary-deep);font-size:13px;display:flex;gap:6px;align-items:center}
+
+  .grid{display:grid;grid-template-columns:392px 1fr;gap:18px;align-items:start}
+  @media (max-width:1100px){.grid{grid-template-columns:1fr}}
+
+  /* ---- Levers ---- */
+  .levers{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto;padding-right:2px}
+  .lever{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+  .lever header{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .badge{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
+  .badge .ic{width:17px;height:17px}
+  .b-indigo{background:var(--primary-soft);color:var(--primary)} .b-green{background:var(--money-soft);color:var(--money)} .b-blue{background:var(--info-soft);color:var(--info)} .b-amber{background:var(--warn-soft);color:var(--warn)} .b-rose{background:var(--rose-soft);color:var(--rose)} .b-teal{background:var(--teal-soft);color:var(--teal)}
+  .lever h3{font-size:15px;font-weight:800}
+  .lever .why{color:var(--muted);font-size:12px;margin:0 0 10px 42px}
+  .row{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #F1F3F9}
+  .row:first-of-type{border-top:0}
+  .row .lbl{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:13px}
+  .row .lbl small{color:var(--muted);font-weight:600;font-size:12px}
+  .row .val{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;color:var(--primary-deep)}
+  .row .val.neg{color:var(--rose)} .row .val.zero{color:var(--muted)}
+  .row input[type=range]{width:100%;grid-column:1}
+  .row .ctl{grid-column:2;display:flex;gap:4px;justify-content:flex-end;align-items:center}
+  .row select,.row input[type=number]{border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff;font-weight:700;font-size:12px;height:28px}
+  .row input[type=number]{width:64px;text-align:right}
+  .row .full{grid-column:1 / -1}
+  .divrow{cursor:pointer}
+  .divrow .dot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px}
+  .roles{grid-column:1 / -1;display:none;background:#FAFBFF;border-radius:10px;padding:6px 10px;margin-top:4px}
+  .roles.open{display:block}
+  .roles .rr{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+  .roles .rr span{flex:1}.roles .rr small{color:var(--muted);width:70px;text-align:right}
+  .step{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .step button{border:0;background:#fff;width:26px;height:26px;cursor:pointer;display:grid;place-items:center;color:var(--primary)}
+  .step button:hover{background:var(--primary-soft)}
+  .step b{width:40px;text-align:center;line-height:26px;font-variant-numeric:tabular-nums;font-size:12px;background:#fff}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:26px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--primary-soft2) 0,var(--primary-soft2) 100%)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-7px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab;transition:transform .1s}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
+  input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}
+  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:5px 10px;font-weight:700;font-size:12px;cursor:pointer}
+  .seg button.on{background:var(--primary);color:#fff}
+  .switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:13px}
+  .switch i{width:36px;height:20px;border-radius:999px;background:#CBD5E1;position:relative;transition:background .2s}
+  .switch i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+  .switch.on i{background:var(--money)} .switch.on i::after{left:18px}
+  .money-in{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;height:30px;padding:0 8px;gap:4px;font-weight:700}
+  .money-in input{border:0;width:70px;text-align:right;font-weight:800;outline:0;font-size:13px}
+  .money-in small{color:var(--muted)}
+
+  /* ---- Dashboard ---- */
+  .dash{display:flex;flex-direction:column;gap:16px}
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  @media (max-width:1300px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+  .kpi .t{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:700;font-size:12px;margin-bottom:8px}
+  .kpi .badge{width:26px;height:26px;border-radius:7px}.kpi .badge .ic{width:14px;height:14px}
+  .kpi .v{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+  .kpi .d{margin-top:6px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px}
+  .kpi .d .ic{width:12px;height:12px}
+  .d.up{background:var(--rose-soft);color:var(--rose)} .d.down{background:var(--money-soft);color:var(--money)} .d.flat{background:#F1F5F9;color:var(--muted)}
+  .d.good{background:var(--money-soft);color:var(--money)} .d.bad{background:var(--rose-soft);color:var(--rose)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:1300px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .card.wide{grid-column:1 / -1}
+  .card h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .card .sub{color:var(--muted);font-size:12px;margin:2px 0 12px}
+  .card .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);font-weight:600}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px}
+  .legend i.dash{background:repeating-linear-gradient(90deg,var(--today) 0 4px,transparent 4px 7px)}
+  .watch{display:flex;flex-direction:column;gap:8px}
+  .watch div{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;font-weight:600;font-size:13px}
+  .watch .crit{background:var(--rose-soft);color:#9F1239}.watch .warn{background:var(--warn-soft);color:#92400E}.watch .ok{background:var(--money-soft);color:#166534}
+  .watch .ic{margin-top:1px}
+
+  /* compare drawer */
+  .drawer{position:fixed;inset:0;background:rgba(30,27,46,.35);display:none;align-items:center;justify-content:center;z-index:50}
+  .drawer.open{display:flex}
+  .sheet{background:#fff;border-radius:18px;width:min(900px,92vw);padding:22px 26px;box-shadow:0 30px 80px rgba(30,27,46,.35)}
+  .sheet table{width:100%;border-collapse:collapse;margin-top:14px;font-variant-numeric:tabular-nums}
+  .sheet th,.sheet td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  .sheet th:first-child,.sheet td:first-child{text-align:left}
+  .sheet th{color:var(--muted);font-size:12px;font-weight:700}
+  .sheet td.best{color:var(--money);font-weight:800}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="top">
+  <div class="brand"><span class="mark">P</span>Payobook</div>
+  <div class="crumb">People · Plan · <b>Workforce Planning</b></div>
+  <div class="chips" id="chips"></div>
+  <div class="spacer"></div>
+  <button class="btn ghost" id="reset">RESET_ICON Start again</button>
+  <button class="btn" id="compare">COMPARE_ICON Compare</button>
+  <button class="btn primary" id="save">SAVE_ICON Save this plan</button>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">SPARK_ICON In plain words</div>
+      <div class="say" id="say"></div>
+    </div>
+    <div class="aside">
+      <span class="pill">USERS_ICON <span id="pill-people"></span></span>
+      <span class="pill">TARGET_ICON <span id="pill-margin"></span></span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <aside class="levers" id="levers"></aside>
+    <main class="dash">
+      <div class="kpis" id="kpis"></div>
+      <div class="cards">
+        <div class="card wide">
+          <div class="hd"><div><h3>Month by month</h3><div class="sub">People cost each month — the dotted grey line is today’s company, the solid line is your plan.</div></div>
+            <div class="seg" id="mode"><button class="on" data-m="cost">People cost</button><button data-m="profit">Profit</button><button data-m="heads">People</button></div></div>
+          <div id="c-months"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>From today to your plan</h3><div class="sub">What each change adds or saves over a year.</div></div></div>
+          <div id="c-water"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Cost by division</h3><div class="sub">Yearly. Faded bars are today.</div></div></div>
+          <div id="c-divs"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Where every đồng goes</h3><div class="sub">Your yearly people cost, split up.</div></div></div>
+          <div id="c-stack"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Watch-outs</h3><div class="sub">Things this plan could break, and what to do about them.</div></div></div>
+          <div class="watch" id="watch"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="drawer" id="drawer"><div class="sheet">
+  <div class="hd" style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:18px">Your plans side by side</h3><button class="btn ghost" id="close">X_ICON Close</button></div>
+  <div id="cmp"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<!--@core-->
+<script>
+(() => {
+  WF.injectCss();
+  const $ = s => document.querySelector(s), I = WF.icon, F = WF.fmt;
+  document.body.innerHTML = document.body.innerHTML
+    .replace(/RESET_ICON/g, I('reset')).replace(/COMPARE_ICON/g, I('columns')).replace(/SAVE_ICON/g, I('save'))
+    .replace(/SPARK_ICON/g, I('sparkles')).replace(/USERS_ICON/g, I('users')).replace(/TARGET_ICON/g, I('target')).replace(/X_ICON/g, I('x'));
+
+  let state = WF.defaultState();
+  const base = WF.baseline();
+  const scenarios = [{ name: 'Today', state: WF.defaultState(), locked: true }];
+  let current = -1; // -1 = unsaved working plan
+  let mode = 'cost';
+
+  // ---------- Levers ----------
+  function buildLevers() {
+    const L = $('#levers'); L.innerHTML = '';
+    const lever = (badge, ic, title, why, body) => { const d = document.createElement('div'); d.className = 'lever'; d.innerHTML = `<header><span class="badge ${badge}">${I(ic)}</span><h3>${title}</h3></header><p class="why">${why}</p>${body}`; L.appendChild(d); return d; };
+
+    // People
+    lever('b-indigo', 'users', 'How many people', 'Drag to add or remove people in a division. Click a name to fine-tune by role.',
+      WF.DIVS.map(d => `
+        <div class="row divrow" data-div="${d.key}">
+          <div class="lbl" data-toggle="${d.key}"><span><i class="dot" style="background:${d.color}"></i>${d.name} <small>· ${F.int(base.byDiv[d.key].headsToday)} today</small></span></div>
+          <div class="val" id="v-${d.key}">0</div>
+          <input type="range" min="-300" max="500" step="5" value="0" data-k="delta" data-div="${d.key}">
+          <div class="ctl"><small style="color:var(--muted);font-weight:600">from</small><select data-k="month" data-div="${d.key}">${WF.MONTHS.map((m, i) => `<option value="${i + 1}" ${i + 1 === 3 ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
+          <div class="roles" id="roles-${d.key}">${d.roles.map(r => `<div class="rr"><span>${r.name}</span><small>${F.int(r.n)} · ₫${r.pay}M</small><span class="step"><button data-role="${d.key}.${r.key}" data-dir="-1">${I('minus')}</button><b id="rv-${d.key}-${r.key}">0</b><button data-role="${d.key}.${r.key}" data-dir="1">${I('plus')}</button></span></div>`).join('')}</div>
+        </div>`).join(''));
+
+    // Pay
+    lever('b-green', 'percent', 'Pay', 'A raise for everyone, and how generous Tet is this year.', `
+      <div class="row"><div class="lbl"><span>Raise for everyone</span></div><div class="val" id="v-raise">0%</div>
+        <input type="range" min="0" max="25" step="0.5" value="0" data-k="raise">
+        <div class="ctl"><small style="color:var(--muted);font-weight:600">from</small><select data-k="raiseMonth">${WF.MONTHS.map((m, i) => `<option value="${i + 1}" ${i + 1 === 4 ? 'selected' : ''}>${m}</option>`).join('')}</select></div></div>
+      <div class="row"><div class="lbl"><span>Tet bonus <small>· paid in January</small></span></div><div class="ctl"><span class="seg" data-k="bonusMonths"><button data-v="0">None</button><button class="on" data-v="1">1 month</button><button data-v="2">2 months</button></span></div></div>`);
+
+    // Hours
+    lever('b-blue', 'clock', 'Hours and shifts', 'Overtime is paid at 150%. Night shifts add 30%.', `
+      <div class="row"><div class="lbl"><span>Overtime</span><small>vs today</small></div><div class="val" id="v-ot">same</div><input type="range" min="0" max="2" step="0.1" value="1" data-k="otFactor" class="full"></div>
+      <div class="row"><div class="lbl"><span>Night shifts</span><small>vs today</small></div><div class="val" id="v-night">same</div><input type="range" min="0" max="2" step="0.1" value="1" data-k="nightFactor" class="full"></div>
+      <div class="row"><div class="lbl"><span>Paid days a month</span></div><div class="val" id="v-days">24</div><input type="range" min="20" max="26" step="1" value="24" data-k="workDays" class="full"></div>`);
+
+    // Leaving
+    lever('b-amber', 'user-minus', 'People leaving', 'Vietnam averages 12–18% a year. Every leaver costs about a month’s pay to replace.', `
+      <div class="row"><div class="lbl"><span>Leave each year</span></div><div class="val" id="v-attr">12%</div><input type="range" min="0" max="40" step="1" value="12" data-k="attrition" class="full"></div>
+      <div class="row"><label class="switch on" data-k="backfill"><i></i>Replace the people who leave</label></div>`);
+
+    // Money
+    lever('b-teal', 'wallet', 'Your money', 'Type your expected revenue and other costs. Profit and margin follow.', `
+      <div class="row"><div class="lbl"><span>Revenue this year</span></div><div class="ctl"><span class="money-in">₫<input type="number" data-k="revenue" value="2200" step="50" min="0"><small>B</small></span></div></div>
+      <div class="row"><div class="lbl"><span>Other costs <small>· rent, materials…</small></span></div><div class="ctl"><span class="money-in">₫<input type="number" data-k="otherCosts" value="260" step="10" min="0"><small>B</small></span></div></div>
+      <div class="row"><label class="switch" data-k="revenueFollows"><i></i>Revenue grows with front-line staff</label></div>`);
+
+    // wire
+    L.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('input', onInput));
+    L.querySelectorAll('select').forEach(r => r.addEventListener('change', onInput));
+    L.querySelectorAll('input[type=number]').forEach(r => r.addEventListener('input', onInput));
+    L.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { const seg = b.parentElement; seg.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); state[seg.dataset.k] = +b.dataset.v; render(); }));
+    L.querySelectorAll('.switch').forEach(s => s.addEventListener('click', () => { s.classList.toggle('on'); state[s.dataset.k] = s.classList.contains('on'); render(); }));
+    L.querySelectorAll('[data-toggle]').forEach(t => t.addEventListener('click', () => $('#roles-' + t.dataset.toggle).classList.toggle('open')));
+    L.querySelectorAll('.step button').forEach(b => b.addEventListener('click', () => { const [dk, rk] = b.dataset.role.split('.'); state.divs[dk].roles[rk] += 5 * +b.dataset.dir; $(`#rv-${dk}-${rk}`).textContent = F.int(state.divs[dk].roles[rk], { plus: true }); render(); }));
+  }
+  function onInput(e) {
+    const t = e.target, k = t.dataset.k, v = t.type === 'number' ? +t.value : (t.tagName === 'SELECT' ? +t.value : +t.value);
+    if (t.dataset.div) state.divs[t.dataset.div][k] = v;
+    else if (k === 'revenue' || k === 'otherCosts') state[k] = v * 1000;
+    else state[k] = v;
+    render();
+  }
+  function syncLeverLabels() {
+    for (const d of WF.DIVS) { const v = state.divs[d.key].delta; const e = $('#v-' + d.key); e.textContent = v === 0 ? '0' : F.int(v, { plus: true }); e.className = 'val ' + (v < 0 ? 'neg' : v === 0 ? 'zero' : ''); }
+    $('#v-raise').textContent = state.raise + '%';
+    const rel = (v, e) => { e.textContent = v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 }); e.className = 'val ' + (v === 1 ? 'zero' : v > 1 ? 'neg' : ''); };
+    rel(state.otFactor, $('#v-ot')); rel(state.nightFactor, $('#v-night'));
+    $('#v-days').textContent = state.workDays; $('#v-attr').textContent = state.attrition + '%';
+  }
+  function pushStateToControls() {
+    document.querySelectorAll('#levers [data-k]').forEach(c => {
+      const k = c.dataset.k;
+      if (c.classList.contains('seg')) { c.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === state[k])); return; }
+      if (c.classList.contains('switch')) { c.classList.toggle('on', !!state[k]); return; }
+      if (c.dataset.div) c.value = state.divs[c.dataset.div][k];
+      else if (k === 'revenue' || k === 'otherCosts') c.value = state[k] / 1000;
+      else c.value = state[k];
+    });
+    for (const d of WF.DIVS) for (const r of d.roles) $(`#rv-${d.key}-${r.key}`).textContent = F.int(state.divs[d.key].roles[r.key], { plus: true });
+  }
+
+  // ---------- Dashboard ----------
+  const KPIS = [
+    { key: 'cost', t: 'People cost this year', badge: 'b-indigo', ic: 'wallet', get: r => r.year.cost, fmt: F.money, dir: 'lowerGood' },
+    { key: 'profit', t: 'Profit', badge: 'b-green', ic: 'trending-up', get: r => r.year.profit, fmt: F.money, dir: 'higherGood' },
+    { key: 'margin', t: 'Margin', badge: 'b-teal', ic: 'target', get: r => r.year.margin, fmt: v => F.pct(v), dir: 'higherGood', pts: true },
+    { key: 'heads', t: 'People at year end', badge: 'b-blue', ic: 'users', get: r => r.year.headsEnd, fmt: F.int, dir: 'neutral' },
+    { key: 'cph', t: 'Cost per person / month', badge: 'b-amber', ic: 'user-plus', get: r => r.year.costPerHead, fmt: F.money, dir: 'lowerGood' },
+    { key: 'erc', t: 'Employer contributions', badge: 'b-rose', ic: 'shield', get: r => r.year.erc, fmt: F.money, dir: 'lowerGood' },
+  ];
+  function buildKpis() {
+    $('#kpis').innerHTML = KPIS.map(k => `<div class="kpi"><div class="t"><span class="badge ${k.badge}">${I(k.ic)}</span>${k.t}</div><div class="v" id="k-${k.key}">–</div><div class="d flat" id="kd-${k.key}">same as today</div></div>`).join('');
+  }
+  function renderKpis(r) {
+    KPIS.forEach(k => {
+      const v = k.get(r), b = k.get(base), d = v - b;
+      WF.animateNumber($('#k-' + k.key), v, k.fmt);
+      const de = $('#kd-' + k.key);
+      if (Math.abs(d) < (k.pts ? 0.0005 : 0.5)) { de.className = 'd flat'; de.innerHTML = 'same as today'; return; }
+      const good = k.dir === 'neutral' ? null : (k.dir === 'higherGood' ? d > 0 : d < 0);
+      de.className = 'd ' + (good === null ? (d > 0 ? 'up' : 'down') : good ? 'good' : 'bad');
+      de.innerHTML = I(d > 0 ? 'trending-up' : 'trending-down') + (k.pts ? F.pts(d) : k.fmt(d, { plus: true })) + ' vs today';
+    });
+  }
+  function renderCharts(r) {
+    const pick = m => mode === 'cost' ? m.total : mode === 'profit' ? m.profit : m.heads;
+    const f = mode === 'heads' ? F.int : F.money;
+    WF.chart.lines($('#c-months'), { series: [
+      { name: 'Today', values: base.months.map(pick), color: '#94A3B8', dash: true },
+      { name: 'Your plan', values: r.months.map(pick), color: mode === 'profit' ? '#2E7D4F' : '#5A4BB0', area: true }],
+      fmtY: f, baseline0: mode !== 'heads', band: mode === 'profit' ? { lo: 0, hi: Math.max(...r.months.map(m => m.profit), 0) } : null });
+    // waterfall: decompose plan − today
+    const steps = [];
+    const dBase = (r.year.base + r.year.allow) - (base.year.base + base.year.allow);
+    const dOt = (r.year.ot + r.year.night) - (base.year.ot + base.year.night);
+    const dErc = r.year.erc - base.year.erc, dBonus = r.year.bonus - base.year.bonus, dOne = r.year.oneOff - base.year.oneOff;
+    if (Math.abs(dBase) > 1) steps.push({ label: 'Pay', value: dBase });
+    if (Math.abs(dOt) > 1) steps.push({ label: 'Overtime & nights', value: dOt });
+    if (Math.abs(dErc) > 1) steps.push({ label: 'Contributions', value: dErc });
+    if (Math.abs(dBonus) > 1) steps.push({ label: 'Tet bonus', value: dBonus });
+    if (Math.abs(dOne) > 1) steps.push({ label: 'Hiring & leaving', value: dOne });
+    if (!steps.length) steps.push({ label: 'No changes yet', value: 0 });
+    WF.chart.waterfall($('#c-water'), { start: { label: 'Today', value: base.year.cost }, steps, endLabel: 'Your plan' });
+    WF.chart.bars($('#c-divs'), { cats: WF.DIVS.map(d => d.name), series: [
+      { name: 'Today', values: WF.DIVS.map(d => base.byDiv[d.key].year), color: '#94A3B8', ghost: true },
+      { name: 'Your plan', values: WF.DIVS.map(d => r.byDiv[d.key].year), color: '#5A4BB0' }], colors: null });
+    WF.chart.stack($('#c-stack'), [
+      { name: 'Take-home pay', value: r.year.takeHome, color: '#5A4BB0' },
+      { name: 'Employee insurance', value: r.year.eeIns, color: '#8B7FD1' },
+      { name: 'Income tax', value: r.year.pit, color: '#B9B0E6' },
+      { name: 'Employer contributions', value: r.year.erc, color: '#2E7D4F' },
+      { name: 'Tet bonus', value: r.year.bonus, color: '#D97706' },
+      { name: 'Hiring & leaving', value: r.year.oneOff, color: '#DC2668' }], r.year.cost);
+  }
+  function renderWatch(r) {
+    $('#watch').innerHTML = WF.warnings(state, r, base).map(w => `<div class="${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${w.text}</span></div>`).join('');
+  }
+  let sayTimer;
+  function renderSay(r) {
+    const s = WF.describe(state, r, base), e = $('#say');
+    e.classList.add('fade'); clearTimeout(sayTimer);
+    sayTimer = setTimeout(() => { e.innerHTML = `${s.lead} <b>${s.tail}</b>`; e.classList.remove('fade'); }, 120);
+    $('#pill-people').textContent = `${F.int(r.year.headsEnd)} people`;
+    $('#pill-margin').textContent = `${F.pct(r.year.margin)} margin`;
+  }
+  function render() {
+    const r = WF.compute(state);
+    syncLeverLabels(); renderSay(r); renderKpis(r); renderCharts(r); renderWatch(r); renderChips();
+  }
+
+  // ---------- Scenarios ----------
+  function renderChips() {
+    $('#chips').innerHTML = scenarios.map((s, i) => `<button class="chip ${i === current ? 'on' : ''}" data-i="${i}">${s.locked ? I('home') : I('flag')}${s.name}</button>`).join('') + (current === -1 ? `<button class="chip on">${I('sparkles')}Working plan</button>` : '');
+    $('#chips').querySelectorAll('.chip[data-i]').forEach(c => c.addEventListener('click', () => { current = +c.dataset.i; state = WF.clone(scenarios[current].state); pushStateToControls(); render(); }));
+  }
+  $('#save').addEventListener('click', () => {
+    const name = prompt('Name this plan', `Plan ${String.fromCharCode(64 + scenarios.length)}`); if (!name) return;
+    scenarios.push({ name, state: WF.clone(state) }); current = scenarios.length - 1; render(); toast(`Saved “${name}”. Keep moving levers to try another idea.`);
+  });
+  $('#reset').addEventListener('click', () => { state = WF.defaultState(); current = -1; pushStateToControls(); render(); toast('Back to today’s company.'); });
+  $('#compare').addEventListener('click', () => {
+    const list = scenarios.concat(current === -1 ? [{ name: 'Working plan', state }] : []);
+    const rows = list.map(s => ({ name: s.name, r: WF.compute(s.state) }));
+    const cols = [['People cost', r => r.year.cost, F.money, 'min'], ['Profit', r => r.year.profit, F.money, 'max'], ['Margin', r => r.year.margin, v => F.pct(v), 'max'], ['People', r => r.year.headsEnd, F.int, null], ['Cost / person / month', r => r.year.costPerHead, F.money, 'min'], ['Take-home pay', r => r.year.takeHome, F.money, 'max']];
+    $('#cmp').innerHTML = `<table><thead><tr><th>Plan</th>${cols.map(c => `<th>${c[0]}</th>`).join('')}</tr></thead><tbody>${rows.map(x => `<tr><td><b>${x.name}</b></td>${cols.map(c => { const vals = rows.map(y => c[1](y.r)); const best = c[3] ? (c[3] === 'max' ? Math.max(...vals) : Math.min(...vals)) : null; const v = c[1](x.r); return `<td class="${best !== null && v === best && rows.length > 1 ? 'best' : ''}">${c[2](v)}</td>`; }).join('')}</tr>`).join('')}</tbody></table><p style="color:var(--muted);font-size:12px;margin-top:10px">Green = the best number in that column.</p>`;
+    $('#drawer').classList.add('open');
+  });
+  $('#close').addEventListener('click', () => $('#drawer').classList.remove('open'));
+  $('#drawer').addEventListener('click', e => { if (e.target === $('#drawer')) $('#drawer').classList.remove('open'); });
+  $('#mode').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { $('#mode').querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); mode = b.dataset.m; renderCharts(WF.compute(state)); }));
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  buildLevers(); buildKpis(); render();
+  window.addEventListener('resize', () => renderCharts(WF.compute(state)));
+})();
+</script>
