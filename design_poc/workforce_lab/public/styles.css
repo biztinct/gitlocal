@@ -3,3 +3,5 @@
 [hidden]{display:none!important}
 .studio button.primary{background:var(--accent);border-color:var(--accent);color:#14261b}
 .main-stack{grid-template-columns:minmax(0,1fr)}.panel,.kpis,.chart-row,.two-col{min-width:0}
+
+.concept-nav{flex-wrap:wrap}@media(max-width:720px){.concept-nav a{flex:1 1 40%;text-align:center}}

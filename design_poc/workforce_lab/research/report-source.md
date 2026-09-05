@@ -1,10 +1,10 @@
 # Workforce Futures — research and design recommendation
 
 Audience: Payobook leadership and product team. Research date: 5 September 2026.
-Decision: choose an interaction model for a new workforce planning product; three working HTML proofs of concept, before production implementation.
+Decision: choose an interaction model for a new workforce planning product; four working HTML proofs of concept, before production implementation.
 
 ## Recommendation
-Make the What-if Cockpit the default home. Offer the Guided Path as an optional starting point for novice users. Open the Coverage Studio when leaders need to resolve shift-specific constraints. These are complementary interaction models over one explainable calculation engine. This is a design recommendation, not evidence that competing systems lack these capabilities.
+Recommend **Option 04: The Living Plan** as the default home. It combines the immediacy of the What-if Cockpit, optional goal-first guidance, and shift-level investigation on a connected visual canvas. The original three concepts remain useful alternatives for comparison. All four use one explainable calculation engine. This is a design recommendation, not evidence that competing systems lack these capabilities.
 
 The product promise: **Change a decision. Understand the consequence. Find a better plan.** A new user should see a useful starting scenario immediately, without constructing a model or knowing planning jargon.
 
@@ -20,17 +20,26 @@ UKG’s documented labor forecast converts demand into required employees by job
 
 Nielsen Norman Group recommends progressive disclosure to defer secondary choices, keeping the primary interface focused. Its usability heuristics emphasize recognition, feedback and user control. The proposed interfaces use starting questions, labeled controls, baseline comparisons, reversible edits, plain-language feedback, and expandable assumptions. These are evidence-informed design choices; a usability test is still needed to prove novice success. [NN/g progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/), [NN/g usability heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/).
 
-## Three options
+## Four options
 
 | Concept | First action | Primary delight | Strength | Trade-off |
 |---|---|---|---|---|
 | What-if Cockpit | Adjust one labeled slider or apply an example | Charts, money breakdown and a causal explanation update together | Fast executive exploration | Too many exposed controls could overwhelm; advanced inputs are folded away |
 | Guided Path | Choose a business goal | Compare calculated paths and see whether the goal is achievable | Easiest first-time experience | Recommendations must disclose the search space and assumptions |
 | Coverage Studio | Add or move capacity among day, evening and night | A visible shortage shrinks while financial impact updates | Operational clarity | A monthly capacity sketch is not a compliant employee roster |
+| The Living Plan — recommended | Move one slider or choose an ambition | A visible people → capacity → profit story, before/after horizon, difference view and financial bridge | Executive overview and novice guidance in one place | Richer visual design needs usability validation; drill-downs and secondary inputs stay folded away |
+
+## Taking the fourth concept further
+
+The Living Plan makes comparison a constant part of the interface: reference values remain visible, the forecast overlays the comparison, and a difference-only view isolates the change. Clicking people, delivered work or financial impact opens the corresponding detail. A profit bridge reconciles the difference in operating profit. This is an accounting explanation, not a causal attribution model.
+
+A movable month cursor reveals hiring timing. A shaded demand stress envelope shows alternative assumptions, explicitly not a statistical confidence interval. The “five more operators” experiment calculates the marginal benefit under the current constraints, so adding people does not automatically look beneficial. Goal-first exploration compares hiring, development and a blend, with explicit unmet targets. Pinned and saved comparisons support iterative exploration; decision briefs preserve inputs and monthly results.
+
+These are product design proposals informed by the evidence above. Visual appeal and ease of use remain hypotheses until tested with novice users and executives. Recommended validation: ask a new user to improve coverage within a cost limit, explain why profit changed, and compare two plans without coaching.
 
 ## Deliberate product decisions
 
-1. One shared model and comparable baseline in all three concepts.
+1. One shared model and comparable baseline in all four concepts.
 2. Demand and capacity determine realized revenue. More hires alone do not guarantee more sales.
 3. Show forecast operating profit, margin, fully loaded workforce cost, headcount, fulfilled demand and employee take-home separately.
 4. Distinguish employee withholding from additional employer cost. The prototype uses explicitly fictional rates, with no claim of jurisdictional payroll compliance.
