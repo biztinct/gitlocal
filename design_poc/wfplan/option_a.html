@@ -301,11 +301,11 @@ window.WF = (() => {
         for (const r of d.roles) {
           // two kinds of change: a division-wide delta (spread across roles) landing at ds.month,
           // and a per-role delta (number, or {n, month}) landing at its own month
+          // a role delta may be a number (lands at ds.month), {n, month}, or an array of {n, month} (option D)
           const rd = ds.roles[r.key];
-          const roleN = typeof rd === 'object' ? rd.n : rd;
-          const roleMonth = typeof rd === 'object' ? rd.month : ds.month;
+          const rdl = Array.isArray(rd) ? rd : [typeof rd === 'object' && rd ? rd : { n: rd || 0, month: ds.month }];
           const divShare = ds.delta * (r.n / d.roles.reduce((a, x) => a + x.n, 0));
-          let n = r.n + ((m + 1) >= ds.month ? divShare : 0) + ((m + 1) >= roleMonth ? roleN : 0);
+          let n = r.n + ((m + 1) >= ds.month ? divShare : 0) + rdl.reduce((a, x) => a + ((m + 1) >= x.month ? x.n : 0), 0);
           const aRate = s.attrition / 100 / 12;
           const leaversThisMonth = r.n * aRate;
           if (!s.backfill) n -= r.n * (1 - Math.pow(1 - aRate, m + 1));
@@ -324,7 +324,7 @@ window.WF = (() => {
             if (delta > 0) { oneOff += delta * pay * s.recruitCost; totals.hires += delta; }
             else { oneOff += -delta * pay * s.severance; totals.cuts += -delta; }
           };
-          land(divShare, ds.month); land(roleN, roleMonth);
+          land(divShare, ds.month); rdl.forEach(x => land(x.n, x.month));
           if (s.backfill) { oneOff += leaversThisMonth * pay * s.recruitCost; }
           totals.leavers += leaversThisMonth;
           const eeInsPP = Math.min(pay, K.insCap) * K.eeRate;
@@ -389,7 +389,7 @@ window.WF = (() => {
     return Math.floor(lo * 2) / 2;
   }
   const clone = o => JSON.parse(JSON.stringify(o));
-  const roleSum = ds => Object.values(ds.roles).reduce((a, v) => a + (typeof v === 'object' ? v.n : v), 0);
+  const roleSum = ds => Object.values(ds.roles).reduce((a, v) => a + (Array.isArray(v) ? v.reduce((b, x) => b + x.n, 0) : (typeof v === 'object' && v ? v.n : v)), 0);
 
   // ---- Formatting (₫, plain) ----
   const fmt = {
@@ -502,7 +502,11 @@ window.WF = (() => {
     if (r.year.margin < 0.10) w.push({ level: 'crit', text: `Margin falls to ${fmt.pct(r.year.margin)} — below the 10% floor. Cut ${fmt.money(0.10 * r.year.revenue - r.year.profit)} of cost or add revenue.` });
     else if (r.year.margin < 0.15) w.push({ level: 'warn', text: `Margin at ${fmt.pct(r.year.margin)} is thin. Anything under 15% leaves little room for a slow quarter.` });
     const worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]);
-    if (worst.profit < 0) w.push({ level: 'crit', text: `${fmt.month(worst.m + 1)} loses money (${fmt.money(worst.profit)}) — Tet bonus and hiring land together. Consider moving the hires later.` });
+    if (worst.profit < 0) {
+      const hiresThen = r.months[worst.m].oneOff > r.months[worst.m].base * 0.02;
+      const why = worst.m === 0 ? (hiresThen ? 'the Tet bonus and new hires land in the same month. Move the hires later and it recovers.' : 'the Tet bonus is paid this month. It is normal; make sure the cash is there.') : (hiresThen ? 'hiring and severance costs land together this month. Spread them out.' : 'costs outrun revenue this month.');
+      w.push({ level: 'crit', text: `${fmt.month(worst.m + 1)} loses money (${fmt.money(worst.profit)}) — ${why}` });
+    }
     const hireMonths = DIVS.filter(d => (s.divs[d.key].delta + roleSum(s.divs[d.key])) > 0).map(d => s.divs[d.key].month);
     if (hireMonths.length && r.totals.hires > 150) w.push({ level: 'warn', text: `${fmt.int(r.totals.hires)} new hires is a lot to recruit at once — roughly ${Math.ceil(r.totals.hires / 25)} recruiter-months of work. Spread them over two or three months.` });
     if (s.raise >= 12) w.push({ level: 'warn', text: `A ${s.raise}% raise is well above the market average of 7–9%. Great for keeping people; check the ${fmt.money(r.year.cost - b.year.cost)} yearly bill.` });
