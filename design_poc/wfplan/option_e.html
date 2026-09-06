@@ -10,10 +10,12 @@
     --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
     --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
     --shadow:0 1px 2px rgba(30,27,46,.04),0 8px 24px rgba(30,27,46,.06);
+    --panel-w:340px;
   }
   *{box-sizing:border-box}
   html{color-scheme:light}
-  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45;padding-bottom:140px}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+  body.has-max{overflow:hidden}
   button,input,select{font-family:inherit;font-size:inherit;color:inherit}
   h1,h2,h3{margin:0;text-wrap:balance}
   .num{font-variant-numeric:tabular-nums}
@@ -22,36 +24,123 @@
   .sub{color:var(--muted);font-weight:600}
 
   /* top bar */
-  .top{height:58px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .top{height:58px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 18px;position:sticky;top:0;z-index:20}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800}
   .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
   .crumb{color:var(--muted);font-weight:600;white-space:nowrap}.crumb b{color:var(--ink)}
   .spacer{flex:1}
-  .name{border:1px solid transparent;border-radius:10px;padding:7px 10px;font-weight:800;min-width:170px;background:transparent}
+  .name{border:1px solid transparent;border-radius:10px;padding:7px 10px;font-weight:800;min-width:160px;background:transparent}
   .name:hover,.name:focus{border-color:var(--line);background:var(--canvas);outline:0}
   .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;user-select:none}
   .btn:hover{background:var(--primary-soft)} .btn:disabled{opacity:.4;cursor:default}
   .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
   .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
   .btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn.icon{padding:7px;border-radius:9px}
   .btn.hold{border-color:var(--primary-soft2);color:var(--primary-deep)} .btn.hold.on{background:var(--primary);color:#fff}
   .btn:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-  .modes{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
-  .modes button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font-weight:700;cursor:pointer;color:var(--muted);display:inline-flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap}
-  .modes button .ic{width:14px;height:14px}
-  .modes button.on{background:var(--primary);color:#fff}
+  .seg{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+  .seg button{border:0;background:transparent;border-radius:9px;padding:6px 11px;font-weight:700;cursor:pointer;color:var(--muted);display:inline-flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap}
+  .seg button .ic{width:14px;height:14px}
+  .seg button:hover{background:var(--primary-soft)}
+  .seg button.on{background:var(--primary);color:#fff}
+  .seg.tiny button{padding:6px 7px}
+  .seg.tiny button.on{background:var(--primary-soft);color:var(--primary-deep)}
 
-  .wrap{max-width:1500px;margin:0 auto;padding:18px 20px 0;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);min-width:0}
+  /* workspace: main + dockable panel */
+  .app{display:grid;gap:0;max-width:1560px;margin:0 auto;align-items:start}
+  .app[data-dock="right"]{grid-template-columns:minmax(0,1fr) var(--panel-w)}
+  .app[data-dock="left"]{grid-template-columns:var(--panel-w) minmax(0,1fr)}
+  .app[data-dock="left"] .panel{order:-1}
+  .app[data-dock="right"][data-panel="closed"]{grid-template-columns:minmax(0,1fr) 56px}
+  .app[data-dock="left"][data-panel="closed"]{grid-template-columns:56px minmax(0,1fr)}
+  .app[data-dock="top"],.app[data-dock="bottom"]{grid-template-columns:minmax(0,1fr)}
+  .app[data-dock="bottom"]{padding-bottom:190px}
+  .app[data-dock="bottom"][data-panel="closed"]{padding-bottom:56px}
+  @media (max-width:1100px){.app[data-dock="right"],.app[data-dock="left"]{grid-template-columns:minmax(0,1fr)!important}.app[data-dock="left"] .panel,.app[data-dock="right"] .panel{order:0;position:static!important;max-height:none!important}}
+  .wrap{padding:16px 18px 24px;display:grid;gap:14px;grid-template-columns:minmax(0,1fr);min-width:0;container-type:inline-size;container-name:main}
+  @media (max-width:1500px){.crumb{display:none}.top .lbl{display:none}}
+  .ctools .btn{display:inline-flex;width:auto;height:auto;border:1px solid var(--primary-soft2)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);min-width:0;position:relative}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .ctools{display:flex;gap:4px;flex:none}
+  .ctools button{border:1px solid transparent;background:transparent;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+  .ctools button:hover{background:var(--primary-soft);color:var(--primary-deep);border-color:var(--primary-soft2)}
+  .ctools .ic{width:15px;height:15px}
+  .card.collapsed .cbody{display:none}
+  .card .csum{display:none;color:var(--muted);font-weight:600;font-size:13px;margin-top:6px}
+  .card.collapsed .csum{display:block}
+  .card.max{position:fixed;inset:14px;z-index:35;overflow:auto;box-shadow:0 30px 80px rgba(30,27,46,.35);border-radius:20px}
+  .card.max .cbody{display:block}
+  .max-backdrop{position:fixed;inset:0;background:rgba(36,31,82,.35);z-index:34;backdrop-filter:blur(3px);display:none}
+  body.has-max .max-backdrop{display:block}
 
-  /* hero row */
-  .hero{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:16px;align-items:stretch}
-  @media (max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}}
-  .river-card{padding:18px 22px 10px;position:relative}
-  .river-card .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-  .river-card h1{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+  /* panel */
+  .panel{background:var(--card);border-left:1px solid var(--line);min-width:0;display:flex;flex-direction:column;position:sticky;top:58px;max-height:calc(100vh - 58px);overflow:auto}
+  .app[data-dock="left"] .panel{border-left:0;border-right:1px solid var(--line)}
+  .app[data-dock="top"] .panel{position:sticky;top:58px;z-index:14;border-left:0;border-bottom:1px solid var(--line);max-height:none;overflow:visible}
+  .app[data-dock="bottom"] .panel{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:14;border-left:0;border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(30,27,46,.08);max-height:60vh}
+  .phead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:800;font-size:13px;position:sticky;top:0;background:var(--card);z-index:2}
+  .phead .ic{color:var(--primary)}
+  .phead .ctools{margin-left:auto}
+  .pbody{padding:14px;display:grid;gap:12px;align-content:start}
+  .app[data-dock="top"] .pbody,.app[data-dock="bottom"] .pbody{max-width:1524px;margin:0 auto;width:100%;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+  .app[data-dock="top"] .pbody>.full,.app[data-dock="bottom"] .pbody>.full{grid-column:1/-1}
+  .app[data-panel="closed"] .pbody,.app[data-panel="closed"] .phead .ptitle{display:none}
+  .app[data-panel="closed"] .panel{align-items:center}
+  .app[data-panel="closed"][data-dock="right"] .phead,.app[data-panel="closed"][data-dock="left"] .phead{flex-direction:column;border:0;padding:10px 6px;gap:6px}
+  .app[data-panel="closed"] .phead .ctools{margin:0;flex-direction:column}
+  .app[data-panel="closed"][data-dock="top"] .phead,.app[data-panel="closed"][data-dock="bottom"] .phead{padding:8px 18px}
+  .app[data-panel="closed"] .pmodes{display:flex}
+  .pmodes{display:none;gap:4px}
+  .app[data-panel="closed"][data-dock="right"] .pmodes,.app[data-panel="closed"][data-dock="left"] .pmodes{flex-direction:column}
+  .pmodes button{border:1px solid transparent;background:transparent;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+  .pmodes button.on{background:var(--primary-soft);color:var(--primary-deep)}
+  .pmodes button:hover{background:var(--primary-soft)}
+  .pmodes .ic{width:16px;height:16px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-weight:700;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .tab .ic{width:13px;height:13px}
+  .tab:hover{background:var(--primary-soft)} .tab.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .sent{font-size:18px;font-weight:700;line-height:2;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-height:40px}
+  .sent .k{color:var(--muted);font-weight:600}
+  .blank{display:inline-flex;align-items:center;border-bottom:2px solid var(--primary-soft2);background:var(--primary-soft);border-radius:8px 8px 2px 2px;padding:0 4px;color:var(--primary-deep);transition:background .15s;max-width:100%}
+  .blank:hover,.blank:focus-within{background:#E3DEF7;border-bottom-color:var(--primary)}
+  .blank input,.blank select{border:0;background:transparent;font-weight:800;font-size:18px;color:var(--primary-deep);outline:0;padding:0 2px;cursor:pointer;appearance:none;-webkit-appearance:none;line-height:1.6;max-width:100%}
+  .blank input[type=number]{width:3.6ch;text-align:center;-moz-appearance:textfield}
+  .blank input[type=number]::-webkit-inner-spin-button{display:none}
+  .blank .ic{width:14px;height:14px;color:var(--primary);opacity:.7}
+  .preview{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:12px;color:var(--ink-2)}
+  .preview .pill{border-radius:999px;padding:3px 9px;background:#EEF1F6;display:inline-flex;gap:5px;align-items:center}
+  .preview .good{background:var(--money-soft);color:var(--money)} .preview .bad{background:var(--rose-soft);color:var(--rose)}
+  .comp-right{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+  .app[data-dock="top"] .comp-right,.app[data-dock="bottom"] .comp-right{align-items:flex-end}
+  .dials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .app[data-dock="top"] .dials,.app[data-dock="bottom"] .dials{grid-template-columns:repeat(6,minmax(0,1fr))}
+  @media (max-width:1100px){.app[data-dock="top"] .dials,.app[data-dock="bottom"] .dials{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .dial{border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+  .dial .t{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--ink-2)}
+  .dial .t .ic{width:13px;height:13px;color:var(--primary)}
+  .dial .v{font-size:16px;font-weight:800;margin:2px 0;color:var(--primary-deep)} .dial .v.zero{color:var(--muted)} .dial .v.neg{color:var(--rose)}
+  .dial select{width:100%;border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-weight:700;font-size:12px;margin-bottom:4px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;margin:0;width:100%}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-6px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab}
+  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+  .touch-help{display:grid;gap:8px}
+  .app[data-dock="top"] .touch-help,.app[data-dock="bottom"] .touch-help{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .touch-help div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:12px;color:var(--ink-2);line-height:1.4}
+  .touch-help .ic{color:var(--primary);margin-top:1px}
+  .touch-help b{display:block;color:var(--ink);font-size:13px}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:14px;align-items:stretch}
+  .river-card{padding:16px 20px 10px}
+  .river-card h1{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
   .river-card h1 .tail{display:block;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0;margin-top:4px}
-  #river{width:100%;height:auto;aspect-ratio:1000/400;display:block;overflow:visible;font-family:inherit;margin-top:8px;touch-action:none}
+  #river{width:100%;height:auto;aspect-ratio:1000/400;display:block;overflow:visible;font-family:inherit;margin-top:6px;touch-action:none}
+  .card.max #river{aspect-ratio:auto;height:calc(100vh - 220px);max-height:720px}
   #river text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
   #river text.in{stroke:none}
   #river .rib{transition:d .45s cubic-bezier(.4,0,.2,1),opacity .2s}
@@ -65,23 +154,22 @@
   #river .nl{font-size:13px;font-weight:800;fill:var(--ink)}
   #river .nv{font-size:12px;font-weight:700;fill:var(--muted);font-variant-numeric:tabular-nums}
   #river .col{font-size:11px;font-weight:800;fill:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  #river .lead{stroke:#B8BFCC;stroke-width:1;fill:none}
   #river .ghost{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 4;opacity:.45;pointer-events:none}
   .river-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;flex-wrap:wrap}
   .river-foot .ic{width:14px;height:14px}
-  .hero-r{display:grid;grid-template-rows:auto 1fr;gap:16px;min-width:0}
-  .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px}
+  .hero-r{display:grid;grid-template-rows:auto 1fr;gap:14px;min-width:0}
+  .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px}
   .kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;background:var(--canvas)}
   .kpi small{color:var(--muted);font-weight:700;font-size:11px}
   .kpi b{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
   .delta{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px;width:max-content;margin-top:4px;background:#EEF1F6;color:var(--ink-2)}
   .delta.good{background:var(--money-soft);color:var(--money)} .delta.bad{background:var(--rose-soft);color:var(--rose)}
   .delta .ic{width:12px;height:12px}
-
-  /* goals */
-  .goals{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+  .goals{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
   .goals h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
   .goal-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-  .goal-row label{font-weight:700;font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+  .goal-row label{font-weight:700;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:8px;line-height:1.3}
   .goal-row label .ic{width:14px;height:14px;color:var(--primary)}
   .goal-in{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;background:var(--card);padding:0 8px;height:32px;font-weight:800}
   .goal-in input{border:0;background:transparent;width:74px;text-align:right;font-weight:800;outline:0}
@@ -91,19 +179,18 @@
   .goal-status .ic{width:14px;height:14px;margin-top:2px}
   .g-ok{background:var(--money-soft);color:var(--money)} .g-gap{background:var(--warn-soft);color:#92400E}
   .sugg{display:grid;gap:6px}
-  .sugg .s{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 8px 7px 10px;font-weight:700;font-size:12px;cursor:default;transition:border-color .15s,background .15s}
+  .sugg .s{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 8px 7px 10px;font-weight:700;font-size:12px;transition:border-color .15s,background .15s}
   .sugg .s:hover{border-color:var(--primary-soft2);background:#FAFAFE}
   .sugg .s small{display:block;color:var(--muted);font-weight:600;font-size:11px}
   .sugg .s b{color:var(--money);white-space:nowrap} .sugg .s b.bad{color:var(--rose)}
   .sugg .s .btn{padding:4px 8px;font-size:11px}
 
   /* board */
-  .board{padding:16px 20px 14px}
-  .board-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
-  .board-head h2{font-size:16px;font-weight:800;letter-spacing:-.01em}
+  .board{padding:14px 18px 12px}
+  .board h2{font-size:16px;font-weight:800;letter-spacing:-.01em}
   .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--muted)}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-  .lane{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed var(--primary-soft2);border-radius:12px;background:#FAFAFE;margin-bottom:10px;flex-wrap:wrap;min-height:44px}
+  .lane{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed var(--primary-soft2);border-radius:12px;background:#FAFAFE;margin:10px 0;flex-wrap:wrap;min-height:44px}
   .lane .lab{font-weight:800;font-size:12px;color:var(--primary-deep);display:inline-flex;align-items:center;gap:6px;margin-right:4px}
   .chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 12px;font-weight:700;font-size:12px;animation:pop .25s ease}
   .chip .imp{color:var(--muted);font-weight:700;font-size:11px}
@@ -111,9 +198,8 @@
   .chip .x:hover{background:var(--rose-soft);color:var(--rose)}
   .lane .hint{color:var(--muted);font-weight:600;font-size:12px}
   .months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
-  @media (max-width:1300px){.months{grid-template-columns:repeat(6,minmax(0,1fr))}}
-  @media (max-width:640px){.months{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .mo{display:flex;flex-direction:column;border-radius:12px;border:1px solid var(--line);background:var(--canvas);min-height:150px;transition:border-color .15s,background .15s;position:relative}
+  .card.max .mo{min-height:300px}
   .mo.over{border-color:var(--primary);background:var(--primary-soft);box-shadow:inset 0 0 0 1px var(--primary)}
   .mo.loss{background:#FFF6F9;border-color:#F5C6D6}
   .mo-head{padding:8px 8px 6px;display:flex;flex-direction:column;gap:5px}
@@ -141,22 +227,26 @@
   @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
 
   /* stage + rail */
-  .stage{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:0;overflow:hidden}
-  @media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}.rail{flex-direction:row;overflow-x:auto;border-left:0;border-top:1px solid var(--line)}}
-  .stage-main{padding:18px 22px 16px;min-width:0}
-  .stage-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 186px;overflow:hidden}
+  .stage.collapsed{grid-template-columns:minmax(0,1fr)}
+  .stage.collapsed .rail{display:none}
+  .stage-main{padding:16px 20px 14px;min-width:0}
+  .stage-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
   .stage-head h2{font-size:17px;font-weight:800;letter-spacing:-.01em}
   .stage-head p{margin:2px 0 0;color:var(--muted);font-weight:600;font-size:12px;max-width:70ch}
   .stage-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .chart{min-height:250px}
+  .card.max .chart{min-height:calc(100vh - 320px)}
   .rail{border-left:1px solid var(--line);background:#FAFAFE;display:flex;flex-direction:column;padding:10px}
   .rail button{display:flex;align-items:center;gap:10px;border:1px solid transparent;background:transparent;border-radius:11px;padding:10px 10px;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink-2);text-align:left;white-space:nowrap}
   .rail button .ic{width:16px;height:16px;color:var(--muted)}
   .rail button:hover{background:var(--primary-soft)}
   .rail button.on{background:var(--card);border-color:var(--line);color:var(--primary-deep);box-shadow:var(--shadow)}
   .rail button.on .ic{color:var(--primary)}
+  .rail button.peek{background:var(--primary-soft)}
   .rail .badge{margin-left:auto;font-size:10px;font-weight:800;border-radius:999px;padding:1px 7px;background:var(--rose-soft);color:var(--rose)}
   .rail .badge.ok{background:var(--money-soft);color:var(--money)}
+  .rail .rhint{margin-top:auto;font-size:11px;color:var(--muted);font-weight:600;padding:8px 10px;line-height:1.4}
   .split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   @media (max-width:900px){.split{grid-template-columns:1fr}}
   .caption{color:var(--muted);font-weight:600;font-size:12px;margin-top:8px}
@@ -187,46 +277,24 @@
   .room .r button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer}
   .room .r button:hover{background:var(--primary-soft)}
 
-  /* drawer */
-  .drawer{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(30,27,46,.08)}
-  .drawer .in{max-width:1500px;margin:0 auto;padding:12px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
-  @media (max-width:900px){.drawer .in{grid-template-columns:1fr}}
-  .drawer.min .in>*{display:none} .drawer.min .in .dhead{display:flex}
-  .dhead{display:flex;align-items:center;gap:10px;grid-column:1/-1;font-weight:800;font-size:13px}
-  .dhead .btn{margin-left:auto}
-  .tabs{display:flex;gap:6px;flex-wrap:wrap}
-  .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-weight:700;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
-  .tab .ic{width:13px;height:13px}
-  .tab:hover{background:var(--primary-soft)} .tab.on{background:var(--primary);border-color:var(--primary);color:#fff}
-  .sent{font-size:18px;font-weight:700;line-height:2;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-height:40px}
-  .sent .k{color:var(--muted);font-weight:600}
-  .blank{display:inline-flex;align-items:center;border-bottom:2px solid var(--primary-soft2);background:var(--primary-soft);border-radius:8px 8px 2px 2px;padding:0 4px;color:var(--primary-deep);transition:background .15s}
-  .blank:hover,.blank:focus-within{background:#E3DEF7;border-bottom-color:var(--primary)}
-  .blank input,.blank select{border:0;background:transparent;font-weight:800;font-size:18px;color:var(--primary-deep);outline:0;padding:0 2px;cursor:pointer;appearance:none;-webkit-appearance:none;line-height:1.6}
-  .blank input[type=number]{width:3.6ch;text-align:center;-moz-appearance:textfield}
-  .blank input[type=number]::-webkit-inner-spin-button{display:none}
-  .blank .ic{width:14px;height:14px;color:var(--primary);opacity:.7}
-  .preview{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:12px;color:var(--ink-2)}
-  .preview .pill{border-radius:999px;padding:3px 9px;background:#EEF1F6;display:inline-flex;gap:5px;align-items:center}
-  .preview .good{background:var(--money-soft);color:var(--money)} .preview .bad{background:var(--rose-soft);color:var(--rose)}
-  .comp-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-  .dials{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;grid-column:1/-1}
-  @media (max-width:1100px){.dials{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  .dial{border:1px solid var(--line);border-radius:12px;padding:8px 10px}
-  .dial .t{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--ink-2)}
-  .dial .t .ic{width:13px;height:13px;color:var(--primary)}
-  .dial .v{font-size:16px;font-weight:800;margin:2px 0;color:var(--primary-deep)} .dial .v.zero{color:var(--muted)} .dial .v.neg{color:var(--rose)}
-  .dial select{width:100%;border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-weight:700;font-size:12px;margin-bottom:4px}
-  input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;margin:0;width:100%}
-  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-6px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab}
-  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
-  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
-  .touch-help{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;grid-column:1/-1}
-  @media (max-width:900px){.touch-help{grid-template-columns:1fr}}
-  .touch-help div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:12px;color:var(--ink-2);line-height:1.4}
-  .touch-help .ic{color:var(--primary);margin-top:1px}
-  .touch-help b{display:block;color:var(--ink);font-size:13px}
+  /* charts window */
+  dialog{border:0;border-radius:20px;padding:0;background:var(--card);box-shadow:0 30px 90px rgba(30,27,46,.4);width:min(1400px,calc(100vw - 40px));max-height:calc(100vh - 40px);color:var(--ink)}
+  dialog::backdrop{background:rgba(36,31,82,.4);backdrop-filter:blur(4px)}
+  .dhead{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
+  .dhead h2{font-size:16px;font-weight:800}
+  .dhead .close{margin-left:auto}
+  .dbody{padding:16px 18px 18px;overflow:auto;max-height:calc(100vh - 120px)}
+  .panes{display:grid;gap:14px}
+  .panes[data-l="tabs"]{grid-template-columns:1fr}
+  .panes[data-l="two"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panes[data-l="four"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media (max-width:900px){.panes{grid-template-columns:1fr!important}}
+  .pane{border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+  .pane .ph{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .pane .ph select{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-weight:800;font-size:13px;background:var(--card)}
+  .pane .ph .sub{font-size:12px;margin-left:auto;text-align:right;max-width:60%}
+  .pane .chart{min-height:220px}
+  .dtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 
   /* popover */
   .pop{position:absolute;width:360px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(30,27,46,.22);padding:14px 16px;z-index:30;display:none;animation:pop .2s ease}
@@ -248,64 +316,82 @@
   .fld .lbl b{color:var(--primary-deep)}
   .bits{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12px}
   .bits b{text-align:right}
+  .wf-tip{visibility:hidden;transition:opacity .15s,visibility .15s;max-width:260px}
+  .wf-tip[style*="opacity: 1"]{visibility:visible}
+  .wf-tip .row2{display:grid;grid-template-columns:1fr auto;gap:2px 14px;margin-top:4px;font-weight:500;opacity:.9}
+  .wf-tip .row2 b{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 
-  .toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--primary-dark);color:#fff;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13px;transition:all .25s;z-index:40;pointer-events:none;box-shadow:0 12px 30px rgba(36,31,82,.3);max-width:90vw}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--primary-dark);color:#fff;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13px;transition:all .25s;z-index:60;pointer-events:none;box-shadow:0 12px 30px rgba(36,31,82,.3);max-width:90vw}
+  .app[data-dock="bottom"]~.toast{bottom:210px}
   .toast.show{opacity:1;transform:translateX(-50%)}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-  @media (max-width:900px){.top{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 14px;gap:8px}.crumb,.spacer{display:none}.name{min-width:0;flex:1 1 120px}.wrap{padding:12px 12px 0}.river-card,.stage-main,.board{padding:14px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media print{.top,.drawer,.rail,.mv .tools,.chip .x,.stage-tools,.sugg .btn{display:none!important}body{background:#fff;padding:0}.card{break-inside:avoid;border-color:#ccc;box-shadow:none}.wrap{padding:0}}
+  @media (max-width:900px){.top{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 14px;gap:8px}.crumb,.spacer{display:none}.name{min-width:0;flex:1 1 120px}.wrap{padding:12px 12px 20px}.river-card,.stage-main,.board{padding:14px}.app[data-dock="bottom"] .panel{max-height:50vh}}
+  /* the main column adapts to its own width, so the docked panel never squeezes the charts */
+  @container main (max-width:1180px){.hero{grid-template-columns:minmax(0,1fr)}.hero-r{grid-template-columns:1fr 1fr;grid-template-rows:auto}.months{grid-template-columns:repeat(6,minmax(0,1fr))}}
+  @container main (max-width:760px){.hero-r{grid-template-columns:1fr}.months{grid-template-columns:repeat(3,minmax(0,1fr))}.stage{grid-template-columns:minmax(0,1fr)}.rail{flex-direction:row;overflow-x:auto;border-left:0;border-top:1px solid var(--line)}.rail .rhint{display:none}.cmp-grid{grid-template-columns:1fr}.split{grid-template-columns:1fr}.room-grid{grid-template-columns:1fr}}
+  @media print{.top,.panel,.rail,.mv .tools,.chip .x,.stage-tools,.sugg .btn,.ctools{display:none!important}body{background:#fff}.card{break-inside:avoid;border-color:#ccc;box-shadow:none}.wrap{padding:0}.app{display:block}}
 </style>
 
 <header class="top">
   <div class="brand"><span class="mark">P</span>Payobook</div>
   <div class="crumb">People / Plan / <b>Boardroom 2026</b></div>
-  <div class="modes" id="modes" role="tablist" aria-label="How you want to make changes"></div>
+  <div class="seg" id="modes" role="tablist" aria-label="How you want to make changes"></div>
+  <div class="seg tiny" id="docks" aria-label="Where the controls panel sits"></div>
+  <button class="btn" id="chartsWin"></button>
   <div class="spacer"></div>
   <input class="name" id="name" value="My 2026 plan" aria-label="Plan name" maxlength="40">
-  <button class="btn" id="undo" title="Undo" disabled></button>
-  <button class="btn" id="redo" title="Redo" disabled></button>
+  <button class="btn icon" id="undo" title="Undo" disabled></button>
+  <button class="btn icon" id="redo" title="Redo" disabled></button>
   <button class="btn" id="reset">Start over</button>
   <button class="btn" id="save"></button>
   <button class="btn primary" id="print"></button>
 </header>
 
-<main class="wrap">
-  <section class="hero">
-    <div class="card river-card" aria-label="Where your money flows">
-      <div class="hd"><h1 id="sentence"></h1><button class="btn hold sm" id="hold"></button></div>
-      <svg id="river" viewBox="0 0 1000 400" aria-label="Money flow from revenue through divisions to who ends up with it"></svg>
-      <div class="river-foot"><span id="river-hint"></span><span class="num" id="river-sub"></span></div>
-      <div class="pop" id="pop"></div>
-    </div>
-    <div class="hero-r">
-      <div class="card kpis" id="kpis" aria-label="This year at a glance"></div>
-      <div class="card goals" aria-label="Goals">
-        <h2 id="goalTitle"></h2>
-        <div id="goalRows"></div>
-        <div id="goalStatus"></div>
-        <div class="sugg" id="sugg"></div>
+<div class="app" id="app" data-dock="right" data-panel="open">
+  <main class="wrap">
+    <section class="hero">
+      <div class="card river-card" id="card-river" aria-label="Where your money flows">
+        <div class="card-head"><h1 id="sentence"></h1><div class="ctools"><button class="btn hold sm" id="hold" style="width:auto;padding:5px 9px"></button><button data-collapse="river" title="Collapse"></button><button data-max="river" title="Maximize"></button></div></div>
+        <div class="csum" id="sum-river"></div>
+        <div class="cbody">
+          <svg id="river" viewBox="0 0 1000 400" aria-label="Money flow from revenue through divisions to who ends up with it"></svg>
+          <div class="river-foot"><span id="river-hint"></span><span class="num" id="river-sub"></span></div>
+        </div>
+        <div class="pop" id="pop"></div>
       </div>
-    </div>
-  </section>
+      <div class="hero-r">
+        <div class="card kpis" id="kpis" aria-label="This year at a glance"></div>
+        <div class="card goals" aria-label="Goals"><h2 id="goalTitle"></h2><div id="goalRows"></div><div id="goalStatus"></div><div class="sugg" id="sugg"></div></div>
+      </div>
+    </section>
 
-  <section class="card board" aria-label="Your year">
-    <div class="board-head"><h2>Your year. Every decision on the month it happens.</h2>
-      <div class="legend"><span><i style="background:var(--money)"></i>Profit that month</span><span><i style="background:#CBD5E1"></i>Today</span><span><i style="background:var(--rose)"></i>Loses money</span><span><i style="background:var(--warn)"></i>Tet bonus</span></div></div>
-    <div class="lane" id="lane"></div>
-    <div class="months" id="months"></div>
-  </section>
+    <section class="card board" id="card-board" aria-label="Your year">
+      <div class="card-head"><div><h2>Your year. Every decision on the month it happens.</h2><div class="csum" id="sum-board"></div></div><div class="ctools"><div class="legend" style="margin-right:8px"><span><i style="background:var(--money)"></i>Profit</span><span><i style="background:#CBD5E1"></i>Today</span><span><i style="background:var(--rose)"></i>Loss</span><span><i style="background:var(--warn)"></i>Tet</span></div><button data-collapse="board" title="Collapse"></button><button data-max="board" title="Maximize"></button></div></div>
+      <div class="cbody"><div class="lane" id="lane"></div><div class="months" id="months"></div></div>
+    </section>
 
-  <section class="card stage" aria-label="Look closer">
-    <div class="stage-main">
-      <div class="stage-head"><div><h2 id="stageTitle"></h2><p id="stageSub"></p></div><div class="stage-tools" id="stageTools"></div></div>
-      <div id="stageBody"></div>
-    </div>
-    <nav class="rail" id="rail" aria-label="Views"></nav>
-  </section>
-</main>
+    <section class="card stage" id="card-stage" aria-label="Look closer">
+      <div class="stage-main">
+        <div class="stage-head"><div><h2 id="stageTitle"></h2><p id="stageSub"></p></div><div class="ctools" id="stageTools"></div></div>
+        <div class="csum" id="sum-stage"></div>
+        <div class="cbody" id="stageBody"></div>
+      </div>
+      <nav class="rail" id="rail" aria-label="Views"></nav>
+    </section>
+  </main>
 
-<div class="drawer" id="drawer"><div class="in" id="drawerIn"></div></div>
+  <aside class="panel" id="panel" aria-label="Controls">
+    <div class="phead" id="phead"></div>
+    <div class="pbody" id="pbody"></div>
+  </aside>
+</div>
+<div class="max-backdrop" id="maxBack"></div>
+
+<dialog id="chartsDlg" aria-label="Charts window">
+  <div class="dhead"><h2 id="dlgTitle"></h2><div class="seg" id="dlgLayout"></div><button class="btn sm close" id="dlgClose"></button></div>
+  <div class="dbody"><div class="dtabs" id="dtabs"></div><div class="panes" id="panes" data-l="tabs"></div></div>
+</dialog>
 <div class="toast" id="toast" role="status"></div>
 <div class="sr" id="live" aria-live="polite"></div>
 
@@ -648,9 +734,9 @@ window.WF = (() => {
   }
 
   // Line/area chart: series = [{name, values[12], color, dash, area}]
-  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220 }) {
+  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220, endLabels = false }) {
     container.innerHTML = ''; container.classList.add('wf-chart');
-    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 24, t: 18, b: 28 };
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: endLabels ? 78 : 24, t: 18, b: 28 };
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
     const all = series.flatMap(s => s.values).concat(band ? [band.lo, band.hi] : []);
     let max = Math.max(...all), min = Math.min(0, ...all);
@@ -673,6 +759,13 @@ window.WF = (() => {
       const last = s.values.length - 1;
       el('circle', { cx: X(last), cy: Y(s.values[last]), r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg);
     });
+    if (endLabels) { // value at the end of each line, nudged apart so they never sit on top of each other
+      const used = [];
+      series.filter(s => s.endLabel !== false).map(s => ({ s, y: Y(s.values[s.values.length - 1]) })).sort((a, b) => a.y - b.y).forEach(o => {
+        let y = o.y; for (const u of used) if (Math.abs(y - u) < 13) y = u + 13; used.push(y);
+        const t = el('text', { x: X(x.length - 1) + 9, y: y + 4, class: 'wf-end', fill: o.s.color }, svg); t.textContent = fmtY(o.s.values[o.s.values.length - 1]);
+      });
+    }
     // hover
     const cross = el('line', { y1: P.t, y2: H - P.b, class: 'wf-cross', opacity: 0 }, svg);
     const dots = series.map(s => el('circle', { r: 5, fill: s.color, stroke: '#fff', 'stroke-width': 2, opacity: 0 }, svg));
@@ -692,7 +785,7 @@ window.WF = (() => {
   // Grouped bars: cats[], series=[{name, values, color}]
   function bars(container, { cats, series, fmtY = fmt.money, h = 220, colors }) {
     container.innerHTML = ''; container.classList.add('wf-chart');
-    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 28 };
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 36 };
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
     const max = nice(Math.max(...series.flatMap(s => s.values)) * 1.15 || 1);
     const Y = v => P.t + (H - P.t - P.b) * (1 - v / max);
@@ -701,7 +794,10 @@ window.WF = (() => {
     const tip = tooltip(container);
     cats.forEach((c, i) => {
       const cx = P.l + gw * i + gw / 2;
-      el('text', { x: cx, y: H - 8, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = c;
+      // category label, wrapped onto two lines when it will not fit the slot
+      const words = String(c).split(' '); const fits = String(c).length * 6.2 < gw - 6;
+      if (fits || words.length === 1) { const t = el('text', { x: cx, y: H - 10, class: 'wf-ax', 'text-anchor': 'middle' }, svg); t.textContent = fits ? c : (String(c).length > Math.floor(gw / 6.2) ? String(c).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…' : c); }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 18, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 6, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
       series.forEach((s, k) => {
         const x = cx - (series.length * bw + (series.length - 1) * 2) / 2 + k * (bw + 2);
         const v = s.values[i], y = Y(v);
@@ -736,7 +832,9 @@ window.WF = (() => {
       const r = el('rect', { x: cx - bw / 2, y: y1, width: bw, height: Math.max(2, y2 - y1), rx: 4, fill: color, class: 'wf-bar' }, svg);
       if (!it.total && i < items.length - 1) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
       if (it.total && i === 0) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
-      const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = it.label;
+      const words = String(it.label).split(' '), fits = String(it.label).length * 6.2 < gw - 4;
+      if (fits || words.length === 1) { const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = fits ? it.label : String(it.label).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…'; }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 26, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 14, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
       const val = el('text', { x: cx, y: y1 - 6, class: 'wf-val', 'text-anchor': 'middle' }, svg); val.textContent = it.total ? fmtY(it.value) : fmtY(it.value, { plus: true });
       r.addEventListener('mousemove', ev => { const rr = svg.getBoundingClientRect(); tip.innerHTML = `<b>${it.label}</b><div><i style="background:${color}"></i>${it.total ? '' : 'Change '}<span>${fmtY(it.value, { plus: !it.total })}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(rr.width - 170, ev.clientX - rr.left + 12) + 'px'; tip.style.top = (ev.clientY - rr.top - 10) + 'px'; });
       r.addEventListener('mouseleave', () => tip.style.opacity = 0);
@@ -765,6 +863,7 @@ window.WF = (() => {
     .wf-connector{stroke:#CBD5E1;stroke-width:1;stroke-dasharray:3 3}
     .wf-ax{font-size:11px;fill:#64748B}
     .wf-val{font-size:11px;fill:#1E1B2E;font-weight:600}
+    .wf-end{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
     .wf-band{fill:#2E7D4F;opacity:.07}
     .wf-line{transition:d .35s ease}
     .wf-bar{transition:y .35s ease,height .35s ease}
@@ -790,26 +889,24 @@ window.WF = (() => {
 </script>
 <script>
 (() => {
-  const W = window.WF, F = W.fmt, I = W.icon, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const W = window.WF, F = W.fmt, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   W.injectCss();
+  // a few extra Lucide glyphs for layout controls
+  const EXTRA = { 'panel-left': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>', 'panel-right': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/>', 'panel-top': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/>', 'panel-bottom': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 15h18"/>', maximize: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>', minimize: '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>', 'chevron-up': '<path d="m18 15-6-6-6 6"/>', 'chevron-down': '<path d="m6 9 6 6 6-6"/>', 'app-window': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/>', 'layout-grid': '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>', 'rows': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/>' };
+  const I = (name, cls = '') => EXTRA[name] ? `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${EXTRA[name]}</svg>` : W.icon(name, cls);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const NS = 'http://www.w3.org/2000/svg';
   const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
-  const TYPES = {
-    hire:  { label:'Hire',        icon:'user-plus',  monthly:true },
-    cut:   { label:'Let go',      icon:'user-minus', monthly:true },
-    raise: { label:'Pay raise',   icon:'trending-up',monthly:true },
-    ot:    { label:'Overtime',    icon:'clock' },
-    night: { label:'Night shifts',icon:'moon' },
-    tet:   { label:'Tet bonus',   icon:'gift' },
-    leave: { label:'Leavers',     icon:'users' },
-  };
+  const TYPES = { hire: { label: 'Hire', icon: 'user-plus', monthly: true }, cut: { label: 'Let go', icon: 'user-minus', monthly: true }, raise: { label: 'Pay raise', icon: 'trending-up', monthly: true }, ot: { label: 'Overtime', icon: 'clock' }, night: { label: 'Night shifts', icon: 'moon' }, tet: { label: 'Tet bonus', icon: 'gift' }, leave: { label: 'Leavers', icon: 'users' } };
   const PLAN_COLORS = ['#5A4BB0', '#0F766E', '#D97706', '#2563EB', '#DC2668', '#7C3AED'];
 
-  // ---------- plan state ----------
-  const fresh = () => ({ name:'My 2026 plan', moves:[], revenue:2200000, other:260000, follows:false, goals:{ margin:{ on:true, v:15 }, profit:{ on:false, v:450 }, cost:{ on:false, v:1500 }, heads:{ on:false, v:4600 } } });
-  let P = fresh(), hist = [], redo = [], nextId = 1, mode = 'sentences', view = 'months', showToday = false, ghostMove = null;
-  let comp = { type:'hire', month:3, n:100, div:'con', role:'', pct:5, factor:0.8, tet:1, attr:12, backfill:true };
+  // ---------- plan + ui state ----------
+  const fresh = () => ({ name: 'My 2026 plan', moves: [], revenue: 2200000, other: 260000, follows: false, goals: { margin: { on: true, v: 15 }, profit: { on: false, v: 450 }, cost: { on: false, v: 1500 }, heads: { on: false, v: 4600 } } });
+  let P = fresh(), hist = [], redo = [], nextId = 1, mode = 'sentences', view = 'months', peek = null, showToday = false, ghostMove = null;
+  let comp = { type: 'hire', month: 3, n: 100, div: 'con', role: '', pct: 5, factor: 0.8, tet: 1, attr: 12, backfill: true };
+  let UI = { dock: 'right', panel: 'open', collapsed: {}, max: null, dlg: { layout: 'tabs', panes: ['months', 'people', 'divisions', 'why'], tab: 'months' } };
+  try { Object.assign(UI, JSON.parse(localStorage.getItem('wfplan.boardroom.ui') || '{}')); UI.max = null; } catch (e) {}
+  const saveUI = () => { try { localStorage.setItem('wfplan.boardroom.ui', JSON.stringify(UI)); } catch (e) {} };
 
   const baseState = () => { const s = W.defaultState(); s.revenue = P.revenue; s.otherCosts = P.other; s.revenueFollows = P.follows; return s; };
   function share(div, n) { const roles = W.DIV[div].roles, tot = roles.reduce((a, r) => a + r.n, 0); const raw = roles.map(r => n * r.n / tot), out = raw.map(Math.floor); let rest = Math.round(n) - out.reduce((a, b) => a + b, 0); raw.map((v, i) => [v - out[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (rest > 0) { out[i]++; rest--; } }); return roles.map((r, i) => [r.key, out[i]]); }
@@ -818,9 +915,7 @@ window.WF = (() => {
     for (const d of W.DIVS) for (const r of d.roles) s.divs[d.key].roles[r.key] = [];
     for (const m of moves) {
       if (m.type === 'hire' || m.type === 'cut') { const n = m.type === 'hire' ? m.n : -m.n; const parts = m.role ? [[m.role, n]] : share(m.div, Math.abs(n)).map(([k, v]) => [k, n < 0 ? -v : v]); parts.forEach(([k, v]) => { if (v) s.divs[m.div].roles[k].push({ n: v, month: m.month }); }); }
-      else if (m.type === 'raise') { s.raise = m.pct; s.raiseMonth = m.month; }
-      else if (m.type === 'ot') s.otFactor = m.factor; else if (m.type === 'night') s.nightFactor = m.factor;
-      else if (m.type === 'tet') s.bonusMonths = m.tet; else if (m.type === 'leave') { s.attrition = m.attr; s.backfill = m.backfill; }
+      else if (m.type === 'raise') { s.raise = m.pct; s.raiseMonth = m.month; } else if (m.type === 'ot') s.otFactor = m.factor; else if (m.type === 'night') s.nightFactor = m.factor; else if (m.type === 'tet') s.bonusMonths = m.tet; else if (m.type === 'leave') { s.attrition = m.attr; s.backfill = m.backfill; }
     }
     return s;
   }
@@ -833,11 +928,7 @@ window.WF = (() => {
 
   // ---------- words ----------
   const roleName = (div, role) => role ? W.DIV[div].roles.find(r => r.key === role).name : 'people';
-  function title(m) { switch (m.type) {
-    case 'hire': return `Hire ${F.int(m.n)} ${roleName(m.div, m.role)}`; case 'cut': return `Let go ${F.int(m.n)} ${roleName(m.div, m.role)}`;
-    case 'raise': return `${m.pct}% raise for everyone`; case 'ot': return `Overtime ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`;
-    case 'night': return `Night shifts ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`; case 'tet': return m.tet === 0 ? 'No Tet bonus this year' : `${m.tet} month${m.tet === 1 ? '' : 's'} of Tet bonus`;
-    case 'leave': return `${m.attr}% leave a year, ${m.backfill ? 'replaced' : 'not replaced'}`; } }
+  function title(m) { switch (m.type) { case 'hire': return `Hire ${F.int(m.n)} ${roleName(m.div, m.role)}`; case 'cut': return `Let go ${F.int(m.n)} ${roleName(m.div, m.role)}`; case 'raise': return `${m.pct}% raise for everyone`; case 'ot': return `Overtime ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`; case 'night': return `Night shifts ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`; case 'tet': return m.tet === 0 ? 'No Tet bonus this year' : `${m.tet} month${m.tet === 1 ? '' : 's'} of Tet bonus`; case 'leave': return `${m.attr}% leave a year, ${m.backfill ? 'replaced' : 'not replaced'}`; } }
   const detail = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].name : m.type === 'raise' ? `from ${F.month(m.month)}` : 'all year';
   const color = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].color : m.type === 'raise' ? '#5A4BB0' : '#64748B';
   function impact(m) { const w = W.compute(toState(P.moves.filter(x => x.id !== m.id))); return { cost: R.year.cost - w.year.cost, profit: R.year.profit - w.year.profit, pts: R.year.margin - w.year.margin }; }
@@ -847,15 +938,27 @@ window.WF = (() => {
   function render() {
     calc();
     $('#name').value = P.name; $('#undo').disabled = !hist.length; $('#redo').disabled = !redo.length;
-    $('#undo').innerHTML = I('undo'); $('#redo').innerHTML = I('redo'); $('#save').innerHTML = `${I('save')} Save plan`; $('#print').innerHTML = `${I('columns')} Print brief`;
+    $('#undo').innerHTML = I('undo'); $('#redo').innerHTML = I('redo'); $('#save').innerHTML = `${I('save')} Save plan`; $('#print').innerHTML = `${I('columns')} Print brief`; $('#chartsWin').innerHTML = `${I('app-window')}<span class="lbl">Charts window</span>`; $('#chartsWin').title = 'Open the charts window';
     $('#hold').innerHTML = `${I('eye')} Hold to see today`;
-    renderModes(); renderHero(); drawRiver(showToday ? B : R); renderBoard(); renderGoals(); renderRail(); renderStage(); renderDrawer();
+    renderChrome(); renderHero(); drawRiver(showToday ? B : R); renderBoard(); renderGoals(); renderRail(); renderStage(); renderPanel(); renderSummaries();
     clearTimeout(render.t); render.t = setTimeout(() => $('#live').textContent = `Plan updated. Yearly people cost ${F.money(R.year.cost)}, profit ${F.money(R.year.profit)}, margin ${F.pct(R.year.margin)}.`, 400);
   }
-  function renderModes() {
+  function renderChrome() {
     const M = [['sentences', 'chat', 'Sentences'], ['touch', 'hand', 'Touch the charts'], ['knobs', 'settings', 'Knobs']];
     $('#modes').innerHTML = M.map(([k, ic, l]) => `<button class="${mode === k ? 'on' : ''}" data-mode="${k}" role="tab" aria-selected="${mode === k}">${I(ic)}${l}</button>`).join('');
-    $('#river-hint').innerHTML = mode === 'touch' ? `${I('hand')} Drag the edge of a division block to hire or let go. Click any block for the full form.` : `${I('hand')} Click a division block to hire, let go or give a raise. Click Revenue to set targets.`;
+    $('#docks').innerHTML = [['left', 'Controls on the left'], ['top', 'Controls on top'], ['bottom', 'Controls at the bottom'], ['right', 'Controls on the right']].map(([k, t]) => `<button class="${UI.dock === k ? 'on' : ''}" data-dock="${k}" title="${t}" aria-label="${t}">${I('panel-' + k)}</button>`).join('');
+    const app = $('#app'); app.dataset.dock = UI.dock; app.dataset.panel = UI.panel;
+    ['river', 'board', 'stage'].forEach(k => { const c = $('#card-' + k); c.classList.toggle('collapsed', !!UI.collapsed[k] && UI.max !== k); c.classList.toggle('max', UI.max === k); });
+    document.body.classList.toggle('has-max', !!UI.max);
+    $$('[data-collapse]').forEach(b => { const k = b.dataset.collapse; b.innerHTML = I(UI.collapsed[k] ? 'chevron-down' : 'chevron-up'); b.title = UI.collapsed[k] ? 'Expand' : 'Collapse'; });
+    $$('[data-max]').forEach(b => { const k = b.dataset.max; b.innerHTML = I(UI.max === k ? 'minimize' : 'maximize'); b.title = UI.max === k ? 'Back to normal size' : 'Maximize'; });
+    $('#river-hint').innerHTML = mode === 'touch' ? `${I('hand')} Drag the edge of a division block to hire or let go. Click any block for the full form.` : `${I('hand')} Click a division block to hire, let go or give a raise. Click Revenue to set targets. Hover anything for the detail.`;
+  }
+  function renderSummaries() {
+    const worst = R.months.reduce((a, m) => m.profit < a.profit ? m : a, R.months[0]);
+    $('#sum-river').textContent = `${F.money(R.year.revenue)} in · ${F.money(R.year.cost)} to people · ${F.money(R.year.profit)} kept (${F.pct(R.year.margin)})`;
+    $('#sum-board').textContent = `${P.moves.length} move${P.moves.length === 1 ? '' : 's'} · lowest month ${W.MONTHS[worst.m]} ${F.money(worst.profit)}${worst.profit < 0 ? ' (loss)' : ''}`;
+    $('#sum-stage').textContent = `${VIEWS.find(v => v[0] === view)[2]} · open the rail or the charts window to look closer`;
   }
   function renderHero() {
     const d = W.describe(S, R, B);
@@ -866,7 +969,7 @@ window.WF = (() => {
     k.forEach((x, i) => { W.animateNumber($('#k' + i), x[1], x[3]); const dv = x[1] - x[2], same = Math.abs(dv) < (i === 3 ? 0.0005 : 0.5), el = $('#d' + i); el.className = 'delta ' + (same ? '' : x[4] ? (x[4](dv) ? 'good' : 'bad') : ''); el.innerHTML = same ? 'same as today' : `${I(dv >= 0 ? 'trending-up' : 'trending-down')}${i === 3 ? F.pts(dv) : x[3](dv, { plus: true })} vs today`; });
   }
 
-  // ---------- the river (sankey) ----------
+  // ---------- the river ----------
   const svg = $('#river'), RW = 1000, RH = 400, PAD = 24, GAP = 9, COLX = [20, 425, 830], NW = 150;
   const BUCKETS = [{ key: 'take', name: 'Take-home pay', color: '#5A4BB0' }, { key: 'eetax', name: 'Employee insurance & tax', color: '#8B7FD1' }, { key: 'erc', name: 'Employer insurance', color: '#2E7D4F' }, { key: 'extra', name: 'Tet bonus, hiring & leaving', color: '#D97706' }, { key: 'other', name: 'Other costs', color: '#94A3B8' }, { key: 'profit', name: 'Profit you keep', color: '#0F766E' }];
   const ribbon = (x1, y1, w1, x2, y2, w2) => { const c = (x1 + x2) / 2; return `M${x1},${y1} C${c},${y1} ${c},${y2} ${x2},${y2} L${x2},${y2 + w2} C${c},${y2 + w2} ${c},${y1 + w1} ${x1},${y1 + w1} Z`; };
@@ -888,70 +991,80 @@ window.WF = (() => {
     midLay.forEach(m => { let my = m.y; const parts = (m.key === 'other' || m.key === 'profit') ? [[m.key, m.v]] : ['take', 'eetax', 'erc', 'extra'].map(k => [k, m.v * bucketV[k] / peopleTotal]); parts.forEach(([k, v]) => { if (v <= 0) return; rib2.push({ from: m.key, to: k, x1: COLX[1] + NW, y1: my, w1: v * scale, x2: COLX[2], y2: rc[k], w2: v * scale, color: m.color, v, label: `${m.name} → ${rightLay.find(b => b.key === k).name}` }); my += v * scale; rc[k] += v * scale; }); });
     return { inLay, midLay, rightLay, rib1, rib2, scale };
   }
+  const riverTip = () => { let t = $('.river-card .wf-tip'); if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; $('.river-card').appendChild(t); } return t; };
+  function nodeTip(n, r) { // rich hover card for a block
+    const y = r.year, rows = [];
+    if (W.DIV[n.key]) { const d = W.DIV[n.key], bd = r.byDiv[n.key], base = B.byDiv[n.key]; rows.push(['People in December', F.int(bd.heads[11])], ['People today', F.int(base.headsToday)], ['Cost a year', F.money(bd.year)], ['Change vs today', F.money(bd.year - base.year, { plus: true })], ['Share of revenue', F.pct(bd.year / y.revenue)], ['Cost per person a year', F.money(bd.year / Math.max(1, bd.heads.reduce((a, b) => a + b, 0) / 12))], ['Roles', d.roles.map(x => x.name).join(', ')]); }
+    else if (n.key === 'rev') rows.push(['Your revenue target', F.money(y.revenue)], ['People cost share', F.pct(y.cost / y.revenue)], ['Other cost share', F.pct(y.other / y.revenue)], ['Margin', F.pct(y.margin)]);
+    else if (n.key === 'loss') rows.push(['Loss this year', F.money(-y.profit)], ['Covered from', 'reserves']);
+    else if (n.key === 'other') rows.push(['Other costs a year', F.money(y.other)], ['Per month', F.money(y.other / 12)]);
+    else if (n.key === 'profit') rows.push(['Profit a year', F.money(y.profit)], ['Margin', F.pct(y.margin)], ['vs today', F.money(y.profit - B.year.profit, { plus: true })]);
+    else if (n.key === 'take') rows.push(['Gross pay', F.money(y.gross)], ['Employee insurance', F.money(-y.eeIns)], ['Income tax', F.money(-y.pit)], ['Take-home pay', F.money(y.takeHome)], ['Per person a month', F.money(y.takeHome / 12 / y.headsAvg)]);
+    else if (n.key === 'eetax') rows.push(['Employee insurance (10.5%)', F.money(y.eeIns)], ['Personal income tax', F.money(y.pit)], ['Together', F.money(y.eeIns + y.pit)], ['Comes out of', 'gross pay, not company cost']);
+    else if (n.key === 'erc') rows.push(['Employer insurance (23.5%)', F.money(y.erc)], ['Social 17.5% · health 3%', F.money(y.erc * 20.5 / 23.5)], ['Unemployment 1% · union 2%', F.money(y.erc * 3 / 23.5)], ['Paid on top of', 'gross pay']);
+    else if (n.key === 'extra') rows.push(['Tet bonus', F.money(y.bonus)], ['Recruiting & severance', F.money(y.oneOff)], ['Together', F.money(y.bonus + y.oneOff)]);
+    return `<b>${esc(n.name)}</b><div class="row2">${rows.map(([l, v]) => `<span>${l}</span><b>${v}</b>`).join('')}</div>`;
+  }
   function drawRiver(r) {
     const L = layout(r);
-    if (!built) { svg.innerHTML = ''; [['Money in', COLX[0]], ['Where it goes', COLX[1]], ['Who ends up with it', COLX[2]]].forEach(([t, x]) => { mk('text', { x, y: 12, class: 'col' }, svg).textContent = t; }); els.g1 = mk('g', {}, svg); els.g2 = mk('g', {}, svg); els.gn = mk('g', {}, svg); els.gg = mk('g', {}, svg); built = true; }
-    const tip = (() => { let t = $('.river-card .wf-tip'); if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; $('.river-card').appendChild(t); } return t; })();
-    const syncRibs = (g, ribs, prefix) => { const seen = new Set(); ribs.forEach(rb => { const id = `${prefix}-${rb.from}-${rb.to}`; seen.add(id); let p = g.querySelector(`[data-id="${id}"]`); if (!p) { p = mk('path', { 'data-id': id, class: 'rib', fill: rb.color, opacity: prefix === 'a' ? 0.28 : 0.22 }, g); p.setAttribute('d', ribbon(rb.x1, rb.y1, 0, rb.x2, rb.y2, 0)); } requestAnimationFrame(() => p.setAttribute('d', ribbon(rb.x1, rb.y1, rb.w1, rb.x2, rb.y2, rb.w2))); p.onmousemove = ev => { const bb = $('.river-card').getBoundingClientRect(); tip.innerHTML = `<b>${rb.label}</b><div><i style="background:${rb.color}"></i><span>${F.money(rb.v)} a year</span></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 14) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; }; p.onmouseleave = () => tip.style.opacity = 0; }); g.querySelectorAll('path').forEach(p => { if (!seen.has(p.dataset.id)) p.remove(); }); };
+    if (!built) { svg.innerHTML = ''; [['Money in', COLX[0]], ['Where it goes', COLX[1]], ['Who ends up with it', COLX[2]]].forEach(([t, x]) => { mk('text', { x, y: 12, class: 'col' }, svg).textContent = t; }); els.g1 = mk('g', {}, svg); els.g2 = mk('g', {}, svg); els.gg = mk('g', {}, svg); els.gn = mk('g', {}, svg); els.gl = mk('g', {}, svg); built = true; }
+    const tip = riverTip();
+    const showTip = (html, ev) => { const bb = $('.river-card').getBoundingClientRect(); tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = Math.min(bb.width - 250, ev.clientX - bb.left + 14) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; };
+    const syncRibs = (g, ribs, prefix) => { const seen = new Set(); ribs.forEach(rb => { const id = `${prefix}-${rb.from}-${rb.to}`; seen.add(id); let p = g.querySelector(`[data-id="${id}"]`); if (!p) { p = mk('path', { 'data-id': id, class: 'rib', fill: rb.color, opacity: prefix === 'a' ? 0.28 : 0.22 }, g); p.setAttribute('d', ribbon(rb.x1, rb.y1, 0, rb.x2, rb.y2, 0)); } requestAnimationFrame(() => p.setAttribute('d', ribbon(rb.x1, rb.y1, rb.w1, rb.x2, rb.y2, rb.w2))); p.onmousemove = ev => { if (drag) return; showTip(`<b>${rb.label}</b><div><i style="background:${rb.color}"></i><span>${F.money(rb.v)} a year · ${F.pct(rb.v / r.year.revenue)} of revenue</span></div>`, ev); }; p.onmouseleave = () => tip.style.opacity = 0; }); g.querySelectorAll('path').forEach(p => { if (!seen.has(p.dataset.id)) p.remove(); }); };
     syncRibs(els.g1, L.rib1, 'a'); syncRibs(els.g2, L.rib2, 'b');
     const nodes = [...L.inLay.map(n => Object.assign({ x: COLX[0] }, n)), ...L.midLay.map(n => Object.assign({ x: COLX[1] }, n)), ...L.rightLay.map(n => Object.assign({ x: COLX[2] }, n))];
-    const seen = new Set();
+    const seen = new Set(), outside = [];
     nodes.forEach(n => {
       const id = `n-${n.x}-${n.key}`; seen.add(id); let g = els.gn.querySelector(`[data-id="${id}"]`);
-      if (!g) { g = mk('g', { 'data-id': id }, els.gn); const rect = mk('rect', { x: n.x, width: NW, rx: 6, fill: n.color, class: 'node', y: n.y, height: 0 }, g); mk('text', { x: n.x + 8, class: 'nl' }, g); mk('text', { x: n.x + 8, class: 'nv' }, g); if (W.DIV[n.key]) { mk('rect', { x: n.x + NW / 2 - 18, width: 36, height: 6, rx: 3, class: 'handle', 'data-div': n.key }, g); } rect.addEventListener('pointerdown', ev => nodeDown(n.key, ev)); }
+      if (!g) { g = mk('g', { 'data-id': id }, els.gn); const rect = mk('rect', { x: n.x, width: NW, rx: 6, fill: n.color, class: 'node', y: n.y, height: 0 }, g); mk('text', { x: n.x + 8, class: 'nl' }, g); mk('text', { x: n.x + 8, class: 'nv' }, g); if (W.DIV[n.key]) mk('rect', { x: n.x + NW / 2 - 18, width: 36, height: 6, rx: 3, class: 'handle', 'data-div': n.key }, g); rect.addEventListener('pointerdown', ev => nodeDown(n.key, ev)); rect.addEventListener('mousemove', ev => { if (drag) return; showTip(nodeTip(n, showToday ? B : R), ev); }); rect.addEventListener('mouseleave', () => { if (!drag) tip.style.opacity = 0; }); }
+      g.querySelector('rect.node')._n = n;
       const rect = g.querySelector('rect.node'), tl = g.querySelector('.nl'), tv = g.querySelector('.nv'), hd = g.querySelector('.handle');
       rect.setAttribute('y', n.y); rect.setAttribute('height', Math.max(2, n.h)); rect.classList.toggle('grab', mode === 'touch' && !!W.DIV[n.key]);
       if (hd) { hd.setAttribute('y', n.y + n.h - 3); hd.classList.toggle('show', mode === 'touch'); }
-      const big = n.h >= 30, midH = n.h >= 8, light = ['#eda100', '#e87ba4', '#1baf7a', '#94A3B8', '#8B7FD1', '#D97706'].includes(n.color);
+      const big = n.h >= 30, light = ['#eda100', '#e87ba4', '#1baf7a', '#94A3B8', '#8B7FD1', '#D97706'].includes(n.color);
       tl.textContent = n.name; tv.textContent = F.money(n.v); tl.classList.toggle('in', big); tv.classList.toggle('in', big);
-      if (big) { tl.setAttribute('x', n.x + 8); tv.setAttribute('x', n.x + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); tl.setAttribute('y', n.y + 18); tv.setAttribute('y', n.y + 34); tl.setAttribute('fill', light ? '#1E1B2E' : '#fff'); tv.setAttribute('fill', light ? 'rgba(30,27,46,.75)' : 'rgba(255,255,255,.85)'); }
-      else { tl.setAttribute('fill', '#1E1B2E'); tv.setAttribute('fill', '#64748B'); const y = n.y + n.h / 2 + 4; if (n.x === COLX[2]) { tl.setAttribute('x', n.x - 8); tv.setAttribute('x', n.x - 8 - n.name.length * 7 - 8); tl.setAttribute('text-anchor', 'end'); tv.setAttribute('text-anchor', 'end'); } else { tl.setAttribute('x', n.x + NW + 8); tv.setAttribute('x', n.x + NW + 8 + n.name.length * 7 + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); } tl.setAttribute('y', y); tv.setAttribute('y', y); }
-      tl.style.display = tv.style.display = midH ? '' : 'none';
+      if (big) { tl.style.display = tv.style.display = ''; tl.setAttribute('x', n.x + 8); tv.setAttribute('x', n.x + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); tl.setAttribute('y', n.y + 18); tv.setAttribute('y', n.y + 34); tl.setAttribute('fill', light ? '#1E1B2E' : '#fff'); tv.setAttribute('fill', light ? 'rgba(30,27,46,.75)' : 'rgba(255,255,255,.85)'); }
+      else { tl.style.display = tv.style.display = 'none'; outside.push(n); } // small block: label placed outside, after collision pass
     });
     els.gn.querySelectorAll('g').forEach(g => { if (!seen.has(g.dataset.id)) g.remove(); });
-    // ghost outlines of today's blocks when the plan differs (only while not holding)
+    // outside labels: all in the middle gap, staggered so they never collide, with leader lines
+    els.gl.innerHTML = '';
+    // each column's small labels sit in the empty gap to its LEFT (mid labels over the first ribbons, right labels over the second), so the two sets never meet
+    const groups = [outside.filter(n => n.x === COLX[1]), outside.filter(n => n.x === COLX[2]), outside.filter(n => n.x === COLX[0])];
+    groups.forEach((grp, gi) => {
+      const labels = grp.map(n => ({ n, want: n.y + n.h / 2 })).sort((a, b) => a.want - b.want);
+      let lastY = -Infinity; labels.forEach(l => { l.y = Math.max(l.want, lastY + 15); lastY = l.y; });
+      const over = labels.length ? Math.max(0, lastY - (RH - 8)) : 0; labels.forEach(l => l.y -= over);
+      labels.forEach(l => { const n = l.n, left = gi !== 2, x0 = left ? n.x - 8 : n.x + NW + 8; const t = mk('text', { x: x0, y: l.y + 4, class: 'nl', 'text-anchor': left ? 'end' : 'start', fill: '#1E1B2E', 'font-size': 12 }, els.gl); t.innerHTML = `${esc(n.name)} <tspan class="nv" style="font-size:11px" fill="#64748B">${F.money(n.v)}</tspan>`; if (Math.abs(l.y - l.want) > 3) mk('path', { d: `M${left ? n.x : n.x + NW},${l.want} L${left ? n.x - 5 : n.x + NW + 5},${l.y}`, class: 'lead' }, els.gl); });
+    });
     els.gg.innerHTML = '';
     if (!showToday) { const LB = layout(B); LB.midLay.forEach((n, i) => { const cur = L.midLay[i]; if (cur && Math.abs(n.h - cur.h) > 3) mk('rect', { x: COLX[1] - 3, y: cur.y - 2, width: NW + 6, height: Math.max(2, n.h + 4), rx: 7, class: 'ghost' }, els.gg); }); }
   }
   // drag the bottom edge of a division block = hire / let go
   let drag = null;
-  function nodeDown(key, ev) {
-    if (!W.DIV[key]) { if (ev.button === 0) openPop(key, ev); return; }
-    const pt = svgPoint(ev); drag = { key, y0: pt.y, moved: false, snapDone: false, before: JSON.stringify(P), ev };
-    try { svg.setPointerCapture(ev.pointerId); } catch (e) {} svg.classList.add('dragging');
-  }
+  function nodeDown(key, ev) { if (!W.DIV[key]) { if (ev.button === 0) openPop(key); return; } const pt = svgPoint(ev); drag = { key, y0: pt.y, moved: false, before: JSON.stringify(P) }; try { svg.setPointerCapture(ev.pointerId); } catch (e) {} svg.classList.add('dragging'); }
   function svgPoint(ev) { const r = svg.getBoundingClientRect(); return { x: (ev.clientX - r.left) * RW / r.width, y: (ev.clientY - r.top) * RH / r.height }; }
   svg.addEventListener('pointermove', ev => {
-    if (!drag) return; const pt = svgPoint(ev), dy = pt.y - drag.y0;
-    if (!drag.moved && Math.abs(dy) < 4) return; drag.moved = true;
-    const d = W.DIV[drag.key], perHead = B.byDiv[d.key].year / B.byDiv[d.key].headsToday; // yearly cost of one person in this division
-    const n = Math.round(dy / lastScale / perHead / 10) * 10;
-    const existing = P.moves.find(m => m.drag && m.div === drag.key);
-    const wanted = (drag.startN ?? (drag.startN = existing ? (existing.type === 'hire' ? existing.n : -existing.n) : 0)) + n;
+    if (!drag) return; const pt = svgPoint(ev), dy = pt.y - drag.y0; if (!drag.moved && Math.abs(dy) < 4) return; drag.moved = true;
+    const d = W.DIV[drag.key], perHead = B.byDiv[d.key].year / B.byDiv[d.key].headsToday, n = Math.round(dy / lastScale / perHead / 10) * 10;
+    const existing = P.moves.find(m => m.drag && m.div === drag.key), wanted = (drag.startN ?? (drag.startN = existing ? (existing.type === 'hire' ? existing.n : -existing.n) : 0)) + n;
     P.moves = P.moves.filter(m => !(m.drag && m.div === drag.key));
     if (wanted) P.moves.push({ id: existing ? existing.id : nextId++, type: wanted > 0 ? 'hire' : 'cut', n: Math.abs(wanted), div: drag.key, role: '', month: existing ? existing.month : 4, drag: true });
     calc(); drawRiver(R); renderHero();
-    const tip = $('.river-card .wf-tip'), bb = $('.river-card').getBoundingClientRect();
-    if (tip) { tip.innerHTML = `<b>${d.name}</b><div><i style="background:${d.color}"></i>${wanted >= 0 ? 'Hire' : 'Let go'} <span>${F.int(Math.abs(wanted))} people</span></div><div><i style="background:#94A3B8"></i>People cost <span>${F.money(R.year.cost - B.year.cost, { plus: true })}/yr</span></div><div><i style="background:#0F766E"></i>Margin <span>${F.pct(R.year.margin)}</span></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 16) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; }
+    const tip = riverTip(), bb = $('.river-card').getBoundingClientRect(); tip.innerHTML = `<b>${d.name}</b><div class="row2"><span>${wanted >= 0 ? 'Hire' : 'Let go'}</span><b>${F.int(Math.abs(wanted))} people</b><span>People cost</span><b>${F.money(R.year.cost - B.year.cost, { plus: true })}/yr</b><span>Margin</span><b>${F.pct(R.year.margin)}</b></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 16) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px';
     $('#river-sub').textContent = `${wanted >= 0 ? 'Hiring' : 'Letting go'} ${F.int(Math.abs(wanted))} people in ${d.name} · release to keep it`;
   });
-  const dragEnd = ev => {
-    if (!drag) return; const dr = drag; drag = null; svg.classList.remove('dragging'); const tp = $('.river-card .wf-tip'); if (tp) tp.style.opacity = 0;
-    if (!dr.moved) { openPop(dr.key, dr.ev); return; }
-    const after = JSON.stringify(P); if (after !== dr.before) { hist.push(dr.before); redo = []; }
-    const m = P.moves.find(x => x.drag && x.div === dr.key);
-    render(); toast(m ? `${title(m)} in ${W.DIV[dr.key].name}, landing in ${F.month(m.month)}. It is on the board, drag it to another month.` : `${W.DIV[dr.key].name} is back to today's size.`);
-  };
+  const dragEnd = () => { if (!drag) return; const dr = drag; drag = null; svg.classList.remove('dragging'); riverTip().style.opacity = 0; if (!dr.moved) { openPop(dr.key); return; } if (JSON.stringify(P) !== dr.before) { hist.push(dr.before); redo = []; } const m = P.moves.find(x => x.drag && x.div === dr.key); render(); toast(m ? `${title(m)} in ${W.DIV[dr.key].name}, landing in ${F.month(m.month)}. It is on the board; drag it to another month.` : `${W.DIV[dr.key].name} is back to today's size.`); };
   svg.addEventListener('pointerup', dragEnd); svg.addEventListener('pointercancel', dragEnd);
 
   // ---------- popover on a block ----------
-  function openPop(key, ev) {
+  function openPop(key) {
     const pop = $('#pop'), card = $('.river-card').getBoundingClientRect(); let html = '';
     if (key === 'rev' || key === 'loss') html = `<h3>${I('wallet')} Your money this year</h3><div class="sub">Type what you expect. Profit is what is left after people and other costs.</div><div class="fld"><div class="lbl">Revenue target</div><span class="money-in">₫<input type="number" data-p="revenue" value="${P.revenue / 1000}" step="50"><small>B</small></span></div><div class="fld"><div class="lbl">Other costs <span class="sub">rent, materials, everything else</span></div><span class="money-in">₫<input type="number" data-p="other" value="${P.other / 1000}" step="10"><small>B</small></span></div><div class="fld"><label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" data-p="follows" ${P.follows ? 'checked' : ''}> Revenue grows and shrinks with revenue-earning staff</label></div>`;
     else if (key === 'other') html = `<h3>${I('building')} Other costs</h3><div class="sub">Everything that is not people.</div><div class="fld"><span class="money-in">₫<input type="number" data-p="other" value="${P.other / 1000}" step="10"><small>B</small></span></div>`;
-    else if (key === 'profit') html = `<h3>${I('target')} Profit you keep</h3><div class="sub">${F.money(R.year.profit)} this year, a ${F.pct(R.year.margin)} margin. Set the margin you want in Goals, on the right, and the suggestions tell you how to get there.</div><div class="fld"><div class="lbl">Keep the margin at least <b>${P.goals.margin.v}%</b></div><input type="range" min="0" max="40" step="1" value="${P.goals.margin.v}" data-goal="margin"></div>`;
+    else if (key === 'profit') html = `<h3>${I('target')} Profit you keep</h3><div class="sub">${F.money(R.year.profit)} this year, a ${F.pct(R.year.margin)} margin. Set the margin you want; the Goals card suggests how to get there.</div><div class="fld"><div class="lbl">Keep the margin at least <b>${P.goals.margin.v}%</b></div><input type="range" min="0" max="40" step="1" value="${P.goals.margin.v}" data-goal="margin"></div>`;
     else if (W.DIV[key]) { comp.div = key; if (!['hire', 'cut', 'raise'].includes(comp.type)) comp.type = 'hire'; const d = W.DIV[key]; html = `<h3><i class="sw" style="background:${d.color}"></i>${d.name}</h3><div class="sub">${F.int(B.byDiv[key].headsToday)} people today · ${F.money(R.byDiv[key].year)} a year${R.byDiv[key].year !== B.byDiv[key].year ? ` (${F.money(R.byDiv[key].year - B.byDiv[key].year, { plus: true })})` : ''}</div><div class="tabs">${['hire', 'cut', 'raise'].map(k => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}" data-in-pop="1">${I(TYPES[k].icon)}${TYPES[k].label}</button>`).join('')}</div><div class="sent" id="popSent"></div><div class="preview" id="popPrev" style="margin-top:6px"></div><div class="row"><button class="btn primary sm" id="popAdd">${I('plus')} Add to plan</button><span class="sub" style="font-size:12px">Roles: ${d.roles.map(r => `${r.name} ₫${r.pay}M`).join(' · ')}</span></div>`; }
-    else { const b = BUCKETS.find(x => x.key === key), y = R.year; const bits = key === 'take' ? [['Gross pay', y.gross], ['− employee insurance (10.5%)', -y.eeIns], ['− personal income tax', -y.pit], ['= take-home', y.takeHome]] : key === 'eetax' ? [['Employee social, health & unemployment insurance', y.eeIns], ['Personal income tax (5–35% ladder)', y.pit]] : key === 'erc' ? [['Employer social insurance 17.5%', y.erc * 17.5 / 23.5], ['Health 3% · unemployment 1% · union 2%', y.erc * 6 / 23.5]] : [['Tet bonus (13th month)', y.bonus], ['Recruiting + severance', y.oneOff]]; html = `<h3>${I('info')} ${b.name}</h3><div class="sub">${F.money(b.key === 'take' ? y.takeHome : b.key === 'eetax' ? y.eeIns + y.pit : b.key === 'erc' ? y.erc : y.bonus + y.oneOff)} a year. This block is an outcome; change people, pay or hours to move it.</div><div class="bits">${bits.map(([l, v]) => `<span>${l}</span><b class="num">${F.money(v)}</b>`).join('')}</div>`; }
+    else { const b = BUCKETS.find(x => x.key === key); html = `<h3>${I('info')} ${b.name}</h3><div class="sub">This block is an outcome; change people, pay or hours to move it.</div><div class="bits">${nodeTip({ key, name: b.name }, R).replace(/^<b>.*?<\/b><div class="row2">/, '').replace(/<\/div>$/, '')}</div>`; }
     pop.innerHTML = `<button class="close" aria-label="Close">${I('x')}</button>` + html;
     const sb = svg.getBoundingClientRect(), k = sb.width / RW, node = svg.querySelector(`[data-id^="n-"][data-id$="-${key}"] rect.node`), nx = +node.getAttribute('x'), ny = +node.getAttribute('y');
     const x = Math.min(card.width - 380, Math.max(8, (nx + NW + 16) * k + (sb.left - card.left))), y = (sb.top - card.top) + ny * k;
@@ -974,31 +1087,22 @@ window.WF = (() => {
   function card(m) { const imp = impact(m), t = TYPES[m.type]; return `<div class="mv" draggable="true" data-id="${m.id}" style="--c:${color(m)}" tabindex="0" title="People cost ${F.money(imp.cost, { plus: true })} a year · profit ${F.money(imp.profit, { plus: true })} · margin ${F.pts(imp.pts)}" aria-label="${esc(title(m))}, ${esc(detail(m))}"><div class="t">${I(t.icon)}<span>${esc(title(m))}</span></div><div class="d">${esc(detail(m))} · ${F.money(imp.cost, { plus: true })}/yr</div><div class="imp num"><span class="${imp.profit >= 0 ? 'good' : 'bad'}">${I(imp.profit >= 0 ? 'trending-up' : 'trending-down')}${F.money(imp.profit, { plus: true })}</span></div><div class="tools"><button data-shift="-1" data-id="${m.id}" title="One month earlier" aria-label="One month earlier" style="transform:scaleX(-1)">${I('chevron-right')}</button><button data-shift="1" data-id="${m.id}" title="One month later" aria-label="One month later">${I('chevron-right')}</button><button data-remove="${m.id}" title="Remove" aria-label="Remove">${I('x')}</button></div></div>`; }
 
   // ---------- goals + suggestions ----------
-  const GOALS = [['margin', 'percent', 'Keep the margin at least', '%', 1], ['profit', 'wallet', 'Make at least this profit', 'B', 1000], ['cost', 'users', 'Keep people cost under', 'B', 1000], ['heads', 'building', 'Have this many people in December', 'people', 1]];
-  function goalGap() { // positive = short of the goal
-    const g = P.goals, gaps = [];
-    if (g.margin.on) gaps.push({ k: 'margin', short: g.margin.v / 100 * R.year.revenue - R.year.profit, text: `${F.pct(R.year.margin)} margin vs ${g.margin.v}% wanted` });
-    if (g.profit.on) gaps.push({ k: 'profit', short: g.profit.v * 1000 - R.year.profit, text: `${F.money(R.year.profit)} profit vs ${F.money(g.profit.v * 1000)} wanted` });
-    if (g.cost.on) gaps.push({ k: 'cost', short: R.year.cost - g.cost.v * 1000, text: `${F.money(R.year.cost)} people cost vs ${F.money(g.cost.v * 1000)} cap` });
-    if (g.heads.on) gaps.push({ k: 'heads', short: g.heads.v - R.year.headsEnd, text: `${F.int(R.year.headsEnd)} people vs ${F.int(g.heads.v)} wanted`, people: true });
-    return gaps;
-  }
+  const GOALS = [['margin', 'percent', 'Keep the margin at least', '%'], ['profit', 'wallet', 'Make at least this profit', 'B'], ['cost', 'users', 'Keep people cost under', 'B'], ['heads', 'building', 'Have this many people in December', 'people']];
+  function goalGap() { const g = P.goals, gaps = []; if (g.margin.on) gaps.push({ k: 'margin', short: g.margin.v / 100 * R.year.revenue - R.year.profit, text: `${F.pct(R.year.margin)} margin vs ${g.margin.v}% wanted` }); if (g.profit.on) gaps.push({ k: 'profit', short: g.profit.v * 1000 - R.year.profit, text: `${F.money(R.year.profit)} profit vs ${F.money(g.profit.v * 1000)} wanted` }); if (g.cost.on) gaps.push({ k: 'cost', short: R.year.cost - g.cost.v * 1000, text: `${F.money(R.year.cost)} people cost vs ${F.money(g.cost.v * 1000)} cap` }); if (g.heads.on) gaps.push({ k: 'heads', short: g.heads.v - R.year.headsEnd, text: `${F.int(R.year.headsEnd)} people vs ${F.int(g.heads.v)} wanted`, people: true }); return gaps; }
   function suggestions() {
     const gaps = goalGap(), need = gaps.filter(g => !g.people && g.short > 0.5), needPeople = gaps.find(g => g.people && Math.abs(g.short) >= 1);
-    const out = [], tryMove = (label, why, mutate) => { const moves = JSON.parse(JSON.stringify(P.moves)); const res = mutate(moves); if (res === false) return; const r = W.compute(toState(moves)); out.push({ label, why, moves, dProfit: r.year.profit - R.year.profit, dCost: r.year.cost - R.year.cost, dHeads: r.year.headsEnd - R.year.headsEnd, r }); };
+    const out = [], tryMove = (label, why, mutate) => { const moves = JSON.parse(JSON.stringify(P.moves)); if (mutate(moves) === false) return; const r = W.compute(toState(moves)); out.push({ label, why, moves, dProfit: r.year.profit - R.year.profit, dCost: r.year.cost - R.year.cost, dHeads: r.year.headsEnd - R.year.headsEnd, r }); };
     if (need.length) {
       const hires = P.moves.filter(m => m.type === 'hire');
       if (hires.length) { tryMove('Start the hires two months later', 'Same people, less of the year on payroll.', ms => { let any = false; ms.forEach(m => { if (m.type === 'hire' && m.month <= 10) { m.month += 2; any = true; } }); return any; }); tryMove('Hire a quarter fewer people', 'Keeps the direction, trims the bill.', ms => { ms.forEach(m => { if (m.type === 'hire') m.n = Math.max(1, Math.round(m.n * 0.75 / 5) * 5); }); }); }
       const ot = P.moves.find(m => m.type === 'ot'); tryMove(ot && ot.factor <= 0.8 ? 'Cut overtime to half of today' : 'Cut overtime by 20%', 'Overtime is paid at 1.5×; fewer hours, same people.', ms => { const f = ot && ot.factor <= 0.8 ? 0.5 : 0.8; const i = ms.findIndex(m => m.type === 'ot'); if (i >= 0) { if (ms[i].factor <= f) return false; ms[i].factor = f; } else ms.push({ type: 'ot', factor: f }); });
       const raise = P.moves.find(m => m.type === 'raise'); if (raise) tryMove(`Halve the raise to ${(raise.pct / 2).toFixed(1)}%`, 'Still a raise, half the yearly cost.', ms => { ms.find(m => m.type === 'raise').pct = +(raise.pct / 2).toFixed(1); }); if (raise && raise.month < 7) tryMove('Start the raise in July', 'Half a year of the higher pay instead of a full one.', ms => { ms.find(m => m.type === 'raise').month = 7; });
       tryMove('Do not replace leavers in Corporate and IT', 'Natural attrition shrinks the back office without letting anyone go.', ms => { for (const dk of ['cor', 'it']) for (const r of W.DIV[dk].roles) ms.push({ type: 'cut', month: 7, n: Math.round(r.n * 0.06), div: dk, role: r.key }); });
-      // role-aware saving: fewer seniors need to go for the same saving
       const target = Math.max(...need.map(g => g.short));
-      [['cor', 'mg'], ['cor', 'ad'], ['it', 'sen']].forEach(([dk, rk]) => { const role = W.DIV[dk].roles.find(r => r.key === rk); const perHead = B.byDiv[dk].year / B.byDiv[dk].headsToday * (role.pay / (W.DIV[dk].roles.reduce((a, r) => a + r.pay * r.n, 0) / B.byDiv[dk].headsToday)); const n = Math.min(role.n, Math.ceil(target / (perHead * 0.75))); if (n >= 1) tryMove(`Let go ${F.int(n)} ${role.name} in ${W.DIV[dk].name} from April`, `${role.name} cost ${F.money(perHead)} a year each, so ${n} of them close the gap.`, ms => { ms.push({ type: 'cut', month: 4, n, div: dk, role: rk }); }); });
+      [['cor', 'mg'], ['cor', 'ad'], ['it', 'sen']].forEach(([dk, rk]) => { const role = W.DIV[dk].roles.find(r => r.key === rk); const perHead = role.pay * 12 * (1 + W.K.allowance) + Math.min(role.pay, W.K.insCap) * W.K.erRate * 12 + role.pay * S.bonusMonths; const n = Math.min(role.n, Math.ceil(target / (perHead * 0.75))); if (n >= 1) tryMove(`Let go ${F.int(n)} ${role.name} in ${W.DIV[dk].name} from April`, `${role.name} cost about ${F.money(perHead)} a year each, so ${n} of them close the gap.`, ms => { ms.push({ type: 'cut', month: 4, n, div: dk, role: rk }); }); });
       const tet = P.moves.find(m => m.type === 'tet'); if (!tet || tet.tet > 0.5) tryMove('Pay half a month of Tet bonus', 'A hard conversation, but it lands in January where cash is tightest.', ms => { const i = ms.findIndex(m => m.type === 'tet'); if (i >= 0) ms[i].tet = 0.5; else ms.push({ type: 'tet', tet: 0.5 }); });
     }
-    if (needPeople) { const n = Math.round(needPeople.short); if (n > 0) { [['con', ''], ['mfg', 'op'], ['ret', 'ss']].forEach(([dk, rk]) => tryMove(`Hire ${F.int(n)} ${rk ? W.DIV[dk].roles.find(r => r.key === rk).name : 'people'} in ${W.DIV[dk].name} in April`, 'Cheapest roles first: the same headcount for the least cost.', ms => { ms.push({ type: 'hire', month: 4, n, div: dk, role: rk }); })); } else { tryMove(`Let ${F.int(-n)} people leave without replacement`, 'Attrition does the work: no severance, no hard conversations.', ms => { const i = ms.findIndex(m => m.type === 'leave'); if (i >= 0) ms[i].backfill = false; else ms.push({ type: 'leave', attr: 12, backfill: false }); }); } }
-    // rank: those that close the biggest gap first, then by least profit lost
+    if (needPeople) { const n = Math.round(needPeople.short); if (n > 0) [['con', ''], ['mfg', 'op'], ['ret', 'ss']].forEach(([dk, rk]) => tryMove(`Hire ${F.int(n)} ${rk ? W.DIV[dk].roles.find(r => r.key === rk).name : 'people'} in ${W.DIV[dk].name} in April`, 'Cheapest roles first: the same headcount for the least cost.', ms => { ms.push({ type: 'hire', month: 4, n, div: dk, role: rk }); })); else tryMove(`Let ${F.int(-n)} people leave without replacement`, 'Attrition does the work: no severance, no hard conversations.', ms => { const i = ms.findIndex(m => m.type === 'leave'); if (i >= 0) ms[i].backfill = false; else ms.push({ type: 'leave', attr: 12, backfill: false }); }); }
     const score = s => need.length ? s.dProfit : needPeople ? -Math.abs(needPeople.short - s.dHeads) : 0;
     return out.filter(s => Math.abs(s.dProfit) > 0.5 || Math.abs(s.dHeads) >= 1).sort((a, b) => score(b) - score(a)).slice(0, 5);
   }
@@ -1006,84 +1110,87 @@ window.WF = (() => {
   function renderGoals() {
     $('#goalTitle').innerHTML = `${I('target')} Goals`;
     $('#goalRows').innerHTML = GOALS.map(([k, ic, l, u]) => { const g = P.goals[k]; return `<div class="goal-row"><label><input type="checkbox" data-gon="${k}" ${g.on ? 'checked' : ''} style="accent-color:var(--primary)">${I(ic)}${l}</label><span class="goal-in ${g.on ? '' : 'off'}">${u === 'B' ? '₫' : ''}<input type="text" inputmode="decimal" data-gv="${k}" value="${g.v.toLocaleString('en')}" aria-label="${l}"><small>${u}</small></span></div>`; }).join('');
-    const gaps = goalGap(); const short = gaps.filter(g => g.people ? Math.abs(g.short) >= 1 : g.short > 0.5);
+    const gaps = goalGap(), short = gaps.filter(g => g.people ? Math.abs(g.short) >= 1 : g.short > 0.5);
     $('#goalStatus').innerHTML = !gaps.length ? `<div class="goal-status g-ok">${I('info')}<span>Tick a goal and the charts draw it as a dashed line. Suggestions appear here.</span></div>` : short.length ? `<div class="goal-status g-gap">${I('alert')}<span>Not there yet: ${short.map(g => g.text).join(' · ')}.${short.some(g => !g.people) ? ` You need ${F.money(Math.max(...short.filter(g => !g.people).map(g => g.short), 0))} more.` : ''}</span></div>` : `<div class="goal-status g-ok">${I('check')}<span>Every goal is met: ${gaps.map(g => g.text).join(' · ')}.</span></div>`;
     suggCache = short.length ? suggestions() : [];
     $('#sugg').innerHTML = suggCache.length ? `<div class="eyebrow" style="margin-top:4px">What you could do · hover to preview on the chart</div>` + suggCache.map((s, i) => `<div class="s" data-sugg="${i}" tabindex="0"><span>${esc(s.label)}<small>${esc(s.why)}</small></span><b class="num ${s.dProfit < 0 ? 'bad' : ''}">${F.money(s.dProfit, { plus: true })}${s.dHeads ? ` · ${F.int(s.dHeads, { plus: true })} people` : ''}</b><button class="btn sm primary" data-apply="${i}">Apply</button></div>`).join('') : (short.length ? `<div class="sub" style="font-size:12px">No single move closes this gap. Combine a few, or lower the goal.</div>` : '');
   }
 
-  // ---------- rail + stage ----------
+  // ---------- views (shared by the stage and the charts window) ----------
   const VIEWS = [['months', 'trending-up', 'Month by month'], ['people', 'users', 'People over the year'], ['divisions', 'building', 'Cost by division'], ['pay', 'layers', 'What pay is made of'], ['why', 'scale', 'Why profit changed'], ['room', 'zap', 'How far can I go'], ['compare', 'columns', 'Compare plans'], ['watch', 'shield', 'Watch-outs']];
-  function renderRail() { const warns = W.warnings(S, R, B), crit = warns.filter(w => w.level !== 'ok').length; $('#rail').innerHTML = VIEWS.map(([k, ic, l]) => `<button class="${view === k ? 'on' : ''}" data-view="${k}" role="tab" aria-selected="${view === k}">${I(ic)}${l}${k === 'watch' ? `<span class="badge ${crit ? '' : 'ok'}">${crit || '✓'}</span>` : k === 'compare' && saved.length ? `<span class="badge ok">${saved.length}</span>` : ''}</button>`).join(''); }
-  function head(t, s, tools = '') { $('#stageTitle').textContent = t; $('#stageSub').textContent = s; $('#stageTools').innerHTML = tools; }
   const targetLine = () => { const g = P.goals; if (g.profit.on) return { name: `Goal · ${F.money(g.profit.v * 1000)} a year`, values: R.months.map(m => g.profit.v * 1000 / 12 * (m.revenue / (R.year.revenue / 12))), color: '#DC2668', dash: true }; if (g.margin.on) return { name: `Goal · ${g.margin.v}% margin`, values: R.months.map(m => m.revenue * g.margin.v / 100), color: '#DC2668', dash: true }; return null; };
-  function renderStage() {
-    const body = $('#stageBody'); body.innerHTML = '';
-    if (view === 'months') { head('Profit, month by month', 'Solid line is your plan, dotted grey is today. The red dashes are your goal; an amber dashed line previews a suggestion while you hover it.'); body.innerHTML = `<div class="chart" id="c1"></div><div class="key" id="key1"></div>`; const series = [{ name: 'Today', values: B.months.map(m => m.profit), color: '#94A3B8', dash: true }, { name: 'Your plan', values: R.months.map(m => m.profit), color: '#5A4BB0', area: true }]; const t = targetLine(); if (t) series.push(t); if (ghostMove) series.push({ name: ghostMove.label, values: ghostMove.r.months.map(m => m.profit), color: '#D97706', dash: true }); W.chart.lines($('#c1'), { series, h: 260 }); $('#key1').innerHTML = series.map(s => `<span><i class="${s.dash ? 'dash' : ''}" style="color:${s.color};background:${s.dash ? '' : s.color}"></i>${esc(s.name)}</span>`).join(''); }
-    else if (view === 'people') { head('People on the payroll, month by month', 'Stacked by division. Hires step up in the month they land; leavers drain away if you choose not to replace them.'); body.innerHTML = `<div class="chart" id="c1"></div><div class="key" id="key1"></div>`; areas($('#c1'), { series: W.DIVS.map(d => ({ name: d.name, values: R.byDiv[d.key].heads, color: d.color })), ghost: B.months.map(m => m.heads), h: 260, goal: P.goals.heads.on ? P.goals.heads.v : null }); $('#key1').innerHTML = W.DIVS.map(d => `<span><i style="background:${d.color}"></i>${d.name} ${F.int(R.byDiv[d.key].heads[11])}</span>`).join('') + `<span><i class="dash" style="color:#1E1B2E"></i>Today, total</span>`; }
-    else if (view === 'divisions') { head('People cost by division, a year', 'Grey is today, colour is your plan. Click a bar to open that division on the money flow.'); body.innerHTML = `<div class="chart" id="c1"></div>`; W.chart.bars($('#c1'), { cats: W.DIVS.map(d => d.name), series: [{ name: 'Today', values: W.DIVS.map(d => B.byDiv[d.key].year), color: '#CBD5E1', ghost: true }, { name: 'Your plan', values: W.DIVS.map(d => R.byDiv[d.key].year), color: '#5A4BB0' }], colors: null, h: 260 }); $('#c1').querySelectorAll('rect.wf-bar').forEach((r, i) => { const d = W.DIVS[Math.floor(i / 2)]; if (!d) return; r.style.cursor = 'pointer'; r.addEventListener('click', ev => { const node = svg.querySelector(`[data-id="n-${COLX[1]}-${d.key}"] rect.node`); openPop(d.key, { target: node, clientX: 0, clientY: 0 }); window.scrollTo({ top: 0, behavior: 'smooth' }); }); }); }
-    else if (view === 'pay') { const y = R.year; head('What a year of pay is made of', `Of ${F.money(y.gross)} gross pay, employees take home ${F.money(y.takeHome)} after ${F.money(y.eeIns)} insurance and ${F.money(y.pit)} income tax. Employer insurance of ${F.money(y.erc)} sits on top and is the company's cost.`); body.innerHTML = `<div class="split"><div><h3 class="eyebrow" style="margin-bottom:10px">Company cost · ${F.money(y.cost)}</h3><div id="c1"></div></div><div><h3 class="eyebrow" style="margin-bottom:10px">Where gross pay ends up · ${F.money(y.gross)}</h3><div id="c2"></div></div></div>`; W.chart.stack($('#c1'), [{ name: 'Base pay', value: y.base, color: '#5A4BB0' }, { name: 'Allowances', value: y.allow, color: '#8B7FD1' }, { name: 'Overtime', value: y.ot, color: '#2563EB' }, { name: 'Night premium', value: y.night, color: '#0F766E' }, { name: 'Employer insurance', value: y.erc, color: '#2E7D4F' }, { name: 'Tet bonus', value: y.bonus, color: '#D97706' }, { name: 'Hiring & severance', value: y.oneOff, color: '#DC2668' }], y.cost); W.chart.stack($('#c2'), [{ name: 'Take-home pay', value: y.takeHome, color: '#5A4BB0' }, { name: 'Employee insurance', value: y.eeIns, color: '#8B7FD1' }, { name: 'Income tax', value: y.pit, color: '#CBC2EE' }], y.gross); }
-    else if (view === 'why') { const y = R.year; head('Why profit changed', 'From today to your plan. Green steps add profit, rose steps take it away. The bars add up exactly.'); body.innerHTML = `<div class="chart" id="c1"></div>`; const st = (l, v) => ({ label: l, value: v }); W.chart.waterfall($('#c1'), { start: { label: 'Today', value: B.year.profit }, endLabel: 'Your plan', steps: [st('Revenue', y.revenue - B.year.revenue), st('Base pay', -(y.base + y.allow - B.year.base - B.year.allow)), st('Overtime & nights', -(y.ot + y.night - B.year.ot - B.year.night)), st('Insurance', -(y.erc - B.year.erc)), st('Tet bonus', -(y.bonus - B.year.bonus)), st('Hiring & severance', -(y.oneOff - B.year.oneOff)), st('Other costs', -(y.other - B.year.other))], upColor: '#2E7D4F', downColor: '#DC2668', h: 270 }); }
-    else if (view === 'room') renderRoom(body);
-    else if (view === 'compare') renderCompare(body);
-    else if (view === 'watch') { head('Watch-outs', 'What could bite, in plain words.'); body.innerHTML = `<div class="warns">${W.warnings(S, R, B).map(w => `<div class="warn w-${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${esc(w.text)}</span></div>`).join('')}</div>`; }
+  function viewMeta(v) {
+    const y = R.year, worst = R.months.reduce((a, m) => m.profit < a.profit ? m : a, R.months[0]);
+    return { months: ['Profit, month by month', 'Solid line is your plan, dotted grey is today. Red dashes are your goal; an amber dashed line previews a suggestion while you hover it.'], people: ['People on the payroll, month by month', 'Stacked by division. Hires step up in the month they land; leavers drain away if you choose not to replace them.'], divisions: ['People cost by division, a year', 'Grey is today, colour is your plan. Click a bar to open that division on the money flow.'], pay: ['What a year of pay is made of', `Of ${F.money(y.gross)} gross pay, employees take home ${F.money(y.takeHome)} after ${F.money(y.eeIns)} insurance and ${F.money(y.pit)} income tax. Employer insurance of ${F.money(y.erc)} sits on top and is the company's cost.`], why: ['Why profit changed', 'From today to your plan. Green steps add profit, rose steps take it away. The bars add up exactly.'], room: ['How far can I go?', `Keeping the margin at least ${P.goals.margin.v}%. Limits are per role: one senior costs several juniors, so fewer of them fit, and fewer of them need to go for the same saving.`], compare: ['Compare plans', saved.length ? 'Every saved plan on the same charts. The plan on the board is solid; saved plans are the coloured lines.' : 'Save a plan and it appears here next to the one on the board.'], watch: ['Watch-outs', `What could bite, in plain words. Lowest month: ${W.MONTHS[worst.m]} ${F.money(worst.profit)}.`] }[v];
   }
-  // stacked area chart (headcount)
+  function renderView(v, box, compact = false) {
+    const q = s => box.querySelector(s), h = compact ? 220 : 260, y = R.year;
+    if (v === 'months') { box.innerHTML = `<div class="chart c1"></div><div class="key k1"></div>`; const series = [{ name: 'Today', values: B.months.map(m => m.profit), color: '#94A3B8', dash: true }, { name: 'Your plan', values: R.months.map(m => m.profit), color: '#5A4BB0', area: true }]; const t = targetLine(); if (t) series.push(t); if (ghostMove) series.push({ name: ghostMove.label, values: ghostMove.r.months.map(m => m.profit), color: '#D97706', dash: true }); W.chart.lines(q('.c1'), { series, h, endLabels: true }); q('.k1').innerHTML = series.map(s => `<span><i class="${s.dash ? 'dash' : ''}" style="color:${s.color};background:${s.dash ? '' : s.color}"></i>${esc(s.name)}</span>`).join(''); }
+    else if (v === 'people') { box.innerHTML = `<div class="chart c1"></div><div class="key k1"></div>`; areas(q('.c1'), { series: W.DIVS.map(d => ({ name: d.name, values: R.byDiv[d.key].heads, color: d.color })), ghost: B.months.map(m => m.heads), h, goal: P.goals.heads.on ? P.goals.heads.v : null }); q('.k1').innerHTML = W.DIVS.map(d => `<span><i style="background:${d.color}"></i>${d.name} ${F.int(R.byDiv[d.key].heads[11])}</span>`).join('') + `<span><i class="dash" style="color:#1E1B2E"></i>Today, total</span>`; }
+    else if (v === 'divisions') { box.innerHTML = `<div class="chart c1"></div>`; W.chart.bars(q('.c1'), { cats: W.DIVS.map(d => d.name), series: [{ name: 'Today', values: W.DIVS.map(d => B.byDiv[d.key].year), color: '#CBD5E1', ghost: true }, { name: 'Your plan', values: W.DIVS.map(d => R.byDiv[d.key].year), color: '#5A4BB0' }], h }); q('.c1').querySelectorAll('rect.wf-bar').forEach((r, i) => { const d = W.DIVS[i % W.DIVS.length]; r.style.cursor = 'pointer'; r.addEventListener('click', () => { openPop(d.key); $('#card-river').scrollIntoView({ behavior: 'smooth', block: 'start' }); }); }); }
+    else if (v === 'pay') { box.innerHTML = `<div class="split"><div><h3 class="eyebrow" style="margin-bottom:10px">Company cost · ${F.money(y.cost)}</h3><div class="c1"></div></div><div><h3 class="eyebrow" style="margin-bottom:10px">Where gross pay ends up · ${F.money(y.gross)}</h3><div class="c2"></div></div></div>`; W.chart.stack(q('.c1'), [{ name: 'Base pay', value: y.base, color: '#5A4BB0' }, { name: 'Allowances', value: y.allow, color: '#8B7FD1' }, { name: 'Overtime', value: y.ot, color: '#2563EB' }, { name: 'Night premium', value: y.night, color: '#0F766E' }, { name: 'Employer insurance', value: y.erc, color: '#2E7D4F' }, { name: 'Tet bonus', value: y.bonus, color: '#D97706' }, { name: 'Hiring & severance', value: y.oneOff, color: '#DC2668' }], y.cost); W.chart.stack(q('.c2'), [{ name: 'Take-home pay', value: y.takeHome, color: '#5A4BB0' }, { name: 'Employee insurance', value: y.eeIns, color: '#8B7FD1' }, { name: 'Income tax', value: y.pit, color: '#CBC2EE' }], y.gross); }
+    else if (v === 'why') { box.innerHTML = `<div class="chart c1"></div>`; const st = (l, val) => ({ label: l, value: val }); W.chart.waterfall(q('.c1'), { start: { label: 'Today', value: B.year.profit }, endLabel: 'Your plan', steps: [st('Revenue', y.revenue - B.year.revenue), st('Base pay', -(y.base + y.allow - B.year.base - B.year.allow)), st('Overtime & nights', -(y.ot + y.night - B.year.ot - B.year.night)), st('Insurance', -(y.erc - B.year.erc)), st('Tet bonus', -(y.bonus - B.year.bonus)), st('Hiring & severance', -(y.oneOff - B.year.oneOff)), st('Other costs', -(y.other - B.year.other))], upColor: '#2E7D4F', downColor: '#DC2668', h: h + 10 }); }
+    else if (v === 'room') renderRoom(box);
+    else if (v === 'compare') renderCompare(box, compact);
+    else if (v === 'watch') box.innerHTML = `<div class="warns">${W.warnings(S, R, B).map(w => `<div class="warn w-${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${esc(w.text)}</span></div>`).join('')}</div>`;
+  }
+  function renderRail() { const crit = W.warnings(S, R, B).filter(w => w.level !== 'ok').length; $('#rail').innerHTML = VIEWS.map(([k, ic, l]) => `<button class="${view === k ? 'on' : ''} ${peek === k ? 'peek' : ''}" data-view="${k}" role="tab" aria-selected="${view === k}">${I(ic)}${l}${k === 'watch' ? `<span class="badge ${crit ? '' : 'ok'}">${crit || '✓'}</span>` : k === 'compare' && saved.length ? `<span class="badge ok">${saved.length}</span>` : ''}</button>`).join('') + `<div class="rhint">Rest on a view to preview it. Click to keep it.</div>`; }
+  function renderStage() { const v = peek || view, m = viewMeta(v); $('#stageTitle').textContent = m[0]; $('#stageSub').textContent = m[1]; $('#stageTools').innerHTML = `${v === 'compare' ? `<button class="btn sm" id="saveHere">${I('save')} Save this plan</button>` : ''}<button class="btn sm" id="openWin">${I('app-window')} Open in window</button><button data-collapse="stage" title="Collapse"></button><button data-max="stage" title="Maximize"></button>`; $$('#stageTools [data-collapse]').forEach(b => b.innerHTML = I(UI.collapsed.stage ? 'chevron-down' : 'chevron-up')); $$('#stageTools [data-max]').forEach(b => b.innerHTML = I(UI.max === 'stage' ? 'minimize' : 'maximize')); if (!UI.collapsed.stage || UI.max === 'stage') renderView(v, $('#stageBody')); }
   function areas(c, { series, ghost, h = 260, goal }) {
     c.innerHTML = ''; c.classList.add('wf-chart'); const Wd = c.clientWidth || 700, P_ = { l: 56, r: 16, t: 16, b: 28 }; const s = mk('svg', { viewBox: `0 0 ${Wd} ${h}`, width: '100%', height: h }, c);
     const totals = series[0].values.map((_, i) => series.reduce((a, sr) => a + sr.values[i], 0)); const max = Math.max(...totals, ...(ghost || []), goal || 0) * 1.08, min = 0;
     const X = i => P_.l + (Wd - P_.l - P_.r) * i / 11, Y = v => P_.t + (h - P_.t - P_.b) * (1 - (v - min) / (max - min));
     for (let i = 0; i <= 4; i++) { const v = min + (max - min) * i / 4; mk('line', { x1: P_.l, x2: Wd - P_.r, y1: Y(v), y2: Y(v), class: 'wf-grid' }, s); mk('text', { x: P_.l - 8, y: Y(v) + 4, class: 'wf-ax', 'text-anchor': 'end' }, s).textContent = F.int(v); }
     W.MONTHS.forEach((m, i) => { mk('text', { x: X(i), y: h - 8, class: 'wf-ax', 'text-anchor': 'middle' }, s).textContent = m; });
+    let tip = c.querySelector('.wf-tip'); if (!tip) { tip = document.createElement('div'); tip.className = 'wf-tip'; c.appendChild(tip); }
     let base = new Array(12).fill(0);
-    series.forEach(sr => { const top = sr.values.map((v, i) => base[i] + v); const d = 'M' + top.map((v, i) => `${X(i)},${Y(v)}`).join(' L') + ' L' + [...base].reverse().map((v, i) => `${X(11 - i)},${Y(v)}`).join(' L') + ' Z'; const p = mk('path', { d, fill: sr.color, opacity: .82 }, s); p.addEventListener('mousemove', ev => { const r = s.getBoundingClientRect(); const i = Math.max(0, Math.min(11, Math.round((ev.clientX - r.left) * Wd / r.width - P_.l) / (Wd - P_.l - P_.r) * 11)); tip.innerHTML = `<b>${W.MONTHS[i]}</b><div><i style="background:${sr.color}"></i>${sr.name} <span>${F.int(sr.values[i])}</span></div><div><i style="background:#1E1B2E"></i>All divisions <span>${F.int(totals[i])}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px'; }); p.addEventListener('mouseleave', () => tip.style.opacity = 0); base = top; });
+    series.forEach(sr => { const top = sr.values.map((v, i) => base[i] + v); const d = 'M' + top.map((v, i) => `${X(i)},${Y(v)}`).join(' L') + ' L' + [...base].reverse().map((v, i) => `${X(11 - i)},${Y(v)}`).join(' L') + ' Z'; const p = mk('path', { d, fill: sr.color, opacity: .82 }, s); p.addEventListener('mousemove', ev => { const r = s.getBoundingClientRect(); const i = Math.max(0, Math.min(11, Math.round(((ev.clientX - r.left) * Wd / r.width - P_.l) / (Wd - P_.l - P_.r) * 11))); tip.innerHTML = `<b>${W.MONTHS[i]}</b><div><i style="background:${sr.color}"></i>${sr.name} <span>${F.int(sr.values[i])}</span></div><div><i style="background:#1E1B2E"></i>All divisions <span>${F.int(totals[i])}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px'; }); p.addEventListener('mouseleave', () => tip.style.opacity = 0); base = top; });
     if (ghost) mk('path', { d: 'M' + ghost.map((v, i) => `${X(i)},${Y(v)}`).join(' L'), fill: 'none', stroke: '#1E1B2E', 'stroke-width': 1.5, 'stroke-dasharray': '4 4', opacity: .6 }, s);
     if (goal) { mk('line', { x1: P_.l, x2: Wd - P_.r, y1: Y(goal), y2: Y(goal), stroke: '#DC2668', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, s); mk('text', { x: Wd - P_.r, y: Y(goal) - 5, class: 'wf-ax', 'text-anchor': 'end', fill: '#DC2668' }, s).textContent = `Goal ${F.int(goal)} people`; }
-    let tip = c.querySelector('.wf-tip'); if (!tip) { tip = document.createElement('div'); tip.className = 'wf-tip'; c.appendChild(tip); }
   }
-  // role-aware headroom, both directions
   function renderRoom(body) {
-    const floor = P.goals.margin.v / 100; head('How far can I go?', `Keeping the margin at least ${P.goals.margin.v}% (change it in Goals). Limits are worked out per role: one senior costs several juniors, so fewer of them fit, and fewer of them need to go for the same saving.`);
-    const roleMax = (dk, rk) => { let lo = 0, hi = 3000; const test = n => { const s = toState([...P.moves, { type: 'hire', month: 4, n, div: dk, role: rk }]); return W.compute(s).year.margin >= floor; }; if (!test(0)) return 0; while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (test(mid)) lo = mid; else hi = mid - 1; } return lo; };
+    const floor = P.goals.margin.v / 100;
+    const roleMax = (dk, rk) => { let lo = 0, hi = 3000; const test = n => W.compute(toState([...P.moves, { type: 'hire', month: 4, n, div: dk, role: rk }])).year.margin >= floor; if (!test(0)) return 0; while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (test(mid)) lo = mid; else hi = mid - 1; } return lo; };
     const saving = Math.max(0, floor * R.year.revenue - R.year.profit);
     body.innerHTML = `<div class="room-grid">${W.DIVS.map(d => { const rows = d.roles.map(r => { const n = roleMax(d.key, r.key); const perHead = r.pay * 12 * (1 + W.K.allowance) + Math.min(r.pay, W.K.insCap) * W.K.erRate * 12 + r.pay * S.bonusMonths; const toGo = saving > 0 ? Math.min(r.n, Math.ceil(saving / (perHead * 0.85))) : 0; return `<div class="r"><span>${r.name} <small class="sub">₫${r.pay}M/mo · ${F.int(r.n)} today</small></span><span>${saving > 0 ? `<b class="bad">let go ${F.int(toGo)}</b> <button data-cutrole="${d.key}:${r.key}:${toGo}">Do it</button>` : `<b>${n ? '+' + F.int(n) : 'no room'}</b> ${n ? `<button data-hirerole="${d.key}:${r.key}:${n}">Add</button>` : ''}`}</span></div>`; }).join(''); return `<div class="room"><div class="t"><i style="background:${d.color}"></i>${d.name} <span class="sub" style="font-weight:600">· ${F.int(B.byDiv[d.key].headsToday)} people</span></div>${rows}</div>`; }).join('')}</div><p class="caption">${saving > 0 ? `You are ${F.money(saving)} below your margin floor, so each row shows how many of that role would have to go from April to close it. Seniors: fewer people, same saving.` : `You are above your floor. Each row is the most of that role you could add from April and stay there.`}</p>`;
   }
-  // ---------- compare ----------
   let saved = []; try { saved = JSON.parse(localStorage.getItem('wfplan.boardroom') || '[]'); } catch (e) { saved = []; }
   const persist = () => { try { localStorage.setItem('wfplan.boardroom', JSON.stringify(saved)); return true; } catch (e) { toast('This browser will not store plans. Print a brief to keep a copy.'); return false; } };
-  function renderCompare(body) {
-    head('Compare plans', saved.length ? 'Every saved plan on the same charts. The plan on the board is drawn solid; saved plans are the coloured lines.' : 'Save a plan (top right) and it appears here next to the one on the board.', `<button class="btn sm" id="saveHere">${I('save')} Save this plan</button>`);
+  function renderCompare(body, compact) {
     const plans = [{ name: 'Today', moves: [], revenue: P.revenue, other: P.other, follows: P.follows, color: '#94A3B8', dash: true }, { ...P, name: P.name + ' (on the board)', color: '#5A4BB0', cur: true }, ...saved.map((s, i) => ({ ...s, color: PLAN_COLORS[(i + 1) % PLAN_COLORS.length], idx: i }))];
     const res = plans.map(p => W.compute(toState(p.moves, p)));
-    body.innerHTML = `<div class="chart" id="c1"></div><div class="key">${plans.map(p => `<span><i class="${p.dash ? 'dash' : ''}" style="color:${p.color};background:${p.dash ? '' : p.color}"></i>${esc(p.name)}</span>`).join('')}</div><div class="cmp-grid"><div><h3>People cost, a year</h3><div id="c2"></div></div><div><h3>Profit, a year</h3><div id="c3"></div></div><div><h3>People in December</h3><div id="c4"></div></div></div><div class="tbl" style="margin-top:12px"><table><thead><tr><th>Plan</th><th>Moves</th><th class="r">People</th><th class="r">People cost</th><th class="r">Profit</th><th class="r">Margin</th><th class="r">Worst month</th><th></th></tr></thead><tbody>${plans.map((p, i) => { const r = res[i], worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]); return `<tr class="${p.cur ? 'cur' : ''}"><td><i class="sw" style="background:${p.color}"></i>${esc(p.name)}</td><td style="white-space:normal;max-width:360px">${p.moves.length ? p.moves.map(title).map(esc).join(' · ') : '—'}</td><td class="r num">${F.int(r.year.headsEnd)}</td><td class="r num">${F.money(r.year.cost)}</td><td class="r num">${F.money(r.year.profit)}</td><td class="r num">${F.pct(r.year.margin)}</td><td class="r num ${worst.profit < 0 ? 'bad' : ''}" style="${worst.profit < 0 ? 'color:var(--rose)' : ''}">${W.MONTHS[worst.m]} ${F.money(worst.profit)}</td><td>${p.idx !== undefined ? `<button class="btn sm" data-load="${p.idx}">Open</button> <button class="btn sm ghost" data-del="${p.idx}" aria-label="Remove">${I('trash')}</button>` : ''}</td></tr>`; }).join('')}</tbody></table></div>`;
-    W.chart.lines($('#c1'), { series: plans.map((p, i) => ({ name: p.name, values: res[i].months.map(m => m.profit), color: p.color, dash: p.dash, area: p.cur })), h: 240 });
-    const cats = plans.map(p => { const n = p.name.replace(' (on the board)', ''); return n.length > 11 ? n.slice(0, 10) + '…' : n; }), cols = plans.map(p => p.color);
-    W.chart.bars($('#c2'), { cats, series: [{ name: 'People cost', values: res.map(r => r.year.cost) }], colors: cols, h: 170 });
-    W.chart.bars($('#c3'), { cats, series: [{ name: 'Profit', values: res.map(r => Math.max(0, r.year.profit)) }], colors: cols, h: 170 });
-    W.chart.bars($('#c4'), { cats, series: [{ name: 'People', values: res.map(r => r.year.headsEnd) }], colors: cols, fmtY: F.int, h: 170 });
+    body.innerHTML = `<div class="chart c1"></div><div class="key">${plans.map(p => `<span><i class="${p.dash ? 'dash' : ''}" style="color:${p.color};background:${p.dash ? '' : p.color}"></i>${esc(p.name)}</span>`).join('')}</div>${compact ? '' : `<div class="cmp-grid"><div><h3>People cost, a year</h3><div class="c2"></div></div><div><h3>Profit, a year</h3><div class="c3"></div></div><div><h3>People in December</h3><div class="c4"></div></div></div>`}<div class="tbl" style="margin-top:12px"><table><thead><tr><th>Plan</th>${compact ? '' : '<th>Moves</th>'}<th class="r">People</th><th class="r">People cost</th><th class="r">Profit</th><th class="r">Margin</th><th class="r">Lowest month</th><th></th></tr></thead><tbody>${plans.map((p, i) => { const r = res[i], worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]); return `<tr class="${p.cur ? 'cur' : ''}"><td><i class="sw" style="background:${p.color}"></i>${esc(p.name)}</td>${compact ? '' : `<td style="white-space:normal;max-width:360px">${p.moves.length ? p.moves.map(title).map(esc).join(' · ') : '—'}</td>`}<td class="r num">${F.int(r.year.headsEnd)}</td><td class="r num">${F.money(r.year.cost)}</td><td class="r num">${F.money(r.year.profit)}</td><td class="r num">${F.pct(r.year.margin)}</td><td class="r num" style="${worst.profit < 0 ? 'color:var(--rose)' : ''}">${W.MONTHS[worst.m]} ${F.money(worst.profit)}</td><td>${p.idx !== undefined ? `<button class="btn sm" data-load="${p.idx}">Open</button> <button class="btn sm ghost" data-del="${p.idx}" aria-label="Remove">${I('trash')}</button>` : ''}</td></tr>`; }).join('')}</tbody></table></div>`;
+    W.chart.lines(body.querySelector('.c1'), { series: plans.map((p, i) => ({ name: p.name, values: res[i].months.map(m => m.profit), color: p.color, dash: p.dash, area: p.cur })), h: compact ? 200 : 240, endLabels: true });
+    if (!compact) { const cats = plans.map(p => p.name.replace(' (on the board)', '')), cols = plans.map(p => p.color); W.chart.bars(body.querySelector('.c2'), { cats, series: [{ name: 'People cost', values: res.map(r => r.year.cost) }], colors: cols, h: 170 }); W.chart.bars(body.querySelector('.c3'), { cats, series: [{ name: 'Profit', values: res.map(r => Math.max(0, r.year.profit)) }], colors: cols, h: 170 }); W.chart.bars(body.querySelector('.c4'), { cats, series: [{ name: 'People', values: res.map(r => r.year.headsEnd) }], colors: cols, fmtY: F.int, h: 170 }); }
   }
-  function savePlan() { if (saved.length >= 6) { toast('Six plans saved. Remove one in Compare plans to save another.'); return; } const nm = P.name.trim() || 'Untitled plan', i = saved.findIndex(s => s.name === nm), rec = { name: nm, moves: P.moves.map(m => ({ ...m })), revenue: P.revenue, other: P.other, follows: P.follows, goals: P.goals }; if (i >= 0) saved[i] = rec; else saved.push(rec); if (persist()) toast(`“${nm}” saved. Open Compare plans on the right to see it next to the others.`); renderRail(); if (view === 'compare') renderStage(); }
+  function savePlan() { if (saved.length >= 6) { toast('Six plans saved. Remove one in Compare plans to save another.'); return; } const nm = P.name.trim() || 'Untitled plan', i = saved.findIndex(s => s.name === nm), rec = { name: nm, moves: P.moves.map(m => ({ ...m })), revenue: P.revenue, other: P.other, follows: P.follows, goals: P.goals }; if (i >= 0) saved[i] = rec; else saved.push(rec); if (persist()) toast(`“${nm}” saved. Open Compare plans to see it next to the others.`); renderRail(); if ((peek || view) === 'compare') renderStage(); }
 
-  // ---------- drawer (input modes) ----------
+  // ---------- charts window ----------
+  function openWin(startView) { const d = $('#chartsDlg'); if (startView) UI.dlg.tab = startView; if (!d.open) d.showModal(); renderWin(); }
+  function renderWin() {
+    const d = UI.dlg; $('#dlgTitle').textContent = 'Charts window'; $('#dlgClose').innerHTML = `${I('x')} Close`;
+    $('#dlgLayout').innerHTML = [['tabs', 'rows', 'Tabs'], ['two', 'columns', 'Two side by side'], ['four', 'layout-grid', 'Four at once']].map(([k, ic, l]) => `<button class="${d.layout === k ? 'on' : ''}" data-dlg="${k}">${I(ic)}${l}</button>`).join('');
+    const panes = $('#panes'); panes.dataset.l = d.layout;
+    if (d.layout === 'tabs') { $('#dtabs').innerHTML = VIEWS.map(([k, ic, l]) => `<button class="tab ${d.tab === k ? 'on' : ''}" data-dtab="${k}">${I(ic)}${l}</button>`).join(''); const m = viewMeta(d.tab); panes.innerHTML = `<div class="pane"><div class="ph"><h3>${m[0]}</h3><span class="sub">${m[1]}</span></div><div class="pb"></div></div>`; renderView(d.tab, panes.querySelector('.pb')); }
+    else { $('#dtabs').innerHTML = ''; const n = d.layout === 'two' ? 2 : 4; panes.innerHTML = Array.from({ length: n }, (_, i) => `<div class="pane"><div class="ph"><select data-pane="${i}" aria-label="View in pane ${i + 1}">${VIEWS.map(([k, , l]) => `<option value="${k}" ${d.panes[i] === k ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="sub">${viewMeta(d.panes[i])[1]}</span></div><div class="pb"></div></div>`).join(''); panes.querySelectorAll('.pb').forEach((pb, i) => renderView(d.panes[i], pb, true)); }
+  }
+
+  // ---------- panel (input modes) ----------
   const sel = (key, opts, val) => `<span class="blank"><select data-c="${key}" aria-label="${key}">${opts.map(([v, l]) => `<option value="${v}" ${String(v) === String(val) ? 'selected' : ''}>${l}</option>`).join('')}</select>${I('chevron')}</span>`;
   const num = (key, val, min, max, step = 1) => `<span class="blank"><input data-c="${key}" type="number" value="${val}" min="${min}" max="${max}" step="${step}" aria-label="${key}"></span>`;
   const monthOpts = W.MONTHS_LONG.map((m, i) => [i + 1, m]), factorOpts = [[0.5, 'half the'], [0.75, 'a quarter less'], [0.8, '20% less'], [0.9, '10% less'], [1.1, '10% more'], [1.25, 'a quarter more'], [1.5, 'half again the']];
-  function sentenceHtml() { const divOpts = W.DIVS.map(d => [d.key, d.name]), roleOpts = [['', 'people across the division'], ...W.DIV[comp.div].roles.map(r => [r.key, r.name])]; switch (comp.type) {
-    case 'hire': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">hire</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`;
-    case 'cut': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">let go</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`;
-    case 'raise': return `<span class="k">From</span> ${sel('month', monthOpts, comp.month)} <span class="k">give everyone a</span> ${num('pct', comp.pct, 0, 40, 0.5)}<span class="k">% raise</span>`;
-    case 'ot': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">overtime of today, all year</span>`;
-    case 'night': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">night shifts of today, all year</span>`;
-    case 'tet': return `<span class="k">Pay</span> ${sel('tet', [[0, 'no'], [0.5, 'half a'], [1, 'one'], [1.5, 'one and a half'], [2, 'two']], comp.tet)} <span class="k">month${comp.tet === 1 || comp.tet === 0.5 ? '' : 's'} of Tet bonus in January</span>`;
-    case 'leave': return `<span class="k">Expect</span> ${num('attr', comp.attr, 0, 40)}<span class="k">% of people to leave this year, and</span> ${sel('backfill', [[1, 'replace them'], [0, 'leave the seats empty']], comp.backfill ? 1 : 0)}`; } }
+  function sentenceHtml() { const divOpts = W.DIVS.map(d => [d.key, d.name]), roleOpts = [['', 'people across the division'], ...W.DIV[comp.div].roles.map(r => [r.key, r.name])]; switch (comp.type) { case 'hire': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">hire</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`; case 'cut': return `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">let go</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`; case 'raise': return `<span class="k">From</span> ${sel('month', monthOpts, comp.month)} <span class="k">give everyone a</span> ${num('pct', comp.pct, 0, 40, 0.5)}<span class="k">% raise</span>`; case 'ot': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">overtime of today, all year</span>`; case 'night': return `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">night shifts of today, all year</span>`; case 'tet': return `<span class="k">Pay</span> ${sel('tet', [[0, 'no'], [0.5, 'half a'], [1, 'one'], [1.5, 'one and a half'], [2, 'two']], comp.tet)} <span class="k">month${comp.tet === 1 || comp.tet === 0.5 ? '' : 's'} of Tet bonus in January</span>`; case 'leave': return `<span class="k">Expect</span> ${num('attr', comp.attr, 0, 40)}<span class="k">% of people to leave this year, and</span> ${sel('backfill', [[1, 'replace them'], [0, 'leave the seats empty']], comp.backfill ? 1 : 0)}`; } }
   function draft() { const m = { id: -1, type: comp.type, month: comp.month }; if (comp.type === 'hire' || comp.type === 'cut') Object.assign(m, { n: comp.n, div: comp.div, role: comp.role }); if (comp.type === 'raise') m.pct = comp.pct; if (comp.type === 'ot' || comp.type === 'night') m.factor = comp.factor; if (comp.type === 'tet') m.tet = comp.tet; if (comp.type === 'leave') { m.attr = comp.attr; m.backfill = comp.backfill; } return m; }
   function renderComposer(sentSel = '#dSent', prevSel = '#dPrev') { const se = $(sentSel), pv = $(prevSel); if (!se) return; se.innerHTML = sentenceHtml(); const m = draft(), trial = W.compute(toState([...P.moves.filter(x => !(!TYPES[x.type].monthly && x.type === m.type)), m])); const dc = trial.year.cost - R.year.cost, dp = trial.year.profit - R.year.profit, dm = trial.year.margin - R.year.margin; if (pv) pv.innerHTML = `<span>If you add this:</span><span class="pill num">${F.money(dc, { plus: true })} people cost</span><span class="pill num ${dp >= 0 ? 'good' : 'bad'}">${I(dp >= 0 ? 'trending-up' : 'trending-down')} ${F.money(dp, { plus: true })} profit</span><span class="pill num">margin ${F.pts(dm)}</span>`; }
-  function renderDrawer() {
-    const d = $('#drawerIn'), minimized = $('#drawer').classList.contains('min');
-    const headHtml = (t) => `<div class="dhead">${t}<button class="btn sm" id="drawerToggle">${minimized ? I('chevron') + ' Show' : I('minus') + ' Hide'}</button></div>`;
-    if (mode === 'sentences') d.innerHTML = headHtml(`${I('sparkles')} Add a move to your plan`) + `<div><div class="tabs">${Object.entries(TYPES).map(([k, t]) => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}">${I(t.icon)}${t.label}</button>`).join('')}</div><div class="sent" id="dSent"></div><div class="preview" id="dPrev"></div></div><div class="comp-right"><button class="btn primary" id="dAdd">${I('plus')} Add to plan</button><span class="sub" style="font-size:12px;text-align:right">${TYPES[comp.type].monthly ? `Lands in ${F.month(comp.month)}. Drag it to another month later.` : 'Applies to the whole year.'}</span><div class="tabs"><span class="sub" style="font-size:12px;align-self:center">Try:</span><button class="tab" data-ex="grow">Grow Construction</button><button class="tab" data-ex="keep">Keep people happy</button><button class="tab" data-ex="lean">A lean year</button></div></div>`;
-    else if (mode === 'knobs') { const get = t => P.moves.find(m => m.type === t); d.innerHTML = headHtml(`${I('settings')} Knobs · slide and the whole page follows`) + `<div class="dials">${[['raise', 'percent', 'Raise for everyone', 0, 25, 0.5, (get('raise') || {}).pct || 0, v => v ? v + '%' : 'none'], ['ot', 'clock', 'Overtime vs today', 0.5, 1.5, 0.05, (get('ot') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['night', 'moon', 'Night shifts vs today', 0.5, 1.5, 0.05, (get('night') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['tet', 'gift', 'Tet bonus', 0, 2, 0.5, (get('tet') || {}).tet ?? 1, v => v + (v === 1 ? ' month' : ' months')], ['attr', 'user-minus', 'People leaving a year', 0, 40, 1, (get('leave') || {}).attr ?? 12, v => v + '%']].map(([k, ic, t, mn, mx, st, v, show]) => `<div class="dial"><div class="t">${I(ic)}${t}</div><div class="v num ${(k === 'raise' && !v) || (k !== 'raise' && k !== 'attr' && k !== 'tet' && v === 1) ? 'zero' : ''}" id="dv-${k}">${show(v)}</div><input type="range" min="${mn}" max="${mx}" step="${st}" value="${v}" data-knob="${k}"></div>`).join('')}<div class="dial"><div class="t">${I('users')}People in a division</div><select id="knobDiv">${W.DIVS.map(dv => `<option value="${dv.key}" ${dv.key === comp.div ? 'selected' : ''}>${dv.name}</option>`).join('')}</select>${(() => { const m = P.moves.find(x => x.drag && x.div === comp.div); const v = m ? (m.type === 'hire' ? m.n : -m.n) : 0; return `<div class="v num ${v ? (v < 0 ? 'neg' : '') : 'zero'}" id="dv-heads">${v ? F.int(v, { plus: true }) + ' people' : 'same as today'}</div><input type="range" min="-300" max="600" step="5" value="${v}" data-knob="heads">`; })()}</div></div>`; }
-    else d.innerHTML = headHtml(`${I('hand')} Touch the charts · everything you see can be changed by hand`) + `<div class="touch-help"><div>${I('layers')}<span><b>Money flow</b>Drag the bottom edge of a division block to hire or let go. Click any block for its full form. Hold "see today" to compare.</span></div><div>${I('calendar')}<span><b>Month board</b>Drag a card to the month it should land. January carries the Tet bonus, so watch it turn red.</span></div><div>${I('target')}<span><b>Goals & charts</b>Set a goal on the right and it appears as a dashed line. Hover a suggestion to preview it in amber; press Apply to take it.</span></div></div>`;
+  function renderPanel() {
+    const titles = { sentences: ['sparkles', 'Add a move to your plan'], touch: ['hand', 'Touch the charts'], knobs: ['settings', 'Knobs'] };
+    const [ic, t] = titles[mode], open = UI.panel === 'open';
+    $('#phead').innerHTML = `${I(ic)}<span class="ptitle">${t}</span><div class="pmodes">${['sentences', 'touch', 'knobs'].map(k => `<button class="${mode === k ? 'on' : ''}" data-mode="${k}" title="${titles[k][1]}" aria-label="${titles[k][1]}">${I(titles[k][0])}</button>`).join('')}</div><div class="ctools"><button id="panelToggle" title="${open ? 'Collapse the panel' : 'Open the panel'}" aria-label="${open ? 'Collapse the panel' : 'Open the panel'}">${I(open ? (UI.dock === 'right' ? 'chevron-right' : UI.dock === 'left' ? 'chevron-right' : UI.dock === 'top' ? 'chevron-up' : 'chevron-down') : 'maximize')}</button></div>`;
+    if (UI.dock === 'left' && open) $('#panelToggle').style.transform = 'scaleX(-1)';
+    const body = $('#pbody'); if (!open) { body.innerHTML = ''; return; }
+    if (mode === 'sentences') body.innerHTML = `<div class="full"><div class="tabs">${Object.entries(TYPES).map(([k, x]) => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}">${I(x.icon)}${x.label}</button>`).join('')}</div></div><div><div class="sent" id="dSent"></div><div class="preview" id="dPrev"></div></div><div class="comp-right"><button class="btn primary" id="dAdd">${I('plus')} Add to plan</button><span class="sub" style="font-size:12px">${TYPES[comp.type].monthly ? `Lands in ${F.month(comp.month)}. Drag it to another month later.` : 'Applies to the whole year.'}</span><div class="tabs"><span class="sub" style="font-size:12px;align-self:center">Try:</span><button class="tab" data-ex="grow">Grow Construction</button><button class="tab" data-ex="keep">Keep people happy</button><button class="tab" data-ex="lean">A lean year</button></div></div>`;
+    else if (mode === 'knobs') { const get = x => P.moves.find(m => m.type === x); body.innerHTML = `<div class="dials full">${[['raise', 'percent', 'Raise for everyone', 0, 25, 0.5, (get('raise') || {}).pct || 0, v => v ? v + '%' : 'none'], ['ot', 'clock', 'Overtime vs today', 0.5, 1.5, 0.05, (get('ot') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['night', 'moon', 'Night shifts vs today', 0.5, 1.5, 0.05, (get('night') || {}).factor || 1, v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })], ['tet', 'gift', 'Tet bonus', 0, 2, 0.5, (get('tet') || {}).tet ?? 1, v => v + (v === 1 ? ' month' : ' months')], ['attr', 'user-minus', 'People leaving a year', 0, 40, 1, (get('leave') || {}).attr ?? 12, v => v + '%']].map(([k, ic2, t2, mn, mx, st, v, show]) => `<div class="dial"><div class="t">${I(ic2)}${t2}</div><div class="v num ${(k === 'raise' && !v) || (k !== 'raise' && k !== 'attr' && k !== 'tet' && v === 1) ? 'zero' : ''}" id="dv-${k}">${show(v)}</div><input type="range" min="${mn}" max="${mx}" step="${st}" value="${v}" data-knob="${k}"></div>`).join('')}<div class="dial"><div class="t">${I('users')}People in a division</div><select id="knobDiv">${W.DIVS.map(dv => `<option value="${dv.key}" ${dv.key === comp.div ? 'selected' : ''}>${dv.name}</option>`).join('')}</select>${(() => { const m = P.moves.find(x => x.drag && x.div === comp.div); const v = m ? (m.type === 'hire' ? m.n : -m.n) : 0; return `<div class="v num ${v ? (v < 0 ? 'neg' : '') : 'zero'}" id="dv-heads">${v ? F.int(v, { plus: true }) + ' people' : 'same as today'}</div><input type="range" min="-300" max="600" step="5" value="${v}" data-knob="heads">`; })()}</div></div>`; }
+    else body.innerHTML = `<div class="touch-help full"><div>${I('layers')}<span><b>Money flow</b>Drag the bottom edge of a division block to hire or let go. Click any block for its full form. Hover anything for the detail. Hold "see today" to compare.</span></div><div>${I('calendar')}<span><b>Month board</b>Drag a card to the month it should land. January carries the Tet bonus, so watch it turn red.</span></div><div>${I('target')}<span><b>Goals & charts</b>Set a goal on the right and it appears as a dashed line. Hover a suggestion to preview it in amber; press Apply to take it.</span></div></div>`;
     if (mode === 'sentences') renderComposer();
   }
 
@@ -1092,11 +1199,20 @@ window.WF = (() => {
 
   // ---------- events ----------
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 3400); }
+  const relayout = () => { renderChrome(); renderStage(); renderPanel(); saveUI(); };
   document.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
-    if (d.mode) { mode = d.mode; renderModes(); drawRiver(R); renderDrawer(); $('#drawer').classList.remove('min'); return; }
-    if (d.view) { view = d.view; ghostMove = null; renderRail(); renderStage(); return; }
-    if (d.type) { comp.type = d.type; if (d.inPop) { $$('#pop .tab').forEach(t => t.classList.toggle('on', t.dataset.type === comp.type)); renderComposer('#popSent', '#popPrev'); } else renderDrawer(); return; }
+    if (d.mode) { mode = d.mode; if (UI.panel === 'closed') UI.panel = 'open'; renderChrome(); drawRiver(R); renderPanel(); saveUI(); return; }
+    if (d.dock) { UI.dock = d.dock; UI.panel = 'open'; relayout(); return; }
+    if (b.id === 'panelToggle') { UI.panel = UI.panel === 'open' ? 'closed' : 'open'; relayout(); return; }
+    if (d.collapse) { UI.collapsed[d.collapse] = !UI.collapsed[d.collapse]; if (UI.max === d.collapse) UI.max = null; relayout(); return; }
+    if (d.max) { UI.max = UI.max === d.max ? null : d.max; renderChrome(); setTimeout(() => { renderStage(); drawRiver(R); }, 30); return; }
+    if (b.id === 'chartsWin' || b.id === 'openWin') { openWin(b.id === 'openWin' ? (peek || view) : null); return; }
+    if (b.id === 'dlgClose') { $('#chartsDlg').close(); return; }
+    if (d.dlg) { UI.dlg.layout = d.dlg; saveUI(); renderWin(); return; }
+    if (d.dtab) { UI.dlg.tab = d.dtab; saveUI(); renderWin(); return; }
+    if (d.view) { view = d.view; peek = null; ghostMove = null; renderRail(); renderStage(); renderSummaries(); return; }
+    if (d.type) { comp.type = d.type; if (d.inPop) { $$('#pop .tab').forEach(t => t.classList.toggle('on', t.dataset.type === comp.type)); renderComposer('#popSent', '#popPrev'); } else renderPanel(); return; }
     if (b.id === 'dAdd' || b.id === 'popAdd') { const m = draft(); apply(() => addMove(m), `${title(m)} added${TYPES[m.type].monthly ? `, landing in ${F.month(m.month)}` : ''}.`); if (b.id === 'popAdd') closePop(); return; }
     if (d.remove) { const id = +d.remove, m = P.moves.find(x => x.id === id); apply(() => P.moves = P.moves.filter(x => x.id !== id), `${title(m)} removed.`); return; }
     if (d.shift) { const m = P.moves.find(x => x.id === +d.id), to = m.month + +d.shift; if (to < 1 || to > 12) { toast(to < 1 ? 'January is the first month of the plan.' : 'December is the last month of the plan.'); return; } apply(() => m.month = to, `${title(m)} now lands in ${F.month(to)}.`); return; }
@@ -1104,27 +1220,23 @@ window.WF = (() => {
     if (d.apply !== undefined) { const s = suggCache[+d.apply]; apply(() => { P.moves = s.moves.map(m => ({ ...m, id: m.id || nextId++ })); ghostMove = null; }, `Applied: ${s.label}.`); return; }
     if (d.hirerole) { const [dk, rk, n] = d.hirerole.split(':'); apply(() => addMove({ type: 'hire', month: 4, n: +n, div: dk, role: rk }), `Added ${n} ${roleName(dk, rk)} in ${W.DIV[dk].name} from April, right at your margin floor.`); return; }
     if (d.cutrole) { const [dk, rk, n] = d.cutrole.split(':'); apply(() => addMove({ type: 'cut', month: 4, n: +n, div: dk, role: rk }), `${n} ${roleName(dk, rk)} let go in ${W.DIV[dk].name} from April.`); return; }
-    if (d.load !== undefined) { const s = saved[+d.load]; apply(() => { P = JSON.parse(JSON.stringify({ ...P, ...s })); P.moves.forEach(m => m.id = nextId++); }, `“${s.name}” is on the board.`); return; }
-    if (d.del !== undefined) { saved.splice(+d.del, 1); persist(); renderRail(); renderStage(); return; }
-    switch (b.id) {
-      case 'undo': undo(); break; case 'redo': redoIt(); break;
-      case 'reset': apply(() => { const n = P.name; P = fresh(); P.name = n; }, 'Board cleared. This is your company today.'); break;
-      case 'save': case 'saveHere': savePlan(); break;
-      case 'print': window.print(); break;
-      case 'drawerToggle': $('#drawer').classList.toggle('min'); renderDrawer(); break;
-    }
+    if (d.load !== undefined) { const s = saved[+d.load]; apply(() => { P = JSON.parse(JSON.stringify({ ...P, ...s })); P.moves.forEach(m => m.id = nextId++); }, `“${s.name}” is on the board.`); if ($('#chartsDlg').open) renderWin(); return; }
+    if (d.del !== undefined) { saved.splice(+d.del, 1); persist(); renderRail(); renderStage(); if ($('#chartsDlg').open) renderWin(); return; }
+    switch (b.id) { case 'undo': undo(); break; case 'redo': redoIt(); break; case 'reset': apply(() => { const n = P.name; P = fresh(); P.name = n; }, 'Board cleared. This is your company today.'); break; case 'save': case 'saveHere': savePlan(); break; case 'print': window.print(); break; }
   });
   document.addEventListener('input', e => {
     const t = e.target;
-    if (t.dataset.c) { const k = t.dataset.c, v = t.type === 'number' ? +t.value : t.value; if (k === 'n' || k === 'pct' || k === 'attr') { if (!Number.isFinite(v)) return; comp[k] = Math.max(+t.min, Math.min(+t.max, v)); } else if (k === 'month') comp.month = +v; else if (k === 'div') { comp.div = v; comp.role = ''; } else if (k === 'role') comp.role = v; else if (k === 'factor') comp.factor = +v; else if (k === 'tet') comp.tet = +v; else if (k === 'backfill') comp.backfill = v === '1';
-      const inPop = !!t.closest('#pop'); const re = () => inPop ? renderComposer('#popSent', '#popPrev') : renderDrawer(); if (t.tagName === 'SELECT') re(); else { clearTimeout(renderComposer.t); renderComposer.t = setTimeout(() => { re(); const nx = document.querySelector(`${inPop ? '#pop' : '#drawer'} [data-c="${k}"]`); if (nx) nx.focus(); }, 400); } return; }
-    if (t.dataset.knob) { const k = t.dataset.knob, v = +t.value; clearTimeout(t._t); const upd = () => { if (k === 'heads') { const dk = $('#knobDiv').value; P.moves = P.moves.filter(m => !(m.drag && m.div === dk)); if (v) P.moves.push({ id: nextId++, type: v > 0 ? 'hire' : 'cut', n: Math.abs(v), div: dk, role: '', month: 4, drag: true }); } else { const type = k === 'attr' ? 'leave' : k; P.moves = P.moves.filter(m => m.type !== type); if (k === 'raise' && v) P.moves.push({ id: nextId++, type: 'raise', month: 4, pct: v }); if ((k === 'ot' || k === 'night') && v !== 1) P.moves.push({ id: nextId++, type: k, factor: v }); if (k === 'tet' && v !== 1) P.moves.push({ id: nextId++, type: 'tet', tet: v }); if (k === 'attr') { const cur = P.moves.find(m => m.type === 'leave'); if (v !== 12) P.moves.push({ id: nextId++, type: 'leave', attr: v, backfill: cur ? cur.backfill : true }); } } }; if (!t._snap) { snap(); t._snap = true; setTimeout(() => t._snap = false, 1500); } upd(); calc(); renderHero(); drawRiver(R); renderBoard(); renderGoals(); renderStage(); const dv = $('#dv-' + k); if (dv) dv.textContent = k === 'heads' ? (v ? F.int(v, { plus: true }) + ' people' : 'same as today') : k === 'raise' ? (v ? v + '%' : 'none') : k === 'attr' ? v + '%' : k === 'tet' ? v + (v === 1 ? ' month' : ' months') : (v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })); return; }
+    if (t.dataset.c) { const k = t.dataset.c, v = t.type === 'number' ? +t.value : t.value; if (k === 'n' || k === 'pct' || k === 'attr') { if (!Number.isFinite(v)) return; comp[k] = Math.max(+t.min, Math.min(+t.max, v)); } else if (k === 'month') comp.month = +v; else if (k === 'div') { comp.div = v; comp.role = ''; } else if (k === 'role') comp.role = v; else if (k === 'factor') comp.factor = +v; else if (k === 'tet') comp.tet = +v; else if (k === 'backfill') comp.backfill = v === '1'; const inPop = !!t.closest('#pop'); const re = () => inPop ? renderComposer('#popSent', '#popPrev') : renderPanel(); if (t.tagName === 'SELECT') re(); else { clearTimeout(renderComposer.t); renderComposer.t = setTimeout(() => { re(); const nx = document.querySelector(`${inPop ? '#pop' : '#panel'} [data-c="${k}"]`); if (nx) nx.focus(); }, 400); } return; }
+    if (t.dataset.knob) { const k = t.dataset.knob, v = +t.value; const upd = () => { if (k === 'heads') { const dk = $('#knobDiv').value; P.moves = P.moves.filter(m => !(m.drag && m.div === dk)); if (v) P.moves.push({ id: nextId++, type: v > 0 ? 'hire' : 'cut', n: Math.abs(v), div: dk, role: '', month: 4, drag: true }); } else { const type = k === 'attr' ? 'leave' : k; P.moves = P.moves.filter(m => m.type !== type); if (k === 'raise' && v) P.moves.push({ id: nextId++, type: 'raise', month: 4, pct: v }); if ((k === 'ot' || k === 'night') && v !== 1) P.moves.push({ id: nextId++, type: k, factor: v }); if (k === 'tet' && v !== 1) P.moves.push({ id: nextId++, type: 'tet', tet: v }); if (k === 'attr') { const cur = P.moves.find(m => m.type === 'leave'); if (v !== 12) P.moves.push({ id: nextId++, type: 'leave', attr: v, backfill: cur ? cur.backfill : true }); } } }; if (!t._snap) { snap(); t._snap = true; setTimeout(() => t._snap = false, 1500); } upd(); calc(); renderHero(); drawRiver(R); renderBoard(); renderGoals(); renderStage(); renderSummaries(); const dv = $('#dv-' + k); if (dv) dv.textContent = k === 'heads' ? (v ? F.int(v, { plus: true }) + ' people' : 'same as today') : k === 'raise' ? (v ? v + '%' : 'none') : k === 'attr' ? v + '%' : k === 'tet' ? v + (v === 1 ? ' month' : ' months') : (v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 })); return; }
     if (t.dataset.gon !== undefined) { P.goals[t.dataset.gon].on = t.checked; renderGoals(); renderStage(); return; }
     if (t.dataset.gv !== undefined) { const v = parseFloat(t.value.replace(/[^\d.]/g, '')); if (!Number.isFinite(v)) return; P.goals[t.dataset.gv].v = v; P.goals[t.dataset.gv].on = true; clearTimeout(t._t); t._t = setTimeout(() => { renderGoals(); renderStage(); const nx = document.querySelector(`[data-gv="${t.dataset.gv}"]`); if (nx) { nx.focus(); nx.setSelectionRange(nx.value.length, nx.value.length); } }, 500); return; }
     if (t.id === 'name') { P.name = t.value; return; }
-    if (t.id === 'knobDiv') { comp.div = t.value; renderDrawer(); return; }
   });
-  document.addEventListener('change', e => { if (e.target.id === 'knobDiv') { comp.div = e.target.value; renderDrawer(); } });
+  document.addEventListener('change', e => { const t = e.target; if (t.id === 'knobDiv') { comp.div = t.value; renderPanel(); } if (t.dataset.pane !== undefined) { UI.dlg.panes[+t.dataset.pane] = t.value; saveUI(); renderWin(); } });
+  // rail hover preview
+  let peekT = null;
+  $('#rail').addEventListener('mouseover', e => { const b = e.target.closest('[data-view]'); if (!b || b.dataset.view === view) return; clearTimeout(peekT); peekT = setTimeout(() => { peek = b.dataset.view; renderRail(); renderStage(); }, 320); });
+  $('#rail').addEventListener('mouseleave', () => { clearTimeout(peekT); if (peek) { peek = null; renderRail(); renderStage(); } });
   // suggestion hover → ghost line on the month chart
   document.addEventListener('mouseover', e => { const s = e.target.closest('[data-sugg]'); if (!s) return; ghostMove = suggCache[+s.dataset.sugg]; if (view !== 'months') { view = 'months'; renderRail(); } renderStage(); });
   document.addEventListener('mouseout', e => { const s = e.target.closest('[data-sugg]'); if (!s || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-sugg]') === s)) return; if (ghostMove) { ghostMove = null; renderStage(); } });
@@ -1137,10 +1249,11 @@ window.WF = (() => {
   document.addEventListener('dragend', e => { const c = e.target.closest('.mv'); if (c) c.classList.remove('drag'); $$('.mo.over').forEach(x => x.classList.remove('over')); });
   document.addEventListener('dragover', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; $$('.mo.over').forEach(x => x.classList.remove('over')); mo.classList.add('over'); });
   document.addEventListener('drop', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); const m = P.moves.find(x => x.id === dragId), to = +mo.dataset.month; dragId = null; if (!m || m.month === to) { $$('.mo.over').forEach(x => x.classList.remove('over')); return; } const from = m.month; apply(() => m.month = to, `${title(m)} moved from ${F.month(from)} to ${F.month(to)}.`); });
-  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redoIt() : undo(); } if (e.key === 'Escape') closePop(); });
-  window.addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(() => { renderStage(); }, 150); });
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redoIt() : undo(); } if (e.key === 'Escape') { closePop(); if (UI.max) { UI.max = null; renderChrome(); renderStage(); } } });
+  $('#maxBack').addEventListener('click', () => { UI.max = null; renderChrome(); renderStage(); });
+  $('#chartsDlg').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+  window.addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(() => { renderStage(); if ($('#chartsDlg').open) renderWin(); }, 150); });
 
-  // first paint: the example, so the whole page is alive on arrival
   EX.grow.moves.forEach(m => addMove({ ...m })); P.name = 'Grow Construction';
   render();
 })();

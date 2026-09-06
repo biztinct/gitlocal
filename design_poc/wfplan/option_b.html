@@ -465,9 +465,9 @@ window.WF = (() => {
   }
 
   // Line/area chart: series = [{name, values[12], color, dash, area}]
-  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220 }) {
+  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220, endLabels = false }) {
     container.innerHTML = ''; container.classList.add('wf-chart');
-    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 24, t: 18, b: 28 };
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: endLabels ? 78 : 24, t: 18, b: 28 };
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
     const all = series.flatMap(s => s.values).concat(band ? [band.lo, band.hi] : []);
     let max = Math.max(...all), min = Math.min(0, ...all);
@@ -490,6 +490,13 @@ window.WF = (() => {
       const last = s.values.length - 1;
       el('circle', { cx: X(last), cy: Y(s.values[last]), r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg);
     });
+    if (endLabels) { // value at the end of each line, nudged apart so they never sit on top of each other
+      const used = [];
+      series.filter(s => s.endLabel !== false).map(s => ({ s, y: Y(s.values[s.values.length - 1]) })).sort((a, b) => a.y - b.y).forEach(o => {
+        let y = o.y; for (const u of used) if (Math.abs(y - u) < 13) y = u + 13; used.push(y);
+        const t = el('text', { x: X(x.length - 1) + 9, y: y + 4, class: 'wf-end', fill: o.s.color }, svg); t.textContent = fmtY(o.s.values[o.s.values.length - 1]);
+      });
+    }
     // hover
     const cross = el('line', { y1: P.t, y2: H - P.b, class: 'wf-cross', opacity: 0 }, svg);
     const dots = series.map(s => el('circle', { r: 5, fill: s.color, stroke: '#fff', 'stroke-width': 2, opacity: 0 }, svg));
@@ -509,7 +516,7 @@ window.WF = (() => {
   // Grouped bars: cats[], series=[{name, values, color}]
   function bars(container, { cats, series, fmtY = fmt.money, h = 220, colors }) {
     container.innerHTML = ''; container.classList.add('wf-chart');
-    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 28 };
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 36 };
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
     const max = nice(Math.max(...series.flatMap(s => s.values)) * 1.15 || 1);
     const Y = v => P.t + (H - P.t - P.b) * (1 - v / max);
@@ -518,7 +525,10 @@ window.WF = (() => {
     const tip = tooltip(container);
     cats.forEach((c, i) => {
       const cx = P.l + gw * i + gw / 2;
-      el('text', { x: cx, y: H - 8, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = c;
+      // category label, wrapped onto two lines when it will not fit the slot
+      const words = String(c).split(' '); const fits = String(c).length * 6.2 < gw - 6;
+      if (fits || words.length === 1) { const t = el('text', { x: cx, y: H - 10, class: 'wf-ax', 'text-anchor': 'middle' }, svg); t.textContent = fits ? c : (String(c).length > Math.floor(gw / 6.2) ? String(c).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…' : c); }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 18, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 6, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
       series.forEach((s, k) => {
         const x = cx - (series.length * bw + (series.length - 1) * 2) / 2 + k * (bw + 2);
         const v = s.values[i], y = Y(v);
@@ -553,7 +563,9 @@ window.WF = (() => {
       const r = el('rect', { x: cx - bw / 2, y: y1, width: bw, height: Math.max(2, y2 - y1), rx: 4, fill: color, class: 'wf-bar' }, svg);
       if (!it.total && i < items.length - 1) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
       if (it.total && i === 0) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
-      const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = it.label;
+      const words = String(it.label).split(' '), fits = String(it.label).length * 6.2 < gw - 4;
+      if (fits || words.length === 1) { const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = fits ? it.label : String(it.label).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…'; }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 26, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 14, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
       const val = el('text', { x: cx, y: y1 - 6, class: 'wf-val', 'text-anchor': 'middle' }, svg); val.textContent = it.total ? fmtY(it.value) : fmtY(it.value, { plus: true });
       r.addEventListener('mousemove', ev => { const rr = svg.getBoundingClientRect(); tip.innerHTML = `<b>${it.label}</b><div><i style="background:${color}"></i>${it.total ? '' : 'Change '}<span>${fmtY(it.value, { plus: !it.total })}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(rr.width - 170, ev.clientX - rr.left + 12) + 'px'; tip.style.top = (ev.clientY - rr.top - 10) + 'px'; });
       r.addEventListener('mouseleave', () => tip.style.opacity = 0);
@@ -582,6 +594,7 @@ window.WF = (() => {
     .wf-connector{stroke:#CBD5E1;stroke-width:1;stroke-dasharray:3 3}
     .wf-ax{font-size:11px;fill:#64748B}
     .wf-val{font-size:11px;fill:#1E1B2E;font-weight:600}
+    .wf-end{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
     .wf-band{fill:#2E7D4F;opacity:.07}
     .wf-line{transition:d .35s ease}
     .wf-bar{transition:y .35s ease,height .35s ease}
