@@ -288,6 +288,12 @@ export const hubPaletteService = {
             try {
                 openHub(actionService, {
                     tag: a.tag, xmlid: a.xmlid, lens: a.lens, lensKey: a.lensKey,
+                    // `focus` says what a row MEANT — "open the saved plans",
+                    // not just "open the room". It was already part of the
+                    // arrival protocol (hub_nav.js) and every other door
+                    // carried it; only the palette dropped it on the floor, so
+                    // a ⌘K row could never be more specific than its lens.
+                    focus: a.focus,
                 });
             } catch (e) {
                 // W40: the catch narrows nothing and hides nothing. It reports,
