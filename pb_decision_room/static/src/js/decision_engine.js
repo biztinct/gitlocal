@@ -67,7 +67,35 @@ export function readAssumptions(a) {
         growth: num(raw.demand_growth_pct, 0),
         ladder: raw.pit_ladder && typeof raw.pit_ladder === "object"
             ? raw.pit_ladder : { bands: [] },
+        // ---- shifts (Phase 2) -------------------------------------------
+        eveningShare: clamp(num(raw.shift_evening_pct, 25), 0, 50),
+        nightShare: clamp(num(raw.shift_night_pct, 15), 0, 40),
+        eveningUplift: Math.max(0, num(raw.evening_uplift_pct, 0)) / 100,
+        demandShares: normalizeShares([
+            num(raw.demand_day_pct, 60),
+            num(raw.demand_evening_pct, 25),
+            num(raw.demand_night_pct, 15),
+        ]),
+        productivityCost: Math.max(0, num(raw.productivity_cost_per_point, 0)),
     };
+}
+
+/** The three shift keys, in the order the day runs. */
+export const SHIFTS = ["day", "evening", "night"];
+
+/**
+ * Three shares that add up to one.
+ *
+ * The record CONSTRAINS them to 100 and the server refuses anything else —
+ * but an old row, a half-typed dialog or a hand-edited database can still
+ * hand this engine 60/25/20, and a picture that silently loses five percent
+ * of the work is worse than one that quietly rescales it.
+ */
+export function normalizeShares(values) {
+    const clean = (values || []).map((v) => Math.max(0, num(v, 0)));
+    const total = clean.reduce((sum, v) => sum + v, 0);
+    if (total <= 0) { return [1, 0, 0]; }
+    return clean.map((v) => v / total);
 }
 
 /** Monthly income tax on one person's taxable pay. Never touches company cost. */
@@ -108,6 +136,8 @@ export function defaultState(baseline, assumptions) {
         productivity: 0,
         absence: DEFAULT_ABSENCE,
         start: clamp(now.getMonth() + 2, 1, 12),
+        evening: a.eveningShare,
+        night: a.nightShare,
         moves: [],
     };
 }
@@ -119,7 +149,15 @@ export function normalizeState(state, baseline, assumptions) {
     const teams = ((baseline && baseline.teams) || []);
     const teamByKey = Object.fromEntries(teams.map((t) => [t.key, t]));
     const moves = Array.isArray(s.moves) ? s.moves : [];
+    // Evening and night are shares of the SAME people, so they are clamped
+    // together: 50 % of a team cannot be on evenings while 40 % is on nights
+    // and somebody still opens the doors in the morning. Night gives way,
+    // because it is the smaller commitment of the two to unwind.
+    let evening = clamp(num(s.evening, base.evening), 0, 50);
+    let night = clamp(num(s.night, base.night), 0, 40);
+    if (evening + night > 80) { night = Math.max(0, 80 - evening); }
     return {
+        evening, night,
         target: Math.max(0, num(s.target, base.target)),
         growth: clamp(num(s.growth, base.growth), -50, 100),
         stress: clamp(num(s.stress, 0), -30, 30),
@@ -170,10 +208,21 @@ export function compute(baseline, assumptions, state) {
         key: t.key, name: t.name, revenue: !!t.revenue,
         headsToday: t.heads, heads: new Array(12).fill(0),
         cost: new Array(12).fill(0), year: 0,
+        payToday: t.pay_month_avg || 0,
+        // December always has the increase: `raiseMonth` cannot be past 12.
+        payDec: (t.pay_month_avg || 0) * (1 + s.raise / 100),
     }));
     const revHeads = new Array(12).fill(0);      // paid revenue-earning heads
     const revCapHeads = new Array(12).fill(0);   // the same, ramped
     let revHeadsBase = 0;
+    // Shares of the people who earn revenue, as fractions. Day is what is
+    // left, so the three always add up to exactly one head per head.
+    const shiftPeople = [
+        Math.max(0, 1 - (s.evening + s.night) / 100),
+        s.evening / 100,
+        s.night / 100,
+    ];
+    const shiftUplift = [0, a.eveningUplift, a.nightUplift];
     const totals = { hires: 0, cuts: 0, leavers: 0 };
 
     const attritionRate = s.attritionOn ? (a.attritionYear / 100 / 12) : 0;
@@ -221,7 +270,14 @@ export function compute(baseline, assumptions, state) {
                 const allowance = base * a.allowance;
                 const hourly = pay / (a.workDays * 8);
                 const overtime = n * hourly * a.otMult * otHours;
-                const premium = 0;   // the shift levers arrive with Phase 2
+                // Shift premiums are paid to the people who work the shifts,
+                // and only the teams that earn revenue are rostered across the
+                // clock in this model — a finance team does not get a night
+                // uplift for a night nobody asked it to work.
+                const premium = team.revenue
+                    ? n * pay * (shiftPeople[1] * shiftUplift[1]
+                                 + shiftPeople[2] * shiftUplift[2])
+                    : 0;
                 const capped = a.cap > 0 ? Math.min(pay, a.cap) : pay;
                 const contributions = n * capped * a.erRate;
                 const bonus = (a.bonusMonth && (m + 1) === a.bonusMonth)
@@ -282,6 +338,12 @@ export function compute(baseline, assumptions, state) {
             teamOut[ti].cost[m] = teamCost;
         });
 
+        // Better hours are not free unless the company says they are: one
+        // point of "productive time" costs whatever the assumptions record
+        // says it costs, per person, per month. The default is zero, which is
+        // exactly the Phase 1 behaviour.
+        row.learning = row.heads * Math.max(0, s.productivity)
+            * a.productivityCost;
         row.people = row.gross + row.contributions + row.recruit
             + row.severance + row.learning;
         row.takehome = row.gross - row.withholding;
@@ -289,23 +351,64 @@ export function compute(baseline, assumptions, state) {
     }
 
     // ------------------------------------------------ what the year earns
-    const hoursBase = (a.workDays * 8) * (1 - DEFAULT_ABSENCE / 100);
+    //
+    // THE CALIBRATION, in one sentence: the company AS IT STANDS TODAY, on its
+    // assumed shifts, serves the typed revenue target exactly. Everything else
+    // is measured from there.
+    //
+    // So `baseHours` — today's revenue-earning people at today's ordinary
+    // hours — is worth `today` (the target, spread along the seasonal curve),
+    // which fixes the money one delivered hour earns. Capacity is then simply
+    // this month's available hours at that rate, and demand is the same hours
+    // moved by growth and stress. Phase 1 did the identical arithmetic without
+    // ever naming an hour; Phase 2 needs the hours themselves, because the
+    // shift split happens inside them: capacity is spread across day, evening
+    // and night by where the PEOPLE are, demand by where the WORK is, and each
+    // shift can only serve the smaller of the two. Mismatch the two and hours
+    // go unserved while other hours stand idle — which is the whole point of
+    // the Work & shifts tab.
+    const hoursPerPersonBase = (a.workDays * 8) * (1 - DEFAULT_ABSENCE / 100);
+    const baseHours = revHeadsBase > 0
+        ? revHeadsBase * hoursPerPersonBase : hoursPerPersonBase;
     const target = s.target;
     for (let m = 0; m < 12; m++) {
         const row = rows[m];
         const otHours = (m + 1) >= s.otFrom ? s.ot : 0;
         const hoursNow = (a.workDays * 8 + otHours)
             * (1 - s.absence / 100) * (1 + s.productivity / 100);
-        const hoursFactor = hoursBase > 0 ? (hoursNow / hoursBase) : 1;
+        const capHeads = revHeadsBase > 0 ? revCapHeads[m] : 1;
+        const available = capHeads * hoursNow;
         const today = target / 12 * SEASON[m];
+        const rate = baseHours > 0 ? today / baseHours : 0;
+        const demandHours = baseHours
+            * (1 + s.growth / 100 * (m + 1) / 12)
+            * (1 + s.stress / 100);
+        const heads = revHeadsBase > 0 ? revHeads[m] : 0;
+
+        row.hoursAvailable = available;
+        row.hoursDemand = target > 0 ? demandHours : 0;
+        row.hoursServed = 0;
+        row.shifts = SHIFTS.map((key, i) => {
+            const shiftAvailable = available * shiftPeople[i];
+            const shiftDemand = target > 0
+                ? demandHours * a.demandShares[i] : null;
+            const served = target > 0
+                ? Math.min(shiftAvailable, shiftDemand) : null;
+            if (target > 0) { row.hoursServed += served; }
+            return {
+                key, heads: heads * shiftPeople[i],
+                share: shiftPeople[i],
+                available: shiftAvailable,
+                demand: shiftDemand,
+                served,
+                uplift: shiftUplift[i],
+            };
+        });
+
         if (target > 0) {
-            row.demand = today
-                * (1 + s.growth / 100 * (m + 1) / 12)
-                * (1 + s.stress / 100);
-            row.capacity = revHeadsBase > 0
-                ? today * (revCapHeads[m] / revHeadsBase) * hoursFactor
-                : today * hoursFactor;
-            row.revenue = Math.min(row.demand, row.capacity);
+            row.demand = demandHours * rate;
+            row.capacity = available * rate;
+            row.revenue = row.hoursServed * rate;
             row.coverage = row.demand > 0 ? row.revenue / row.demand : 1;
         } else {
             row.demand = 0;
@@ -324,9 +427,22 @@ export function compute(baseline, assumptions, state) {
                        "premium", "bonus", "contributions", "recruit",
                        "severance", "learning", "people", "gross",
                        "withholding", "takehome", "demand", "capacity",
-                       "revenue", "other", "profit"]) {
+                       "revenue", "other", "profit",
+                       "hoursAvailable", "hoursDemand", "hoursServed"]) {
         year[key] = sum(key);
     }
+    year.shifts = SHIFTS.map((key, i) => ({
+        key,
+        heads: rows[11] ? rows[11].shifts[i].heads : 0,
+        share: shiftPeople[i],
+        uplift: shiftUplift[i],
+        demandShare: a.demandShares[i],
+        available: rows.reduce((t, r) => t + r.shifts[i].available, 0),
+        demand: s.target > 0
+            ? rows.reduce((t, r) => t + r.shifts[i].demand, 0) : null,
+        served: s.target > 0
+            ? rows.reduce((t, r) => t + r.shifts[i].served, 0) : null,
+    }));
     year.headcount = rows[11] ? rows[11].heads : 0;
     year.headsAvg = year.heads / 12;
     year.coverage = year.demand > 0 ? year.revenue / year.demand : 1;
@@ -493,21 +609,23 @@ export function bridge(plan, ref) {
     const r = ref.year;
     const steps = [
         ["Revenue delivered", p.revenue - r.revenue,
-         "What the team could actually serve"],
+         "The work the team could actually serve, at the same price an hour"],
         ["Salaries and allowances", -(p.salary - r.salary),
-         "Headcount and pay levels"],
+         "How many people are on the payroll, and what they are paid"],
         ["Overtime and premiums", -((p.overtime + p.premium)
                                     - (r.overtime + r.premium)),
-         "Hours beyond the normal month"],
-        ["Bonus", -(p.bonus - r.bonus), "The yearly bonus month"],
+         "Hours beyond the normal month, and the uplift for evenings and "
+         + "nights"],
+        ["Bonus", -(p.bonus - r.bonus),
+         "The yearly bonus, paid in its month"],
         ["Contributions", -(p.contributions - r.contributions),
-         "Paid by the business on top of pay"],
+         "Insurance the business pays on top of pay, up to the cap"],
         ["Recruiting and severance", -((p.recruit + p.severance + p.learning)
                                        - (r.recruit + r.severance + r.learning)),
-         "One-off costs of people joining and leaving"],
+         "One-off costs of people joining and leaving, and of better hours"],
         ["Other costs", -(p.other - r.other),
-         "Everything that is not people"],
-    ].map(([label, value, note]) => ({ label, value, note }));
+         "Rent, materials and everything else that is not people"],
+    ].map(([label, value, reason]) => ({ label, value, reason, note: reason }));
     const total = steps.reduce((sum, x) => sum + x.value, 0);
     const difference = p.profit - r.profit;
     // A RELATIVE tolerance, because the absolute one is a lie at this size: a
@@ -527,7 +645,7 @@ export function changes(state, refState, baseline) {
     const weight = {
         moves: 6, raise: 5, target: 5, growth: 5, ot: 4, productivity: 4,
         absence: 3, bonusMonths: 3, attritionOn: 3, backfill: 2, stress: 3,
-        raiseMonth: 1, otFrom: 1, start: 1,
+        raiseMonth: 1, otFrom: 1, start: 1, evening: 2, night: 2,
     };
     const teamName = Object.fromEntries(
         ((baseline && baseline.teams) || []).map((t) => [t.key, t.name]));
@@ -553,7 +671,7 @@ export function changes(state, refState, baseline) {
     }
     for (const key of ["raise", "target", "growth", "ot", "productivity",
                        "absence", "bonusMonths", "stress", "raiseMonth",
-                       "otFrom", "start"]) {
+                       "otFrom", "start", "evening", "night"]) {
         const delta = num(state[key]) - num(refState[key]);
         if (Math.abs(delta) > 1e-9) {
             list.push({ key, delta, from: refState[key], to: state[key] });
@@ -618,6 +736,10 @@ export function describeChange(change, format) {
         case "attritionOn":
             return change.to ? "people leaving through the year"
                 : "nobody leaving";
+        case "evening":
+            return `${Math.round(change.to)}% of the team on evenings`;
+        case "night":
+            return `${Math.round(change.to)}% of the team on nights`;
         case "backfill":
             return change.to ? "replacing everyone who leaves"
                 : "not replacing leavers";
@@ -753,7 +875,72 @@ export function warnings(plan, ref, state, format) {
     return out;
 }
 
-// --------------------------------------------- ready for Phase 2, unused now
+// =====================================================================
+//  Phase 2 — the detail workspace, the goal finder and the brief
+// =====================================================================
+
+/**
+ * The evening and night shares that match where the work actually is.
+ *
+ * "Match shifts to demand": put the same proportion of people on each shift
+ * as there is work arriving on it. Rounded to whole percentages, and clamped
+ * to the same ranges the levers use, so pressing the button can never produce
+ * a state the sliders could not.
+ */
+export function balanceShifts(baseline, assumptions, state) {
+    const a = readAssumptions(assumptions);
+    const s = normalizeState(state, baseline, assumptions);
+    let evening = clamp(Math.round(a.demandShares[1] * 100), 0, 50);
+    let night = clamp(Math.round(a.demandShares[2] * 100), 0, 40);
+    if (evening + night > 80) { night = Math.max(0, 80 - evening); }
+    return { ...s, evening, night };
+}
+
+/**
+ * Where a year of pay goes.
+ *
+ * Two facts this has to keep straight, because getting them wrong is the
+ * single most common way a workforce number lies:
+ *   * what an employee TAKES HOME is their gross pay less what is withheld —
+ *     deductions live INSIDE gross and are not an extra cost to anybody;
+ *   * what the BUSINESS pays is gross plus the contributions it pays on top,
+ *     plus the one-off costs of people joining, leaving and getting better.
+ */
+export function payStory(plan) {
+    const y = plan.year;
+    return {
+        gross: y.gross,
+        base: y.base,
+        allowance: y.allowance,
+        overtime: y.overtime,
+        premiums: y.premium,
+        bonus: y.bonus,
+        withholding: y.withholding,
+        takehome: y.takehome,
+        contributions: y.contributions,
+        recruit: y.recruit,
+        severance: y.severance,
+        learning: y.learning,
+        total: y.people,
+    };
+}
+
+/** Who is on the team in December, next to the comparison. */
+export function teamsInDecember(plan, ref) {
+    const refByKey = Object.fromEntries(
+        (ref.teams || []).map((t) => [t.key, t]));
+    return (plan.teams || []).map((t) => {
+        const other = refByKey[t.key];
+        return {
+            key: t.key, name: t.name, revenue: t.revenue,
+            heads: t.heads[11],
+            refHeads: other ? other.heads[11] : 0,
+            payMonth: t.payDec,
+            cost: t.year,
+        };
+    }).filter((t) => t.heads > 0.005 || t.refHeads > 0.005);
+}
+
 /** What five more people in one team would do from here. */
 export function marginal(baseline, assumptions, state, plan, teamKey, n = 5) {
     const team = ((baseline && baseline.teams) || [])
@@ -772,72 +959,280 @@ export function marginal(baseline, assumptions, state, plan, teamKey, n = 5) {
     };
 }
 
-/** How many more people one team can take before a goal breaks. */
+/**
+ * How many more people one team can take before a goal breaks.
+ *
+ * Everything else is held exactly where it is: this answers "how much room
+ * do we have HERE", not "what is the best plan". The scan is BOUNDED — half
+ * the team again, or two hundred people, whichever is smaller — and stepped
+ * so that a four-thousand-person team is still answered in a fraction of a
+ * second. The step is returned so the tab can say what it walked.
+ */
 export function headroom(baseline, assumptions, state, goals, teamKey,
-                         format, max = 60) {
+                         format, roleKey = null) {
+    const team = ((baseline && baseline.teams) || [])
+        .find((t) => t.key === teamKey);
+    const enabled = GOAL_ORDER.some((k) => goals && goals[k] && goals[k].on);
+    if (!team) { return { points: [], intervals: [], enabled, step: 1,
+                          max: 0, team: null }; }
+    const role = roleKey
+        ? team.roles.find((r) => r.key === roleKey) : null;
+    const pool = role ? role.heads : team.heads;
+    const max = Math.max(1, Math.min(200, Math.round(pool * 0.5)));
+    // At most sixty points on the chart: more than that is a smear, and every
+    // extra point is another twelve months of arithmetic.
+    const step = [1, 2, 5, 10, 20].find((n) => max / n <= 60) || 25;
     const points = [];
-    for (let add = 0; add <= max; add++) {
+    for (let add = 0; add <= max; add += step) {
         const trial = compute(baseline, assumptions, {
             ...state,
             moves: add
                 ? [...(state.moves || []),
-                   { team: teamKey, role: null, n: add, month: state.start }]
+                   { team: teamKey, role: roleKey || null, n: add,
+                     month: state.start }]
                 : (state.moves || []),
         });
         const rating = gradeGoals(trial, goals, format);
-        points.push({ add, profit: trial.year.profit, met: rating.met,
-                      failed: rating.failed });
+        points.push({
+            add, profit: trial.year.profit,
+            cost: trial.year.people,
+            coverage: trial.year.coverage,
+            met: enabled && rating.met, failed: rating.failed,
+        });
     }
     const intervals = [];
+    let previous = null;
     for (const point of points) {
-        if (!point.met) { continue; }
+        if (!point.met) { previous = null; continue; }
         const last = intervals[intervals.length - 1];
-        if (last && last[1] === point.add - 1) { last[1] = point.add; }
-        else { intervals.push([point.add, point.add]); }
+        if (last && previous !== null && previous === point.add - step) {
+            last[1] = point.add;
+        } else {
+            intervals.push([point.add, point.add]);
+        }
+        previous = point.add;
     }
-    return { points, intervals };
+    return { points, intervals, enabled, step, max, team,
+             role: role || null, revenue: !!team.revenue };
 }
 
-/** Three ways to reach the same goals. Pure; Phase 2 gives it a screen. */
+/** The three lanes, in the order the room shows them. */
+export const LANES = ["hire", "develop", "balanced"];
+
+/**
+ * Three ways to reach the same goals.
+ *
+ * A BOUNDED grid, on purpose: people in the biggest revenue-earning team,
+ * overtime, and assumed productive time. Everything else the person set —
+ * their demand, their pay increase, their shifts, their hiring month — is
+ * left exactly alone, because a search that quietly rewrites the decisions
+ * somebody has already made is not offering them a path, it is overruling
+ * them.
+ *
+ * Ranked by: fewest goals missed, then by how badly (as a share of each
+ * goal, so a percentage and a billion can be compared), then by the cheaper
+ * plan, then by the one that changes least.
+ */
 export function candidates(baseline, assumptions, state, goals, format) {
     const teams = ((baseline && baseline.teams) || []);
-    const earner = teams.find((t) => t.revenue) || teams[0];
-    if (!earner) { return { count: 0, lanes: [] }; }
+    const earner = teams.filter((t) => t.revenue && t.heads > 0)
+        .sort((a, b) => b.heads - a.heads)[0] || teams[0];
+    const enabled = GOAL_ORDER.some((k) => goals && goals[k] && goals[k].on);
+    if (!earner || !enabled) { return { count: 0, lanes: [], enabled }; }
+    const s = normalizeState(state, baseline, assumptions);
     const lanes = { hire: null, develop: null, balanced: null };
     let count = 0;
-    const rank = (a, b) => !b || a.failed < b.failed
-        || (a.failed === b.failed && (a.score < b.score - 1e-9
-            || (Math.abs(a.score - b.score) < 1e-9
-                && a.plan.year.people < b.plan.year.people)));
-    const heads = earner.heads;
-    const steps = [0, 0.02, 0.05, 0.08, 0.12, 0.2].map(
-        (p) => Math.round(heads * p));
-    for (const add of [...new Set(steps)]) {
-        for (const ot of [0, 8, 16, 24]) {
-            for (const productivity of [0, 4, 8, 12]) {
-                const trial = {
-                    ...state, ot, productivity,
+    const rank = (a, b) => {
+        if (!b) { return true; }
+        if (a.failed !== b.failed) { return a.failed < b.failed; }
+        if (Math.abs(a.score - b.score) > 1e-9) { return a.score < b.score; }
+        if (Math.abs(a.result.year.people - b.result.year.people) > 0.01) {
+            return a.result.year.people < b.result.year.people;
+        }
+        return a.change < b.change;
+    };
+    const uniq = (values) => [...new Set(values)].sort((x, y) => x - y);
+    const adds = uniq([0, 0.02, 0.05, 0.10, 0.15]
+        .map((p) => Math.round(earner.heads * p)));
+    const overtimes = uniq([0, 8, 16, Math.round(s.ot)]);
+    const gains = uniq([0, 5, 10, Math.round(s.productivity)]);
+
+    const visit = (trial) => {
+        const result = compute(baseline, assumptions, trial);
+        const rating = gradeGoals(result, goals, format);
+        const add = (trial.moves || [])
+            .filter((m) => m.team === earner.key)
+            .reduce((total, m) => total + m.n, 0);
+        const change = Math.abs(add) + Math.abs(trial.ot - s.ot)
+            + Math.abs(trial.productivity - s.productivity);
+        const item = { state: trial, result, plan: result, change, ...rating };
+        count++;
+        const buckets = ["balanced"];
+        if (trial.productivity === s.productivity) { buckets.push("hire"); }
+        if (!add) { buckets.push("develop"); }
+        for (const lane of buckets) {
+            if (rank(item, lanes[lane])) { lanes[lane] = item; }
+        }
+    };
+
+    visit({ ...s });
+    for (const add of adds) {
+        for (const ot of overtimes) {
+            for (const productivity of gains) {
+                visit({
+                    ...s, ot, productivity,
                     moves: add
                         ? [{ team: earner.key, role: null, n: add,
-                             month: state.start }]
+                             month: s.start }]
                         : [],
-                };
-                const plan = compute(baseline, assumptions, trial);
-                const rating = gradeGoals(plan, goals, format);
-                const item = { state: trial, plan, ...rating };
-                count++;
-                const buckets = ["balanced"];
-                if (productivity === 0) { buckets.push("hire"); }
-                if (add === 0) { buckets.push("develop"); }
-                for (const lane of buckets) {
-                    if (rank(item, lanes[lane])) { lanes[lane] = item; }
-                }
+                });
             }
         }
     }
     return {
-        count,
-        lanes: ["hire", "develop", "balanced"]
-            .map((lane) => ({ lane, ...(lanes[lane] || {}) })),
+        count, enabled, team: earner,
+        lanes: LANES.map((lane) => ({ lane, ...(lanes[lane] || {}) }))
+            .filter((l) => !!l.result),
+    };
+}
+
+/** The reality-check sentence: what happens if demand is not what we said. */
+export function stressOutcome(baseline, assumptions, state, plan, format) {
+    const f = format;
+    const s = normalizeState(state, baseline, assumptions);
+    if (!(s.target > 0)) {
+        return "Type a revenue target and the room can stress-test the plan.";
+    }
+    const band = stressBand(baseline, assumptions, s);
+    const low = Math.min(band.lo.year.profit, band.hi.year.profit);
+    const high = Math.max(band.lo.year.profit, band.hi.year.profit);
+    const label = s.stress < 0 ? "softer demand"
+        : (s.stress > 0 ? "stronger demand" : "your own forecast");
+    const upside = band.hi.year.coverage < 0.95
+        ? `Stronger demand would leave ${f.pct((1 - band.hi.year.coverage) * 100)}`
+          + " of it unserved: the limit becomes your people, not the market."
+        : "The team could absorb the upside without leaving work behind.";
+    return `Under ${label} this plan makes ${f.money(plan.year.profit)} and `
+        + `serves ${f.pct(plan.year.coverage * 100)} of the work. If demand `
+        + `lands 10% either side of that, profit runs from ${f.money(low)} `
+        + `to ${f.money(high)}. ${upside}`;
+}
+
+/** Every lever, said in words, for the brief's "everything that was set". */
+export const INPUT_LABELS = [
+    ["target", "Revenue target for the year", "money"],
+    ["growth", "More work by December", "pct"],
+    ["stress", "Demand reality check", "pct"],
+    ["raise", "Salary increase", "pct"],
+    ["raiseMonth", "The increase starts in", "month"],
+    ["ot", "Overtime per person", "hours"],
+    ["otFrom", "Overtime from", "month"],
+    ["evening", "People on the evening shift", "pct"],
+    ["night", "People on the night shift", "pct"],
+    ["productivity", "Productive time", "pct"],
+    ["absence", "Unavailable paid time", "pct"],
+    ["bonusMonths", "Yearly bonus", "months"],
+    ["start", "New people arrive in", "month"],
+    ["attritionOn", "Some people leave during the year", "yesno"],
+    ["backfill", "Replace everyone who leaves", "yesno"],
+];
+
+const MONTH_OF = (v) => MONTH_NAMES[clamp(Math.round(num(v, 1)), 1, 12) - 1];
+
+function sayInput(kind, value, format) {
+    switch (kind) {
+        case "money": return format.money(num(value, 0));
+        case "pct": return format.pct(num(value, 0));
+        case "hours": return `${Math.round(num(value, 0))} h a month`;
+        case "months": {
+            const n = num(value, 0);
+            return n === 1 ? "1 month" : `${n} months`;
+        }
+        case "month": return MONTH_OF(value);
+        case "yesno": return value ? "Yes" : "No";
+        default: return String(value);
+    }
+}
+
+/**
+ * Everything the printable brief needs, already said in words.
+ *
+ * The SERVER lays this out and stamps the company, the reader and the date on
+ * it; it never recomputes a number, because the twelve computed months only
+ * exist here. Every value in this object is a finished string.
+ */
+export function briefModel(o) {
+    const { plan, ref, baseline, assumptions, state, refState, goals,
+            format, planName, comparisonName } = o;
+    const f = format;
+    const checks = evaluateGoals(plan, goals, f);
+    const b = bridge(plan, ref);
+    const s = normalizeState(state, baseline, assumptions);
+    const r = normalizeState(refState || state, baseline, assumptions);
+    const told = story(plan, ref, s, r, comparisonName, baseline, f);
+    const hasTarget = s.target > 0;
+    const money = (v) => f.money(v);
+
+    const outcome = [
+        ["Revenue delivered", ref.year.revenue, plan.year.revenue, "money"],
+        ["Workforce cost", ref.year.people, plan.year.people, "money"],
+        ["Other operating costs", ref.year.other, plan.year.other, "money"],
+        ["Operating profit", ref.year.profit, plan.year.profit, "money"],
+        ["Operating margin", ref.year.margin * 100, plan.year.margin * 100,
+         "pct"],
+        ["Gross pay to employees", ref.year.gross, plan.year.gross, "money"],
+        ["Employee deductions", ref.year.withholding, plan.year.withholding,
+         "money"],
+        ["What reaches employees", ref.year.takehome, plan.year.takehome,
+         "money"],
+        ["Demand served", ref.year.coverage * 100, plan.year.coverage * 100,
+         "pct"],
+        ["People in December", ref.year.headcount, plan.year.headcount,
+         "int"],
+    ].map(([label, a, c, kind]) => ({
+        label,
+        ref: kind === "money" ? money(a)
+            : (kind === "pct" ? (hasTarget ? f.pct(a) : "—") : f.int(a)),
+        plan: kind === "money" ? money(c)
+            : (kind === "pct" ? (hasTarget ? f.pct(c) : "—") : f.int(c)),
+    }));
+
+    return {
+        plan_name: planName,
+        comparison_name: comparisonName,
+        currency_code: f.code || f.symbol,
+        headline_title: told.title,
+        headline_copy: told.copy,
+        goals: checks.map((c) => ({
+            label: c.label,
+            bound: c.sense === "min" ? "At least" : "At most",
+            target: c.targetText,
+            actual: c.actualText,
+            met: c.met,
+            status: c.met ? "Met" : "Not met yet",
+        })),
+        outcome,
+        bridge: b.steps.map((x) => ({
+            label: x.label, reason: x.reason,
+            value: f.signedMoney(x.value), good: x.value >= 0,
+        })),
+        bridge_total: f.signedMoney(b.total),
+        changes: changes(s, r, baseline)
+            .map((c) => describeChange(c, f))
+            .filter(Boolean)
+            .map((line) => line.charAt(0).toUpperCase() + line.slice(1)),
+        inputs: INPUT_LABELS.map(([key, label, kind]) => ({
+            label,
+            ref: sayInput(kind, r[key], f),
+            plan: sayInput(kind, s[key], f),
+        })),
+        months: plan.rows.map((row) => ({
+            name: MONTH_NAMES[row.index],
+            people: f.int(row.heads),
+            cost: money(row.people),
+            served: hasTarget ? f.pct(row.coverage * 100) : "—",
+            profit: hasTarget ? money(row.profit) : "—",
+        })),
+        assumptions: o.assumptionLines || [],
     };
 }

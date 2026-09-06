@@ -51,6 +51,42 @@ function three(n) {
         ? text.replace(/0+$/, "").replace(/\.$/, "") : text;
 }
 
+/** k / m / b / t, in the units a person actually types. */
+const SUFFIX = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 };
+
+/**
+ * Read a money box the way a person writes one.
+ *
+ * Nobody types ₫2,200,000,000,000 and nobody reads it back. So the box shows
+ * "₫2,200B" and accepts every shape of the same thing: `2200000000000`,
+ * `2,200 B`, `2.2 t`, `2200b`, `1.5m`, with or without the company's own
+ * currency symbol and with either kind of minus sign.
+ *
+ * Returns `null` — never 0, and never NaN — when the text is not a number at
+ * all, so the caller can KEEP THE OLD VALUE rather than silently zero a
+ * revenue target because somebody's cat sat on the keyboard.
+ *
+ * @param {string} text    what is in the box
+ * @param {string} symbol  the company's currency symbol, if it has one
+ * @returns {number|null}
+ */
+export function parseCompact(text, symbol = "") {
+    let raw = String(text === undefined || text === null ? "" : text).trim();
+    if (!raw) { return null; }
+    if (symbol) { raw = raw.split(symbol).join(""); }
+    raw = raw
+        .replace(/−/g, "-")     // a real minus sign
+        .replace(/[\s ']/g, "")
+        .replace(/,/g, "");
+    const hit = /^([+-]?)(\d+(?:\.\d+)?)([a-zA-Z]?)$/.exec(raw);
+    if (!hit) { return null; }
+    const suffix = hit[3].toLowerCase();
+    if (suffix && !(suffix in SUFFIX)) { return null; }
+    const value = Number(hit[2]) * (suffix ? SUFFIX[suffix] : 1);
+    if (!Number.isFinite(value)) { return null; }
+    return hit[1] === "-" ? -value : value;
+}
+
 /**
  * Build the whole formatter set for one company's currency.
  * @param {{symbol:string, position:string, decimals:number, code:string}} cur
@@ -122,8 +158,24 @@ export function makeFormat(cur) {
         return `${int(v, { plus: true })} ${Math.abs(v) === 1 ? "person" : "people"}`;
     }
 
-    return { money, exact, signedMoney, pct, pp, int, people, symbol,
-             decimals, code: currency.code || "" };
+    /**
+     * The step one arrow press moves, in the unit the box is SHOWING.
+     *
+     * Pressing up on "₫2,200B" should give "₫2,201B" and not
+     * "₫2,200.000001B" — the increment has to be the unit under the cursor,
+     * which is the scale the value is displayed at and not a fixed number.
+     */
+    function step(value) {
+        const a = Math.abs(Number(value) || 0);
+        for (const [from, size] of SCALES) {
+            if (a >= from) { return size; }
+        }
+        return whole ? 1000 : 1;
+    }
+
+    return { money, compact: money, exact, signedMoney, pct, pp, int, people,
+             step, parse: (text) => parseCompact(text, symbol),
+             symbol, decimals, code: currency.code || "" };
 }
 
 /** Never trust a name into markup. */
