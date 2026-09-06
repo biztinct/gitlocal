@@ -425,3 +425,116 @@ template clone (the 5 are pre-existing pb_learn drift). Closeout:
   what the builder read to open itself, so it costs no round trip. Anchor on
   `fromId` when the role was started from another one; otherwise the greatest
   Jaccard overlap; silence when nothing is shared.
+
+### P7 CLOSED 2026-09-02 — the packaging faults (closeout debt D3)
+(commits b760f98e hr_contract, 5633e6cc om_hr_payroll, a0cc9c67 pb_sidebar; not pushed)
+All 8 numbered tests PASS. om_hr_payroll 19.0.1.3.0 on payobook / abm /
+payobook_template; hr_contract and pb_sidebar deployed WITHOUT a version bump
+(both changes are provably inert on an installed database). A brand-new empty
+database now installs the Payobook set: 87 modules, registry loaded in 92.8s,
+and the Access home runs on it — `docs/handovers/access_p7_shots/`. Facts now
+true:
+- G1. ⚠ FOUR faults, not three. `pb_sidebar/data/pb_sidebar_data.xml:389` gates
+  `item_wf_roster` on `hr_attendance.group_hr_attendance_officer` with
+  hr_attendance undeclared. Same shape as faults 2/3, fixed with them.
+- G2. **`report_xlsx` is NOT absent from the server** — the closeout's claim was
+  stale. It is in `/odoo/odoo-server/addons` (dated 2026-08-26 13:31, the
+  rsync --delete recovery), byte-identical to the repo, installed 19.0.1.0.2 on
+  all three databases, and the payslip spreadsheet report **works**: a live
+  `_render_xlsx` of `om_hr_payroll.payslip_lines_xlsx` over a real pay run
+  returned 9,313 bytes on payobook and 16,322 on abm. It was never broken.
+  Decision: keep the module, declare the dependency.
+- G3. ⚠ `convert.py::_tag_menuitem` writes `action` into the values dict ONLY
+  when the XML carries the attribute (`if rec.get('action')`). So REMOVING an
+  action from a menuitem is a no-op on every existing database — the menu keeps
+  whatever it holds. That is what made fault 3 fixable without touching live
+  behaviour. (Same clause: `web_icon` is only read when the item has no parent.)
+- G4. ⚠ The handover's recommended fix for fault 3 (re-point the menu from
+  pb_hr_flow) would have CHANGED live behaviour. Graph depths: om_hr_payroll 4,
+  pb_dashboard 6, pb_hr_flow 8. `pb_dashboard/views/pb_dashboard_action.xml`
+  already re-points `om_hr_payroll.menu_hr_payroll_root` to its own cockpit and
+  wins today; a pb_hr_flow re-point would load last and win instead. Always
+  check who ELSE writes a menu before "restoring" a pointer to it.
+- G5. Adding a `depends` entry without bumping the version still lands: Odoo's
+  `update_list()` refreshes `ir_module_dependency` from the manifest on every
+  run, regardless of module state. Verified — the pb_sidebar -> hr_attendance
+  row appeared on all three databases from the om_hr_payroll upgrade alone.
+- G6. The `hr_contract` in this repo is CUSTOM, not vendored-standard. The
+  authoritative split is `git -C /odoo/odoo-server ls-files addons | cut -d/ -f2`
+  (625 standard modules): `resource`, `hr`, `web` are standard; `hr_contract`,
+  `om_hr_payroll`, `report_xlsx`, `pb_*` are ours. Odoo 19 upstream folded
+  hr_contract into hr, so the server's clone has no copy — deploying ours is
+  correct, and CLAUDE.md's "hr_*" shorthand is too coarse to decide by.
+- G7. ⚠ An `odoo-bin` run **inherits `logfile` from `-c /etc/odoo-server.conf`**,
+  so a test run's whole log lands in `/var/log/odoo/odoo-server.log` unless you
+  pass `--logfile`. And a `--logfile` you create yourself as `ubuntu` is not
+  writable by `odoo`: the run silently falls back to stdout. Create nothing;
+  pass a path under /tmp and let odoo make it, or read the shared log.
+- G8. Cloning live payobook (2.26 GB): `pg_dump | psql` ran at ~15 MB/min and was
+  hopeless; `pg_dump -Fc -Z1` + `pg_restore -j 2` did it in a few minutes with 0
+  errors. `createdb -T` is not available while the service holds connections.
+- G9. Test 7 baseline held exactly: **0 failed, 0 errors of 517 tests** on an
+  upgraded payobook clone (biz_access 152, pb_learn 288, pb_vendor_access 89,
+  pb_sidebar 48, pb_settings 40, pb_tenants 22). om_hr_payroll contributes 0 —
+  its suite is deliberately disabled in `om_hr_payroll/tests/__init__.py` and
+  says so at length.
+- G10. What a fresh database still does NOT get: `pb_vendor_access` was not in
+  the install set, so the Access home comes up product-neutral (0 roles, 0
+  abilities) exactly as the P6 proof described — and `biz_access` still drags 86
+  modules in through the Payobook chassis (closeout debt D4 unchanged).
+
+### P8 CLOSED 2026-09-02 — abm brought into step + the standing rule made durable
+(commits: biz_access re-seed seam, pb_tenants sync report/install; not pushed)
+All 9 numbered tests PASS. `abm` 206 → **220 modules** (the 14 missing, minus the
+4 deny-listed); payroll data byte-identical by count; only ACTIVE user gains one
+left-menu entry and loses nothing. `biz_access` 19.0.1.1.0 (payobook + template +
+abm), `pb_tenants` 19.0.1.4.0 (payobook only — it is deny-listed everywhere else).
+Backup `/var/backups/access_p8/abm_pre_p8_install_20260902T125142Z.dump`
+(19,664 objects, `pg_restore -l` clean). Facts now true:
+- H1. ⚠ **A catalogue seeded by a `post_init_hook` sees only the modules that
+  loaded BEFORE it.** Installing the whole family in ONE `-i` run put
+  `pb_vendor_access`'s hook ahead of `pb_comp_ben`/`pb_rnr`, so 4 abilities and
+  their 4 roles were skipped — and A2 means the hook never fires again. Two
+  cures, both now in the tree: install in TWO runs (everything, then the access
+  modules), which is what the runbook does by hand; or call the new
+  `pb.access.reseed_catalogue()` afterwards, which is what the cockpit's button
+  does. Proven both ways on an abm clone (20 roles/31 abilities → 24/35).
+- H2. ⚠ The re-seed does NOT close one gap, on purpose: `ensure_tenant_admin_role`
+  is CREATE-ONLY (E3), so a bundle created mid-cascade keeps the abilities that
+  existed at that moment. Single-pass + re-seed left "Tenant administrator" 3
+  screen-gates short of the two-pass result (Lifecycle, People, Workforce).
+  Nobody holds that role on a tenant until the flip is run, and ticking the
+  abilities on is two clicks with an audit line. **The live abm install used the
+  two-pass order**, so abm has the complete bundle (35 role gate links).
+- H3. The deny-list lives in `pb_tenants` (`TENANT_SYNC_NEVER` + a prefix rail
+  `TENANT_SYNC_NEVER_PREFIXES`), never in a tenant: a list of "what a customer
+  must never be given" inside a customer's database is a map of the soft spots.
+  The pure split is `sync_split(master, tenant)`; the guard is applied a SECOND
+  time to the literal list `_sync_install` is about to write (a test asserts the
+  re-check happens before `button_immediate_install`).
+- H4. `sync_report` reads other databases with plain SQL through `_pg_cursor`,
+  not `_tenant_env` — one registry load per customer would make a read-only
+  screen the most expensive thing in the cockpit.
+- H5. ⚠ `Environment` has no `.sudo()`. `ensure_catalogue(self.env.sudo())`
+  raised `AttributeError` and the calling code swallowed it into a warning; the
+  install "succeeded" with a short catalogue. A recordset has `.sudo()`; the
+  env it carries does not.
+- H6. abm's rail was ALREADY permission-gated before this phase (the per-module
+  data files ship `groups_id`), so the two lanes were both live from the first
+  minute. Before/after over 5 users × 9 entries: 7 cells moved — 3 accounts gain
+  the new "Lifecycle" entry, and the 2 archived driver logins see Settings as a
+  locked teaser (D5, exactly as on payobook). The one ACTIVE account
+  (`ash@biztinct.com`, `base.group_system`) loses nothing.
+- H7. `pb_zoho_bridge` seeds its own "Zoho People — inbound" connector and 7
+  endpoints. On abm that sits BESIDE the customer's live "Zoho People (ABM)"
+  connector, with no credentials, both sync switches off and status
+  "disconnected" — additive and inert, but worth saying out loud before an
+  install onto a database that already runs an integration.
+- H8. Test-suite baselines must be taken on a CLONE, and `--test-enable` with
+  `-u <a few modules>` runs the WHOLE tree on this build (1,727 tests on abm,
+  not the 3 modules asked for). abm: 18 failed / 1 error of 1,727 before →
+  17 / 1 of 1,921 after — zero new failures and one pre-existing pb_learn
+  reachability failure FIXED by the install.
+- H9. `acme` is gone from the cluster (decommissioned); the fleet is
+  payobook + payobook_template + abm. Closeout debts D1/D2 are therefore
+  half-closed by this phase and half moot.

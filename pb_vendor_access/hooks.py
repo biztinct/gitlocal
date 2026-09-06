@@ -316,6 +316,18 @@ NEW_ABILITIES = [
      'Read the record of who changed what, and when, across the whole system. '
      'Reads only — the trail itself can never be edited or deleted by anybody.',
      ('biz_audit_trail.group_audit_reader',)),
+    # ACCESS P9. The letterhead, and nothing else. Deliberately its own
+    # ability rather than a corner of "access team": deciding who can do what
+    # and rewriting what the payslips say are two different jobs, and somebody
+    # may well be trusted with one and not the other.
+    ('company-details', 'system', 110,
+     'Correct this company\'s own details',
+     'Change the name, address, contact details, tax and registration numbers '
+     'and logo that print on payslips, filings and letters. It is one company '
+     '— this one — and nothing else about it: not the currency, not where it '
+     'sits in a group of companies, and nothing belonging to the platform '
+     'this runs on.',
+     ('pb_settings.group_company_editor',)),
 ]
 
 
@@ -384,6 +396,7 @@ TENANT_ADMIN_ABILITIES = (
     'vendor-team',                  # the supplier register and its agreements
     'access-team',                  # who here can do what — REQUIRED
     'audit-read',                   # who changed what, and when
+    'company-details',              # the letterhead: name, address, tax, logo
 )
 
 TENANT_ADMIN_NAME = 'Tenant administrator'

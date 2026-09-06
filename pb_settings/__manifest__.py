@@ -40,8 +40,18 @@ back, exactly as it is for the other native admin actions.
 
 pbim tokens only, `.pbst-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills (W1/W2/W3).
+
+ACCESS P9 adds the ONE surface in this module that owns something: "Your
+company" (`pb_company_profile`), the page where a customer's own administrator
+corrects the details that print on payslips, filings and letters. It is
+deliberately not the platform's Companies screen with the lock taken off — that
+one edits every company on the database and every field on it, and stays
+`base.group_system`'s. This one edits ONE record, resolved server-side from the
+caller's own user account and never accepted from the browser, and thirteen
+whitelisted fields on it. `pb.company.profile` is the whole guard; `res.company`
+gains the product's audit mixin so a change is recorded wherever it came from.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.8.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -59,17 +69,27 @@ registry, flat fills (W1/W2/W3).
         'om_hr_payroll',
         'pb_hr_payroll_base',
         'pb_sidebar',
+        # ACCESS P9. The company page records who changed what in the product's
+        # own append-only trail rather than inventing a second store, and
+        # `res.company` gains that mixin here. The engine has no dependency of
+        # its own beyond `base`, so this costs the graph nothing.
+        'biz_audit_trail',
     ],
     'data': [
+        'security/pb_settings_security.xml',
         'views/pb_settings_action.xml',
         'data/pb_sidebar.xml',
+        'data/biz_audit_rule.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_settings/static/src/scss/settings_hub.scss',
+            'pb_settings/static/src/scss/company_profile.scss',
             'pb_settings/static/src/js/settings_hub.js',
+            'pb_settings/static/src/js/company_profile.js',
             'pb_settings/static/src/js/settings_palette.js',
             'pb_settings/static/src/xml/settings_hub.xml',
+            'pb_settings/static/src/xml/company_profile.xml',
         ],
     },
     'installable': True,

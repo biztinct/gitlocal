@@ -30,7 +30,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { G_ADMIN } from "@pb_hub/js/hub_palette_entries";
-import { CATEGORIES } from "@pb_settings/js/settings_hub";
+import { CATEGORIES, COMPANY_EDITOR } from "@pb_settings/js/settings_hub";
 
 const palette = registry.category("pb_hub_palette");
 
@@ -50,3 +50,26 @@ palette.add("settings", {
     requires: "pb_settings_hub",
     groups: GATE,
 }, { sequence: 180 });
+
+/**
+ * ACCESS P9 — "Your company" gets its own row, one place after Settings.
+ *
+ * A surface reachable only from inside another surface is one people cannot
+ * find when they are not already in it, and "where do I fix our address?" is
+ * exactly the question somebody asks from wherever they happen to be. The gate
+ * is IMPORTED from the hub, not restated: the permission is defined once and
+ * the two copies of a gate list drift silently in both directions. The system
+ * administrator permission is named beside it because the hub answers `is
+ * system` before it looks at anything else, and this row must not be the one
+ * place where the administrator is the only person who cannot see the door.
+ */
+palette.add("company_profile", {
+    id: "company_profile",
+    label: _t("Your company"),
+    sublabel: _t("Admin"),
+    icon: "idCard",
+    group: G_ADMIN,
+    action: { xmlid: "pb_settings.action_pb_company_profile" },
+    requires: "pb_company_profile",
+    groups: [COMPANY_EDITOR, "base.group_system"],
+}, { sequence: 181 });
