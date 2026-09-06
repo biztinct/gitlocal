@@ -97,12 +97,24 @@ const PAYROLL_USER = "om_hr_payroll.group_hr_payroll_user";
 const PB_BASE_USER = "pb_hr_payroll_base.group_payroll_base_user";
 const PB_MANAGER = "pb_hr_payroll_base.group_payroll_base_manager";
 const SYSTEM = "base.group_system";
+/**
+ * ACCESS P9. The permission written for "Your company" — one record, the
+ * caller's own, thirteen fields on it. It is NOT the administrator permission
+ * and it is NOT the access-team one: "may correct the letterhead" is its own
+ * small thing, and the whole point of the phase is that a customer's own
+ * administrator can do it without holding anything belonging to the platform.
+ *
+ * Exported because the ⌘K row for the same surface gates on it, and two copies
+ * of a gate drift silently in both directions (see settings_palette.js).
+ */
+export const COMPANY_EDITOR = "pb_settings.group_company_editor";
 
 const G_FORMULA = [FORMULA_MANAGER, FORMULA_USER];
 const G_STRUCTURES = [PAYROLL_USER, HR_USER];
 const G_STATUTORY = [PB_BASE_USER, PB_MANAGER];
 const G_INTEGRATIONS = [FORMULA_ADMIN, FORMULA_USER];
 const ADMIN = [SYSTEM];
+const G_COMPANY = [COMPANY_EDITOR];
 
 /**
  * The eight categories, in the order the mockup fixes them.
@@ -211,6 +223,28 @@ export const CATEGORIES = [
             { id: "sidebar_sections", xmlid: "pb_sidebar.action_pb_sidebar_section",
               icon: "layers", label: _t("Sidebar sections"),
               sub: _t("The blocks the rail entries are grouped into.") },
+        ],
+    },
+    // ACCESS P9 — the NINTH category, and the first one that is the customer's
+    // own rather than the platform's or the payroll team's.
+    //
+    // IT IS NOT "Companies & Tenants" WITH THE LOCK TAKEN OFF. That category
+    // stays exactly where P5 put it: platform-only, refused server-side, and
+    // it edits every company on the database, the currency, the hierarchy and
+    // everything provisioning wrote. This one edits ONE record — whoever is
+    // reading it — and thirteen fields on it. Two different jobs, two doors,
+    // and the narrow one is the only one a customer needs.
+    //
+    // It has a single card, so the generic rule takes over and the entry opens
+    // the surface directly rather than a page listing one tile.
+    {
+        key: "company", icon: "idCard", label: _t("Your company"),
+        blurb: _t("Your own name, address, tax numbers and logo."),
+        groups: G_COMPANY,
+        cards: [
+            { id: "company_profile", tag: "pb_company_profile", icon: "idCard",
+              label: _t("Your company"),
+              sub: _t("The details that print on payslips, filings and letters — and a preview of each one.") },
         ],
     },
 ];

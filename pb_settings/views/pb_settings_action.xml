@@ -10,4 +10,15 @@
         <field name="name">Settings</field>
         <field name="tag">pb_settings_hub</field>
     </record>
+
+    <!-- ACCESS P9. "Your company" is a surface of its own rather than a card
+         inside the platform's Companies screen, because it edits ONE record —
+         the caller's own — and the platform screen edits every company on the
+         database and every field on it. Same reason it carries a NAME: it is
+         opened from the Settings hub with a back chip, and from the global
+         search by this record. -->
+    <record id="action_pb_company_profile" model="ir.actions.client">
+        <field name="name">Your company</field>
+        <field name="tag">pb_company_profile</field>
+    </record>
 </odoo>

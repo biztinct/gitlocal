@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================================================================
+         WHICH COMPANY DETAILS ARE WORTH A LINE IN THE AUDIT TRAIL.
+
+         Exactly the fields "Your company" may change, minus the logo (a
+         picture has no readable old value — the facade writes its line in
+         words instead). `tests/test_company_profile.py` asserts this list
+         against the whitelist in `pb_company_profile.py`, so the two cannot
+         drift apart in either direction.
+
+         NOT `noupdate`, on purpose: the watched list is ours and must follow
+         the whitelist, so an upgrade re-asserting it is the correct
+         behaviour rather than a lost edit.
+         ================================================================== -->
+    <record id="audit_rule_company_details" model="biz.audit.rule">
+        <field name="name">Company details</field>
+        <field name="model_name">res.company</field>
+        <field name="field_names">name,street,street2,city,zip,state_id,country_id,phone,email,website,vat,company_registry</field>
+    </record>
+</odoo>

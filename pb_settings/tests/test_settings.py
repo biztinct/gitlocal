@@ -57,8 +57,15 @@ _RE_CARD_ID = re.compile(r"""\{\s*id:\s*["'](\w+)["']""")
 # gate added in a later cycle is checked automatically instead of quietly
 # skipped — and a gate that fails to resolve is invisible at runtime, because
 # group resolution deliberately fails OPEN.
+#
+# ACCESS P9 amendment: `export const` counts too. The company-details
+# permission is exported so the ⌘K row for the same surface can import it
+# instead of restating it, and a gate that stops being checked the moment it
+# gains the word `export` is a gate that fails in exactly the direction this
+# one guards (group resolution FAILS OPEN).
 _RE_GROUP_CONST = re.compile(
-    r"""^const\s+[A-Z][A-Z0-9_]*\s*=\s*["']([\w.]+\.group_\w+)["']""", re.M)
+    r"""^(?:export\s+)?const\s+[A-Z][A-Z0-9_]*\s*=\s*["']([\w.]+\.group_\w+)["']""",
+    re.M)
 # Python-style implicit string concatenation is a JS SyntaxError, and Odoo's
 # asset pipeline concatenates without ever parsing — so one of these blanks the
 # whole backend with a clean server log (W74).
@@ -110,14 +117,25 @@ class TestSettingsDescriptor(TransactionCase):
                      "a typo here ungates its whole category silently" % xmlid)
             self.assertEqual(rec._name, 'res.groups')
 
-    def test_the_descriptor_is_eight_categories_with_unique_keys(self):
+    def test_the_descriptor_is_nine_categories_with_unique_keys(self):
+        """ACCESS P9 APPENDED THE NINTH, AND APPENDED IS THE WORD THAT MATTERS.
+
+        Cycle 3 fixed this order to the mockup's and said so here. P9 adds
+        "Your company" — the first category that is the CUSTOMER's rather than
+        the platform's or the payroll team's — and puts it at the END rather
+        than anywhere in the middle, so every position a reader has already
+        learnt is unmoved and the remembered key in `pbst.cat.v1` still names
+        the category it always did. The assertion is amended at the site rather
+        than loosened into "contains", because the order is still the rule
+        (W76.3).
+        """
         keys = _RE_KEY.findall(_js())
         self.assertEqual(
             keys,
             ['formula', 'structures', 'statutory', 'integrations',
-             'payroll', 'roles', 'org', 'nav'],
-            "the category order is the mockup's and is fixed; the localStorage "
-            "key pbst.cat.v1 also remembers one of these by name")
+             'payroll', 'roles', 'org', 'nav', 'company'],
+            "the category order is the mockup's plus P9's appended one; the "
+            "localStorage key pbst.cat.v1 also remembers one of these by name")
         self.assertEqual(len(set(keys)), len(keys))
 
     def test_the_cockpit_tags_are_exactly_the_agreed_list(self):
@@ -138,11 +156,18 @@ class TestSettingsDescriptor(TransactionCase):
         # against. The assertion itself is unchanged: these six are what the
         # DESCRIPTOR ships, and a category registered by a later module is not
         # in this file at all.
+        #
+        # ACCESS P9 amendment: a SEVENTH door, `pb_company_profile`. It is the
+        # first tag in this list that is not a payroll cockpit or the
+        # platform's — it is the customer's own letterhead — and it is the one
+        # card of the appended "company" category.
         self.assertEqual(
             sorted(set(_RE_TAG.findall(_code(_js())))),
-            ['pb_formula_studio', 'pb_integrations', 'pb_mapping_studio',
-             'pb_statutory', 'pb_structures', 'pb_tenants'],
-            "the tags are the payroll cockpits plus Tenants. The hub's own "
+            ['pb_company_profile', 'pb_formula_studio', 'pb_integrations',
+             'pb_mapping_studio', 'pb_statutory', 'pb_structures',
+             'pb_tenants'],
+            "the tags are the payroll cockpits plus Tenants and Your company. "
+            "The hub's own "
             "return door is an XMLID, not a tag — a bare tag reaches the action "
             "service with no NAME, and the breadcrumb reads 'Unnamed'")
 
@@ -222,7 +247,8 @@ class TestSettingsDescriptor(TransactionCase):
         self.assertIn('card.context', opencard)
 
     def test_no_python_style_implicit_string_concatenation(self):
-        for fname in ('settings_hub.js', 'settings_palette.js'):
+        for fname in ('settings_hub.js', 'settings_palette.js',
+                      'company_profile.js'):
             path = get_module_path('pb_settings') + '/static/src/js/' + fname
             with open(path, encoding='utf-8') as fh:
                 src = fh.read()

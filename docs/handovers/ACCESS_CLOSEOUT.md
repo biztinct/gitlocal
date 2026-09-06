@@ -255,6 +255,66 @@ the throwaway accounts `p5.tenantadmin@` / `p5.systemadmin@` (archived) and the
 
 ---
 
+## 7b. Runbook — keeping a customer in step with the master
+
+**The rule, in your words (2026-09-02):** *"From now on all tenant databases
+should get installed once master gets it, except anything related to the
+platform cockpit or anything which can interfere or be misused against the
+master tenant / platform functions."*
+
+That rule now lives in the product, not in a note.
+
+### What to press
+
+1. Sign in to **payobook.com** → left menu → **Settings** → **Companies &
+   Tenants** (Tenant Mission Control).
+2. Top right: **In step with master**.
+3. The page lists every customer, how many parts of the product they have, and
+   how many they are behind. **Show the detail** opens two columns: what should
+   be installed, and what is never installed here — each with the reason.
+4. **Install the N missing** does it, for that one customer. It asks first.
+
+### What is never installed on a customer's database
+
+| Part | Why it stays here |
+|---|---|
+| Tenant Mission Control | It creates, backs up, restores and deletes every database on the fleet, including the master. |
+| Demo Environment | Made-up employees and pay runs, indistinguishable from real staff inside a real payroll. |
+| Demo Registration Portal | It hands out logins to a demonstration world. |
+| Website | Our public marketing site. A customer's address is not our shop window. |
+
+Anything else the master gains is offered to every customer. A part of the
+product written for the platform in future is refused by default (its name has
+to start with `pb_platform`) rather than shipped by accident.
+
+### Two things this deliberately does NOT do
+
+- **It never installs on its own.** Not on a deploy, not on an upgrade, not on
+  a timer. A customer's database must not gain a part of the product because
+  somebody upgraded something else. The page says so on the page.
+- **It never takes anything away.** Something a customer has and the master
+  does not is left alone.
+
+### The one thing to know when syncing a customer for the first time
+
+Installing a whole family of applications in one go seeds the plain-English
+role catalogue at the moment the Access home's turn comes round — which can be
+before the applications installed a second later exist. The button handles this
+(it re-reads the catalogue afterwards). Doing it by hand from the server needs
+**two runs**: everything else first, then `biz_access,pb_vendor_access`. The
+"Tenant administrator" bundle is the one thing the button's second pass will not
+widen — by design, because widening a role nobody pressed anything for is the
+outcome the Access home refuses everywhere else. If it comes out short, tick the
+missing abilities onto it in the role builder; the audit trail records it.
+
+### Where the list is written down
+
+`pb_tenants/models/service.py` — `TENANT_SYNC_NEVER`, with your rule quoted
+verbatim above it and a test that fails if the quote ever drifts from the code
+it explains.
+
+---
+
 ## 8. How to check any of this yourself
 
 - **Live:** payobook.com → Settings → Access & delegation.
