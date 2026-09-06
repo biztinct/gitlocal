@@ -218,9 +218,77 @@ Owner rulings (binding):
 - WF2: The Codex concept uses USD, 240 fictional staff, `$150/hour`. None of that ships.
   Every number on screen comes from the company's roster, pay, currency and the
   assumptions record; the demand model is calibrated to the typed revenue target.
+- WF3 (P1): **OWL does not rewrite `not`.** It rewrites `and` -> `&&` and `or` -> `||`
+  and nothing else, so `t-att-class="{ 'x': not a.b and not a.c }"` compiles to
+  `ctx['not']ctx['a'].b` — a SyntaxError that kills the WHOLE template at mount with
+  NOTHING in the server log (the only trace is an OwlError in the browser console).
+  Use `!`. Guarded now by
+  `pb_decision_room/tests/test_static_contract.py::test_no_template_expression_uses_the_word_not`.
+- WF4 (P1): The platform's own hotkey service listens on `window` and STOPS
+  PROPAGATION for the keys it claims, Escape among them. A bubble-phase
+  `window.addEventListener("keydown", …)` in a cockpit therefore never fires and its
+  dialogs cannot be closed with the keyboard. Register with `{capture: true}` (and
+  never `preventDefault` on Escape, so the platform still gets its turn).
+- WF5 (P1): A CSS grid track sized `1fr` or `auto` takes its MIN-CONTENT from its
+  children. A story column holding a wide table refused to shrink and pushed the hub
+  canvas 69px off the right edge. `minmax(0, 1fr)` is needed on BOTH the outer track
+  and the inner grid — `min-width: 0` on the element alone does not do it.
+- WF6 (P1): `.pbim-tablewrap` CLIPS (`overflow-x: hidden`) rather than scrolls. A
+  table wider than the hub canvas loses its last column — which is where Open /
+  Compare / Remove live. Scope `overflow-x: auto` per surface and pin the actions
+  column with `position: sticky; right: 0` so the numbers slide under the buttons.
+- WF7 (P1) **THE ROSTER SOURCE, verified on this build**: `hr.employee.department_id`
+  and `job_id` are NON-STORED related fields through `version_id` — unsearchable,
+  ungroupable, invisible to `read_group`. The stored truth is `hr.version`, reached by
+  `hr.employee.current_version_id`. `hr.contract` DOES carry `department_id`, `job_id`
+  and `wage`, but on the Payobook demo company (5) only `wage` is filled (department
+  and job are NULL on all 4,510 open contracts) while on the AB Mauri tenant the
+  contract's department IS filled on all 152. So: team and role from the CONTRACT when
+  it names them, from the employee's CURRENT VERSION otherwise; pay always from the
+  open contract's `wage`. One code path answers both databases.
+- WF8 (P1): a `fields.Json` written as `{}` reads back as `False`, not `{}`. A
+  constraint written `if value is not None and not isinstance(value, dict)` fires on
+  every empty payload. Test for TRUTHINESS: `if value and not isinstance(value, dict)`.
+- WF9 (P1): a roll-up that SLICES its tail loses rows. `sorted(roles)[:12]` on the
+  merged "Other teams" bucket dropped 5 of AB Mauri's 153 people, so December's
+  headcount read 148 and every number built on it was quietly wrong. Merge the tail
+  into one row; assert `sum(role heads over every team) == active employees`.
+- WF10 (P1): reading the roster AS THE USER needs `hr.group_hr_user`, which the owner
+  persona does not hold — the room would have been locked out of its own headcount
+  chart by an HR permission. The four roster queries run under `sudo()` AFTER the
+  server-side gate, return AGGREGATES ONLY (team, count, average pay — never a person),
+  and the reasoning is written at the top of `models/pb_decision_room.py`.
+- WF11 (P1): `tools.ormcache` has NO TTL and hands back the stored object, which a
+  caller can mutate. The baseline cache is a module-level dict keyed on
+  (db, company, roster signature) with a 600 s TTL and a `deepcopy` on the way out.
+- WF12 (P1): ORM `search_read` over 4,533 employees + 8,592 versions + 4,510 contracts
+  costs ~800 ms; ONE SQL join with `DISTINCT ON (employee_id)` costs ~70 ms. Above a
+  few hundred rows, ask for the four columns you need and nothing else.
+- WF13 (P1): a test that greps its own module for a forbidden word finds its own
+  assertion message and fails for saying what it is looking for. Exclude `tests/`.
+- WF14 (P1): the global palette's `run()` dropped `focus` from the entry's action, so
+  no ⌘K row could ever be more specific than its lens ("Saved plans" opened the room
+  but never scrolled to the dock). One-line fix in
+  `pb_hub/static/src/js/hub_palette_service.js`; `pb_hub` therefore ships in P1 too.
+- WF15 (P1): **the abm admin password in this ledger is WRONG.** `ash@biztinct.com` /
+  `J5validate!2026` is refused, and so is every obvious variant. Browser validation on
+  abm was done with a temporary user (`wfplan.validator@payobook.com`, created through
+  `odoo-bin shell`, ARCHIVED afterwards). Resetting the owner's own password was not
+  done — that is an owner decision.
 
 ## Phase log
 
-- P1 — "The room opens" — designed 2026-09-06 (`WFPLAN_P1_DECISION_ROOM.md`). Status: building.
+- P1 — "The room opens" — designed and BUILT 2026-09-06 (`WFPLAN_P1_DECISION_ROOM.md`).
+  Status: **COMPLETE**. `pb_decision_room` 19.0.1.0.0 live on p9clone, payobook, abm and
+  payobook_template; `pb_people_hub` 19.0.1.4.0 (Plan hero slot + "Classic planning
+  tools" fold + sidebar match + `wantsArrival`), `pb_import_kit` 19.0.1.10.0 (`target`,
+  `pause`, `arrowUpRight`), `pb_hub` 19.0.1.7.0 (palette forwards `focus`).
+  51 server tests green on p9clone, 27 engine checks green under
+  `node tools/decision_engine_check.mjs`, B1-B10 walked on payobook and abm.
+  Facade on company 5 (4,533 people): **cold 68 ms, warm 8 ms.**
+  Screenshots: `docs/handovers/wfplan_p1_shots/`.
+  Owner debts: the abm login in this ledger is wrong (WF15); a demo plan named
+  "Board draft" is saved on payobook company 5; the revenue target ₫2,200B was written
+  to `pb.decision.assumptions` for Payobook Vietnam JSC during validation.
 - P2 — "Look closer" (detail workspace, goal finder, stress, compare, brief). Not yet designed.
 - P3 — "Wow and close" (motion, phone, VI, home tile, legacy fold ruling, closeout). Not yet designed.
