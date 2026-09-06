@@ -43,7 +43,7 @@ import { openHub } from "@pb_hub/js/hub_nav";
 
 import { PbPeople } from "@pb_people/js/people";
 import { PbContracts } from "@pb_contracts/js/contracts";
-import { PlanLauncher, PLAN_GATE } from "@pb_people_hub/js/plan_launcher";
+import { PlanLauncher, PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_launcher";
 
 /** `hr.employee`'s READ access. */
 export const EMPLOYEE_GATE = [
@@ -105,11 +105,29 @@ export class PbPeopleHub extends Component {
                 ...this.extraLenses(),
                 // FLEET P4. Headcount planning is sold on its own; Employees
                 // and Contracts never are.
+                // `wantsArrival` because a deep link can be more specific
+                // than a lens: "open the saved plans" has to reach the planning
+                // product mounted inside this launcher, and the shell only
+                // hands the payload to a lens that says it reads one.
                 { key: "plan", icon: "trendingUp", label: _t("Plan"),
-                  Component: PlanLauncher, groups: PLAN_GATE,
-                  feature: "people_plan" },
+                  Component: PlanLauncher, groups: this.planGate(),
+                  wantsArrival: true, feature: "people_plan" },
             ],
         };
+    }
+
+    /**
+     * Who is offered the Plan lens.
+     *
+     * The UNION of the Workforce Planning tiers and whatever the registered
+     * planning product is offered to. Before the Decision Room the two were the
+     * same set; they are not any more, and taking only the first would hide the
+     * lens from somebody who holds the Decision Room role and no legacy
+     * planning group — the exact shape of W95, with the gate on the wrong door.
+     * Read ONCE, in setup, like everything else in this config.
+     */
+    planGate() {
+        return [...new Set([...PLAN_GATE, ...heroGroups()])];
     }
 
     /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
