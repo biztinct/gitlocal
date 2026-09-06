@@ -25,6 +25,35 @@
         margin: 0 auto;
     }
 
+    // WFPLAN P1. When a planning PRODUCT is registered into the hero slot it
+    // owns the whole canvas: the 860px reading column is right for seven rows
+    // of text and wrong for a two-column planning room, and the launcher's own
+    // padding would sit outside the product's.
+    &:has(.pbpl-wrap--hero) { padding: 0; }
+    .pbpl-wrap--hero { max-width: none; }
+
+    // The seven legacy screens, folded away under the product but never
+    // removed: the owner ruling is that they stay reachable until they are
+    // retired on purpose.
+    .pbpl-classic {
+        max-width: 860px;
+        margin: 18px auto 0;
+        padding: 14px 20px 4px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+
+        > summary {
+            cursor: pointer;
+            list-style: none;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--pbim-muted, #64748B);
+            &::-webkit-details-marker { display: none; }
+            &:before { content: "\25B8  "; }
+        }
+        &[open] > summary:before { content: "\25BE  "; }
+        &[open] > summary { margin-bottom: 12px; }
+    }
+
     .pbpl-h {
         margin: 0 0 3px;
         font-size: 18px;

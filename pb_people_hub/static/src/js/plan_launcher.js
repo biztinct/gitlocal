@@ -60,6 +60,31 @@ const WFP_ADMIN = "pb_hr_workforce_planning.group_wfp_admin";
 export const PLAN_GATE = [WFP_USER, WFP_MANAGER, WFP_ADMIN];
 
 /**
+ * WFPLAN P1 — where a planning PRODUCT bolts itself onto the Plan lens.
+ *
+ *     registry.category(PLAN_HERO).add("decision_room", {
+ *         id, Component, groups,
+ *     }, { sequence: 10 });
+ *
+ * The owner ruling above is unchanged: the seven legacy screens are still
+ * launched, still unmodified, still opening what they opened yesterday. What
+ * changes is what the lens LANDS on. When something is registered here it
+ * renders above them and the seven fold away under "Classic planning tools";
+ * when nothing is, the fold is open and this page reads exactly as it did.
+ *
+ * A REGISTRY rather than an import, for the reason the hub's own lens registry
+ * exists: `pb_decision_room` depends on this module, so this module cannot
+ * import it back without a cycle no manifest can express.
+ */
+export const PLAN_HERO = "pb_people_hub_plan_hero";
+
+/** The groups the registered hero is offered to, for the lens gate. */
+export function heroGroups() {
+    return [...new Set(registry.category(PLAN_HERO).getAll()
+        .flatMap((h) => h.groups || []))];
+}
+
+/**
  * The seven cards, in the order the retired PLANNING section had them.
  *
  * `gate` is the set of groups `ir.model.access` grants READ on `model` — read
@@ -122,12 +147,19 @@ export class PlanLauncher extends Component {
     static template = "pb_people_hub.PlanLauncher";
     static props = {
         embedded: { type: Boolean, optional: true },
+        arrival: { type: Object, optional: true },
         "*": true,
     };
 
     setup() {
         this.orm = useService("orm");
         this.actionService = useService("action");
+
+        // Read ONCE, in setup. The props handed on are memoised for the same
+        // reason the hub memoises a lens's: a getter returning a fresh object
+        // makes OWL see the child's props as changed on every repaint.
+        this.hero = registry.category(PLAN_HERO).getAll()[0] || null;
+        this.heroProps = { inPlan: true, arrival: this.props.arrival || null };
 
         this.state = useState({
             resolved: false,
