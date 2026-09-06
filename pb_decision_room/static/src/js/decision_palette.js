@@ -15,7 +15,13 @@
  *      synthesised with no action NAME, so anything returning through a
  *      breadcrumb lands on a crumb labelled "Unnamed".
  *
- *   3. `/odoo/action-pb_decision_room` — the standalone action record, for a
+ *   3. **The Home hub's own lens.** The owner's day starts on Home, and the
+ *      room is a thing an owner opens on the way to a board meeting rather
+ *      than a thing they navigate to through People. It is the SAME component
+ *      mounted in a second shell — only the lens-memory key differs — so
+ *      there is no second copy of the room to keep in step with the first.
+ *
+ *   4. `/odoo/action-pb_decision_room` — the standalone action record, for a
  *      deep link or a bookmark. The component renders the same, with the back
  *      chip the arrival protocol gives it.
  *
@@ -26,6 +32,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { PLAN_HERO } from "@pb_people_hub/js/plan_launcher";
+import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { PbDecisionRoom } from "@pb_decision_room/js/decision_room";
 
 /** Who is offered the room. The facade decides who actually gets it. */
@@ -40,6 +47,23 @@ registry.category(PLAN_HERO).add("decision_room", {
     Component: PbDecisionRoom,
     groups: DECISION_GATE,
 }, { sequence: 10 });
+
+/**
+ * The Home lens.
+ *
+ * `feature: "people_plan"` is the same switch that governs the People hub's
+ * Plan lens, so a tenant that has planning turned off does not get it back
+ * through a second door. The mapping the shell reads for the deep-link form
+ * of the same lens lives in `pb_hub/static/src/js/hub_features.js`.
+ */
+registry.category(HOME_LENSES).add("decide", {
+    key: "decide",
+    icon: "target",
+    label: _t("Decision Room"),
+    Component: PbDecisionRoom,
+    groups: DECISION_GATE,
+    feature: "people_plan",
+}, { sequence: 30 });
 
 const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 

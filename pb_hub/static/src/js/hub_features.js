@@ -101,6 +101,11 @@ export const FEATURE_BY_LENS = {
     "pb_payhub.action_pb_pay_hub#adjust": "retro_proration",
     "pb_people_hub#plan": "people_plan",
     "pb_people_hub.action_pb_people_hub#plan": "people_plan",
+    // The Decision Room is reachable from Home as well as from People, and
+    // one switch has to govern both doors — a tenant with planning turned
+    // off must not find it again on the home page.
+    "pb_home_hub#decide": "people_plan",
+    "pb_home_hub.action_pb_home_hub#decide": "people_plan",
 };
 
 /** Everything on. The answer whenever there is nothing to read. */
