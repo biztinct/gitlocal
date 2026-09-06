@@ -191,6 +191,289 @@ export function drawHorizon(canvas, o) {
     return true;
 }
 
+/**
+ * The palette of the LIGHT cards — the three charts in the detail workspace
+ * sit on white, not on the stage, and a canvas cannot read a custom property
+ * without a `getComputedStyle` round trip on every draw.
+ */
+export const PAPER = {
+    ink: "#1E1B2E",
+    sub: "#64748B",
+    line: "#E7E4F0",
+    primary: "#5A4BB0",
+    soft: "#CBC2EE",
+    teal: "#0F766E",
+    rose: "#DC2668",
+    good: "#8477BF",
+    bad: "#E0A97F",
+    dark: "#352F4E",
+    dim: "#CBB5C1",
+};
+
+const MONTHS_3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Two lines of a label, split near the middle on a word boundary. */
+function twoLines(label) {
+    const words = String(label || "").split(" ");
+    if (words.length < 2) { return [label, ""]; }
+    const cut = Math.ceil(words.length / 2);
+    return [words.slice(0, cut).join(" "), words.slice(cut).join(" ")];
+}
+
+/**
+ * Will the work and the team line up?
+ *
+ * Three lines in HOURS: the work arriving, what the team could deliver if
+ * every hour found work, and what is actually delivered once the two are
+ * matched shift by shift. The gap between the first two is the story; the
+ * third says how much of it is being closed.
+ *
+ * @param {object} o  demand[12], capacity[12], served[12], month, fmt(v)
+ */
+export function drawDemand(canvas, o) {
+    const g = canvas2d(canvas);
+    if (!g) { return false; }
+    const { ctx, w, h } = g;
+    const pad = { l: w < 420 ? 44 : 58, r: 14, t: 16, b: 26 };
+    const sets = [
+        { values: o.demand || [], colour: PAPER.rose, dash: [4, 4] },
+        { values: o.capacity || [], colour: PAPER.teal, dash: [2, 4] },
+        { values: o.served || [], colour: PAPER.primary, dash: [] },
+    ].filter((s) => s.values.length === 12);
+    if (!sets.length) { return false; }
+    const max = Math.max(...sets.flatMap((s) => s.values), 1) * 1.15;
+    const X = (i) => pad.l + (w - pad.l - pad.r) * i / 11;
+    const Y = (v) => pad.t + (h - pad.t - pad.b) * (1 - v / max);
+
+    ctx.font = "9px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    for (let i = 0; i <= 4; i++) {
+        const v = max * i / 4;
+        ctx.strokeStyle = PAPER.line;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, Y(v));
+        ctx.lineTo(w - pad.r, Y(v));
+        ctx.stroke();
+        ctx.fillStyle = PAPER.sub;
+        ctx.fillText(o.fmt(v), pad.l - 7, Y(v) + 3);
+    }
+    // the month being explored
+    if (o.month >= 0 && o.month <= 11) {
+        ctx.strokeStyle = "rgba(90,75,176,.22)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(X(o.month), pad.t);
+        ctx.lineTo(X(o.month), h - pad.b);
+        ctx.stroke();
+    }
+    for (const set of sets) {
+        ctx.beginPath();
+        set.values.forEach((v, i) => (i ? ctx.lineTo(X(i), Y(v))
+                                       : ctx.moveTo(X(i), Y(v))));
+        ctx.setLineDash(set.dash);
+        ctx.strokeStyle = set.colour;
+        ctx.lineWidth = set.dash.length ? 1.7 : 2.6;
+        ctx.lineJoin = "round";
+        ctx.stroke();
+        ctx.setLineDash([]);
+        if (o.month >= 0 && o.month <= 11) {
+            ctx.beginPath();
+            ctx.arc(X(o.month), Y(set.values[o.month]), 3.4, 0, Math.PI * 2);
+            ctx.fillStyle = set.colour;
+            ctx.fill();
+        }
+    }
+    ctx.textAlign = "center";
+    ctx.fillStyle = PAPER.sub;
+    ctx.font = "9px system-ui, sans-serif";
+    MONTHS_3.forEach((name, i) => {
+        if (w > 440 || i % 2 === 0) { ctx.fillText(name, X(i), h - 8); }
+    });
+    return true;
+}
+
+/**
+ * Every difference has a reason — the profit bridge.
+ *
+ * A waterfall from the comparison to this plan: one bar per step, each
+ * starting where the last one left off, with a dotted connector so the eye
+ * can follow the running level. The two ends are drawn from zero, because
+ * they are totals and not differences.
+ *
+ * @param {object} o  start, end, steps[{label,value}], startName, fmt(v),
+ *                    signed(v)
+ */
+export function drawBridge(canvas, o) {
+    const g = canvas2d(canvas);
+    if (!g) { return false; }
+    const { ctx, w, h } = g;
+    const pad = { l: w < 460 ? 52 : 64, r: 12, t: 22, b: 48 };
+    const items = [
+        { label: o.startName || "Comparison", value: o.start, total: true },
+        ...(o.steps || []).map((s) => ({ label: s.label, value: s.value })),
+        { label: "Your plan", value: o.end, total: true },
+    ];
+    // THE SCALE IS THE JOURNEY, NOT THE DESTINATION.
+    //
+    // Anchoring the axis at zero is the obvious thing to do and it makes this
+    // chart useless: on a ₫286 billion profit, a ₫2 billion step is four
+    // pixels tall, so the waterfall reads as two towers with a flat dotted
+    // line between them and the whole point — WHY it changed — is invisible.
+    // So the axis spans the running level only, and the two totals are drawn
+    // as columns from the floor of that axis. The footnote under the chart
+    // says the scale does not start at zero, because a column that is not
+    // proportional has to say so.
+    let run = 0;
+    let lo = Math.min(o.start, o.end);
+    let hi = Math.max(o.start, o.end);
+    for (const item of items) {
+        if (item.total) { run = item.value; } else { run += item.value; }
+        lo = Math.min(lo, run);
+        hi = Math.max(hi, run);
+    }
+    const span = (hi - lo) || Math.max(1, Math.abs(hi) * 0.02);
+    lo -= span * 0.35;
+    hi += span * 0.22;
+    const n = items.length;
+    const slot = (w - pad.l - pad.r) / n;
+    const bw = Math.min(48, Math.max(6, slot * 0.6));
+    const Y = (v) => pad.t + (h - pad.t - pad.b) * (hi - v) / (hi - lo || 1);
+
+    ctx.font = "9px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    for (let k = 0; k <= 4; k++) {
+        const v = lo + (hi - lo) * k / 4;
+        ctx.strokeStyle = PAPER.line;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, Y(v));
+        ctx.lineTo(w - pad.r, Y(v));
+        ctx.stroke();
+        ctx.fillStyle = PAPER.sub;
+        ctx.fillText(o.fmt(v), pad.l - 7, Y(v) + 3);
+    }
+
+    let level = 0;
+    items.forEach((item, i) => {
+        const cx = pad.l + slot * i + slot / 2;
+        const x0 = cx - bw / 2;
+        let top;
+        let bottom;
+        let colour;
+        if (item.total) {
+            top = Y(item.value);
+            bottom = h - pad.b;          // a column from the floor of the axis
+            colour = PAPER.dark;
+            level = item.value;
+        } else {
+            const from = level;
+            const to = level + item.value;
+            top = Y(Math.max(from, to));
+            bottom = Y(Math.min(from, to));
+            colour = item.value >= 0 ? PAPER.good : PAPER.bad;
+            level = to;
+        }
+        ctx.fillStyle = colour;
+        ctx.beginPath();
+        const height = Math.max(2, bottom - top);
+        if (ctx.roundRect) { ctx.roundRect(x0, top, bw, height, 3); }
+        else { ctx.rect(x0, top, bw, height); }
+        ctx.fill();
+        if (i < n - 1) {
+            ctx.strokeStyle = "#B2ADC7";
+            ctx.setLineDash([2, 3]);
+            ctx.beginPath();
+            ctx.moveTo(x0 + bw, Y(level));
+            ctx.lineTo(pad.l + slot * (i + 1) + slot / 2 - bw / 2, Y(level));
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        ctx.textAlign = "center";
+        ctx.fillStyle = PAPER.ink;
+        ctx.font = "600 9px system-ui, sans-serif";
+        ctx.fillText(item.total ? o.fmt(item.value) : o.signed(item.value),
+                     cx, top - 7);
+        ctx.fillStyle = PAPER.sub;
+        ctx.font = "8px system-ui, sans-serif";
+        const [one, two] = twoLines(item.label);
+        ctx.fillText(one, cx, h - pad.b + 17);
+        if (two) { ctx.fillText(two, cx, h - pad.b + 27); }
+    });
+    return true;
+}
+
+/**
+ * How much room do we have? — profit against additional people.
+ *
+ * Teal where every goal still holds, rose where one has broken. The segments
+ * between two met points are teal too, so a run reads as a range rather than
+ * as a row of dots.
+ *
+ * @param {object} o  points[{add,profit,met}], fmt(v)
+ */
+export function drawRoom(canvas, o) {
+    const g = canvas2d(canvas);
+    if (!g) { return false; }
+    const { ctx, w, h } = g;
+    const points = o.points || [];
+    if (points.length < 2) { return false; }
+    const pad = { l: w < 460 ? 48 : 62, r: 16, t: 20, b: 30 };
+    const values = points.map((p) => p.profit);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const span = Math.max(Math.abs(max) * 1e-6, max - min, 1);
+    const low = min - span * 0.18;
+    const high = max + span * 0.18;
+    const X = (i) => pad.l + (w - pad.l - pad.r) * i
+        / Math.max(1, points.length - 1);
+    const Y = (v) => pad.t + (h - pad.t - pad.b) * (high - v) / (high - low);
+
+    ctx.font = "9px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    for (let i = 0; i <= 4; i++) {
+        const v = low + (high - low) * i / 4;
+        ctx.strokeStyle = PAPER.line;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, Y(v));
+        ctx.lineTo(w - pad.r, Y(v));
+        ctx.stroke();
+        ctx.fillStyle = PAPER.sub;
+        ctx.fillText(o.fmt(v), pad.l - 7, Y(v) + 3);
+    }
+    for (let i = 1; i < points.length; i++) {
+        ctx.beginPath();
+        ctx.moveTo(X(i - 1), Y(points[i - 1].profit));
+        ctx.lineTo(X(i), Y(points[i].profit));
+        ctx.strokeStyle = (points[i].met && points[i - 1].met)
+            ? PAPER.teal : PAPER.dim;
+        ctx.lineWidth = 2.4;
+        ctx.stroke();
+    }
+    const radius = points.length > 35 ? 2.2 : 3.2;
+    points.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.arc(X(i), Y(p.profit), radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.met ? PAPER.teal : PAPER.rose;
+        ctx.fill();
+    });
+    ctx.fillStyle = PAPER.sub;
+    const marks = [...new Set([0, Math.floor((points.length - 1) / 2),
+                               points.length - 1])];
+    marks.forEach((i) => {
+        // The first and last labels sit ON the edge of the plot, so they are
+        // aligned INTO it — centred, the last one runs off the canvas and
+        // reads "+200 peo".
+        ctx.textAlign = i === 0 ? "left"
+            : (i === points.length - 1 ? "right" : "center");
+        ctx.fillText(`+${points[i].add} people`, X(i), h - 9);
+    });
+    ctx.textAlign = "center";
+    return true;
+}
+
 /** How much of the work the team can deliver, as a dial. */
 export function drawRing(canvas, o) {
     const g = canvas2d(canvas);

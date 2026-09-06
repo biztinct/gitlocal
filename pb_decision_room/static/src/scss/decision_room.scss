@@ -776,12 +776,476 @@ $dr-teal:       #0F766E;
         border: 1px solid rgba(127, 112, 181, .6);
         box-shadow: 0 8px 30px rgba(41, 36, 61, .22);
     }
+
+    // =================================================================
+    //  PHASE 2 — the detail workspace, the finder, stress and the brief
+    // =================================================================
+
+    // ----------------------------------------------- the money box
+    .dr-money--big input { font-size: 17px; }
+    // The compact value carries its own symbol, so the box holds one control
+    // and the number starts at the left edge where a number belongs.
+    .dr-money input { text-align: left; }
+    .dr-money--shake { animation: dr-shake .42s ease; }
+
+    .dr-pos { color: $dr-good; }
+    .dr-neg { color: $dr-rose; }
+    .dr-strong { font-weight: 700; }
+
+    // -------------------------------------------- one small experiment
+    .dr-next {
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        border-radius: var(--pbim-r, 14px); padding: 14px 15px;
+        background: #F6F4FD;
+        .pbim-eyebrow { display: flex; align-items: center; gap: 5px; }
+        strong {
+            display: block; font-size: 13px; line-height: 1.5; margin: 8px 0 0;
+            color: var(--pbim-ink, #1B1733); font-weight: 600;
+        }
+        p {
+            font-size: 10px; line-height: 1.7; margin: 6px 0 10px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-next-btn {
+        display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+        font-size: 11px; font-weight: 600; padding: 8px 11px;
+        border-radius: var(--pbim-r-sm, 10px); background: #fff;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        color: var(--pbim-primary, #5A4BB0);
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+        &:disabled { opacity: .5; cursor: not-allowed; }
+    }
+
+    // ------------------------------------------- trying a possibility
+    .dr-preview {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 14px 18px; border-radius: var(--pbim-r, 14px);
+        background: #FFF7EC; border: 1px solid #F0D5AC;
+        animation: dr-drop .28s ease-out;
+    }
+    .dr-preview-ic {
+        width: 36px; height: 36px; flex: none; display: grid;
+        place-items: center; border-radius: 50%; background: #FBE9CE;
+        color: $dr-amber;
+    }
+    .dr-preview-tx {
+        flex: 1; min-width: 200px;
+        .pbim-eyebrow { color: $dr-amber; }
+        strong {
+            display: block; font-size: 14px; font-weight: 600; margin: 5px 0 0;
+            color: var(--pbim-ink, #1B1733);
+        }
+        p { font-size: 11px; line-height: 1.65; margin: 4px 0 0; color: #8A6A3A; }
+    }
+    .dr-preview-actions { display: flex; gap: 8px; flex: none; }
+
+    // ---------------------------------------- the cards became doors
+    .dr-card {
+        text-align: left; cursor: pointer; font: inherit;
+        display: block; width: 100%;
+        transition: border-color .16s, box-shadow .16s;
+        &:hover {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            box-shadow: 0 8px 22px rgba(36, 31, 82, .10);
+        }
+        &.is-picked {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 2px var(--pbim-ring, rgba(90, 75, 176, .16));
+        }
+    }
+    .dr-card-go { margin-left: auto; color: var(--pbim-primary, #5A4BB0); }
+
+    // ------------------------------------------- the detail workspace
+    .dr-work { padding: 0; overflow: hidden; }
+    .dr-tabstrip {
+        display: flex; gap: 2px; padding: 8px 10px 0; overflow-x: auto;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        background: #FAFAFE;
+        button {
+            display: inline-flex; align-items: center; gap: 6px; flex: none;
+            font-size: 11px; font-weight: 600; padding: 10px 14px;
+            border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+            background: transparent; color: var(--pbim-muted, #64748B);
+            white-space: nowrap;
+            &:hover { color: var(--pbim-ink, #1B1733); }
+            &.is-on {
+                color: var(--pbim-primary, #5A4BB0);
+                border-bottom-color: var(--pbim-primary, #5A4BB0);
+            }
+        }
+    }
+    .dr-panel-detail { padding: 20px 22px 22px; animation: dr-slide .24s ease-out; }
+    .dr-detail-h {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+        h3 {
+            font-size: 19px; font-weight: 600; letter-spacing: -.5px;
+            margin: 6px 0 4px; color: var(--pbim-ink, #1B1733);
+        }
+        p { font-size: 11px; margin: 0; color: var(--pbim-muted, #64748B); }
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+
+    // ------------------------------------------------ 1 · work & shifts
+    .dr-demand {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); padding: 14px 16px;
+        background: #FCFCFF;
+    }
+    .dr-demand-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        flex-wrap: wrap; font-size: 11px; color: var(--pbim-muted, #64748B);
+        strong { font-size: 12px; color: var(--pbim-ink, #1B1733); }
+    }
+    .dr-demand-c {
+        height: 208px; margin-top: 8px;
+        canvas { display: block; width: 100%; height: 100%; }
+    }
+    .dr-legend {
+        display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+        > span {
+            display: flex; align-items: center; gap: 5px; font-size: 9px;
+            color: var(--pbim-muted, #64748B);
+        }
+        i { display: inline-block; width: 13px; height: 3px; border-radius: 2px; }
+        .dr-l-demand { background: $dr-rose; }
+        .dr-l-cap { background: $dr-teal; }
+        .dr-l-served { background: var(--pbim-primary, #5A4BB0); }
+        .dr-l-met { background: $dr-teal; height: 7px; width: 7px;
+                    border-radius: 50%; }
+        .dr-l-miss { background: $dr-rose; height: 7px; width: 7px;
+                     border-radius: 50%; }
+    }
+    .dr-shifts {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px; margin: 16px 0;
+    }
+    .dr-shift {
+        border: 1px solid var(--pbim-line, #E2E8F0); min-width: 0;
+        border-radius: var(--pbim-r-sm, 10px); padding: 13px 14px;
+        background: #fff;
+    }
+    .dr-shift-h {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 12px; font-weight: 650; color: var(--pbim-ink, #1B1733);
+    }
+    .dr-shift-ic { color: var(--pbim-primary, #5A4BB0); display: flex; }
+    .dr-shift-band {
+        font-size: 9px; margin-top: 4px; color: var(--pbim-muted, #64748B);
+    }
+    .dr-shift-n {
+        display: flex; align-items: baseline; gap: 7px; margin: 11px 0 9px;
+        flex-wrap: wrap;
+        strong {
+            font-size: 24px; font-weight: 400; letter-spacing: -.7px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        small { font-size: 9px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-cap {
+        position: relative; height: 20px; border-radius: 6px;
+        background: #EEECF5; overflow: hidden;
+        > i {
+            position: absolute; inset: 0 auto 0 0; display: block;
+            background: var(--pbim-primary, #5A4BB0); border-radius: 6px;
+            transition: width .3s ease;
+            &.dr-cap--thin { background: $dr-amber; }
+        }
+        > b {
+            position: absolute; top: 0; bottom: 0; width: 2px;
+            background: rgba(30, 27, 46, .45); z-index: 2;
+        }
+        > span {
+            position: absolute; inset: 0; display: flex; align-items: center;
+            justify-content: flex-end; padding: 0 8px; font-size: 9px;
+            font-weight: 600; color: var(--pbim-ink, #1B1733); z-index: 3;
+        }
+    }
+    .dr-shift-s {
+        font-size: 10px; line-height: 1.6; margin: 8px 0 0;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-shift-levers {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 22px;
+    }
+
+    // ------------------------------------------ 2 · why profit changed
+    .dr-bridge-total {
+        text-align: right; flex: none;
+        span { display: block; font-size: 9px; letter-spacing: .5px;
+               color: var(--pbim-muted, #64748B); }
+        strong { font-size: 24px; font-weight: 400; letter-spacing: -.7px;
+                 color: var(--pbim-ink, #1B1733); }
+    }
+    // WF6: a wide picture SCROLLS inside its own box. It never widens the page.
+    .dr-bridge {
+        overflow-x: auto; overflow-y: hidden;
+        canvas { display: block; width: 100%; min-width: 620px; height: 260px; }
+    }
+    .dr-bridge-list {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 22px; margin-top: 12px;
+    }
+    .dr-bridge-i {
+        display: flex; justify-content: space-between; gap: 12px;
+        align-items: flex-start; padding: 9px 0;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        > span { font-size: 11px; font-weight: 600; min-width: 0; }
+        small {
+            display: block; font-size: 10px; font-weight: 400; margin-top: 3px;
+            line-height: 1.5; color: var(--pbim-muted, #64748B);
+        }
+        strong {
+            font-size: 12px; white-space: nowrap; flex: none;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // ---------------------------------------------- 3 · people & pay
+    .dr-people-grid {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        h4 {
+            font-size: 11px; font-weight: 650; margin: 0 0 14px;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .dr-team-row { margin-bottom: 13px; min-width: 0; }
+    .dr-team-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        font-size: 11px; margin-bottom: 5px; align-items: baseline;
+        > span:first-child { min-width: 0; overflow: hidden;
+                             text-overflow: ellipsis; white-space: nowrap; }
+        strong { font-size: 13px; font-weight: 650; }
+        small { font-size: 9px; margin-left: 6px;
+                color: var(--pbim-muted, #64748B); }
+    }
+    .dr-team-track {
+        position: relative; height: 14px; border-radius: 5px;
+        background: #F2F1F7; overflow: hidden;
+        i {
+            position: absolute; inset: 0 auto 0 0; height: 8px; top: 0;
+            border-radius: 5px 5px 0 0;
+            background: var(--pbim-primary, #5A4BB0);
+        }
+        b {
+            position: absolute; left: 0; bottom: 0; height: 5px;
+            border-radius: 0 0 5px 5px; background: #CFCADF;
+        }
+    }
+    .dr-pay { min-width: 0; }
+    .dr-strip {
+        display: flex; height: 30px; border-radius: 7px; overflow: hidden;
+        margin-bottom: 14px;
+        > span {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 650; overflow: hidden;
+            white-space: nowrap;
+        }
+        .dr-strip-take { background: var(--pbim-primary, #5A4BB0); color: #fff; }
+        .dr-strip-ded { background: #DED9EF; color: #4A4363; }
+    }
+    .dr-employer {
+        margin-top: 12px; padding: 4px 12px 6px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8);
+    }
+
+    // ------------------------------------------------ 4 · room to hire
+    .dr-room-pick {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        flex: none;
+        label { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-room-result {
+        padding: 13px 16px; border-radius: var(--pbim-r-sm, 10px);
+        background: #EEF6F4; border: 1px solid #CFE5E0; margin-bottom: 14px;
+        strong {
+            display: block; font-size: 16px; font-weight: 650;
+            letter-spacing: -.4px; color: #0E4F49;
+        }
+        span {
+            display: block; font-size: 11px; line-height: 1.65; margin-top: 5px;
+            color: #4A6B67;
+        }
+    }
+    .dr-room-chart {
+        height: 220px;
+        canvas { display: block; width: 100%; height: 100%; }
+    }
+    .dr-room-try {
+        display: flex; gap: 7px; flex-wrap: wrap; margin: 14px 0 4px;
+        .pbim-btn { display: inline-flex; align-items: center; gap: 5px; }
+    }
+
+    // -------------------------------------------- the reality check
+    .dr-stress { padding: 18px 20px; }
+    .dr-stress-opts {
+        display: flex; gap: 7px; flex-wrap: wrap; flex: none;
+        button {
+            padding: 9px 14px; cursor: pointer; text-align: center;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); background: #fff;
+            color: var(--pbim-text, #1B1733);
+            span { display: block; font-size: 13px; font-weight: 650; }
+            small { display: block; font-size: 9px; margin-top: 2px;
+                    color: var(--pbim-muted, #64748B); }
+            &:hover { border-color: var(--pbim-primary-light, #CBC2EE); }
+            &.is-on {
+                background: var(--pbim-primary, #5A4BB0); border-color: transparent;
+                span, small { color: #fff; }
+            }
+        }
+    }
+    .dr-stress-out {
+        font-size: 12px; line-height: 1.8; margin: 4px 0 0;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    // ------------------------------------------------ the goal finder
+    .dr-find {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 14px; flex-wrap: wrap; padding: 14px 0 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px;
+                    flex: none; }
+    }
+    .dr-find-note {
+        font-size: 10px; line-height: 1.7; flex: 1; min-width: 200px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-find-empty {
+        display: grid; place-items: center; gap: 6px; text-align: center;
+        padding: 26px 20px; border-radius: var(--pbim-r-sm, 10px);
+        background: #F6F5FC; border: 1px dashed #D9D3EE;
+        color: var(--pbim-primary, #5A4BB0);
+        strong { font-size: 14px; color: var(--pbim-ink, #1B1733); }
+        p {
+            font-size: 11px; line-height: 1.7; margin: 0; max-width: 480px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-paths {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        &.dr-paths--one { grid-template-columns: minmax(0, 1fr); }
+    }
+    .dr-path {
+        border: 1px solid #DDD7F0; border-radius: var(--pbim-r-sm, 10px);
+        padding: 15px 16px; background: #FAF9FE; min-width: 0;
+        display: flex; flex-direction: column;
+        h3 {
+            display: flex; align-items: center; gap: 7px; margin: 6px 0 9px;
+            font-size: 16px; font-weight: 650; letter-spacing: -.4px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        > p {
+            font-size: 10px; line-height: 1.65; margin: 10px 0 12px; flex: 1;
+            color: var(--pbim-muted, #64748B);
+        }
+        &.dr-path--miss { background: #FFFAFB; border-color: #F0DCE3; }
+    }
+    .dr-path-st {
+        display: inline-flex; align-items: center; gap: 5px; font-size: 10px;
+        font-weight: 600; color: $dr-good;
+        i { display: flex; }
+        &.dr-path-st--miss { color: $dr-rose; }
+    }
+    .dr-path-n {
+        margin: 11px 0 12px;
+        strong {
+            display: block; font-size: 23px; font-weight: 400;
+            letter-spacing: -.7px; color: var(--pbim-ink, #1B1733);
+        }
+        small { font-size: 9px; color: var(--pbim-muted, #64748B); }
+        b { font-weight: 650; }
+    }
+    .dr-path-s {
+        display: flex; justify-content: space-between; gap: 10px;
+        font-size: 10px; padding: 5px 0;
+        border-bottom: 1px solid #EBE8F4;
+        span { color: var(--pbim-muted, #64748B); }
+        b { font-weight: 600; text-align: right; }
+    }
+
+    // ------------------------------------------ editable assumptions
+    .dr-edit {
+        margin-top: 6px; padding-top: 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        .pbim-eyebrow { display: inline-flex; align-items: center; gap: 5px; }
+    }
+    .dr-edit-h { margin-bottom: 12px; }
+    .dr-edit-g {
+        margin-bottom: 16px;
+        h3 {
+            font-size: 11px; font-weight: 650; margin: 0 0 9px;
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .dr-edit-rows {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .dr-edit-f {
+        min-width: 0;
+        label {
+            display: block; font-size: 10px; font-weight: 600; margin-bottom: 5px;
+            color: var(--pbim-text, #1B1733);
+        }
+        input[type="number"] {
+            width: 100%; padding: 8px 10px; font: inherit; font-size: 13px;
+            font-weight: 650; color: var(--pbim-primary, #5A4BB0);
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); background: #fff;
+        }
+        small {
+            display: block; font-size: 9px; line-height: 1.55; margin-top: 5px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-money { background: #fff; }
+    }
+    .dr-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .dr-chip {
+        display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+        font-size: 10px; padding: 5px 9px; border-radius: 30px;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+        color: var(--pbim-muted, #64748B);
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            color: var(--pbim-primary, #5A4BB0); font-weight: 600;
+        }
+    }
+
+    // ------------------------------------------------- the dock foot
+    .dr-dock-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-top: 12px;
+        p { margin: 0; }
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
 }
 
 @keyframes dr-travel {
     0% { left: 0; opacity: 0; }
     20% { opacity: 1; }
     100% { left: 100%; opacity: 0; }
+}
+@keyframes dr-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    45% { transform: translateX(4px); }
+    70% { transform: translateX(-2px); }
+}
+@keyframes dr-drop {
+    from { opacity: 0; transform: translateY(-9px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dr-slide {
+    from { opacity: 0; transform: translateX(7px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 @keyframes dr-glow {
     0%, 100% { box-shadow: 0 5px 16px rgba(36, 31, 82, .05); }
@@ -793,6 +1257,7 @@ $dr-teal:       #0F766E;
 @media (max-width: 1400px) {
     .pbim.dr .dr-pills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .pbim.dr .dr-goals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pbim.dr .dr-edit-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1100px) {
@@ -805,6 +1270,9 @@ $dr-teal:       #0F766E;
         .dr-link-l { display: none; }
         .dr-hero > strong { font-size: 44px; }
         .dr-assume { grid-template-columns: 1fr; }
+        .dr-people-grid { grid-template-columns: minmax(0, 1fr); }
+        .dr-bridge-list { grid-template-columns: minmax(0, 1fr); }
+        .dr-paths { grid-template-columns: minmax(0, 1fr); }
     }
 }
 
@@ -834,6 +1302,26 @@ $dr-teal:       #0F766E;
         // that runs out of its own box is a number nobody trusts.
         .dr-money input { font-size: 13px; }
         .dr-goal-entry input { width: 100%; }
+
+        // Phase 2 surfaces on a phone: one column everywhere, the tab strip
+        // scrolls sideways inside itself (it never widens the page), and the
+        // bridge keeps its own scroller (WF6).
+        .dr-panel-detail { padding: 16px 14px 18px; }
+        .dr-shifts { grid-template-columns: minmax(0, 1fr); }
+        .dr-shift-levers { grid-template-columns: minmax(0, 1fr); }
+        .dr-edit-rows { grid-template-columns: minmax(0, 1fr); }
+        .dr-demand-c { height: 180px; }
+        .dr-room-chart { height: 180px; }
+        .dr-detail-h { gap: 10px; }
+        .dr-detail-h .pbim-btn { width: 100%; justify-content: center; }
+        .dr-bridge-total { text-align: left; }
+        .dr-preview-actions { width: 100%; }
+        .dr-preview-actions .pbim-btn { flex: 1; justify-content: center; }
+        .dr-stress-opts { width: 100%; }
+        .dr-stress-opts button { flex: 1; }
+        .dr-find .pbim-btn { width: 100%; justify-content: center; }
+        .dr-dock-foot .pbim-btn { width: 100%; justify-content: center; }
+        .dr-goal-entry .dr-money { width: 100%; }
     }
 }
 
