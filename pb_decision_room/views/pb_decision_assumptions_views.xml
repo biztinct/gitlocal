@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- OFF-MENU on purpose (see the plan views). Phase 1 shows these numbers
-         READ-ONLY inside the room; this is where the person allowed to change
-         them does it until the room grows an editor of its own. -->
+    <!-- OFF-MENU on purpose (see the plan views). The room itself edits these
+         numbers now (Phase 2); this form is where the change HISTORY is read —
+         "Open the change history" in the room's assumptions panel lands here,
+         on the chatter. -->
 
     <record id="view_pb_decision_assumptions_form" model="ir.ui.view">
         <field name="name">pb.decision.assumptions.form</field>
@@ -26,8 +27,16 @@
                         <field name="contribution_cap"/>
                         <field name="allowance_pct"/>
                         <field name="ot_multiplier"/>
-                        <field name="night_uplift_pct"/>
                         <field name="work_days"/>
+                    </group>
+                    <group string="Shifts and when the work arrives">
+                        <field name="shift_evening_pct"/>
+                        <field name="shift_night_pct"/>
+                        <field name="evening_uplift_pct"/>
+                        <field name="night_uplift_pct"/>
+                        <field name="demand_day_pct"/>
+                        <field name="demand_evening_pct"/>
+                        <field name="demand_night_pct"/>
                     </group>
                     <group string="Joining and leaving">
                         <field name="recruit_cost_months"/>
@@ -42,6 +51,7 @@
                     <group string="Everything that is not people">
                         <field name="other_fixed_monthly"/>
                         <field name="other_pct_revenue"/>
+                        <field name="productivity_cost_per_point"/>
                     </group>
                     <group string="Income tax ladder">
                         <field name="pit_ladder"/>
@@ -50,6 +60,7 @@
                         <field name="note" nolabel="1"/>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
