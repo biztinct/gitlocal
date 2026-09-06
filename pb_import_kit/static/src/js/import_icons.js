@@ -196,6 +196,20 @@ export const IC = {
     target:       '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     pause:        '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
     arrowUpRight: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+    // WFPLAN P2 — the detail workspace. `sun`/`sunset`/`moon` are the three
+    // shifts (the concept drew them as ☀ ◐ ☾ glyphs, which this product does
+    // not ship); `printer` is "save this brief as a PDF"; `flask` is the one
+    // small experiment; `route` is a path to a goal; `gitBranch` is the three
+    // directions the goal finder offers; `sliders` is the assumptions panel.
+    // One shared registry, never a module-local map (W2), Lucide paths only.
+    sun:          '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+    sunset:       '<path d="M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M17.66 12.34l1.41-1.41M22 22H2"/><path d="m16 6-4 4-4-4"/><path d="M16 18a4 4 0 0 0-8 0"/>',
+    moon:         '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    printer:      '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/>',
+    flask:        '<path d="M10 2v7.31a1 1 0 0 1-.15.53L4.3 18.6A2 2 0 0 0 6 21.7h12a2 2 0 0 0 1.7-3.1l-5.55-8.76a1 1 0 0 1-.15-.53V2"/><path d="M8.5 2h7M6.5 15h11"/>',
+    route:        '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
+    gitBranch:    '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+    sliders:      '<line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/>',
 };
 
 /**
