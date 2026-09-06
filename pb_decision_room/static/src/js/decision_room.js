@@ -28,7 +28,7 @@
  */
 import {
     Component, useState, useRef, onWillStart, onMounted, onPatched,
-    onWillUnmount,
+    onWillUnmount, onWillUpdateProps,
 } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -36,15 +36,118 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { hubBack, HubBackChip, openHub } from "@pb_hub/js/hub_nav";
 import { makeFormat, MONTHS, monthLong } from "@pb_decision_room/js/decision_format";
-import { drawHorizon, drawRing } from "@pb_decision_room/js/decision_charts";
+import {
+    drawHorizon, drawRing, drawDemand, drawBridge, drawRoom,
+} from "@pb_decision_room/js/decision_charts";
 import {
     compute, defaultState, normalizeState, normalizeGoals, defaultGoals,
-    evaluateGoals, series, stressBand, story, warnings,
-    GOAL_DEFS, GOAL_ORDER, cloneState,
+    evaluateGoals, series, stressBand, story, warnings, bridge, marginal,
+    balanceShifts, payStory, teamsInDecember, headroom, candidates,
+    stressOutcome, briefModel, changes, describeChange,
+    GOAL_DEFS, GOAL_ORDER, cloneState, SHIFTS,
 } from "@pb_decision_room/js/decision_engine";
 
 const UNDO_DEPTH = 40;
 const TWEEN_MS = 350;
+
+/**
+ * A money box a person can actually type into.
+ *
+ * It SHOWS the compact form the rest of the room speaks — ₫2,200B — and
+ * accepts every spelling of the same amount: 2200000000000, "2,200 B",
+ * "2.2 t", "1.5m", with or without the currency symbol. Arrow keys step by
+ * the unit on screen, so up on ₫2,200B is ₫2,201B and not a fraction of a
+ * dong. Text that is not a number at all leaves the old value exactly where
+ * it was and shakes once, because silently zeroing a revenue target is the
+ * worst thing a box like this can do.
+ */
+export class DrMoneyInput extends Component {
+    static template = "pb_decision_room.DrMoneyInput";
+    static props = {
+        value: Number,
+        api: Object,                 // {format, parse, step, symbol}
+        label: String,
+        onCommit: Function,
+        inputId: { type: String, optional: true },
+        min: { type: Number, optional: true },
+        tone: { type: String, optional: true },
+    };
+
+    setup() {
+        this.box = useRef("box");
+        this.state = useState({
+            text: this.props.api.format(this.props.value),
+            editing: false,
+            shake: false,
+        });
+        onWillUpdateProps((next) => {
+            if (!this.state.editing) {
+                this.state.text = next.api.format(next.value);
+            }
+        });
+        // `t-att-value` writes the ATTRIBUTE, and a browser stops mirroring
+        // that into the field the moment somebody types in it. Without this
+        // the box would keep whatever nonsense was typed after a refusal,
+        // while the plan quietly held the old number — the one state a money
+        // box must never be in.
+        onPatched(() => this._sync());
+    }
+
+    _sync() {
+        const el = this.box.el;
+        if (el && !this.state.editing && el.value !== this.state.text) {
+            el.value = this.state.text;
+        }
+    }
+
+    _show(text) {
+        this.state.text = text;
+        if (this.box.el) { this.box.el.value = text; }
+    }
+
+    onFocus() { this.state.editing = true; }
+
+    onInput(event) { this.state.text = event.target.value; }
+
+    /** Enter and blur mean the same thing: "I have finished typing." */
+    onKeydown(event) {
+        if (event.key === "Enter") { event.preventDefault(); this.commit(); }
+        else if (event.key === "Escape") { this.cancel(); }
+        else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+            event.preventDefault();
+            this.nudge(event.key === "ArrowUp" ? 1 : -1);
+        }
+    }
+
+    nudge(direction) {
+        const current = this.props.api.parse(this.state.text);
+        const from = current === null ? this.props.value : current;
+        const step = this.props.api.step(from) || 1;
+        const next = Math.max(this.props.min === undefined ? -Infinity
+            : this.props.min, from + direction * step);
+        this._show(this.props.api.format(next));
+        this.props.onCommit(next);
+    }
+
+    cancel() {
+        this.state.editing = false;
+        this._show(this.props.api.format(this.props.value));
+    }
+
+    commit() {
+        const value = this.props.api.parse(this.state.text);
+        this.state.editing = false;
+        if (value === null
+            || (this.props.min !== undefined && value < this.props.min)) {
+            this._show(this.props.api.format(this.props.value));
+            this.state.shake = true;
+            setTimeout(() => { this.state.shake = false; }, 460);
+            return;
+        }
+        this._show(this.props.api.format(value));
+        this.props.onCommit(value);
+    }
+}
 
 /** The three metrics the stage can show. */
 const METRICS = {
@@ -64,7 +167,7 @@ const METRICS = {
 
 export class PbDecisionRoom extends Component {
     static template = "pb_decision_room.PbDecisionRoom";
-    static components = { HubBackChip };
+    static components = { HubBackChip, DrMoneyInput };
     static props = ["*"];
 
     setup() {
@@ -81,6 +184,18 @@ export class PbDecisionRoom extends Component {
         this.horizonRef = useRef("horizon");
         this.ringRef = useRef("ring");
         this.heroRef = useRef("hero");
+        this.demandRef = useRef("demand");
+        this.bridgeRef = useRef("bridge");
+        this.roomRef = useRef("room");
+
+        /** Stable identities, built ONCE: a money box handed a freshly made
+         *  function on every paint re-renders on every paint (W21). */
+        this.moneyApi = {
+            format: (v) => this.fmt.money(v),
+            parse: (text) => this.fmt.parse(text),
+            step: (v) => this.fmt.step(v),
+            symbol: () => this.fmt.symbol,
+        };
 
         this.state = useState({
             loaded: false,
@@ -103,6 +218,16 @@ export class PbDecisionRoom extends Component {
             roleKey: "",
             moveMonth: 1,
 
+            // the detail workspace
+            detail: "coverage",
+            roomTeam: "",
+            roomRole: "",
+
+            // trying a possibility
+            preview: false,
+            finding: false,
+            searchNote: "",
+
             // dialogs, one at a time
             saveOpen: false,
             saveName: "",
@@ -110,6 +235,10 @@ export class PbDecisionRoom extends Component {
             saveError: "",
             goalsOpen: false,
             assumptionsOpen: false,
+            assumeDraft: {},
+            assumeError: "",
+            assumeBusy: false,
+            briefBusy: false,
 
             // a company with nobody on record can still sketch one
             sketchOpen: false,
@@ -138,6 +267,12 @@ export class PbDecisionRoom extends Component {
         this._resize = null;
         this._toastTimer = null;
         this._rippleAt = 0;
+        this._preview = null;       // {state, goals, scene, historyLength}
+        this._paths = [];           // the three ways the finder found
+        this._room = null;          // the headroom scan, memoised
+        this._roomKey = "";
+        this.assumptionsForm = [];
+        this.assumptionsGroups = [];
 
         this.fmt = makeFormat({});
         this.months = MONTHS;
@@ -184,6 +319,8 @@ export class PbDecisionRoom extends Component {
             this.baseline = data.baseline
                 || { asof: "", headcount: 0, teams: [], source: "" };
             this.assumptions = data.assumptions || {};
+            this.assumptionsForm = data.assumptions_form || [];
+            this.assumptionsGroups = data.assumptions_groups || [];
             this.fmt = makeFormat((data.company || {}).currency || {});
 
             this.planState = defaultState(this.baseline, this.assumptions);
@@ -201,9 +338,16 @@ export class PbDecisionRoom extends Component {
             const firstTeam = (this.baseline.teams || [])[0];
             this.state.teamKey = firstTeam ? firstTeam.key : "";
             this.state.roleKey = "";
+            this.state.roomTeam = this.state.teamKey;
+            this.state.roomRole = "";
+            this.state.detail = (this.planState.target || 0) > 0
+                ? "coverage" : "people";
             this.state.moveMonth = this.planState.start;
             this.state.month = Math.min(11, Math.max(0, new Date().getMonth()));
             this._history = [];
+            this._preview = null;
+            this.state.preview = false;
+            this._clearPaths();
             this._recompute();
         } catch (e) {
             console.warn("pb_decision_room: the room could not load", e);
@@ -283,6 +427,9 @@ export class PbDecisionRoom extends Component {
                                normalizeState(this.planState, base, a),
                                this.fmt),
         };
+        // The headroom scan is a hundred computed years; it is memoised on the
+        // instance and thrown away the moment anything it depended on moves.
+        this._roomKey = "";
         this.state.rev++;
     }
 
@@ -390,7 +537,7 @@ export class PbDecisionRoom extends Component {
         if (this._history.length > UNDO_DEPTH) { this._history.shift(); }
     }
 
-    get canUndo() { return this._history.length > 0; }
+    get canUndo() { return this._history.length > 0 || this.state.preview; }
 
     /** Every lever change lands here, so undo and the ripple are never missed. */
     _apply(patch, sceneName, record = true) {
@@ -459,14 +606,19 @@ export class PbDecisionRoom extends Component {
         this._apply({ moves }, _t("Your working plan"));
     }
 
-    onTarget(event) {
-        const raw = String(event.target.value || "").replace(/[^\d.-]/g, "");
-        const value = Math.max(0, Number(raw) || 0);
-        if (Math.abs(value - (this.planState.target || 0)) < 1e-9) { return; }
-        this._apply({ target: value }, _t("Your working plan"));
+    /** The revenue target, typed the way people write money. */
+    setTarget(value) {
+        const target = Math.max(0, Number(value) || 0);
+        if (Math.abs(target - (this.planState.target || 0)) >= 1e-9) {
+            this._apply({ target }, _t("Your working plan"));
+            if (target > 0 && this.state.detail === "people") {
+                this.state.detail = "coverage";
+            }
+        }
+        this.onTargetCommit();
     }
 
-    /** On blur the target is remembered for everyone, when we may. */
+    /** The target is remembered for everyone, when we may. */
     async onTargetCommit() {
         if (!this.state.canManage) { return; }
         const target = this.planState.target || 0;
@@ -530,6 +682,10 @@ export class PbDecisionRoom extends Component {
 
     // ------------------------------------------------------ undo / reset
     undo() {
+        // Undo, while a possibility is being tried, means "back to my plan" —
+        // it is the same act, and two different ways to leave a preview is one
+        // too many.
+        if (this._preview) { this.backToPlan(); return; }
         if (!this._history.length) { return; }
         const previous = this._history.pop();
         this.planState = previous.state;
@@ -970,28 +1126,16 @@ export class PbDecisionRoom extends Component {
     }
 
     /**
-     * The unit a MONEY goal is typed in.
+     * The six goal cards.
      *
-     * Nobody types ₫327,361,352,250 into a box, and nobody reads it back. So
-     * the money goals are entered in the same unit the whole screen speaks —
-     * billions here, millions on a smaller company — and multiplied back on
-     * the way in. The scale is chosen ONCE from the size of the company's
-     * workforce bill, not from the value in the box, so it cannot change under
-     * somebody's fingers while they are typing.
+     * The money goals used to be typed "in billions", with the unit written
+     * beside the box and the multiplication done on the way in — which worked
+     * and read like a form. They are now the same compact money box as the
+     * revenue target: you type ₫2,200B, or 2200000000000, or 2.2t, and it is
+     * the same amount.
      */
-    _moneyScale() {
-        const size = this.calc
-            ? Math.abs(this.calc.basePlan.year.people) : 0;
-        const whole = (this.fmt.decimals || 0) === 0;
-        if (size >= 1e9) { return { by: 1e9, suffix: whole ? "B" : "bn" }; }
-        if (size >= 1e6) { return { by: 1e6, suffix: whole ? "M" : "m" }; }
-        if (size >= 1e3) { return { by: 1e3, suffix: "k" }; }
-        return { by: 1, suffix: "" };
-    }
-
     get goalCards() {
         const checks = this.calc ? this.calc.checks : [];
-        const scale = this._moneyScale();
         return GOAL_ORDER.map((key) => {
             const def = GOAL_DEFS[key];
             const check = checks.find((c) => c.key === key);
@@ -999,13 +1143,12 @@ export class PbDecisionRoom extends Component {
             return {
                 key, label: def.label, money,
                 bound: def.sense === "min" ? _t("At least") : _t("At most"),
-                unit: money ? `${scale.suffix} ${this.fmt.symbol}`.trim()
+                unit: money ? ""
                     : (def.unit === "people" ? _t("people") : def.unit),
-                step: money ? 0.01 : def.step,
+                step: def.step,
+                min: def.min,
                 on: this.goals[key].on,
-                target: money
-                    ? Math.round(this.goals[key].target / scale.by * 100) / 100
-                    : this.goals[key].target,
+                target: this.goals[key].target,
                 status: check
                     ? _t("Now %(now)s · %(gap)s",
                          { now: check.actualText, gap: this._gapText(check) })
@@ -1030,6 +1173,7 @@ export class PbDecisionRoom extends Component {
     toggleGoal(key, event) {
         this._push();
         this._goalsTouched = true;
+        this._clearPaths();
         this.goals = normalizeGoals(
             { ...this.goals, [key]: { ...this.goals[key],
                                       on: !!event.target.checked } },
@@ -1040,12 +1184,16 @@ export class PbDecisionRoom extends Component {
     setGoalTarget(key, event) {
         const raw = event.target.value;
         if (raw === "" || !Number.isFinite(Number(raw))) { return; }
+        this.setGoalValue(key, Number(raw));
+    }
+
+    setGoalValue(key, value) {
+        if (!Number.isFinite(Number(value))) { return; }
         this._goalsTouched = true;
-        const scale = GOAL_DEFS[key].unit === "money"
-            ? this._moneyScale().by : 1;
+        this._clearPaths();
         this.goals = normalizeGoals(
             { ...this.goals, [key]: { ...this.goals[key],
-                                      target: Number(raw) * scale } },
+                                      target: Number(value) } },
             this.calc.basePlan, this.hasTarget);
         this._recompute();
     }
@@ -1133,6 +1281,7 @@ export class PbDecisionRoom extends Component {
     }
 
     openPlan(row) {
+        if (this.state.preview) { this._toast(this.previewNote); return; }
         const plan = this.state.plans.find((p) => p.id === row.id);
         if (!plan) { return; }
         this._push();
@@ -1179,6 +1328,7 @@ export class PbDecisionRoom extends Component {
 
     // -------------------------------------------------------------- saving
     openSave() {
+        if (this.state.preview) { this._toast(this.previewNote); return; }
         this.state.saveName = this.state.sceneName === this.TODAY
             ? "" : String(this.state.sceneName);
         this.state.saveConflict = false;
@@ -1252,8 +1402,17 @@ export class PbDecisionRoom extends Component {
     // ===================================================================
     // assumptions (read only in this release)
     // ===================================================================
-    openAssumptions() { this._openDialog("assumptionsOpen"); }
-    closeAssumptions() { this.state.assumptionsOpen = false; }
+    openAssumptions() {
+        this.state.assumeDraft = {};
+        this.state.assumeError = "";
+        this._openDialog("assumptionsOpen");
+    }
+
+    closeAssumptions() {
+        this.state.assumptionsOpen = false;
+        this.state.assumeDraft = {};
+        this.state.assumeError = "";
+    }
 
     get assumptionLines() {
         const a = this.assumptions;
@@ -1283,6 +1442,19 @@ export class PbDecisionRoom extends Component {
                 + "worked out over %(days)s paid days a month.",
                 { mult: (a.ot_multiplier || 1.5).toFixed(2).replace(/0$/, ""),
                   days: a.work_days || 22 })],
+            [_t("Shifts and when the work arrives"),
+             _t("%(evening)s of the people who earn revenue work evenings and "
+                + "%(night)s work nights, paid %(eu)s and %(nu)s above base "
+                + "pay. The work itself arrives %(dd)s during the day, "
+                + "%(de)s in the evening and %(dn)s at night — a shift can "
+                + "only serve the work that arrives on it.",
+                { evening: f.pct(this.planState.evening || 0, 0),
+                  night: f.pct(this.planState.night || 0, 0),
+                  eu: f.pct(a.evening_uplift_pct || 0, 0),
+                  nu: f.pct(a.night_uplift_pct || 0, 0),
+                  dd: f.pct(a.demand_day_pct || 0, 0),
+                  de: f.pct(a.demand_evening_pct || 0, 0),
+                  dn: f.pct(a.demand_night_pct || 0, 0) })],
             [_t("Joining and leaving"),
              _t("Recruiting someone costs %(hire)s of their pay, once, in the "
                 + "month they arrive. They are paid in full from day one and "
@@ -1382,6 +1554,843 @@ export class PbDecisionRoom extends Component {
     onSketch(field, event) { this.state[field] = event.target.value; }
 
     // ===================================================================
+    // the detail workspace
+    // ===================================================================
+    get detailTabs() {
+        return [
+            { key: "coverage", icon: "sun", label: _t("Work & shifts") },
+            { key: "money", icon: "trendingUp", label: _t("Why profit changed") },
+            { key: "people", icon: "users", label: _t("People & pay") },
+            { key: "room", icon: "arrowLeftRight", label: _t("Room to hire") },
+        ].map((t) => ({ ...t, active: t.key === this.state.detail }));
+    }
+
+    setDetail(key) {
+        if (this.state.detail === key) { return; }
+        this.state.detail = key;
+        this.state.rev++;
+    }
+
+    /** Clicking an impact card opens its tab and walks the page down to it. */
+    focusDetail(key) {
+        this.setDetail(key);
+        setTimeout(() => {
+            const el = document.querySelector(".dr-work");
+            if (!el) { return; }
+            el.scrollIntoView({
+                behavior: this.state.motion ? "smooth" : "auto",
+                block: "start",
+            });
+        }, 40);
+    }
+
+    /** Arrow keys walk a tab strip; that is what `role="tablist"` promises. */
+    onTabKey(event) {
+        const keys = this.detailTabs.map((t) => t.key);
+        const at = keys.indexOf(this.state.detail);
+        let next = -1;
+        if (event.key === "ArrowRight") { next = (at + 1) % keys.length; }
+        else if (event.key === "ArrowLeft") {
+            next = (at - 1 + keys.length) % keys.length;
+        } else if (event.key === "Home") { next = 0; }
+        else if (event.key === "End") { next = keys.length - 1; }
+        if (next < 0) { return; }
+        event.preventDefault();
+        this.setDetail(keys[next]);
+        setTimeout(() => {
+            const el = document.querySelector(
+                `.dr-tabstrip [data-detail="${keys[next]}"]`);
+            if (el) { el.focus(); }
+        }, 0);
+    }
+
+    // ------------------------------------------------- 1 · work & shifts
+    /** Hours, said short: 1.2m h / 840k h / 620 h. */
+    _hours(value) {
+        const v = Math.abs(Number(value) || 0);
+        if (v >= 1e6) { return `${(v / 1e6).toFixed(2)}m h`; }
+        if (v >= 1e3) { return `${Math.round(v / 1e3).toLocaleString()}k h`; }
+        return `${Math.round(v).toLocaleString()} h`;
+    }
+
+    get shiftMeta() {
+        return {
+            day: { name: _t("Day"), icon: "sun", band: _t("06:00 – 14:00") },
+            evening: { name: _t("Evening"), icon: "sunset",
+                       band: _t("14:00 – 22:00") },
+            night: { name: _t("Night"), icon: "moon",
+                     band: _t("22:00 – 06:00") },
+        };
+    }
+
+    get shiftTiles() {
+        const c = this.calc;
+        if (!c) { return []; }
+        const row = c.plan.rows[this.state.month];
+        const refRow = c.ref.rows[this.state.month];
+        const meta = this.shiftMeta;
+        return (row.shifts || []).map((shift, i) => {
+            const before = refRow.shifts[i];
+            const served = this.hasTarget && shift.demand > 0
+                ? Math.min(100, shift.served / shift.demand * 100) : null;
+            const wasServed = this.hasTarget && before.demand > 0
+                ? Math.min(100, before.served / before.demand * 100) : null;
+            const gap = this.hasTarget
+                ? Math.max(0, shift.demand - shift.served) : 0;
+            const spare = this.hasTarget && gap <= 1
+                && shift.available > shift.demand * 1.15;
+            return {
+                key: shift.key,
+                name: meta[shift.key].name,
+                icon: meta[shift.key].icon,
+                band: meta[shift.key].band,
+                premium: shift.uplift > 0
+                    ? _t("+%s on top of base pay",
+                         this.fmt.pct(shift.uplift * 100, 0))
+                    : _t("base rate"),
+                heads: this.fmt.int(shift.heads),
+                share: this.fmt.pct(shift.share * 100, 0),
+                servedPct: served === null ? 0 : served,
+                wasPct: wasServed === null ? 0 : wasServed,
+                servedText: served === null ? "—" : this.fmt.pct(served),
+                hoursText: this._hours(
+                    this.hasTarget ? shift.served : shift.available),
+                thin: served !== null && served < 95,
+                status: !this.hasTarget
+                    ? _t("%s of the hours this team can work",
+                         this.fmt.pct(shift.share * 100, 0))
+                    : (gap > 1
+                        ? _t("%s of work goes unserved on this shift",
+                             this._hours(gap))
+                        : (spare
+                            ? _t("Every hour covered · spare capacity here")
+                            : _t("Every hour of this shift is covered"))),
+                bad: gap > 1,
+            };
+        });
+    }
+
+    get eveningLever() {
+        return this._lever(
+            "evening", _t("People on the evening shift"),
+            _t("A share of the people who earn revenue."), 0, 50, 1, "%");
+    }
+
+    get nightLever() {
+        return this._lever(
+            "night", _t("People on the night shift"),
+            _t("A share of the people who earn revenue."), 0, 40, 1, "%");
+    }
+
+    get shiftBalance() {
+        const a = this.assumptions;
+        return _t("The work arrives %(day)s day, %(evening)s evening, "
+                  + "%(night)s night.",
+                  { day: this.fmt.pct(a.demand_day_pct || 0, 0),
+                    evening: this.fmt.pct(a.demand_evening_pct || 0, 0),
+                    night: this.fmt.pct(a.demand_night_pct || 0, 0) });
+    }
+
+    matchShiftsToDemand() {
+        const next = balanceShifts(this.baseline, this.assumptions,
+                                   this.planState);
+        this._apply({ evening: next.evening, night: next.night },
+                    _t("Your working plan"));
+        this._toast(_t("Shifts matched to the work: %(evening)s on evenings, "
+                       + "%(night)s on nights.",
+                       { evening: this.fmt.pct(next.evening, 0),
+                         night: this.fmt.pct(next.night, 0) }));
+    }
+
+    // -------------------------------------------- 2 · why profit changed
+    get bridgeRows() {
+        const c = this.calc;
+        if (!c) { return []; }
+        return bridge(c.plan, c.ref).steps.map((step) => ({
+            label: step.label,
+            reason: step.reason,
+            value: this.fmt.signedMoney(step.value),
+            good: step.value >= 0,
+            zero: Math.abs(step.value) < 1,
+        }));
+    }
+
+    get bridgeTotal() {
+        const c = this.calc;
+        if (!c) { return ""; }
+        return this.fmt.signedMoney(c.plan.year.profit - c.ref.year.profit);
+    }
+
+    // ------------------------------------------------- 3 · people & pay
+    get teamRows() {
+        const c = this.calc;
+        if (!c) { return []; }
+        const rows = teamsInDecember(c.plan, c.ref);
+        const max = Math.max(1, ...rows.map(
+            (t) => Math.max(t.heads, t.refHeads))) * 1.08;
+        return rows.map((t) => ({
+            key: t.key,
+            name: t.name,
+            heads: this.fmt.int(t.heads),
+            pay: this.fmt.money(t.payMonth),
+            delta: Math.abs(t.heads - t.refHeads) >= 0.5
+                ? this.fmt.people(t.heads - t.refHeads) : "",
+            planW: (t.heads / max * 100).toFixed(1),
+            refW: (t.refHeads / max * 100).toFixed(1),
+            title: _t("%(name)s: %(heads)s people, comparison %(was)s",
+                      { name: t.name, heads: this.fmt.int(t.heads),
+                        was: this.fmt.int(t.refHeads) }),
+        }));
+    }
+
+    get payRows() {
+        const c = this.calc;
+        if (!c) { return { strip: [], employee: [], employer: [] }; }
+        const p = payStory(c.plan);
+        const take = p.gross > 0 ? p.takehome / p.gross * 100 : 100;
+        return {
+            strip: [
+                { key: "take", flex: take,
+                  label: _t("Take-home %s", this.fmt.pct(take)) },
+                { key: "ded", flex: Math.max(0, 100 - take),
+                  label: (100 - take) >= 12 ? _t("Deductions") : "" },
+            ],
+            employee: [
+                { label: _t("Gross pay to employees"),
+                  value: this.fmt.money(p.gross), strong: false },
+                { label: _t("− Employee contributions and income tax"),
+                  value: this.fmt.money(p.withholding), strong: false },
+                { label: _t("= What reaches employees"),
+                  value: this.fmt.money(p.takehome), strong: true },
+            ],
+            employer: [
+                { label: _t("Employer contributions, paid on top"),
+                  value: this.fmt.money(p.contributions), strong: false },
+                { label: _t("Overtime and shift premiums"),
+                  value: this.fmt.money(p.overtime + p.premiums),
+                  strong: false },
+                { label: _t("Recruiting, severance and better hours"),
+                  value: this.fmt.money(p.recruit + p.severance + p.learning),
+                  strong: false },
+                { label: _t("Total workforce cost to the business"),
+                  value: this.fmt.money(p.total), strong: true },
+            ],
+        };
+    }
+
+    // ------------------------------------------------ 4 · room to hire
+    get roomTeamObj() {
+        return this.teams.find((t) => t.key === this.state.roomTeam)
+            || this.teams[0] || null;
+    }
+
+    get roomRoles() { return this.roomTeamObj ? this.roomTeamObj.roles : []; }
+
+    setRoomTeam(event) {
+        this.state.roomTeam = event.target.value;
+        this.state.roomRole = "";
+        this._roomKey = "";
+        this.state.rev++;
+    }
+
+    setRoomRole(event) {
+        this.state.roomRole = event.target.value;
+        this._roomKey = "";
+        this.state.rev++;
+    }
+
+    /** The scan, computed at most once per (plan, team, role). */
+    get roomScan() {
+        void this.state.rev;
+        const key = `${this.state.rev}|${this.state.roomTeam}`
+            + `|${this.state.roomRole}`;
+        if (this._roomKey === key && this._room) { return this._room; }
+        if (!this.calc || !this.roomTeamObj) { return null; }
+        const started = performance.now();
+        this._room = headroom(
+            this.baseline, this.assumptions, this.planState, this.goals,
+            this.roomTeamObj.key, this.fmt, this.state.roomRole || null);
+        this._room.ms = Math.round(performance.now() - started);
+        this._roomKey = key;
+        return this._room;
+    }
+
+    get roomResult() {
+        const scan = this.roomScan;
+        const team = this.roomTeamObj;
+        if (!scan || !team) {
+            return { title: _t("Pick a team to explore."), copy: "",
+                     tries: [] };
+        }
+        if (!scan.enabled) {
+            return {
+                title: _t("Choose a goal to see your room to hire."),
+                copy: _t("Switch on margin, profit, cost, demand served, team "
+                         + "size or overtime and this becomes an answer."),
+                tries: [],
+            };
+        }
+        const where = this.state.roomRole && scan.role
+            ? _t("%(role)s in %(team)s",
+                 { role: scan.role.name, team: team.name })
+            : team.name;
+        if (!scan.intervals.length) {
+            return {
+                title: _t("No additional hiring meets every goal."),
+                copy: _t("Every extra person in %s breaks at least one of "
+                         + "your goals. Ease a goal, or look at hours and "
+                         + "productive time instead.", where),
+                tries: [],
+            };
+        }
+        const ranges = scan.intervals.map(
+            ([lo, hi]) => (lo === hi ? String(lo) : `${lo}–${hi}`)).join(
+            _t(" or "));
+        const edges = [...new Set(scan.intervals.flatMap(([lo, hi]) => [lo, hi]))]
+            .filter((n) => n > 0).slice(0, 4);
+        return {
+            title: _t("%(range)s more people in %(where)s",
+                      { range: ranges, where }),
+            copy: _t("Every one of those keeps all your goals. Demand, pay, "
+                     + "shifts, overtime and the hiring month all stay exactly "
+                     + "where you left them."),
+            tries: edges.map((n) => ({
+                n, label: _t("Try %s more", this.fmt.int(n)),
+            })),
+        };
+    }
+
+    get roomFootnote() {
+        const scan = this.roomScan;
+        if (!scan) { return ""; }
+        const stepped = scan.step > 1
+            ? _t(" in steps of %s people", scan.step) : "";
+        const notEarning = scan.team && !scan.revenue
+            ? _t(" This team does not earn revenue in this model, so adding "
+                 + "people here changes cost only.") : "";
+        return _t("Walked from 0 to %(max)s more people%(step)s, holding every "
+                  + "other decision fixed.%(note)s",
+                  { max: scan.max, step: stepped, note: notEarning });
+    }
+
+    tryRoom(n) {
+        const team = this.roomTeamObj;
+        if (!team) { return; }
+        const role = this.state.roomRole || null;
+        const where = role
+            ? (this.roomRoles.find((r) => r.key === role) || {}).name
+            : team.name;
+        this.beginPreview({
+            ...this.planState,
+            moves: [...(this.planState.moves || []),
+                    { team: team.key, role, n, month: this.planState.start }],
+        }, _t("%(n)s more in %(where)s · preview",
+              { n: this.fmt.int(n), where }));
+    }
+
+    // ===================================================================
+    // the goal finder
+    // ===================================================================
+    _clearPaths() {
+        this._paths = [];
+        this.state.searchNote = "";
+    }
+
+    get hasPaths() { void this.state.rev; return this._paths.length > 0; }
+
+    /**
+     * When the three directions turn out to be the same one.
+     *
+     * It happens, and it is the truth rather than a failure: if the team
+     * already serves every hour of the work, then hiring, overtime and
+     * training all only add cost, and the best plan on every lane is the one
+     * already on screen. Showing that as three identical cards makes the room
+     * look broken. One card, saying what actually happened, does not.
+     */
+    get pathsAreOne() {
+        void this.state.rev;
+        if (this._paths.length < 2) { return false; }
+        const first = JSON.stringify(this._paths[0].state);
+        return this._paths.every((p) => JSON.stringify(p.state) === first);
+    }
+
+    get pathsVerdict() {
+        const cards = this.pathCards;
+        if (!cards.length) { return null; }
+        const one = cards[0];
+        return {
+            ...one,
+            title: one.met
+                ? _t("Your plan already meets these goals.")
+                : _t("Nothing reaches these goals from here."),
+            copy: one.met
+                ? _t("Every direction the search tried came back to the plan "
+                     + "you already have. Raise a goal and look again — there "
+                     + "is room to think bigger.")
+                : _t("%(gaps)s. Adding people, hours or productive time only "
+                     + "moves the plan further away, so the search came back "
+                     + "to where you started. Ease a goal, change the revenue "
+                     + "target, or look at what the work itself is worth.",
+                     { gaps: one.gapText }),
+        };
+    }
+
+    get anyGoalOn() {
+        return GOAL_ORDER.some((k) => this.goals && this.goals[k]
+                               && this.goals[k].on);
+    }
+
+    get pathCards() {
+        void this.state.rev;
+        const c = this.calc;
+        if (!c) { return []; }
+        const names = {
+            hire: { eyebrow: _t("HIRING & HOURS"), title: _t("Build the team"),
+                    icon: "users",
+                    keeps: _t("Productive time stays as you assumed it.") },
+            develop: { eyebrow: _t("SKILLS & HOURS"),
+                       title: _t("Develop the team"), icon: "sparkles",
+                       keeps: _t("Hiring stays exactly as you planned it.") },
+            balanced: { eyebrow: _t("MOST FLEXIBLE"), title: _t("Blend the two"),
+                        icon: "gitBranch",
+                        keeps: _t("Hiring and productive time can both move.") },
+        };
+        return this._paths.map((path, index) => {
+            const meta = names[path.lane];
+            const added = (path.state.moves || [])
+                .reduce((total, m) => total + m.n, 0);
+            const team = this._paths.team;
+            return {
+                index,
+                lane: path.lane,
+                eyebrow: meta.eyebrow,
+                title: meta.title,
+                icon: meta.icon,
+                met: path.met,
+                status: path.met
+                    ? _t("Meets every goal you switched on")
+                    : _t("%(n)s goal%(s)s still missed",
+                         { n: path.failed, s: path.failed === 1 ? "" : "s" }),
+                profit: this.fmt.money(path.result.year.profit),
+                delta: this.fmt.signedMoney(
+                    path.result.year.profit - c.plan.year.profit),
+                better: path.result.year.profit >= c.plan.year.profit,
+                specs: [
+                    { label: _t("People to add"),
+                      value: added
+                          ? _t("%(n)s in %(team)s",
+                               { n: this.fmt.int(added),
+                                 team: team ? team.name : "" })
+                          : _t("none") },
+                    { label: _t("Productive time"),
+                      value: this.fmt.pct(path.state.productivity, 0) },
+                    { label: _t("Overtime per person"),
+                      value: _t("%s h a month",
+                                Math.round(path.state.ot)) },
+                    { label: _t("Workforce cost"),
+                      value: this.fmt.money(path.result.year.people) },
+                    { label: _t("Operating margin"),
+                      value: this.fmt.pct(path.result.year.margin * 100) },
+                    { label: _t("Demand served"),
+                      value: this.hasTarget
+                          ? this.fmt.pct(path.result.year.coverage * 100)
+                          : "—" },
+                ],
+                gapText: path.checks.filter((x) => !x.met)
+                    .map((x) => `${x.short}: ${this._gapText(x)}`)
+                    .join(" · "),
+                copy: path.met
+                    ? _t("Every goal you switched on is met. %s", meta.keeps)
+                    : _t("%(gaps)s. %(keeps)s",
+                         { gaps: path.checks.filter((x) => !x.met)
+                             .map((x) => `${x.short}: ${this._gapText(x)}`)
+                             .join(" · "),
+                           keeps: meta.keeps }),
+            };
+        });
+    }
+
+    async findPaths() {
+        if (!this.anyGoalOn) {
+            this._toast(_t("Switch on at least one goal first — the search "
+                           + "needs something to aim at."));
+            return;
+        }
+        this.state.finding = true;
+        // A frame, so the button actually paints "Exploring…" before the
+        // browser is handed eighty computed years to get through.
+        await new Promise((resolve) => setTimeout(resolve, 40));
+        try {
+            const found = candidates(this.baseline, this.assumptions,
+                                     this.planState, this.goals, this.fmt);
+            this._paths = found.lanes;
+            this._paths.team = found.team;
+            this.state.searchNote = found.lanes.length
+                ? _t("Checked %s combinations, keeping your demand, pay, "
+                     + "shifts and hiring month exactly as they are.",
+                     this.fmt.int(found.count))
+                : _t("Nothing to search: switch on a goal first.");
+        } catch (e) {
+            console.warn("pb_decision_room: the search failed", e);
+            this._paths = [];
+            this.state.searchNote = _t("The search could not finish. %s",
+                                       this._reason(e));
+        } finally {
+            this.state.finding = false;
+            this.state.rev++;
+        }
+    }
+
+    tryPath(index) {
+        const path = this._paths[index];
+        if (!path) { return; }
+        const title = { hire: _t("Build the team"),
+                        develop: _t("Develop the team"),
+                        balanced: _t("Blend the two") }[path.lane];
+        this.state.goalsOpen = false;
+        this.beginPreview(path.state, _t("%s · preview", title));
+    }
+
+    // ===================================================================
+    // trying a possibility, and coming back
+    // ===================================================================
+    beginPreview(nextState, sceneName) {
+        if (!this._preview) {
+            this._preview = {
+                state: cloneState(this.planState),
+                goals: JSON.parse(JSON.stringify(this.goals || {})),
+                scene: this.state.sceneName,
+                touched: this._goalsTouched,
+                historyLength: this._history.length,
+                // Kept so the banner can say "against your previous plan"
+                // without recomputing a whole year on every paint.
+                profit: this.calc ? this.calc.plan.year.profit : 0,
+            };
+        }
+        this.state.preview = true;
+        this._apply(nextState, sceneName, false);
+        setTimeout(() => {
+            const el = document.querySelector(".dr-preview");
+            if (!el) { return; }
+            el.scrollIntoView({
+                behavior: this.state.motion ? "smooth" : "auto",
+                block: "center",
+            });
+        }, 40);
+    }
+
+    get previewBanner() {
+        const c = this.calc;
+        if (!this.state.preview || !this._preview || !c) { return null; }
+        const checks = c.checks;
+        const met = checks.filter((x) => x.met).length;
+        return {
+            title: this.state.sceneName,
+            copy: _t("%(delta)s of yearly profit against your previous plan. "
+                     + "%(met)s of %(all)s goals met. Your previous plan is "
+                     + "kept until you choose.",
+                     { delta: this.fmt.signedMoney(
+                         c.plan.year.profit - this._preview.profit),
+                       met, all: checks.length }),
+        };
+    }
+
+    /** Keep it: the plan you had becomes the thing Ctrl+Z brings back. */
+    keepPreview() {
+        if (!this._preview) { return; }
+        const kept = this._preview;
+        this._history.length = kept.historyLength;
+        this._history.push({
+            state: kept.state, goals: kept.goals, scene: kept.scene,
+            touched: kept.touched,
+        });
+        if (this._history.length > UNDO_DEPTH) { this._history.shift(); }
+        this._preview = null;
+        this.state.preview = false;
+        this.state.sceneName = String(this.state.sceneName)
+            .replace(" · preview", "");
+        this._recompute();
+        this._toast(_t("Kept. You can still undo it."));
+    }
+
+    /** Back out: everything — levers, goals, name, history — as it was. */
+    backToPlan() {
+        if (!this._preview) { return; }
+        const kept = this._preview;
+        this._history.length = kept.historyLength;
+        this.planState = normalizeState(kept.state, this.baseline,
+                                        this.assumptions);
+        this.goals = kept.goals;
+        this._goalsTouched = kept.touched;
+        this.state.sceneName = kept.scene;
+        this._preview = null;
+        this.state.preview = false;
+        this._recompute();
+        this._toast(_t("Your previous plan is back, exactly as it was."));
+    }
+
+    get previewNote() {
+        return _t("Finish trying this possibility first — keep it, or go "
+                  + "back to your plan.");
+    }
+
+    // ===================================================================
+    // the reality check
+    // ===================================================================
+    get stressOptions() {
+        return [
+            { value: -10, head: _t("−10%"), label: _t("Softer demand") },
+            { value: 0, head: _t("As planned"), label: _t("Your forecast") },
+            { value: 10, head: _t("+10%"), label: _t("Stronger demand") },
+        ].map((o) => ({ ...o,
+                        active: Math.abs(this.planState.stress - o.value) < 1e-9 }));
+    }
+
+    setStress(value) {
+        if (Math.abs((this.planState.stress || 0) - value) < 1e-9) { return; }
+        this._apply({ stress: value }, _t("Your working plan"));
+    }
+
+    get stressText() {
+        const c = this.calc;
+        if (!c) { return ""; }
+        return stressOutcome(this.baseline, this.assumptions, this.planState,
+                             c.plan, this.fmt);
+    }
+
+    // ===================================================================
+    // one small experiment
+    // ===================================================================
+    get experiment() {
+        const c = this.calc;
+        const team = this.team;
+        if (!c || !team) { return null; }
+        const step = marginal(this.baseline, this.assumptions, this.planState,
+                              c.plan, team.key, 5);
+        if (!step) { return null; }
+        const good = step.dProfit >= 0;
+        return {
+            title: good
+                ? _t("Five more people in %(team)s would add %(money)s of "
+                     + "profit.",
+                     { team: team.name,
+                       money: this.fmt.money(step.dProfit) })
+                : _t("Five more people in %(team)s would cost %(money)s of "
+                     + "profit.",
+                     { team: team.name,
+                       money: this.fmt.money(-step.dProfit) }),
+            copy: this.hasTarget && Math.abs(step.dCoverage) >= 0.05
+                ? _t("Demand served moves %(cov)s for %(cost)s more workforce "
+                     + "cost across the year.",
+                     { cov: this.fmt.pp(step.dCoverage),
+                       cost: this.fmt.money(step.dCost) })
+                : _t("At this size five people barely move what you can "
+                     + "deliver. Workforce cost rises %(cost)s across the "
+                     + "year.", { cost: this.fmt.money(step.dCost) }),
+            good,
+        };
+    }
+
+    previewExperiment() {
+        const team = this.team;
+        if (!team) { return; }
+        this.beginPreview({
+            ...this.planState,
+            moves: [...(this.planState.moves || []),
+                    { team: team.key, role: null, n: 5,
+                      month: this.planState.start }],
+        }, _t("Five more in %s · preview", team.name));
+    }
+
+    // ===================================================================
+    // the assumptions, now editable
+    // ===================================================================
+    get assumptionFields() {
+        const groups = {};
+        for (const field of this.assumptionsForm) {
+            (groups[field.group] = groups[field.group] || []).push({
+                ...field,
+                value: field.key === "revenue_team_ids"
+                    ? (this.state.assumeDraft.revenue_team_ids
+                       || this.assumptions.revenue_team_ids || [])
+                    : (this.state.assumeDraft[field.key] !== undefined
+                        ? this.state.assumeDraft[field.key]
+                        : (this.assumptions[field.key] || 0)),
+                text: this._assumeText(field),
+            });
+        }
+        return this.assumptionsGroups
+            .filter((name) => groups[name])
+            .map((name) => ({ name, fields: groups[name] }));
+    }
+
+    _assumeValue(field) {
+        if (this.state.assumeDraft[field.key] !== undefined) {
+            return this.state.assumeDraft[field.key];
+        }
+        return this.assumptions[field.key] || 0;
+    }
+
+    _assumeText(field) {
+        if (field.kind === "teams") {
+            const chosen = this.state.assumeDraft.revenue_team_ids
+                || this.assumptions.revenue_team_ids || [];
+            return _t("%s teams", chosen.length);
+        }
+        const value = this._assumeValue(field);
+        switch (field.kind) {
+            case "money": return this.fmt.money(value);
+            case "pct": return this.fmt.pct(value, 1);
+            case "months": return Number(value) === 1
+                ? _t("1 month") : _t("%s months", value);
+            case "rate": return _t("%s× normal", Number(value).toFixed(2));
+            case "int": return this.fmt.int(value);
+            default: return String(value);
+        }
+    }
+
+    get assumeTeamChips() {
+        const chosen = new Set(this.state.assumeDraft.revenue_team_ids
+            || this.assumptions.revenue_team_ids || []);
+        return (this.baseline.teams || [])
+            .filter((t) => t.department_id)
+            .map((t) => ({
+                id: t.department_id, name: t.name, on: chosen.has(t.department_id),
+            }));
+    }
+
+    toggleRevenueTeam(id) {
+        const chosen = new Set(this.state.assumeDraft.revenue_team_ids
+            || this.assumptions.revenue_team_ids || []);
+        if (chosen.has(id)) { chosen.delete(id); } else { chosen.add(id); }
+        this.state.assumeDraft = {
+            ...this.state.assumeDraft, revenue_team_ids: [...chosen],
+        };
+        this.state.assumeError = "";
+    }
+
+    setAssumption(key, value) {
+        this.state.assumeDraft = { ...this.state.assumeDraft, [key]: value };
+        this.state.assumeError = this.demandShareError;
+    }
+
+    onAssumption(key, event) {
+        const raw = event.target.value;
+        if (raw === "" || !Number.isFinite(Number(raw))) { return; }
+        this.setAssumption(key, Number(raw));
+    }
+
+    /** The one rule the dialog can break on its own, said inline. */
+    get demandShareError() {
+        const total = ["demand_day_pct", "demand_evening_pct",
+                       "demand_night_pct"]
+            .reduce((sum, key) => sum + Number(
+                this.state.assumeDraft[key] !== undefined
+                    ? this.state.assumeDraft[key]
+                    : (this.assumptions[key] || 0)), 0);
+        if (Math.abs(total - 100) <= 0.01) { return ""; }
+        return _t("Day, evening and night have to add up to 100%% of the "
+                  + "work. They add up to %s%% right now.",
+                  Math.round(total * 10) / 10);
+    }
+
+    get assumeDirty() {
+        return Object.keys(this.state.assumeDraft).length > 0;
+    }
+
+    async saveAssumptions() {
+        if (this.demandShareError) {
+            this.state.assumeError = this.demandShareError;
+            return;
+        }
+        this.state.assumeBusy = true;
+        try {
+            const fresh = await this.orm.call(
+                "pb.decision.room", "save_assumptions",
+                [{ ...this.state.assumeDraft }]);
+            this.assumptions = fresh;
+            this.state.assumeDraft = {};
+            this.state.assumeError = "";
+            // Which teams earn revenue is part of the BASELINE, so the roster
+            // has to come back with it.
+            await this.load(true);
+            this.state.assumptionsOpen = true;
+            this._toast(_t("Assumptions saved for %s. Every plan now uses "
+                           + "them.", this.state.company.name || ""));
+        } catch (e) {
+            this.state.assumeError = this._reason(e);
+        } finally {
+            this.state.assumeBusy = false;
+        }
+    }
+
+    openAssumptionsRecord() {
+        const id = this.assumptions.id;
+        if (!id) { return; }
+        this.actionService.doAction({
+            type: "ir.actions.act_window",
+            res_model: "pb.decision.assumptions",
+            res_id: id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+
+    get assumptionsWho() {
+        if (this.state.canManage) {
+            return _t("You can change these numbers. Everyone planning at %s "
+                      + "will see the change.", this.state.company.name || "");
+        }
+        const who = this.assumptions.changed_by;
+        const when = (this.assumptions.changed_on || "").slice(0, 10);
+        const last = who && when
+            ? _t("Last changed by %(who)s on %(when)s. ", { who, when }) : "";
+        return _t("%sThese numbers are looked after by your HR or finance "
+                  + "lead. Ask them if one of them looks wrong.", last);
+    }
+
+    // ===================================================================
+    // the printable brief
+    // ===================================================================
+    async exportBrief() {
+        const c = this.calc;
+        if (!c || this.state.briefBusy) { return; }
+        // The tab is opened BEFORE the round trip: a window opened later, from
+        // a promise, is a pop-up as far as every browser is concerned.
+        const tab = window.open("", "_blank");
+        this.state.briefBusy = true;
+        try {
+            const model = briefModel({
+                plan: c.plan, ref: c.ref, baseline: this.baseline,
+                assumptions: this.assumptions, state: this.planState,
+                refState: c.refState, goals: this.goals, format: this.fmt,
+                planName: String(this.state.sceneName),
+                comparisonName: String(this.comparison.name),
+                assumptionLines: this.assumptionLines,
+            });
+            const html = await this.orm.call(
+                "pb.decision.room", "render_brief", [model]);
+            if (!tab || tab.closed) {
+                this._toast(_t("Your browser blocked the new tab. Allow "
+                               + "pop-ups for this site and try again."));
+                return;
+            }
+            tab.document.open();
+            tab.document.write(html);
+            tab.document.close();
+            this._toast(_t("Decision brief opened in a new tab — use Print to "
+                           + "save it as a PDF."));
+        } catch (e) {
+            if (tab && !tab.closed) { tab.close(); }
+            console.warn("pb_decision_room: the brief failed", e);
+            this._toast(_t("The brief could not be built. %s",
+                           this._reason(e)));
+        } finally {
+            this.state.briefBusy = false;
+        }
+    }
+
+    // ===================================================================
     // painting
     // ===================================================================
     paint() {
@@ -1408,7 +2417,39 @@ export class PbDecisionRoom extends Component {
             goodAt: this.goals.coverage.on
                 ? this.goals.coverage.target / 100 : 0.95,
         });
+        this._paintDetail(c);
         this._tweenHero();
+    }
+
+    /** Only the tab on screen is drawn: the others have no box to size to. */
+    _paintDetail(c) {
+        if (this.state.detail === "coverage" && this.demandRef.el) {
+            drawDemand(this.demandRef.el, {
+                demand: c.plan.rows.map((r) => r.hoursDemand),
+                capacity: c.plan.rows.map((r) => r.hoursAvailable),
+                served: c.plan.rows.map((r) => r.hoursServed),
+                month: this.state.month,
+                fmt: (v) => this._hours(v),
+            });
+        }
+        if (this.state.detail === "money" && this.bridgeRef.el) {
+            const b = bridge(c.plan, c.ref);
+            drawBridge(this.bridgeRef.el, {
+                start: b.start, end: b.end, steps: b.steps,
+                startName: String(this.comparison.name),
+                fmt: (v) => this.fmt.money(v),
+                signed: (v) => this.fmt.signedMoney(v),
+            });
+        }
+        if (this.state.detail === "room" && this.roomRef.el) {
+            const scan = this.roomScan;
+            if (scan && scan.points.length > 1) {
+                drawRoom(this.roomRef.el, {
+                    points: scan.points,
+                    fmt: (v) => this.fmt.money(v),
+                });
+            }
+        }
     }
 
     _goalPace(c) {
@@ -1457,8 +2498,8 @@ export class PbDecisionRoom extends Component {
         if (event.key === "Escape") {
             this.state.saveOpen = false;
             this.state.goalsOpen = false;
-            this.state.assumptionsOpen = false;
             this.state.sketchOpen = false;
+            if (this.state.assumptionsOpen) { this.closeAssumptions(); }
             return;
         }
         if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z"

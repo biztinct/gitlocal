@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+  <!-- ================================================== a money box
+       Shows ₫2,200B, accepts "2200000000000", "2,200 B", "2.2 t", "1.5m".
+       Arrow keys step by the unit on screen. Text that is not a number keeps
+       the old value and shakes once. -->
+  <t t-name="pb_decision_room.DrMoneyInput">
+    <div class="dr-money" t-att-class="{ 'dr-money--shake': state.shake,
+                                         'dr-money--big': props.tone === 'big' }">
+      <!-- No separate symbol: the compact form already carries it, and two
+           of them read as two different amounts. -->
+      <input type="text" inputmode="decimal" autocomplete="off"
+             t-ref="box" t-att-id="props.inputId"
+             t-att-value="state.text" t-att-aria-label="props.label"
+             t-on-focus="() => this.onFocus()"
+             t-on-input="(ev) => this.onInput(ev)"
+             t-on-keydown="(ev) => this.onKeydown(ev)"
+             t-on-blur="() => this.commit()"/>
+    </div>
+  </t>
+
   <!-- ================================================== one lever
        Called with `lev` set: {key,label,note,min,max,step,unit,value,was,
        fill,tick,same}. The slider carries the keyboard (arrows), the number
@@ -73,7 +92,9 @@
                     title="Put every lever back where the company is today">
               <span t-out="ic('rotate', 14)"/> Reset
             </button>
-            <button class="pbim-btn primary" t-on-click="() => this.openSave()">
+            <button class="pbim-btn primary" t-att-disabled="state.preview"
+                    t-att-title="state.preview ? previewNote : 'Keep this plan for everyone'"
+                    t-on-click="() => this.openSave()">
               <span t-out="ic('save', 14)"/> Save plan
             </button>
           </div>
@@ -114,16 +135,13 @@
               <!-- ==================================== the revenue target -->
               <div class="dr-target" t-att-class="{ 'dr-target--empty': !hasTarget }">
                 <label for="dr-target">What do you plan to earn this year?</label>
-                <div class="dr-money">
-                  <span class="dr-money-sym" t-esc="fmt.symbol"/>
-                  <input id="dr-target" type="number" min="0" step="1000000"
-                         t-att-value="planState.target"
-                         aria-label="Revenue target for the year"
-                         t-on-change="(ev) => this.onTarget(ev)"
-                         t-on-blur="() => this.onTargetCommit()"/>
-                </div>
+                <DrMoneyInput value="planState.target" api="moneyApi"
+                              label="'Revenue target for the year'"
+                              inputId="'dr-target'" min="0" tone="'big'"
+                              onCommit.bind="setTarget"/>
                 <p class="dr-hint" t-if="!hasTarget">
-                  Type this year's revenue target and profit appears.
+                  Type it the way you say it — 2,200 B, 2.2 t or the whole
+                  number. Profit appears the moment it is there.
                 </p>
                 <p class="dr-hint" t-else="">
                   <t t-esc="fmt.exact(planState.target)"/> across the year.
@@ -259,6 +277,20 @@
               </details>
             </div>
 
+            <!-- ================================== one small experiment -->
+            <div class="dr-next" t-if="experiment">
+              <span class="pbim-eyebrow">
+                <span t-out="ic('flask', 12)"/> ONE SMALL EXPERIMENT
+              </span>
+              <strong t-esc="experiment.title"/>
+              <p t-esc="experiment.copy"/>
+              <button class="dr-next-btn" t-att-disabled="state.preview"
+                      t-att-title="state.preview ? previewNote : ''"
+                      t-on-click="() => this.previewExperiment()">
+                Preview 5 more people <span t-out="ic('arrowUpRight', 12)"/>
+              </button>
+            </div>
+
             <div class="dr-note">
               <span t-out="ic('info', 15)"/>
               <p>
@@ -304,6 +336,25 @@
                 starts keeping score.
               </p>
             </section>
+
+            <!-- ==================================== trying a possibility -->
+            <div class="dr-preview" t-if="previewBanner" role="status">
+              <span class="dr-preview-ic" t-out="ic('route', 18)"/>
+              <div class="dr-preview-tx">
+                <span class="pbim-eyebrow">TRYING A POSSIBILITY</span>
+                <strong t-esc="previewBanner.title"/>
+                <p t-esc="previewBanner.copy"/>
+              </div>
+              <div class="dr-preview-actions">
+                <button class="pbim-btn" t-on-click="() => this.backToPlan()">
+                  Back to my plan
+                </button>
+                <button class="pbim-btn primary"
+                        t-on-click="() => this.keepPreview()">
+                  Keep this direction
+                </button>
+              </div>
+            </div>
 
             <!-- ======================================= the outcome stage -->
             <section class="dr-stage">
@@ -436,11 +487,16 @@
                   <span class="pbim-eyebrow">FOLLOW THE CONNECTION</span>
                   <h2>One decision. A ripple through the business.</h2>
                 </div>
+                <span class="dr-tiny">Click a step to look closer</span>
               </div>
               <div class="dr-journey">
-                <div class="dr-card" title="Detail views arrive in the next release">
+                <button class="dr-card" data-focus="people"
+                        t-att-class="{ 'is-picked': state.detail === 'people' }"
+                        title="Open People &amp; pay"
+                        t-on-click="() => this.focusDetail('people')">
                   <div class="dr-card-top">
                     <span class="dr-step">01</span><span>YOUR PEOPLE</span>
+                    <span class="dr-card-go" t-out="ic('arrowUpRight', 12)"/>
                   </div>
                   <div class="dr-dots" aria-hidden="true"
                        t-attf-title="Each square is about {{dotScale}} people">
@@ -452,13 +508,17 @@
                     <span>people in December</span>
                   </div>
                   <p t-esc="peopleCopy"/>
-                </div>
+                </button>
 
                 <div class="dr-link-l" aria-hidden="true"><span>capacity</span><i/></div>
 
-                <div class="dr-card" title="Detail views arrive in the next release">
+                <button class="dr-card" data-focus="coverage"
+                        t-att-class="{ 'is-picked': state.detail === 'coverage' }"
+                        title="Open Work &amp; shifts"
+                        t-on-click="() => this.focusDetail('coverage')">
                   <div class="dr-card-top">
                     <span class="dr-step">02</span><span>THE WORK YOU CAN DELIVER</span>
+                    <span class="dr-card-go" t-out="ic('arrowUpRight', 12)"/>
                   </div>
                   <div class="dr-ring">
                     <canvas t-ref="ring" aria-hidden="true"/>
@@ -469,13 +529,17 @@
                     <span>change in what you can serve</span>
                   </div>
                   <p t-esc="coverageCopy"/>
-                </div>
+                </button>
 
                 <div class="dr-link-l" aria-hidden="true"><span>value</span><i/></div>
 
-                <div class="dr-card" title="Detail views arrive in the next release">
+                <button class="dr-card" data-focus="money"
+                        t-att-class="{ 'is-picked': state.detail === 'money' }"
+                        title="Open Why profit changed"
+                        t-on-click="() => this.focusDetail('money')">
                   <div class="dr-card-top">
                     <span class="dr-step">03</span><span>THE FINANCIAL RESULT</span>
+                    <span class="dr-card-go" t-out="ic('arrowUpRight', 12)"/>
                   </div>
                   <div class="dr-bars" aria-hidden="true">
                     <span t-foreach="profitBars" t-as="b" t-key="b.id"
@@ -491,8 +555,300 @@
                     <span t-else="">workforce cost for the year</span>
                   </div>
                   <p t-esc="moneyCopy"/>
+                </button>
+              </div>
+            </section>
+
+            <!-- ================================== the detail workspace -->
+            <section class="pbim-card dr-work">
+              <div class="dr-tabstrip" role="tablist"
+                   aria-label="Look closer at this decision"
+                   t-on-keydown="(ev) => this.onTabKey(ev)">
+                <button t-foreach="detailTabs" t-as="tab" t-key="tab.key"
+                        role="tab" t-att-data-detail="tab.key"
+                        t-att-class="{ 'is-on': tab.active }"
+                        t-att-aria-selected="tab.active"
+                        t-att-tabindex="tab.active ? 0 : -1"
+                        t-on-click="() => this.setDetail(tab.key)">
+                  <span t-out="ic(tab.icon, 13)"/>
+                  <t t-esc="tab.label"/>
+                </button>
+              </div>
+
+              <!-- ================================== 1 · work & shifts -->
+              <div class="dr-panel-detail" t-if="state.detail === 'coverage'"
+                   role="tabpanel">
+                <div class="dr-detail-h">
+                  <div>
+                    <span class="pbim-eyebrow">
+                      SHIFT COVERAGE · <t t-esc="months[state.month]"/>
+                    </span>
+                    <h3>Enough people. In the right places.</h3>
+                    <p>Find the gap before adding more cost.</p>
+                  </div>
+                  <button class="pbim-btn"
+                          t-att-title="shiftBalance"
+                          t-on-click="() => this.matchShiftsToDemand()">
+                    Match shifts to demand
+                    <span t-out="ic('arrowUpRight', 13)"/>
+                  </button>
+                </div>
+
+                <div class="dr-demand">
+                  <div class="dr-demand-h">
+                    <strong>Will the work and the team line up?</strong>
+                    <span>Delivery hours a month</span>
+                  </div>
+                  <div class="dr-demand-c">
+                    <canvas t-ref="demand" role="img"
+                            aria-label="The work arriving, what the team could
+                                        deliver, and what is delivered, month
+                                        by month"/>
+                  </div>
+                  <div class="dr-legend">
+                    <span><i class="dr-l-demand"/>Work arriving</span>
+                    <span><i class="dr-l-cap"/>What the team could deliver</span>
+                    <span><i class="dr-l-served"/>Work delivered</span>
+                  </div>
+                  <p class="dr-tiny" t-if="!hasTarget">
+                    Type a revenue target to see demand against capacity. Until
+                    then this shows the hours your people can work.
+                  </p>
+                </div>
+
+                <div class="dr-shifts">
+                  <div t-foreach="shiftTiles" t-as="s" t-key="s.key"
+                       class="dr-shift">
+                    <div class="dr-shift-h">
+                      <span t-esc="s.name"/>
+                      <span class="dr-shift-ic" t-out="ic(s.icon, 15)"/>
+                    </div>
+                    <div class="dr-shift-band">
+                      <t t-esc="s.band"/> · <t t-esc="s.premium"/>
+                    </div>
+                    <div class="dr-shift-n">
+                      <strong t-esc="s.heads"/>
+                      <small>people · <t t-esc="s.share"/> of the team</small>
+                    </div>
+                    <div class="dr-cap" role="img"
+                         t-att-aria-label="s.name + ' shift: ' + s.servedText">
+                      <i t-att-class="{ 'dr-cap--thin': s.thin }"
+                         t-attf-style="width:{{s.servedPct}}%"/>
+                      <b t-attf-style="left:{{s.wasPct}}%"
+                         title="Where the comparison sits"/>
+                      <span>
+                        <t t-esc="s.hoursText"/> · <t t-esc="s.servedText"/>
+                      </span>
+                    </div>
+                    <p class="dr-shift-s" t-att-class="{ 'dr-neg': s.bad }"
+                       t-esc="s.status"/>
+                  </div>
+                </div>
+
+                <div class="dr-shift-levers">
+                  <t t-set="lev" t-value="eveningLever"/>
+                  <t t-call="pb_decision_room.DrLever"/>
+                  <t t-set="lev" t-value="nightLever"/>
+                  <t t-call="pb_decision_room.DrLever"/>
+                </div>
+                <p class="dr-tiny">
+                  Shift shares apply all year and describe a pool of hours, not
+                  a roster. <t t-esc="shiftBalance"/>
+                </p>
+              </div>
+
+              <!-- ============================== 2 · why profit changed -->
+              <div class="dr-panel-detail" t-if="state.detail === 'money'"
+                   role="tabpanel">
+                <div class="dr-detail-h">
+                  <div>
+                    <span class="pbim-eyebrow">FROM
+                      <t t-esc="comparison.name"/> TO YOUR PLAN</span>
+                    <h3>Every difference has a reason.</h3>
+                    <p>Follow the whole way from the comparison to your result.</p>
+                  </div>
+                  <div class="dr-bridge-total">
+                    <span>Difference in profit</span>
+                    <strong t-esc="bridgeTotal"/>
+                  </div>
+                </div>
+                <div class="dr-bridge">
+                  <canvas t-ref="bridge" role="img"
+                          aria-label="How the difference in operating profit is
+                                      made up"/>
+                </div>
+                <div class="dr-bridge-list">
+                  <div t-foreach="bridgeRows" t-as="b" t-key="b_index"
+                       class="dr-bridge-i">
+                    <span>
+                      <t t-esc="b.label"/>
+                      <small t-esc="b.reason"/>
+                    </span>
+                    <strong t-att-class="{ 'dr-pos': b.good and !b.zero,
+                                           'dr-neg': !b.good and !b.zero }"
+                            t-esc="b.value"/>
+                  </div>
+                </div>
+                <p class="dr-tiny">
+                  This bridge reconciles the difference. It does not claim each
+                  input acts alone. The scale is zoomed to the change, not to
+                  zero, so that every step is visible — the two dark columns
+                  are totals and their height is not to scale.
+                </p>
+              </div>
+
+              <!-- ================================= 3 · people &amp; pay -->
+              <div class="dr-panel-detail" t-if="state.detail === 'people'"
+                   role="tabpanel">
+                <div class="dr-detail-h">
+                  <div>
+                    <span class="pbim-eyebrow">PEOPLE, PAY AND WHAT REACHES
+                      THEM</span>
+                    <h3>A whole team. A clear money story.</h3>
+                    <p>What the business pays and what an employee takes home
+                      are two different numbers.</p>
+                  </div>
+                </div>
+                <div class="dr-people-grid">
+                  <div>
+                    <h4>Who is on the team in December</h4>
+                    <div t-foreach="teamRows" t-as="t" t-key="t.key"
+                         class="dr-team-row">
+                      <div class="dr-team-h">
+                        <span t-esc="t.name"/>
+                        <span>
+                          <strong t-esc="t.heads"/>
+                          <small>
+                            <t t-if="t.delta"><t t-esc="t.delta"/> · </t>
+                            <t t-esc="t.pay"/> a month
+                          </small>
+                        </span>
+                      </div>
+                      <div class="dr-team-track" role="img"
+                           t-att-aria-label="t.title">
+                        <i t-attf-style="width:{{t.planW}}%"/>
+                        <b t-attf-style="width:{{t.refW}}%"/>
+                      </div>
+                    </div>
+                    <p class="dr-tiny">
+                      Solid bar: your plan. Faint bar:
+                      <t t-esc="comparison.name"/>.
+                    </p>
+                  </div>
+                  <div class="dr-pay">
+                    <h4>Where a year of pay goes</h4>
+                    <div class="dr-strip" role="img"
+                         aria-label="How gross pay splits between take-home and
+                                     deductions">
+                      <span t-foreach="payRows.strip" t-as="p" t-key="p.key"
+                            t-attf-class="dr-strip-{{p.key}}"
+                            t-attf-style="flex:{{p.flex}}"
+                            t-esc="p.label"/>
+                    </div>
+                    <div t-foreach="payRows.employee" t-as="r" t-key="r_index"
+                         class="dr-line">
+                      <span t-esc="r.label"/>
+                      <b t-att-class="{ 'dr-strong': r.strong }"
+                         t-esc="r.value"/>
+                    </div>
+                    <div class="dr-employer">
+                      <div t-foreach="payRows.employer" t-as="r" t-key="r_index"
+                           class="dr-line">
+                        <span t-esc="r.label"/>
+                        <b t-att-class="{ 'dr-strong': r.strong }"
+                           t-esc="r.value"/>
+                      </div>
+                    </div>
+                    <p class="dr-tiny">
+                      Deductions are shown once, inside gross pay. They never
+                      add to business cost.
+                    </p>
+                  </div>
                 </div>
               </div>
+
+              <!-- ==================================== 4 · room to hire -->
+              <div class="dr-panel-detail" t-if="state.detail === 'room'"
+                   role="tabpanel">
+                <div class="dr-detail-h">
+                  <div>
+                    <span class="pbim-eyebrow">AN ANSWER BEFORE ANOTHER
+                      COMMITMENT</span>
+                    <h3>How much room do we have?</h3>
+                    <p>Extra hires, with every other decision held exactly
+                      where you left it.</p>
+                  </div>
+                  <div class="dr-room-pick">
+                    <label for="dr-room-team">Team</label>
+                    <select id="dr-room-team" class="dr-select dr-select--sm"
+                            t-on-change="(ev) => this.setRoomTeam(ev)">
+                      <option t-foreach="teams" t-as="t" t-key="t.key"
+                              t-att-value="t.key"
+                              t-att-selected="t.key === state.roomTeam">
+                        <t t-esc="t.name"/>
+                      </option>
+                    </select>
+                    <label for="dr-room-role">Roles</label>
+                    <select id="dr-room-role" class="dr-select dr-select--sm"
+                            t-on-change="(ev) => this.setRoomRole(ev)">
+                      <option value="" t-att-selected="!state.roomRole">
+                        Typical mix
+                      </option>
+                      <option t-foreach="roomRoles" t-as="r" t-key="r.key"
+                              t-att-value="r.key"
+                              t-att-selected="r.key === state.roomRole">
+                        <t t-esc="r.name"/>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="dr-room-result">
+                  <strong t-esc="roomResult.title"/>
+                  <span t-esc="roomResult.copy"/>
+                </div>
+                <div class="dr-room-chart">
+                  <canvas t-ref="room" role="img"
+                          aria-label="Operating profit as more people are
+                                      added"/>
+                </div>
+                <div class="dr-legend">
+                  <span><i class="dr-l-met"/>Every goal still met</span>
+                  <span><i class="dr-l-miss"/>A goal breaks here</span>
+                </div>
+                <div class="dr-room-try" t-if="roomResult.tries.length">
+                  <button t-foreach="roomResult.tries" t-as="t" t-key="t.n"
+                          class="pbim-btn"
+                          t-on-click="() => this.tryRoom(t.n)">
+                    <t t-esc="t.label"/>
+                    <span t-out="ic('arrowUpRight', 12)"/>
+                  </button>
+                </div>
+                <p class="dr-tiny" t-esc="roomFootnote"/>
+              </div>
+            </section>
+
+            <!-- ======================================= a reality check -->
+            <section class="pbim-card dr-stress">
+              <div class="dr-year-h">
+                <div>
+                  <span class="pbim-eyebrow">GIVE THE PLAN A REALITY CHECK</span>
+                  <h2>And if demand surprises us?</h2>
+                </div>
+                <div class="dr-stress-opts" t-if="hasTarget" role="group"
+                     aria-label="Demand reality check">
+                  <button t-foreach="stressOptions" t-as="o" t-key="o.value"
+                          t-att-class="{ 'is-on': o.active }"
+                          t-att-aria-pressed="o.active"
+                          t-on-click="() => this.setStress(o.value)">
+                    <span t-esc="o.head"/>
+                    <small t-esc="o.label"/>
+                  </button>
+                </div>
+              </div>
+              <p class="dr-stress-out" t-if="hasTarget" t-esc="stressText"/>
+              <p class="dr-tiny" t-else="">
+                Type a revenue target to stress-test the plan.
+              </p>
             </section>
 
             <!-- ===================================== the scenario dock -->
@@ -558,11 +914,21 @@
                   </tbody>
                 </table>
               </div>
-              <p class="dr-tiny dr-dock-foot">
-                Saved for everyone at <t t-esc="state.company.name"/> ·
-                up to <t t-esc="state.limits.max_plans"/> plans ·
-                nothing here changes payroll.
-              </p>
+              <div class="dr-dock-foot">
+                <p class="dr-tiny">
+                  Saved for everyone at <t t-esc="state.company.name"/> ·
+                  up to <t t-esc="state.limits.max_plans"/> plans ·
+                  nothing here changes payroll.
+                </p>
+                <button class="pbim-btn"
+                        t-att-disabled="state.preview or state.briefBusy"
+                        t-att-title="state.preview ? previewNote : 'Opens a printable page in a new tab'"
+                        t-on-click="() => this.exportBrief()">
+                  <span t-out="ic('printer', 14)"/>
+                  <t t-if="state.briefBusy">Building the brief…</t>
+                  <t t-else="">Export the decision brief</t>
+                </button>
+              </div>
             </section>
           </div>
         </div>
@@ -619,18 +985,107 @@
                 </label>
                 <div class="dr-goal-entry">
                   <span t-esc="g.bound"/>
-                  <input type="number" t-att-step="g.step" t-att-value="g.target"
-                         t-att-aria-label="g.label"
+                  <DrMoneyInput t-if="g.money" value="g.target" api="moneyApi"
+                                label="g.label"
+                                onCommit="(v) => this.setGoalValue(g.key, v)"/>
+                  <input t-else="" type="number" t-att-step="g.step"
+                         t-att-value="g.target" t-att-aria-label="g.label"
                          t-on-change="(ev) => this.setGoalTarget(g.key, ev)"/>
-                  <span t-esc="g.unit"/>
+                  <span t-if="g.unit" t-esc="g.unit"/>
                 </div>
                 <p class="dr-goal-s" t-att-class="{ 'dr-goal-s--missed': g.missed }"
                    t-esc="g.status"/>
               </div>
             </div>
-            <p class="dr-tiny">Finding a path to these goals for you — three
-              calculated routes, side by side — arrives in the next release.
-              For now the room keeps score while you steer.</p>
+
+            <!-- ==================================== the goal finder -->
+            <div class="dr-find">
+              <span class="dr-find-note">
+                <t t-if="state.searchNote"><t t-esc="state.searchNote"/></t>
+                <t t-else="">Your current demand, pay, shifts and hiring month
+                  stay exactly in place.</t>
+              </span>
+              <button class="pbim-btn primary"
+                      t-att-disabled="state.finding"
+                      t-on-click="() => this.findPaths()">
+                <span t-out="ic('route', 14)"/>
+                <t t-if="state.finding">Exploring the possibilities…</t>
+                <t t-else="">Find paths to these goals</t>
+              </button>
+            </div>
+
+            <div class="dr-paths dr-paths--one" t-if="hasPaths and pathsAreOne">
+              <div class="dr-path"
+                   t-att-class="{ 'dr-path--miss': !pathsVerdict.met }">
+                <span class="pbim-eyebrow">ONE HONEST ANSWER</span>
+                <h3>
+                  <span t-out="ic(pathsVerdict.met ? 'check' : 'info', 15)"/>
+                  <t t-esc="pathsVerdict.title"/>
+                </h3>
+                <div class="dr-path-n">
+                  <strong t-esc="pathsVerdict.profit"/>
+                  <small>operating profit · this is the plan you have</small>
+                </div>
+                <div t-foreach="pathsVerdict.specs" t-as="s" t-key="s_index"
+                     class="dr-path-s">
+                  <span t-esc="s.label"/><b t-esc="s.value"/>
+                </div>
+                <p t-esc="pathsVerdict.copy"/>
+              </div>
+            </div>
+            <div class="dr-paths" t-elif="hasPaths">
+              <div t-foreach="pathCards" t-as="p" t-key="p.lane"
+                   class="dr-path" t-att-class="{ 'dr-path--miss': !p.met }">
+                <span class="pbim-eyebrow" t-esc="p.eyebrow"/>
+                <h3><span t-out="ic(p.icon, 15)"/> <t t-esc="p.title"/></h3>
+                <span class="dr-path-st"
+                      t-att-class="{ 'dr-path-st--miss': !p.met }">
+                  <i t-out="ic(p.met ? 'check' : 'alert', 12)"/>
+                  <t t-esc="p.status"/>
+                </span>
+                <div class="dr-path-n">
+                  <strong t-esc="p.profit"/>
+                  <small>
+                    operating profit ·
+                    <b t-att-class="{ 'dr-neg': !p.better }" t-esc="p.delta"/>
+                    vs your plan
+                  </small>
+                </div>
+                <div t-foreach="p.specs" t-as="s" t-key="s_index"
+                     class="dr-path-s">
+                  <span t-esc="s.label"/><b t-esc="s.value"/>
+                </div>
+                <p t-esc="p.copy"/>
+                <button class="pbim-btn primary"
+                        t-on-click="() => this.tryPath(p.index)">
+                  Try this direction <span t-out="ic('arrowUpRight', 12)"/>
+                </button>
+              </div>
+            </div>
+            <div class="dr-find-empty" t-else="">
+              <span t-out="ic('sparkles', 20)"/>
+              <strong>One ambition. More than one way there.</strong>
+              <p>Hiring, developing the team you have, or a blend of the two —
+                worked out from this company's own roster and pay. You can try
+                a direction before you keep it.</p>
+            </div>
+
+            <details class="dr-fold">
+              <summary>What the search changes — and what it protects</summary>
+              <p class="dr-tiny">
+                It varies three things: how many people you add to your biggest
+                revenue-earning team, how much overtime everyone works, and how
+                much more gets done in an hour. It leaves everything else you
+                decided exactly alone — your revenue target, the growth you
+                expect, the salary increase, the shift shares, the month new
+                people arrive and the reality check. Nobody's job is at stake
+                in any of this: the search only ever adds people to a plan.
+                Each card is the least costly version of its direction. If no
+                direction meets every goal, they are ranked by how few goals
+                are missed, then by how narrowly. These are calculations from
+                the numbers on this page, not predictions.
+              </p>
+            </details>
           </div>
         </div>
 
@@ -650,7 +1105,75 @@
                 <p t-esc="a.copy"/>
               </div>
             </div>
-            <p class="dr-tiny" t-esc="whoCanChange"/>
+
+            <!-- ============================ the numbers, for the lead -->
+            <div class="dr-edit" t-if="state.canManage">
+              <div class="dr-edit-h">
+                <span class="pbim-eyebrow">
+                  <span t-out="ic('sliders', 12)"/> CHANGE THE NUMBERS
+                </span>
+                <p class="dr-tiny">These apply to every plan at
+                  <t t-esc="state.company.name"/>, for everyone.</p>
+              </div>
+              <div t-foreach="assumptionFields" t-as="grp" t-key="grp.name"
+                   class="dr-edit-g">
+                <h3 t-esc="grp.name"/>
+                <div class="dr-edit-rows">
+                  <div t-foreach="grp.fields" t-as="f" t-key="f.key"
+                       class="dr-edit-f">
+                    <t t-if="f.kind === 'teams'">
+                      <label t-esc="f.label"/>
+                      <div class="dr-chips">
+                        <button t-foreach="assumeTeamChips" t-as="c"
+                                t-key="c.id" class="dr-chip"
+                                t-att-class="{ 'is-on': c.on }"
+                                t-att-aria-pressed="c.on"
+                                t-on-click="() => this.toggleRevenueTeam(c.id)">
+                          <span t-out="ic(c.on ? 'check' : 'plus', 11)"/>
+                          <t t-esc="c.name"/>
+                        </button>
+                      </div>
+                      <small t-esc="f.help"/>
+                    </t>
+                    <t t-elif="f.kind === 'money'">
+                      <label t-att-for="'dr-a-' + f.key" t-esc="f.label"/>
+                      <DrMoneyInput value="f.value" api="moneyApi"
+                                    label="f.label" min="0"
+                                    inputId="'dr-a-' + f.key"
+                                    onCommit="(v) => this.setAssumption(f.key, v)"/>
+                      <small t-esc="f.help"/>
+                    </t>
+                    <t t-else="">
+                      <label t-att-for="'dr-a-' + f.key" t-esc="f.label"/>
+                      <input t-att-id="'dr-a-' + f.key" type="number"
+                             t-att-step="f.step" t-att-min="f.min"
+                             t-att-max="f.max" t-att-value="f.value"
+                             t-att-aria-label="f.label"
+                             t-on-change="(ev) => this.onAssumption(f.key, ev)"/>
+                      <small t-esc="f.help"/>
+                    </t>
+                  </div>
+                </div>
+              </div>
+              <p class="dr-tiny dr-error" t-if="state.assumeError"
+                 t-esc="state.assumeError"/>
+              <div class="dr-dialog-actions">
+                <button class="dr-link"
+                        t-on-click="() => this.openAssumptionsRecord()">
+                  Open the change history
+                </button>
+                <button class="pbim-btn"
+                        t-on-click="() => this.closeAssumptions()">Cancel</button>
+                <button class="pbim-btn primary"
+                        t-att-disabled="state.assumeBusy or !assumeDirty or demandShareError"
+                        t-on-click="() => this.saveAssumptions()">
+                  <t t-if="state.assumeBusy">Saving…</t>
+                  <t t-else="">Save these assumptions</t>
+                </button>
+              </div>
+            </div>
+            <p class="dr-tiny" t-else="" t-esc="assumptionsWho"/>
+            <p class="dr-tiny" t-if="state.canManage" t-esc="assumptionsWho"/>
           </div>
         </div>
 
