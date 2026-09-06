@@ -3,3 +3,5 @@
 .capacity-track>.capacity-before{z-index:2;top:0;bottom:0}.money-strip span{min-width:0;overflow:hidden}.model-note{display:flex!important}
 
 @media(max-width:720px){.bridge-wrap{overflow-x:auto}.bridge-wrap canvas{min-width:640px}.hero-number>strong{font-size:44px}.hero-number{gap:10px}.delta-pill{max-width:100%}}
+
+.topbar nav{flex-wrap:wrap}@media(max-width:720px){.topbar nav{justify-content:flex-start}}

@@ -1,10 +1,13 @@
 # Workforce Futures — research and design recommendation
 
 Audience: Payobook leadership and product team. Research date: 5 September 2026.
-Decision: choose an interaction model for a new workforce planning product; four working HTML proofs of concept, before production implementation.
+Decision: choose an interaction model for a new workforce planning product; five working HTML proofs of concept, before production implementation.
+
+## Option 05 update — 6 September 2026
+The Decision Room is the newest direction for review. It adopts option_e’s violet palette and extends the Living Plan with six simultaneous business goals, visible goal gaps, a cumulative annual outlook, a month ribbon, reversible trials, a demand/capacity chart and exact feasible hiring ranges. Its search preserves the current company assumptions. No new runtime library is required; Payobook already has OWL and a lazy-loaded Chart.js integration. The existing fictional data remains in use. Extra chart windows and draggable money flows were deferred to keep the executive journey focused.
 
 ## Recommendation
-Recommend **Option 04: The Living Plan** as the default home. It combines the immediacy of the What-if Cockpit, optional goal-first guidance, and shift-level investigation on a connected visual canvas. The original three concepts remain useful alternatives for comparison. All four use one explainable calculation engine. This is a design recommendation, not evidence that competing systems lack these capabilities.
+Recommend **Option 05: The Decision Room** for the next review; it builds on Option 04: The Living Plan. It combines the immediacy of the What-if Cockpit, optional goal-first guidance, and shift-level investigation on a connected visual canvas. The original three concepts remain useful alternatives for comparison. All five use one explainable calculation engine. This is a design recommendation, not evidence that competing systems lack these capabilities.
 
 The product promise: **Change a decision. Understand the consequence. Find a better plan.** A new user should see a useful starting scenario immediately, without constructing a model or knowing planning jargon.
 
@@ -20,14 +23,16 @@ UKG’s documented labor forecast converts demand into required employees by job
 
 Nielsen Norman Group recommends progressive disclosure to defer secondary choices, keeping the primary interface focused. Its usability heuristics emphasize recognition, feedback and user control. The proposed interfaces use starting questions, labeled controls, baseline comparisons, reversible edits, plain-language feedback, and expandable assumptions. These are evidence-informed design choices; a usability test is still needed to prove novice success. [NN/g progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/), [NN/g usability heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/).
 
-## Four options
+## Five options
 
 | Concept | First action | Primary delight | Strength | Trade-off |
 |---|---|---|---|---|
 | What-if Cockpit | Adjust one labeled slider or apply an example | Charts, money breakdown and a causal explanation update together | Fast executive exploration | Too many exposed controls could overwhelm; advanced inputs are folded away |
 | Guided Path | Choose a business goal | Compare calculated paths and see whether the goal is achievable | Easiest first-time experience | Recommendations must disclose the search space and assumptions |
 | Coverage Studio | Add or move capacity among day, evening and night | A visible shortage shrinks while financial impact updates | Operational clarity | A monthly capacity sketch is not a compliant employee roster |
-| The Living Plan — recommended | Move one slider or choose an ambition | A visible people → capacity → profit story, before/after horizon, difference view and financial bridge | Executive overview and novice guidance in one place | Richer visual design needs usability validation; drill-downs and secondary inputs stay folded away |
+| The Living Plan | Move one slider or choose an ambition | A visible people → capacity → profit story, before/after horizon, difference view and financial bridge | Executive overview and novice guidance in one place | Richer visual design needs usability validation; drill-downs and secondary inputs stay folded away |
+
+| The Decision Room | Set multiple business goals | Try a calculated path reversibly and see exact hiring room | Connects ambition to practical limits | More goals require explicit units, feasibility checks and an explainable search |
 
 ## Taking the fourth concept further
 
@@ -39,7 +44,7 @@ These are product design proposals informed by the evidence above. Visual appeal
 
 ## Deliberate product decisions
 
-1. One shared model and comparable baseline in all four concepts.
+1. One shared model and comparable baseline in all five concepts.
 2. Demand and capacity determine realized revenue. More hires alone do not guarantee more sales.
 3. Show forecast operating profit, margin, fully loaded workforce cost, headcount, fulfilled demand and employee take-home separately.
 4. Distinguish employee withholding from additional employer cost. The prototype uses explicitly fictional rates, with no claim of jurisdictional payroll compliance.

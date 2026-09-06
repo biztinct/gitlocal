@@ -7,10 +7,12 @@ Four distinct HTML concepts for a new Payobook workforce planning experience:
 - `public/studio.html` — monthly shift coverage, operator allocation, hiring, overtime, productive time and support-skill bottlenecks.
 - `public/living.html` — The Living Plan: the three concepts joined on one connected canvas. Hero stage with profit / people cost / coverage views, ±10% demand band and a month scrubber; people → coverage → profit ripple; shift balance, profit bridge and take-home tabs; compare against the baseline, a pinned plan or any saved scenario. Logic in `public/living-model.js` (pure) and `public/living.js` (page).
 - `public/living.html` — recommended connected canvas: before/after forecast, demand stress envelope, profit bridge, monthly exploration, goal paths, marginal hiring preview and pinned comparisons.
+- `public/option5.html` — The Decision Room: Option 04 with the option_e violet palette, six simultaneous executive goals, cumulative outlook, reversible path trials, demand/capacity chart and exact feasible hiring ranges.
+- `public/option5-standalone.html` — self-contained portable version; no external assets or runtime dependencies.
 - `public/index.html` — offline concept gallery.
 - `public/research.html` — research, comparison, recommendation and proposed production roadmap.
 
-Open `public/index.html` directly, keeping the public folder together. All four concepts work without a server, external libraries or live business data. Named scenarios are stored only in this browser. Export creates a portable HTML decision brief.
+Open `public/index.html` directly, keeping the public folder together. All five concepts work without a server, external libraries or live business data. Named scenarios are stored only in this browser. Export creates a portable HTML decision brief.
 
 Hosted preview: https://payobook-workforce-futures.groovy-pixie-4012.chatgpt.site
 
@@ -23,6 +25,7 @@ This phase creates reviewable standalone prototypes only. The existing workforce
 - `npm install`
 - `python3 scripts/export-html.py` regenerates offline gallery and research HTML.
 - `node --test tests/*.test.mjs tests/living.test.mjs` validates reconciliations, timing, capacity constraints, role effects and goal seeking.
+- `python3 scripts/export-option5.py` regenerates the standalone Option 05 HTML.
 - `npm run dev` serves the local gallery and prototypes.
 - `npm run build` creates the Sites deployment output.
 
@@ -38,6 +41,8 @@ All rates are invented demonstration assumptions, not statutory rules. The month
 
 ## Browser review paths
 
-Cockpit: edit operators → observe metrics and chart → undo → save a named scenario → reset → reload saved plan → export brief. Guided Path: calculate a 15% growth goal → compare three paths → inspect selected plan; also test a 50% cost reduction target for explicit infeasibility. Studio: balance shift shares → transfer operators → hire into a shift → compare months before/after start. Living Plan: load “Grow thoughtfully” → move the operators lever → watch the ripple → open “Why profit changed” → pin the plan as comparison → try “Help me reach a goal” → save and export. Check all four at desktop and mobile widths.
+Cockpit: edit operators → observe metrics and chart → undo → save a named scenario → reset → reload saved plan → export brief. Guided Path: calculate a 15% growth goal → compare three paths → inspect selected plan; also test a 50% cost reduction target for explicit infeasibility. Studio: balance shift shares → transfer operators → hire into a shift → compare months before/after start. Living Plan: load “Grow thoughtfully” → move the operators lever → watch the ripple → open “Why profit changed” → pin the plan as comparison → try “Help me reach a goal” → save and export. Check all five at desktop and mobile widths.
 
 Testing screenshots must not be retained. `public/og.png` is the generated social preview product asset, not a testing screenshot.
+
+Option 05 decisions and production mapping: `research/option5-design.md`. Its named scenarios include goals and use a separate browser-local storage key, preserving Option 04 scenarios. Browser check: set all six goals → find paths → try/cancel/keep → Room to hire → trial a feasible addition → save → change goals → restore → export. Validate impossible goals explicitly.
