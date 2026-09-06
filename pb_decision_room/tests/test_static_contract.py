@@ -126,6 +126,16 @@ class TestDecisionRoomStaticContract(TransactionCase):
                             and not node.value.startswith('odoo.'):
                         bad.append('%s: %s' % (rel, node.value[:60]))
                 continue
+            if path.endswith(('.pot', '.po')):
+                # A catalogue's COMMENT lines are the extractor's own
+                # bookkeeping — `#. odoo-javascript`, `#: code:addons/…` —
+                # and no user ever sees one. What a user sees is the msgstr,
+                # and T37 holds the Vietnamese file to the same rule.
+                text = '\n'.join(line for line in src.splitlines()
+                                 if not line.startswith('#'))
+                if 'odoo' in text.lower():
+                    bad.append(rel)
+                continue
             if 'odoo' in src.lower():
                 bad.append(rel)
         self.assertFalse(bad, 'the product says "Odoo" to a user: %s' % bad)
@@ -164,6 +174,10 @@ class TestDecisionRoomStaticContract(TransactionCase):
         self.assertIn('target', known)
         self.assertIn('pause', known)
         self.assertIn('arrowUpRight', known)
+        # T44. Phase 3's own new icon: the grab handle on the phone's
+        # "Shape your plan" bar, which has to point the way the sheet goes.
+        self.assertIn('chevronUp', known)
+        self.assertIn('sliders', known)
         used = set()
         for path in _walk(os.path.join(HERE, 'static'), ('.js', '.xml')):
             for hit in re.finditer(r"""\bic\(\s*['"]([\w]+)['"]""",
@@ -317,3 +331,75 @@ class TestDecisionRoomStaticContract(TransactionCase):
             self.assertTrue(self.env.ref(xmlid, raise_if_not_found=False),
                             'the gate names a group that does not exist: %s'
                             % xmlid)
+
+    # ------------------------------------------------------------- T46
+    def test_t46_every_aria_reference_points_at_something_that_exists(self):
+        """T46. `aria-controls="dr-controls"` on a bar whose panel has no id
+        is a promise to a screen reader that nothing keeps — and it is
+        invisible in every sighted test there is."""
+        for path in _walk(os.path.join(HERE, 'static'), ('.xml',)):
+            src = _read(path)
+            ids = set(re.findall(r'\bid="([^"{}]+)"', src))
+            # ids the template builds by hand, e.g. id="dr-a-<key>"
+            for hit in re.finditer(r"""t-att-id="'([\w-]+)'\s*\+""", src):
+                ids.add(hit.group(1) + '*')
+            referenced = []
+            for attr in ('aria-controls', 'aria-labelledby',
+                         'aria-describedby'):
+                for hit in re.finditer(r'\b%s="([^"{}]+)"' % attr, src):
+                    referenced.extend(hit.group(1).split())
+            missing = [name for name in referenced if name not in ids]
+            self.assertFalse(
+                missing,
+                '%s points at ids that do not exist: %s'
+                % (os.path.basename(path), missing))
+
+    # ------------------------------------------------------------- T47
+    def test_t47_the_look_is_flat_colour_and_unit_safe(self):
+        """T47. Two rules that cost a whole afternoon each when broken.
+
+        The design system forbids COLOUR GRADIENTS — every `gradient()` in
+        this file has to be a HARD STOP (a fill bar, a dashed swatch, a dot
+        texture), which is what a repeated stop position means. And Sass dies
+        on `min()`/`max()` with mixed px and % units, taking the WHOLE asset
+        bundle with it and showing nothing in the server log.
+        """
+        scss = _read(HERE, 'static', 'src', 'scss', 'decision_room.scss')
+        body = re.sub(r'//[^\n]*', '', scss)
+        for hit in re.finditer(r'(repeating-)?(linear|radial)-gradient\(',
+                               body):
+            start = hit.end()
+            depth, i = 1, start
+            while i < len(body) and depth:
+                if body[i] == '(':
+                    depth += 1
+                elif body[i] == ')':
+                    depth -= 1
+                i += 1
+            inside = body[start:i - 1]
+            stops = re.findall(r'(\d+(?:\.\d+)?(?:px|%)|var\([^)]*\))',
+                               inside)
+            repeated = [s for s in set(stops) if stops.count(s) > 1]
+            self.assertTrue(
+                repeated,
+                'a colour gradient (not a hard-stop pattern): %s'
+                % inside[:90])
+        for hit in re.finditer(r'\b(?:min|max)\(([^()]*)\)', body):
+            units = set(re.findall(r'\d(px|%|vh|vw|em|rem)', hit.group(1)))
+            self.assertLessEqual(
+                len(units), 1,
+                'Sass cannot mix units inside min()/max(): %s' % hit.group(0))
+
+    def test_the_engine_and_the_formatter_are_handed_a_translator(self):
+        """The two files that may not import anything still have to speak
+        Vietnamese. They are handed `_t` at load time; if that call is ever
+        removed, every sentence they build silently reverts to English with
+        nothing failing anywhere."""
+        room = _code(_read(HERE, 'static', 'src', 'js', 'decision_room.js'))
+        self.assertIn('useEngineTranslator(_t);', room)
+        self.assertIn('useFormatTranslator(_t);', room)
+        for name in ('decision_engine.js', 'decision_format.js'):
+            src = _read(HERE, 'static', 'src', 'js', name)
+            self.assertIn('export function useTranslator(', src)
+            self.assertGreater(len(re.findall(r'\b_t\(', src)), 20,
+                               '%s has stopped translating' % name)

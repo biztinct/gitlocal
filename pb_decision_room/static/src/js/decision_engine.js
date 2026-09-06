@@ -26,8 +26,42 @@
  * who earn revenue, revenue is the smaller of demand and capacity.
  *
  * This file imports NOTHING, so `node tools/decision_engine_check.mjs` can load
- * it exactly as it ships.
+ * it exactly as it ships. That includes the TRANSLATOR: every sentence below
+ * is written `_t("…")`, which the string extractor finds exactly as it finds
+ * one in any other file, but `_t` itself is INJECTED at load time by
+ * `decision_room.js` rather than imported. Under node the fallback below
+ * interpolates and hands back plain English, so the numbered engine checks
+ * read the same sentences they always did.
  */
+
+/** The room's translator; replaced by the platform's `_t` at load time. */
+let _t = (text, params) => interpolate(text, params);
+
+function interpolate(text, params) {
+    const raw = String(text === undefined || text === null ? "" : text);
+    if (params === undefined || params === null) { return raw; }
+    // The platform's own two rules, mirrored exactly, so a sentence reads the
+    // same under `node` as it does on screen: with a dictionary only
+    // `%(key)s` is replaced and `%%` is left alone; with a single value `%s`
+    // is replaced and `%%` becomes one per cent sign.
+    if (typeof params === "object" && !Array.isArray(params)) {
+        return raw.replace(/%\(([^)]+)\)s/g,
+            (hit, key) => (key in params ? String(params[key]) : ""));
+    }
+    let out = "";
+    for (let i = 0; i < raw.length; i++) {
+        if (raw[i] === "%" && raw[i + 1] === "%") { out += "%"; i++; continue; }
+        if (raw[i] === "%" && raw[i + 1] === "s") {
+            out += String(params); i++; continue;
+        }
+        out += raw[i];
+    }
+    return out;
+}
+
+export function useTranslator(fn) {
+    if (typeof fn === "function") { _t = fn; }
+}
 
 /** Mild Vietnamese seasonality. Sums to 12, so a flat year is a flat year. */
 export const SEASON = [0.86, 0.78, 0.95, 1.00, 1.02, 1.04,
@@ -473,40 +507,47 @@ export function compute(baseline, assumptions, state) {
  */
 export const GOAL_DEFS = {
     margin: {
-        key: "margin", label: "Operating margin", short: "Margin",
+        key: "margin", label: () => _t("Operating margin"),
+        short: () => _t("Margin"),
         sense: "min", unit: "%", step: 0.5, min: -50, max: 80,
         value: (plan) => plan.year.margin * 100,
         format: (v, f) => f.pct(v),
     },
     profit: {
-        key: "profit", label: "Operating profit for the year", short: "Profit",
+        key: "profit", label: () => _t("Operating profit for the year"),
+        short: () => _t("Profit"),
         sense: "min", unit: "money", step: 1, min: -1e15, max: 1e15,
         value: (plan) => plan.year.profit,
         format: (v, f) => f.money(v),
     },
     cost: {
-        key: "cost", label: "Workforce cost for the year", short: "Cost",
+        key: "cost", label: () => _t("Workforce cost for the year"),
+        short: () => _t("Cost"),
         sense: "max", unit: "money", step: 1, min: 0, max: 1e15,
         value: (plan) => plan.year.people,
         format: (v, f) => f.money(v),
     },
     coverage: {
-        key: "coverage", label: "Demand served", short: "Served",
+        key: "coverage", label: () => _t("Demand served"),
+        short: () => _t("Served"),
         sense: "min", unit: "%", step: 0.5, min: 0, max: 100,
         value: (plan) => plan.year.coverage * 100,
         format: (v, f) => f.pct(v),
     },
     heads: {
-        key: "heads", label: "People in December", short: "Team size",
+        key: "heads", label: () => _t("People in December"),
+        short: () => _t("Team size"),
         sense: "max", unit: "people", step: 1, min: 0, max: 1e7,
         value: (plan) => plan.year.headcount,
-        format: (v, f) => f.int(v) + " people",
+        format: (v, f) => f.people
+            ? String(f.people(v)).replace(/^\+/, "") : String(v),
     },
     overtime: {
-        key: "overtime", label: "Overtime per person", short: "Overtime",
+        key: "overtime", label: () => _t("Overtime per person"),
+        short: () => _t("Overtime"),
         sense: "max", unit: "h/mo", step: 1, min: 0, max: 60,
         value: (plan) => plan.state.ot,
-        format: (v) => `${Math.round(v)} h a month`,
+        format: (v) => _t("%(n)s h a month", { n: Math.round(v) }),
     },
 };
 
@@ -560,7 +601,7 @@ export function evaluateGoals(plan, goals, format) {
         // met read as missed by nothing at all.
         const epsilon = Math.max(1e-8, Math.abs(g.target) * 1e-9);
         out.push({
-            key, def, short: def.short, label: def.label, sense: def.sense,
+            key, def, short: def.short(), label: def.label(), sense: def.sense,
             actual, target: g.target, gap, met: gap <= epsilon,
             shortfall: Math.max(0, gap) / Math.max(Math.abs(g.target), 1),
             actualText: def.format(actual, format),
@@ -608,23 +649,26 @@ export function bridge(plan, ref) {
     const p = plan.year;
     const r = ref.year;
     const steps = [
-        ["Revenue delivered", p.revenue - r.revenue,
-         "The work the team could actually serve, at the same price an hour"],
-        ["Salaries and allowances", -(p.salary - r.salary),
-         "How many people are on the payroll, and what they are paid"],
-        ["Overtime and premiums", -((p.overtime + p.premium)
-                                    - (r.overtime + r.premium)),
-         "Hours beyond the normal month, and the uplift for evenings and "
-         + "nights"],
-        ["Bonus", -(p.bonus - r.bonus),
-         "The yearly bonus, paid in its month"],
-        ["Contributions", -(p.contributions - r.contributions),
-         "Insurance the business pays on top of pay, up to the cap"],
-        ["Recruiting and severance", -((p.recruit + p.severance + p.learning)
-                                       - (r.recruit + r.severance + r.learning)),
-         "One-off costs of people joining and leaving, and of better hours"],
-        ["Other costs", -(p.other - r.other),
-         "Rent, materials and everything else that is not people"],
+        [_t("Revenue delivered"), p.revenue - r.revenue,
+         _t("The work the team could actually serve, at the same price an "
+            + "hour")],
+        [_t("Salaries and allowances"), -(p.salary - r.salary),
+         _t("How many people are on the payroll, and what they are paid")],
+        [_t("Overtime and premiums"), -((p.overtime + p.premium)
+                                        - (r.overtime + r.premium)),
+         _t("Hours beyond the normal month, and the uplift for evenings and "
+            + "nights")],
+        [_t("Bonus"), -(p.bonus - r.bonus),
+         _t("The yearly bonus, paid in its month")],
+        [_t("Contributions"), -(p.contributions - r.contributions),
+         _t("Insurance the business pays on top of pay, up to the cap")],
+        [_t("Recruiting and severance"),
+         -((p.recruit + p.severance + p.learning)
+           - (r.recruit + r.severance + r.learning)),
+         _t("One-off costs of people joining and leaving, and of better "
+            + "hours")],
+        [_t("Other costs"), -(p.other - r.other),
+         _t("Rent, materials and everything else that is not people")],
     ].map(([label, value, reason]) => ({ label, value, reason, note: reason }));
     const total = steps.reduce((sum, x) => sum + x.value, 0);
     const difference = p.profit - r.profit;
@@ -685,9 +729,14 @@ export function changes(state, refState, baseline) {
     return list.sort((x, y) => (weight[y.key] || 1) - (weight[x.key] || 1));
 }
 
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
-                     "July", "August", "September", "October", "November",
-                     "December"];
+/** The twelve months, in the reader's language, asked for one at a time. */
+export function monthName(index) {
+    const i = ((Math.round(num(index, 0)) % 12) + 12) % 12;
+    return [_t("January"), _t("February"), _t("March"), _t("April"),
+            _t("May"), _t("June"), _t("July"), _t("August"),
+            _t("September"), _t("October"), _t("November"),
+            _t("December")][i];
+}
 
 /** One change, said the way a person would say it. */
 export function describeChange(change, format) {
@@ -700,49 +749,65 @@ export function describeChange(change, format) {
             // simply has 120 fewer people in it than the one it is measured
             // against. "Fewer" is true either way round.
             const n = Math.abs(Math.round(change.delta));
-            const word = change.delta > 0 ? "more" : "fewer";
-            const who = n === 1 ? "person" : "people";
-            return `${n} ${word} ${who} in ${change.teamName} `
-                + `from ${MONTH_NAMES[(change.month || 1) - 1]}`;
+            const month = monthName((change.month || 1) - 1);
+            const team = change.teamName;
+            if (change.delta > 0) {
+                return n === 1
+                    ? _t("%(n)s more person in %(team)s from %(month)s",
+                         { n, team, month })
+                    : _t("%(n)s more people in %(team)s from %(month)s",
+                         { n, team, month });
+            }
+            return n === 1
+                ? _t("%(n)s fewer person in %(team)s from %(month)s",
+                     { n, team, month })
+                : _t("%(n)s fewer people in %(team)s from %(month)s",
+                     { n, team, month });
         }
         case "raise":
-            return `a ${change.to > 0 ? "" : "cut of "}`
-                + `${Math.abs(change.to).toFixed(1)}% `
-                + (change.to > 0 ? "salary increase" : "in salaries");
+            return change.to > 0
+                ? _t("a %(pct)s% salary increase",
+                     { pct: Math.abs(change.to).toFixed(1) })
+                : _t("a cut of %(pct)s% in salaries",
+                     { pct: Math.abs(change.to).toFixed(1) });
         case "target":
-            return `a revenue target of ${f.money(change.to)}`;
+            return _t("a revenue target of %s", f.money(change.to));
         case "growth":
-            return `${Math.abs(change.to)}% ${change.to >= 0 ? "more" : "less"} `
-                + "work by December";
+            return change.to >= 0
+                ? _t("%s%% more work by December", Math.abs(change.to))
+                : _t("%s%% less work by December", Math.abs(change.to));
         case "ot":
-            return `${Math.round(change.to)} hours of overtime per person`;
+            return _t("%s hours of overtime per person",
+                      Math.round(change.to));
         case "productivity":
-            return `${Math.abs(change.to)}% ${change.to >= 0 ? "more" : "less"} `
-                + "productive time";
+            return change.to >= 0
+                ? _t("%s%% more productive time", Math.abs(change.to))
+                : _t("%s%% less productive time", Math.abs(change.to));
         case "absence":
-            return `${Math.round(change.to)}% unavailable time`;
+            return _t("%s%% unavailable time", Math.round(change.to));
         case "bonusMonths":
-            return change.to === 0 ? "no yearly bonus"
-                : `${change.to} months of bonus`;
+            return change.to === 0 ? _t("no yearly bonus")
+                : _t("%s months of bonus", change.to);
         case "stress":
-            return `demand ${change.to >= 0 ? "up" : "down"} `
-                + `${Math.abs(change.to)}%`;
+            return change.to >= 0
+                ? _t("demand up %s%%", Math.abs(change.to))
+                : _t("demand down %s%%", Math.abs(change.to));
         case "raiseMonth":
-            return `the increase starting in ${MONTH_NAMES[change.to - 1]}`;
+            return _t("the increase starting in %s", monthName(change.to - 1));
         case "otFrom":
-            return `overtime from ${MONTH_NAMES[change.to - 1]}`;
+            return _t("overtime from %s", monthName(change.to - 1));
         case "start":
-            return `hires arriving in ${MONTH_NAMES[change.to - 1]}`;
+            return _t("hires arriving in %s", monthName(change.to - 1));
         case "attritionOn":
-            return change.to ? "people leaving through the year"
-                : "nobody leaving";
+            return change.to ? _t("people leaving through the year")
+                : _t("nobody leaving");
         case "evening":
-            return `${Math.round(change.to)}% of the team on evenings`;
+            return _t("%s%% of the team on evenings", Math.round(change.to));
         case "night":
-            return `${Math.round(change.to)}% of the team on nights`;
+            return _t("%s%% of the team on nights", Math.round(change.to));
         case "backfill":
-            return change.to ? "replacing everyone who leaves"
-                : "not replacing leavers";
+            return change.to ? _t("replacing everyone who leaves")
+                : _t("not replacing leavers");
         default:
             return "";
     }
@@ -754,46 +819,53 @@ export function story(plan, ref, state, refState, refName, baseline, format) {
     const list = changes(state, refState, baseline);
     if (!list.length) {
         return {
-            title: `This is ${refName.toLowerCase()}. Nothing has changed yet.`,
-            copy: "Move one lever on the left and watch people, the work you "
-                + "can deliver and profit respond together.",
+            title: _t("This is %s. Nothing has changed yet.",
+                      String(refName).toLowerCase()),
+            copy: _t("Move one lever on the left and watch people, the work "
+                     + "you can deliver and profit respond together."),
         };
     }
     const lead = list.slice(0, 2)
-        .map((c) => describeChange(c, f)).filter(Boolean).join(" and ");
+        .map((c) => describeChange(c, f)).filter(Boolean).join(_t(" and "));
     const dProfit = plan.year.profit - ref.year.profit;
-    const rest = list.length > 2
-        ? ` with ${list.length - 2} smaller change`
-          + `${list.length > 3 ? "s" : ""}`
+    const smaller = list.length - 2;
+    const rest = smaller > 0
+        ? (smaller === 1 ? _t(" with 1 smaller change")
+            : _t(" with %s smaller changes", smaller))
         : "";
-    const title = `${lead.charAt(0).toUpperCase()}${lead.slice(1)} `
-        + `${dProfit >= 0 ? "adds" : "costs"} ${f.money(Math.abs(dProfit))} `
-        + `of profit for the year${rest}.`;
+    const opening = `${lead.charAt(0).toUpperCase()}${lead.slice(1)}`;
+    const title = dProfit >= 0
+        ? _t("%(lead)s adds %(money)s of profit for the year%(rest)s.",
+             { lead: opening, money: f.money(Math.abs(dProfit)), rest })
+        : _t("%(lead)s costs %(money)s of profit for the year%(rest)s.",
+             { lead: opening, money: f.money(Math.abs(dProfit)), rest });
 
     const why = [];
     const dCost = plan.year.people - ref.year.people;
     if (Math.abs(dCost) >= 1) {
-        why.push(`Workforce cost is ${f.signedMoney(dCost)} for the year `
-                 + `at ${f.money(plan.year.people)}.`);
+        why.push(_t("Workforce cost is %(delta)s for the year at %(total)s.",
+                    { delta: f.signedMoney(dCost),
+                      total: f.money(plan.year.people) }));
     } else {
-        why.push("Workforce cost is unchanged.");
+        why.push(_t("Workforce cost is unchanged."));
     }
     if (state.target > 0) {
         const dCov = (plan.year.coverage - ref.year.coverage) * 100;
         why.push(Math.abs(dCov) >= 0.05
-            ? `Demand served changes by ${f.pp(dCov)}, to `
-              + `${f.pct(plan.year.coverage * 100)}.`
-            : "The share of demand you serve is unchanged.");
+            ? _t("Demand served changes by %(delta)s, to %(now)s.",
+                 { delta: f.pp(dCov),
+                   now: f.pct(plan.year.coverage * 100) })
+            : _t("The share of demand you serve is unchanged."));
         if (plan.year.unserved > 0) {
-            why.push(`${f.money(plan.year.unserved)} of demand still goes `
-                     + "unserved.");
+            why.push(_t("%s of demand still goes unserved.",
+                        f.money(plan.year.unserved)));
         }
     } else {
-        why.push("Type a revenue target and profit appears here too.");
+        why.push(_t("Type a revenue target and profit appears here too."));
     }
     const dHeads = plan.year.headcount - ref.year.headcount;
     if (Math.abs(dHeads) >= 1) {
-        why.push(`${f.people(dHeads)} on payroll by December.`);
+        why.push(_t("%s on payroll by December.", f.people(dHeads)));
     }
     return { title, copy: why.join(" ") };
 }
@@ -806,13 +878,13 @@ export function warnings(plan, ref, state, format) {
     if (state.target > 0 && year.margin < 0.10) {
         out.push({
             level: "bad",
-            text: `Margin falls to ${f.pct(year.margin * 100)}. Below 10% `
-                + "there is no room for a slow quarter.",
+            text: _t("Margin falls to %s. Below 10%% there is no room for a "
+                     + "slow quarter.", f.pct(year.margin * 100)),
         });
     } else if (state.target > 0 && year.margin < 0.15) {
         out.push({
             level: "watch",
-            text: `Margin at ${f.pct(year.margin * 100)} is thin.`,
+            text: _t("Margin at %s is thin.", f.pct(year.margin * 100)),
         });
     }
     const worst = plan.rows[year.worstMonth];
@@ -820,56 +892,60 @@ export function warnings(plan, ref, state, format) {
         const bonusMonth = worst.bonus > 0;
         const hiring = worst.recruit + worst.severance > worst.base * 0.02;
         const why = bonusMonth && hiring
-            ? "the bonus and the new arrivals land in the same month — move "
-              + "the hires later and it recovers"
+            ? _t("the bonus and the new arrivals land in the same month — "
+                 + "move the hires later and it recovers")
             : bonusMonth
-                ? "the yearly bonus is paid this month; it is normal, but the "
-                  + "cash has to be there"
+                ? _t("the yearly bonus is paid this month; it is normal, but "
+                     + "the cash has to be there")
                 : hiring
-                    ? "joining and leaving costs land together this month"
-                    : "costs outrun revenue this month";
+                    ? _t("joining and leaving costs land together this month")
+                    : _t("costs outrun revenue this month");
         out.push({
             level: "bad",
-            text: `${MONTH_NAMES[worst.index]} loses money `
-                + `(${f.money(worst.profit)}) — ${why}.`,
+            text: _t("%(month)s loses money (%(money)s) — %(why)s.",
+                     { month: monthName(worst.index),
+                       money: f.money(worst.profit), why }),
         });
     }
     if (year.hires > 150) {
         out.push({
             level: "watch",
-            text: `${f.int(year.hires)} new people is a lot to recruit at `
-                + `once — roughly ${Math.ceil(year.hires / 25)} recruiter-`
-                + "months of work. Spreading them over two or three months "
-                + "is kinder to everyone.",
+            text: _t("%(n)s new people is a lot to recruit at once — roughly "
+                     + "%(months)s recruiter-months of work. Spreading them "
+                     + "over two or three months is kinder to everyone.",
+                     { n: f.int(year.hires),
+                       months: Math.ceil(year.hires / 25) }),
         });
     }
     if (state.raise >= 12) {
         out.push({
             level: "watch",
-            text: `A ${state.raise}% increase is well above a normal year. `
-                + "Good for keeping people; check the yearly bill.",
+            text: _t("A %s%% increase is well above a normal year. Good for "
+                     + "keeping people; check the yearly bill.", state.raise),
         });
     }
     if (state.ot >= 40) {
         out.push({
             level: "watch",
-            text: `${Math.round(state.ot)} hours of overtime a person brushes `
-                + "the legal monthly cap for factory roles. Hiring may cost "
-                + "less.",
+            text: _t("%s hours of overtime a person brushes the legal "
+                     + "monthly cap for factory roles. Hiring may cost less.",
+                     Math.round(state.ot)),
         });
     }
     if (state.target > 0 && year.coverage < 0.95) {
         out.push({
             level: "watch",
-            text: `${f.pct((1 - year.coverage) * 100)} of demand goes `
-                + `unserved — ${f.money(year.unserved)} left on the table.`,
+            text: _t("%(share)s of demand goes unserved — %(money)s left on "
+                     + "the table.",
+                     { share: f.pct((1 - year.coverage) * 100),
+                       money: f.money(year.unserved) }),
         });
     }
     if (state.target > 0 && year.capacity > year.demand * 1.15) {
         out.push({
             level: "watch",
-            text: "The team could deliver more than the work coming in. "
-                + "Fewer hires, or later ones, would keep the margin.",
+            text: _t("The team could deliver more than the work coming in. "
+                     + "Fewer hires, or later ones, would keep the margin."),
         });
     }
     return out;
@@ -957,6 +1033,22 @@ export function marginal(baseline, assumptions, state, plan, teamKey, n = 5) {
         dCost: next.year.people - plan.year.people,
         dCoverage: (next.year.coverage - plan.year.coverage) * 100,
     };
+}
+
+/**
+ * How big "one small experiment" has to be to still be a real question.
+ *
+ * Five more people is a good nudge in a forty-person team and a rounding
+ * error in a four-thousand-person one: at that size five people move profit
+ * by a tenth of a percent, the card reads "would add ₫0" and the whole idea
+ * looks broken. So the experiment is ONE PER CENT of the team, never fewer
+ * than five, and rounded to a number a person would actually say out loud —
+ * multiples of five once it is past twenty.
+ */
+export function experimentSize(heads) {
+    const raw = Math.round(Math.max(0, num(heads, 0)) * 0.01);
+    const n = Math.max(5, raw);
+    return n <= 20 ? n : Math.round(n / 5) * 5;
 }
 
 /**
@@ -1101,55 +1193,61 @@ export function stressOutcome(baseline, assumptions, state, plan, format) {
     const f = format;
     const s = normalizeState(state, baseline, assumptions);
     if (!(s.target > 0)) {
-        return "Type a revenue target and the room can stress-test the plan.";
+        return _t("Type a revenue target and the room can stress-test the "
+                  + "plan.");
     }
     const band = stressBand(baseline, assumptions, s);
     const low = Math.min(band.lo.year.profit, band.hi.year.profit);
     const high = Math.max(band.lo.year.profit, band.hi.year.profit);
-    const label = s.stress < 0 ? "softer demand"
-        : (s.stress > 0 ? "stronger demand" : "your own forecast");
+    const label = s.stress < 0 ? _t("softer demand")
+        : (s.stress > 0 ? _t("stronger demand") : _t("your own forecast"));
     const upside = band.hi.year.coverage < 0.95
-        ? `Stronger demand would leave ${f.pct((1 - band.hi.year.coverage) * 100)}`
-          + " of it unserved: the limit becomes your people, not the market."
-        : "The team could absorb the upside without leaving work behind.";
-    return `Under ${label} this plan makes ${f.money(plan.year.profit)} and `
-        + `serves ${f.pct(plan.year.coverage * 100)} of the work. If demand `
-        + `lands 10% either side of that, profit runs from ${f.money(low)} `
-        + `to ${f.money(high)}. ${upside}`;
+        ? _t("Stronger demand would leave %s of it unserved: the limit "
+             + "becomes your people, not the market.",
+             f.pct((1 - band.hi.year.coverage) * 100))
+        : _t("The team could absorb the upside without leaving work behind.");
+    return _t("Under %(label)s this plan makes %(profit)s and serves "
+              + "%(served)s of the work. If demand lands 10% either side of "
+              + "that, profit runs from %(low)s to %(high)s. %(upside)s",
+              { label, profit: f.money(plan.year.profit),
+                served: f.pct(plan.year.coverage * 100),
+                low: f.money(low), high: f.money(high), upside });
 }
 
 /** Every lever, said in words, for the brief's "everything that was set". */
-export const INPUT_LABELS = [
-    ["target", "Revenue target for the year", "money"],
-    ["growth", "More work by December", "pct"],
-    ["stress", "Demand reality check", "pct"],
-    ["raise", "Salary increase", "pct"],
-    ["raiseMonth", "The increase starts in", "month"],
-    ["ot", "Overtime per person", "hours"],
-    ["otFrom", "Overtime from", "month"],
-    ["evening", "People on the evening shift", "pct"],
-    ["night", "People on the night shift", "pct"],
-    ["productivity", "Productive time", "pct"],
-    ["absence", "Unavailable paid time", "pct"],
-    ["bonusMonths", "Yearly bonus", "months"],
-    ["start", "New people arrive in", "month"],
-    ["attritionOn", "Some people leave during the year", "yesno"],
-    ["backfill", "Replace everyone who leaves", "yesno"],
-];
+export function inputLabels() {
+    return [
+        ["target", _t("Revenue target for the year"), "money"],
+        ["growth", _t("More work by December"), "pct"],
+        ["stress", _t("Demand reality check"), "pct"],
+        ["raise", _t("Salary increase"), "pct"],
+        ["raiseMonth", _t("The increase starts in"), "month"],
+        ["ot", _t("Overtime per person"), "hours"],
+        ["otFrom", _t("Overtime from"), "month"],
+        ["evening", _t("People on the evening shift"), "pct"],
+        ["night", _t("People on the night shift"), "pct"],
+        ["productivity", _t("Productive time"), "pct"],
+        ["absence", _t("Unavailable paid time"), "pct"],
+        ["bonusMonths", _t("Yearly bonus"), "months"],
+        ["start", _t("New people arrive in"), "month"],
+        ["attritionOn", _t("Some people leave during the year"), "yesno"],
+        ["backfill", _t("Replace everyone who leaves"), "yesno"],
+    ];
+}
 
-const MONTH_OF = (v) => MONTH_NAMES[clamp(Math.round(num(v, 1)), 1, 12) - 1];
+const MONTH_OF = (v) => monthName(clamp(Math.round(num(v, 1)), 1, 12) - 1);
 
 function sayInput(kind, value, format) {
     switch (kind) {
         case "money": return format.money(num(value, 0));
         case "pct": return format.pct(num(value, 0));
-        case "hours": return `${Math.round(num(value, 0))} h a month`;
+        case "hours": return _t("%s h a month", Math.round(num(value, 0)));
         case "months": {
             const n = num(value, 0);
-            return n === 1 ? "1 month" : `${n} months`;
+            return n === 1 ? _t("1 month") : _t("%s months", n);
         }
         case "month": return MONTH_OF(value);
-        case "yesno": return value ? "Yes" : "No";
+        case "yesno": return value ? _t("Yes") : _t("No");
         default: return String(value);
     }
 }
@@ -1174,20 +1272,21 @@ export function briefModel(o) {
     const money = (v) => f.money(v);
 
     const outcome = [
-        ["Revenue delivered", ref.year.revenue, plan.year.revenue, "money"],
-        ["Workforce cost", ref.year.people, plan.year.people, "money"],
-        ["Other operating costs", ref.year.other, plan.year.other, "money"],
-        ["Operating profit", ref.year.profit, plan.year.profit, "money"],
-        ["Operating margin", ref.year.margin * 100, plan.year.margin * 100,
-         "pct"],
-        ["Gross pay to employees", ref.year.gross, plan.year.gross, "money"],
-        ["Employee deductions", ref.year.withholding, plan.year.withholding,
+        [_t("Revenue delivered"), ref.year.revenue, plan.year.revenue, "money"],
+        [_t("Workforce cost"), ref.year.people, plan.year.people, "money"],
+        [_t("Other operating costs"), ref.year.other, plan.year.other, "money"],
+        [_t("Operating profit"), ref.year.profit, plan.year.profit, "money"],
+        [_t("Operating margin"), ref.year.margin * 100,
+         plan.year.margin * 100, "pct"],
+        [_t("Gross pay to employees"), ref.year.gross, plan.year.gross,
          "money"],
-        ["What reaches employees", ref.year.takehome, plan.year.takehome,
+        [_t("Employee deductions"), ref.year.withholding,
+         plan.year.withholding, "money"],
+        [_t("What reaches employees"), ref.year.takehome, plan.year.takehome,
          "money"],
-        ["Demand served", ref.year.coverage * 100, plan.year.coverage * 100,
-         "pct"],
-        ["People in December", ref.year.headcount, plan.year.headcount,
+        [_t("Demand served"), ref.year.coverage * 100,
+         plan.year.coverage * 100, "pct"],
+        [_t("People in December"), ref.year.headcount, plan.year.headcount,
          "int"],
     ].map(([label, a, c, kind]) => ({
         label,
@@ -1199,17 +1298,27 @@ export function briefModel(o) {
 
     return {
         plan_name: planName,
+        // The browser TAB is part of the page a person keeps: a Vietnamese
+        // brief saved to a laptop should not be filed under an English name.
+        // The client supplies it because a QWeb <title> is not a term the
+        // string extractor collects.
+        doc_title: _t("Decision brief · %s", planName),
         comparison_name: comparisonName,
         currency_code: f.code || f.symbol,
+        // The printable page is stamped with the reader's own language, so a
+        // Vietnamese brief says `lang="vi-VN"` and a screen reader, a
+        // spell-checker and a browser's own translate button all agree with
+        // the words on it.
+        lang: String(f.lang || "").replace("_", "-") || "en",
         headline_title: told.title,
         headline_copy: told.copy,
         goals: checks.map((c) => ({
             label: c.label,
-            bound: c.sense === "min" ? "At least" : "At most",
+            bound: c.sense === "min" ? _t("At least") : _t("At most"),
             target: c.targetText,
             actual: c.actualText,
             met: c.met,
-            status: c.met ? "Met" : "Not met yet",
+            status: c.met ? _t("Met") : _t("Not met yet"),
         })),
         outcome,
         bridge: b.steps.map((x) => ({
@@ -1221,13 +1330,13 @@ export function briefModel(o) {
             .map((c) => describeChange(c, f))
             .filter(Boolean)
             .map((line) => line.charAt(0).toUpperCase() + line.slice(1)),
-        inputs: INPUT_LABELS.map(([key, label, kind]) => ({
+        inputs: inputLabels().map(([key, label, kind]) => ({
             label,
             ref: sayInput(kind, r[key], f),
             plan: sayInput(kind, s[key], f),
         })),
         months: plan.rows.map((row) => ({
-            name: MONTH_NAMES[row.index],
+            name: monthName(row.index),
             people: f.int(row.heads),
             cost: money(row.people),
             served: hasTarget ? f.pct(row.coverage * 100) : "—",

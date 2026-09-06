@@ -39,6 +39,7 @@ async function load(name) {
 
 const E = await load("decision_engine.js");
 const F = await load("decision_format.js");
+const C = await load("decision_charts.js");
 
 // ------------------------------------------------------------------ fixtures
 const VND = { symbol: "₫", position: "after", decimals: 0, code: "VND" };
@@ -591,6 +592,92 @@ const FLAT_SHIFTS = {
        model.months.every((m) => typeof m.cost === "string")
        && model.outcome.every((r) => typeof r.plan === "string")
        && typeof model.bridge_total === "string");
+}
+
+// =====================================================================
+//  WFPLAN P3 — Vietnamese money, the experiment that scales with the team,
+//  and the tween that always arrives.
+// =====================================================================
+
+// ---------------------------------------------------------------------- T41
+{
+    const vi = F.makeFormat(VND, "vi_VN");
+    ok("T41", "Vietnamese money is said in Vietnamese words",
+       vi.compact(2.2e12) === "\u20ab2.200 t\u1ef7"
+       && vi.compact(8.4e8) === "\u20ab840 tri\u1ec7u"
+       && vi.compact(1.25e7) === "\u20ab12,5 tri\u1ec7u",
+       [vi.compact(2.2e12), vi.compact(8.4e8), vi.compact(1.25e7)].join(" "));
+    ok("T41b", "and read back, however it is written",
+       vi.parse("2.200 t\u1ef7") === 2.2e12
+       && vi.parse("840 trieu") === 8.4e8
+       && vi.parse("2,2 t\u1ef7") === 2.2e9
+       && vi.parse("\u20ab12,5 tri\u1ec7u") === 1.25e7,
+       [vi.parse("2.200 t\u1ef7"), vi.parse("840 trieu"),
+        vi.parse("2,2 t\u1ef7")].join(" "));
+    const trip = [2.2e12, 8.4e8, 1.25e7, 950000, 0];
+    ok("T41c", "what a Vietnamese reader sees is what the box reads back",
+       trip.every((v) => Math.abs(vi.parse(vi.compact(v)) - v)
+                  <= Math.max(1, Math.abs(v) * 0.005)),
+       trip.map((v) => `${vi.compact(v)}->${vi.parse(vi.compact(v))}`)
+           .join(" "));
+    ok("T41d", "percentages and whole figures take the Vietnamese marks too",
+       vi.pct(23.5) === "23,5%" && vi.exact(1234567) === "1.234.567 \u20ab",
+       `${vi.pct(23.5)} ${vi.exact(1234567)}`);
+    ok("T41e", "and English is exactly what it always was",
+       fmt.compact(2.2e12) === "\u20ab2,200B"
+       && fmt.compact(8.4e8) === "\u20ab840M"
+       && fmt.compact(1.25e7) === "\u20ab12.5M"
+       && fmt.parse("2,200 B") === 2.2e12 && fmt.pct(23.5) === "23.5%",
+       [fmt.compact(2.2e12), fmt.compact(1.25e7), fmt.pct(23.5)].join(" "));
+    ok("T41f", "an arrow press still moves the unit on screen in either "
+       + "language", vi.step(2.2e12) === 1e9 && vi.step(950000) === 1e3);
+}
+
+// ---------------------------------------------------------------------- T42
+{
+    ok("T42", "one small experiment is one per cent of the team",
+       E.experimentSize(4533) === 45 && E.experimentSize(40) === 5
+       && E.experimentSize(0) === 5 && E.experimentSize(500) === 5
+       && E.experimentSize(2000) === 20 && E.experimentSize(2300) === 25,
+       [4533, 40, 0, 500, 2000, 2300].map(E.experimentSize).join(" "));
+    ok("T42b", "and it is always a number somebody would say out loud",
+       [0, 7, 40, 300, 999, 2401, 4533, 12000].every((h) => {
+           const n = E.experimentSize(h);
+           return n >= 5 && (n <= 20 || n % 5 === 0);
+       }));
+    const base = E.defaultState(BASELINE, WITH_TARGET);
+    const plan = E.compute(BASELINE, WITH_TARGET, base);
+    const n = E.experimentSize(200);            // the Manufacturing team
+    const step = E.marginal(BASELINE, WITH_TARGET, base, plan, "t1", n);
+    ok("T42c", "the engine costs exactly the number the card offers",
+       step && step.n === n
+       && Math.abs(step.plan.year.headcount
+                   - plan.year.headcount - n) < 1e-6,
+       step ? `${step.n} -> ${step.plan.year.headcount
+           - plan.year.headcount}` : "no step");
+}
+
+// ---------------------------------------------------------------------- T43
+{
+    const from = [0, 10, 20];
+    const to = [100, 110, 120];
+    const half = C.tweenSeries(from, to, 0.5, true);
+    ok("T43", "a chart travels half way when it is half way",
+       half[0] === 50 && half[1] === 60 && half[2] === 70, half.join(" "));
+    ok("T43b", "and arrives EXACTLY, not 0.999 of the way there",
+       C.tweenSeries(from, to, 1, true) === to
+       && C.tweenSeries(from, to, 1.4, true) === to
+       && JSON.stringify(C.tweenSeries(from, to, 1, true)) ===
+          JSON.stringify(to));
+    ok("T43c", "with motion off there is no travel at all",
+       C.tweenSeries(from, to, 0.5, false) === to
+       && C.tweenSeries(null, to, 0.5, true) === to
+       && C.tweenSeries([1, 2], to, 0.5, true) === to,
+       "a first draw and a changed length both go straight there");
+    ok("T43d", "and the easing starts and ends where it should",
+       C.easeOut(0) === 0 && C.easeOut(1) === 1
+       && C.easeOut(0.5) > 0.5 && C.easeOut(2) === 1
+       && C.easeOut(-1) === 0, `${C.easeOut(0.5)}`);
 }
 
 console.log(`\n${checks - failures}/${checks} checks passed\n`);

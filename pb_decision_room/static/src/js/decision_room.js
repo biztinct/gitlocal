@@ -34,21 +34,54 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { user } from "@web/core/user";
 import { hubBack, HubBackChip, openHub } from "@pb_hub/js/hub_nav";
-import { makeFormat, MONTHS, monthLong } from "@pb_decision_room/js/decision_format";
+import {
+    makeFormat, MONTHS, monthLong, monthShort,
+    useTranslator as useFormatTranslator,
+} from "@pb_decision_room/js/decision_format";
 import {
     drawHorizon, drawRing, drawDemand, drawBridge, drawRoom,
+    tweenSeries, easeOut,
 } from "@pb_decision_room/js/decision_charts";
 import {
     compute, defaultState, normalizeState, normalizeGoals, defaultGoals,
     evaluateGoals, series, stressBand, story, warnings, bridge, marginal,
     balanceShifts, payStory, teamsInDecember, headroom, candidates,
-    stressOutcome, briefModel, changes, describeChange,
+    stressOutcome, briefModel, changes, describeChange, experimentSize,
     GOAL_DEFS, GOAL_ORDER, cloneState, SHIFTS,
+    useTranslator as useEngineTranslator,
 } from "@pb_decision_room/js/decision_engine";
+
+/**
+ * THE ENGINE AND THE FORMATTER SPEAK VIETNAMESE THROUGH HERE.
+ *
+ * Neither file may import anything — `node tools/decision_engine_check.mjs`
+ * loads them off disk exactly as they ship — so they are handed the platform's
+ * translator instead. This runs while the asset bundle is being evaluated,
+ * long before any component renders, and every `_t("…")` inside those two
+ * files is still found by the string extractor exactly as if it had been
+ * imported there.
+ */
+useEngineTranslator(_t);
+useFormatTranslator(_t);
+
+/** Has this person asked their computer to stop moving things? */
+function prefersReducedMotion() {
+    try {
+        return !!(window.matchMedia
+            && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    } catch {
+        return false;
+    }
+}
 
 const UNDO_DEPTH = 40;
 const TWEEN_MS = 350;
+/** How long a chart takes to travel from its old shape to its new one. */
+const CHART_MS = 300;
+/** Below this width the control room becomes a sheet you pull up. */
+const PHONE = 720;
 
 /**
  * A money box a person can actually type into.
@@ -213,7 +246,10 @@ export class PbDecisionRoom extends Component {
             month: 0,
             metric: "profit",
             diff: false,
-            motion: true,
+            // The operating system's own answer, asked once. Somebody who has
+            // told their computer they do not want movement has told THIS
+            // screen too, and should not have to say it again.
+            motion: !prefersReducedMotion(),
             teamKey: "",
             roleKey: "",
             moveMonth: 1,
@@ -227,6 +263,11 @@ export class PbDecisionRoom extends Component {
             preview: false,
             finding: false,
             searchNote: "",
+
+            // the phone: the control room becomes a sheet you pull up
+            phone: false,
+            sheet: false,
+            refreshing: false,
 
             // dialogs, one at a time
             saveOpen: false,
@@ -271,18 +312,33 @@ export class PbDecisionRoom extends Component {
         this._paths = [];           // the three ways the finder found
         this._room = null;          // the headroom scan, memoised
         this._roomKey = "";
+        this._chartFrom = {};       // where each chart is travelling FROM
+        this._chartSig = {};        // and what it last travelled to
+        this._chartFrame = {};
+        this._media = null;
+        this._onVisibility = null;
         this.assumptionsForm = [];
         this.assumptionsGroups = [];
 
-        this.fmt = makeFormat({});
-        this.months = MONTHS;
+        // The reader's language decides how money is SAID, not only which
+        // words surround it: ₫2.200 tỷ and ₫2,200B are the same amount
+        // written by two different finance departments.
+        this.lang = user.lang || "";
+        this.fmt = makeFormat({}, this.lang);
 
         onWillStart(async () => { await this.load(); });
         onMounted(() => {
             this._resize = new ResizeObserver(() => this.paint());
             if (this.horizonRef.el) { this._resize.observe(this.horizonRef.el); }
+            this._watchWidth();
             this.paint();
             this._focusArrival();
+            // A play-through nobody is watching is a timer nobody wanted:
+            // leave the tab and the year stops where it is.
+            this._onVisibility = () => {
+                if (document.visibilityState === "hidden") { this.stopPlay(); }
+            };
+            document.addEventListener("visibilitychange", this._onVisibility);
             // CAPTURE, deliberately. The platform's own hotkey service listens
             // on `window` and stops propagation for the keys it claims —
             // Escape among them — so a bubble-phase listener here never fires
@@ -295,8 +351,19 @@ export class PbDecisionRoom extends Component {
         onWillUnmount(() => {
             this.stopPlay();
             if (this._resize) { this._resize.disconnect(); }
+            if (this._media && this._media.removeEventListener) {
+                this._media.removeEventListener("change", this._onWidth);
+            }
+            if (this._onVisibility) {
+                document.removeEventListener("visibilitychange",
+                                             this._onVisibility);
+            }
             cancelAnimationFrame(this._heroFrame);
+            for (const key of Object.keys(this._chartFrame)) {
+                cancelAnimationFrame(this._chartFrame[key]);
+            }
             clearTimeout(this._toastTimer);
+            clearTimeout(this._pulseTimer);
             window.removeEventListener("keydown", this.onKey, true);
         });
     }
@@ -321,7 +388,8 @@ export class PbDecisionRoom extends Component {
             this.assumptions = data.assumptions || {};
             this.assumptionsForm = data.assumptions_form || [];
             this.assumptionsGroups = data.assumptions_groups || [];
-            this.fmt = makeFormat((data.company || {}).currency || {});
+            this.fmt = makeFormat((data.company || {}).currency || {},
+                                  this.lang);
 
             this.planState = defaultState(this.baseline, this.assumptions);
             this.goals = null;                     // built after the first sum
@@ -555,6 +623,26 @@ export class PbDecisionRoom extends Component {
         const value = Number(raw);
         if (Math.abs((this.planState[key] || 0) - value) < 1e-9) { return; }
         this._apply({ [key]: value }, _t("Your working plan"));
+    }
+
+    /**
+     * A slider a keyboard can actually drive.
+     *
+     * The browser already moves a range by one step per arrow press, which is
+     * 0.5% on the salary lever — eighty presses to cross it. Shift makes each
+     * press worth ten, which is how every other serious slider behaves, and
+     * how somebody who never touches a mouse gets across the room.
+     */
+    onLeverKey(lev, event) {
+        const down = event.key === "ArrowLeft" || event.key === "ArrowDown";
+        const up = event.key === "ArrowRight" || event.key === "ArrowUp";
+        if (!event.shiftKey || (!down && !up)) { return; }
+        event.preventDefault();
+        const step = (Number(lev.step) || 1) * 10;
+        const next = Math.max(lev.min, Math.min(lev.max,
+            (Number(this.planState[lev.key]) || 0) + (up ? step : -step)));
+        if (Math.abs((this.planState[lev.key] || 0) - next) < 1e-9) { return; }
+        this._apply({ [lev.key]: next }, _t("Your working plan"));
     }
 
     onBonus(event) {
@@ -876,11 +964,48 @@ export class PbDecisionRoom extends Component {
     setMonth(event) {
         this.stopPlay();
         this.state.month = Number(event.target.value) || 0;
+        this._markMonth();
+    }
+
+    /** Space on the timeline plays the year — the shape every player has. */
+    onTimelineKey(event) {
+        if (event.key !== " " && event.key !== "Spacebar") { return; }
+        event.preventDefault();
+        this.togglePlay();
     }
 
     pickMonth(index) {
         this.stopPlay();
         this.state.month = index;
+        this._markMonth();
+    }
+
+    /**
+     * The month you just chose says so — once, and quietly.
+     *
+     * On a phone the twelve month cards are a strip you scroll, so the one
+     * being explored can be off screen entirely; it is brought to the middle.
+     * On a desktop grid nothing scrolls, because scrolling a grid that fits
+     * would drag the whole page for no reason.
+     */
+    _markMonth() {
+        clearTimeout(this._pulseTimer);
+        this._pulseTimer = setTimeout(() => {
+            const strip = document.querySelector(".dr-months");
+            const card = strip && strip.querySelector(".dr-month.is-on");
+            if (!strip || !card) { return; }
+            if (strip.scrollWidth > strip.clientWidth + 4) {
+                strip.scrollTo({
+                    left: Math.max(0, card.offsetLeft
+                        - (strip.clientWidth - card.offsetWidth) / 2),
+                    behavior: this.state.motion ? "smooth" : "auto",
+                });
+            }
+            if (!this.state.motion) { return; }
+            card.classList.remove("dr-pulse");
+            void card.offsetWidth;      // restart the animation
+            card.classList.add("dr-pulse");
+        }, 20);
     }
 
     toggleDiff() { this.state.diff = !this.state.diff; }
@@ -918,7 +1043,7 @@ export class PbDecisionRoom extends Component {
             ? this.goals.coverage.target / 100 : 0.95;
         return c.plan.rows.map((row, i) => ({
             index: i,
-            name: MONTHS[i],
+            name: monthShort(i),
             value: this.hasTarget ? this.fmt.money(row.profit)
                 : this.fmt.money(row.people),
             watch: (this.hasTarget && row.coverage + 1e-8 < threshold)
@@ -1141,7 +1266,7 @@ export class PbDecisionRoom extends Component {
             const check = checks.find((c) => c.key === key);
             const money = def.unit === "money";
             return {
-                key, label: def.label, money,
+                key, label: def.label(), money,
                 bound: def.sense === "min" ? _t("At least") : _t("At most"),
                 unit: money ? ""
                     : (def.unit === "people" ? _t("people") : def.unit),
@@ -1568,6 +1693,12 @@ export class PbDecisionRoom extends Component {
     setDetail(key) {
         if (this.state.detail === key) { return; }
         this.state.detail = key;
+        // A tab you come back to draws itself again from the beginning: the
+        // waterfall grows out of the comparison, the other two arrive whole.
+        if (key === "money") {
+            delete this._chartFrom.bridge;
+            delete this._chartSig.bridge;
+        }
         this.state.rev++;
     }
 
@@ -1605,12 +1736,20 @@ export class PbDecisionRoom extends Component {
     }
 
     // ------------------------------------------------- 1 · work & shifts
-    /** Hours, said short: 1.2m h / 840k h / 620 h. */
+    /**
+     * Hours, said short: 1.2m h / 840k h / 620 h — and, for a Vietnamese
+     * reader, 1,2 triệu giờ / 840 nghìn giờ / 620 giờ. The unit is a
+     * translated term and the number keeps this language's own marks.
+     */
     _hours(value) {
         const v = Math.abs(Number(value) || 0);
-        if (v >= 1e6) { return `${(v / 1e6).toFixed(2)}m h`; }
-        if (v >= 1e3) { return `${Math.round(v / 1e3).toLocaleString()}k h`; }
-        return `${Math.round(v).toLocaleString()} h`;
+        if (v >= 1e6) {
+            return _t("%(n)sm h", { n: this.fmt.fixed(v / 1e6, 2) });
+        }
+        if (v >= 1e3) {
+            return _t("%(n)sk h", { n: this.fmt.int(v / 1e3) });
+        }
+        return _t("%(n)s h", { n: this.fmt.int(v) });
     }
 
     get shiftMeta() {
@@ -2011,6 +2150,10 @@ export class PbDecisionRoom extends Component {
     }
 
     async findPaths() {
+        // A second press while the first search is still running would throw
+        // eighty more computed years at a browser that is already busy, and
+        // the slower of the two would win. One search at a time.
+        if (this.state.finding) { return; }
         if (!this.anyGoalOn) {
             this._toast(_t("Switch on at least one goal first — the search "
                            + "needs something to aim at."));
@@ -2161,32 +2304,50 @@ export class PbDecisionRoom extends Component {
     // ===================================================================
     // one small experiment
     // ===================================================================
+    /**
+     * How many people this team's experiment is worth asking about.
+     *
+     * Phase 2 always asked about five, which is a real question in a
+     * forty-person team and a rounding error in a four-thousand-person one:
+     * at that size the card read "would add ₫0" and the whole idea looked
+     * broken. It is one per cent of the team now, never fewer than five.
+     */
+    get experimentN() {
+        const team = this.team;
+        return experimentSize(team ? team.heads : 0);
+    }
+
     get experiment() {
         const c = this.calc;
         const team = this.team;
         if (!c || !team) { return null; }
+        const n = this.experimentN;
         const step = marginal(this.baseline, this.assumptions, this.planState,
-                              c.plan, team.key, 5);
+                              c.plan, team.key, n);
         if (!step) { return null; }
         const good = step.dProfit >= 0;
+        const people = this.fmt.int(n);
         return {
+            n,
+            button: _t("Preview %s more people", people),
             title: good
-                ? _t("Five more people in %(team)s would add %(money)s of "
+                ? _t("%(n)s more people in %(team)s would add %(money)s of "
                      + "profit.",
-                     { team: team.name,
+                     { n: people, team: team.name,
                        money: this.fmt.money(step.dProfit) })
-                : _t("Five more people in %(team)s would cost %(money)s of "
+                : _t("%(n)s more people in %(team)s would cost %(money)s of "
                      + "profit.",
-                     { team: team.name,
+                     { n: people, team: team.name,
                        money: this.fmt.money(-step.dProfit) }),
             copy: this.hasTarget && Math.abs(step.dCoverage) >= 0.05
                 ? _t("Demand served moves %(cov)s for %(cost)s more workforce "
                      + "cost across the year.",
                      { cov: this.fmt.pp(step.dCoverage),
                        cost: this.fmt.money(step.dCost) })
-                : _t("At this size five people barely move what you can "
+                : _t("At this size %(n)s people barely move what you can "
                      + "deliver. Workforce cost rises %(cost)s across the "
-                     + "year.", { cost: this.fmt.money(step.dCost) }),
+                     + "year.",
+                     { n: people, cost: this.fmt.money(step.dCost) }),
             good,
         };
     }
@@ -2194,12 +2355,14 @@ export class PbDecisionRoom extends Component {
     previewExperiment() {
         const team = this.team;
         if (!team) { return; }
+        const n = this.experimentN;
         this.beginPreview({
             ...this.planState,
             moves: [...(this.planState.moves || []),
-                    { team: team.key, role: null, n: 5,
+                    { team: team.key, role: null, n,
                       month: this.planState.start }],
-        }, _t("Five more in %s · preview", team.name));
+        }, _t("%(n)s more in %(team)s · preview",
+              { n: this.fmt.int(n), team: team.name }));
     }
 
     // ===================================================================
@@ -2391,8 +2554,151 @@ export class PbDecisionRoom extends Component {
     }
 
     // ===================================================================
+    // the phone
+    // ===================================================================
+    /**
+     * A phone is not a small desktop.
+     *
+     * On a 390 px screen the levers cannot sit above the stage: you would
+     * scroll past nine controls before seeing a single number, which is the
+     * opposite of what this room is for. So the stage comes first and the
+     * control room becomes a SHEET — one thumb-reach bar at the bottom lifts
+     * it, the levers scroll inside it, and the hero number is mirrored in its
+     * header so a lever's effect is visible while your thumb is still on it.
+     *
+     * The markup is the same markup: the sheet is the control room, moved.
+     * Two copies of nine levers would be two places for them to drift apart.
+     */
+    _watchWidth() {
+        if (!window.matchMedia) { return; }
+        this._media = window.matchMedia(`(max-width: ${PHONE}px)`);
+        this._onWidth = () => {
+            this.state.phone = this._media.matches;
+            if (!this.state.phone) { this.state.sheet = false; }
+        };
+        this._onWidth();
+        if (this._media.addEventListener) {
+            this._media.addEventListener("change", this._onWidth);
+        }
+    }
+
+    openSheet() {
+        this.state.sheet = true;
+    }
+
+    closeSheet() {
+        this.state.sheet = false;
+    }
+
+    get sheetLabel() {
+        return String(this.state.sceneName || "");
+    }
+
+    // ===================================================================
+    // the roster, and how old it is
+    // ===================================================================
+    /**
+     * "as of 14:02" — the wall-clock time this roster was actually read.
+     *
+     * The baseline is cached for ten minutes, so a number on this screen can
+     * legitimately be a few minutes behind a hire made this morning. Saying
+     * WHEN it was read, and offering to read it again, is the difference
+     * between a stale number and a dated one.
+     */
+    get asofText() {
+        const stamp = this.baseline.asof_at || "";
+        if (!stamp) { return this.baseline.asof || ""; }
+        const when = new Date(stamp.replace(" ", "T") + "Z");
+        if (isNaN(when.getTime())) { return this.baseline.asof || ""; }
+        const hh = String(when.getHours()).padStart(2, "0");
+        const mm = String(when.getMinutes()).padStart(2, "0");
+        return `${hh}:${mm}`;
+    }
+
+    /** Read the roster again, and keep the plan exactly where it is. */
+    async refreshRoster() {
+        if (this.state.refreshing) { return; }
+        this.state.refreshing = true;
+        const kept = {
+            state: cloneState(this.planState),
+            goals: JSON.parse(JSON.stringify(this.goals || {})),
+            scene: this.state.sceneName,
+            touched: this._goalsTouched,
+            comparison: this.comparison,
+            month: this.state.month,
+            metric: this.state.metric,
+            detail: this.state.detail,
+        };
+        try {
+            await this.load(true);
+            this.planState = normalizeState(kept.state, this.baseline,
+                                            this.assumptions);
+            this.goals = kept.goals;
+            this._goalsTouched = kept.touched;
+            this.state.sceneName = kept.scene;
+            this.comparison = kept.comparison;
+            this.state.month = kept.month;
+            this.state.metric = kept.metric;
+            this.state.detail = kept.detail;
+            this.state.assumptionsOpen = true;
+            this._recompute();
+            this._toast(_t("Roster read again. Your plan is untouched."));
+        } catch (e) {
+            this._toast(_t("The roster could not be read again. %s",
+                           this._reason(e)));
+        } finally {
+            this.state.refreshing = false;
+        }
+    }
+
+    // ===================================================================
     // painting
     // ===================================================================
+    /**
+     * One chart, travelling from the shape it had to the shape it has.
+     *
+     * A chart that snaps asks the reader to compare two pictures from memory.
+     * Three rules keep it from becoming decoration: it only starts when the
+     * numbers actually changed (a resize redraws, it does not re-animate), it
+     * ends EXACTLY on the target, and with "Motion off" — or the operating
+     * system's own reduced-motion setting — there is no travel at all.
+     */
+    _travel(key, next, draw) {
+        const signature = JSON.stringify(next);
+        if (this._chartSig[key] === signature) {
+            if (!this._chartFrame[key]) { draw(next); }
+            return;
+        }
+        const from = this._chartFrom[key];
+        this._chartSig[key] = signature;
+        cancelAnimationFrame(this._chartFrame[key]);
+        this._chartFrame[key] = 0;
+        if (!this.state.motion || !from) {
+            this._chartFrom[key] = next;
+            draw(next);
+            return;
+        }
+        const started = performance.now();
+        const tick = (now) => {
+            const k = Math.min(1, (now - started) / CHART_MS);
+            const eased = easeOut(k);
+            const mixed = {};
+            for (const name of Object.keys(next)) {
+                mixed[name] = Array.isArray(next[name])
+                    ? tweenSeries(from[name], next[name], eased, true)
+                    : next[name];
+            }
+            draw(mixed);
+            if (k < 1) {
+                this._chartFrame[key] = requestAnimationFrame(tick);
+            } else {
+                this._chartFrame[key] = 0;
+                this._chartFrom[key] = next;
+            }
+        };
+        this._chartFrame[key] = requestAnimationFrame(tick);
+    }
+
     paint() {
         const c = this.calc;
         if (!c) { return; }
@@ -2408,6 +2714,7 @@ export class PbDecisionRoom extends Component {
             month: this.state.month,
             diff: this.state.diff,
             coverage,
+            months: this.months,
             goodUp: this.metricDef.goodUp,
             fmt: (v) => (coverage ? `${Math.round(v)}%` : this.fmt.money(v)),
         });
@@ -2424,30 +2731,51 @@ export class PbDecisionRoom extends Component {
     /** Only the tab on screen is drawn: the others have no box to size to. */
     _paintDetail(c) {
         if (this.state.detail === "coverage" && this.demandRef.el) {
-            drawDemand(this.demandRef.el, {
+            this._travel("demand", {
                 demand: c.plan.rows.map((r) => r.hoursDemand),
                 capacity: c.plan.rows.map((r) => r.hoursAvailable),
                 served: c.plan.rows.map((r) => r.hoursServed),
                 month: this.state.month,
+            }, (o) => drawDemand(this.demandRef.el, {
+                ...o,
+                months: this.months,
                 fmt: (v) => this._hours(v),
-            });
+            }));
         }
         if (this.state.detail === "money" && this.bridgeRef.el) {
             const b = bridge(c.plan, c.ref);
-            drawBridge(this.bridgeRef.el, {
-                start: b.start, end: b.end, steps: b.steps,
+            // The bars GROW FROM THE RUNNING LEVEL: the first frame is the
+            // comparison with seven steps of nothing, and the waterfall
+            // builds itself in front of you.
+            if (this._chartFrom.bridge === undefined) {
+                this._chartFrom.bridge = {
+                    values: b.steps.map(() => 0), end: b.start,
+                };
+            }
+            this._travel("bridge", {
+                values: b.steps.map((x) => x.value), end: b.end,
+            }, (o) => drawBridge(this.bridgeRef.el, {
+                start: b.start,
+                end: o.end,
+                steps: b.steps.map((x, i) => ({ ...x, value: o.values[i] })),
                 startName: String(this.comparison.name),
+                endName: _t("Your plan"),
                 fmt: (v) => this.fmt.money(v),
                 signed: (v) => this.fmt.signedMoney(v),
-            });
+            }));
         }
         if (this.state.detail === "room" && this.roomRef.el) {
             const scan = this.roomScan;
             if (scan && scan.points.length > 1) {
-                drawRoom(this.roomRef.el, {
-                    points: scan.points,
+                this._travel("room", {
+                    profit: scan.points.map((pt) => pt.profit),
+                }, (o) => drawRoom(this.roomRef.el, {
+                    points: scan.points.map((pt, i) => ({
+                        ...pt, profit: o.profit[i],
+                    })),
+                    label: (n) => _t("+%s people", this.fmt.int(n)),
                     fmt: (v) => this.fmt.money(v),
-                });
+                }));
             }
         }
     }
@@ -2496,18 +2824,32 @@ export class PbDecisionRoom extends Component {
     // ===================================================================
     onKey(event) {
         if (event.key === "Escape") {
-            this.state.saveOpen = false;
-            this.state.goalsOpen = false;
-            this.state.sketchOpen = false;
-            if (this.state.assumptionsOpen) { this.closeAssumptions(); }
+            if (this.state.saveOpen || this.state.goalsOpen
+                || this.state.sketchOpen || this.state.assumptionsOpen) {
+                this.state.saveOpen = false;
+                this.state.goalsOpen = false;
+                this.state.sketchOpen = false;
+                if (this.state.assumptionsOpen) { this.closeAssumptions(); }
+                return;
+            }
+            // Nothing else was open, so Escape means the sheet.
+            this.state.sheet = false;
             return;
         }
-        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z"
-            && !event.shiftKey) {
-            const tag = (event.target.tagName || "").toLowerCase();
+        if (!(event.metaKey || event.ctrlKey) || event.altKey) { return; }
+        const key = String(event.key || "").toLowerCase();
+        const tag = (event.target.tagName || "").toLowerCase();
+        if (key === "z" && !event.shiftKey) {
             if (tag === "input" || tag === "textarea") { return; }
             event.preventDefault();
             this.undo();
+            return;
+        }
+        // Ctrl+S is "save this", everywhere in the world. Here it opens the
+        // name dialog rather than saving over yesterday's plan silently.
+        if (key === "s" && !event.shiftKey) {
+            event.preventDefault();
+            this.openSave();
         }
     }
 
@@ -2544,8 +2886,12 @@ export class PbDecisionRoom extends Component {
     }
 
     get monthOptions() {
-        return MONTHS.map((name, i) => ({ value: i + 1, label: monthLong(i) }));
+        return MONTHS.map((_name, i) => ({ value: i + 1,
+                                           label: monthLong(i) }));
     }
+
+    /** The twelve short month names, in the reader's own language. */
+    get months() { return MONTHS.map((_name, i) => monthShort(i)); }
 
     get emptyTitle() { return _t("The Decision Room is not open to you."); }
 

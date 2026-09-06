@@ -19,8 +19,41 @@
  *     functions are safe to call from a resize observer.
  *
  * Colours are the palette's, written out: a canvas cannot read a CSS custom
- * property without a `getComputedStyle` round trip per draw.
+ * property without a `getComputedStyle` round trip per draw. So are the month
+ * labels: nothing here reaches for a translator, every word a canvas paints is
+ * handed to it by the room, which HAS one.
  */
+
+/**
+ * One frame of a line moving from where it was to where it is going.
+ *
+ * A chart that SNAPS between two shapes makes the reader compare two pictures
+ * from memory; a chart that travels lets them watch one number pull another.
+ * Two rules keep it honest: at `k >= 1` the answer is the destination itself
+ * and not something 0.999 of the way there — a chart that never quite arrives
+ * is a chart that is quietly wrong — and with motion off it is the
+ * destination immediately, which is what "Motion off" has to mean everywhere.
+ *
+ * @param {number[]} from   the shape on screen now (or null on a first draw)
+ * @param {number[]} to     the shape it is heading for
+ * @param {number} k        0 -> 1
+ * @param {boolean} motion  false = go straight there
+ * @returns {number[]}
+ */
+export function tweenSeries(from, to, k, motion = true) {
+    const target = to || [];
+    if (!motion || !from || from.length !== target.length) { return target; }
+    const t = Number(k);
+    if (!Number.isFinite(t) || t >= 1) { return target; }
+    if (t <= 0) { return from; }
+    return target.map((v, i) => from[i] + (v - from[i]) * t);
+}
+
+/** Ease-out cubic: fast off the mark, gentle into place. */
+export function easeOut(k) {
+    const t = Math.max(0, Math.min(1, Number(k) || 0));
+    return 1 - Math.pow(1 - t, 3);
+}
 
 export const STAGE = {
     ink: "#241F52",
@@ -184,8 +217,7 @@ export function drawHorizon(canvas, o) {
     ctx.fillStyle = "#C1B8D8";
     ctx.textAlign = "center";
     ctx.font = "9px system-ui, sans-serif";
-    ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].forEach((name, i) => {
+    (o.months || MONTHS_3).forEach((name, i) => {
         if (w > 440 || i % 2 === 0) { ctx.fillText(name, X(i), h - 7); }
     });
     return true;
@@ -210,6 +242,7 @@ export const PAPER = {
     dim: "#CBB5C1",
 };
 
+/** The last-resort month labels. The room passes the reader's own. */
 const MONTHS_3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -288,7 +321,7 @@ export function drawDemand(canvas, o) {
     ctx.textAlign = "center";
     ctx.fillStyle = PAPER.sub;
     ctx.font = "9px system-ui, sans-serif";
-    MONTHS_3.forEach((name, i) => {
+    (o.months || MONTHS_3).forEach((name, i) => {
         if (w > 440 || i % 2 === 0) { ctx.fillText(name, X(i), h - 8); }
     });
     return true;
@@ -311,9 +344,9 @@ export function drawBridge(canvas, o) {
     const { ctx, w, h } = g;
     const pad = { l: w < 460 ? 52 : 64, r: 12, t: 22, b: 48 };
     const items = [
-        { label: o.startName || "Comparison", value: o.start, total: true },
+        { label: o.startName || "", value: o.start, total: true },
         ...(o.steps || []).map((s) => ({ label: s.label, value: s.value })),
-        { label: "Your plan", value: o.end, total: true },
+        { label: o.endName || "", value: o.end, total: true },
     ];
     // THE SCALE IS THE JOURNEY, NOT THE DESTINATION.
     //
@@ -462,13 +495,14 @@ export function drawRoom(canvas, o) {
     ctx.fillStyle = PAPER.sub;
     const marks = [...new Set([0, Math.floor((points.length - 1) / 2),
                                points.length - 1])];
+    const label = o.label || ((n) => `+${n} people`);
     marks.forEach((i) => {
         // The first and last labels sit ON the edge of the plot, so they are
         // aligned INTO it — centred, the last one runs off the canvas and
         // reads "+200 peo".
         ctx.textAlign = i === 0 ? "left"
             : (i === points.length - 1 ? "right" : "center");
-        ctx.fillText(`+${points[i].add} people`, X(i), h - 9);
+        ctx.fillText(String(label(points[i].add)), X(i), h - 9);
     });
     ctx.textAlign = "center";
     return true;

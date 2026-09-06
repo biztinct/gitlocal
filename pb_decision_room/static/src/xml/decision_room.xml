@@ -45,6 +45,7 @@
                t-att-min="lev.min" t-att-max="lev.max" t-att-step="lev.step"
                t-att-value="lev.value" t-att-aria-label="lev.label"
                t-attf-style="--dr-fill:{{lev.fill}}%"
+               t-on-keydown="(ev) => this.onLeverKey(lev, ev)"
                t-on-input="(ev) => this.onLever(lev.key, ev)"/>
       </div>
       <div class="dr-lever-note">
@@ -56,7 +57,9 @@
 
   <!-- ================================================== the Decision Room -->
   <t t-name="pb_decision_room.PbDecisionRoom">
-    <div class="pbim pbim-page dr" t-att-class="{ 'dr--embedded': inHub }">
+    <div class="pbim pbim-page dr"
+         t-att-class="{ 'dr--embedded': inHub, 'dr--phone': state.phone,
+                        'dr--sheet': state.sheet }">
 
       <div t-if="!state.loaded" class="pbim-busy">
         <div class="pbim-spin"/><span>Reading your roster…</span>
@@ -103,7 +106,25 @@
         <div class="dr-layout">
 
           <!-- ======================================== the control room -->
-          <aside class="dr-controls">
+          <aside id="dr-controls" class="dr-controls"
+                 t-att-aria-hidden="state.phone and !state.sheet">
+
+            <!-- Only ever on a phone, where this whole column is a sheet: the
+                 hero number is mirrored here so a lever's effect is visible
+                 while your thumb is still on the lever. -->
+            <div class="dr-sheet-head">
+              <span class="dr-sheet-grab" aria-hidden="true"/>
+              <div class="dr-sheet-hero">
+                <span class="dr-sheet-ov" t-esc="metricDef.title"/>
+                <span class="dr-sheet-n">
+                  <strong t-esc="heroText(heroValue)"/>
+                  <small t-att-class="{ 'dr-worse': !heroDelta.good and !heroDelta.zero }"
+                         t-esc="heroDelta.text"/>
+                </span>
+              </div>
+              <button class="pbim-btn primary dr-sheet-done"
+                      t-on-click="() => this.closeSheet()">Done</button>
+            </div>
 
             <div class="dr-invite">
               <span class="pbim-eyebrow">A LITTLE HELP, A BETTER PLAN</span>
@@ -287,7 +308,8 @@
               <button class="dr-next-btn" t-att-disabled="state.preview"
                       t-att-title="state.preview ? previewNote : ''"
                       t-on-click="() => this.previewExperiment()">
-                Preview 5 more people <span t-out="ic('arrowUpRight', 12)"/>
+                <t t-esc="experiment.button"/>
+                <span t-out="ic('arrowUpRight', 12)"/>
               </button>
             </div>
 
@@ -427,7 +449,8 @@
                   <span t-out="ic(playing ? 'pause' : 'play', 12)"/>
                 </button>
                 <input type="range" min="0" max="11" t-att-value="state.month"
-                       aria-label="Explore a month"
+                       aria-label="Explore a month — space plays the year"
+                       t-on-keydown="(ev) => this.onTimelineKey(ev)"
                        t-on-input="(ev) => this.setMonth(ev)"/>
                 <span class="dr-stamp" t-esc="months[state.month]"/>
               </div>
@@ -1098,6 +1121,19 @@
             </button>
             <span class="pbim-eyebrow">THE THINKING BEHIND THE PICTURE</span>
             <h2>What this room believes.</h2>
+            <div class="dr-asof">
+              <span>
+                <t t-esc="fmt.int(baseline.headcount)"/> people ·
+                roster read at <t t-esc="asofText"/>
+              </span>
+              <button class="dr-link" t-att-disabled="state.refreshing"
+                      title="Read the roster again. Your plan stays exactly as it is."
+                      t-on-click="() => this.refreshRoster()">
+                <span t-out="ic('rotate', 12)"/>
+                <t t-if="state.refreshing">Reading…</t>
+                <t t-else="">Refresh</t>
+              </button>
+            </div>
             <div class="dr-assume">
               <div t-foreach="assumptionLines" t-as="a" t-key="a_index"
                    class="dr-assume-i">
@@ -1205,6 +1241,24 @@
             </div>
           </div>
         </div>
+
+        <!-- ============================================ the phone sheet
+             A fixed bar at thumb height, and the backdrop behind the sheet
+             it lifts. Both are inert above 720px: the control room is a
+             column again and neither is displayed. -->
+        <div t-if="state.phone and state.sheet" class="dr-sheetscrim"
+             t-on-click="() => this.closeSheet()"/>
+        <button t-if="state.phone" class="dr-sheetbar"
+                t-att-aria-expanded="state.sheet"
+                aria-controls="dr-controls"
+                t-on-click="() => this.openSheet()">
+          <span class="dr-sheetbar-ic" t-out="ic('sliders', 16)"/>
+          <span class="dr-sheetbar-tx">
+            <strong>Shape your plan</strong>
+            <small t-esc="sheetLabel"/>
+          </span>
+          <span t-out="ic('chevronUp', 15)"/>
+        </button>
 
         <div t-if="state.toast" class="dr-toast" role="status" t-esc="state.toast"/>
       </div>

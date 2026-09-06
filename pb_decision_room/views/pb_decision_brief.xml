@@ -17,10 +17,14 @@
          five characters and does not turn the page bold (T25). -->
 
     <template id="brief" name="Decision brief">
-        <html lang="en">
+        <!-- The page is stamped with the READER's language, and every word
+             of it is a translatable template term: a Vietnamese owner prints
+             a Vietnamese brief, with the numbers the room already formatted
+             in Vietnamese, from the same template. -->
+        <html t-att-lang="brief.get('lang') or 'en'">
         <head>
             <meta charset="utf-8"/>
-            <title>Decision brief · <t t-esc="brief.get('plan_name')"/></title>
+            <title t-esc="brief.get('doc_title') or brief.get('plan_name')"/>
             <style>
                 @page { margin: 16mm 14mm; }
                 * { box-sizing: border-box; }
