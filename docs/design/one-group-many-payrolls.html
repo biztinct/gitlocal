@@ -113,6 +113,35 @@
   details.eng .body p, details.eng .body li{font-size:13.5px}
   code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--soft);color:var(--brand);padding:1px 6px;border-radius:5px;font-weight:600}
   a{color:var(--brand)}
+
+  /* ---------- org diagram ---------- */
+  .org{margin:0 0 22px}
+  .org-parent{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow);text-align:center}
+  .org-parent b{font-size:15px;font-weight:800}
+  .org-parent span{display:block;font-size:12.5px;color:var(--faint);font-weight:600;margin-top:2px}
+  .org-stem{height:18px;width:1px;background:var(--line);margin:0 auto}
+  .org-cos{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:720px){.org-cos{grid-template-columns:1.6fr 1fr}}
+  .org-co{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .org-co-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .org-co-head b{font-size:14.5px;font-weight:800}
+  .cur{font-size:11px;font-weight:800;letter-spacing:.05em;background:var(--soft);color:var(--brand);border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .org-divs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+  .org-div{background:var(--soft);border-radius:9px;padding:10px 12px}
+  .org-div b{display:block;font-size:13px;font-weight:800;color:var(--ink)}
+  .org-div i{display:block;font-style:normal;font-size:11.5px;color:var(--sub);font-weight:600;margin-top:4px;line-height:1.5}
+  .org-div em{display:block;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-top:7px}
+  .org-cap{font-size:12.5px;color:var(--faint);font-weight:600;text-align:center;margin:12px 0 0}
+
+  .walk{border-left:2px solid var(--line);padding-left:20px;margin:0 0 22px}
+  .walk h4{margin:0 0 5px;font-size:14.5px;font-weight:800;letter-spacing:-.01em}
+  .walk .item{margin:0 0 18px;position:relative}
+  .walk .item:last-child{margin-bottom:0}
+  .walk .item::before{content:"";position:absolute;left:-25px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
+  .walk .item.bad::before{background:var(--stop)}
+  .walk .item.ok::before{background:var(--good)}
+  .walk p{margin:0;font-size:14.5px;color:var(--sub)}
+
   footer{margin-top:14px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
 </style>
 
@@ -121,7 +150,7 @@
 <header class="top">
   <p class="eyebrow">Payobook · architecture answer</p>
   <h1>One group, many payrolls</h1>
-  <p class="standfirst">You asked six questions: what the old planning screens still own, how a person is tied to a payroll scheme, how analytics picks one scheme or adds them all up, what happens to currency across countries, where departments fit, and how planning works for one plant. Here are the honest answers, checked against your live system.</p>
+  <p class="standfirst">What the old planning screens still own, how a person is tied to a payroll scheme, how analytics picks one scheme or adds them all up, what happens to currency across countries, where departments fit, and how planning works for one plant. It starts with your own group worked through end to end, including the person who works part of the month in each country. Checked against your live system.</p>
   <div class="stamp">
     <span>Checked 7 September 2026</span>
     <span>Payobook Vietnam JSC · 4,533 people</span>
@@ -131,6 +160,7 @@
 </header>
 
 <nav class="toc"><ol>
+  <li><a href="#s0">Your group</a></li>
   <li><a href="#s1">1 · Old screens</a></li>
   <li><a href="#s2">2 · Person → scheme</a></li>
   <li><a href="#s3">3 · Analytics by scheme</a></li>
@@ -153,7 +183,155 @@
     <b>A consolidated view across countries would add dong to Singapore dollars.</b>
     <p>Nothing in analytics converts currency today. This is the most important thing on this page. The fix already exists inside the Budget screen and needs to be lifted out.</p>
   </div>
+  <div class="ans no">
+    <b>A person who works 20 days in Vietnam and 10 in Singapore cannot be represented at all today.</b>
+    <p>The system holds one person in one company with one contract and one scheme. Your split-month case needs something that does not exist yet, and it is worth designing properly rather than working around.</p>
+  </div>
 </div>
+
+<!-- ============ 0 · worked example ============ -->
+<section id="s0">
+  <p class="snum">WORKED EXAMPLE</p>
+  <h2>Your group, all the way through</h2>
+
+  <p class="lead">You described a parent company with three divisions in Vietnam and one in Singapore, a payroll scheme for each division, and a person who works twenty days in Vietnam and ten in Singapore. Here is precisely what the system does with that today, and what it will do after the changes.</p>
+
+  <div class="org">
+    <div class="org-parent"><b>Parent company</b><span>the group you report on</span></div>
+    <div class="org-stem"></div>
+    <div class="org-cos">
+      <div class="org-co">
+        <div class="org-co-head"><b>Vietnam</b><span class="cur">₫ dong</span></div>
+        <div class="org-divs">
+          <div class="org-div"><b>Retail</b><i>Groceries 30 · Bread 40 · Others 30</i><em>100 people</em></div>
+          <div class="org-div"><b>Manufacturing</b><i>its own departments</i><em>own scheme</em></div>
+          <div class="org-div"><b>Office</b><i>its own departments</i><em>own scheme</em></div>
+        </div>
+      </div>
+      <div class="org-co">
+        <div class="org-co-head"><b>Singapore</b><span class="cur">S$ dollars</span></div>
+        <div class="org-divs">
+          <div class="org-div"><b>Logistics</b><i>its own departments</i><em>own scheme</em></div>
+        </div>
+      </div>
+    </div>
+    <p class="org-cap">Four divisions, four payroll schemes, two currencies, one group.</p>
+  </div>
+
+  <h3>What the system can hold today</h3>
+  <p>Most of your shape fits. Two pieces do not.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>What you call it</th><th>Where it lives in the system</th><th>Does it hold?</th></tr></thead>
+    <tbody>
+      <tr><td>Parent company</td><td>A company record above the others. On your live system no company has a parent set yet, so there is currently no group for a group total to belong to.</td><td><span class="pill p-part">One field to set</span></td></tr>
+      <tr><td>Vietnam and Singapore</td><td>Two separate companies. This is not a preference: money belongs to a company, so a division paid in Singapore dollars has to be its own company.</td><td><span class="pill p-yes">Correct as is</span></td></tr>
+      <tr><td>Retail, Manufacturing, Office</td><td>Top-level departments inside the Vietnam company. Each employee also carries a division tag, filled in for 4,502 of your 4,533 Vietnamese people.</td><td><span class="pill p-yes">Held, twice over</span></td></tr>
+      <tr><td>Groceries, Bread, Others</td><td>Departments underneath Retail, so the 30 / 40 / 30 split is real structure, not a label.</td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>A payroll scheme per division</td><td>A scheme belongs to one company and carries a country. Your three Vietnamese schemes sit in the Vietnam company; the Logistics scheme must sit in the Singapore company and will be in Singapore dollars.</td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Which scheme pays this person</td><td>Nothing on the person says it. Only their payslips record it, after the fact.</td><td><span class="pill p-no">Missing</span></td></tr>
+      <tr><td>Twenty days here, ten days there</td><td>A person belongs to one company, has one contract there, and is paid by one scheme.</td><td><span class="pill p-no">Missing</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Running a month today</h3>
+  <div class="walk">
+    <div class="item bad">
+      <h4>Paying Retail's 100 people</h4>
+      <p>You must run one pay run per division and tell the run which scheme it is using. If you start a single Vietnamese pay run and let the system work the scheme out, everyone in that run can end up paid under whichever scheme the first payslip happened to pick. With three Vietnamese schemes in one company, that is a real risk rather than a theoretical one.</p>
+    </div>
+    <div class="item ok">
+      <h4>Seeing Retail split into Groceries, Bread and Others</h4>
+      <p>Works today. Department is recorded on every summary row, using the department the person was in at the end of that pay period, so history stays correct when somebody transfers later.</p>
+    </div>
+    <div class="item">
+      <h4>Seeing Retail on its own, against Manufacturing</h4>
+      <p>Works by division or by department, because your divisions are top-level departments. It does not work by scheme, because reports never record which scheme produced a number. Today those two agree with each other; the day a scheme covers two divisions, they stop agreeing.</p>
+    </div>
+    <div class="item bad">
+      <h4>Vietnam and Singapore in one total</h4>
+      <p>Do not do this yet. The screen will add dong to Singapore dollars and show one confident, meaningless number. Read them side by side instead, each in its own money.</p>
+    </div>
+    <div class="item">
+      <h4>Planning next year for Retail</h4>
+      <p>Open the Decision Room on the Vietnam company and you see Retail, Manufacturing and Office as three teams. Move Retail's levers and leave the others alone: that is a plant-level plan today. Singapore is a separate room, and because the Vietnamese contribution and tax rules are the only ones built in, Singapore's employer costs would be missing.</p>
+    </div>
+    <div class="item bad">
+      <h4>The person working across both</h4>
+      <p>There is no way to say it. Either you create two separate employee records, one per company, which are not linked to each other and so count as two people in any group headcount, or you keep them in Vietnam, pay them fully there, and treat the Singapore days as a business trip. The trip route already feeds a day count into payroll for allowances, so it is the only honest option that exists today, and it is not a payroll split.</p>
+    </div>
+  </div>
+
+  <h3>The same month after the changes</h3>
+  <div class="walk">
+    <div class="item ok">
+      <h4>Who is paid by what</h4>
+      <p>You draw it once: Retail is paid by the Retail scheme, Groceries and Bread inherit it, Logistics is paid by the Singapore scheme. The employee record then shows "Paid by: Retail, end of month" as a fact anyone can read, and a new joiner in Bread has a scheme from their first day, before any payslip exists.</p>
+    </div>
+    <div class="item ok">
+      <h4>Paying them</h4>
+      <p>The pay run asks which scheme, offers the people that scheme covers, and stops guessing. A person can still be on two schemes where that is genuine, the mid-month advance and the end-of-month run, because the map holds one scheme per kind of run.</p>
+    </div>
+    <div class="item ok">
+      <h4>Slicing the numbers</h4>
+      <p>Scheme becomes a filter beside company, division, department and month. So: Retail scheme only; Retail and Manufacturing together; all four side by side per month with cost per head; then group by department to see Groceries against Bread inside any of them.</p>
+    </div>
+    <div class="item ok">
+      <h4>The consolidated view</h4>
+      <p>The parent company names the currency the board reads in. Each entity keeps its own money underneath; the group view converts at that month's rate and says so in the header, with a switch for "show each in its own money". If a rate is missing for a month, the screen shows the parts separately and tells you why, instead of inventing one.</p>
+    </div>
+    <div class="item ok">
+      <h4>Planning</h4>
+      <p>A scope picker at the top of the room: the whole company, one division, or one payroll scheme. Choose the Retail scheme and the roster, the rules and every number underneath change to Retail's. Vietnamese schemes use Vietnamese contribution rules, the Singapore scheme uses Singapore's. Saved plans remember their scope, so "Retail 2027" and "Logistics 2027" sit side by side, and a group view adds them in the board's currency.</p>
+    </div>
+  </div>
+
+  <h3>The person who works 20 days in Vietnam and 10 in Singapore</h3>
+  <p>This is the hardest thing you asked, and it deserves a straight answer: it is a genuine gap, not an oversight in the reporting. The system has no idea that one human being can be two employments. Fixing it properly means adding one small idea, and then everything else follows from it.</p>
+
+  <div class="note">
+    <h4>The one idea: a work assignment</h4>
+    <p>A record that says <strong>this person, in this entity, in this division, for these days</strong>. One person can have two of them in a month: twenty days in Vietnam Retail, ten days in Singapore Logistics. That single record is what every other screen then reads.</p>
+  </div>
+
+  <p>With it in place, you get a choice about how they are actually paid, and both are legitimate. The right one depends on their contract and on the tax advice you take, so the product should support both rather than pick for you.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h4>Option A · each entity pays its own days</h4>
+      <ul>
+        <li>Two payslips: Vietnam pays twenty days, Singapore pays ten.</li>
+        <li>Each one uses its own scheme, its own contributions, its own tax rules and its own currency.</li>
+        <li>Cost lands where the work happened, with no internal transfer needed.</li>
+        <li>Usually the correct answer when the person genuinely has an employment in both places.</li>
+        <li>Needs the day-split to reach payroll as a proportion, which the engine can already do for a value that changes mid-month but not yet across two entities.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Option B · home entity pays, host entity is charged</h4>
+      <ul>
+        <li>One payslip in Vietnam for the whole month, one set of statutory rules.</li>
+        <li>An internal charge moves a third of the cost to Singapore so reports show it where the work happened.</li>
+        <li>Simpler payroll, and often what a short secondment actually requires.</li>
+        <li>The person stays one employee with one contract.</li>
+        <li>Needs the cost transfer to exist, which today it does not.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>Whichever you choose, the reporting rules are the same and they are worth stating now, because they are what stop the same person being counted twice:</p>
+  <ul>
+    <li><strong>One person, counted once.</strong> Group headcount counts human beings, not employments.</li>
+    <li><strong>Divisions count in fractions.</strong> Retail carries two thirds of that person and Logistics one third, so the two divisions still add up to one.</li>
+    <li><strong>Cost follows the days.</strong> Two thirds of the month's cost sits in Vietnam in dong, one third in Singapore in Singapore dollars, and the group view converts both.</li>
+    <li><strong>Planning uses the fraction too.</strong> When you plan Retail, that person is two thirds of a head, not a whole one and not nothing.</li>
+  </ul>
+
+  <div class="note win">
+    <h4>Worth knowing: you are closer than it looks</h4>
+    <p>Two of the pieces already exist. The engine can already spread a value across part of a month and record exactly how it did it, which is what a day-split needs. And business trips already record a person, a destination country and a date range, and already push the day count into payroll. What is missing is the idea of the second <em>entity</em>, and the rule that a person is one person even when they are two employments.</p>
+  </div>
+</section>
 
 <!-- ============ 1 ============ -->
 <section id="s1">
@@ -392,6 +570,10 @@
       <b>Absorb what is worth keeping from the old screens, then retire the rest <span class="effort">the answer to question 1</span></b>
       <p>In order: move the budget storage out of the old module so your budget history is safe; rebuild the pay review, the approval chain and the limits as a proper Payobook workflow; keep pay grades and the merit table as reference data; bring the per-person costing engine under the new room. Only then does uninstalling the old module become a one-line decision.</p>
     </li>
+    <li>
+      <b>Let one person work in two places <span class="effort">the split-month case</span></b>
+      <p>Add the work assignment: this person, this entity, this division, these days. Then choose per case whether each entity pays its own days or the home entity pays and the host is charged. Headcount counts the person once, divisions count them in fractions, and cost lands where the work happened. This one is last because steps 1 and 2 are what make it possible, but it is the piece that turns a Vietnam company and a Singapore company into one group.</p>
+    </li>
   </ol>
 
   <div class="note">
@@ -410,6 +592,8 @@
       <p><strong>Currency.</strong> No <code>_convert()</code> or rate use in any analytics module. <code>pb.budget.fx</code> is the reference implementation: root-company presentation currency, <code>rate_known()</code> refusing an implicit 1.0, <code>convert()</code> returning <code>(value, known)</code>, and an explanatory note when the rate is missing. <code>res.company.presentation_currency_id</code> is defined in <code>pb_demo</code> and should move to a platform module. Facts need a <code>currency_id</code> column; <code>pb_explorer</code> and <code>pb_insights</code> need a presentation-currency toggle and must refuse cross-currency sums when a rate is missing.</p>
       <p><strong>Known defects found while answering.</strong> <code>hr_analytics_personnel_costs._get_payslips_for_period</code> and <code>hr_analytics_statutory_contrib</code> search <code>hr.payslip</code> with no <code>company_id</code> filter despite carrying the field. <code>pb_payruns.pb_payruns</code> lists runs with <code>search([])</code>, no company filter, and prices every row in the active company's currency. <code>hr.payslip.run</code> has no <code>company_id</code> on this build, so <code>pb_currency_id</code> always falls back to the active company. <code>payroll.analytics</code> has no <code>company_id</code> at all and selects payslips by matching structure names as strings.</p>
       <p><strong>Legacy module.</strong> 19 models, ~4,400 lines. Two external writes: <code>compensation_cycle.py</code> writing <code>hr.contract.wage</code>, and the tagging wizard writing <code>wfp_category</code> onto <code>hr.formula.rule</code>. Contract-level <code>grade_id</code>, <code>compa_ratio</code> and <code>range_penetration</code> are stored columns other screens read. <code>pb_budget</code> inherits <code>wfp.budget.actual</code> and writes it from seven sites, so uninstall requires re-homing that model first. <code>wfp.employer.cost.calculator</code> is the piece worth porting: it costs a person through their own config's rules with a fixed-point evaluation pass and buckets the result by <code>wfp_category</code>.</p>
+      <p><strong>Split work across entities.</strong> Nothing models it. <code>hr.employee.company_id</code> is single; <code>hr.contract.company_id</code> is computed from the employee's company and snaps back on any recompute, and the employee domain on the contract restricts to that company; <code>hr.payslip.company_id</code> is overwritten from the employee in both onchange paths. The overlap constraint <code>_check_current_contract</code> is scoped per company, so two overlapping contracts in <em>different</em> companies technically pass, but no path creates them. No secondment, home/host company, cross-charge or global-person model exists (<code>grep -rniE "secondment|host_company|cross_charge|global_person"</code> → a Vietnamese tax-status label and unrelated test strings). <code>hr.employee.country_id</code> is nationality, defined on <code>hr.version</code>; there is no work-country or tax-residence field. Proration (<code>hr.payroll.proration.line</code> + <code>_apply_proration</code>) is a time-weighted average of one component across segments created by <code>hr.contract.advantage.change</code> rows, scoped to one config and one import batch — it cannot split a month between two schemes, and it does not fire for mid-month joiners or leavers at all. The nearest existing primitive is <code>pb.business.trip</code> (employee, destination country, date range) which the trip bridge turns into <code>TRIPDAYS</code> and <code>PERDIEM</code> inputs. Proposal: a <code>pb.work.assignment</code> (person, company, division/scheme, date range or day count, basis) as the one new object; make it the source for run population, for a proration factor that the engine applies per entity, and for FTE-weighted headcount in the facts; add an optional inter-company cost transfer for the home-pays pattern.</p>
+      <p><strong>Live group shape.</strong> No company on the live database has <code>parent_id</code> set (companies 1, 2, 5, 6, 7 are flat), so <code>pb.budget.fx.presentation_currency()</code>, which walks to the root, has nothing to resolve. Company 5 is VN/VND, company 6 is SG/SGD with no employees. <code>hr.employee.division</code> (Char, declared in <code>pb_hr_payroll_formula/models/hr_employee.py</code>) is populated on 4,502 of 4,533 — a second, parallel division axis alongside the department tree, and neither is the payroll link.</p>
       <p><strong>Decision Room today.</strong> Single company chosen from <code>env.companies</code> as an allow-list; teams are root departments; department resolved as <code>COALESCE(contract.department_id, version.department_id)</code>; currency is the company's functional currency; VN assumptions gated on the currency code being VND. Scope picker means adding a scheme/division dimension to <code>_build_baseline</code> and a scope field to <code>pb.decision.plan</code> and <code>pb.decision.assumptions</code>.</p>
     </div>
   </details>
