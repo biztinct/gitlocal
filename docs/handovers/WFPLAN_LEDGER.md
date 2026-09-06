@@ -275,6 +275,48 @@ Owner rulings (binding):
   abm was done with a temporary user (`wfplan.validator@payobook.com`, created through
   `odoo-bin shell`, ARCHIVED afterwards). Resetting the owner's own password was not
   done — that is an owner decision.
+  P2 addendum: that user is still there, archived, id 246, and P2 reused it
+  (reactivated, password `WfpP2!Validate2026`, archived again). It holds
+  `base.group_system`, so it validates the MANAGER path only; the read-only
+  path needs a second user without it — P2 made `wfplan.reader@payobook.com`
+  (id 247, `WfpP2!Reader2026`, `group_decision_user` only), also archived
+  afterwards. Reactivating both is one `odoo-bin shell` write.
+- WF16 (P2): **`mail.thread.create` DISCARDS tracking for a record it just created**
+  (`threads._track_discard()`, `mail_thread.py`), so a create is not also reported as
+  twenty-five changes — and the discard is stored on `cr.precommit.data` and lasts the
+  WHOLE TRANSACTION. A test that creates the record and then changes it therefore sees
+  no chatter entry at all, and looks exactly like broken tracking. Two consequences:
+  tracking messages are posted in `cr.precommit`, so a test must run
+  `env.flush_all(); env.cr.precommit.run()` before reading `message_ids`; and it must
+  first `env.cr.precommit.data.pop('mail.tracking.<model>', None)` to clear the discard.
+  On a real database the row already exists and none of this arises.
+- WF17 (P2): **an XML comment may not contain `--`.** The P1 template file rules its
+  sections with `=`; writing `<!-- ------- 1 · work & shifts -->` makes the WHOLE OWL
+  template file unparseable, and the room renders nothing. `ElementTree.parse` catches
+  it (`test_every_template_file_parses...`), so run the local XML parse before deploying.
+- WF18 (P2): **deleting the `/web/assets/%` attachments is NOT enough after an XML or
+  SCSS change.** The running server keeps the compiled bundle, so the browser goes on
+  serving yesterday's template while today's file sits on disk — with no error anywhere,
+  which costs half an hour every time. `sudo service odoo-server restart` after the
+  DELETE is the only reliable step. (Deleting alone IS enough for a pure `.js` change.)
+- WF19 (P2): `t-att-value` on an `<input>` writes the ATTRIBUTE, and a browser stops
+  mirroring the attribute into the field the moment somebody types in it. A box that
+  refuses bad text and restores the old value therefore keeps the bad text on screen
+  while the plan holds the old number — the one state a money box must never be in.
+  Sync `el.value` by hand in `onPatched` (and on every programmatic change).
+- WF20 (P2): a profit waterfall anchored at ZERO is useless at this company's scale: on
+  ₫286B of profit a ₫2B step is four pixels and the chart reads as two towers with a
+  flat line between them. The axis spans the RUNNING LEVEL only, the two totals are
+  drawn as columns from the floor of that axis, and the footnote says the scale does not
+  start at zero.
+- WF21 (P2): `-u pb_people_hub` on p9clone CRASHES the registry load on an unrelated
+  stale record — `pb_vendor_access.cron_access_auto_revert_ir_actions_server` is being
+  unlinked while its `ir_cron` still points at it (FK `ir_cron_ir_actions_server_id_fkey`).
+  Nothing rolls forward; the transaction is lost. Update `pb_import_kit` instead: the hub
+  depends on it, so the hub is updated as a dependent and its 37 tests still run.
+- WF22 (P2): the money formatter's short form ALREADY carries the currency symbol
+  (`₫2,200B`). Putting a symbol span beside the input renders `₫ ₫2,200B`, which reads
+  as two different amounts. One control, one symbol.
 
 ## Phase log
 
@@ -290,5 +332,23 @@ Owner rulings (binding):
   Owner debts: the abm login in this ledger is wrong (WF15); a demo plan named
   "Board draft" is saved on payobook company 5; the revenue target ₫2,200B was written
   to `pb.decision.assumptions` for Payobook Vietnam JSC during validation.
-- P2 — "Look closer" (detail workspace, goal finder, stress, compare, brief). Not yet designed.
+- P2 — "Look closer" — designed and BUILT 2026-09-07 (`WFPLAN_P2_LOOK_CLOSER.md`).
+  Status: **COMPLETE**. `pb_decision_room` 19.0.2.0.0 live on p9clone, payobook, abm and
+  payobook_template; `pb_import_kit` 19.0.1.11.0 (`sun`, `sunset`, `moon`, `printer`,
+  `flask`, `route`, `gitBranch`, `sliders`). `pb_people_hub` UNCHANGED at 19.0.1.4.0.
+  Shipped: the four-tab detail workspace under the impact cards (Work & shifts with the
+  shift split and the demand picture, the profit bridge, People & pay, Room to hire),
+  the goal finder with three calculated directions + reversible preview, the demand
+  reality check, the "one small experiment" card, the compact money box everywhere money
+  is typed, an editable assumptions panel with chatter, and the printable decision brief.
+  60 server tests green on p9clone (35 `pb_decision_room` + 37 `pb_people_hub` methods),
+  57 engine checks green under `node tools/decision_engine_check.mjs`, B11-B24 walked on
+  payobook and abm at 1440 and 390.
+  Timings on company 5 (4,533 people): `candidates()` **28 ms** over 46 combinations
+  (real roster fixture), `headroom()` **23 ms** over 41 points; facade cold 86 ms,
+  warm 7 ms. Fixture: `tools/fixtures/company5_baseline.json` (aggregates only).
+  Screenshots: `docs/handovers/wfplan_p2_shots/`.
+  Owner debts: the ₫2,200B revenue target and the "Board draft" plan from P1 are still
+  on payobook company 5 (abm was restored to a zero target and 23.5 % employer rate
+  after validation); both temporary abm validators are archived again (WF15).
 - P3 — "Wow and close" (motion, phone, VI, home tile, legacy fold ruling, closeout). Not yet designed.
