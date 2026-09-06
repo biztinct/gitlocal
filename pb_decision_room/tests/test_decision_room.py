@@ -12,6 +12,8 @@ roster and nobody else's) and T8 (the room answers in under 800 ms warm on the
 a planning screen nobody opens twice).
 """
 import logging
+import os
+import re
 import time
 
 from odoo.exceptions import AccessError, UserError, ValidationError
@@ -494,3 +496,153 @@ class TestDecisionRoomFacade(TransactionCase):
                         r"(create|write|unlink)\b", src):
                     bad.append('%s: %s' % (name, hit.group(0)))
         self.assertFalse(bad, 'the room writes to payroll data: %s' % bad)
+
+
+@tagged('post_install', '-at_install')
+class TestDecisionRoomVietnamese(TransactionCase):
+    """WFPLAN P3 §7 — the room in the language of the company that runs it.
+
+    T37 every term the module exports has a Vietnamese translation, the file
+        loads, and no translated string says "Odoo" to anybody;
+    T38 the printable brief, rendered for a Vietnamese reader, comes back in
+        Vietnamese with the money words that reader's finance department uses;
+    T39 the second door — the Home hub lens — is declared, gated by the same
+        feature switch as the first one, and its module dependency is real.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cls.root = os.path.dirname(cls.here)
+
+    # ------------------------------------------------------------- T37
+    def test_t37_every_word_of_the_room_exists_in_vietnamese(self):
+        """T37. A half-translated screen is worse than an English one: it
+        reads as a broken screen rather than as a foreign one."""
+        import polib
+        pot_path = os.path.join(self.here, 'i18n', 'pb_decision_room.pot')
+        po_path = os.path.join(self.here, 'i18n', 'vi_VN.po')
+        self.assertTrue(os.path.exists(pot_path), 'the template is missing')
+        self.assertTrue(os.path.exists(po_path), 'the translation is missing')
+
+        pot = polib.pofile(pot_path)
+        po = polib.pofile(po_path)
+        self.assertEqual(po.metadata.get('Language'), 'vi_VN')
+
+        done = {entry.msgid: entry.msgstr for entry in po
+                if not entry.obsolete}
+        missing = [entry.msgid for entry in pot
+                   if entry.msgid and not (done.get(entry.msgid) or '').strip()]
+        self.assertFalse(
+            missing[:20],
+            '%s of %s terms are still English: %s'
+            % (len(missing), len(pot), missing[:20]))
+
+        # The white-label rule reaches into the translations too.
+        said = [msgid for msgid, text in done.items()
+                if 'odoo' in (text or '').lower()]
+        self.assertFalse(said, 'a translated string says "Odoo": %s' % said)
+
+        # Placeholders survive translation: a sentence that loses its
+        # `%(money)s` renders a gap where the number should be.
+        broken = []
+        for entry in pot:
+            text = done.get(entry.msgid)
+            if not text:
+                continue
+            for hit in set(re.findall(r'%\([^)]+\)s', entry.msgid)):
+                if hit not in text:
+                    broken.append('%s -> %s' % (entry.msgid[:40], hit))
+            if entry.msgid.count('%s') != text.count('%s'):
+                broken.append('%s -> %%s count' % entry.msgid[:40])
+        self.assertFalse(broken, 'a translation lost a placeholder: %s'
+                         % broken[:10])
+
+    def test_t37b_the_translation_is_loaded_on_this_database(self):
+        """T37b. A file on disk is not a translation: the terms have to be in
+        `ir.model.data`'s language tables for the browser to serve them."""
+        vi = self.env['res.lang'].with_context(active_test=False).search(
+            [('code', '=', 'vi_VN')], limit=1)
+        if not vi:
+            self.skipTest('vi_VN is not on this database')
+        field = self.env['ir.model.fields'].search([
+            ('model', '=', 'pb.decision.assumptions'),
+            ('name', '=', 'revenue_target')], limit=1)
+        self.assertTrue(field, 'the assumptions model is not installed')
+        english = field.with_context(lang='en_US').field_description
+        vietnamese = field.with_context(lang='vi_VN').field_description
+        _logger.info('Decision Room: revenue_target reads "%s" in Vietnamese',
+                     vietnamese)
+        self.assertTrue(vietnamese)
+        if vi.active:
+            self.assertNotEqual(
+                vietnamese, english,
+                'the Vietnamese translation has not been loaded')
+
+    # ------------------------------------------------------------- T38
+    def test_t38_the_brief_prints_in_the_readers_language(self):
+        """T38. Section headings come from the template, money words come
+        from the browser — the page has to carry both."""
+        vi = self.env['res.lang'].with_context(active_test=False).search(
+            [('code', '=', 'vi_VN')], limit=1)
+        if not vi or not vi.active:
+            self.skipTest('vi_VN is not active on this database')
+        payload = {
+            'plan_name': 'Ban nháp hội đồng',
+            'comparison_name': 'Hôm nay',
+            'currency_code': 'VND',
+            'lang': 'vi-VN',
+            'headline_title': 'Thêm 45 người.',
+            'headline_copy': 'Chi phí nhân sự tăng ₫12,5 triệu.',
+            'goals': [],
+            'outcome': [{'label': 'Lợi nhuận', 'ref': '₫2.200 tỷ',
+                         'plan': '₫2.300 tỷ'}],
+            'bridge': [], 'bridge_total': '+₫100 tỷ', 'changes': [],
+            'inputs': [], 'months': [], 'assumptions': [],
+        }
+        html = self.env['pb.decision.room'].with_context(
+            lang='vi_VN').render_brief(payload)
+        self.assertIn('lang="vi-VN"', html)
+        # the money words the client formatted, straight through
+        self.assertIn('₫2.200 tỷ', html)
+        self.assertIn('₫12,5 triệu', html)
+        # and at least one heading that the template itself owns
+        english = self.env['pb.decision.room'].with_context(
+            lang='en_US').render_brief(payload)
+        self.assertIn('In one sentence', english)
+        self.assertNotIn('In one sentence', html,
+                         'the brief printed its headings in English for a '
+                         'Vietnamese reader')
+        self.assertNotIn('Odoo', html)
+
+    # ------------------------------------------------------------- T39
+    def test_t39_the_home_hub_is_a_real_door_and_a_real_dependency(self):
+        import ast
+        manifest = ast.literal_eval(
+            open(os.path.join(self.here, '__manifest__.py'),
+                 encoding='utf-8').read())
+        self.assertIn('pb_home_hub', manifest['depends'],
+                      'the Home lens imports a module this one does not '
+                      'depend on')
+        self.assertTrue(self.env['ir.module.module'].search(
+            [('name', '=', 'pb_home_hub'), ('state', '=', 'installed')]),
+            'pb_home_hub is not installed on this database')
+
+        palette = open(os.path.join(
+            self.here, 'static', 'src', 'js', 'decision_palette.js'),
+            encoding='utf-8').read()
+        self.assertIn('registry.category(HOME_LENSES).add("decide"', palette)
+        self.assertIn('from "@pb_home_hub/js/home_hub"', palette)
+        self.assertIn('feature: "people_plan"', palette)
+
+        features = open(os.path.join(
+            self.root, 'pb_hub', 'static', 'src', 'js', 'hub_features.js'),
+            encoding='utf-8').read()
+        for key in ('"pb_home_hub#decide": "people_plan"',
+                    '"pb_home_hub.action_pb_home_hub#decide": "people_plan"'):
+            self.assertIn(key, features,
+                          'the feature switch does not reach the Home lens')
+        # and the xmlid the map names has to be the real one
+        self.assertTrue(self.env.ref('pb_home_hub.action_pb_home_hub',
+                                     raise_if_not_found=False))

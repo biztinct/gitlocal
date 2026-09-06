@@ -57,6 +57,7 @@ from datetime import date
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.tools.misc import format_date
 
 from .pb_decision_assumptions import EDIT_FORM, EDIT_GROUPS
 from .pb_decision_plan import MAX_PLANS
@@ -171,7 +172,10 @@ class PbDecisionRoom(models.AbstractModel):
             'assumptions': {},
             'assumptions_form': [],
             'assumptions_groups': [],
-            'baseline': {'asof': str(date.today()), 'headcount': 0,
+            'baseline': {'asof': str(date.today()),
+                         'asof_at': fields.Datetime.to_string(
+                             fields.Datetime.now()),
+                         'headcount': 0,
                          'teams': [], 'source': ''},
             'plans': [],
             'limits': {'max_plans': MAX_PLANS},
@@ -219,8 +223,10 @@ class PbDecisionRoom(models.AbstractModel):
             'assumptions_groups': list(EDIT_GROUPS),
             'baseline': self._safe(
                 lambda: self._baseline(company, refresh=refresh),
-                default={'asof': str(date.today()), 'headcount': 0,
-                         'teams': [], 'source': 'none'}),
+                default={'asof': str(date.today()),
+                         'asof_at': fields.Datetime.to_string(
+                             fields.Datetime.now()),
+                         'headcount': 0, 'teams': [], 'source': 'none'}),
             'plans': self._safe(lambda: self._plans(company), default=[]),
             'limits': {'max_plans': MAX_PLANS},
         }
@@ -473,6 +479,11 @@ class PbDecisionRoom(models.AbstractModel):
 
         return {
             'asof': str(date.today()),
+            # WHEN this roster was actually read, not which day it is.
+            # The baseline is cached for ten minutes, so a number on screen
+            # can legitimately be a few minutes behind a hire made this
+            # morning; the dialog says the time and offers to read it again.
+            'asof_at': fields.Datetime.to_string(fields.Datetime.now()),
             'headcount': headcount,
             'teams': out_teams,
             'source': source,
@@ -692,6 +703,8 @@ class PbDecisionRoom(models.AbstractModel):
             'brief': payload,
             'company_name': company.display_name,
             'reader': self.env.user.display_name,
-            'today': fields.Date.to_string(fields.Date.context_today(self)),
+            # In the reader's own locale: an owner in Hanoi reading a
+            # Vietnamese brief should not find one American date on it.
+            'today': format_date(self.env, fields.Date.context_today(self)),
         })
         return '<!doctype html>\n' + str(html)

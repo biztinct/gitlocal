@@ -4,7 +4,7 @@
     'summary': 'See the year before you commit to it — a what-if workforce '
                'planner built on the company\'s real roster and pay',
     'description': """
-WFPLAN Phases 1-2 — the Decision Room.
+WFPLAN Phases 1-3 — the Decision Room.
 
 WHAT THIS MODULE IS
 
@@ -48,13 +48,27 @@ WHAT PHASE 2 ADDED
   the reason for every difference, the twelve months and every
   assumption behind them.
 
+WHAT PHASE 3 ADDED
+
+  The phone. On a 390px screen the dark stage fills the first view and
+  the levers live in a sheet a thumb pulls up from the bottom, with the
+  headline number mirrored in its header so a lever's effect is visible
+  while you are still dragging it. The whole room is reachable by
+  keyboard alone, and every control shows where the focus is. Charts
+  travel between their old shape and their new one instead of snapping,
+  and every bit of that obeys "Motion off" and the operating system's
+  own reduced-motion setting. The room also speaks Vietnamese — every
+  sentence, and money in the words Vietnamese finance uses: 2.200 ty,
+  840 trieu. And it has a second door: a "Decision Room" lens on the
+  Home hub, governed by the same feature switch as the Plan lens.
+
 WHAT IT NEVER DOES
 
   It never writes to an employee, a contract, a payslip or a pay run. It
   reads the roster and it saves plans. That promise is on the screen, in
   those words, and the facade has no write path to any `hr.*` model.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.3.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -66,6 +80,7 @@ WHAT IT NEVER DOES
         'pb_hub',               # the shell kit + the global palette
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_people_hub',        # the hub whose Plan lens this becomes
+        'pb_home_hub',          # and the home page, where the owner starts
     ],
     'data': [
         'security/pb_decision_room_security.xml',

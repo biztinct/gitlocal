@@ -55,6 +55,31 @@ $dr-teal:       #0F766E;
         .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
     }
 
+    // ------------------------------------------------------- the keyboard
+    // A visible focus ring on EVERY control, in both places the room lives:
+    // indigo on the light cards, and the pale plan colour on the dark stage,
+    // where indigo on indigo would be no ring at all. `:focus-visible` and
+    // not `:focus`, so a mouse click does not leave a ring behind it.
+    button, input, select, summary, a, [tabindex] {
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: 2px; border-radius: 4px;
+        }
+    }
+    .dr-stage, .dr-sheet-head {
+        button, input, select, [tabindex] {
+            &:focus-visible { outline-color: #CBC2EE; }
+        }
+    }
+
+    // ------------------------------------------------- the phone sheet
+    // Above 720px none of this exists: `.dr-controls` is the sticky column
+    // it has always been, and the bar and its backdrop are not rendered at
+    // all (the component only paints them when the media query matches).
+    .dr-sheet-head { display: none; }
+    .dr-sheetbar { display: none; }
+    .dr-sheetscrim { display: none; }
+
     // -------------------------------------------------------- the layout
     .dr-layout {
         display: grid; grid-template-columns: 282px minmax(0, 1fr);
@@ -526,6 +551,9 @@ $dr-teal:       #0F766E;
             > span { color: var(--pbim-primary, #5A4BB0); font-weight: 800; }
         }
         &:hover { border-color: var(--pbim-primary-light, #CBC2EE); }
+        // The month you just chose says so, once. Not a loop, not a glow —
+        // one beat, the length of an eye blink, and then it is a card again.
+        &.dr-pulse { animation: dr-beat .24s ease-out; }
     }
     .dr-year-note {
         font-size: 11px; line-height: 1.7; margin: 12px 0 0;
@@ -743,6 +771,12 @@ $dr-teal:       #0F766E;
         font-size: 10px; line-height: 1.6; margin: 8px 0 0;
         color: var(--pbim-muted, #64748B);
         &.dr-goal-s--missed { color: $dr-rose; }
+    }
+    .dr-asof {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin: 2px 0 14px; font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+        .dr-link { display: inline-flex; align-items: center; gap: 4px; }
     }
     .dr-assume {
         display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
@@ -1247,6 +1281,12 @@ $dr-teal:       #0F766E;
     from { opacity: 0; transform: translateX(7px); }
     to { opacity: 1; transform: translateX(0); }
 }
+@keyframes dr-beat {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
 @keyframes dr-glow {
     0%, 100% { box-shadow: 0 5px 16px rgba(36, 31, 82, .05); }
     40% { box-shadow: 0 0 0 3px rgba(137, 119, 217, .28),
@@ -1322,6 +1362,105 @@ $dr-teal:       #0F766E;
         .dr-find .pbim-btn { width: 100%; justify-content: center; }
         .dr-dock-foot .pbim-btn { width: 100%; justify-content: center; }
         .dr-goal-entry .dr-money { width: 100%; }
+    }
+}
+
+// =====================================================================
+//  THE PHONE  (<= 720px)
+//
+//  The hero of Phase 3. The stage comes FIRST — the big number, the line,
+//  the month strip — and the nine levers move into a sheet that a thumb
+//  pulls up from the bottom of the screen. It is the SAME markup: the
+//  control room is not duplicated, it is repositioned, because two copies
+//  of nine levers is two places for them to drift apart.
+// =====================================================================
+@media (max-width: 720px) {
+    .pbim.dr.dr--phone {
+        // The story column is the page; the control room has left the flow.
+        .dr-layout { display: block; }
+        .dr-story { padding-bottom: 74px; }
+
+        .dr-controls {
+            position: fixed; z-index: 1200; left: 0; right: 0; bottom: 0;
+            top: auto; width: auto; max-height: 85vh; height: 85vh;
+            display: block; overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 0 14px 22px; margin: 0;
+            background: var(--pbim-bg, #F4F5FB);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -12px 40px rgba(20, 16, 48, .26);
+            transform: translateY(100%);
+            transition: transform .26s cubic-bezier(.22, .8, .3, 1);
+            visibility: hidden;
+        }
+        &.dr--sheet .dr-controls { transform: translateY(0); visibility: visible; }
+
+        // ------------------------------------------------ the sheet head
+        .dr-sheet-head {
+            position: sticky; top: 0; z-index: 2; display: block;
+            padding: 10px 2px 12px; margin: 0 -14px 12px;
+            padding-left: 16px; padding-right: 16px;
+            background: $dr-stage; color: $dr-onstage-2;
+            border-radius: 20px 20px 0 0;
+        }
+        .dr-sheet-grab {
+            display: block; width: 38px; height: 4px; margin: 0 auto 10px;
+            border-radius: 3px; background: rgba(215, 198, 255, .35);
+        }
+        .dr-sheet-hero {
+            display: block; min-width: 0;
+        }
+        .dr-sheet-ov {
+            display: block; font-size: 8px; letter-spacing: 1.4px;
+            font-weight: 700; color: #A79FD0;
+        }
+        .dr-sheet-n {
+            display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+            margin-top: 3px;
+            strong {
+                font-size: 24px; letter-spacing: -1px; color: #fff;
+                font-variant-numeric: tabular-nums;
+            }
+            small { font-size: 11px; font-weight: 600; color: #A6E0BE; }
+            .dr-worse { color: #EFB294; }
+        }
+        .dr-sheet-done {
+            position: absolute; right: 14px; top: 22px; padding: 6px 14px;
+        }
+
+        // -------------------------------------------------- the thumb bar
+        .dr-sheetbar {
+            position: fixed; z-index: 1150; left: 10px; right: 10px;
+            bottom: 10px; display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; cursor: pointer; text-align: left;
+            border: 0; border-radius: 14px; color: #EFECFA;
+            background: $dr-stage;
+            box-shadow: 0 8px 24px rgba(20, 16, 48, .3);
+            .dr-sheetbar-ic { display: flex; color: $dr-plan; flex: none; }
+            .dr-sheetbar-tx { flex: 1; min-width: 0; }
+            strong { display: block; font-size: 13px; font-weight: 650; }
+            small {
+                display: block; font-size: 10px; color: #A79FD0;
+                white-space: nowrap; overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        &.dr--sheet .dr-sheetbar { display: none; }
+
+        .dr-sheetscrim {
+            position: fixed; inset: 0; z-index: 1190; display: block;
+            background: rgba(21, 17, 44, .5);
+        }
+
+        // ------------------------------------- the year strip, scrollable
+        // Twelve cards do not fit a 390px screen as a grid, and three rows
+        // of four is not a year. One strip, snapping, with the month you
+        // are exploring brought to the middle.
+        .dr-months {
+            display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+            scroll-snap-type: x mandatory; scroll-padding: 0 50%;
+            -webkit-overflow-scrolling: touch;
+        }
+        .dr-month { flex: 0 0 78px; scroll-snap-align: center; }
     }
 }
 
