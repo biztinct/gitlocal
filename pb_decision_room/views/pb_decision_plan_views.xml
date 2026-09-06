@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OFF-MENU on purpose. The room is the way in; these two views exist so
+         that an administrator investigating a saved plan has somewhere to look
+         that is not the database. No menu item points at them. -->
+
+    <record id="view_pb_decision_plan_list" model="ir.ui.view">
+        <field name="name">pb.decision.plan.list</field>
+        <field name="model">pb.decision.plan</field>
+        <field name="arch" type="xml">
+            <list string="Saved plans">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="user_id"/>
+                <field name="is_reference"/>
+                <field name="write_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_decision_plan_form" model="ir.ui.view">
+        <field name="name">pb.decision.plan.form</field>
+        <field name="model">pb.decision.plan</field>
+        <field name="arch" type="xml">
+            <form string="Saved plan">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="user_id"/>
+                        <field name="is_reference"/>
+                        <field name="active"/>
+                    </group>
+                    <group string="Note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                    <group string="What was saved">
+                        <field name="state"/>
+                        <field name="goals"/>
+                        <field name="summary"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_decision_plan" model="ir.actions.act_window">
+        <field name="name">Saved plans</field>
+        <field name="res_model">pb.decision.plan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
