@@ -238,6 +238,9 @@ window.WF = (() => {
       revenue: 2200000,  // ₫M / year  (₫2,200 B)
       otherCosts: 260000,// ₫M / year non-people costs
       revenueFollows: false, // does revenue grow with revenue-earning staff?
+      demandMode: false,     // option E: revenue = what the team can serve of a growing demand
+      demandGrowth: 0,       // % more demand by December than today
+      demandStress: 0,       // % immediate change to all demand (stress test)
     };
   }
 
@@ -303,23 +306,35 @@ window.WF = (() => {
     }
     // revenue + profit
     const seasonal = [0.86,0.78,0.95,1.0,1.02,1.04,1.02,1.03,1.05,1.08,1.1,1.07]; // mild VN seasonality, sums to 12
+    // demand mode: today's team serves exactly today's revenue; capacity moves with revenue-earning heads and overtime hours
+    const otAvg = DIVS.filter(d => d.revenue).reduce((a, d) => a + d.roles.reduce((b, r) => b + r.ot * r.n, 0), 0) / Math.max(1, revHeadsBase);
+    const hoursFactor = (s.workDays * 8 + otAvg * s.otFactor) / (s.workDays * 8 + otAvg);
     for (let m = 0; m < 12; m++) {
       const row = months[m];
-      let rev = s.revenue / 12 * seasonal[m];
-      if (s.revenueFollows) rev *= revHeads[m] / revHeadsBase;
-      row.revenue = rev;
+      const today = s.revenue / 12 * seasonal[m];
+      if (s.demandMode) {
+        row.demand = today * (1 + s.demandGrowth / 100 * (m + 1) / 12) * (1 + s.demandStress / 100);
+        row.capacity = today * (revHeads[m] / revHeadsBase) * hoursFactor;
+        row.revenue = Math.min(row.demand, row.capacity);
+      } else {
+        row.revenue = s.revenueFollows ? today * revHeads[m] / revHeadsBase : today;
+        row.demand = row.revenue; row.capacity = today * (revHeads[m] / revHeadsBase) * hoursFactor;
+      }
+      row.coverage = row.demand ? row.revenue / row.demand : 1;
       row.other = s.otherCosts / 12;
-      row.profit = rev - row.total - row.other;
-      row.margin = rev ? row.profit / rev : 0;
+      row.profit = row.revenue - row.total - row.other;
+      row.margin = row.revenue ? row.profit / row.revenue : 0;
     }
     const sum = k => months.reduce((a, r) => a + r[k], 0);
     const year = {
       cost: sum('total'), gross: sum('gross'), base: sum('base'), allow: sum('allow'), ot: sum('ot'), night: sum('night'),
       erc: sum('erc'), bonus: sum('bonus'), oneOff: sum('oneOff'), eeIns: sum('eeIns'), pit: sum('pit'), takeHome: sum('takeHome'),
-      revenue: sum('revenue'), other: sum('other'), profit: sum('profit'),
+      revenue: sum('revenue'), other: sum('other'), profit: sum('profit'), demand: sum('demand'), capacity: sum('capacity'),
       headsEnd: months[11].heads, headsAvg: sum('heads') / 12,
       peakMonth: months.reduce((b, r) => r.total > months[b].total ? r.m : b, 0),
     };
+    year.coverage = year.demand ? year.revenue / year.demand : 1;
+    year.unserved = year.demand - year.revenue;
     year.margin = year.revenue ? year.profit / year.revenue : 0;
     year.costPerHead = year.cost / 12 / year.headsAvg;
     year.peopleShare = year.revenue ? year.cost / year.revenue : 0;
@@ -446,10 +461,13 @@ window.WF = (() => {
     if (s.bonusMonths !== 1) parts.push(`${s.bonusMonths === 0 ? 'no Tet bonus' : s.bonusMonths + ' months of Tet bonus'}`);
     if (!s.backfill) parts.push('not replacing leavers');
     if (s.attrition !== 12) parts.push(`${s.attrition}% of people leaving a year`);
+    if (s.demandMode && s.demandGrowth) parts.push(`demand ${s.demandGrowth > 0 ? 'growing' : 'shrinking'} ${Math.abs(s.demandGrowth)}% by December`);
+    if (s.demandMode && s.demandStress) parts.push(`demand ${s.demandStress > 0 ? 'up' : 'down'} ${Math.abs(s.demandStress)}% across the year`);
     const dCost = r.year.cost - b.year.cost, dProfit = r.year.profit - b.year.profit;
+    const served = s.demandMode && r.year.coverage < 0.995 ? ` You serve ${fmt.pct(r.year.coverage)} of demand; ${fmt.money(r.year.unserved)} goes unserved.` : '';
     if (!parts.length) return { lead: 'This is your company today.', tail: `${fmt.int(b.year.headsEnd)} people cost ${fmt.money(b.year.cost)} a year and you keep ${fmt.money(b.year.profit)} profit — a ${fmt.pct(b.year.margin)} margin.` };
     const lead = 'With ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts.slice(-1) : parts[0]) + ',';
-    const tail = `your yearly people cost ${dCost >= 0 ? 'rises' : 'falls'} by ${fmt.money(Math.abs(dCost))} to ${fmt.money(r.year.cost)}, and profit ${dProfit >= 0 ? 'goes up' : 'goes down'} ${fmt.money(Math.abs(dProfit))} — margin ${fmt.pct(b.year.margin)} → ${fmt.pct(r.year.margin)}.`;
+    const tail = `your yearly people cost ${dCost >= 0 ? 'rises' : 'falls'} by ${fmt.money(Math.abs(dCost))} to ${fmt.money(r.year.cost)}, and profit ${dProfit >= 0 ? 'goes up' : 'goes down'} ${fmt.money(Math.abs(dProfit))} — margin ${fmt.pct(b.year.margin)} → ${fmt.pct(r.year.margin)}.${served}`;
     return { lead, tail };
   }
 
@@ -469,6 +487,8 @@ window.WF = (() => {
     if (s.raise >= 12) w.push({ level: 'warn', text: `A ${s.raise}% raise is well above the market average of 7–9%. Great for keeping people; check the ${fmt.money(r.year.cost - b.year.cost)} yearly bill.` });
     if (s.attrition >= 20) w.push({ level: 'warn', text: `${s.attrition}% leaving a year means re-hiring ${fmt.int(r.totals.leavers)} people — ${fmt.money(r.totals.leavers * 15 * s.recruitCost)} in recruiting cost alone.` });
     if (s.otFactor >= 1.5) w.push({ level: 'warn', text: `Overtime at ${fmt.pct(s.otFactor - 1, { plus: true, d: 0 })} vs today brushes the 40 h/month legal cap for factory roles. Hiring may be cheaper.` });
+    if (s.demandMode && r.year.coverage < 0.95) w.push({ level: 'warn', text: `${fmt.pct(1 - r.year.coverage)} of demand goes unserved — ${fmt.money(r.year.unserved)} of revenue left on the table. Add revenue-earning people earlier, or more overtime.` });
+    if (s.demandMode && r.year.capacity > r.year.demand * 1.15) w.push({ level: 'warn', text: `Capacity runs ${fmt.pct(r.year.capacity / r.year.demand - 1)} above demand this year. Fewer hires, or later ones, would keep the margin.` });
     if (!w.length) w.push({ level: 'ok', text: 'Nothing to worry about. Margin, cash and hiring pace all look healthy.' });
     return w;
   }
