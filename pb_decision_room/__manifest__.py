@@ -4,7 +4,7 @@
     'summary': 'See the year before you commit to it — a what-if workforce '
                'planner built on the company\'s real roster and pay',
     'description': """
-WFPLAN Phase 1 — the Decision Room.
+WFPLAN Phases 1-2 — the Decision Room.
 
 WHAT THIS MODULE IS
 
@@ -34,13 +34,27 @@ THE THREE PIECES
     a reader with no Decision Room group gets an EXPLAINED empty room
     rather than an access dialog.
 
+WHAT PHASE 2 ADDED
+
+  The three cards under the stage OPEN. A workspace beneath them answers
+  four questions in turn: are there enough people on the right shifts,
+  why is profit different from the comparison, where does a year of pay
+  actually go, and how many more people could we take before a goal
+  breaks. The goals dialog can now SEARCH: it offers three calculated
+  directions — build the team, develop the team, or blend the two — and
+  any of them can be tried on the whole canvas and taken back untouched.
+  A reality check swings demand ten percent either way. And the whole
+  decision prints: one self-contained page with the goals, the outcome,
+  the reason for every difference, the twelve months and every
+  assumption behind them.
+
 WHAT IT NEVER DOES
 
   It never writes to an employee, a contract, a payslip or a pay run. It
   reads the roster and it saves plans. That promise is on the screen, in
   those words, and the facade has no write path to any `hr.*` model.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -58,6 +72,7 @@ WHAT IT NEVER DOES
         'security/ir.model.access.csv',
         'views/pb_decision_plan_views.xml',
         'views/pb_decision_assumptions_views.xml',
+        'views/pb_decision_brief.xml',
         'views/pb_decision_room_action.xml',
     ],
     'assets': {

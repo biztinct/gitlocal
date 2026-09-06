@@ -130,6 +130,28 @@ class TestDecisionRoomStaticContract(TransactionCase):
                 bad.append(rel)
         self.assertFalse(bad, 'the product says "Odoo" to a user: %s' % bad)
 
+    # ------------------------------------------------------------- T26
+    def test_t26_the_brief_template_is_inside_the_promise_t9_makes(self):
+        """T26. T9 walks every shipped file, so the brief template and the
+        `.pot` are already covered — this says so out loud, and adds the one
+        thing T9 cannot see: that the printable page reaches nowhere."""
+        brief = os.path.join(HERE, 'views', 'pb_decision_brief.xml')
+        self.assertTrue(os.path.exists(brief))
+        walked = set(_walk(HERE, ('.js', '.xml', '.py', '.pot', '.csv',
+                                  '.scss')))
+        self.assertIn(brief, walked)
+        self.assertIn(os.path.join(HERE, 'i18n', 'pb_decision_room.pot'),
+                      walked)
+        # The COMMENT at the top of that file says, in words, that the page
+        # carries no <script> and no <link> — so the grep has to look at the
+        # markup and not at the promise about the markup.
+        src = re.sub(r'<!--.*?-->', '', _read(brief), flags=re.S)
+        for forbidden in ('<script', '<link', 'http://', 'https://',
+                          '@import', 'url('):
+            self.assertNotIn(forbidden, src,
+                             'the brief reaches outside itself: %s'
+                             % forbidden)
+
     # ------------------------------------------------------------- T11
     def test_t11_every_icon_exists_in_the_shared_registry(self):
         """T11. `ic()` falls back to a tick when a name is unknown, so a typo

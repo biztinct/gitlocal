@@ -261,6 +261,222 @@ class TestDecisionRoomFacade(TransactionCase):
         self.assertEqual(out['revenue_target'], 1234000000)
         self.assertEqual(out['demand_growth_pct'], 7)
 
+    # =================================================================
+    #  WFPLAN P2 — the assumptions a lead can change, and the brief
+    # =================================================================
+
+    # ------------------------------------------------------------- T21
+    def test_t21_an_upgraded_row_carries_the_new_defaults(self):
+        """T21. An assumptions row created before Phase 2 must read the new
+        shift fields at their defaults after the upgrade — and the three
+        demand shares must be refused unless they describe a whole day."""
+        row = self.Assumptions.get_for_company(self.company)
+        self.assertEqual(row.shift_evening_pct, 25.0)
+        self.assertEqual(row.shift_night_pct, 15.0)
+        self.assertEqual(row.evening_uplift_pct, 0.0)
+        self.assertEqual(row.demand_day_pct, 60.0)
+        self.assertEqual(row.demand_evening_pct, 25.0)
+        self.assertEqual(row.demand_night_pct, 15.0)
+        self.assertEqual(row.productivity_cost_per_point, 0.0)
+        with self.assertRaises(ValidationError) as caught:
+            row.write({'demand_night_pct': 20.0})
+        message = str(caught.exception)
+        self.assertIn('100', message)
+        self.assertIn('add up', message)
+        self.assertNotIn('constraint', message.lower())
+        # 60 + 25 + 15 is still fine, and so is any other whole day.
+        row.write({'demand_day_pct': 50.0, 'demand_evening_pct': 30.0,
+                   'demand_night_pct': 20.0})
+        self.assertEqual(row.demand_day_pct, 50.0)
+        with self.assertRaises(ValidationError):
+            row.write({'shift_evening_pct': 50.0, 'shift_night_pct': 40.0})
+
+    # ------------------------------------------------------------- T22
+    def test_t22_only_the_planning_lead_changes_the_assumptions(self):
+        """T22. Refused for a plan-tier user with a sentence that says who to
+        ask; written by the lead, recorded in the chatter with the old and the
+        new value; and the cached roster is dropped, because which teams earn
+        revenue is part of the roster itself."""
+        with self.assertRaises(AccessError) as caught:
+            self._as(self.user_plan).save_assumptions({'employer_rate_pct': 24})
+        said = str(caught.exception)
+        self.assertIn('HR or finance lead', said)
+        self.assertNotIn('Odoo', said)
+
+        row = self.Assumptions.get_for_company(self.company)
+        # WF16. `mail.thread.create` DISCARDS tracking for a record it has
+        # just created — so a create is not also reported as twenty-five
+        # changes — and the discard lasts the whole transaction. On a real
+        # database this row already exists and the discard never happens; in
+        # a test it always does, because the row is created inside the very
+        # transaction that then changes it. Clearing the marker is what makes
+        # this test measure the product rather than that artefact.
+        self.env.cr.precommit.data.pop(
+            'mail.tracking.pb.decision.assumptions', None)
+        before = row.employer_rate_pct
+        # A value that is definitely NOT the one already there: writing a
+        # field its current value is not a change, and a change is what the
+        # chatter records.
+        after = 24.0 if abs(before - 24.0) > 0.01 else 25.0
+        out = self._as(self.user_lead).save_assumptions(
+            {'employer_rate_pct': after})
+        self.assertEqual(out['employer_rate_pct'], after)
+        # Tracking messages are posted in the cursor's PRE-COMMIT hook, not
+        # inside `write()`. In a test, which never commits, they do not exist
+        # until that hook is run by hand.
+        self.env.flush_all()
+        self.env.cr.precommit.run()
+        row.invalidate_recordset()
+        tracked = row.message_ids.tracking_value_ids
+        self.assertTrue(tracked, 'the change was not recorded on the record')
+        values = [(t.old_value_float, t.new_value_float) for t in tracked]
+        self.assertIn((before, after), values)
+
+        # ... and the cache really is dropped: drop a revenue team and the
+        # baseline that comes back must agree.
+        room = self._room(self.user_lead)
+        earners = [t for t in room['baseline']['teams'] if t['revenue']]
+        if earners and earners[0]['department_id']:
+            keep = [t['department_id'] for t in room['baseline']['teams']
+                    if t['revenue'] and t['department_id']
+                    and t['department_id'] != earners[0]['department_id']]
+            self._as(self.user_lead).save_assumptions(
+                {'revenue_team_ids': keep})
+            after = self._room(self.user_lead)
+            dropped = [t for t in after['baseline']['teams']
+                       if t['department_id'] == earners[0]['department_id']]
+            self.assertTrue(dropped)
+            self.assertFalse(dropped[0]['revenue'],
+                             'the baseline cache was not cleared')
+
+    # ------------------------------------------------------------- T23
+    def test_t23_the_editable_form_is_the_model_and_nothing_else(self):
+        """T23. The dialog is GENERATED from this list, so a field that is on
+        the list and not on the model would draw a box that saves nowhere, and
+        one on the model and not the list would be invisible for ever."""
+        form = self._room(self.user_lead)['assumptions_form']
+        keys = [f['key'] for f in form]
+        self.assertEqual(len(keys), len(set(keys)), 'a field appears twice')
+        model_fields = self.Assumptions._fields
+        for field in form:
+            self.assertIn(field['key'], model_fields, field['key'])
+            self.assertTrue(field['label'], field['key'])
+            self.assertTrue(field['help'], field['key'])
+            self.assertIn(field['kind'],
+                          ('money', 'pct', 'months', 'int', 'teams', 'rate'))
+            self.assertNotIn('Odoo', field['help'])
+        # Everything a person could reasonably want to change is offered.
+        expected = {
+            'revenue_target', 'demand_growth_pct', 'revenue_team_ids',
+            'employer_rate_pct', 'employee_rate_pct', 'contribution_cap',
+            'allowance_pct', 'bonus_months', 'bonus_month_index',
+            'recruit_cost_months', 'severance_months', 'ramp_first_month_pct',
+            'attrition_pct_year', 'work_days', 'ot_multiplier',
+            'shift_evening_pct', 'shift_night_pct', 'evening_uplift_pct',
+            'night_uplift_pct', 'demand_day_pct', 'demand_evening_pct',
+            'demand_night_pct', 'other_fixed_monthly', 'other_pct_revenue',
+            'productivity_cost_per_point',
+        }
+        self.assertEqual(set(keys), expected)
+        groups = self._room(self.user_lead)['assumptions_groups']
+        self.assertEqual(set(f['group'] for f in form) - set(groups), set())
+
+    def test_the_assumption_ranges_are_a_server_rule_and_not_a_suggestion(self):
+        room = self._as(self.user_lead)
+        with self.assertRaises(UserError) as caught:
+            room.save_assumptions({'employer_rate_pct': 900})
+        self.assertIn('between', str(caught.exception))
+        with self.assertRaises(UserError):
+            room.save_assumptions({'revenue_target': -5})
+        with self.assertRaises(UserError):
+            room.save_assumptions({'work_days': 'lots'})
+
+    # ------------------------------------------------------------- T24
+    def _brief(self, **kw):
+        payload = {
+            'plan_name': 'Board draft',
+            'comparison_name': 'Today',
+            'currency_code': 'VND',
+            'headline_title': 'Twelve more people adds profit.',
+            'headline_copy': 'Workforce cost is up for the year.',
+            'goals': [{'label': 'Operating margin', 'bound': 'At least',
+                       'target': '20.0%', 'actual': '23.4%', 'met': True,
+                       'status': 'Met'}],
+            'outcome': [{'label': 'Operating profit', 'ref': '1B',
+                         'plan': '1.2B'}],
+            'bridge': [{'label': 'Revenue delivered', 'reason': 'What was served',
+                        'value': '+200M', 'good': True}],
+            'bridge_total': '+200M',
+            'changes': ['12 more people in Production from March'],
+            'inputs': [{'label': 'Overtime per person', 'ref': '0 h a month',
+                        'plan': '8 h a month'}],
+            'months': [{'name': 'January', 'people': '4,533', 'cost': '90B',
+                        'served': '98.0%', 'profit': '12B'}],
+            'assumptions': [{'title': 'Who this is about',
+                             'copy': '4,533 people in 13 teams.'}],
+        }
+        payload.update(kw)
+        return self._as(self.user_plan).render_brief(payload)
+
+    def test_t24_the_brief_is_one_self_contained_page(self):
+        """T24. It is saved to a laptop and mailed on: a brief whose layout
+        depends on a server it can no longer reach is not a brief."""
+        html = self._brief()
+        for forbidden in ('<script', '<link', 'http://', 'https://', 'src=',
+                          '@import'):
+            self.assertNotIn(forbidden, html,
+                             'the brief reaches outside itself: %s' % forbidden)
+        self.assertIn('<!doctype html>', html)
+        self.assertIn(self.company.display_name, html)
+        self.assertIn('Board draft', html)
+        self.assertIn('Nothing in payroll', html)
+        self.assertIn('Operating margin', html)
+        self.assertIn('Who this is about', html)
+        self.assertIn('4,533 people in 13 teams.', html)
+        self.assertIn('12 more people in Production from March', html)
+        self.assertIn('January', html)
+        self.assertIn('Overtime per person', html)
+        self.assertNotIn('Odoo', html)
+
+    # ------------------------------------------------------------- T25
+    def test_t25_the_brief_never_lets_a_name_become_markup(self):
+        """T25. A plan called `<b>x</b>` prints those five characters."""
+        html = self._brief(plan_name='<b>x</b>',
+                           comparison_name='"><script>alert(1)</script>')
+        self.assertIn('&lt;b&gt;x&lt;/b&gt;', html)
+        self.assertNotIn('<b>x</b>', html)
+        self.assertNotIn('<script>alert(1)</script>', html)
+
+    def test_the_brief_is_refused_to_somebody_with_no_room(self):
+        with self.assertRaises(AccessError):
+            self.Room.with_user(self.user_none).render_brief({})
+
+    def test_the_baseline_that_leaves_this_server_names_nobody(self):
+        """The fixture the engine checks use is written from here, so what the
+        node checks are timed against is the REAL roster — and the check that
+        it carries no person is the same check that writes it."""
+        import json
+        import os
+        room = self._room(self.user_plan, refresh=True)
+        baseline = room['baseline']
+        blob = json.dumps(baseline)
+        self.assertNotIn('employee', blob.lower())
+        for team in baseline['teams']:
+            self.assertEqual(set(team) - {
+                'key', 'name', 'department_id', 'revenue', 'heads',
+                'pay_month_avg', 'roles'}, set())
+            for role in team['roles']:
+                self.assertEqual(set(role) - {
+                    'key', 'name', 'job_id', 'heads', 'pay_month_avg',
+                    'level'}, set())
+        path = os.path.join('/tmp', 'pb_decision_room_baseline.json')
+        try:
+            with open(path, 'w', encoding='utf-8') as fh:
+                json.dump(baseline, fh, indent=1)
+            _logger.info('Decision Room: baseline fixture written to %s', path)
+        except OSError as e:      # a read-only /tmp is not a test failure
+            _logger.info('Decision Room: fixture not written (%s)', e)
+
     def test_the_room_never_writes_to_an_hr_model(self):
         """The promise on the screen, checked against the source."""
         import os

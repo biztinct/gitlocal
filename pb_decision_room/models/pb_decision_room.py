@@ -55,9 +55,10 @@ import time
 from copy import deepcopy
 from datetime import date
 
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
+from .pb_decision_assumptions import EDIT_FORM, EDIT_GROUPS
 from .pb_decision_plan import MAX_PLANS
 
 _logger = logging.getLogger(__name__)
@@ -88,6 +89,27 @@ PAYSLIP_WAGE_FIELDS = (
 
 #: (database, company id, roster signature) -> (built at, baseline)
 _BASELINE_CACHE = {}
+
+
+def _clean_number(value):
+    """"46,800,000" not "46800000.0" — a range in a refusal a person reads."""
+    number = float(value or 0)
+    if number == int(number):
+        return '{:,}'.format(int(number))
+    return '{:,.2f}'.format(number)
+
+
+def _drop_company_cache(dbname, company_id):
+    """Forget every cached baseline for one company.
+
+    The key carries the roster signature, so there is no single entry to pop:
+    the whole set for that company goes. Changing which teams earn revenue is
+    a change to the BASELINE, and a ten-minute-old answer would quietly be the
+    old one.
+    """
+    for key in [k for k in _BASELINE_CACHE
+                if k[0] == dbname and k[1] == company_id]:
+        _BASELINE_CACHE.pop(key, None)
 
 
 def _level_of(name):
@@ -147,6 +169,8 @@ class PbDecisionRoom(models.AbstractModel):
             'can_manage': False,
             'company': {},
             'assumptions': {},
+            'assumptions_form': [],
+            'assumptions_groups': [],
             'baseline': {'asof': str(date.today()), 'headcount': 0,
                          'teams': [], 'source': ''},
             'plans': [],
@@ -187,6 +211,12 @@ class PbDecisionRoom(models.AbstractModel):
             },
             'assumptions': self._safe(
                 lambda: self._assumptions_dict(assumptions), default={}),
+            # The editing surface is DESCRIBED here and drawn in the browser,
+            # so the dialog cannot drift from the model behind it.
+            'assumptions_form': self._safe(
+                lambda: self.env['pb.decision.assumptions'].edit_form(),
+                default=[]),
+            'assumptions_groups': list(EDIT_GROUPS),
             'baseline': self._safe(
                 lambda: self._baseline(company, refresh=refresh),
                 default={'asof': str(date.today()), 'headcount': 0,
@@ -211,6 +241,11 @@ class PbDecisionRoom(models.AbstractModel):
             'recruit_cost_months', 'severance_months', 'ramp_first_month_pct',
             'attrition_pct_year', 'bonus_month_index', 'bonus_months',
             'other_fixed_monthly', 'other_pct_revenue', 'pit_ladder', 'note',
+            # Phase 2 — shifts, when the work arrives, and what a point of
+            # productivity costs.
+            'shift_evening_pct', 'shift_night_pct', 'evening_uplift_pct',
+            'demand_day_pct', 'demand_evening_pct', 'demand_night_pct',
+            'productivity_cost_per_point',
         ]
         out = {'id': row.id}
         for name in fields_:
@@ -219,6 +254,9 @@ class PbDecisionRoom(models.AbstractModel):
                 {} if name == 'pit_ladder' else
                 ('' if name == 'note' else 0))
         out['revenue_team_ids'] = row.revenue_team_ids.ids
+        out['changed_on'] = str(row.write_date or '')
+        out['changed_by'] = self._safe(
+            lambda: row.sudo().write_uid.display_name or '', default='')
         return out
 
     # ----------------------------------------------------------- the roster
@@ -577,15 +615,83 @@ class PbDecisionRoom(models.AbstractModel):
 
     @api.model
     def save_assumptions(self, vals):
-        """Phase 1 writes the revenue target and the growth by December."""
+        """Change what the room believes — the planning lead's job alone.
+
+        Every number is checked HERE against the range the form advertises,
+        because a browser is a suggestion and a server is a rule; the refusal
+        is a sentence naming the field and its range, not a traceback. Writing
+        also drops this company's cached baseline, since one of the fields
+        (which teams earn revenue) is part of the baseline itself and a stale
+        cache would have the room drawing the old answer for ten minutes.
+        """
         self._require_manage()
         vals = vals or {}
         company = self._company_for(vals.get('company_id'))
-        row = self.env['pb.decision.assumptions'].get_for_company(company)
+        Assumptions = self.env['pb.decision.assumptions']
+        row = Assumptions.get_for_company(company)
+        ranges = {name: (kind, low, high)
+                  for _group, name, kind, _step, low, high in EDIT_FORM}
         payload = {}
-        for name in ('revenue_target', 'demand_growth_pct'):
-            if name in vals:
-                payload[name] = float(vals[name] or 0.0)
+        for name, value in vals.items():
+            if name in ('company_id', 'id'):
+                continue
+            if name == 'revenue_team_ids':
+                ids = [int(x) for x in (value or []) if int(x or 0) > 0]
+                payload['revenue_team_ids'] = [(6, 0, ids)]
+                continue
+            if name == 'note':
+                payload['note'] = value or ''
+                continue
+            if name not in ranges:
+                continue
+            kind, low, high = ranges[name]
+            try:
+                number = float(value or 0.0)
+            except (TypeError, ValueError):
+                raise UserError(_(
+                    "\"%s\" needs to be a number.",
+                    Assumptions._fields[name].string)) from None
+            if kind != 'money' and (number < low - 1e-9
+                                    or number > high + 1e-9):
+                raise UserError(_(
+                    "\"%(label)s\" has to be between %(low)s and %(high)s.",
+                    label=Assumptions._fields[name].string,
+                    low=_clean_number(low), high=_clean_number(high)))
+            if kind == 'money' and number < 0:
+                raise UserError(_(
+                    "\"%s\" cannot be negative.",
+                    Assumptions._fields[name].string))
+            payload[name] = (int(round(number)) if kind == 'int' else number)
         if payload:
             row.write(payload)
-        return self._assumptions_dict(row)
+            _drop_company_cache(self.env.cr.dbname, company.id)
+        out = self._assumptions_dict(row)
+        out['signature'] = self._safe(
+            lambda: self._roster_signature(company), default='')
+        return out
+
+    # -------------------------------------------------------- the brief
+    @api.model
+    def render_brief(self, payload):
+        """One printable page that says what was decided and what it assumed.
+
+        The CLIENT computed every number (it is the only thing holding the
+        twelve computed months); the server LAYS THEM OUT and stamps the
+        company, the reader and the date on them, so a brief that leaves this
+        building carries the same provenance a report would.
+
+        The page is self-contained on purpose — no script, no stylesheet, no
+        image, nothing fetched from anywhere — because it is opened in a blank
+        tab and may be saved to a laptop and mailed on, and a brief whose
+        formatting depends on a server it can no longer reach is not a brief.
+        """
+        self._require_read()
+        payload = payload or {}
+        company = self._company_for(payload.get('company_id'))
+        html = self.env['ir.qweb']._render('pb_decision_room.brief', {
+            'brief': payload,
+            'company_name': company.display_name,
+            'reader': self.env.user.display_name,
+            'today': fields.Date.to_string(fields.Date.context_today(self)),
+        })
+        return '<!doctype html>\n' + str(html)
