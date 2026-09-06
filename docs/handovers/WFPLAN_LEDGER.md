@@ -351,4 +351,64 @@ Owner rulings (binding):
   Owner debts: the ₫2,200B revenue target and the "Board draft" plan from P1 are still
   on payobook company 5 (abm was restored to a zero target and 23.5 % employer rate
   after validation); both temporary abm validators are archived again (WF15).
-- P3 — "Wow and close" (motion, phone, VI, home tile, legacy fold ruling, closeout). Not yet designed.
+- P3 — "Wow and close" — designed and BUILT 2026-09-07 (`WFPLAN_P3_WOW_AND_CLOSE.md`).
+  Status: **COMPLETE**. `pb_decision_room` 19.0.3.0.0 live on p9clone, payobook, abm and
+  payobook_template; `pb_hub` 19.0.1.8.0 (the Home lens in the feature map),
+  `pb_import_kit` 19.0.1.12.0 (`chevronUp`). `pb_people_hub` UNCHANGED at 19.0.1.4.0.
+  Shipped: the phone (stage first, the control room as a bottom sheet with the hero
+  number mirrored in its header, the year strip scrolling and snapping), full keyboard
+  reach (Shift+arrows on every slider, Space on the timeline, ⌘S, Esc, visible focus
+  rings), charts that travel between shapes and obey both "Motion off" and the operating
+  system's reduced-motion setting, the experiment card scaled to one per cent of the team,
+  the roster "read at HH:MM · Refresh" control, a concurrency guard on the goal search,
+  a **complete Vietnamese room** (686 terms, money in tỷ/triệu/nghìn), and the
+  **Decision Room lens on the Home hub**.
+  97 server tests green on p9clone (44 `pb_decision_room` + 34 `pb_hub` +
+  37 `pb_people_hub`), 70 engine checks green under `node tools/decision_engine_check.mjs`,
+  B25–B36 walked on payobook and abm at 1440 and 390, light and dark, in English and
+  Vietnamese. Screenshots: `docs/handovers/wfplan_p3_shots/`.
+  Closeout: `docs/handovers/WFPLAN_CLOSEOUT.md`.
+  Owner debts: unchanged from P2 (the ₫2,200B target and the "Board draft" plan are still
+  on payobook company 5); every temporary validator created in P1-P3 is archived again
+  (payobook 4405/4406, abm 246/247/248, p9clone 3816).
+
+## Gotchas from Phase 3 (continue the ledger above)
+
+- WF23 (P3): **the string extractor does not care where `_t` came from.** Two files may
+  not import anything (`decision_engine.js`, `decision_format.js` — `node
+  tools/decision_engine_check.mjs` loads them off disk exactly as they ship), so they
+  keep a module-level `let _t = interpolate` and export `useTranslator(fn)`, which
+  `decision_room.js` calls at bundle-evaluation time. Every `_t("…")` in those files is
+  still collected into the `.pot` exactly as if it had been imported. Two consequences:
+  anything evaluated at MODULE level (`GOAL_DEFS` labels, the input labels, month names)
+  has to become a FUNCTION, because the module body runs before the translator is
+  injected; and the fallback must interpolate the way the platform does, or the sentences
+  read differently under node than they do on screen.
+- WF24 (P3): **the platform's `sprintf` escapes `%%` for a POSITIONAL substitution and
+  NOT for a keyed one.** `_t("a %(pct)s%% increase", {pct})` renders "a 5%% increase" on
+  screen; `_t("A %s%% increase", value)` renders "A 5% increase". So: with a dictionary
+  write ONE per cent sign, with a positional value write TWO. There is no warning either
+  way — it is only visible in the finished sentence.
+- WF25 (P3): **Odoo's own login form writes the language back to the user.** A validator
+  created with `lang='vi_VN'` who logs in through `/web/login` with the language selector
+  left on "English (US)" is silently rewritten to `en_US`, and the screen comes up in
+  English with nothing wrong anywhere. Pick the language in the login form, or write
+  `lang` again after logging in.
+- WF26 (P3): **a permission or a feature switch changed from `odoo-bin shell` is not
+  seen by the running web worker.** `res.users.has_group` and `ir.config_parameter` are
+  both `ormcache`d per process; the shell clears its OWN cache and the signal does not
+  reach the serving process in time to be useful. A gating check in the browser therefore
+  passes when it should fail. `sudo service odoo-server restart` after the write is the
+  only reliable step — the same shape of trap as WF18.
+- WF27 (P3): **a `.pot` exported by `odoo-bin i18n export` carries
+  `"Project-Id-Version: Odoo Server 19.0"` in its header and `#. odoo-javascript`
+  on nearly every entry.** The header line is a STRING and trips the white-label test;
+  the `#.` lines are the extractor's own bookkeeping and no user ever sees one. So T9
+  now skips comment lines in a catalogue, and every fresh export must have its
+  `Project-Id-Version` rewritten to `Payobook 19.0` before it is committed.
+- WF28 (P3): `--i18n-export` **is gone from the Odoo 19 server options**. Translation
+  export is its own subcommand: `odoo-bin i18n export -c … -d … -l pot -o <file>
+  <module>`. It runs happily against a database the live service is also serving.
+- WF29 (P3): `odoo-bin shell` DOES work while `odoo-server` is running (P1's warning
+  about needing the service stopped does not apply on this box) — but see WF26 for what
+  the running worker will and will not notice afterwards.
