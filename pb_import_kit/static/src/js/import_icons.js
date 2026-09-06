@@ -210,6 +210,12 @@ export const IC = {
     route:        '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
     gitBranch:    '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
     sliders:      '<line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/>',
+    // WFPLAN P3 — the phone. `chevronUp` is the only new one: it is the grab
+    // handle on the bar that lifts the levers into view, and it has to point
+    // the way the sheet travels. `chevron` and `chevronDown` already existed;
+    // this completes the set rather than rotating one in CSS, because an icon
+    // that means "up" should say so in the markup a screen reader reads.
+    chevronUp:    '<path d="m18 15-6-6-6 6"/>',
 };
 
 /**
