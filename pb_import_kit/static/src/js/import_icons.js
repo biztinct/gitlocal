@@ -188,6 +188,14 @@ export const IC = {
     // (`banknote`), the treasury (`landmark`) and the percentage (`percent`)
     // were already here. One shared registry, never a module-local map (W2).
     gauge:        '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    // WFPLAN P1 — the Decision Room. `target` is a goal (the compass, the
+    // palette row); `pause` is the twin of `play` on the year scrubber, which
+    // has been missing since `play` arrived; `arrowUpRight` is "this opens
+    // something", replacing the concept's ↗ glyph. One shared registry, never a
+    // module-local map (W2), Lucide paths only — no emoji, no unicode arrows.
+    target:       '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    pause:        '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
+    arrowUpRight: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
 };
 
 /**
