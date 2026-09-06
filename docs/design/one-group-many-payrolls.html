@@ -1,0 +1,422 @@
+<title>One Group, Many Payrolls</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ground:#F7F7FB; --card:#FFFFFF; --ink:#1E1B2E; --sub:#5C5A72; --faint:#83809A;
+    --line:#E4E2EF; --line2:#EFEEF6;
+    --brand:#5A4BB0; --deep:#241F52; --soft:#EDEAF8;
+    --good:#2E7D4F; --goodbg:#E9F4ED; --warn:#B4700A; --warnbg:#FBF1E1; --stop:#C21F5B; --stopbg:#FCEBF1;
+    --teal:#0F766E;
+    --shadow:0 1px 2px rgba(36,31,82,.05), 0 8px 24px rgba(36,31,82,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB;
+      --line:#302C4A; --line2:#282443;
+      --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450;
+      --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F; --stop:#F58BB0; --stopbg:#37172A;
+      --teal:#5FC7BC;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB;
+    --line:#302C4A; --line2:#282443;
+    --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450;
+    --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F; --stop:#F58BB0; --stopbg:#37172A;
+    --teal:#5FC7BC;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px 90px}
+
+  /* ---------- masthead ---------- */
+  header.top{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin:0 0 14px}
+  h1{font-size:clamp(30px,5.2vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0 0 14px;text-wrap:balance}
+  .standfirst{font-size:17px;color:var(--sub);margin:0;max-width:64ch}
+  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .stamp span{font-size:12px;font-weight:600;color:var(--sub);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+
+  /* ---------- contents ---------- */
+  nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb, var(--ground) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -22px 40px;padding:10px 22px}
+  nav.toc ol{display:flex;gap:4px;list-style:none;margin:0;padding:0;overflow-x:auto;scrollbar-width:thin}
+  nav.toc a{display:block;white-space:nowrap;font-size:12.5px;font-weight:700;color:var(--sub);text-decoration:none;padding:7px 11px;border-radius:8px}
+  nav.toc a:hover{background:var(--soft);color:var(--brand)}
+
+  /* ---------- answer cards ---------- */
+  .answers{display:grid;gap:12px;margin:0 0 46px}
+  .ans{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .ans.no{border-left-color:var(--stop)} .ans.part{border-left-color:var(--warn)} .ans.yes{border-left-color:var(--good)}
+  .ans b{display:block;font-size:15px;font-weight:800;letter-spacing:-.01em;margin-bottom:3px}
+  .ans p{margin:0;font-size:14.5px;color:var(--sub)}
+
+  /* ---------- sections ---------- */
+  section{margin:0 0 54px;scroll-margin-top:64px}
+  .snum{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--faint)}
+  h2{font-size:clamp(22px,3.2vw,29px);font-weight:800;letter-spacing:-.025em;line-height:1.18;margin:6px 0 8px;text-wrap:balance}
+  h3{font-size:17px;font-weight:800;letter-spacing:-.015em;margin:30px 0 8px}
+  p{margin:0 0 14px;max-width:68ch}
+  ul,ol.body{margin:0 0 16px;padding-left:20px;max-width:68ch}
+  li{margin:0 0 7px}
+  strong{font-weight:800}
+  .lead{font-size:16.5px;color:var(--sub)}
+
+  .verdict{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:5px 12px;margin-bottom:14px}
+  .v-yes{background:var(--goodbg);color:var(--good)} .v-part{background:var(--warnbg);color:var(--warn)} .v-no{background:var(--stopbg);color:var(--stop)}
+
+  /* ---------- tables ---------- */
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 18px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+  th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:13px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:13px 16px;border-bottom:1px solid var(--line2);color:var(--sub);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td:first-child{color:var(--ink);font-weight:700}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink);font-weight:700}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .p-yes{background:var(--goodbg);color:var(--good)} .p-part{background:var(--warnbg);color:var(--warn)} .p-no{background:var(--stopbg);color:var(--stop)}
+
+  /* ---------- call-outs ---------- */
+  .note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 20px;box-shadow:var(--shadow)}
+  .note.risk{background:var(--stopbg);border-color:color-mix(in srgb, var(--stop) 30%, transparent)}
+  .note.win{background:var(--goodbg);border-color:color-mix(in srgb, var(--good) 30%, transparent)}
+  .note h4{margin:0 0 7px;font-size:14.5px;font-weight:800;letter-spacing:-.01em}
+  .note p{margin:0;font-size:14.5px;max-width:none}
+  .note p + p{margin-top:10px}
+
+  /* ---------- today vs proposed ---------- */
+  .twocol{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 20px}
+  @media(min-width:720px){.twocol{grid-template-columns:1fr 1fr}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .col h4{margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .col ul{margin:0;padding-left:18px;max-width:none;font-size:14.5px;color:var(--sub)}
+
+  /* ---------- steps ---------- */
+  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+  ol.steps li{counter-increment:s;position:relative;padding:0 0 20px 44px;margin:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--brand);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  ol.steps li::after{content:"";position:absolute;left:13.5px;top:32px;bottom:0;width:1px;background:var(--line)}
+  ol.steps li:last-child::after{display:none}
+  ol.steps b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.015em;margin-bottom:3px}
+  ol.steps p{margin:0;font-size:14.5px;color:var(--sub)}
+  .effort{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--teal);margin-left:8px}
+
+  /* ---------- engineer fold ---------- */
+  details.eng{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0;box-shadow:var(--shadow);overflow:hidden}
+  details.eng summary{cursor:pointer;padding:16px 20px;font-size:14px;font-weight:800;list-style:none}
+  details.eng summary::-webkit-details-marker{display:none}
+  details.eng summary::before{content:"▸ ";color:var(--brand)}
+  details.eng[open] summary::before{content:"▾ "}
+  details.eng .body{padding:0 20px 18px;border-top:1px solid var(--line2)}
+  details.eng .body p, details.eng .body li{font-size:13.5px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--soft);color:var(--brand);padding:1px 6px;border-radius:5px;font-weight:600}
+  a{color:var(--brand)}
+  footer{margin-top:14px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Payobook · architecture answer</p>
+  <h1>One group, many payrolls</h1>
+  <p class="standfirst">You asked six questions: what the old planning screens still own, how a person is tied to a payroll scheme, how analytics picks one scheme or adds them all up, what happens to currency across countries, where departments fit, and how planning works for one plant. Here are the honest answers, checked against your live system.</p>
+  <div class="stamp">
+    <span>Checked 7 September 2026</span>
+    <span>Payobook Vietnam JSC · 4,533 people</span>
+    <span>15 payroll schemes</span>
+    <span>AB Mauri · 153 people · 1 scheme</span>
+  </div>
+</header>
+
+<nav class="toc"><ol>
+  <li><a href="#s1">1 · Old screens</a></li>
+  <li><a href="#s2">2 · Person → scheme</a></li>
+  <li><a href="#s3">3 · Analytics by scheme</a></li>
+  <li><a href="#s4">4 · Currency</a></li>
+  <li><a href="#s5">5 · Departments</a></li>
+  <li><a href="#s6">6 · Planning by plant</a></li>
+  <li><a href="#s7">7 · What I recommend</a></li>
+</ol></nav>
+
+<div class="answers">
+  <div class="ans no">
+    <b>Do not switch off the old planning screens yet.</b>
+    <p>The new room replaces the picture, not the paperwork. Pay grades, the merit matrix, the approval chain that applies pay rises to contracts, and the table the Budget screen stores its numbers in all still live in the old module. I was wrong to imply a single Budget change was enough.</p>
+  </div>
+  <div class="ans part">
+    <b>Choosing one payroll scheme in analytics is only half there.</b>
+    <p>You can slice by company, department and division. You cannot yet pick "Manufacturing payroll" as a scheme and compare it against "Retail payroll", because reports never record which scheme a number came from.</p>
+  </div>
+  <div class="ans no">
+    <b>A consolidated view across countries would add dong to Singapore dollars.</b>
+    <p>Nothing in analytics converts currency today. This is the most important thing on this page. The fix already exists inside the Budget screen and needs to be lifted out.</p>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <p class="snum">QUESTION 1</p>
+  <h2>What have you actually retired?</h2>
+  <span class="verdict v-part">Nothing yet · and not everything can go</span>
+
+  <p class="lead">Right now nothing is retired. All seven old screens are still there, one press away, inside the fold called "Classic planning tools" at the bottom of the new room. That was deliberate. Having now read the old module properly, I am glad of it.</p>
+
+  <p>The old module is bigger than it looks: nineteen record types and about four and a half thousand lines of logic behind those seven doors. Some of it the Decision Room genuinely replaces. Some of it is not planning at all, it is paperwork and record-keeping, and a what-if simulator can never replace paperwork.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Old screen</th><th>What it really does</th><th>Covered by the new room?</th></tr></thead>
+    <tbody>
+      <tr><td>Planning Dashboard</td><td>Read-only charts: cost by department, month by month, budget against actual pay runs, overtime and absence analysis, recruitment pipeline</td><td><span class="pill p-part">Mostly</span> The cost and month views yes. Budget-against-actual and the overtime and recruitment tabs, no.</td></tr>
+      <tr><td>Planning Scenarios</td><td>A saved pay-rise plan for one payroll scheme, with rules like "everyone in Assembly gets 6%", calculated through your real payroll formulas, then approved and version-stamped</td><td><span class="pill p-part">Partly</span> The new room plans faster and reads better, but it is company-wide and uses standard rates, not your own payroll formulas per person.</td></tr>
+      <tr><td>Employee Forecasts</td><td>The line-by-line result: every employee, pay now against pay after, with a spreadsheet export</td><td><span class="pill p-no">No</span> The new room stops at team level, on purpose. There is no per-person list and no export of one.</td></tr>
+      <tr><td>Pay Grades</td><td>Salary bands, and the "where in the band is this person" figure that is stamped on every contract</td><td><span class="pill p-no">No</span> This is master data other screens read, including the contract screens.</td></tr>
+      <tr><td>Merit Matrix</td><td>The table that turns a person's position in their band into a rise percentage</td><td><span class="pill p-no">No</span> Nothing else in the product does this.</td></tr>
+      <tr><td>Compensation Cycles</td><td>The actual pay review: managers propose, limits block bad proposals, approvers sign in order, and at the end the new salaries are written onto the contracts</td><td><span class="pill p-no">No</span> This is the only place in the whole product that turns a planned rise into a real salary.</td></tr>
+      <tr><td>Tag Formula Components</td><td>Marks which of your payroll columns count as basic pay, allowance, deduction or employer cost</td><td><span class="pill p-no">No</span> And this tagging is what lets any planner read your own payroll formulas.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note risk">
+    <h4>The hard blocker: your Budget screen lives inside the old module</h4>
+    <p>The Budget screen you use does not have its own table. It stores every budget line, every uploaded budget and every actual it matches, inside a table that belongs to the old planning module. Uninstalling the module would delete that table and take your budget history with it.</p>
+    <p>So the order is: move the budget storage first, then decide about the rest. That is a real piece of work, not a switch.</p>
+  </div>
+
+  <h3>What I would do instead</h3>
+  <p>Keep the fold. Rename it so it stops looking like leftovers, and take the pieces worth keeping into the new world one at a time: the pay review workflow, pay grades and the merit table are worth keeping and worth redesigning. The old dashboard and the old scenario screens can go once the new room reads your payroll formulas. Section 7 has the order.</p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <p class="snum">QUESTION 2</p>
+  <h2>How is an employee tied to a payroll scheme?</h2>
+  <span class="verdict v-no">Today: only through their payslips</span>
+
+  <p class="lead">This is the root of almost everything else you asked, so it is worth being blunt. There is no field on an employee, a contract or a job that says which payroll scheme pays them. The connection only appears once a payslip exists, because the payslip records the scheme that produced it.</p>
+
+  <p>In other words, the system knows how someone <em>was</em> paid last month. It does not hold a standing statement of how they <em>are</em> to be paid. For a single-scheme company like AB Mauri that never shows. For your Vietnam company, which runs fifteen schemes, it matters a great deal.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h4>What exists today</h4>
+      <ul>
+        <li>The payslip carries the scheme. That is the only reliable record.</li>
+        <li>The Mapping screen lets you draw a picture of which department belongs to which scheme. It is stored, but no part of payroll reads it.</li>
+        <li>When a pay run is computed without being told the scheme, the system guesses: it copies the first payslip in the run, or falls back to the country, or to the first scheme it finds.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>What that means in practice</h4>
+      <ul>
+        <li>A mixed run containing manufacturing and retail people can quietly pay everyone under one scheme.</li>
+        <li>A new joiner has no scheme until their first payslip exists.</li>
+        <li>Any report that asks "how many people are on the manufacturing payroll" has to work it out backwards from payslips.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <h4>How your demo company works around it, and why it is a good pattern</h4>
+    <p>The Vietnam company has six divisions and two schemes each, an end-of-month payroll and a mid-month advance. Departments are organised the same way: a top-level department per division with its real departments underneath, so Manufacturing holds Assembly Line A and B, Quality Control, Maintenance and Warehouse. Payslips are then attached to the right scheme by division.</p>
+    <p>That is exactly the shape a real group needs. The only thing missing is making it official instead of a convention.</p>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Division</th><th>End-of-month scheme</th><th>People paid on it</th></tr></thead>
+    <tbody>
+      <tr><td>Manufacturing</td><td>Payobook Manufacturing — End-Month Payroll</td><td class="num">1,000</td></tr>
+      <tr><td>Retail</td><td>Payobook Retail — End-Month Payroll</td><td class="num">905</td></tr>
+      <tr><td>Construction</td><td>Payobook Construction — End-Month Payroll</td><td class="num">800</td></tr>
+      <tr><td>Logistics</td><td>Payobook Logistics — End-Month Payroll</td><td class="num">695</td></tr>
+      <tr><td>Information Technology</td><td>Payobook IT — End-Month Payroll</td><td class="num">597</td></tr>
+      <tr><td>Corporate Office</td><td>Payobook Corporate Office — End-Month Payroll</td><td class="num">500</td></tr>
+      <tr><td>Total</td><td>Six schemes, plus six matching mid-month advance schemes</td><td class="num">4,494</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note risk">
+    <h4>The counting trap you should know about</h4>
+    <p>Most of these people are on two schemes in the same month: the mid-month advance and the end-of-month payroll. On your live system that happens 12,621 times. So "count people by scheme" double-counts unless the report is told to look at one kind of run only.</p>
+    <p>Any scheme filter we build has to answer "people paid at all" and "people on this scheme" as two different questions.</p>
+  </div>
+
+  <h3>The fix</h3>
+  <p>Make the department-to-scheme map real: the map you can already draw becomes the answer to "which scheme pays this person", it shows on the employee record, the pay run uses it to pick who is in the run, and reports read it. One person can still be on two schemes where that is genuine, an advance and a main run, because the map holds a scheme per kind of run.</p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <p class="snum">QUESTION 3</p>
+  <h2>Picking one scheme, or seeing them all, in analytics</h2>
+  <span class="verdict v-part">Partly · division works, scheme does not</span>
+
+  <p class="lead">Your Analytics Explorer is built on a fast summary table that is rebuilt from finished pay runs. When it builds a row it does record which division and which kind of run the money came from, and which department and job the person was in. It does not record the scheme itself. So you can ask for Manufacturing, and you can ask for end-of-month runs, but you cannot ask for "the Manufacturing payroll scheme" and compare it with "the Retail payroll scheme" side by side.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Screen</th><th>Pick one scheme?</th><th>Add several together?</th><th>Across companies?</th></tr></thead>
+    <tbody>
+      <tr><td>Analytics Explorer</td><td><span class="pill p-part">By division only</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes, and this is the risk</span></td></tr>
+      <tr><td>Insights</td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Pay run results</td><td><span class="pill p-yes">Yes, per run</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">Shown separately</span></td></tr>
+      <tr><td>Government reports</td><td><span class="pill p-no">By country</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">One company at a time</span></td></tr>
+      <tr><td>Decision Room</td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">Whole company</span></td><td><span class="pill p-no">One company</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The division route works today because of the convention described above, and it will keep working. But a division and a scheme are not the same thing. Two divisions can share a scheme, one division can have a special scheme for a plant, and a scheme can change year to year while the division name stays. If the CEO's question is "what does the manufacturing payroll cost us", the answer should follow the scheme.</p>
+
+  <div class="note win">
+    <h4>The good news</h4>
+    <p>The scheme is already written on every payslip and on every payslip line. Adding it to the summary tables is a small change to how they are built, not new record-keeping. Once it is there, the scheme becomes a filter and a grouping in the Explorer like any other: one scheme, several ticked, or all of them.</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <p class="snum">QUESTION 4</p>
+  <h2>Different countries, different currencies</h2>
+  <span class="verdict v-no">Not handled · and it can mislead you today</span>
+
+  <p class="lead">You are right to ask. Manufacturing in Vietnam and retail in Singapore is exactly the case the product is not ready for, and the failure is a quiet one rather than an error message.</p>
+
+  <p>Every payroll number is stored as a plain amount with no currency attached to it. Each screen decides on its own what symbol to draw. The Explorer, which is the one screen that can add several companies together, keeps no currency at all: if you gave it a Vietnamese company and a Singaporean one, it would add dong to Singapore dollars and show you one large meaningless number. Insights would do the same and then label the total with whichever company you happen to be viewing.</p>
+
+  <div class="note risk">
+    <h4>Say this plainly</h4>
+    <p>Until this is fixed, do not use a group-wide total across two currencies. Compare countries side by side, each in its own money. The per-country and per-company numbers are sound; it is only the addition across them that is not.</p>
+  </div>
+
+  <h3>What a proper answer looks like</h3>
+  <p>The pattern already exists in your Budget screen, which does this correctly and can simply be lifted out and used everywhere:</p>
+  <ul>
+    <li><strong>A group currency.</strong> The parent company names the currency the board reads in, for example US dollars or dong.</li>
+    <li><strong>Every stored number keeps its own currency.</strong> A dong figure stays a dong figure for ever.</li>
+    <li><strong>Conversion happens when you look, not when it is stored</strong>, using the rate for that month, so last year's numbers do not move when today's rate does.</li>
+    <li><strong>No invented rates.</strong> If there is no rate on file for a month, the screen says so and shows the figures separately rather than guessing. Your Budget screen already refuses in exactly this way.</li>
+    <li><strong>The header always says which money you are looking at</strong>, and offers "show in each country's own money" as a single switch.</li>
+  </ul>
+  <p>This also decides a smaller question you will hit immediately: the Decision Room's Vietnamese assumptions, the 23.5% employer contribution and the contribution cap, are correct for Vietnam and wrong for Singapore. A Singapore company opening the room today gets no cap and no tax ladder. Per-country assumption sets solve that, and they belong in the same piece of work.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <p class="snum">QUESTION 5</p>
+  <h2>Departments inside a payroll scheme</h2>
+  <span class="verdict v-yes">Works · but the link runs the other way</span>
+
+  <p class="lead">There are no departments inside a payroll scheme. A scheme is a calculation: a list of columns, the values that feed them and the formulas that turn them into pay. It has no idea what a department is.</p>
+
+  <p>Departments live on the person. Each employee sits in a department, the department sits under a parent, and that is where the structure lives. So "the departments in the manufacturing payroll" is answered from the other direction: the departments of the people that scheme pays. On your live system that reads back cleanly, five departments and just over a thousand people.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Department inside the Manufacturing scheme</th><th>People</th></tr></thead>
+    <tbody>
+      <tr><td>Assembly Line B</td><td class="num">208</td></tr>
+      <tr><td>Maintenance</td><td class="num">202</td></tr>
+      <tr><td>Warehouse</td><td class="num">202</td></tr>
+      <tr><td>Assembly Line A</td><td class="num">195</td></tr>
+      <tr><td>Quality Control</td><td class="num">193</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>One detail worth knowing, because it is a quality point rather than a gap: when the Explorer builds its summary it uses the department a person was in <em>at the end of that pay period</em>, not the department they are in today. That is the correct behaviour for history. It means last March's numbers stay where they were even if somebody transferred in June.</p>
+
+  <p>The one thing missing is the standing statement in the other direction, "this department is paid by this scheme", which is the same fix as question 2. Draw that once and every screen can offer both directions: departments within a scheme, and the scheme behind a department.</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <p class="snum">QUESTION 6</p>
+  <h2>Planning for one plant instead of the whole company</h2>
+  <span class="verdict v-part">Possible today by team · not yet by scheme</span>
+
+  <p class="lead">The Decision Room opens on one company and splits it into teams, and a team is a top-level department. On your Vietnam company that gives exactly nine teams, and they are your divisions: Manufacturing, Retail, Logistics, Corporate Office, IT, Construction and so on.</p>
+
+  <p>So planning for manufacturing alone is already possible in a practical sense: move the levers on the Manufacturing team and leave the others alone. What you cannot do today is these three things.</p>
+
+  <ul>
+    <li><strong>Plan a scheme, rather than a team.</strong> If a scheme covers two divisions, or a division runs on two schemes, the team view no longer matches the payroll.</li>
+    <li><strong>Use each scheme's own rules.</strong> The room applies one set of assumptions to the whole company. In reality a factory scheme and an office scheme can differ on overtime, shift pay and allowances, and those differences change the cost of hiring ten people.</li>
+    <li><strong>Plan a group.</strong> The room deliberately opens on one company. A Vietnam plant and a Singapore shop cannot be planned on one screen, and until currency is solved they should not be.</li>
+  </ul>
+
+  <div class="twocol">
+    <div class="col">
+      <h4>What I propose on screen</h4>
+      <ul>
+        <li>A scope picker at the top: whole company, one division, or one payroll scheme.</li>
+        <li>The picker changes the roster, the assumptions and every number underneath it.</li>
+        <li>Plans remember their scope, so "Manufacturing 2027" and "Retail 2027" sit side by side in the comparison table.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Then, once currency is solved</h4>
+      <ul>
+        <li>A group view that adds the plans together in the board's currency.</li>
+        <li>Each country keeps its own rules underneath; only the presentation is shared.</li>
+        <li>The stage shows both: group total, and a strip per company.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>There is a deeper prize here. The old planning module, for all its clumsiness, does one thing the new room does not: it costs a pay rise through <em>your own payroll formulas</em>, per person, per scheme, rather than through a general contribution rate. That is why it insists a scenario names a scheme. Bringing that engine under the new room is what would make plant-level planning genuinely accurate, and it is the reason I would not simply throw the old module away.</p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <p class="snum">QUESTION 7</p>
+  <h2>What I recommend, in order</h2>
+
+  <p class="lead">Five pieces of work. Each is useful on its own, and each one makes the next easier. The first two are what unlock everything you asked about.</p>
+
+  <ol class="steps">
+    <li>
+      <b>Give every person a payroll scheme <span class="effort">the foundation</span></b>
+      <p>Turn the department-to-scheme map you can already draw into the real answer. It shows on the employee record, the pay run uses it to choose who is in the run and stops guessing, and a scheme can hold both a main run and an advance run. This removes the risk of a mixed run paying people under the wrong scheme, which is worth doing on its own merits.</p>
+    </li>
+    <li>
+      <b>Make currency honest <span class="effort">the safety fix</span></b>
+      <p>A group currency on the parent company, every stored number keeping its own currency, conversion at the rate for that month, and a refusal to invent a rate. The mechanism exists in your Budget screen already. Until this lands, no screen should offer a total across two currencies.</p>
+    </li>
+    <li>
+      <b>Put the scheme into analytics <span class="effort">the answer to question 3</span></b>
+      <p>Record the scheme on every summary row, then offer it as a filter and a grouping in the Explorer: one scheme, several, or all. Add a scheme comparison view, so Manufacturing and Retail payroll sit side by side per month with cost per head and overtime share.</p>
+    </li>
+    <li>
+      <b>Give the Decision Room a scope picker <span class="effort">the answer to question 6</span></b>
+      <p>Whole company, one division, or one scheme, with that scheme's own rules and its own saved plans. Then a group view that adds several companies in the board's currency, once step 2 is in place.</p>
+    </li>
+    <li>
+      <b>Absorb what is worth keeping from the old screens, then retire the rest <span class="effort">the answer to question 1</span></b>
+      <p>In order: move the budget storage out of the old module so your budget history is safe; rebuild the pay review, the approval chain and the limits as a proper Payobook workflow; keep pay grades and the merit table as reference data; bring the per-person costing engine under the new room. Only then does uninstalling the old module become a one-line decision.</p>
+    </li>
+  </ol>
+
+  <div class="note">
+    <h4>If you only do one thing</h4>
+    <p>Do step 2. A wrong number that looks right is worse than a missing one, and today a group total across Vietnam and Singapore is a wrong number that looks right.</p>
+  </div>
+</section>
+
+<section>
+  <details class="eng">
+    <summary>For the engineers · the same answers with names and places</summary>
+    <div class="body">
+      <p><strong>Scheme identity.</strong> <code>hr.formula.config</code>: company-scoped, unique code per company, required <code>country_code</code>, <code>currency_id</code> computed from the country code only, <code>cycle_type</code> regular/mid/end/full-final. No department, plant or branch field. <code>pb_division</code> is added by <code>pb_demo</code>, not by the engine, which is why the fact builder probes for its existence.</p>
+      <p><strong>Employee to scheme.</strong> No <code>formula_config_id</code> on <code>hr.employee</code>, <code>hr.contract</code> or <code>hr.version</code>. <code>hr.formula.scheme.assignment</code> (config, department, optional domain) exists and is written only by the Formula Studio mapping canvas; nothing in the compute path reads it. The operative field is <code>hr.payslip.formula_config_id</code>, set explicitly by the import batch or resolved by <code>_find_formula_config()</code> down a five-rung ladder: sibling slip in the run, import batch, structure if unique, employee country, first active config. Rungs 1 and 5 are what make a mixed run dangerous. Proposal: make the assignment model authoritative, consult it in <code>_find_formula_config</code> above the country rung, expose it as a related field on the employee, and use it to build the run population in <code>pb.payrun.wizard._eligible_employees</code>.</p>
+      <p><strong>Analytics dimensions.</strong> <code>pb.fact.run</code> / <code>pb.fact.line</code> / <code>pb.fact.emp</code> store company, month, quarter, cycle, division, basis, department, job, category, code. The builder already joins <code>hr_formula_config</code> but keeps only <code>cycle_type</code> and <code>pb_division</code>; adding <code>config_id</code> plus <code>config_name</code> to all three fact models and to <code>_DIMENSIONS</code>/<code>_FILTERS</code> in <code>pb_explorer</code> is the whole of step 3. Note <code>hr.payslip.line</code> already carries a stored <code>formula_config_id</code> and <code>department_id</code> from <code>pb_hr_payroll_analytics</code>, so the pivots can group by scheme today.</p>
+      <p><strong>Currency.</strong> No <code>_convert()</code> or rate use in any analytics module. <code>pb.budget.fx</code> is the reference implementation: root-company presentation currency, <code>rate_known()</code> refusing an implicit 1.0, <code>convert()</code> returning <code>(value, known)</code>, and an explanatory note when the rate is missing. <code>res.company.presentation_currency_id</code> is defined in <code>pb_demo</code> and should move to a platform module. Facts need a <code>currency_id</code> column; <code>pb_explorer</code> and <code>pb_insights</code> need a presentation-currency toggle and must refuse cross-currency sums when a rate is missing.</p>
+      <p><strong>Known defects found while answering.</strong> <code>hr_analytics_personnel_costs._get_payslips_for_period</code> and <code>hr_analytics_statutory_contrib</code> search <code>hr.payslip</code> with no <code>company_id</code> filter despite carrying the field. <code>pb_payruns.pb_payruns</code> lists runs with <code>search([])</code>, no company filter, and prices every row in the active company's currency. <code>hr.payslip.run</code> has no <code>company_id</code> on this build, so <code>pb_currency_id</code> always falls back to the active company. <code>payroll.analytics</code> has no <code>company_id</code> at all and selects payslips by matching structure names as strings.</p>
+      <p><strong>Legacy module.</strong> 19 models, ~4,400 lines. Two external writes: <code>compensation_cycle.py</code> writing <code>hr.contract.wage</code>, and the tagging wizard writing <code>wfp_category</code> onto <code>hr.formula.rule</code>. Contract-level <code>grade_id</code>, <code>compa_ratio</code> and <code>range_penetration</code> are stored columns other screens read. <code>pb_budget</code> inherits <code>wfp.budget.actual</code> and writes it from seven sites, so uninstall requires re-homing that model first. <code>wfp.employer.cost.calculator</code> is the piece worth porting: it costs a person through their own config's rules with a fixed-point evaluation pass and buckets the result by <code>wfp_category</code>.</p>
+      <p><strong>Decision Room today.</strong> Single company chosen from <code>env.companies</code> as an allow-list; teams are root departments; department resolved as <code>COALESCE(contract.department_id, version.department_id)</code>; currency is the company's functional currency; VN assumptions gated on the currency code being VND. Scope picker means adding a scheme/division dimension to <code>_build_baseline</code> and a scope field to <code>pb.decision.plan</code> and <code>pb.decision.assumptions</code>.</p>
+    </div>
+  </details>
+</section>
+
+<footer>
+  Payobook · prepared 7 September 2026 · checked against the live Payobook and AB Mauri databases. Nothing described here was changed while checking.
+</footer>
+
+</div>
