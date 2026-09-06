@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OFF-MENU on purpose (see the plan views). Phase 1 shows these numbers
+         READ-ONLY inside the room; this is where the person allowed to change
+         them does it until the room grows an editor of its own. -->
+
+    <record id="view_pb_decision_assumptions_form" model="ir.ui.view">
+        <field name="name">pb.decision.assumptions.form</field>
+        <field name="model">pb.decision.assumptions</field>
+        <field name="arch" type="xml">
+            <form string="Decision Room assumptions">
+                <sheet>
+                    <group>
+                        <field name="company_id"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group string="What we plan to sell">
+                        <field name="revenue_target"/>
+                        <field name="demand_growth_pct"/>
+                        <field name="revenue_team_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="What an employee costs">
+                        <field name="employer_rate_pct"/>
+                        <field name="employee_rate_pct"/>
+                        <field name="contribution_cap"/>
+                        <field name="allowance_pct"/>
+                        <field name="ot_multiplier"/>
+                        <field name="night_uplift_pct"/>
+                        <field name="work_days"/>
+                    </group>
+                    <group string="Joining and leaving">
+                        <field name="recruit_cost_months"/>
+                        <field name="severance_months"/>
+                        <field name="ramp_first_month_pct"/>
+                        <field name="attrition_pct_year"/>
+                    </group>
+                    <group string="Bonus">
+                        <field name="bonus_month_index"/>
+                        <field name="bonus_months"/>
+                    </group>
+                    <group string="Everything that is not people">
+                        <field name="other_fixed_monthly"/>
+                        <field name="other_pct_revenue"/>
+                    </group>
+                    <group string="Income tax ladder">
+                        <field name="pit_ladder"/>
+                    </group>
+                    <group string="Note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_decision_assumptions_list" model="ir.ui.view">
+        <field name="name">pb.decision.assumptions.list</field>
+        <field name="model">pb.decision.assumptions</field>
+        <field name="arch" type="xml">
+            <list string="Decision Room assumptions">
+                <field name="company_id"/>
+                <field name="revenue_target"/>
+                <field name="employer_rate_pct"/>
+                <field name="work_days"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_decision_assumptions" model="ir.actions.act_window">
+        <field name="name">Decision Room assumptions</field>
+        <field name="res_model">pb.decision.assumptions</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

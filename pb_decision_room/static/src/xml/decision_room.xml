@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================== one lever
+       Called with `lev` set: {key,label,note,min,max,step,unit,value,was,
+       fill,tick,same}. The slider carries the keyboard (arrows), the number
+       box carries typing, and the tick behind them both is where the
+       comparison plan sits. -->
+  <t t-name="pb_decision_room.DrLever">
+    <div class="dr-lever">
+      <div class="dr-lever-head">
+        <label t-att-for="'dr-' + lev.key" t-esc="lev.label"/>
+        <span class="dr-lever-num">
+          <input type="number" t-att-id="'dr-' + lev.key + '-n'"
+                 t-att-min="lev.min" t-att-max="lev.max" t-att-step="lev.step"
+                 t-att-value="lev.value"
+                 t-att-aria-label="lev.label"
+                 t-on-change="(ev) => this.onLever(lev.key, ev)"/>
+          <span t-esc="lev.unit"/>
+        </span>
+      </div>
+      <div class="dr-track">
+        <span class="dr-tick" t-attf-style="left:{{lev.tick}}%"
+              t-att-title="lev.was"/>
+        <input type="range" t-att-id="'dr-' + lev.key"
+               t-att-min="lev.min" t-att-max="lev.max" t-att-step="lev.step"
+               t-att-value="lev.value" t-att-aria-label="lev.label"
+               t-attf-style="--dr-fill:{{lev.fill}}%"
+               t-on-input="(ev) => this.onLever(lev.key, ev)"/>
+      </div>
+      <div class="dr-lever-note">
+        <span t-esc="lev.note"/>
+        <span class="dr-was" t-if="!lev.same">Was <t t-esc="lev.was"/></span>
+      </div>
+    </div>
+  </t>
+
+  <!-- ================================================== the Decision Room -->
+  <t t-name="pb_decision_room.PbDecisionRoom">
+    <div class="pbim pbim-page dr" t-att-class="{ 'dr--embedded': inHub }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your roster…</span>
+      </div>
+      <div t-elif="!state.allowed" class="dr-none">
+        <span class="dr-none-ic" t-out="ic('lock', 22)"/>
+        <span class="dr-none-t" t-esc="emptyTitle"/>
+        <span class="dr-none-s" t-esc="emptyNote"/>
+      </div>
+      <div t-elif="state.error" class="dr-none">
+        <span class="dr-none-ic" t-out="ic('alert', 22)"/>
+        <span class="dr-none-t">The room could not read your roster.</span>
+        <span class="dr-none-s" t-esc="state.error"/>
+        <button class="pbim-btn primary" t-on-click="() => this.retry()">Try again</button>
+      </div>
+      <div t-else="" class="dr-wrap">
+
+        <!-- ============================================ the page heading -->
+        <div class="dr-head">
+          <div class="dr-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <span class="pbim-eyebrow">DECISION ROOM</span>
+            <h1 class="dr-h1">See the year before you commit to it.</h1>
+            <p class="dr-sub">Set your goals. Shape your team. Watch the business respond.</p>
+          </div>
+          <div class="dr-head-actions">
+            <button class="pbim-btn" t-att-disabled="!canUndo"
+                    title="Undo the last change (Ctrl+Z)"
+                    t-on-click="() => this.undo()">
+              <span t-out="ic('undo', 14)"/> Undo
+            </button>
+            <button class="pbim-btn" t-on-click="() => this.reset()"
+                    title="Put every lever back where the company is today">
+              <span t-out="ic('rotate', 14)"/> Reset
+            </button>
+            <button class="pbim-btn primary" t-on-click="() => this.openSave()">
+              <span t-out="ic('save', 14)"/> Save plan
+            </button>
+          </div>
+        </div>
+
+        <div class="dr-layout">
+
+          <!-- ======================================== the control room -->
+          <aside class="dr-controls">
+
+            <div class="dr-invite">
+              <span class="pbim-eyebrow">A LITTLE HELP, A BETTER PLAN</span>
+              <button class="dr-invite-btn" t-on-click="() => this.openGoals()">
+                <span class="dr-invite-ic" t-out="ic('target', 22)"/>
+                <span class="dr-invite-tx">
+                  <span class="dr-invite-l">Say what a good year looks like</span>
+                  <span class="dr-invite-s">Six goals. The room keeps score.</span>
+                </span>
+                <span t-out="ic('arrowUpRight', 15)"/>
+              </button>
+            </div>
+
+            <div class="pbim-card dr-panel">
+              <div class="dr-panel-top">
+                <span class="pbim-eyebrow">SHAPE YOUR PLAN</span>
+                <span class="dr-live"><i/>Live</span>
+              </div>
+              <h2 class="dr-panel-h">What if we…</h2>
+
+              <div class="dr-presets">
+                <button t-foreach="presets" t-as="p" t-key="p.id"
+                        class="dr-preset" t-att-title="p.note"
+                        t-on-click="() => this.applyPreset(p)">
+                  <t t-esc="p.label"/>
+                </button>
+              </div>
+
+              <!-- ==================================== the revenue target -->
+              <div class="dr-target" t-att-class="{ 'dr-target--empty': !hasTarget }">
+                <label for="dr-target">What do you plan to earn this year?</label>
+                <div class="dr-money">
+                  <span class="dr-money-sym" t-esc="fmt.symbol"/>
+                  <input id="dr-target" type="number" min="0" step="1000000"
+                         t-att-value="planState.target"
+                         aria-label="Revenue target for the year"
+                         t-on-change="(ev) => this.onTarget(ev)"
+                         t-on-blur="() => this.onTargetCommit()"/>
+                </div>
+                <p class="dr-hint" t-if="!hasTarget">
+                  Type this year's revenue target and profit appears.
+                </p>
+                <p class="dr-hint" t-else="">
+                  <t t-esc="fmt.exact(planState.target)"/> across the year.
+                </p>
+                <t t-set="lev" t-value="growthLever"/>
+                <t t-call="pb_decision_room.DrLever"/>
+              </div>
+
+              <!-- ========================================== the people -->
+              <div class="dr-block" t-if="hasRoster">
+                <label class="dr-label" for="dr-team">Which team?</label>
+                <select id="dr-team" class="dr-select" t-on-change="(ev) => this.setTeam(ev)">
+                  <option t-foreach="teams" t-as="t" t-key="t.key"
+                          t-att-value="t.key" t-att-selected="t.key === state.teamKey">
+                    <t t-esc="t.name"/> · <t t-esc="fmt.int(t.heads)"/> today
+                  </option>
+                </select>
+
+                <label class="dr-label" for="dr-role">Which roles?</label>
+                <select id="dr-role" class="dr-select" t-on-change="(ev) => this.setRole(ev)">
+                  <option value="" t-att-selected="!state.roleKey">Typical mix of the team</option>
+                  <option t-foreach="roles" t-as="r" t-key="r.key"
+                          t-att-value="r.key" t-att-selected="r.key === state.roleKey">
+                    <t t-esc="r.name"/> · <t t-esc="fmt.int(r.heads)"/> today
+                  </option>
+                </select>
+
+                <div class="dr-lever">
+                  <div class="dr-lever-head">
+                    <label for="dr-people">Add or remove people</label>
+                    <span class="dr-lever-num">
+                      <input id="dr-people-n" type="number"
+                             t-att-min="peopleRange.min" t-att-max="peopleRange.max"
+                             step="1" t-att-value="peopleValue"
+                             aria-label="People added or removed"
+                             t-on-change="(ev) => this.onPeople(ev)"/>
+                      <span>people</span>
+                    </span>
+                  </div>
+                  <div class="dr-track">
+                    <input id="dr-people" type="range"
+                           t-att-min="peopleRange.min" t-att-max="peopleRange.max"
+                           step="1" t-att-value="peopleValue"
+                           aria-label="People added or removed"
+                           t-on-input="(ev) => this.onPeople(ev)"/>
+                  </div>
+                  <div class="dr-lever-note">
+                    <span><t t-esc="fmt.int(peopleRange.heads)"/> in this selection today</span>
+                  </div>
+                </div>
+
+                <div class="dr-inline">
+                  <label for="dr-arrive">New people arrive in</label>
+                  <select id="dr-arrive" class="dr-select dr-select--sm"
+                          t-on-change="(ev) => this.setMoveMonth(ev)">
+                    <option t-foreach="monthOptions" t-as="m" t-key="m.value"
+                            t-att-value="m.value" t-att-selected="m.value === state.moveMonth">
+                      <t t-esc="m.label"/>
+                    </option>
+                  </select>
+                </div>
+                <p class="dr-tiny">Paid in full from their first day, about half as
+                  productive while they learn.</p>
+              </div>
+              <div class="dr-block" t-else="">
+                <p class="dr-tiny">This company has nobody on record yet.</p>
+                <button class="pbim-btn" t-on-click="() => this.openSketch()">
+                  <span t-out="ic('plus', 14)"/> Sketch a team
+                </button>
+              </div>
+
+              <!-- ========================================== hours and pay -->
+              <t t-set="lev" t-value="otLever"/>
+              <t t-call="pb_decision_room.DrLever"/>
+
+              <t t-set="lev" t-value="raiseLever"/>
+              <t t-call="pb_decision_room.DrLever"/>
+              <div class="dr-inline">
+                <label for="dr-raise-from">The increase starts in</label>
+                <select id="dr-raise-from" class="dr-select dr-select--sm"
+                        t-on-change="(ev) => this.onMonthSelect('raiseMonth', ev)">
+                  <option t-foreach="monthOptions" t-as="m" t-key="m.value"
+                          t-att-value="m.value" t-att-selected="m.value === planState.raiseMonth">
+                    <t t-esc="m.label"/>
+                  </option>
+                </select>
+              </div>
+
+              <!-- ================================================= folds -->
+              <details class="dr-fold">
+                <summary>Pay, development &amp; available time</summary>
+                <t t-set="lev" t-value="productivityLever"/>
+                <t t-call="pb_decision_room.DrLever"/>
+                <t t-set="lev" t-value="absenceLever"/>
+                <t t-call="pb_decision_room.DrLever"/>
+                <div class="dr-lever">
+                  <div class="dr-lever-head">
+                    <label for="dr-bonus">Yearly bonus</label>
+                    <span class="dr-lever-num">
+                      <input id="dr-bonus-n" type="number" min="0" max="3" step="0.5"
+                             t-att-value="bonusValue" aria-label="Yearly bonus in months of pay"
+                             t-on-change="(ev) => this.onBonus(ev)"/>
+                      <span>months</span>
+                    </span>
+                  </div>
+                  <div class="dr-track">
+                    <input id="dr-bonus" type="range" min="0" max="3" step="0.5"
+                           t-att-value="bonusValue" aria-label="Yearly bonus in months of pay"
+                           t-on-input="(ev) => this.onBonus(ev)"/>
+                  </div>
+                </div>
+                <label class="dr-switch">
+                  <input type="checkbox" t-att-checked="planState.attritionOn"
+                         t-on-change="(ev) => this.setAttrition(ev)"/>
+                  <span>Some people leave during the year</span>
+                </label>
+                <label class="dr-switch" t-if="planState.attritionOn">
+                  <input type="checkbox" t-att-checked="planState.backfill"
+                         t-on-change="(ev) => this.setBackfill(ev)"/>
+                  <span>Replace everyone who leaves</span>
+                </label>
+              </details>
+
+              <details class="dr-fold">
+                <summary>Contributions &amp; deductions</summary>
+                <div class="dr-lines">
+                  <div t-foreach="contributionLines" t-as="line" t-key="line_index"
+                       class="dr-line">
+                    <span t-esc="line.label"/><b t-esc="line.value"/>
+                  </div>
+                </div>
+                <p class="dr-tiny" t-esc="whoCanChange"/>
+              </details>
+            </div>
+
+            <div class="dr-note">
+              <span t-out="ic('info', 15)"/>
+              <p>
+                Explore freely. Nothing here changes payroll.<br/>
+                <button class="dr-link" t-on-click="() => this.openAssumptions()">
+                  See the assumptions
+                </button>
+              </p>
+            </div>
+          </aside>
+
+          <!-- ======================================== the story column -->
+          <div class="dr-story">
+
+            <!-- ===================================== the goal compass -->
+            <section class="pbim-card dr-compass">
+              <div class="dr-compass-h">
+                <div>
+                  <span class="pbim-eyebrow">YOUR DEFINITION OF A GOOD YEAR</span>
+                  <h2 t-esc="goalSummary"/>
+                </div>
+                <button class="pbim-btn" t-on-click="() => this.openGoals()">
+                  Set goals <span t-out="ic('arrowUpRight', 13)"/>
+                </button>
+              </div>
+              <div class="dr-pills" t-if="goalPills.length">
+                <button t-foreach="goalPills" t-as="g" t-key="g.key"
+                        class="dr-pill" t-att-class="{ 'dr-pill--missed': !g.met }"
+                        t-on-click="() => this.openGoals()">
+                  <span class="dr-pill-n">
+                    <t t-esc="g.short"/>
+                    <i t-out="ic(g.met ? 'check' : 'alert', 12)"/>
+                  </span>
+                  <strong t-esc="g.actual"/>
+                  <small t-esc="g.note"/>
+                  <span class="dr-pill-track">
+                    <i t-attf-style="width:{{g.progress}}%"/>
+                  </span>
+                </button>
+              </div>
+              <p class="dr-tiny" t-else="">
+                No goals are switched on. Set one and every number on this page
+                starts keeping score.
+              </p>
+            </section>
+
+            <!-- ======================================= the outcome stage -->
+            <section class="dr-stage">
+              <div class="dr-stage-top">
+                <div class="dr-scene">
+                  <span class="dr-dot"/>
+                  <span t-esc="state.sceneName"/>
+                </div>
+                <div class="dr-stage-tools">
+                  <button t-att-aria-pressed="state.motion"
+                          t-att-class="{ 'is-on': state.motion }"
+                          t-on-click="() => this.toggleMotion()">
+                    <t t-if="state.motion">Motion on</t>
+                    <t t-else="">Motion off</t>
+                  </button>
+                  <button t-att-aria-pressed="state.diff"
+                          t-att-class="{ 'is-on': state.diff }"
+                          t-on-click="() => this.toggleDiff()">
+                    <t t-if="state.diff">Show the full picture</t>
+                    <t t-else="">Show only the difference</t>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dr-stage-head">
+                <div class="dr-stage-id">
+                  <span class="dr-overline" t-esc="metricDef.title"/>
+                  <div class="dr-hero">
+                    <strong t-ref="hero" t-esc="heroText(heroValue)"/>
+                    <span class="dr-delta"
+                          t-att-class="{ 'dr-delta--bad': !heroDelta.good and !heroDelta.zero }"
+                          t-esc="heroDelta.text"/>
+                  </div>
+                  <p class="dr-before" t-esc="heroSentence"/>
+                </div>
+                <div class="dr-tabs" role="group" aria-label="What the chart shows">
+                  <button t-foreach="metricTabs" t-as="m" t-key="m.key"
+                          t-att-class="{ 'is-on': m.active }"
+                          t-att-aria-pressed="m.active"
+                          t-on-click="() => this.setMetric(m.key)">
+                    <t t-esc="m.tab"/>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dr-horizon">
+                <canvas t-ref="horizon" role="img"
+                        aria-label="Your year, month by month, against the comparison"/>
+                <div class="dr-callout">
+                  <b><t t-esc="monthCallout.title"/> · <t t-esc="monthCallout.value"/></b>
+                  <span t-foreach="monthCallout.lines" t-as="l" t-key="l_index"
+                        t-esc="l"/>
+                </div>
+              </div>
+
+              <div class="dr-chartfoot">
+                <span class="dr-context" t-esc="chartContext"/>
+                <span class="dr-goalnote" t-esc="goalPaceNote"/>
+              </div>
+              <div class="dr-key">
+                <span><i class="dr-k-plan"/>Your plan</span>
+                <span><i class="dr-k-base"/><t t-esc="comparison.name"/></span>
+                <span t-if="!state.diff"><i class="dr-k-band"/>If demand lands 10% either side</span>
+              </div>
+
+              <div class="dr-timeline">
+                <button class="dr-play" t-att-aria-pressed="playing"
+                        aria-label="Play through the year"
+                        t-on-click="() => this.togglePlay()">
+                  <span t-out="ic(playing ? 'pause' : 'play', 12)"/>
+                </button>
+                <input type="range" min="0" max="11" t-att-value="state.month"
+                       aria-label="Explore a month"
+                       t-on-input="(ev) => this.setMonth(ev)"/>
+                <span class="dr-stamp" t-esc="months[state.month]"/>
+              </div>
+
+              <div class="dr-tiles">
+                <div t-foreach="stageTiles" t-as="tile" t-key="tile_index"
+                     class="dr-tile">
+                  <span t-esc="tile.label"/>
+                  <div>
+                    <strong t-esc="tile.value"/>
+                    <small t-att-class="{ 'dr-worse': tile.bad }" t-esc="tile.delta"/>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- =========================================== the year lens -->
+            <section class="pbim-card dr-year">
+              <div class="dr-year-h">
+                <div>
+                  <span class="pbim-eyebrow">EVERY MONTH TELLS A STORY</span>
+                  <h2>Your year, at a glance.</h2>
+                </div>
+                <span class="dr-tiny">Click a month to explore it</span>
+              </div>
+              <div class="dr-months">
+                <button t-foreach="monthCards" t-as="m" t-key="m.index"
+                        class="dr-month"
+                        t-att-class="{ 'is-on': m.active, 'is-watch': m.watch }"
+                        t-att-title="m.title" t-att-aria-pressed="m.active"
+                        t-on-click="() => this.pickMonth(m.index)">
+                  <span t-esc="m.name"/>
+                  <strong t-esc="m.value"/>
+                  <i/>
+                </button>
+              </div>
+              <p class="dr-year-note" t-esc="yearNote"/>
+            </section>
+
+            <!-- ======================================= the story caption -->
+            <section class="dr-caption" aria-live="polite">
+              <span class="dr-caption-ic" t-out="ic('sparkles', 18)"/>
+              <div>
+                <strong t-esc="storyLine.title"/>
+                <p t-esc="storyLine.copy"/>
+                <p class="dr-warn" t-foreach="warningLines" t-as="w" t-key="w_index"
+                   t-att-class="'dr-warn--' + w.level">
+                  <span t-out="ic('alert', 13)"/><span t-esc="w.text"/>
+                </p>
+              </div>
+            </section>
+
+            <!-- ===================================== the impact journey -->
+            <section class="dr-impact">
+              <div class="dr-year-h">
+                <div>
+                  <span class="pbim-eyebrow">FOLLOW THE CONNECTION</span>
+                  <h2>One decision. A ripple through the business.</h2>
+                </div>
+              </div>
+              <div class="dr-journey">
+                <div class="dr-card" title="Detail views arrive in the next release">
+                  <div class="dr-card-top">
+                    <span class="dr-step">01</span><span>YOUR PEOPLE</span>
+                  </div>
+                  <div class="dr-dots" aria-hidden="true"
+                       t-attf-title="Each square is about {{dotScale}} people">
+                    <i t-foreach="peopleDots" t-as="d" t-key="d.id"
+                       t-att-class="'dr-dotm ' + d.cls"/>
+                  </div>
+                  <div class="dr-card-v">
+                    <strong t-esc="fmt.int(calc.plan.year.headcount)"/>
+                    <span>people in December</span>
+                  </div>
+                  <p t-esc="peopleCopy"/>
+                </div>
+
+                <div class="dr-link-l" aria-hidden="true"><span>capacity</span><i/></div>
+
+                <div class="dr-card" title="Detail views arrive in the next release">
+                  <div class="dr-card-top">
+                    <span class="dr-step">02</span><span>THE WORK YOU CAN DELIVER</span>
+                  </div>
+                  <div class="dr-ring">
+                    <canvas t-ref="ring" aria-hidden="true"/>
+                    <span t-esc="coverageRingValue"/>
+                  </div>
+                  <div class="dr-card-v">
+                    <strong t-esc="fmt.pp((calc.plan.year.coverage - calc.ref.year.coverage) * 100)"/>
+                    <span>change in what you can serve</span>
+                  </div>
+                  <p t-esc="coverageCopy"/>
+                </div>
+
+                <div class="dr-link-l" aria-hidden="true"><span>value</span><i/></div>
+
+                <div class="dr-card" title="Detail views arrive in the next release">
+                  <div class="dr-card-top">
+                    <span class="dr-step">03</span><span>THE FINANCIAL RESULT</span>
+                  </div>
+                  <div class="dr-bars" aria-hidden="true">
+                    <span t-foreach="profitBars" t-as="b" t-key="b.id"
+                          t-att-title="b.title">
+                      <i t-attf-style="height:{{b.refH}}%"/>
+                      <i t-attf-style="height:{{b.planH}}%"
+                         t-att-class="{ 'dr-bar--neg': b.neg }"/>
+                    </span>
+                  </div>
+                  <div class="dr-card-v">
+                    <strong t-esc="profitChangeText"/>
+                    <span t-if="hasTarget">operating profit for the year</span>
+                    <span t-else="">workforce cost for the year</span>
+                  </div>
+                  <p t-esc="moneyCopy"/>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===================================== the scenario dock -->
+            <section class="pbim-card dr-dock">
+              <div class="dr-year-h">
+                <div>
+                  <span class="pbim-eyebrow">KEEP A GOOD IDEA. TRY ANOTHER.</span>
+                  <h2>Compare possibilities, with confidence.</h2>
+                </div>
+              </div>
+              <div class="dr-dock-controls">
+                <label for="dr-compare">Compare against</label>
+                <select id="dr-compare" class="dr-select"
+                        t-on-change="(ev) => this.onComparison(ev)">
+                  <option t-foreach="comparisonOptions" t-as="o" t-key="o.value"
+                          t-att-value="o.value" t-att-selected="o.value === comparisonValue">
+                    <t t-esc="o.label"/>
+                  </option>
+                </select>
+                <button class="pbim-btn" t-on-click="() => this.useAsComparison()">
+                  Use this plan as the comparison
+                </button>
+              </div>
+              <div class="pbim-tablewrap">
+                <table class="pbim-table dr-table">
+                  <thead>
+                    <tr>
+                      <th>Plan</th>
+                      <th>People · Dec</th>
+                      <th>Workforce cost</th>
+                      <th>Demand served</th>
+                      <th>Operating profit</th>
+                      <th>vs comparison</th>
+                      <th/>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="dockRows" t-as="row" t-key="row.tag + '-' + row.id"
+                        t-att-class="{ 'dr-row--now': row.tag === 'current' }">
+                      <td>
+                        <t t-esc="row.name"/>
+                        <span class="dr-tag" t-if="row.tag === 'comparison'">· comparison</span>
+                        <span class="dr-tag" t-elif="row.tag === 'current'">· on screen</span>
+                        <span class="dr-tag" t-elif="row.who">· <t t-esc="row.who"/></span>
+                      </td>
+                      <td t-esc="row.heads"/>
+                      <td t-esc="row.cost"/>
+                      <td t-esc="row.served"/>
+                      <td><strong t-esc="row.profit"/></td>
+                      <td t-att-class="{ 'dr-neg': row.bad }" t-esc="row.delta"/>
+                      <td class="dr-row-actions">
+                        <t t-if="row.tag === 'saved'">
+                          <button class="pbim-btn-sm" t-on-click="() => this.openPlan(row)">Open</button>
+                          <button class="pbim-btn-sm" t-on-click="() => this.compareWith(row)">Compare</button>
+                          <button class="pbim-btn-sm" t-if="row.mine or state.canManage"
+                                  t-att-aria-label="'Remove ' + row.name"
+                                  t-on-click="() => this.removePlan(row)">
+                            <span t-out="ic('trash', 12)"/>
+                          </button>
+                        </t>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="dr-tiny dr-dock-foot">
+                Saved for everyone at <t t-esc="state.company.name"/> ·
+                up to <t t-esc="state.limits.max_plans"/> plans ·
+                nothing here changes payroll.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <!-- ================================================== the dialogs -->
+        <div t-if="state.saveOpen" class="dr-scrim" t-on-click="() => this.closeSave()">
+          <div class="dr-dialog" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close" t-on-click="() => this.closeSave()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">A POSSIBILITY WORTH KEEPING</span>
+            <h2>Give your plan a name.</h2>
+            <label for="dr-name">Plan name</label>
+            <input id="dr-name" type="text" maxlength="60"
+                   t-att-value="state.saveName"
+                   placeholder="e.g. Board draft"
+                   t-on-input="(ev) => this.onSaveName(ev)"/>
+            <p class="dr-tiny" t-if="state.saveConflict">
+              A plan called “<t t-esc="state.saveName"/>” already exists.
+            </p>
+            <p class="dr-tiny dr-error" t-elif="state.saveError" t-esc="state.saveError"/>
+            <p class="dr-tiny" t-else="">
+              Everyone at <t t-esc="state.company.name"/> will be able to open
+              it and compare against it.
+            </p>
+            <div class="dr-dialog-actions">
+              <t t-if="state.saveConflict">
+                <button class="pbim-btn" t-on-click="() => this.closeSave()">Rename it</button>
+                <button class="pbim-btn primary" t-att-disabled="state.busy"
+                        t-on-click="() => this.confirmSave(true)">Replace it</button>
+              </t>
+              <button t-else="" class="pbim-btn primary" t-att-disabled="state.busy"
+                      t-on-click="() => this.confirmSave(false)">Save this plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div t-if="state.goalsOpen" class="dr-scrim" t-on-click="() => this.closeGoals()">
+          <div class="dr-dialog dr-dialog--wide" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close" t-on-click="() => this.closeGoals()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">AMBITION, WITH BOUNDARIES</span>
+            <h2>What would make this a good year?</h2>
+            <p class="dr-tiny">Switch on what matters. Every number on the page
+              then keeps score against it.</p>
+            <div class="dr-goals">
+              <div t-foreach="goalCards" t-as="g" t-key="g.key"
+                   class="dr-goal" t-att-class="{ 'dr-goal--off': !g.on }">
+                <label class="dr-goal-h">
+                  <input type="checkbox" t-att-checked="g.on"
+                         t-on-change="(ev) => this.toggleGoal(g.key, ev)"/>
+                  <span t-esc="g.label"/>
+                </label>
+                <div class="dr-goal-entry">
+                  <span t-esc="g.bound"/>
+                  <input type="number" t-att-step="g.step" t-att-value="g.target"
+                         t-att-aria-label="g.label"
+                         t-on-change="(ev) => this.setGoalTarget(g.key, ev)"/>
+                  <span t-esc="g.unit"/>
+                </div>
+                <p class="dr-goal-s" t-att-class="{ 'dr-goal-s--missed': g.missed }"
+                   t-esc="g.status"/>
+              </div>
+            </div>
+            <p class="dr-tiny">Finding a path to these goals for you — three
+              calculated routes, side by side — arrives in the next release.
+              For now the room keeps score while you steer.</p>
+          </div>
+        </div>
+
+        <div t-if="state.assumptionsOpen" class="dr-scrim"
+             t-on-click="() => this.closeAssumptions()">
+          <div class="dr-dialog dr-dialog--wide" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close"
+                    t-on-click="() => this.closeAssumptions()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">THE THINKING BEHIND THE PICTURE</span>
+            <h2>What this room believes.</h2>
+            <div class="dr-assume">
+              <div t-foreach="assumptionLines" t-as="a" t-key="a_index"
+                   class="dr-assume-i">
+                <h3 t-esc="a.title"/>
+                <p t-esc="a.copy"/>
+              </div>
+            </div>
+            <p class="dr-tiny" t-esc="whoCanChange"/>
+          </div>
+        </div>
+
+        <div t-if="state.sketchOpen" class="dr-scrim" t-on-click="() => this.closeSketch()">
+          <div class="dr-dialog" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close" t-on-click="() => this.closeSketch()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">NOBODY ON RECORD YET</span>
+            <h2>Sketch a team.</h2>
+            <p class="dr-tiny">This stays on your screen. It is not saved to
+              anybody's record and it changes nothing.</p>
+            <label for="dr-sk-name">Team name</label>
+            <input id="dr-sk-name" type="text" maxlength="40"
+                   t-att-value="state.sketchName"
+                   t-on-input="(ev) => this.onSketch('sketchName', ev)"/>
+            <label for="dr-sk-n">How many people</label>
+            <input id="dr-sk-n" type="number" min="1" step="1"
+                   t-att-value="state.sketchPeople"
+                   t-on-input="(ev) => this.onSketch('sketchPeople', ev)"/>
+            <label for="dr-sk-pay">Monthly pay each</label>
+            <input id="dr-sk-pay" type="number" min="0" step="1000"
+                   t-att-value="state.sketchPay"
+                   t-on-input="(ev) => this.onSketch('sketchPay', ev)"/>
+            <div class="dr-dialog-actions">
+              <button class="pbim-btn primary" t-on-click="() => this.addSketchTeam()">
+                Add this team
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div t-if="state.toast" class="dr-toast" role="status" t-esc="state.toast"/>
+      </div>
+    </div>
+  </t>
+
+</templates>

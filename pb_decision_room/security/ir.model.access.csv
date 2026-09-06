@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_decision_plan_user,decision plan user,model_pb_decision_plan,pb_decision_room.group_decision_user,1,1,1,1
+access_pb_decision_plan_manager,decision plan manager,model_pb_decision_plan,pb_decision_room.group_decision_manager,1,1,1,1
+access_pb_decision_plan_system,decision plan system,model_pb_decision_plan,base.group_system,1,1,1,1
+access_pb_decision_assumptions_user,decision assumptions read,model_pb_decision_assumptions,pb_decision_room.group_decision_user,1,0,0,0
+access_pb_decision_assumptions_manager,decision assumptions manager,model_pb_decision_assumptions,pb_decision_room.group_decision_manager,1,1,1,0
+access_pb_decision_assumptions_system,decision assumptions system,model_pb_decision_assumptions,base.group_system,1,1,1,1
