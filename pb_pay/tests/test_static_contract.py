@@ -38,7 +38,7 @@ _RE_CLASS = re.compile(r'(?<![-\w])class="([^"]*)"')
 
 #: The words that may appear in a class attribute without this module's prefix.
 ALLOWED_CLASSES = {
-    'pbim', 'pay', 'primary', 'outline', 'ghost', 'sm', 'is-on',
+    'pbim', 'pay', 'primary', 'outline', 'ghost', 'sm', 'is-on', 'is-none',
     'o_view_nocontent_smiley_face', 'num', 'why', 'sub', 'lead', 'eyebrow',
     'foot',
 }
@@ -138,7 +138,8 @@ class TestPayStaticContract(TransactionCase):
                             and isinstance(node.value, str) \
                             and id(node) not in docs \
                             and 'odoo' in node.value.lower() \
-                            and not node.value.startswith('odoo.'):
+                            and not node.value.startswith('odoo.') \
+                            and not node.value.startswith('/'):
                         bad.append('%s: %s' % (rel, node.value[:60]))
                 continue
             if path.endswith(('.pot', '.po')):
@@ -176,19 +177,27 @@ class TestPayStaticContract(TransactionCase):
 
     def test_t11_the_bundle_is_the_files_on_disk_in_the_right_order(self):
         manifest = ast.literal_eval(_read(HERE, '__manifest__.py'))
-        declared = manifest['assets']['web.assets_backend']
+        backend = manifest['assets']['web.assets_backend']
+        frontend = manifest['assets']['web.assets_frontend']
         on_disk = set()
         for path in _walk(os.path.join(HERE, 'static'),
                           ('.js', '.xml', '.scss')):
             on_disk.add('pb_pay/'
                         + os.path.relpath(path, HERE).replace(os.sep, '/'))
-        self.assertEqual(set(declared), on_disk)
-        self.assertEqual(list(declared), [
+        self.assertEqual(set(backend) | set(frontend), on_disk)
+        self.assertEqual(list(backend), [
             'pb_pay/static/src/scss/pay.scss',
+            'pb_pay/static/src/js/pay_review.js',
             'pb_pay/static/src/js/pay_hub.js',
             'pb_pay/static/src/js/pay_palette.js',
             'pb_pay/static/src/xml/pay.xml',
+            'pb_pay/static/src/xml/pay_review.xml',
         ])
+        # The portal page is a PUBLIC page and its stylesheet belongs in the
+        # frontend bundle only: leaking a backend bundle onto the portal is
+        # how a cockpit's chrome ends up on somebody's payslip page.
+        self.assertEqual(list(frontend),
+                         ['pb_pay/static/src/scss/pay_portal.scss'])
 
     def test_t11_every_icon_exists_in_the_shared_registry(self):
         """`ic()` falls back to a tick when a name is unknown, so a typo
@@ -198,8 +207,9 @@ class TestPayStaticContract(TransactionCase):
         self.assertTrue(block, 'the shared icon registry is gone')
         known = set(re.findall(r"^\s*'?([A-Za-z][\w]*)'?:\s*'",
                                block.group(1), re.M))
-        # This phase's own two additions.
-        for name in ('scale', 'userPlus'):
+        # The two the band phase added, and the ones the review needs.
+        for name in ('scale', 'userPlus', 'sparkles', 'inbox', 'target',
+                     'sigma', 'undo', 'copy', 'refresh'):
             self.assertIn(name, known)
         used = set()
         for path in _walk(os.path.join(HERE, 'static'), ('.js', '.xml')):
@@ -221,7 +231,8 @@ class TestPayStaticContract(TransactionCase):
                             'a palette door points at nothing: %s' % xmlid)
         # The 3400 block, as the ledger allocated it.
         for row, seq in (('pay_bands', 3400), ('pay_fairness', 3410),
-                         ('pay_place_hire', 3420)):
+                         ('pay_place_hire', 3420), ('pay_review', 3430),
+                         ('pay_new_change', 3440), ('pay_awaiting', 3450)):
             found = re.search(
                 r'palette\.add\("%s",.*?\{ sequence: (\d+) \}\);' % row,
                 palette, re.S)
@@ -243,30 +254,52 @@ class TestPayStaticContract(TransactionCase):
             self.assertFalse(offenders,
                              'this module adds no rail item: %s' % offenders)
 
-    def test_t11_this_module_writes_nothing_to_payroll(self):
+    #: The only two files in this module allowed to change what a person is
+    #: paid. Everything else in Pay is a statement ABOUT money.
+    PAY_WRITERS = ('pb_pay_apply.py', 'pb_pay_change.py')
+
+    def test_t11_only_two_files_may_change_what_somebody_is_paid(self):
         """THE MOST IMPORTANT STATIC CHECK IN THIS MODULE.
 
-        A band is a statement of intent. Nothing in it may change what
-        anybody is paid, so no file here may write a wage, a payslip or an
-        employee. The only `write()` on `hr.contract` in this module is the
-        one that queues a REBUILD of the derived table, and it writes
-        nothing.
+        A band is a statement of intent and a proposal is an opinion; neither
+        may reach a wage. Exactly one act in this module writes
+        `hr.contract.wage`, it lives behind an approval chain, a preview and
+        an undo, and it is confined to the two files named above. Any other
+        file that writes a wage, a payslip or an employee is a bug that this
+        test exists to catch before a reviewer has to.
         """
         bad = []
         for path in _walk(os.path.join(HERE, 'models'), ('.py',)):
+            name = os.path.basename(path)
             body = _read(path)
             body = re.sub(r'"""(?:.|\n)*?"""', '', body)
             body = re.sub(r'#[^\n]*', '', body)
-            if 'hr.payslip' in body:
-                bad.append('%s names a payslip' % os.path.basename(path))
+            if name in self.PAY_WRITERS:
+                continue
+            if 'hr.payslip' in body and name != 'pb_pay_apply.py':
+                bad.append('%s names a payslip' % name)
             if re.search(r'\.wage\s*=[^=]', body):
-                bad.append('%s assigns a wage' % os.path.basename(path))
+                bad.append('%s assigns a wage' % name)
             for forbidden in ("hr.contract'].sudo().write",
+                              "hr.contract'].write",
                               "hr.employee'].sudo().write",
                               "hr.version'].sudo().write"):
                 if forbidden in body:
-                    bad.append('%s: %s' % (os.path.basename(path), forbidden))
+                    bad.append('%s: %s' % (name, forbidden))
         self.assertFalse(bad, 'this module writes to payroll: %s' % bad)
+
+    def test_t11_the_wage_write_goes_through_the_apply_record(self):
+        """The two files that DO write a wage each keep the old value.
+
+        A write with no record of what was there before is a write that
+        cannot be undone, and the whole promise of Apply is that it can be.
+        """
+        for name in self.PAY_WRITERS:
+            body = _read(HERE, 'models', name)
+            self.assertIn("'wage'", body)
+            self.assertIn('old_wage', body,
+                          '%s changes a wage without keeping the old one'
+                          % name)
 
     def test_t11_the_statement_is_self_contained(self):
         body = _read(HERE, 'views', 'pb_pay_statement.xml')

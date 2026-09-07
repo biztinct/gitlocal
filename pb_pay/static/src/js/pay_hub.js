@@ -41,6 +41,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { PbPayReview, PbPayChanges } from "@pb_pay/js/pay_review";
 
 const BANDS = "pb.pay.bands";
 const FAIRNESS = "pb.pay.fairness";
@@ -48,20 +49,28 @@ const FAIRNESS = "pb.pay.fairness";
 /** How long a drag waits before asking the server for the exact cost. */
 const DRAG_SETTLE = 160;
 
-/** The four surfaces of the Pay area. Two of them arrive in the next phase. */
+/** The four surfaces of the Pay area. All of them are live now. */
 function tabDefs() {
     return [
         { key: "bands", icon: "sliders", label: _t("Bands"), ready: true },
         { key: "fairness", icon: "scale", label: _t("Fairness"), ready: true },
         { key: "review", icon: "checkCircle", label: _t("Review"),
-          ready: false },
-        { key: "changes", icon: "pencil", label: _t("Changes"), ready: false },
+          ready: true },
+        { key: "changes", icon: "pencil", label: _t("Changes"), ready: true },
     ];
+}
+
+/** The word in the breadcrumb, per surface. */
+function tabName(key) {
+    if (key === "fairness") { return _t("Fairness"); }
+    if (key === "review") { return _t("Pay review"); }
+    if (key === "changes") { return _t("Pay changes"); }
+    return _t("Pay bands");
 }
 
 export class PbPayScreen extends Component {
     static template = "pb_pay.PbPayScreen";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbPayReview, PbPayChanges };
     static props = ["*"];
 
     setup() {
@@ -77,7 +86,9 @@ export class PbPayScreen extends Component {
             loaded: false,
             busy: false,
             failed: "",
-            tab: context.pb_tab === "fairness" ? "fairness" : "bands",
+            tab: ["fairness", "review", "changes"].includes(context.pb_tab)
+                ? context.pb_tab : "bands",
+            focus: context.pb_focus || "",
 
             // ---- bands
             board: null,
@@ -107,10 +118,17 @@ export class PbPayScreen extends Component {
             method: false,
         });
 
+        // The props handed to a sub-screen are memoised: a getter returning a
+        // fresh object makes OWL see the child's props as changed on every
+        // repaint, and this child holds a nine-hundred-row worksheet (W21).
+        this.reviewProps = { focus: context.pb_focus || "" };
+
         onWillStart(async () => {
-            this.env.config.setDisplayName(
-                this.state.tab === "fairness"
-                    ? _t("Fairness") : _t("Pay bands"));
+            this.env.config.setDisplayName(tabName(this.state.tab));
+            if (this.state.tab === "review" || this.state.tab === "changes") {
+                this.state.loaded = true;
+                return;
+            }
             await this.load();
             if (context.pb_focus === "place") { await this.openPlace(); }
         });
@@ -197,8 +215,14 @@ export class PbPayScreen extends Component {
         const tab = this.tabs.find((t) => t.key === key);
         if (!tab || !tab.ready) { return; }
         this.state.tab = key;
-        this.env.config.setDisplayName(
-            key === "fairness" ? _t("Fairness") : _t("Pay bands"));
+        this.env.config.setDisplayName(tabName(key));
+        if (key === "review" || key === "changes") { return; }
+        if (!this.state.board) {
+            this.state.busy = true;
+            await this.load();
+            this.state.busy = false;
+            return;
+        }
         if (key === "fairness" && !this.state.fair) {
             this.state.busy = true;
             await this.loadFairness();
