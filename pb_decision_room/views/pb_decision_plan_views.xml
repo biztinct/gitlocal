@@ -11,6 +11,8 @@
         <field name="arch" type="xml">
             <list string="Saved plans">
                 <field name="name"/>
+                <field name="scope_label"/>
+                <field name="status"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="user_id"/>
                 <field name="is_reference"/>
@@ -35,11 +37,37 @@
                     <group string="Note">
                         <field name="note" nolabel="1"/>
                     </group>
+                    <group string="This is a plan for">
+                        <field name="scope_kind"/>
+                        <field name="scope_label"/>
+                        <field name="company_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Where it stands">
+                        <field name="status"/>
+                        <field name="proposed_by"/>
+                        <field name="proposed_at"/>
+                        <field name="decided_by"/>
+                        <field name="decided_at"/>
+                        <field name="decision_note"/>
+                    </group>
                     <group string="What was saved">
                         <field name="state"/>
                         <field name="goals"/>
                         <field name="summary"/>
+                        <field name="exact_result"/>
                     </group>
+                    <notebook>
+                        <page string="Versions">
+                            <field name="version_ids" readonly="1">
+                                <list>
+                                    <field name="number"/>
+                                    <field name="label"/>
+                                    <field name="created_by"/>
+                                    <field name="created_at"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>
