@@ -2,6 +2,10 @@
 // Lucide icon paths + ic() for the Insights cockpit. 24x24, currentColor
 // stroke, no fills. NEVER emoji, never Font Awesome (design system, C11).
 import { markup } from "@odoo/owl";
+// ONE REGISTRY OF RECORD: the shared Lucide set lives in pb_import_kit, and
+// every name in it is reachable here. This map holds only what this cockpit
+// drew before the kit existed, plus its own wrapper.
+import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 
 export const IC = {
     activity:   '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
@@ -37,10 +41,12 @@ export const IC = {
     zap:        '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
 };
 
+const ALL = { ...KIT_IC, ...IC };
+
 export function ic(name, size = 16) {
     return markup(
         `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" ` +
         `stroke="currentColor" stroke-width="2" stroke-linecap="round" ` +
-        `stroke-linejoin="round">${IC[name] || IC.activity}</svg>`
+        `stroke-linejoin="round">${ALL[name] || IC.activity}</svg>`
     );
 }

@@ -66,14 +66,23 @@ export class PbInsights extends Component {
         });
     }
 
+    /** The server's own sentence, or ours — never the platform's (GR17). */
+    _msg(error, fallback) {
+        const data = (error && error.data)
+            || (error && error.message && error.message.data);
+        return (data && data.message) || fallback;
+    }
+
     async load() {
         this.state.busy = true;
         try {
             this.state.data = await this.orm.call(MODEL, "get_insights", [this.state.months]);
             this.state.error = "";
         } catch (e) {
-            this.state.error = (e && e.data && e.data.message) || (e && e.message)
-                || _t("Insights could not be loaded.");
+            // GR17: the top-level `.message` of an RPC error on this platform
+            // is the literal string "Odoo Server Error", so it is not a rung
+            // on this ladder — the server's own sentence, or ours.
+            this.state.error = this._msg(e, _t("Insights could not be loaded."));
         } finally {
             this.state.loaded = true;
             this.state.busy = false;
@@ -133,6 +142,16 @@ export class PbInsights extends Component {
         if (this.state.statHover === "employer") { return _t("employer share"); }
         return _t("contributions");
     }
+
+    /** GROUP P3 — the money these totals are in, and its parts. */
+    get moneyInfo() {
+        return Object.assign(
+            { name: "", symbol: "", many: false, parts: [], unconverted: [],
+              note: "" },
+            this.d.money || {});
+    }
+
+    get schemes() { return this.d.schemes || []; }
 
     get pulse() { return this.d.pulse || {}; }
     get snapshots() { return this.d.snapshots || []; }
@@ -363,7 +382,7 @@ export class PbInsights extends Component {
             additionalContext: { pbex_spec: spec },
         }).catch((e) => {
             this.notif.add(
-                (e && e.data && e.data.message) || _t("Could not open the Explorer."),
+                this._msg(e, _t("Could not open the Explorer.")),
                 { type: "danger" });
         });
     }
@@ -563,7 +582,7 @@ export class PbInsights extends Component {
             console.warn("pb_insights: get_people_ledger failed", e);
             this.state.people = null;
             this.notif.add(
-                (e && e.data && e.data.message) || _t("Could not load that list."),
+                this._msg(e, _t("Could not load that list.")),
                 { type: "danger" });
         } finally {
             this.state.peopleLoading = false;
