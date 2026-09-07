@@ -405,6 +405,87 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   `group.p3@payobook.com`, archived afterwards. Resetting the owner's own
   password is an owner decision and was not done.
 
+- GR25 (P4): **an `ir.cron` whose `model_id` names a model the running
+  worker has never heard of throws inside the PLATFORM, where no guard of
+  ours can reach it.** GR14 said to guard a cron's CODE on the registry; that
+  is not enough. Odoo builds a server action's eval context with
+  `self.env[model_name]` (`base/models/ir_actions.py:1125`) BEFORE a line of
+  the action's code runs, so a cron pointing at a table this upgrade created
+  is a `KeyError` on the first pass after install — one ERROR in the log with
+  nothing anybody can act on, exactly as GR14's was. The cron therefore names
+  a model every worker has had since an earlier phase (`pb.decision.plan`)
+  and the code does `env['pb.decision.exact.job']._cron_run() if
+  'pb.decision.exact.job' in env else None`. A cron is also the wrong place
+  for `noupdate="1"`: it is plumbing, and a fix to it has to reach a database
+  that already has yesterday's version.
+- GR26 (P4): **a value the TEMPLATE reads has to live in `useState`.** The
+  Decision Room deliberately keeps its heavy results (three computed years) on
+  the instance and off the reactive state, and every getter that reads them
+  starts `void this.state.rev;` to subscribe. Copying that shape for a small
+  metadata object — which rules this scope follows — and forgetting the `void`
+  produced a dialog that rendered `{}` for the whole session: the heading read
+  "Rules typed for " with an empty name and the override button never
+  appeared, while the RPC beside it returned the data in full. Nothing is
+  logged, and the JSON in the network tab is perfect, so it looks like a
+  server bug for as long as you are willing to believe one. Small metadata
+  goes in `useState`; only genuinely heavy, wholesale-replaced results earn a
+  place on the instance, and those must be read through a `state.rev` gate.
+- GR27 (P4): **the company RECORD RULE follows the switcher, not the scope.**
+  P4 resolves a scope from every company the reader is ENTITLED to
+  (`res.users.company_ids`), because a person planning a group should not have
+  to tick five boxes in a menu first. But the global rule on a plan reads
+  `company_ids` from the CONTEXT — `allowed_company_ids`, the switcher — so
+  saving a plan for Payobook Vietnam while standing in the head office was
+  refused with the platform's "top-secret records" dialog. The fix is
+  `_with_companies()`: widen `allowed_company_ids` to the intersection of the
+  scope and `user.company_ids`, which is not a privilege (that context may
+  only ever be a subset of the user's own companies) and is needed on every
+  read AND write of a plan or a set of assumptions. Same family as GR16 and
+  GR3: a screen with no company domain looks right until there are two.
+- GR28 (P4): **two transactions may not write the same row on this
+  platform.** The exact-cost job reports progress on a cursor of its own so a
+  chip on screen can move while the work is still running. The job's MAIN
+  transaction also wrote `state='running'` at the start and `state='done'` at
+  the end — and Odoo runs on REPEATABLE READ, so the final write failed with
+  `could not serialize access due to concurrent update` and left the row
+  saying "running" for ever. One writer per row: every field of the queue row
+  is written by the side cursor, and the main transaction writes only the
+  RESULT, which lives on the plan.
+- GR29 (P4): **a loop variable called `job` two hundred lines below a
+  parameter called `job`.** `for _emp, scheme, dep, job, wage, company in
+  rows:` rebound the queue record to an integer, and the next progress write
+  died on `'int' object has no attribute 'id'` — after the expensive part had
+  already run. Unpacking a wide SQL row is where this happens; name the
+  columns you do not use `_something`, and never a name the method already
+  holds.
+- GR30 (P4): **one classified component out of sixty is not a classified
+  scheme.** The exact-cost lane buckets a payslip by `net_role`, and it read
+  "somebody has classified this" as "any rule carries a role". On payobook
+  exactly one rule of the Retail scheme carries one (`INCENTV`, an input
+  worth zero), so the whole scheme priced at **₫0** against an estimate of
+  ₫230B, with `ok: true` and no note. The test that means what it says is
+  whether the scheme knows which component IS net pay: without a `net` role
+  nothing can be bucketed. Failing that, the scheme's own net-pay formula is
+  walked read-only through `_build_net_role_classification()` (which does not
+  write, unlike `classify_net_roles()`), the answer says it was derived, and
+  the figure came out at ₫182B — 20.6 % under the average-based estimate.
+
+- GR31 (P4): **a side-cursor write is invisible inside a test, and a no-op
+  against a row the test has not committed.** GR28's fix — the exact-cost
+  queue row written on its own cursor — means a `TransactionCase` that creates
+  a job and runs it reads back `state = 'queued'` for ever: its own
+  transaction cannot see the other one's commit, and the other one's `UPDATE`
+  matched nothing because the row only exists inside the test. Assert on what
+  the MAIN transaction wrote (here `plan.exact_result`) and treat the queue
+  row's state as a thing only a browser can see.
+- GR32 (P4): **`search([('company_id', '=', X)], limit=1)` stopped meaning
+  one row.** P4 gives a company several sets of assumptions — one for the
+  company, one for each division and scheme inside it — so a lookup by
+  company alone returns whichever the database felt like. The baseline's
+  "which teams earn revenue" was reading a division's row on a company view.
+  Every lookup of a settings row now carries its SCOPE, and a lookup by
+  company means `('scope_kind', '=', 'company')` out loud.
+
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
   Status: **COMPLETE**. `pb_group` 19.0.1.0.1 live on p9clone, payobook, abm and
@@ -526,7 +607,66 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   destination — a person should press ⌘K once to confirm; `pb_insights`'s new
   scheme chips stay empty on the demo data because P2 stamps the run's scheme
   only on runs created since, which is correct and will fill itself.
-- P4 — "Planning with scope". Not yet designed.
+- P4 — "Planning with scope" — designed and BUILT 2026-09-07
+  (`GROUP_P4_PLANNING_WITH_SCOPE.md`). Status: **COMPLETE**.
+  `pb_decision_room` 19.0.4.0.0 live on p9clone, payobook, abm and
+  payobook_template (it now DEPENDS on `pb_group` — `pb.fx` and
+  `pb.division`); `pb_group` 19.0.1.2.0 (its "nobody has priced this pair"
+  sentence is now Vietnamese — the Decision Room is the first screen that
+  prints it to a Vietnamese reader). `pb_import_kit` UNCHANGED: every icon
+  this phase needed — `globe`, `mapPin`, `building`, `layers`, `route`,
+  `chevron`, `chevronDown`, `landmark`, `history`, `checkCircle` — was
+  already in the shared set.
+  Shipped: the SCOPE chip at the top of the stage and its tree picker with a
+  head count on every node (group › country › company › division › payroll
+  scheme), remembered per person and carried in the link; `pb.decision.scope`
+  and a scope-aware baseline that reproduces the company view to the digit
+  (T1); `pb.decision.ruleset` with eight countries shipped as `noupdate` data
+  and a resolution order scheme → company → country → Vietnam, with a
+  contribution ceiling that is dropped and EXPLAINED when it is written in a
+  currency the company does not keep its books in; a group stage that
+  computes each company in its own money under its own rules and converts
+  only for reading, with the rate badge, the "Not converted" strip and an
+  "Each in its own money" switch; the actual line over the plan from
+  `pb.fact.emp`, naming the last month that reads like a full payroll and
+  saying so when it does not; propose / approve / send back with versions
+  that keep the levers, goals, numbers, scope and what could not be
+  converted; the exact-cost lane (`pb.decision.exact` + a queue table + a
+  cron) that runs a plan's people through their own scheme's formulas,
+  bucketing by `net_role`/`value_kind` (ruling G7) and reading the scheme's
+  own classification when nobody has confirmed one; ⌘K rows 3360 "Plan the
+  group" and 3370 "Plans awaiting approval"; and 210 new Vietnamese terms.
+  **The Home decision: a CHIP, not a second lens.** Approvals reach the
+  reader on the Decision Room lens they already have. A rail the IA
+  programme cut from thirty-eight items to eight does not get a ninth whose
+  content is empty on most days.
+  164 tests green on p9clone (`pb_decision_room` 71 methods incl. the new
+  `test_decision_scope.py`, plus `pb_group` 34, `pb_scheme_map` 31,
+  `pb_explorer` 50, `pb_hub` 34, `pb_people_hub` 37) — 0 failed, 0 errors,
+  zero regressions. 89 engine checks green under
+  `node tools/decision_engine_check.mjs` (19 new: T48 identity, T49–T52
+  group conversion, T53–T54 actuals, T55 the search functions over a group).
+  Timings on company 5 (4,533 people): `get_room` cold **157 ms**, warm
+  **110 ms**; the exact-cost lane priced 902 people in 229 pay bands in
+  **9 s** on payobook.
+  On payobook the Retail scheme's exact cost came to **₫182B against an
+  estimated ₫230B — 20.6 % under**, derived from the scheme's own net-pay
+  formula because only one of its sixty components has ever been classified.
+  B1–B10 walked on payobook, abm and p9clone at 1440 and 390, light and
+  dark, in English and Vietnamese. Screenshots:
+  `docs/handovers/group_p4_shots/`.
+  The p9clone rehearsal (a group of companies 5 + 6, twelve months of
+  SGD and VND rate rows at 18,000, three scratch Singapore contracts at
+  S$8,000) proved the converted group total — ₫1,382B = ₫1,376B + ₫6.88B —
+  and was DELETED afterwards and verified gone.
+  Owner debts: `pb_group`'s Vietnamese catalogue holds 29 of its 225 terms —
+  P4 translated only the one sentence it prints, and the rest belongs to P7;
+  four sets of assumptions now exist against company 5 (the company's own,
+  plus one each for the group, the Retail scheme and the Logistics division)
+  because a scope creates its settings row on first read — that is the model
+  working, not litter; every temporary validator is archived again (payobook
+  4408/4409, abm 246, p9clone 3968); the "Board draft" plan and the ₫2,200B
+  revenue target from WFPLAN P1 are still on payobook company 5.
 - P5 — "People in two places". Not yet designed.
 - P6 — "Pay: Review, Bands, Fairness, Changes; retire legacy" (ruling G9; may split into
   6a bands+fairness and 6b review+changes). Not yet designed.
