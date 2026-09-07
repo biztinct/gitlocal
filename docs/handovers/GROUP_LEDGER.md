@@ -263,9 +263,74 @@ and tree-hash verification, never `pkill -f odoo-bin`).
 - GR3: `scheme_mapping_data` searches departments and configs with no company domain —
   a group makes that canvas cross-company on day one; P2 scopes it.
 - GR4: `pb_explorer` fact consumers read rows positionally — append new columns LAST.
+- GR5 (P1): **a hand-written `.po` whose entries carry no `#. module: <name>`
+  comment takes the WHOLE DATABASE DOWN on install.** `odoo/tools/translate.py:857`
+  does `re.match(r"(module[s]?): (\w+)", entry.comment).groups()` with no guard, so a
+  missing comment is `AttributeError: 'NoneType' object has no attribute 'groups'`
+  during `_update_translations`, the registry fails to load and nothing rolls forward.
+  Every entry needs `#. module: pb_group` (plus `#: code:addons/…` for the occurrence);
+  a free-form comment block at the top of the file is fine, entry comments are not
+  optional. Validate before deploying:
+  `python3 -c "import polib,re; [re.match(r'(module[s]?): (\w+)', e.comment).groups() for e in polib.pofile(PATH)]"`.
+- GR6 (P1): `hr.department.complete_name` is a NON-STORED compute on Odoo 19.
+  Naming it in `order=` is a hard `ValueError: Cannot convert … to SQL because it is
+  not stored` — not a slow query, a crash. Read it as a field, sort in Python.
+- GR7 (P1): a manifest `description` is shown to a person in the Apps list, so the
+  white-label test treats it as a user-visible string. Engineering prose — model
+  names, the platform's own field names, why the branch tree is unusable — belongs in
+  module docstrings, which the test skips.
+- GR8 (P1): a client action that renders no control panel has NO breadcrumb name, so
+  anything it opens draws a trail whose first crumb reads "Unnamed". Two halves to the
+  fix: `this.env.config.setDisplayName(_t("…"))` in `setup()`, and the return chip
+  written on the ACTION RECORD's `context` (`{'pb_back': {...}}`) rather than at each
+  door, so the Settings card, a ⌘K row and a bookmark all arrive with the same way
+  out. (The Settings hub itself still crumbs as "Unnamed" — it is opened by a bare tag
+  from the rail. Platform-wide, pre-existing, not this programme's.)
+- GR9 (P1): every `res.currency.rate` row on payobook belongs to **company 1**, and
+  Odoo's own `_get_rates` filters on `company.root_id` — company 5's root is itself.
+  So a group of companies 5 + 6 genuinely has no SGD→VND rate, and the coverage strip
+  is right to say so. GR2's widening is to the GROUP's members, never to every company
+  on the database.
+- GR10 (P1): `pb.fx._as_currency(<id>)` runs `browse().exists()` — one query. Resolving
+  the currencies per ROW cost 2,000 queries and 539 ms for 1,000 conversions;
+  memoising them inside `convert_many` took it to **52 ms**. `convert()` one row at a
+  time is 2.1 s per 1,000 and always will be — P3 must use `convert_many`.
+- GR11 (P1): companies 6 and 7 on payobook are ARCHIVED, and a company picker that
+  respects `active_test` cannot build the group this product exists for. The Group
+  screen reads companies with `active_test=False`, labels a parked one "Not in use
+  right now", and says on the tick that adding it switches it back on.
+- GR12 (P1): a refusal about something the reader is LOOKING AT belongs beside it. The
+  detach dialog shows its sentence inline (`state.dialogError`); a toast over an open
+  dialog is a sentence about a control the reader can no longer see.
 
 ## Phase log
-- P1 — "The group" — designed 2026-09-07 (`GROUP_P1_THE_GROUP.md`). Status: building.
+- P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
+  Status: **COMPLETE**. `pb_group` 19.0.1.0.1 live on p9clone, payobook, abm and
+  payobook_template; `pb_budget` 19.0.1.1.0 (`pb.budget.fx` is now a shim over
+  `pb.fx`, same public API, `payment_date` policy and 2-decimal rounding so its
+  numbers are unchanged to the digit); `pb_import_kit` 19.0.1.13.0 (`globe`, `coins`).
+  `pb_demo` UNCHANGED — `pb.fx` probes `res.company.presentation_currency_id` instead
+  of redefining it, so the demo generator keeps writing the column it always wrote.
+  Shipped: `pb.group` (members via `res.company.pb_group_id`, group currency, rate
+  policy, fiscal start, chatter), `pb.fx` (three policies, rate date on every answer,
+  group-scoped rate rows, `convert_many`, `coverage`), `pb.division` +
+  `pb.division.link` (effective-dated, one division per department per day,
+  attachment at the top of a branch covers everything under it, accent-folded
+  suggestions), `pb.group.room`, and the Group screen behind the Settings cog
+  (category seq 30, ⌘K rows 3300/3310/3320, no new rail item).
+  43 post-install tests green on p9clone (34 `pb_group` + 21 `pb_budget` methods).
+  Timings on company 5 (4,533 people): `get_room` **49 ms**, 1,000 conversions
+  through `convert_many` **52 ms**. B1–B8 walked on payobook and abm at 1440 and 390.
+  Screenshots: `docs/handovers/group_p1_shots/`.
+  Demo group on payobook: **"Payobook Group" (PBG)**, VND, "the last rate of the
+  month", year starts January, members Payobook Vietnam JSC (5) and Payobook
+  Singapore Pte Ltd (6, switched back on as it joined); eight divisions —
+  Manufacturing 1,002 · Retail 902 · Construction 799 · Logistics 700 · Technology
+  600 · Corporate Office 500 · Production 1 · Singapore 0, plus 29 people not in a
+  division (4,533 exactly).
+  Owner debts: company 6 was ARCHIVED and is now active on payobook; the two "RIZE …
+  (test)" top-level departments were left out of the divisions on purpose; the
+  Settings hub's own breadcrumb still reads "Unnamed" (platform-wide, GR8).
 - P2 — "Who is paid by what". Not yet designed.
 - P3 — "Numbers that remember". Not yet designed.
 - P4 — "Planning with scope". Not yet designed.
