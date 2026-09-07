@@ -160,7 +160,7 @@ class PbBudgetUploadWizard(models.TransientModel):
         """Read it again, then write it. The preview is never trusted."""
         self.env['pb.budget']._require_edit()
         plan = self._plan(file_b64, fy, budget_type)
-        Budget = self.env['wfp.budget.actual']
+        Budget = self.env['pb.budget.line']
         created = updated = 0
         for row in plan['writes']:
             rec = Budget.search([
@@ -353,7 +353,7 @@ class PbBudgetUploadWizard(models.TransientModel):
         if not writes:
             return set()
         months = sorted({w['month'] for w in writes})
-        recs = self.env['wfp.budget.actual'].search_read([
+        recs = self.env['pb.budget.line'].search_read([
             ('period_month', '>=', months[0]),
             ('period_month', '<=', months[-1]),
         ], ['company_id', 'department_id', 'period_month', 'pb_budget_type'])

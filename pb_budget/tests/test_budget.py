@@ -11,6 +11,7 @@ The behaviour tests are the other half, and they run against whatever this
 database actually holds — skipping rather than passing vacuously when it holds
 nothing (W78).
 """
+import ast
 import os
 import re
 
@@ -60,21 +61,22 @@ class TestBudgetRails(TransactionCase):
             writes,
             'the actuals writer must never write a budget column: %s' % writes)
 
-    def test_the_narrow_rule_ships_with_its_wide_partner(self):
+    def test_the_narrow_rule_ships_with_its_wide_partners(self):
         """R60 — `ir.rule` group rules are ORed over the rules that APPLY, so a
-        narrow rule shipped ALONE is a narrowing. This module adds a
-        function-head rule to a model an earlier module's groups can already
-        read; without an explicit "everything" rule for those tiers beside it, a
-        workforce-planning user who is also given a budget group would lose
-        every row they can see today."""
+        narrow rule shipped ALONE is a narrowing of whoever holds the group it
+        names. The budget row now lives in this module, so the tiers to protect
+        are this module's own two: finance and the budget team must each carry
+        an explicit "everything" rule, and both must come before the
+        function-head rule so the file reads as the set it is."""
         xml = _read('security', 'pb_budget_security.xml')
-        self.assertIn('group_wfp_user', xml,
-                      'the wide rule for the existing tiers must be here')
-        self.assertIn('rule_budget_viewer_own_function', xml)
-        self.assertIn('rule_budget_wfp_all', xml)
-        # And the wide one comes FIRST in the file, so the pair reads as a pair.
-        self.assertLess(xml.index('rule_budget_wfp_all'),
-                        xml.index('rule_budget_viewer_own_function'))
+        self.assertNotIn(
+            'pb_hr_workforce_planning', xml,
+            'the budget rules must not name the retired planning module')
+        self.assertIn('rule_line_viewer_own_function', xml)
+        for wide in ('rule_line_finance_all', 'rule_line_manager_all'):
+            self.assertIn(wide, xml)
+            self.assertLess(xml.index(wide),
+                            xml.index('rule_line_viewer_own_function'))
 
     def test_the_cost_mirror_is_stated_once_and_matches_the_explorer(self):
         """The payroll figure on a budget row must be the SAME aggregation the
@@ -137,7 +139,7 @@ class TestBudgetRails(TransactionCase):
         """The rail is eight items and the Budget lens is not one of them: its
         doors are the Insights mission and the command palette."""
         acts = self.env['ir.actions.act_window'].search(
-            [('res_model', 'in', ('pb.budget.expense', 'wfp.budget.actual'))])
+            [('res_model', 'in', ('pb.budget.expense', 'pb.budget.line'))])
         menus = self.env['ir.ui.menu'].search(
             [('action', 'in', ['ir.actions.act_window,%s' % a.id for a in acts])])
         self.assertFalse(menus, 'pb_budget must ship no ir.ui.menu')
@@ -148,7 +150,7 @@ class TestBudgetModel(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.Budget = self.env['wfp.budget.actual']
+        self.Budget = self.env['pb.budget.line']
         self.company = self.env.company
         self.dept = self.env['hr.department'].search(
             [('company_id', '=', self.company.id), ('parent_id', '!=', False)],
@@ -179,14 +181,14 @@ class TestBudgetModel(TransactionCase):
         self.assertTrue(row.pb_unbudgeted)
 
     def test_a_budget_row_needs_no_scenario_and_carries_its_own_company(self):
-        """The two overrides this module makes, asserted. Without the second, a
+        """The two decisions the re-home kept, asserted. Without the second, a
         scenario-less row would carry NO company — and a company-less row is
         visible to everybody (R8), which is the boundary country HR relies on."""
         row = self.Budget.create({
             'company_id': self.company.id,
             'period_month': date(2026, 3, 1),
         })
-        self.assertFalse(row.scenario_id)
+        self.assertFalse(row.scenario_ref)
         self.assertEqual(row.company_id, self.company)
         self.assertEqual(row.pb_currency_id, self.company.currency_id)
         self.assertEqual(row.currency_id, row.pb_currency_id)
@@ -272,3 +274,66 @@ class TestBudgetBoard(TransactionCase):
         })
         with self.assertRaises(AccessError):
             self.env['pb.budget'].with_user(user).get_board()
+
+
+@tagged('post_install', '-at_install')
+class TestBudgetRehome(TransactionCase):
+    """T9 — the budget row came home, and nothing was left behind."""
+
+    def test_no_file_in_this_module_names_the_retired_planning_module(self):
+        """A single leftover reference is a module that cannot be removed.
+
+        The one exception is the migration itself, which has to read the old
+        table by name in order to empty it.
+        """
+        offenders = []
+        for base, dirs, files in os.walk(HERE):
+            if '__pycache__' in base:
+                continue
+            if os.sep + 'tests' in base + os.sep:
+                continue
+            for name in files:
+                if not name.endswith(('.py', '.xml', '.csv', '.js')):
+                    continue
+                if name == 'pb_budget_line.py' or 'migrations' in base:
+                    continue
+                path = os.path.join(base, name)
+                with open(path, encoding='utf-8') as handle:
+                    body = handle.read()
+                for word in ('wfp.budget.actual', 'wfp_budget_actual',
+                             'pb_hr_workforce_planning'):
+                    if word in body:
+                        offenders.append('%s: %s' % (name, word))
+        self.assertFalse(offenders,
+                         'pb_budget still names the retired planning module: '
+                         '%s' % offenders)
+
+    def test_the_manifest_no_longer_depends_on_the_planning_module(self):
+        manifest = ast.literal_eval(_read('__manifest__.py'))
+        self.assertNotIn('pb_hr_workforce_planning', manifest['depends'])
+
+    def test_moving_the_rows_is_idempotent_and_adds_up(self):
+        """The migration is the only thing standing between a customer's
+        budget and a dropped table, so it is tested on real arithmetic."""
+        Line = self.env['pb.budget.line']
+        before = Line.search_count([])
+        self.env.cr.execute(
+            'SELECT COALESCE(SUM(actual_cost), 0) FROM pb_budget_line')
+        before_sum = float(self.env.cr.fetchone()[0] or 0.0)
+
+        first = Line.migrate_from_planning()
+        again = Line.migrate_from_planning()
+        self.assertEqual(again.get('made', 0), 0,
+                         'a second run must move nothing twice')
+        self.assertEqual(again.get('moved_sum', 0.0), 0.0)
+        # What the move added is exactly what the rows it created are worth:
+        # comparing two grand totals would fail the moment somebody had
+        # entered a budget of their own, which is the whole point of the
+        # table.
+        self.assertAlmostEqual(first['new_sum'],
+                               before_sum + first.get('moved_sum', 0.0),
+                               places=0)
+        self.assertEqual(first.get('made', 0) + first.get('skipped', 0),
+                         first.get('found', 0),
+                         'every old row was either moved or already there')
+        self.assertGreaterEqual(Line.search_count([]), before)

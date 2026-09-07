@@ -69,15 +69,22 @@
          company it belongs to, and the companies somebody has switched on
          decide whether they can see it at all.
 
-         `wfp.budget.actual` had NO rule of any kind before this module —
-         it also had no rows, no writer and no screen. Adding the company
-         rule is therefore not a narrowing of anything that was working; it
-         is the boundary the model always should have had.
+         The budget row had NO rule of any kind before this module — it
+         also had no rows, no writer and no screen. The company rule is
+         therefore not a narrowing of anything that was working; it is the
+         boundary the model always should have had.
          ================================================================== -->
 
-    <record id="rule_budget_company" model="ir.rule">
+    <!-- These four carry NEW xmlids on purpose. They used to name a model in
+         another module, they live in a `noupdate` block, and a `noupdate`
+         record is never rewritten on an upgrade — so keeping the old ids
+         would have left four rules pointing at a table that is about to be
+         dropped, and a budget row with no company rule is a budget row every
+         company can read. New ids are created fresh; the old ones are removed
+         with the rest of the records this module no longer ships. -->
+    <record id="rule_line_company" model="ir.rule">
         <field name="name">Budget: company</field>
-        <field name="model_id" ref="pb_hr_workforce_planning.model_wfp_budget_actual"/>
+        <field name="model_id" ref="model_pb_budget_line"/>
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
@@ -88,43 +95,36 @@
     </record>
 
     <!-- ==================================================================
-         THE PAIR (R60/R65). `ir.rule` group rules are ORed, but only over
-         the rules that APPLY — so a narrow rule shipped ALONE is a
-         narrowing, and here it would narrow somebody who has held this
-         model since the workforce-planning module shipped.
+         THE PAIR (R60/R65), AND WHY THE OLD HALF OF IT IS GONE.
 
-         Today a workforce-planning user sees every budget row, because
-         there are no group rules on the model at all. Adding only the
-         function-head rule below would leave a person holding BOTH that
-         group and this module's viewer group with exactly one applicable
-         rule — the narrow one — and they would lose everything they had.
+         `ir.rule` group rules are ORed, but only over the rules that
+         APPLY — so a narrow rule shipped ALONE is a narrowing of whoever
+         holds the group it names. That is why a WIDE rule for the old
+         planning tiers used to ship above the narrow one: those tiers
+         could read every budget row, and adding only the function-head
+         rule would have taken it all away from them.
 
-         So the wide rule for the workforce-planning tiers ships FIRST, in
-         the same file, and this module never changes what they see.
+         The budget row now lives in this module and the planning module is
+         retired, so there is no such group left to protect. The wide rules
+         below are this module's own two tiers, and they ship in the same
+         file and before the narrow one for exactly the same reason.
          ================================================================== -->
-
-    <record id="rule_budget_wfp_all" model="ir.rule">
-        <field name="name">Budget: workforce planning sees all of it</field>
-        <field name="model_id" ref="pb_hr_workforce_planning.model_wfp_budget_actual"/>
-        <field name="groups" eval="[(4, ref('pb_hr_workforce_planning.group_wfp_user'))]"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-    </record>
 
     <!-- Finance and the budget team: everything, inside their companies. The
          company rule above is ANDed on top, so "everything" is never every
          company. Both tiers get their own rule rather than one rule naming
          two groups, so revoking one cannot silently widen the other. -->
 
-    <record id="rule_budget_finance_all" model="ir.rule">
+    <record id="rule_line_finance_all" model="ir.rule">
         <field name="name">Budget: finance sees all of it</field>
-        <field name="model_id" ref="pb_hr_workforce_planning.model_wfp_budget_actual"/>
+        <field name="model_id" ref="model_pb_budget_line"/>
         <field name="groups" eval="[(4, ref('group_budget_finance'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
-    <record id="rule_budget_manager_all" model="ir.rule">
+    <record id="rule_line_manager_all" model="ir.rule">
         <field name="name">Budget: the budget team sees all of it</field>
-        <field name="model_id" ref="pb_hr_workforce_planning.model_wfp_budget_actual"/>
+        <field name="model_id" ref="model_pb_budget_line"/>
         <field name="groups" eval="[(4, ref('group_budget_manager'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
@@ -135,9 +135,9 @@
          column precisely so this can be a plain indexed comparison rather
          than a walk up a tree at every read. -->
 
-    <record id="rule_budget_viewer_own_function" model="ir.rule">
+    <record id="rule_line_viewer_own_function" model="ir.rule">
         <field name="name">Budget: my own function</field>
-        <field name="model_id" ref="pb_hr_workforce_planning.model_wfp_budget_actual"/>
+        <field name="model_id" ref="model_pb_budget_line"/>
         <field name="groups" eval="[(4, ref('group_budget_viewer'))]"/>
         <field name="domain_force">['|', ('pb_function_head_user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
     </record>

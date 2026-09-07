@@ -84,7 +84,7 @@ class PbBudgetExpense(models.Model):
 
     @api.depends('department_id')
     def _compute_function(self):
-        Budget = self.env['wfp.budget.actual'].sudo()
+        Budget = self.env['pb.budget.line'].sudo()
         for rec in self:
             if not rec.department_id:
                 rec.function_id = False

@@ -39,7 +39,7 @@ class HrDepartment(models.Model):
         return res
 
     def _pb_budget_refresh_subtree(self):
-        Budget = self.env['wfp.budget.actual'].sudo()
+        Budget = self.env['pb.budget.line'].sudo()
         depts = self.search([('id', 'child_of', self.ids)])
         rows = Budget.search([('department_id', 'in', depts.ids)])
         if not rows:
