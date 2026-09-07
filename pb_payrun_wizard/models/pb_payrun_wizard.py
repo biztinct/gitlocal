@@ -21,6 +21,194 @@ class PbPayrunWizard(models.AbstractModel):
     _name = 'pb.payrun.wizard'
     _description = 'Payobook Run Payroll wizard orchestration'
 
+    # ==================================================================
+    # GROUP P2 — "Pay run for which scheme?"
+    #
+    # Until now this wizard asked for a period and then took EVERYBODY with a
+    # running contract, across every company the user had switched on, and let
+    # each payslip work its own scheme out afterwards. On one company with one
+    # scheme that is right every time. On a group with fifteen it is a guess
+    # made 4,500 times.
+    #
+    # So step one now asks the question first: which scheme is this run for.
+    # The answer decides who is in it (the people that scheme's map covers),
+    # names who it leaves out BEFORE anything is created, is written on the run
+    # and is stamped on every payslip the run makes.
+    #
+    # THREE THINGS THIS MUST NOT BREAK, and each is guarded here:
+    #   * a database with no formula engine at all — every read below is behind
+    #     `'hr.formula.config' in self.env`;
+    #   * a company with exactly ONE scheme — the card is pre-selected, nothing
+    #     is asked, and the population is the one it always was (ledger rule 8);
+    #   * `pb_demo`'s division-driven run, which overrides `prepare_run` and
+    #     `compute_batch` and is reconciled rather than replaced.
+    # ==================================================================
+    @api.model
+    def _formula_configs(self):
+        """This company's live payroll schemes, or an empty recordset.
+
+        ONE COMPANY, always `self.env.company` — never the switcher. A scheme
+        belongs to a legal entity and a pay run happens inside one; offering
+        Vietnam's schemes while Singapore's people are in scope is how a
+        payslip lands in the wrong company.
+        """
+        if 'hr.formula.config' not in self.env:
+            return None
+        Config = self.env['hr.formula.config'].sudo()
+        return Config.search(
+            ['|', ('company_id', '=', False),
+             ('company_id', '=', self.env.company.id),
+             ('state', '=', 'active')], order='cycle_type, name', limit=60)
+
+    @api.model
+    def _scheme_cards(self):
+        """The step-one cards: name, kind of run, people covered, last run."""
+        configs = self._formula_configs()
+        if configs is None or not configs:
+            return []
+        Map = self.env.get('pb.scheme.map')
+        # A SCHEME'S OWN KIND OF RUN DECIDES ITS COUNT. Asked "who pays this
+        # person", the answer is the main monthly run — so a single reading
+        # would show every mid-month advance card as covering nobody, over a
+        # map that covers all of them. One reading per kind of run the company
+        # actually has: two on the demo company.
+        cover = {}
+        if Map is not None:
+            for kind in {c.cycle_type or 'regular' for c in configs}:
+                try:
+                    answer = Map.sudo().coverage(self.env.company.id, kind, 0)
+                    cover[kind] = {
+                        int(k): v
+                        for k, v in (answer.get('by_config') or {}).items()}
+                except Exception:   # noqa: BLE001 — the picker must appear
+                    _logger.exception('Could not read scheme coverage')
+        cards = []
+        for config in configs:
+            kind = config.cycle_type or 'regular'
+            cards.append({
+                'id': config.id,
+                'name': config.name or '',
+                'code': config.code or '',
+                'cycle': kind,
+                'cycle_label': self._cycle_label(config.cycle_type),
+                'covered': cover.get(kind, {}).get(config.id, 0),
+                'last_run': self._last_run_for(config),
+                # The demo build tags each scheme with the part of the business
+                # it belongs to, and its own run path is driven by that tag. The
+                # card carries it so picking a scheme keeps that path pointed at
+                # the same place — see `pb_demo`'s reconciliation.
+                'division': (config.pb_division or ''
+                             if 'pb_division' in config._fields else ''),
+            })
+        return cards
+
+    @api.model
+    def _cycle_label(self, cycle_type):
+        return {
+            'regular': _("Regular payroll"),
+            'mid_cycle': _("Mid-month advance"),
+            'end_cycle': _("End of month"),
+            'full_final': _("Final settlement"),
+        }.get(cycle_type or 'regular', _("Regular payroll"))
+
+    @api.model
+    def _last_run_for(self, config):
+        slip = self.env['hr.payslip'].sudo().search(
+            [('formula_config_id', '=', config.id),
+             ('payslip_run_id', '!=', False)],
+            order='date_to desc, id desc', limit=1)
+        run = slip.payslip_run_id
+        if not run:
+            return {}
+        return {
+            'name': run.name or '',
+            'date_end': fields.Date.to_string(run.date_end) if run.date_end
+                        else '',
+            'employees': len(run.slip_ids),
+        }
+
+    @api.model
+    def _scheme_population(self, config_id, base_ids):
+        """`(covered_ids, not_covered)` for one scheme, over a starting list.
+
+        The map decides. Where there is no map module at all — or the map has
+        nothing to say — everybody in `base_ids` is covered, which is exactly
+        the behaviour that shipped.
+        """
+        Map = self.env.get('pb.scheme.map')
+        if Map is None or not config_id:
+            return list(base_ids), []
+        config = self.env['hr.formula.config'].sudo().browse(
+            int(config_id)).exists()
+        cycle = config.cycle_type or 'any'
+        try:
+            answers = Map.sudo().resolve_many(list(base_ids), cycle)
+        except Exception:       # noqa: BLE001 — never block a pay run
+            _logger.exception('The scheme map could not be read for the run')
+            return list(base_ids), []
+        covered, missed = [], []
+        for employee_id in base_ids:
+            answer = answers.get(employee_id) or {}
+            if answer.get('config_id') == config.id:
+                covered.append(employee_id)
+            elif not answer.get('config_id'):
+                missed.append((employee_id, answer.get('via') or ''))
+        names = self.env['hr.employee'].sudo().browse(
+            [e for e, _v in missed[:200]])
+        return covered, [{
+            'employee_id': employee.id,
+            'emp': employee.name or '',
+            'why': _("No scheme covers this person yet."),
+        } for employee in names]
+
+    @api.model
+    def _require_scheme(self, vals):
+        """The scheme this run is for, or an empty recordset — never a guess.
+
+        Refuses in plain words rather than picking one, because picking one is
+        exactly the failure this phase exists to end: a run created for the
+        wrong scheme looks completely normal until somebody reads a payslip.
+        """
+        configs = self._formula_configs()
+        if configs is None or not configs:
+            return None
+        wanted = int((vals or {}).get('formula_config_id') or 0)
+        if wanted:
+            picked = configs.filtered(lambda c: c.id == wanted)
+            if not picked:
+                raise UserError(_(
+                    "That payroll scheme is not one this company runs. Pick "
+                    "one from the list and try again."))
+            return picked[:1]
+        if len(configs) == 1:
+            return configs[:1]
+        raise UserError(_(
+            "This company runs %(count)s payroll schemes, so this run needs to "
+            "say which one it is for. Pick a scheme on the first step and the "
+            "people it covers appear before anything is created.",
+            count=len(configs)))
+
+    @api.model
+    def scheme_preview(self, vals=None):
+        """Who a run for this scheme would cover, and who it would leave out.
+
+        Answered the moment a card is picked, BEFORE anything is created — so
+        the count and the names are a fact the reader saw rather than something
+        they discover on the review step.
+        """
+        vals = vals or {}
+        config_id = int(vals.get('formula_config_id') or 0)
+        base = self._eligible_employees(
+            statuses=vals.get('statuses'),
+            employee_ids=vals.get('employee_ids'))
+        covered, missed = self._scheme_population(config_id, base)
+        return {
+            'formula_config_id': config_id,
+            'covered': len(covered),
+            'not_covered': len(missed),
+            'people': missed[:100],
+        }
+
     # ---------------- Step 1: defaults ----------------
     @api.model
     def get_defaults(self):
@@ -29,13 +217,20 @@ class PbPayrunWizard(models.AbstractModel):
         end = (start + relativedelta(months=1)) - relativedelta(days=1)
         structs = self.env['hr.payroll.structure'].search([], limit=50)
         emp_ids = self._eligible_employees()
+        schemes = self._scheme_cards()
         return {
             'name': 'Payroll %s' % start.strftime('%B %Y'),
             'date_start': start.isoformat(),
             'date_end': end.isoformat(),
             'company': self.env.company.name,
+            'company_id': self.env.company.id,
             'currency': self.env.company.currency_id.name or 'VND',
             'structures': [{'id': s.id, 'name': s.name} for s in structs],
+            # GROUP P2 — the schemes this company runs. Empty on a database
+            # with no formula engine, in which case the wizard shows no picker
+            # and reads exactly as it always did.
+            'schemes': schemes,
+            'formula_config_id': schemes[0]['id'] if len(schemes) == 1 else 0,
             'eligible': len(emp_ids),
             # VALUEKIND P4 — who to include, decided per run by a person rather
             # than by a rule baked into the generator. Empty when the scheme has
@@ -44,8 +239,21 @@ class PbPayrunWizard(models.AbstractModel):
             'statuses': self.employment_status_options(),
         }
 
-    def _eligible_employees(self, statuses=None, employee_ids=None):
+    def _eligible_employees(self, statuses=None, employee_ids=None,
+                            formula_config_id=None):
         """Who this run should produce a payslip for.
+
+        `formula_config_id` — the scheme this run is for. When it is given, the
+        list is narrowed to the people that scheme's map covers, which is the
+        whole of GROUP P2's question on this screen. When it is not given —
+        no formula engine, one scheme, an older caller — nothing narrows and
+        the answer is byte-for-byte the one that shipped (ledger rule 8).
+
+        THE COMPANY IS `self.env.company`, NOT THE SWITCHER. A pay run happens
+        inside one legal entity. The contract search used to lean on the record
+        rule, which scopes to every company the user has switched on, so an
+        administrator with three companies enabled produced one run holding
+        three companies' people.
 
         `statuses` — employment statuses to include, as the SOURCE spells them
         ("Active", "Resigned", …). None means "no opinion", which is the
@@ -61,12 +269,16 @@ class PbPayrunWizard(models.AbstractModel):
         contract while the source reports 85 Resigned and 25 Terminated. Filtering
         on the record would be a filter that does nothing.
         """
+        company_id = self.env.company.id
         try:
-            contracts = self.env['hr.contract'].search([('state', '=', 'open')])
+            contracts = self.env['hr.contract'].search(
+                [('state', '=', 'open'), ('company_id', '=', company_id)])
             emps = contracts.mapped('employee_id')
-            base = emps.ids if emps else self.env['hr.employee'].search([]).ids
+            base = emps.ids if emps else self.env['hr.employee'].search(
+                [('company_id', '=', company_id)]).ids
         except Exception:       # noqa: BLE001 — never let this break the wizard
-            base = self.env['hr.employee'].search([]).ids
+            base = self.env['hr.employee'].search(
+                [('company_id', '=', company_id)]).ids
 
         if statuses is not None:
             wanted = {str(s or '').strip() for s in statuses}
@@ -81,6 +293,11 @@ class PbPayrunWizard(models.AbstractModel):
         if employee_ids:
             shortlist = {int(e) for e in employee_ids}
             base = [e for e in base if e in shortlist]
+
+        # GROUP P2 — the scheme, last, so it narrows what the status filter and
+        # the shortlist already agreed on rather than re-admitting anybody.
+        if formula_config_id:
+            base, _missed = self._scheme_population(formula_config_id, base)
         return base
 
     def _employee_signals(self):
@@ -138,7 +355,8 @@ class PbPayrunWizard(models.AbstractModel):
         statuses = vals.get('statuses')
         search = (vals.get('search') or '').strip()
         emp_ids = self._eligible_employees(
-            statuses=statuses, employee_ids=vals.get('employee_ids'))
+            statuses=statuses, employee_ids=vals.get('employee_ids'),
+            formula_config_id=vals.get('formula_config_id'))
         signals = self._employee_signals()
 
         domain = [('id', 'in', emp_ids)]
@@ -367,6 +585,14 @@ class PbPayrunWizard(models.AbstractModel):
         de = vals.get('date_end')
         force_clean = vals.get('force_clean')
 
+        # GROUP P2 — which scheme is this run for?
+        #
+        # Required only where the question is real: a company with more than
+        # one live scheme. With exactly one, the answer is that one and nobody
+        # is asked anything; with none, this whole branch is absent and the run
+        # is the salary-structure run it always was.
+        config = self._require_scheme(vals)
+
         existing = self._period_runs(ds, de)
         if existing and not force_clean:
             locked = any(getattr(r, 'locked', False) for r in existing)
@@ -390,7 +616,16 @@ class PbPayrunWizard(models.AbstractModel):
         if force_clean and existing:
             self.sudo()._clean_period(existing.sudo())
 
-        run = self.env['hr.payslip.run'].sudo().create({'name': name, 'date_start': ds, 'date_end': de})
+        Run = self.env['hr.payslip.run'].sudo()
+        run_vals = {'name': name, 'date_start': ds, 'date_end': de}
+        # The scheme is written on the RUN, not only on its payslips: a run is
+        # the thing a person opens, and "which scheme was this?" should not have
+        # to be answered by reading one payslip out of it and hoping the rest
+        # agree. The field belongs to `pb_scheme_map`, so it is written only
+        # where it exists — this module does not depend on the formula engine.
+        if config and 'pb_formula_config_id' in Run._fields:
+            run_vals['pb_formula_config_id'] = config.id
+        run = Run.create(run_vals)
 
         # Claim the period's existing payslips before computing anything, and
         # take their employees off the list — computing them again would put two
@@ -399,12 +634,14 @@ class PbPayrunWizard(models.AbstractModel):
         adopted = self._adopt_loose_slips(run, ds, de)
         emp_ids = [e for e in self._eligible_employees(
                        statuses=vals.get('statuses'),
-                       employee_ids=vals.get('employee_ids'))
+                       employee_ids=vals.get('employee_ids'),
+                       formula_config_id=config.id if config else None)
                    if e not in set(adopted.mapped('employee_id').ids)]
         payload = {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de,
             'division': vals.get('division'),   # passed back to compute_batch
+            'formula_config_id': config.id if config else 0,
             'emp_ids': emp_ids, 'total': len(emp_ids),
             'adopted': len(adopted),
         }
@@ -429,6 +666,11 @@ class PbPayrunWizard(models.AbstractModel):
         ds = payload.get('date_start')
         de = payload.get('date_end')
         emp_ids = payload.get('emp_ids') or []
+        # GROUP P2 — the scheme the run was created for, stamped on every
+        # payslip as it is made. A payslip that knows its scheme never reaches
+        # `_find_formula_config` at all, which is how a mixed database stops
+        # guessing.
+        config_id = int(payload.get('formula_config_id') or 0)
         # sudo: see prepare_run — demo users may lack create/unlink on payslips.
         Slip = self.env['hr.payslip'].sudo()
         exceptions = []
@@ -450,7 +692,7 @@ class PbPayrunWizard(models.AbstractModel):
                         'emp': emp.name,
                         'why': self._no_contract_reason(emp, ds, de)})
                     continue
-                slip = Slip.create({
+                slip_vals = {
                     'employee_id': emp.id,
                     'name': v.get('name') or ('%s - %s' % (emp.name, name)),
                     'struct_id': v.get('struct_id'),
@@ -461,7 +703,10 @@ class PbPayrunWizard(models.AbstractModel):
                     'date_from': ds,
                     'date_to': de,
                     'company_id': emp.company_id.id,
-                })
+                }
+                if config_id and 'formula_config_id' in Slip._fields:
+                    slip_vals['formula_config_id'] = config_id
+                slip = Slip.create(slip_vals)
                 created += slip
             except Exception as e:
                 _logger.warning("Payrun wizard: skip %s: %s", emp.name, e)
