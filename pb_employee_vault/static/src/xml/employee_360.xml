@@ -31,6 +31,15 @@
                   <span t-attf-class="pev-chip tone-{{ stateCls(profile.contract and profile.contract.state) }}">
                     <t t-out="ic('fileText',13)"/> <t t-esc="(profile.contract and profile.contract.state_label) || '—'"/>
                   </span>
+
+                  <!-- The chip seam. Another module may add one line of its
+                       own about this person — GROUP P2's "Paid by" is the
+                       first — without forking a drawer that would then be two
+                       drawers to keep in step forever. Absent modules add
+                       nothing and this row reads exactly as it did. -->
+                  <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
+                    <t t-component="chip.Component" t-props="chipProps"/>
+                  </t>
                 </div>
               </div>
             </div>
