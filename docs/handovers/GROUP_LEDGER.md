@@ -553,6 +553,57 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   next phase stops claiming a pass it cannot make. Giving the kit a dark
   palette is a `pb_import_kit` job and belongs to P7 or later.
 
+- GR39 (P6a): **a fragment of `sql` built with `%` formatting eats the
+  placeholders psycopg is meant to fill.** The position pass assembles a
+  `VALUES` list whose rows are `(%s, %s, …)` and then drops it into a
+  larger statement; written as `sql = """WITH %s, …""" % (band_cte, where)`
+  the outer format consumes the INNER `%s` and psycopg is handed a
+  statement with the wrong number of parameters. There is no safe way to
+  format a SQL string that itself contains placeholders: build it by
+  CONCATENATION, and let `%s` mean exactly one thing.
+- GR40 (P6a): **`position: sticky; bottom: 0` on a control that answers a
+  drag is a control nobody sees.** The band picture is four screens tall,
+  so a bar at the foot of the CARD sticks to the bottom of the card, not
+  of the window, and the sentence that has to be true while the mouse is
+  down renders three thousand pixels below the mouse. A running answer to
+  a gesture is `position: fixed`, or it is decoration.
+- GR41 (P6a): **`companies[:1]` is "the lowest id", and on this group that
+  is the entity with nobody in it.** Fairness opened on Payobook Singapore
+  (0 people) and its first sentence was "there is nobody to measure" — true
+  and useless — while 4,510 Vietnamese people sat one menu away. The same
+  bug in its second form: refusing to mix two currencies KEPT the first
+  company's currency and dropped 4,510 people to keep 0. A default scope is
+  the company the reader is standing in, and failing that the one with the
+  most people; a majority currency is the one a refusal keeps.
+- GR42 (P6a): **the platform's `_()` has no plural form, and "1 people" is
+  the first thing a reader sees.** On AB Mauri most suggested bands hold
+  one person, so the screen read "1 people · ₫22M to ₫27M" twenty-nine
+  times. There is no `ngettext` here: write the phrase once
+  (`_people_phrase`), branch on `count == 1` inside it, and pass the PHRASE
+  into the sentence rather than the number.
+- GR43 (P6a): **a shared money axis is squashed by one outlier, and the
+  fix has to stay honest.** One person paid four times the top of the
+  highest band stretched every band into a sliver. The axis now runs to the
+  top of the highest BAND or the 95th percentile of pay, whichever is
+  greater; the handful beyond sit ON the right edge, are always
+  "above the band" anyway, and the lane says how many and what the edge is
+  worth. Also: an axis label at 0% or 100% centred on its tick hangs half
+  off the picture — the first is left-aligned and the last right-aligned.
+- GR44 (P6a): **a rebuild queued on every `hr.contract.write` turns a
+  payroll import into a ten-minute one.** 4,500 position rows rebuilt after
+  each of several hundred contract writes is quadratic work for a figure
+  nobody reads until a screen opens. The work goes on the cursor's
+  PRECOMMIT (`cr.precommit.add`), so it runs ONCE per transaction, inside
+  it, and a rollback takes it with it. The cost: a `TransactionCase` never
+  commits, so a test that changes a wage must call
+  `env.cr.precommit.run()` itself — the same family of surprise as WF16.
+- GR45 (P6a): **`/odoo/action-<name>` resolves a bare xmlid for some
+  records and silently lands on Discuss for others.** `action-pb_pay`
+  worked and `action-pb_pay_fairness` did not. Always write the full
+  `module.name` in a test or validation URL; the short form is a
+  coincidence, not a contract.
+
+
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
   Status: **COMPLETE**. `pb_group` 19.0.1.0.1 live on p9clone, payobook, abm and
@@ -818,6 +869,92 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   verified gone; every temporary validator is archived again; the `pbim`
   kit still has no dark palette (GR38), so "dark" means the platform's
   chrome only.
-- P6 — "Pay: Review, Bands, Fairness, Changes; retire legacy" (ruling G9; may split into
-  6a bands+fairness and 6b review+changes). Not yet designed.
+- P6a — "Pay, part one: bands and fairness" — designed and BUILT 2026-09-08
+  (`GROUP_P6A_PAY_BANDS_AND_FAIRNESS.md`). Status: **COMPLETE**.
+  `pb_pay` 19.0.1.0.0 live on p9clone, payobook, abm and
+  payobook_template; `pb_contracts` 19.0.1.4.0 (the drawer reads the band
+  and the position, and names the old grade fields nowhere),
+  `pb_import_kit` 19.0.1.16.0 (`scale`, `userPlus`). All three module
+  trees verified byte-identical to the repository on the server, and every
+  manifest version verified against `ir_module_module.latest_version` on
+  all four databases.
+  Shipped: `pb.pay.family` / `pb.pay.band` (min ≤ mid ≤ max, no two
+  ranges over the same days, chatter on the three amounts) /
+  `pb.pay.band.job` (one band per job at a time) / `pb.pay.position` (a
+  DERIVED table rebuilt in one SQL statement, the job read as
+  `COALESCE(c.job_id, v.job_id)` so both databases answer, the person
+  carried where `pb_workseg` is installed); read-only `pb_band_id`,
+  `pb_position_pct` and `pb_band_state` on `hr.contract`, computed and
+  stored nowhere; `pb.pay.bands` with the band picture, the five health
+  cards each carrying its own definition, `move_edge` (dry run, commit,
+  and the three previous numbers for an exact Undo), `place_hire`,
+  import with a per-row preview, export, `suggest_families` and
+  `suggest_bands`; `pb.pay.fairness` computed on every read and stored
+  nowhere, with the weighted median gap level-by-level, by level, by
+  division, the same-job spread, who is paid least for the same work
+  (names gated), the five-person floor, the two-currency refusal through
+  `pb.fx`, and a self-contained printed statement; the Pay lens on the
+  People hub at sequence 45 (Bands · Fairness live, Review · Changes
+  greyed "soon"); ⌘K rows 3400 "Pay bands", 3410 "Fairness", 3420 "Place
+  a new hire"; an idempotent migration from `wfp.pay.grade`; and a
+  299-term `vi_VN.po`.
+  **THE EMPTY STATE IS A PROPOSAL, NOT A TUTORIAL.** A company that has
+  never written a band opens the screen and sees its OWN bands already
+  drawn from the wages it already pays, dashed and saved only on "Use
+  these" — 21 bands over 4,500 people on Payobook Vietnam JSC, 29 over
+  152 on AB Mauri. Nothing is written until somebody presses the button,
+  which is what let this phase validate the hero on production without
+  leaving a row behind.
+  56 `pb_pay` tests green on p9clone (T1–T11). The wider run over 288
+  tests (`pb_contracts` 48, `pb_explorer` 50, `pb_group` 34, `pb_hub` 34,
+  `pb_people_hub` 37, `pb_scheme_map` 31, `pb_workseg` 38) reports 3
+  failures and 0 errors — and a CONTROL run with `pb_contracts` reverted
+  to HEAD reports the SAME three (`pb_contracts`
+  `test_22_the_picker_is_whitelisted`, `test_05_the_picker_is_whitelisted_and_answers`,
+  `pb_group` `test_t9_the_screen_counts_what_the_roster_counts_and_is_quick`).
+  They are p9clone data drift and predate this phase; zero regressions.
+  Timings on company 5 (4,517 open contracts): the position pass
+  **227 ms** for every company and **217 ms** for company 5 alone, well
+  under the two seconds the handover asked for; **477 ms** once bands
+  exist; the band board **411–671 ms** (halved from 1,070 ms by handing
+  the positions and the tenure query down to the health cards rather than
+  reading them twice); fairness **144 ms** over 4,510 people.
+  Positions built on install: payobook 4,517 · abm 152 ·
+  payobook_template 0 · p9clone 4,517. Migration: **0 grades → 0 bands**
+  on every database — `wfp.pay.grade` is empty everywhere, so the
+  migration is proven by T9's fixture (a grade created on p9clone became
+  a band under family "Migrated" at the right level and midpoint, and a
+  second run made nothing new) rather than by production data.
+  On p9clone's copy of company 5, with the suggested bands accepted:
+  **352 paid below the band, 537 above, 198 newer people paid more than
+  the middle of the long-serving, 0 managers paid less than a report, 5
+  bands at least twice as wide as their floor**; the hero read
+  "₫2.4B a year to bring 24 people back in" while the edge was held, saved
+  on release (47M → 61.3M), and Undo put all three numbers back exactly.
+  Fairness on the same company: **"Women earn 2.4% less than men doing
+  work at the same level"**, measured on 4,510 people from the November
+  2026 payroll, 1,662 women and 2,840 men. On payobook, with no bands, the
+  same question falls back to job-by-job and answers **0.5%**, with the
+  six group divisions ranging from −7.8% (Manufacturing) to +20.8%
+  (Technology). On abm, 152 people have no gender on record, so the gap
+  says "not enough people to compare fairly" and the card explains why.
+  In group mode on payobook the screen keeps VND's 4,510 people, names
+  SGD as left out, and refuses to invent a rate (GR9 — there is genuinely
+  no SGD→VND rate on that database).
+  B1–B9 walked on p9clone, payobook and abm at 1440 and 390, in English
+  and Vietnamese. Screenshots: `docs/handovers/group_p6a_shots/`.
+  The p9clone rehearsal (21 accepted bands, 11 families, 30 job links,
+  2 imported bands) was DELETED afterwards and verified gone; every
+  production database carries **0 bands** and the derived positions only.
+  Owner debts: the payobook admin password in this ledger is still wrong
+  (GR24) — P6a used temporary `group.p6a@payobook.com`,
+  `group.p6a.reader@payobook.com` and `group.p6a.vi@payobook.com`, all
+  archived again (payobook 4411/4412/4413, abm 250, p9clone
+  4024/4025/4026); the p9clone validator was granted
+  `hr_contract.group_hr_contract_manager` for the contract-drawer walk
+  and is archived; NOTHING was written to payobook, abm or
+  payobook_template beyond the module install and its derived position
+  rows, so the demo company still has no pay bands and the screen opens
+  on the suggestion; the `pbim` kit still has no dark palette (GR38).
+- P6b — "Pay: Review and Changes; retire legacy" (ruling G9). Not yet designed.
 - P7 — "Visibility, Vietnamese, closeout". Not yet designed.
