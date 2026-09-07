@@ -2,7 +2,7 @@
 {
     'name': 'Payobook People Hub',
     'summary': 'The People mission — employees, contracts and a launcher for '
-               'the existing Planning screens',
+               'the planning room',
     'description': """
 IA redesign Cycle 5 — the People mission.
 
@@ -15,33 +15,19 @@ Three lenses, in the order a person exists in payroll:
 reimplemented, neither is forked, and both standalone client actions keep
 working.
 
-**`plan` is a LAUNCHER, and that is an owner ruling rather than a shortcut.**
-Workforce Planning gets a MINIMAL menu change in this programme and nothing
-else: its screens, its actions and its flows are a separate piece of work. So
-the Plan lens is a card grid over the seven Planning actions exactly as they
-exist today — the same act_windows, the same client action, the same views, the
-same behaviour. Nothing in `pb_hr_workforce_planning` is touched by this module,
-and a test walks the whole directory to prove it.
-
-Two consequences of that ruling, stated because they look like defects
-otherwise:
-
-  * the six native cards open Odoo's own list views, which render Odoo's own
-    control panel — so they are opened WITHOUT clearing the breadcrumbs and
-    "People Hub" is the crumb that brings you back (the C3 Settings precedent);
-  * the Planning Dashboard is a full-bleed OWL cockpit with no control panel,
-    so its way back is the rail — which is exactly the way back it has today
-    from the rail's own Planning Dashboard item. Giving it a back chip would be
-    a Planning change.
-
-Each card is gated on the `ir.model.access` of the model BEHIND it (W95), and
-probed for existence before it is rendered (W79) — a tile pointing at an action
-that is not installed renders normally and answers a click with silence.
+**`plan` is a MOUNT POINT.** Whatever planning product is installed renders
+inside it full-bleed; when nothing is, the lens says so in a sentence and
+offers nothing. It used to be a card grid over seven screens of an older
+planning module — scenarios, forecasts, pay grades, a merit matrix,
+compensation cycles and a component-tagging wizard. Every one of those has
+been replaced by something built on this product's own engine, and the grid
+went with the module that owned them, because a card that opens nothing is
+the worst screen this product can show.
 
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -52,8 +38,6 @@ one accent (W1/W2/W3).
         # the two surfaces this hub mounts as lenses
         'pb_people',
         'pb_contracts',
-        # the seven screens the Plan lens LAUNCHES (and changes in no way)
-        'pb_hr_workforce_planning',
     ],
     'data': [
         'views/pb_people_hub_action.xml',

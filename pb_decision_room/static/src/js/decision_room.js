@@ -2101,13 +2101,25 @@ export class PbDecisionRoom extends Component {
         ];
     }
 
-    /** The chip: how many plans are waiting on this reader right now. */
+    /** The chip: how many decisions are waiting on this reader right now.
+     *
+     *  Plans and PAY are counted together, because a person opening this room
+     *  is asking one question — what needs me — and answering it in two
+     *  places is how one of the two goes unread for a week. The pay half is
+     *  a soft probe: a database without the Pay area simply contributes zero.
+     */
     get awaitingText() {
-        const n = (this.state.awaiting || {}).count || 0;
-        if (!n) { return ""; }
-        return n === 1
-            ? _t("1 plan is waiting for your decision.")
-            : _t("%s plans are waiting for your decision.", n);
+        const state = this.state.awaiting || {};
+        const plans = state.count || 0;
+        const pay = state.pay_count || 0;
+        const parts = [];
+        if (plans) {
+            parts.push(plans === 1
+                ? _t("1 plan is waiting for your decision.")
+                : _t("%s plans are waiting for your decision.", plans));
+        }
+        if (pay && state.pay_sentence) { parts.push(state.pay_sentence); }
+        return parts.join(" ");
     }
 
     goToPlans() {

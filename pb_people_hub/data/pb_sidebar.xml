@@ -44,8 +44,8 @@
         <field name="sequence">20</field>
         <field name="action_xmlid">pb_people_hub.action_pb_people_hub</field>
         <field name="action_tag">pb_people_hub</field>
-        <field name="match_action_tags">pb_people_hub,pb_people,pb_contracts,pb_employee_detail,pb_contract_detail,wfp_dashboard,pb_decision_room</field>
-        <field name="match_action_xmlids">pb_hr_workforce_planning.action_wfp_scenario,pb_hr_workforce_planning.action_wfp_forecast,pb_hr_workforce_planning.action_wfp_grade,pb_hr_workforce_planning.action_wfp_merit_matrix,pb_hr_workforce_planning.action_wfp_cycle,pb_hr_workforce_planning.action_wfp_tagging_wizard</field>
+        <field name="match_action_tags">pb_people_hub,pb_people,pb_contracts,pb_employee_detail,pb_contract_detail,pb_decision_room,pb_pay</field>
+        <field name="match_action_xmlids">pb_pay.action_pb_pay,pb_pay.action_pb_pay_fairness,pb_pay.action_pb_pay_review,pb_pay.action_pb_pay_change,pb_pay.action_pb_pay_awaiting,pb_pay.action_pb_pay_place</field>
         <field name="match_models">hr.employee,hr.contract</field>
     </record>
 

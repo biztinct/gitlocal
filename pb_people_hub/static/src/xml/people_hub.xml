@@ -9,10 +9,11 @@
     <HubShell config="config" action="props.action or {}"/>
   </t>
 
-  <!-- ================================================== the Plan launcher
-       A card grid over the SEVEN EXISTING Planning screens. No embedding, no
-       re-skin, no descriptor — every Open below hands straight to the action
-       the retired PLANNING rail item used to hand to. -->
+  <!-- ================================================== the Plan lens
+       A MOUNT POINT. Whatever planning product has registered itself renders
+       here full-bleed; when nothing has, the lens says so in a sentence.
+       The seven legacy cards this template used to draw are gone with the
+       module that owned them. -->
   <t t-name="pb_people_hub.PlanLauncher">
     <div class="pbim pbpl">
       <!-- NOTHING may sit between these three branches, not even a comment:
@@ -22,35 +23,13 @@
       <div t-if="!state.resolved" class="pbim-busy">
         <div class="pbim-spin"/><span>Loading planning…</span>
       </div>
-      <div t-elif="!hero and !cards.length" class="pbpl-none">
+      <div t-elif="!hero" class="pbpl-none">
         <span class="pbpl-none__ic" t-out="ic('lock', 22)"/>
         <span class="pbpl-none__t" t-esc="emptyTitle"/>
         <span class="pbpl-none__s" t-esc="emptyNote"/>
       </div>
-      <div t-else="" class="pbpl-wrap" t-att-class="{ 'pbpl-wrap--hero': hero }">
-        <t t-if="hero">
-          <t t-component="hero.Component" t-props="heroProps"/>
-        </t>
-        <div t-else="" class="pbpl-intro">
-          <h1 class="pbpl-h">Workforce Planning</h1>
-          <p class="pbpl-blurb">The planning screens, unchanged. Each one opens where it always did.</p>
-        </div>
-
-        <details t-if="cards.length" class="pbpl-classic" t-att-open="!hero">
-          <summary>Classic planning tools · <t t-esc="cards.length"/> screens</summary>
-          <div class="pbpl-cards">
-            <div t-foreach="cards" t-as="k" t-key="k.id" class="pbpl-card">
-              <span class="pbpl-card__ic" t-out="ic(k.icon, 17)"/>
-              <span class="pbpl-card__tx">
-                <span class="pbpl-card__l" t-esc="k.label"/>
-                <span class="pbpl-card__s" t-esc="k.sub"/>
-              </span>
-              <button class="pbim-btn primary pbpl-go"
-                      t-att-title="k.label"
-                      t-on-click="() => this.openCard(k)">Open</button>
-            </div>
-          </div>
-        </details>
+      <div t-else="" class="pbpl-wrap pbpl-wrap--hero">
+        <t t-component="hero.Component" t-props="heroProps"/>
       </div>
     </div>
   </t>

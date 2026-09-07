@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-"""pb_people_hub — the gates, the launcher, and the ruling it has to keep.
+"""pb_people_hub — the gates, and the promises that are absences.
 
-The load-bearing test in this file is the one that proves a NEGATIVE: that the
-Plan lens changed nothing in `pb_hr_workforce_planning`. The owner's ruling for
-this programme is that Workforce Planning gets a minimal menu change and no
-product change, and "we did not touch it" is exactly the kind of claim that
-quietly stops being true. So it is checked against git, not against memory.
+The load-bearing test in this file used to prove a NEGATIVE: that the Plan
+lens changed nothing in the old workforce planning module. That module has
+been retired, so the ruling it enforced is spent and the test is gone with it.
+What replaces it is the OTHER negative: that no file in this module still
+names the retired module or any of its models, because a single leftover
+reference is a screen that opens nothing.
 
 Every source gate reads `_code(src)` — the file with its comments removed —
 because a word-shaped gate fails on the documentation that explains the rule
@@ -14,14 +15,12 @@ because a word-shaped gate fails on the documentation that explains the rule
 import ast
 import os
 import re
-import subprocess
 from xml.etree import ElementTree
 
 from odoo.tests.common import TransactionCase, tagged
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.dirname(HERE)
-PLANNING = os.path.join(ROOT, 'pb_hr_workforce_planning')
 
 
 def _read(*parts):
@@ -66,33 +65,6 @@ def _js_list(src, name):
     m = re.search(r'export const %s = \[(.*?)\];' % name, src, re.S)
     assert m, "no such exported list: %s" % name
     return re.findall(r'"([^"]+)"', m.group(1))
-
-
-def _plan_cards():
-    """The descriptor, parsed back out of `plan_launcher.js`."""
-    src = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-    block = re.search(r'export const PLAN_CARDS = \[(.*?)\n\];', src, re.S)
-    assert block, 'PLAN_CARDS is gone'
-    cards = []
-    for chunk in re.findall(r'\{(.*?)\n    \}', block.group(1), re.S):
-        card = {}
-        for key in ('id', 'icon', 'xmlid', 'tag', 'model'):
-            m = re.search(r'\b%s: "([^"]+)"' % key, chunk)
-            if m:
-                card[key] = m.group(1)
-        gate = re.search(r'gate: \[([^\]]*)\]', chunk)
-        card['gate'] = [g.strip() for g in gate.group(1).split(',') if g.strip()] \
-            if gate else []
-        cards.append(card)
-    return cards
-
-
-# The JS constant names the descriptor uses for each planning group.
-_GROUP_CONST = {
-    'WFP_USER': 'pb_hr_workforce_planning.group_wfp_user',
-    'WFP_MANAGER': 'pb_hr_workforce_planning.group_wfp_manager',
-    'WFP_ADMIN': 'pb_hr_workforce_planning.group_wfp_admin',
-}
 
 
 @tagged('post_install', '-at_install')
@@ -149,7 +121,7 @@ class TestPeopleHubGates(TransactionCase):
         names = set(_js_list(self.SRC, 'EMPLOYEE_GATE'))
         names |= set(_js_list(self.SRC, 'CONTRACT_GATE'))
         plan = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-        names |= set(re.findall(r'"(pb_hr_workforce_planning\.\w+)"', plan))
+        names |= set(re.findall(r'"(pb_decision_room\.\w+)"', plan))
         for xmlid in sorted(names):
             self.assertTrue(
                 self.env.ref(xmlid, raise_if_not_found=False),
@@ -157,140 +129,72 @@ class TestPeopleHubGates(TransactionCase):
 
 
 @tagged('post_install', '-at_install')
-class TestPlanLauncherIsALauncher(TransactionCase):
-    """The owner ruling: a minimal menu change and no product change."""
+class TestPlanLensIsAMountPoint(TransactionCase):
+    """The Plan lens holds a planning PRODUCT, and nothing of its own."""
 
-    def test_this_cycle_changed_nothing_in_pb_hr_workforce_planning(self):
-        """Asserted against git rather than against memory.
+    def test_nothing_in_this_module_names_the_retired_planning_module(self):
+        """The negative that matters now the old module is gone.
 
-        The ruling is the whole reason the Plan lens is a card grid instead of
-        an embedded cockpit, and "we did not touch it" is exactly the sort of
-        claim that quietly stops being true.
-
-        IT SKIPS ON A DEPLOYED SERVER, AND THE SKIP HAS TO BE ARGUED FOR RATHER
-        THAN ASSUMED, because the naive version of this test FAILS there for a
-        reason that has nothing to do with the ruling. `/odoo/odoo-server` is
-        itself a git checkout — of odoo/odoo — and the custom modules are
-        UNTRACKED inside it, so `git status --porcelain` answers
-        `?? pb_hr_workforce_planning/` and a bare emptiness check reads that as
-        "the module was modified". The question is therefore asked in two parts:
-        does git track this path here at all (`ls-files`), and only then, is it
-        dirty. A tree that does not track the module cannot answer the question
-        and says so, instead of answering it wrongly. (W78's shape: a guard
-        around the only assertion is a smell — so the guard here is a SKIP, which
-        is loud, rather than a silent pass.)
+        A leftover action id opens a blank screen, a leftover group xmlid
+        gates a lens on a permission nobody can hold, and neither of them
+        errors anywhere a person would see. Only a grep can tell "we removed
+        it" from "we meant to".
         """
-        try:
-            tracked = subprocess.run(
-                ['git', '-C', ROOT, 'ls-files', '--', 'pb_hr_workforce_planning'],
-                capture_output=True, text=True, timeout=30)
-        except (OSError, subprocess.SubprocessError) as e:
-            self.skipTest('git is not available here: %s' % e)
-        if tracked.returncode != 0:
-            self.skipTest('not a git checkout: %s' % tracked.stderr.strip())
-        if not tracked.stdout.strip():
-            self.skipTest('this tree does not track pb_hr_workforce_planning — '
-                          'a deployed addons directory cannot answer this')
-        out = subprocess.run(
-            ['git', '-C', ROOT, 'status', '--porcelain', '--',
-             'pb_hr_workforce_planning'],
-            capture_output=True, text=True, timeout=30)
-        self.assertEqual(
-            out.stdout.strip(), '',
-            'the Plan lens is a LAUNCHER by owner ruling — Workforce Planning '
-            'must be byte-identical this cycle, and git says otherwise:\n%s'
-            % out.stdout)
+        offenders = []
+        for base, _dirs, files in os.walk(HERE):
+            if '__pycache__' in base:
+                continue
+            if os.sep + 'tests' in base + os.sep:
+                continue
+            for name in files:
+                if not name.endswith(('.py', '.js', '.xml', '.csv')):
+                    continue
+                path = os.path.join(base, name)
+                with open(path, encoding='utf-8') as handle:
+                    body = handle.read()
+                if name.endswith('.js'):
+                    body = _code(body)
+                for word in ('pb_hr_workforce_planning', 'wfp.', 'wfp_'):
+                    if word in body:
+                        offenders.append('%s: %s' % (name, word))
+        self.assertFalse(
+            offenders,
+            'the People hub still names the retired planning module: %s'
+            % offenders)
 
-    def test_the_launcher_embeds_no_planning_component_and_owns_no_facade(self):
-        """A grep is the only thing that can tell "did not embed" from
-        "embedded and it happens to look like a grid" (W79)."""
+    def test_the_manifest_no_longer_depends_on_the_planning_module(self):
+        manifest = ast.literal_eval(_hub('__manifest__.py'))
+        self.assertNotIn('pb_hr_workforce_planning', manifest['depends'])
+
+    def test_the_plan_gate_is_the_planning_rooms_own_roles(self):
+        """A lens whose gate names groups that no longer exist is a lens
+        nobody is ever offered — the silent kind of dead end."""
         code = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-        self.assertNotIn('@pb_hr_workforce_planning/', code,
-                         'the launcher must import nothing from Planning')
+        gate = _js_list(code, 'PLAN_GATE')
+        self.assertTrue(gate, 'the Plan lens has no gate at all')
+        for xmlid in gate:
+            self.assertTrue(xmlid.startswith('pb_decision_room.'),
+                            'the Plan gate should name the planning room: %s'
+                            % xmlid)
+            self.assertTrue(
+                self.env.ref(xmlid, raise_if_not_found=False),
+                'the Plan gate names a group that does not exist here: %s'
+                % xmlid)
+
+    def test_the_launcher_owns_no_cards_and_no_facade(self):
+        code = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
+        self.assertNotIn('PLAN_CARDS', code,
+                         'the legacy card grid is retired')
         self.assertNotIn('embedded: true', code)
-        self.assertNotIn('wfp.', code.replace('wfp.planning.scenario', '')
-                                     .replace('wfp.employee.forecast', '')
-                                     .replace('wfp.pay.grade', '')
-                                     .replace('wfp.merit.matrix', '')
-                                     .replace('wfp.compensation.cycle', '')
-                                     .replace('wfp.tagging.wizard', ''),
-                         'the only planning model names allowed here are the '
-                         'seven the gates are derived from')
         self.assertFalse(os.path.isdir(os.path.join(HERE, 'models')),
                          'the hub owns no server code at all')
 
-    def test_all_seven_planning_actions_are_offered_and_all_of_them_resolve(self):
-        cards = _plan_cards()
-        self.assertEqual(len(cards), 7, 'seven screens, seven cards')
-        for card in cards:
-            self.assertTrue(
-                self.env.ref(card['xmlid'], raise_if_not_found=False),
-                'card %s names an action that does not exist: %s'
-                % (card['id'], card['xmlid']))
-
-    def test_the_card_order_is_the_retired_planning_sections_order(self):
-        self.assertEqual(
-            [c['id'] for c in _plan_cards()],
-            ['dashboard', 'scenarios', 'forecasts', 'grades', 'merit',
-             'cycles', 'tagging'])
-
-    def test_each_card_is_gated_on_its_own_models_acl(self):
-        """The seven planning models do NOT all grant read to the same tier —
-        pay grades and the merit matrix are admin+user while the rest are
-        manager+user, and the tagging wizard is manager only. One gate for the
-        lens would therefore have been the wrong gate for three of its cards."""
-        Access = self.env['ir.model.access'].sudo()
-        Data = self.env['ir.model.data'].sudo()
-        for card in _plan_cards():
-            rows = Access.search([('model_id.model', '=', card['model']),
-                                  ('perm_read', '=', True)])
-            acl = set()
-            for row in rows:
-                if not row.group_id:
-                    continue
-                d = Data.search([('model', '=', 'res.groups'),
-                                 ('res_id', '=', row.group_id.id)], limit=1)
-                if d:
-                    acl.add('%s.%s' % (d.module, d.name))
-            declared = {_GROUP_CONST[g] for g in card['gate']}
-            self.assertTrue(acl, '%s has no ACL rows' % card['model'])
-            self.assertEqual(
-                declared, acl,
-                'card %s is gated %s but %s grants read to %s'
-                % (card['id'], sorted(declared), card['model'], sorted(acl)))
-
-    def test_the_launcher_opens_by_xmlid_and_keeps_the_breadcrumb(self):
-        """`clearBreadcrumbs: false` is the way back for the six native lists —
-        they render Odoo's own control panel, and a back chip is not something
-        an Odoo view can host (W98's corollary). The Planning Dashboard renders
-        no control panel and its way back is the rail, exactly as it is today
-        from the rail's own Planning Dashboard item."""
+    def test_the_hero_registry_is_still_the_seam(self):
+        """`pb_decision_room` registers itself here; this module may never
+        import it back, because the dependency runs the other way."""
         code = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-        self.assertIn('clearBreadcrumbs: false', code)
-        self.assertNotIn('clearBreadcrumbs: true', code)
-
-    def test_a_card_that_opens_nothing_is_not_rendered(self):
-        """W79: a resolver with a swallowing fallback makes a DEAD entry
-        indistinguishable from an ABSENT one, so presence is probed rather than
-        assumed — server-side for the act_windows, against the registry for the
-        one client action."""
-        code = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-        self.assertIn('"pb.settings", "resolve_actions"', code)
-        self.assertIn('registry.category("actions").contains', code)
-
-    def test_the_probe_facade_answers_for_every_card(self):
-        """Behaviour, against the real method the launcher calls."""
-        cards = _plan_cards()
-        xmlids = [c['xmlid'] for c in cards]
-        out = self.env['pb.settings'].resolve_actions(xmlids)
-        self.assertEqual(set(out), set(xmlids))
-        self.assertTrue(all(out.values()),
-                        'resolve_actions says a planning action is missing: %s'
-                        % {k: v for k, v in out.items() if not v})
-
-    def test_the_double_click_guard_is_there(self):
-        code = _code(_hub('static', 'src', 'js', 'plan_launcher.js'))
-        self.assertIn('this._opening', code)
+        self.assertIn('pb_people_hub_plan_hero', code)
+        self.assertNotIn('@pb_decision_room/', code)
 
 
 @tagged('post_install', '-at_install')
