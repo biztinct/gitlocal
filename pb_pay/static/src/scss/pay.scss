@@ -1,0 +1,315 @@
+// =====================================================================
+//  Pay bands and fairness — .pay-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page pay". Nothing here declares a colour of its own,
+//  so this screen re-tints with the rest of the app and cannot drift into
+//  a second palette.
+//
+//  THE ONE THING THIS FILE OWNS THAT THE KIT DOES NOT IS THE BAND PICTURE.
+//  A band is a rounded rectangle laid on a shared money axis; every person
+//  in it is a dot placed by their pay; the two edges are grab handles. The
+//  three states a dot can be in — inside, under, over — are told apart by
+//  FILL, RING and SIZE together, never by colour alone, because a picture
+//  whose whole meaning is a hue is unreadable to a good number of readers
+//  and unprintable in black and white.
+//
+//  Every animation lives inside a `prefers-reduced-motion: no-preference`
+//  block, so a machine asked for calm gets the finished screen on the
+//  first frame with nothing to recover from.
+// =====================================================================
+
+.pbim.pbim-page.pay {
+
+    .pay-wrap { padding-bottom: 32px; }
+
+    // -------------------------------------------------------- the header
+    .pay-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .pay-head-id { min-width: 0; }
+    .pay-h { margin: 6px 0 0; font-size: 20px; font-weight: 800; color: var(--pbim-ink); }
+    .pay-s { margin: 4px 0 0; font-size: 13px; color: var(--pbim-muted); max-width: 680px; }
+    .pay-head-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    // ---------------------------------------------------------- the tabs
+    .pay-tabs {
+        display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px;
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pay-tab {
+        appearance: none; background: none; border: 0; cursor: pointer;
+        padding: 9px 14px; font-size: 13px; font-weight: 650;
+        color: var(--pbim-muted); border-bottom: 2px solid transparent;
+        display: inline-flex; align-items: center; gap: 7px;
+        border-radius: var(--pbim-r-sm) var(--pbim-r-sm) 0 0;
+        &:hover { color: var(--pbim-ink); background: var(--pbim-line-2); }
+        &.is-on { color: var(--pbim-primary); border-bottom-color: var(--pbim-primary); }
+        &:disabled { cursor: default; opacity: .5; }
+        &:disabled:hover { background: none; color: var(--pbim-muted); }
+    }
+    .pay-tab-soon {
+        font-size: 10px; font-weight: 700; letter-spacing: .4px;
+        text-transform: uppercase; color: var(--pbim-muted);
+        background: var(--pbim-line-2); border-radius: var(--pbim-pill);
+        padding: 2px 7px;
+    }
+
+    // --------------------------------------------------------- the cards
+    .pay-card {
+        padding: 20px 22px; margin-bottom: 16px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg);
+        background: var(--pbim-surface);
+    }
+    .pay-card-h {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .pay-card-t { font-size: 15px; font-weight: 750; color: var(--pbim-ink); margin: 0; }
+    .pay-card-s { font-size: 12px; color: var(--pbim-muted); margin: 3px 0 0; }
+
+    .pay-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .pay-select {
+        appearance: none; font: inherit; font-size: 12px; font-weight: 600;
+        color: var(--pbim-ink); background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
+        padding: 6px 12px; max-width: 240px;
+    }
+
+    // ================================================= the band picture
+    .pay-lane { margin-bottom: 22px; }
+    .pay-lane-h {
+        display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
+        font-size: 12px; font-weight: 700; color: var(--pbim-muted);
+        letter-spacing: .4px; text-transform: uppercase;
+    }
+    .pay-axis {
+        position: relative; height: 18px; margin-left: 214px;
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pay-axis-t {
+        position: absolute; top: 0; transform: translateX(-50%);
+        font-size: 10px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    // The last tick sits ON the right edge, so centring it hangs half of it
+    // off the picture and the reader loses the currency.
+    .pay-axis-end { transform: translateX(-100%); }
+    .pay-axis-start { transform: translateX(0); }
+    .pay-axis-note {
+        margin: 6px 0 0 214px; font-size: 11px; color: var(--pbim-muted);
+    }
+    .pay-band {
+        display: grid; grid-template-columns: 206px minmax(0, 1fr);
+        gap: 8px; align-items: center; padding: 7px 0;
+        border-bottom: 1px solid var(--pbim-line-2);
+    }
+    .pay-band-id { min-width: 0; }
+    .pay-band-n {
+        font-size: 13px; font-weight: 700; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pay-band-sub { font-size: 11px; color: var(--pbim-muted); }
+    .pay-track {
+        position: relative; height: 46px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-line-2);
+    }
+    .pay-range {
+        position: absolute; top: 8px; bottom: 8px;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-primary-light);
+        border-radius: var(--pbim-r-sm);
+    }
+    .pay-range.is-suggested { border-style: dashed; }
+    .pay-mid {
+        position: absolute; top: 5px; bottom: 5px; width: 2px;
+        background: var(--pbim-primary-light);
+    }
+    .pay-dot {
+        position: absolute; top: 50%; width: 9px; height: 9px;
+        margin: -4px 0 0 -4px; border-radius: 50%;
+        background: var(--pbim-primary); border: 1px solid var(--pbim-surface);
+        cursor: pointer; padding: 0;
+    }
+    .pay-dot.is-out {
+        width: 13px; height: 13px; margin: -6px 0 0 -6px;
+        background: var(--pbim-rose);
+        box-shadow: 0 0 0 3px var(--pbim-rose-soft);
+    }
+    .pay-dot.is-over {
+        background: var(--pbim-amber);
+        box-shadow: 0 0 0 3px var(--pbim-amber-soft);
+    }
+    .pay-dot:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    .pay-grip {
+        position: absolute; top: 2px; bottom: 2px; width: 12px;
+        margin-left: -6px; border: 0; padding: 0; cursor: ew-resize;
+        background: none; border-radius: var(--pbim-r-sm);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .pay-grip::before {
+        content: ""; width: 3px; height: 26px; border-radius: var(--pbim-pill);
+        background: var(--pbim-primary);
+    }
+    .pay-grip:hover::before { width: 5px; }
+    .pay-grip:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+    .pay-edge-lab {
+        position: absolute; bottom: -3px; font-size: 10px;
+        color: var(--pbim-muted); font-variant-numeric: tabular-nums;
+        white-space: nowrap; transform: translateX(-50%);
+    }
+    .pay-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+
+    // The sentence that follows a drag.
+    //
+    // FIXED, not sticky. The band picture is far taller than a screen, so a
+    // bar at the foot of the card is a bar nobody can see while they are
+    // dragging a band four rows above it — and the whole point of the
+    // sentence is that it is true WHILE the mouse is down.
+    .pay-dragbar {
+        position: fixed; bottom: 18px; left: 50%; z-index: 17;
+        transform: translateX(-50%); width: 620px; max-width: 92vw;
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 12px 18px; border-radius: var(--pbim-r);
+        background: var(--pbim-primary-dark); color: #fff;
+        box-shadow: var(--pbim-sh-lg);
+    }
+    .pay-dragbar-t { font-size: 14px; font-weight: 700; }
+    .pay-dragbar-s { font-size: 12px; opacity: .85; }
+    .pay-dragbar .pbim-btn { margin-left: auto; }
+
+    // ------------------------------------------------------ health cards
+    .pay-health {
+        display: grid; gap: 12px; margin-bottom: 4px;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+    .pay-hc {
+        text-align: left; cursor: pointer; padding: 14px 16px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r);
+        background: var(--pbim-surface); min-width: 0;
+        &:hover { border-color: var(--pbim-primary-light); box-shadow: var(--pbim-sh); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pay-hc-n {
+        font-size: 26px; font-weight: 800; letter-spacing: -1px;
+        color: var(--pbim-ink); font-variant-numeric: tabular-nums;
+    }
+    .pay-hc-l { font-size: 12px; font-weight: 700; color: var(--pbim-ink); margin-top: 2px; }
+    .pay-hc-s { font-size: 11px; color: var(--pbim-muted); margin-top: 4px; }
+    .pay-hc-m { font-size: 11px; font-weight: 700; margin-top: 6px; color: var(--pbim-primary); }
+    .pay-hc.is-rose .pay-hc-n { color: var(--pbim-rose); }
+    .pay-hc.is-warn .pay-hc-n { color: var(--pbim-amber); }
+    .pay-hc.is-teal .pay-hc-n { color: var(--pbim-green); }
+
+    // ---------------------------------------------------------- drawers
+    .pay-scrim {
+        position: fixed; inset: 0; z-index: 18;
+        background: rgba(27, 23, 51, .38);
+    }
+    .pay-drawer {
+        position: fixed; top: 0; right: 0; bottom: 0; z-index: 19;
+        width: 560px; max-width: 100%; overflow-y: auto;
+        background: var(--pbim-surface); box-shadow: var(--pbim-sh-lg);
+        padding: 22px 24px 40px;
+    }
+    .pay-drawer-h {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 12px; margin-bottom: 14px;
+    }
+    .pay-drawer-t { font-size: 17px; font-weight: 800; color: var(--pbim-ink); margin: 0; }
+    .pay-drawer-s { font-size: 12px; color: var(--pbim-muted); margin: 4px 0 0; }
+    .pay-x {
+        appearance: none; border: 0; background: none; cursor: pointer;
+        color: var(--pbim-muted); padding: 4px; border-radius: var(--pbim-r-sm);
+        &:hover { background: var(--pbim-line-2); color: var(--pbim-ink); }
+    }
+
+    // ------------------------------------------------------------ tables
+    .pay-scroll { overflow-x: auto; }
+    .pay-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .pay-table th {
+        text-align: left; font-size: 10px; letter-spacing: .5px;
+        text-transform: uppercase; color: var(--pbim-muted); font-weight: 700;
+        padding: 8px; border-bottom: 1px solid var(--pbim-line);
+        white-space: nowrap;
+    }
+    .pay-table td {
+        padding: 8px; border-bottom: 1px solid var(--pbim-line-2);
+        vertical-align: top;
+    }
+    // A numeric column is as wide as its widest number and no wider: four
+    // equal thirds of a wide table push "Gap" to the far right, where the
+    // reader has to travel across an empty screen to find the answer.
+    .pay-num {
+        text-align: right; font-variant-numeric: tabular-nums;
+        white-space: nowrap; width: 1%;
+    }
+    .pay-rose { color: var(--pbim-rose); font-weight: 700; }
+    .pay-good { color: var(--pbim-green); font-weight: 700; }
+    .pay-warn { color: var(--pbim-amber); font-weight: 700; }
+
+    // --------------------------------------------------------- fairness
+    .pay-headline {
+        font-size: 22px; font-weight: 750; letter-spacing: -.4px;
+        color: var(--pbim-ink); margin: 0 0 6px; line-height: 1.4;
+    }
+    .pay-fcards {
+        display: grid; gap: 12px; margin: 16px 0;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .pay-fc {
+        padding: 16px 18px; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); background: var(--pbim-surface);
+    }
+    .pay-fc-n {
+        font-size: 32px; font-weight: 800; letter-spacing: -1.2px;
+        color: var(--pbim-ink); font-variant-numeric: tabular-nums;
+    }
+    .pay-fc.is-rose .pay-fc-n { color: var(--pbim-rose); }
+    .pay-fc.is-warn .pay-fc-n { color: var(--pbim-amber); }
+    .pay-fc.is-good .pay-fc-n { color: var(--pbim-green); }
+    .pay-fc-l { font-size: 12px; font-weight: 700; color: var(--pbim-ink); }
+    .pay-fc-s { font-size: 12px; color: var(--pbim-muted); margin-top: 6px; line-height: 1.6; }
+    .pay-fc-p { font-size: 11px; color: var(--pbim-muted); margin-top: 8px; }
+
+    .pay-fold {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r);
+        padding: 12px 16px; margin-top: 14px; background: var(--pbim-line-2);
+    }
+    .pay-fold-b {
+        appearance: none; border: 0; background: none; cursor: pointer;
+        font-size: 12px; font-weight: 700; color: var(--pbim-ink);
+        display: inline-flex; align-items: center; gap: 7px; padding: 0;
+    }
+    .pay-fold-l { margin: 10px 0 0; padding-left: 18px; font-size: 12px; color: var(--pbim-muted); }
+    .pay-fold-l li { margin: 5px 0; line-height: 1.6; }
+
+    // ------------------------------------------------------- empty state
+    .pay-empty { text-align: center; padding: 36px 24px; }
+    .pay-empty-t { font-size: 19px; font-weight: 750; color: var(--pbim-ink); margin: 12px 0 6px; }
+    .pay-empty-s {
+        font-size: 13px; color: var(--pbim-muted); width: 560px;
+        max-width: 100%; margin: 0 auto 16px; line-height: 1.7;
+    }
+    .pay-empty-a { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+    // --------------------------------------------------------- the phone
+    @media (max-width: 720px) {
+        .pay-axis { margin-left: 0; }
+        .pay-axis-note { margin-left: 0; }
+        .pay-band { grid-template-columns: minmax(0, 1fr); }
+        .pay-drawer { width: 100%; }
+        .pay-head-actions { width: 100%; }
+        .pay-headline { font-size: 18px; }
+        .pay-fc-n { font-size: 26px; }
+    }
+
+    // ------------------------------------------------------------ motion
+    @media (prefers-reduced-motion: no-preference) {
+        .pay-dot { transition: background-color .12s ease, box-shadow .12s ease,
+                               width .12s ease, height .12s ease; }
+        .pay-range { transition: left .08s linear, right .08s linear; }
+        .pay-hc { transition: border-color .14s ease, box-shadow .14s ease; }
+    }
+}

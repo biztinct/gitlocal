@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The printable fairness statement.
+
+         Rendered on the server from the same figures the screen shows, opened
+         in a new tab, printed with the browser's own dialog. No report engine,
+         no PDF library.
+
+         SELF-CONTAINED BY CONTRACT: no script, no stylesheet link, no image,
+         no font and no URL of any kind. A statement is saved to a laptop and
+         mailed to a board or a regulator; one whose layout depends on a
+         server it can no longer reach is not a statement. The module's own
+         test greps this template for exactly that.
+
+         Every value is escaped by QWeb, so a division called "&lt;b&gt;x&lt;/b&gt;"
+         prints those five characters and does not turn the page bold. -->
+
+    <template id="fairness_statement" name="Fairness statement">
+        <html t-att-lang="board.get('lang') or 'en'">
+        <head>
+            <meta charset="utf-8"/>
+            <title>Pay fairness statement</title>
+            <style>
+                @page { margin: 16mm 14mm; }
+                * { box-sizing: border-box; }
+                body { font: 13px/1.75 system-ui, -apple-system, "Segoe UI",
+                       Roboto, Arial, sans-serif; color: #1B1733;
+                       max-width: 900px; margin: 40px auto; padding: 0 24px;
+                       background: #fff; }
+                header { border-bottom: 3px solid #5A4BB0; padding-bottom: 18px; }
+                .eyebrow { font-size: 10px; letter-spacing: 1.6px;
+                           font-weight: 700; color: #5A4BB0; }
+                h1 { font-size: 32px; letter-spacing: -1px; font-weight: 600;
+                     margin: 10px 0 6px; }
+                h2 { font-size: 17px; font-weight: 650; margin: 32px 0 10px;
+                     letter-spacing: -.3px; page-break-after: avoid; }
+                p { margin: 8px 0; }
+                .sub { font-size: 11px; color: #64748B; margin: 0; }
+                .lead { font-size: 16px; line-height: 1.7; font-weight: 600; }
+                table { border-collapse: collapse; width: 100%;
+                        font-size: 12px; page-break-inside: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+                th { text-align: left; font-weight: 650; font-size: 10px;
+                     letter-spacing: .6px; text-transform: uppercase;
+                     color: #64748B; border-bottom: 1px solid #CBC2EE;
+                     padding: 7px 8px; }
+                td { border-bottom: 1px solid #E2E8F0; padding: 7px 8px;
+                     vertical-align: top; }
+                td.num, th.num { text-align: right;
+                                 font-variant-numeric: tabular-nums;
+                                 white-space: nowrap; }
+                .why { font-size: 11px; color: #64748B; display: block; }
+                .foot { margin-top: 34px; border-top: 1px solid #E2E8F0;
+                        padding-top: 14px; font-size: 11px; color: #64748B; }
+                ul { padding-left: 18px; }
+                li { margin: 4px 0; }
+                @media print {
+                    body { margin: 0; max-width: none; padding: 0; }
+                    h2 { margin-top: 22px; }
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <span class="eyebrow">PAY FAIRNESS STATEMENT</span>
+                <h1><t t-esc="scope_name"/></h1>
+                <p class="sub"><t t-esc="stamp"/></p>
+                <p class="sub"><t t-esc="board.get('source_label')"/></p>
+            </header>
+
+            <p class="lead"><t t-esc="board.get('headline')"/></p>
+
+            <h2>The headline numbers</h2>
+            <table>
+                <tr>
+                    <th>Question</th>
+                    <th class="num">Answer</th>
+                    <th>What it means</th>
+                </tr>
+                <tr t-foreach="board.get('cards') or []" t-as="card">
+                    <td><t t-esc="card.get('label')"/></td>
+                    <td class="num"><t t-esc="card.get('value_label') or '—'"/></td>
+                    <td>
+                        <t t-esc="card.get('sentence')"/>
+                        <span class="why" t-if="card.get('population')"
+                              t-esc="card.get('population')"/>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 t-if="board.get('levels')">By level</h2>
+            <table t-if="board.get('levels')">
+                <tr>
+                    <th>Level</th><th class="num">Women</th>
+                    <th class="num">Men</th><th class="num">Gap</th>
+                </tr>
+                <tr t-foreach="board.get('levels') or []" t-as="row">
+                    <td><t t-esc="row.get('level')"/></td>
+                    <td class="num"><t t-esc="row.get('women')"/></td>
+                    <td class="num"><t t-esc="row.get('men')"/></td>
+                    <td class="num">
+                        <t t-esc="row.get('gap_label') or row.get('note')"/>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 t-if="board.get('divisions')">By division</h2>
+            <table t-if="board.get('divisions')">
+                <tr>
+                    <th>Division</th><th class="num">Women</th>
+                    <th class="num">Men</th><th class="num">Gap</th>
+                </tr>
+                <tr t-foreach="board.get('divisions') or []" t-as="row">
+                    <td><t t-esc="row.get('name')"/></td>
+                    <td class="num"><t t-esc="row.get('women')"/></td>
+                    <td class="num"><t t-esc="row.get('men')"/></td>
+                    <td class="num">
+                        <t t-esc="row.get('gap_label') or row.get('note')"/>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 t-if="board.get('spread')">Same job, different pay</h2>
+            <table t-if="board.get('spread')">
+                <tr>
+                    <th>Job</th><th class="num">People</th>
+                    <th class="num">Lowest</th><th class="num">Middle</th>
+                    <th class="num">Highest</th><th class="num">Spread</th>
+                </tr>
+                <tr t-foreach="board.get('spread') or []" t-as="row">
+                    <td><t t-esc="row.get('name')"/></td>
+                    <td class="num"><t t-esc="row.get('people')"/></td>
+                    <td class="num"><t t-esc="row.get('low_label')"/></td>
+                    <td class="num"><t t-esc="row.get('mid_label')"/></td>
+                    <td class="num"><t t-esc="row.get('high_label')"/></td>
+                    <td class="num"><t t-esc="row.get('spread_label')"/></td>
+                </tr>
+            </table>
+
+            <h2>How this was measured</h2>
+            <ul>
+                <li t-foreach="board.get('method') or []" t-as="line">
+                    <t t-esc="line"/>
+                </li>
+            </ul>
+
+            <p class="foot">
+                Every figure on this page was worked out when it was printed,
+                from the pay this company actually paid. Nothing here is stored
+                or carried forward.
+            </p>
+        </body>
+        </html>
+    </template>
+
+</odoo>

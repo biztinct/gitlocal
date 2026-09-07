@@ -1,0 +1,1814 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_pay
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-08 00:00+0000\n"
+"PO-Revision-Date: 2026-09-08 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "\"Paid least for the same work\" means at least %(pct)s%% under the middle pay of everybody in the same job, where at least three people hold it."
+msgstr "\"Trả thấp nhất cho cùng một công việc\" nghĩa là thấp hơn ít nhất %(pct)s%% so với mức lương giữa của tất cả những người cùng chức danh, khi có ít nhất ba người giữ chức danh đó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "%(band)s already has a range in force from %(since)s. Two ranges for the same family, level and country cannot cover the same days — end the old one the day before the new one starts."
+msgstr "%(band)s đã có một khoảng lương hiệu lực từ %(since)s. Hai khoảng lương cho cùng nhóm công việc, cùng bậc và cùng quốc gia không thể trùng ngày — hãy kết thúc khoảng cũ vào ngày trước khi khoảng mới bắt đầu."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "%(bands)s bands and %(jobs)s jobs saved."
+msgstr "Đã lưu %(bands)s khoảng lương và %(jobs)s chức danh."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cell)s is not an amount"
+msgstr "%(cell)s không phải là một số tiền"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s is not a country this product runs payroll for"
+msgstr "%(code)s không phải là quốc gia mà sản phẩm này tính lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s is not a currency on file"
+msgstr "%(code)s không phải là loại tiền có trong hệ thống"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s · %(count)s bands"
+msgstr "%(code)s · %(count)s khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cost)s a year to bring %(people)s back in"
+msgstr "%(cost)s mỗi năm để đưa %(people)s trở lại trong khoảng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cost)s a year would bring everybody back in"
+msgstr "%(cost)s mỗi năm sẽ đưa tất cả trở lại trong khoảng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(count)s above"
+msgstr "%(count)s trên khoảng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(count)s below"
+msgstr "%(count)s dưới khoảng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s companies"
+msgstr "%(count)s công ty"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s people"
+msgstr "%(count)s người"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s people have no gender on their record, so they are in no comparison above."
+msgstr "%(count)s người chưa có giới tính trên hồ sơ, nên không nằm trong bất kỳ so sánh nào ở trên."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s people measured."
+msgstr "Đã đo trên %(count)s người."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(family)s · level %(level)s · %(country)s"
+msgstr "%(family)s · bậc %(level)s · %(country)s"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(good)s row(s) ready, %(bad)s to fix."
+msgstr "%(good)s dòng sẵn sàng, %(bad)s dòng cần sửa."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "%(job)s is already in %(band)s over those days. A job sits in one band at a time."
+msgstr "%(job)s đã nằm trong %(band)s trong những ngày đó. Mỗi chức danh chỉ thuộc một khoảng lương tại một thời điểm."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(job)s is not in a band yet. Put it in one and the suggested offer appears here; until then the best guide is what %(people)s already doing it are paid."
+msgstr "%(job)s chưa nằm trong khoảng lương nào. Hãy xếp nó vào một khoảng thì mức đề xuất sẽ hiện ở đây; trước mắt, cơ sở tốt nhất là mức lương của %(people)s đang làm công việc này."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(made)s band(s) saved."
+msgstr "Đã lưu %(made)s khoảng lương."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+msgid "%(pct)s%% of the way through the band"
+msgstr "Ở mức %(pct)s%% của khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(people)s · %(low)s to %(high)s"
+msgstr "%(people)s · %(low)s đến %(high)s"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(people)s would sit above the band"
+msgstr "%(people)s sẽ nằm trên khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "%(rows)s people placed in %(ms)s ms."
+msgstr "Đã xếp %(rows)s người trong %(ms)s ms."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(women)s women and %(men)s men, %(compared)s of them in a group big enough to compare."
+msgstr "%(women)s nữ và %(men)s nam, trong đó %(compared)s người thuộc nhóm đủ lớn để so sánh."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(women)s women, %(men)s men."
+msgstr "%(women)s nữ, %(men)s nam."
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_hr_contract__pb_position_pct
+msgid "0 is the bottom of the band and 100 the top."
+msgstr "0 là đáy khoảng lương và 100 là đỉnh."
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_position__position_pct
+msgid "0 is the bottom of the band and 100 the top. Below 0 or above 100 means the pay is outside it."
+msgstr "0 là đáy khoảng lương và 100 là đỉnh. Dưới 0 hoặc trên 100 nghĩa là mức lương nằm ngoài khoảng."
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__level
+msgid "1 is the most junior. Levels are this company's own ladder."
+msgstr "1 là bậc thấp nhất. Các bậc là thang riêng của công ty này."
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "<span class=\"eyebrow\">PAY FAIRNESS STATEMENT</span>"
+msgstr "<span class=\"eyebrow\">BÁO CÁO CÔNG BẰNG TIỀN LƯƠNG</span>"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "A band has a lowest and a highest edge."
+msgstr "Một khoảng lương có một mép thấp nhất và một mép cao nhất."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "A band is the lowest, middle and highest monthly pay\n                            for one level of one kind of work. There is nobody\n                            with an open contract and a job title here yet, so\n                            there is nothing to draw one from — import a\n                            spreadsheet to start."
+msgstr "Khoảng lương là mức thấp nhất, mức giữa và mức cao nhất hằng tháng cho một bậc của một loại công việc. Ở đây chưa có ai có hợp đồng đang hiệu lực kèm chức danh, nên chưa có gì để dựng khoảng lương — hãy nhập từ bảng tính để bắt đầu."
+
+#. module: pb_pay
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_band
+msgid "A band is the lowest, middle and highest monthly pay for one level of one job family. The Pay screen can suggest a full set from what you already pay."
+msgstr "Khoảng lương là mức thấp nhất, mức giữa và mức cao nhất hằng tháng cho một bậc của một nhóm công việc. Màn hình Lương có thể đề xuất trọn bộ từ mức bạn đang trả."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "A band needs a highest amount above zero, or nobody can be measured against it."
+msgstr "Khoảng lương cần một mức cao nhất lớn hơn không, nếu không thì không ai đo được theo nó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "A band reads lowest, middle, highest. On %(band)s the three numbers are not in that order."
+msgstr "Khoảng lương đọc theo thứ tự thấp nhất, giữa, cao nhất. Ở %(band)s ba con số không theo thứ tự đó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "A comparison is made only where there are at least %(count)s people on each side. Everything smaller says so rather than printing a number nobody should act on."
+msgstr "Chỉ so sánh khi mỗi bên có ít nhất %(count)s người. Nhóm nhỏ hơn sẽ nói rõ như vậy thay vì in ra một con số không ai nên hành động theo."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_family.py:0
+msgid "A job family needs a name."
+msgstr "Nhóm công việc cần có tên."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "A level runs from 1 to %(top)s."
+msgstr "Bậc chạy từ 1 đến %(top)s."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "A manager paid less"
+msgstr "Quản lý được trả thấp hơn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "A spreadsheet with one band per row: job family,\n                            level, country, currency, lowest, middle, highest,\n                            and the dates it is in force. Export first if you\n                            want the exact columns."
+msgstr "Một bảng tính, mỗi dòng một khoảng lương: nhóm công việc, bậc, quốc gia, loại tiền, thấp nhất, giữa, cao nhất và các ngày hiệu lực. Hãy xuất ra trước nếu bạn muốn đúng các cột."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+msgid "Above the band"
+msgstr "Trên khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Across everybody"
+msgstr "Trên toàn bộ nhân sự"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__active
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__compa
+msgid "Against the middle"
+msgstr "So với mức giữa"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Allow this site to open a new tab and press it again."
+msgstr "Hãy cho phép trang này mở tab mới rồi bấm lại."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Amounts from companies that keep their books in different money are never added together without a rate."
+msgstr "Số tiền của các công ty ghi sổ bằng loại tiền khác nhau không bao giờ được cộng gộp khi chưa có tỷ giá."
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Answer"
+msgstr "Câu trả lời"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "At least 15% under the middle pay of everybody doing\n                            the same job."
+msgstr "Thấp hơn ít nhất 15% so với mức lương giữa của những người cùng chức danh."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "At least 15% under the middle pay of everybody doing\n                            the same job. Names are for a pay manager to see."
+msgstr "Thấp hơn ít nhất 15% so với mức lương giữa của những người cùng chức danh. Chỉ người quản lý lương mới thấy tên."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "B"
+msgstr "tỷ"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__band_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__band_id
+msgid "Band"
+msgstr "Khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Band moved."
+msgstr "Đã chuyển khoảng lương."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_band_state
+msgid "Band standing"
+msgstr "Vị trí so với khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__band_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__band_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_list
+msgid "Bands"
+msgstr "Khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Basic monthly pay only. Overtime, bonuses and allowances vary month to month and would make a gap say more about last month than about pay."
+msgstr "Chỉ tính lương cơ bản hằng tháng. Làm thêm giờ, thưởng và phụ cấp thay đổi theo tháng và sẽ khiến chênh lệch nói về tháng vừa rồi nhiều hơn là về tiền lương."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+msgid "Below the band"
+msgstr "Dưới khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "By division"
+msgstr "Theo khối"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "By level"
+msgstr "Theo bậc"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__kh
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Changes"
+msgstr "Thay đổi"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Choose a spreadsheet"
+msgstr "Chọn một bảng tính"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Compared with"
+msgstr "So với"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Comparing every woman with every man, without regard to the work, the difference is %(pct)s%%."
+msgstr "So sánh mọi phụ nữ với mọi nam giới, không xét đến công việc, chênh lệch là %(pct)s%%."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__contract_id
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Copied."
+msgstr "Đã sao chép."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Copy the sentence"
+msgstr "Sao chép câu này"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__country_code
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__currency_id
+msgid "Currency"
+msgstr "Loại tiền"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Dismiss"
+msgstr "Bỏ qua"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_bands__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_fairness__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Does this already"
+msgstr "Đã làm việc này rồi"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Each in its own money"
+msgstr "Mỗi bên theo tiền của mình"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every company you can see"
+msgstr "Mọi công ty bạn xem được"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every country"
+msgstr "Mọi quốc gia"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Every figure on this page was worked out when it was printed,\n                from the pay this company actually paid. Nothing here is stored\n                or carried forward."
+msgstr "Mọi con số trên trang này được tính ngay khi in, từ tiền lương công ty đã thực trả. Không có gì ở đây được lưu lại hay chuyển tiếp."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every job family"
+msgstr "Mọi nhóm công việc"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every job title has been put in a family and\n                                    on a level from the words in it, and the\n                                    range comes from the people doing that work\n                                    today. Nothing below is saved until you say\n                                    so, and every number can be changed\n                                    afterwards."
+msgstr "Mỗi chức danh đã được xếp vào một nhóm công việc và một bậc dựa trên chính các từ trong tên chức danh, còn khoảng lương lấy từ những người đang làm công việc đó hôm nay. Không có gì bên dưới được lưu cho đến khi bạn đồng ý, và mọi con số đều có thể sửa sau."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Every open contract, measured against the band in force today for its job."
+msgstr "Mọi hợp đồng đang hiệu lực, đo theo khoảng lương đang áp dụng hôm nay cho chức danh đó."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every person is a dot placed by their pay.\n                                    Drag a band's edge and the people who fall\n                                    outside light up, with what it would cost to\n                                    bring them back in."
+msgstr "Mỗi người là một chấm đặt theo mức lương của họ. Kéo mép của một khoảng lương và những người rơi ra ngoài sẽ sáng lên, kèm chi phí để đưa họ trở lại."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Export"
+msgstr "Xuất ra"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_fairness
+#: model:ir.model,name:pb_pay.model_pb_pay_fairness
+msgid "Fairness"
+msgstr "Công bằng"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Fairness is not switched on for you"
+msgstr "Phần Công bằng chưa được bật cho bạn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Five questions about pay that nobody\n                                    remembers to ask. Press one to see who it\n                                    is about."
+msgstr "Năm câu hỏi về tiền lương mà không ai nhớ để hỏi. Bấm vào một câu để xem nó nói về ai."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "From the payroll paid in %(month)s."
+msgstr "Từ kỳ lương đã trả trong %(month)s."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Gap"
+msgstr "Chênh lệch"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__max_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Highest"
+msgstr "Cao nhất"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Highest pay divided by lowest pay inside each band. Counted here when the highest is at least twice the lowest."
+msgstr "Mức cao nhất chia cho mức thấp nhất trong mỗi khoảng lương. Được tính ở đây khi mức cao nhất gấp ít nhất hai lần mức thấp nhất."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "How experienced this person is"
+msgstr "Người này có bao nhiêu kinh nghiệm"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "How far apart the lowest and the highest paid people\n                            doing the same job are. A very wide spread is\n                            usually two jobs wearing one name."
+msgstr "Người được trả thấp nhất và người được trả cao nhất trong cùng một chức danh cách nhau bao xa. Độ giãn quá rộng thường là hai công việc mang chung một tên."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "How this is measured"
+msgstr "Cách tính con số này"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "How this was measured"
+msgstr "Cách tính các con số này"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "How wide each band has become"
+msgstr "Mỗi khoảng lương đã rộng ra bao nhiêu"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_bands__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_fairness__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu chọn, các tin nhắn mới cần bạn xử lý."
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu chọn, một số tin nhắn gửi không thành công."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import"
+msgstr "Nhập vào"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import bands"
+msgstr "Nhập khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import pay bands"
+msgstr "Nhập khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Import the %(count)s good rows"
+msgstr "Nhập %(count)s dòng hợp lệ"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__date_from
+msgid "In force from"
+msgstr "Hiệu lực từ"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "In force since %(day)s"
+msgstr "Hiệu lực từ %(day)s"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__date_to
+msgid "In force until"
+msgstr "Hiệu lực đến"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__in
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__id
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__in
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__in
+msgid "Inside the band"
+msgstr "Trong khoảng lương"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Job"
+msgstr "Chức danh"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_list
+msgid "Job families"
+msgstr "Nhóm công việc"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model,name:pb_pay.model_pb_pay_family
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__family_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__name
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_form
+msgid "Job family"
+msgstr "Nhóm công việc"
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_band_job
+msgid "Job in a pay band"
+msgstr "Chức danh trong khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__job_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__job_id
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__job_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__job_ids
+msgid "Jobs"
+msgstr "Chức danh"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Jobs in this band"
+msgstr "Các chức danh trong khoảng lương này"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "K"
+msgstr "nghìn"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__company_ids
+msgid "Leave empty and every company in this country uses the band."
+msgstr "Để trống thì mọi công ty ở quốc gia này đều dùng khoảng lương này."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Less than %(new)s months of service, paid above the middle of everybody with %(old)s months or more in the same job and company. Jobs with fewer than three long-serving people are skipped."
+msgstr "Làm việc dưới %(new)s tháng nhưng được trả cao hơn mức giữa của những người làm từ %(old)s tháng trở lên trong cùng chức danh và cùng công ty. Bỏ qua các chức danh có ít hơn ba người làm lâu năm."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Let go to save it. Nothing has changed yet."
+msgstr "Thả tay ra để lưu. Chưa có gì thay đổi."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__level
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Level"
+msgstr "Bậc"
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_viewer
+msgid "Look at the pay bands, the health cards and the fairness figures, without the names behind them."
+msgstr "Xem khoảng lương, các thẻ cảnh báo và các con số về công bằng, không kèm tên người."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__min_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Lowest"
+msgstr "Thấp nhất"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "M"
+msgstr "triệu"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__my
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Men"
+msgstr "Nam"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__mid_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Middle"
+msgstr "Giữa"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Middle for the job"
+msgstr "Mức giữa của chức danh"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Middle pay today"
+msgstr "Mức lương giữa hiện nay"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__wage
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Move the highest edge of this band"
+msgstr "Chuyển mép cao nhất của khoảng lương này"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Move the lowest edge of this band"
+msgstr "Chuyển mép thấp nhất của khoảng lương này"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "New to this level"
+msgstr "Mới ở bậc này"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Newer people paid more"
+msgstr "Người mới được trả cao hơn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "No approved payroll to read yet, so these figures come from the pay written on open contracts."
+msgstr "Chưa có kỳ lương nào được duyệt để đọc, nên các con số này lấy từ mức lương ghi trên hợp đồng đang hiệu lực."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__no_band
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__no_band
+msgid "No band for this job yet"
+msgstr "Chức danh này chưa có khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "No job on record"
+msgstr "Chưa có chức danh trên hồ sơ"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_band
+msgid "No pay bands yet"
+msgstr "Chưa có khoảng lương nào"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Nobody falls outside the band there."
+msgstr "Không ai nằm ngoài khoảng lương ở mức đó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Nobody has priced %(codes)s against %(target)s, so those companies are left out rather than converted at a rate this product would have to invent."
+msgstr "Chưa ai định giá %(codes)s so với %(target)s, nên các công ty đó được để riêng thay vì quy đổi theo một tỷ giá mà sản phẩm này phải tự bịa ra."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Nobody to measure yet"
+msgstr "Chưa có ai để đo"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not enough people to compare fairly"
+msgstr "Chưa đủ người để so sánh công bằng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not enough people to compare fairly."
+msgstr "Chưa đủ người để so sánh công bằng."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not enough people to compare fairly. A gap needs at least %(count)s women and %(count)s men doing work at the same %(unit)s."
+msgstr "Chưa đủ người để so sánh công bằng. Một chênh lệch cần ít nhất %(count)s nữ và %(count)s nam làm việc ở cùng %(unit)s."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Not in a band yet — %(people)s"
+msgstr "Chưa thuộc khoảng lương nào — %(people)s"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not in a division"
+msgstr "Không thuộc khối nào"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__note
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__note
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Nothing on record"
+msgstr "Chưa có trên hồ sơ"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần làm"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn gửi lỗi"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Offer %(offer)s. That is inside %(band)s and %(compare)s what %(people)s already doing this job are paid."
+msgstr "Đề xuất %(offer)s. Mức này nằm trong %(band)s và %(compare)s mức lương của %(people)s đang làm công việc này."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__company_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Only these companies"
+msgstr "Chỉ các công ty này"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Open contracts only, and only where both people are paid by the same company — two entities keep their books in two currencies and there is no honest comparison without a rate."
+msgstr "Chỉ xét hợp đồng đang hiệu lực, và chỉ khi cả hai người được cùng một công ty trả lương — hai pháp nhân ghi sổ bằng hai loại tiền thì không thể so sánh trung thực nếu không có tỷ giá."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__above
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__above
+msgid "Paid above the band"
+msgstr "Được trả trên khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__below
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__below
+msgid "Paid below the band"
+msgstr "Được trả dưới khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Paid least for the same work"
+msgstr "Trả thấp nhất cho cùng một công việc"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_band
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_band_id
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Pay band"
+msgstr "Khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.act_window,name:pb_pay.action_pb_pay_band
+#: model:ir.actions.client,name:pb_pay.action_pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_bands
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_list
+msgid "Pay bands"
+msgstr "Khoảng lương"
+
+#. module: pb_pay
+#: model:ir.module.category,name:pb_pay.module_category_pay
+#: model:res.groups.privilege,name:pb_pay.res_groups_privilege_pay
+msgid "Pay bands and fairness"
+msgstr "Khoảng lương và công bằng"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pay bands are not switched on for you"
+msgstr "Khoảng lương chưa được bật cho bạn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Pay gap by gender"
+msgstr "Chênh lệch lương theo giới"
+
+#. module: pb_pay
+#: model:ir.actions.server,name:pb_pay.cron_pay_positions_ir_actions_server
+msgid "Payobook: work out where everybody sits in their pay band"
+msgstr "Payobook: tính vị trí của mọi người trong khoảng lương của họ"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__people_count
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_list
+msgid "People"
+msgstr "Người"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__person_id
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__ph
+msgid "Philippines"
+msgstr "Philippines"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pick a job"
+msgstr "Chọn một chức danh"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Pick a job to place somebody in."
+msgstr "Hãy chọn một chức danh để xếp người vào."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pick the job and say how much of it the person has\n                            done before. The suggested offer is the middle of\n                            the band, moved by up to a tenth of its width."
+msgstr "Chọn chức danh và cho biết người đó đã làm công việc này nhiều đến đâu. Mức đề xuất là mức giữa của khoảng lương, dịch tối đa một phần mười độ rộng."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_place
+msgid "Place a new hire"
+msgstr "Xếp lương người mới"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_position_pct
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__position_pct
+msgid "Position in band"
+msgstr "Vị trí trong khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Prepared by %(reader)s on %(day)s · %(count)s people measured"
+msgstr "%(reader)s lập ngày %(day)s · đo trên %(count)s người"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Print the statement"
+msgstr "In báo cáo"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Put back the way it was."
+msgstr "Đã đưa về như cũ."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Putting this right is a pay review, which arrives in the\n                    next release. Until then, a band edge can be moved above\n                    and a contract changed on the person's own record."
+msgstr "Việc sửa lại thuộc về đợt xét lương, sẽ có ở bản phát hành kế tiếp. Trước mắt, bạn có thể chuyển mép khoảng lương ở trên và sửa hợp đồng trên hồ sơ của từng người."
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Reading the pay bands…"
+msgstr "Đang đọc khoảng lương…"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Review"
+msgstr "Xét lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Row"
+msgstr "Dòng"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi tin nhắn SMS"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Same job, different pay"
+msgstr "Cùng chức danh, khác lương"
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_viewer
+msgid "See the pay bands"
+msgstr "Xem khoảng lương"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_manager
+msgid "Set the pay bands"
+msgstr "Đặt khoảng lương"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__code
+msgid "Short code"
+msgstr "Mã ngắn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Show it all in the group's money"
+msgstr "Hiện tất cả theo tiền của tập đoàn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Shown in %(target)s at the rate on file."
+msgstr "Hiển thị theo %(target)s với tỷ giá đang có."
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__sg
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Somebody in their first year is paid more than the middle of what long-serving people in the same job earn."
+msgstr "Có người trong năm đầu tiên được trả cao hơn mức giữa của những người làm lâu năm cùng chức danh."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Somebody is paid less than a person who reports to them."
+msgstr "Có người được trả thấp hơn cấp dưới của mình."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Somebody with the pay role can show you the bands\n                            and what they mean. Nothing is missing from your\n                            screen; this part of the product is simply not\n                            yours to open."
+msgstr "Người có vai trò về lương có thể cho bạn xem các khoảng lương và ý nghĩa của chúng. Màn hình của bạn không thiếu gì cả; phần này của sản phẩm đơn giản là không thuộc quyền mở của bạn."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Someone"
+msgstr "Một người"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Spread"
+msgstr "Độ giãn"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__state
+msgid "Standing"
+msgstr "Vị trí"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Suggested offer"
+msgstr "Mức đề xuất"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__th
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That band could not be moved."
+msgstr "Không chuyển được khoảng lương đó."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That band could not be put back."
+msgstr "Không đưa lại được khoảng lương đó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That band no longer exists."
+msgstr "Khoảng lương đó không còn nữa."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That file could not be read. Save it as a CSV and try again."
+msgstr "Không đọc được tệp đó. Hãy lưu dưới dạng CSV rồi thử lại."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That file is empty."
+msgstr "Tệp đó rỗng."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That job could not be placed just now."
+msgstr "Hiện chưa xếp được chức danh đó."
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_band_job_job_band_uniq
+msgid "That job is already in this band."
+msgstr "Chức danh đó đã nằm trong khoảng lương này."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(people)s already doing this job are paid from %(low)s to %(high)s, with %(mid)s in the middle."
+msgstr "%(people)s đang làm công việc này được trả từ %(low)s đến %(high)s, với %(mid)s ở mức giữa."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "The band picture"
+msgstr "Bức tranh khoảng lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The bands could not be exported."
+msgstr "Không xuất được các khoảng lương."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "The companies in this view keep their books in %(codes)s. Two amounts in two currencies cannot be compared without a rate, so only %(main)s is measured here — switch to the group's money to bring the rest in."
+msgstr "Các công ty trong khung nhìn này ghi sổ bằng %(codes)s. Hai số tiền ở hai loại tiền không thể so sánh nếu không có tỷ giá, nên ở đây chỉ đo %(main)s — hãy chuyển sang tiền của tập đoàn để đưa phần còn lại vào."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The fairness figures could not be worked out just now."
+msgstr "Hiện chưa tính được các con số về công bằng."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "The gap inside each level of the bands, which is the\n                            like-for-like comparison."
+msgstr "Chênh lệch trong từng bậc của các khoảng lương, tức là so sánh tương đương."
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "The headline numbers"
+msgstr "Các con số chính"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "The highest paid person in a band, next to the lowest. A very wide band is usually two jobs wearing one name."
+msgstr "Người được trả cao nhất trong một khoảng lương, đặt cạnh người thấp nhất. Khoảng lương quá rộng thường là hai công việc mang chung một tên."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The jobs could not be read just now."
+msgstr "Hiện chưa đọc được danh sách chức danh."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "The lowest amount has to stay under the highest one."
+msgstr "Mức thấp nhất phải luôn nhỏ hơn mức cao nhất."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "The middle pay of all women against the middle pay of all men. Published in some countries; it mostly measures which jobs each group holds."
+msgstr "Mức lương giữa của toàn bộ nữ so với mức lương giữa của toàn bộ nam. Một số quốc gia yêu cầu công bố con số này; nó chủ yếu đo xem mỗi nhóm đang giữ những công việc nào."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "The middle pay of each side, compared %(basis)s and averaged by how many women are in each. Never a straight average of everybody: that measures who holds which job."
+msgstr "Mức lương giữa của mỗi bên, so sánh %(basis)s và lấy bình quân theo số phụ nữ trong từng nhóm. Không bao giờ lấy bình quân thẳng của tất cả: cách đó chỉ đo ai đang giữ công việc nào."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The pass could not be run just now."
+msgstr "Hiện chưa chạy được lượt tính."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The pay bands could not be read just now. Try again in a moment."
+msgstr "Hiện chưa đọc được khoảng lương. Hãy thử lại sau giây lát."
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_position__compa
+msgid "The pay divided by the middle of the band. 1.0 is exactly the middle."
+msgstr "Mức lương chia cho mức giữa của khoảng lương. 1,0 là đúng ở giữa."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The statement could not be prepared."
+msgstr "Không chuẩn bị được báo cáo."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "The whole group"
+msgstr "Toàn tập đoàn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Their pay"
+msgstr "Lương của họ"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Their pay is over the highest amount their band allows. That is not always wrong — it is always worth knowing."
+msgstr "Lương của họ vượt mức cao nhất mà khoảng lương cho phép. Điều đó không phải lúc nào cũng sai — nhưng luôn đáng biết."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Their pay is under the lowest amount their band allows."
+msgstr "Lương của họ thấp hơn mức thấp nhất mà khoảng lương cho phép."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "There are no open contracts in this view, so there\n                            is nothing to compare. Add people and this fills\n                            itself in."
+msgstr "Khung nhìn này không có hợp đồng đang hiệu lực nào nên chưa có gì để so sánh. Thêm người vào thì phần này sẽ tự đầy lên."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "There is nobody to measure in this view yet."
+msgstr "Khung nhìn này chưa có ai để đo."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "There is nobody to measure in this view."
+msgstr "Khung nhìn này không có ai để đo."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "These bands are a suggestion. Press “Use these” first and then you can move them."
+msgstr "Các khoảng lương này mới là đề xuất. Hãy bấm “Dùng các khoảng này” trước rồi bạn mới chuyển được chúng."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "These figures are about everybody's pay, so they are\n                            offered to the people who look after it."
+msgstr "Các con số này nói về tiền lương của tất cả mọi người, nên chỉ dành cho những người phụ trách tiền lương."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "These jobs are in no band, so nobody doing\n                                    them can be measured. What they are paid\n                                    today is beside each one."
+msgstr "Các chức danh này chưa thuộc khoảng lương nào nên không đo được ai đang làm chúng. Mức lương hiện nay được ghi bên cạnh từng chức danh."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "This band"
+msgstr "Khoảng lương này"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Those bands could not be saved."
+msgstr "Không lưu được các khoảng lương đó."
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_family_name_uniq
+msgid "Two job families cannot have the same name."
+msgstr "Hai nhóm công việc không thể trùng tên."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Under by"
+msgstr "Thấp hơn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "Unnamed"
+msgstr "Chưa đặt tên"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Use these"
+msgstr "Dùng các khoảng này"
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__vn
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "What is wrong"
+msgstr "Có gì sai"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "What it means"
+msgstr "Nghĩa là gì"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_form
+msgid "What kind of work this family covers"
+msgstr "Nhóm công việc này bao gồm loại công việc nào"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "What this company means to pay for each kind of work,\n                        and where everybody actually sits. Nothing here changes\n                        anybody's pay."
+msgstr "Mức công ty này định trả cho từng loại công việc, và thực tế mọi người đang nằm ở đâu. Không có gì ở đây làm thay đổi lương của bất kỳ ai."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "What to measure"
+msgstr "Đo phạm vi nào"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Where"
+msgstr "Ở đâu"
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_position
+msgid "Where a contract sits in its band"
+msgstr "Vị trí của một hợp đồng trong khoảng lương"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_position_list
+msgid "Where people sit"
+msgstr "Mọi người đang nằm ở đâu"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Women"
+msgstr "Nữ"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women and men are paid the same, %(basis)s."
+msgstr "Nữ và nam được trả như nhau, %(basis)s."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women earn %(pct)s%% less than men doing work at the same %(unit)s."
+msgstr "Nữ được trả thấp hơn nam %(pct)s%% khi làm việc ở cùng %(unit)s."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women earn %(pct)s%% more than men doing work at the same %(unit)s."
+msgstr "Nữ được trả cao hơn nam %(pct)s%% khi làm việc ở cùng %(unit)s."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Work it out again"
+msgstr "Tính lại"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Worked out from the pay this company actually paid,\n                        every time you open it. Nothing is stored."
+msgstr "Được tính từ tiền lương công ty đã thực trả, mỗi lần bạn mở màn hình này. Không có gì được lưu lại."
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__as_of
+msgid "Worked out on"
+msgstr "Tính vào ngày"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Working it out…"
+msgstr "Đang tính…"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Worth knowing"
+msgstr "Đáng biết"
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_manager
+msgid "Write and move pay bands, put jobs in them, import them, and see who is paid least for the same work."
+msgstr "Tạo và chuyển khoảng lương, xếp chức danh vào chúng, nhập từ bảng tính, và xem ai được trả thấp nhất cho cùng một công việc."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "You can look at the pay bands, but changing one is for a pay manager. Ask one of them to make the change."
+msgstr "Bạn có thể xem các khoảng lương, nhưng việc thay đổi thuộc về người quản lý lương. Hãy nhờ họ thực hiện thay đổi."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "You cannot read the pay bands."
+msgstr "Bạn không được xem các khoảng lương."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "You cannot read this."
+msgstr "Bạn không được xem phần này."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "You have no pay bands yet — here is a set\n                                    drawn from what you already pay"
+msgstr "Bạn chưa có khoảng lương nào — đây là một bộ dựng từ mức bạn đang trả"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "above"
+msgstr "cao hơn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "and %(count)s more not drawn"
+msgstr "và %(count)s người nữa chưa vẽ"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "and %(count)s more."
+msgstr "và %(count)s dòng nữa."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "below"
+msgstr "thấp hơn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "job"
+msgstr "chức danh"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "job by job"
+msgstr "theo từng chức danh"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "level"
+msgstr "bậc"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "level by level"
+msgstr "theo từng bậc"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "level with"
+msgstr "ngang bằng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "lowest, middle and highest are not in that order"
+msgstr "thấp nhất, giữa và cao nhất không theo thứ tự đó"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "no job family"
+msgstr "thiếu nhóm công việc"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "on"
+msgstr "ngày"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "people measured"
+msgstr "người được đo"
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "prepared by"
+msgstr "người lập"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "reports: %(name)s"
+msgstr "cấp dưới: %(name)s"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "soon"
+msgstr "sắp có"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "the level has to be a number from 1 to %(top)s"
+msgstr "bậc phải là một số từ 1 đến %(top)s"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "this band"
+msgstr "khoảng lương này"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "1 person"
+msgstr "1 người"

@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_pay_family_user,job family read,model_pb_pay_family,base.group_user,1,0,0,0
+access_pb_pay_family_manager,job family manager,model_pb_pay_family,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_family_system,job family system,model_pb_pay_family,base.group_system,1,1,1,1
+access_pb_pay_band_user,pay band read,model_pb_pay_band,base.group_user,1,0,0,0
+access_pb_pay_band_manager,pay band manager,model_pb_pay_band,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_band_system,pay band system,model_pb_pay_band,base.group_system,1,1,1,1
+access_pb_pay_band_job_user,job in band read,model_pb_pay_band_job,base.group_user,1,0,0,0
+access_pb_pay_band_job_manager,job in band manager,model_pb_pay_band_job,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_band_job_system,job in band system,model_pb_pay_band_job,base.group_system,1,1,1,1
+access_pb_pay_position_viewer,position read,model_pb_pay_position,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_position_manager,position manager,model_pb_pay_position,pb_pay.group_pay_manager,1,0,0,0
+access_pb_pay_position_system,position system,model_pb_pay_position,base.group_system,1,1,1,1

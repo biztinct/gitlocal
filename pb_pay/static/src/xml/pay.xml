@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+<!--
+    Pay — bands and fairness.
+
+    Written against the rules the platform enforces silently: the word `not`
+    is never used in an expression (OWL rewrites `and` and `or` and NOT that
+    one), no element carries two flavours of class attribute, no expression
+    names a JavaScript global, and no comment contains a double dash.
+-->
+
+<t t-name="pb_pay.PbPayScreen">
+    <div class="pbim pbim-page pay">
+        <div class="pay-wrap">
+
+            <!-- ============================================ the header -->
+            <div class="pay-head">
+                <div class="pay-head-id">
+                    <HubBackChip t-if="back" back="back" tone="'light'"/>
+                    <p class="pbim-eyebrow">Pay</p>
+                    <h1 class="pay-h" t-if="state.tab === 'bands'">Pay bands</h1>
+                    <h1 class="pay-h" t-else="">Fairness</h1>
+                    <p class="pay-s" t-if="state.tab === 'bands'">
+                        What this company means to pay for each kind of work,
+                        and where everybody actually sits. Nothing here changes
+                        anybody's pay.
+                    </p>
+                    <p class="pay-s" t-else="">
+                        Worked out from the pay this company actually paid,
+                        every time you open it. Nothing is stored.
+                    </p>
+                </div>
+                <div class="pay-head-actions" t-if="state.tab === 'bands'">
+                    <button class="pbim-btn ghost sm" t-on-click="() => this.recompute()"
+                            t-att-disabled="state.busy">
+                        <t t-out="ic('refresh', 14)"/> Work it out again
+                    </button>
+                    <button class="pbim-btn ghost sm" t-on-click="() => this.exportBands()">
+                        <t t-out="ic('download', 14)"/> Export
+                    </button>
+                    <button class="pbim-btn outline sm" t-on-click="() => this.openImport()">
+                        <t t-out="ic('upload', 14)"/> Import
+                    </button>
+                    <button class="pbim-btn primary sm" t-on-click="() => this.openPlace()">
+                        <t t-out="ic('userPlus', 14)"/> Place a new hire
+                    </button>
+                </div>
+                <div class="pay-head-actions" t-else="">
+                    <button class="pbim-btn outline sm"
+                            t-on-click="() => this.printStatement()">
+                        <t t-out="ic('printer', 14)"/> Print the statement
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================== the tabs -->
+            <div class="pay-tabs">
+                <button t-foreach="tabs" t-as="tab" t-key="tab.key"
+                        t-attf-class="pay-tab {{ state.tab === tab.key ? 'is-on' : '' }}"
+                        t-att-disabled="tab.ready ? false : true"
+                        t-att-title="tab.ready ? '' : 'Coming in the next release'"
+                        t-on-click="() => this.setTab(tab.key)">
+                    <t t-out="ic(tab.icon, 15)"/>
+                    <span t-esc="tab.label"/>
+                    <span class="pay-tab-soon" t-if="!tab.ready">soon</span>
+                </button>
+            </div>
+
+            <div class="pbim-note" t-if="state.failed">
+                <t t-esc="state.failed"/>
+            </div>
+
+            <div class="pbim-busy" t-if="!state.loaded">Reading the pay bands…</div>
+
+            <!-- =========================================== BANDS -->
+            <t t-if="state.loaded and state.tab === 'bands'">
+                <t t-if="state.board and !state.board.allowed">
+                    <div class="pay-card pay-empty">
+                        <t t-out="ic('lock', 28)"/>
+                        <p class="pay-empty-t">Pay bands are not switched on for you</p>
+                        <p class="pay-empty-s">
+                            Somebody with the pay role can show you the bands
+                            and what they mean. Nothing is missing from your
+                            screen; this part of the product is simply not
+                            yours to open.
+                        </p>
+                    </div>
+                </t>
+
+                <t t-if="state.board and state.board.allowed">
+                    <!-- the suggestion banner -->
+                    <div class="pay-card" t-if="showingSuggestion">
+                        <div class="pay-card-h">
+                            <div>
+                                <p class="pay-card-t">
+                                    You have no pay bands yet — here is a set
+                                    drawn from what you already pay
+                                </p>
+                                <p class="pay-card-s">
+                                    Every job title has been put in a family and
+                                    on a level from the words in it, and the
+                                    range comes from the people doing that work
+                                    today. Nothing below is saved until you say
+                                    so, and every number can be changed
+                                    afterwards.
+                                </p>
+                            </div>
+                            <button class="pbim-btn primary sm"
+                                    t-att-disabled="state.busy"
+                                    t-on-click="() => this.acceptSuggestion()">
+                                <t t-out="ic('check', 14)"/> Use these
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- filters -->
+                    <div class="pay-card" t-if="state.board.has_bands">
+                        <div class="pay-filters">
+                            <select class="pay-select" aria-label="Company"
+                                    t-on-change="(ev) => this.refilter('company', ev.target.value)">
+                                <option value="0">Every company you can see</option>
+                                <option t-foreach="state.board.companies" t-as="company"
+                                        t-key="company.id" t-att-value="company.id"
+                                        t-att-selected="state.companyId === company.id">
+                                    <t t-esc="company.name"/>
+                                </option>
+                            </select>
+                            <select class="pay-select" aria-label="Job family"
+                                    t-on-change="(ev) => this.refilter('family', ev.target.value)">
+                                <option value="0">Every job family</option>
+                                <option t-foreach="state.board.families" t-as="family"
+                                        t-key="family.id" t-att-value="family.id"
+                                        t-att-selected="state.familyId === family.id">
+                                    <t t-esc="family.name"/>
+                                </option>
+                            </select>
+                            <select class="pay-select" aria-label="Country"
+                                    t-on-change="(ev) => this.refilter('country', ev.target.value)">
+                                <option value="">Every country</option>
+                                <option t-foreach="state.board.countries" t-as="country"
+                                        t-key="country.code" t-att-value="country.code"
+                                        t-att-selected="state.country === country.code">
+                                    <t t-esc="country.label"/>
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- the picture -->
+                    <div class="pay-card" t-if="lanes.length">
+                        <div class="pay-card-h">
+                            <div>
+                                <p class="pay-card-t">The band picture</p>
+                                <p class="pay-card-s">
+                                    Every person is a dot placed by their pay.
+                                    Drag a band's edge and the people who fall
+                                    outside light up, with what it would cost to
+                                    bring them back in.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="pay-scroll">
+                        <div class="pay-lane" t-foreach="lanes" t-as="lane"
+                             t-key="lane.currency_code">
+                            <div class="pay-lane-h" t-esc="lane.title"/>
+                            <div class="pay-axis">
+                                <span t-foreach="lane.axis.ticks"
+                                      t-as="tick" t-key="tick_index"
+                                      t-attf-class="pay-axis-t {{ tick.last ? 'pay-axis-end' : '' }} {{ tick.first ? 'pay-axis-start' : '' }}"
+                                      t-attf-style="left:{{ axisPct(lane, tick.value) }}%">
+                                    <t t-esc="tick.label"/>
+                                </span>
+                            </div>
+                            <p class="pay-axis-note" t-if="lane.axis.note"
+                               t-esc="lane.axis.note"/>
+
+                            <div class="pay-band" t-foreach="lane.bands" t-as="band"
+                                 t-key="band.id or band.name">
+                                <div class="pay-band-id">
+                                    <div class="pay-band-n" t-esc="band.name"/>
+                                    <div class="pay-band-sub" t-esc="band.sub_label"/>
+                                    <div class="pay-chips">
+                                        <span class="pbim-chip" t-if="band.below"
+                                              t-esc="band.below_label"/>
+                                        <span class="pbim-chip" t-if="band.above"
+                                              t-esc="band.above_label"/>
+                                        <span class="pbim-chip" t-if="band.more"
+                                              t-esc="band.more_label"/>
+                                    </div>
+                                </div>
+                                <div class="pay-track"
+                                     t-att-data-band="band.id"
+                                     t-on-mousedown="(ev) => this.setTrack(band, ev.currentTarget)">
+                                    <div t-attf-class="pay-range {{ band.suggested ? 'is-suggested' : '' }}"
+                                         t-att-style="rangeStyle(lane, band)"/>
+                                    <div class="pay-mid" t-att-style="midStyle(lane, band)"/>
+                                    <button t-foreach="band.dots" t-as="dot"
+                                            t-key="dot.id"
+                                            t-att-class="dotClass(band, dot)"
+                                            t-att-style="dotStyle(lane, dot)"
+                                            t-att-title="dotTitle(dot)"
+                                            t-att-aria-label="dotTitle(dot)"/>
+                                    <button class="pay-grip" t-if="band.id"
+                                            aria-label="Move the lowest edge of this band"
+                                            t-att-style="gripStyle(lane, band, 'min')"
+                                            t-on-mousedown="(ev) => this.startDrag(lane, band, 'min', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(lane, band, 'min', ev)"/>
+                                    <button class="pay-grip" t-if="band.id"
+                                            aria-label="Move the highest edge of this band"
+                                            t-att-style="gripStyle(lane, band, 'max')"
+                                            t-on-mousedown="(ev) => this.startDrag(lane, band, 'max', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(lane, band, 'max', ev)"/>
+                                    <span class="pay-edge-lab"
+                                          t-att-style="gripStyle(lane, band, 'min')"
+                                          t-esc="band.min_short"/>
+                                    <span class="pay-edge-lab"
+                                          t-att-style="gripStyle(lane, band, 'max')"
+                                          t-esc="band.max_short"/>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <!-- what the drag costs, while it is still happening -->
+                        <div class="pay-dragbar" t-if="state.preview and state.drag">
+                            <div>
+                                <div class="pay-dragbar-t" t-esc="state.preview.sentence"/>
+                                <div class="pay-dragbar-s">
+                                    Let go to save it. Nothing has changed yet.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- what the drag did, and the way back -->
+                        <div class="pay-dragbar" t-if="state.undo">
+                            <div>
+                                <div class="pay-dragbar-t">Band moved.</div>
+                                <div class="pay-dragbar-s" t-esc="state.undo.sentence"/>
+                            </div>
+                            <button class="pbim-btn sm"
+                                    t-on-click="() => this.undoEdge()">
+                                <t t-out="ic('undo', 14)"/> Undo
+                            </button>
+                            <button class="pay-x" aria-label="Dismiss"
+                                    t-on-click="() => this.dismissUndo()">
+                                <t t-out="ic('x', 15)"/>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- nobody in a band, and nothing suggested either -->
+                    <div class="pay-card pay-empty"
+                         t-if="!lanes.length and !state.suggesting">
+                        <t t-out="ic('sliders', 28)"/>
+                        <p class="pay-empty-t">No pay bands yet</p>
+                        <p class="pay-empty-s">
+                            A band is the lowest, middle and highest monthly pay
+                            for one level of one kind of work. There is nobody
+                            with an open contract and a job title here yet, so
+                            there is nothing to draw one from — import a
+                            spreadsheet to start.
+                        </p>
+                        <div class="pay-empty-a">
+                            <button class="pbim-btn primary sm"
+                                    t-on-click="() => this.openImport()">
+                                <t t-out="ic('upload', 14)"/> Import bands
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- the jobs with no band -->
+                    <div class="pay-card" t-if="state.board.unbanded and state.board.unbanded.people">
+                        <div class="pay-card-h">
+                            <div>
+                                <p class="pay-card-t"
+                                   t-esc="state.board.unbanded.title"/>
+                                <p class="pay-card-s">
+                                    These jobs are in no band, so nobody doing
+                                    them can be measured. What they are paid
+                                    today is beside each one.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pay-scroll">
+                            <table class="pay-table">
+                                <tr>
+                                    <th>Job</th>
+                                    <th class="pay-num">People</th>
+                                    <th class="pay-num">Middle pay today</th>
+                                </tr>
+                                <tr t-foreach="state.board.unbanded.jobs" t-as="job"
+                                    t-key="job.id">
+                                    <td t-esc="job.name"/>
+                                    <td class="pay-num" t-esc="job.people"/>
+                                    <td class="pay-num" t-esc="job.median_label"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- the health cards -->
+                    <div class="pay-card" t-if="state.board.health.length">
+                        <div class="pay-card-h">
+                            <div>
+                                <p class="pay-card-t">Worth knowing</p>
+                                <p class="pay-card-s">
+                                    Five questions about pay that nobody
+                                    remembers to ask. Press one to see who it
+                                    is about.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pay-health">
+                            <button t-foreach="state.board.health" t-as="card"
+                                    t-key="card.key"
+                                    t-attf-class="pay-hc is-{{ card.tone }}"
+                                    t-on-click="() => this.openHealth(card)">
+                                <div class="pay-hc-n" t-esc="card.count"/>
+                                <div class="pay-hc-l" t-esc="card.label"/>
+                                <div class="pay-hc-s" t-esc="card.blurb"/>
+                                <div class="pay-hc-m" t-if="card.money"
+                                     t-esc="card.money"/>
+                            </button>
+                        </div>
+                    </div>
+                </t>
+            </t>
+
+            <!-- =========================================== FAIRNESS -->
+            <t t-if="state.loaded and state.tab === 'fairness'">
+                <div class="pbim-busy" t-if="!state.fair">Working it out…</div>
+                <t t-if="state.fair and !state.fair.allowed">
+                    <div class="pay-card pay-empty">
+                        <t t-out="ic('lock', 28)"/>
+                        <p class="pay-empty-t">Fairness is not switched on for you</p>
+                        <p class="pay-empty-s">
+                            These figures are about everybody's pay, so they are
+                            offered to the people who look after it.
+                        </p>
+                    </div>
+                </t>
+                <t t-if="state.fair and state.fair.allowed">
+                    <div class="pay-card">
+                        <div class="pay-filters">
+                            <select class="pay-select" aria-label="What to measure"
+                                    t-on-change="(ev) => this.setScope(ev.target.value)">
+                                <option t-foreach="state.fair.scopes" t-as="scope"
+                                        t-key="scopeValue(scope)"
+                                        t-att-value="scopeValue(scope)"
+                                        t-att-selected="scopeCurrent === scopeValue(scope)">
+                                    <t t-esc="scope.label"/> · <t t-esc="scope.sub"/>
+                                </option>
+                            </select>
+                            <button class="pbim-btn ghost sm"
+                                    t-if="state.fair.money and !state.fair.money.one_currency"
+                                    t-on-click="() => this.toggleGroupMoney()">
+                                <t t-out="ic('globe', 14)"/>
+                                <t t-if="state.groupMoney">Each in its own money</t>
+                                <t t-else="">Show it all in the group's money</t>
+                            </button>
+                        </div>
+                        <p class="pay-card-s" t-esc="state.fair.source_label"/>
+                        <p class="pay-card-s" t-if="state.fair.money and state.fair.money.rate_note"
+                           t-esc="state.fair.money.rate_note"/>
+                    </div>
+
+                    <div class="pay-card">
+                        <p class="pay-headline" t-esc="state.fair.headline"/>
+                        <p class="pay-card-s" t-esc="state.fair.people_label"/>
+
+                        <div class="pay-fcards">
+                            <div t-foreach="state.fair.cards" t-as="card"
+                                 t-key="card.key"
+                                 t-attf-class="pay-fc is-{{ card.tone }}">
+                                <div class="pay-fc-n" t-esc="card.value_label or '—'"/>
+                                <div class="pay-fc-l" t-esc="card.label"/>
+                                <div class="pay-fc-s" t-esc="card.sentence"/>
+                                <div class="pay-fc-p" t-if="card.population"
+                                     t-esc="card.population"/>
+                            </div>
+                        </div>
+
+                        <div class="pay-fold">
+                            <button class="pay-fold-b" t-on-click="() => this.toggleMethod()">
+                                <t t-out="ic('info', 14)"/> How this is measured
+                            </button>
+                            <ul class="pay-fold-l" t-if="state.method">
+                                <li t-foreach="state.fair.method" t-as="line"
+                                    t-key="line_index" t-esc="line"/>
+                                <li t-foreach="state.fair.cards" t-as="card"
+                                    t-key="card.key" t-if="card.method">
+                                    <t t-esc="card.label"/>: <t t-esc="card.method"/>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pay-card" t-if="state.fair.levels.length">
+                        <p class="pay-card-t">By level</p>
+                        <p class="pay-card-s">
+                            The gap inside each level of the bands, which is the
+                            like-for-like comparison.
+                        </p>
+                        <div class="pay-scroll">
+                            <table class="pay-table">
+                                <tr>
+                                    <th>Level</th>
+                                    <th class="pay-num">Women</th>
+                                    <th class="pay-num">Men</th>
+                                    <th class="pay-num">Gap</th>
+                                </tr>
+                                <tr t-foreach="state.fair.levels" t-as="row"
+                                    t-key="row.level">
+                                    <td t-esc="row.level"/>
+                                    <td class="pay-num" t-esc="row.women"/>
+                                    <td class="pay-num" t-esc="row.men"/>
+                                    <td class="pay-num" t-esc="row.gap_label or row.note"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pay-card" t-if="state.fair.divisions.length">
+                        <p class="pay-card-t">By division</p>
+                        <div class="pay-scroll">
+                            <table class="pay-table">
+                                <tr>
+                                    <th>Division</th>
+                                    <th class="pay-num">Women</th>
+                                    <th class="pay-num">Men</th>
+                                    <th class="pay-num">Gap</th>
+                                </tr>
+                                <tr t-foreach="state.fair.divisions" t-as="row"
+                                    t-key="row.id">
+                                    <td t-esc="row.name"/>
+                                    <td class="pay-num" t-esc="row.women"/>
+                                    <td class="pay-num" t-esc="row.men"/>
+                                    <td class="pay-num" t-esc="row.gap_label or row.note"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pay-card" t-if="state.fair.spread.length">
+                        <p class="pay-card-t">Same job, different pay</p>
+                        <p class="pay-card-s">
+                            How far apart the lowest and the highest paid people
+                            doing the same job are. A very wide spread is
+                            usually two jobs wearing one name.
+                        </p>
+                        <div class="pay-scroll">
+                            <table class="pay-table">
+                                <tr>
+                                    <th>Job</th>
+                                    <th class="pay-num">People</th>
+                                    <th class="pay-num">Lowest</th>
+                                    <th class="pay-num">Middle</th>
+                                    <th class="pay-num">Highest</th>
+                                    <th class="pay-num">Spread</th>
+                                </tr>
+                                <tr t-foreach="state.fair.spread" t-as="row"
+                                    t-key="row.id">
+                                    <td t-esc="row.name"/>
+                                    <td class="pay-num" t-esc="row.people"/>
+                                    <td class="pay-num" t-esc="row.low_label"/>
+                                    <td class="pay-num" t-esc="row.mid_label"/>
+                                    <td class="pay-num" t-esc="row.high_label"/>
+                                    <td class="pay-num" t-esc="row.spread_label"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pay-card" t-if="state.fair.lowest.length">
+                        <p class="pay-card-t">Paid least for the same work</p>
+                        <p class="pay-card-s" t-if="state.fair.can_see_names">
+                            At least 15% under the middle pay of everybody doing
+                            the same job.
+                        </p>
+                        <p class="pay-card-s" t-else="">
+                            At least 15% under the middle pay of everybody doing
+                            the same job. Names are for a pay manager to see.
+                        </p>
+                        <div class="pay-scroll">
+                            <table class="pay-table">
+                                <tr>
+                                    <th>Person</th>
+                                    <th>Job</th>
+                                    <th class="pay-num">Their pay</th>
+                                    <th class="pay-num">Middle for the job</th>
+                                    <th class="pay-num">Under by</th>
+                                </tr>
+                                <tr t-foreach="state.fair.lowest" t-as="row"
+                                    t-key="row_index">
+                                    <td t-esc="row.name"/>
+                                    <td t-esc="row.job"/>
+                                    <td class="pay-num" t-esc="row.wage_label"/>
+                                    <td class="pay-num" t-esc="row.mid_label"/>
+                                    <td class="pay-num pay-rose" t-esc="row.under_label"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pay-card pay-empty" t-if="!state.fair.people">
+                        <t t-out="ic('users', 28)"/>
+                        <p class="pay-empty-t">Nobody to measure yet</p>
+                        <p class="pay-empty-s">
+                            There are no open contracts in this view, so there
+                            is nothing to compare. Add people and this fills
+                            itself in.
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- ========================================== the drawers -->
+            <div class="pay-scrim" t-if="state.health or state.place or state.importing"
+                 t-on-click="() => this.closeDrawers()"/>
+
+            <!-- a health card, opened -->
+            <div class="pay-drawer" t-if="state.health">
+                <div class="pay-drawer-h">
+                    <div>
+                        <h2 class="pay-drawer-t" t-esc="state.health.label"/>
+                        <p class="pay-drawer-s" t-esc="state.health.blurb"/>
+                    </div>
+                    <button class="pay-x" aria-label="Close"
+                            t-on-click="() => this.closeDrawers()">
+                        <t t-out="ic('x', 18)"/>
+                    </button>
+                </div>
+                <p class="pay-card-s" t-if="state.health.method"
+                   t-esc="state.health.method"/>
+                <div class="pbim-note" t-if="state.health.money"
+                     t-esc="state.health.money"/>
+                <div class="pay-scroll">
+                    <table class="pay-table">
+                        <tr>
+                            <th>Who</th>
+                            <th>Where</th>
+                            <th class="pay-num">Their pay</th>
+                            <th class="pay-num">Compared with</th>
+                        </tr>
+                        <tr t-foreach="state.health.rows" t-as="row"
+                            t-key="row_index">
+                            <td t-esc="row.name"/>
+                            <td>
+                                <t t-esc="row.job"/>
+                                <span class="pay-band-sub" t-if="row.band"
+                                      t-esc="row.band"/>
+                            </td>
+                            <td class="pay-num" t-esc="row.wage_label"/>
+                            <td class="pay-num" t-esc="row.edge_label"/>
+                        </tr>
+                    </table>
+                </div>
+                <p class="pay-card-s" t-if="state.health.more"
+                   t-esc="state.health.more_label"/>
+                <div class="pbim-note">
+                    Putting this right is a pay review, which arrives in the
+                    next release. Until then, a band edge can be moved above
+                    and a contract changed on the person's own record.
+                </div>
+            </div>
+
+            <!-- place a new hire -->
+            <div class="pay-drawer" t-if="state.place">
+                <div class="pay-drawer-h">
+                    <div>
+                        <h2 class="pay-drawer-t">Place a new hire</h2>
+                        <p class="pay-drawer-s">
+                            Pick the job and say how much of it the person has
+                            done before. The suggested offer is the middle of
+                            the band, moved by up to a tenth of its width.
+                        </p>
+                    </div>
+                    <button class="pay-x" aria-label="Close"
+                            t-on-click="() => this.closeDrawers()">
+                        <t t-out="ic('x', 18)"/>
+                    </button>
+                </div>
+                <div class="pbim-note" t-if="state.dialogError"
+                     t-esc="state.dialogError"/>
+                <div class="pay-filters">
+                    <select class="pay-select" aria-label="Job position"
+                            t-on-change="(ev) => this.setPlaceJob(ev.target.value)">
+                        <option value="0">Pick a job</option>
+                        <option t-foreach="state.place.jobs" t-as="job"
+                                t-key="job_index" t-att-value="job.id"
+                                t-att-selected="state.place.job_id === job.id">
+                            <t t-esc="job.name"/>
+                        </option>
+                    </select>
+                </div>
+                <p class="pay-card-s">
+                    New to this level
+                    <input type="range" min="0" max="100" step="10"
+                           aria-label="How experienced this person is"
+                           t-att-value="state.place.experience_pct"
+                           t-on-change="(ev) => this.setPlaceExperience(ev.target.value)"/>
+                    Does this already
+                </p>
+                <t t-if="state.place.answer">
+                    <div class="pay-fc" t-if="state.place.answer.offer_label">
+                        <div class="pay-fc-n" t-esc="state.place.answer.offer_label"/>
+                        <div class="pay-fc-l">Suggested offer</div>
+                        <div class="pay-fc-s" t-esc="state.place.answer.sentence"/>
+                    </div>
+                    <div class="pbim-note" t-if="!state.place.answer.offer_label"
+                         t-esc="state.place.answer.sentence"/>
+                    <p class="pay-card-s" t-if="state.place.answer.people"
+                       t-esc="state.place.answer.market_label"/>
+                    <button class="pbim-btn outline sm"
+                            t-if="state.place.answer.offer_label"
+                            t-on-click="() => this.copyOffer()">
+                        <t t-out="ic('copy', 14)"/> Copy the sentence
+                    </button>
+                </t>
+            </div>
+
+            <!-- import -->
+            <div class="pay-drawer" t-if="state.importing">
+                <div class="pay-drawer-h">
+                    <div>
+                        <h2 class="pay-drawer-t">Import pay bands</h2>
+                        <p class="pay-drawer-s">
+                            A spreadsheet with one band per row: job family,
+                            level, country, currency, lowest, middle, highest,
+                            and the dates it is in force. Export first if you
+                            want the exact columns.
+                        </p>
+                    </div>
+                    <button class="pay-x" aria-label="Close"
+                            t-on-click="() => this.closeDrawers()">
+                        <t t-out="ic('x', 18)"/>
+                    </button>
+                </div>
+                <div class="pbim-note" t-if="state.dialogError"
+                     t-esc="state.dialogError"/>
+                <input type="file" accept=".csv,text/csv"
+                       aria-label="Choose a spreadsheet"
+                       t-on-change="(ev) => this.onFile(ev)"/>
+                <t t-if="state.importing.read">
+                    <p class="pay-card-s" t-esc="state.importing.sentence"/>
+                    <div class="pay-scroll">
+                        <table class="pay-table">
+                            <tr>
+                                <th>Row</th>
+                                <th>Job family</th>
+                                <th class="pay-num">Level</th>
+                                <th>Country</th>
+                                <th class="pay-num">Lowest</th>
+                                <th class="pay-num">Middle</th>
+                                <th class="pay-num">Highest</th>
+                                <th>What is wrong</th>
+                            </tr>
+                            <tr t-foreach="state.importing.rows" t-as="row"
+                                t-key="row.line">
+                                <td t-esc="row.line"/>
+                                <td t-esc="row.family"/>
+                                <td class="pay-num" t-esc="row.level"/>
+                                <td t-esc="row.country_label"/>
+                                <td class="pay-num" t-esc="row.min_label"/>
+                                <td class="pay-num" t-esc="row.mid_label"/>
+                                <td class="pay-num" t-esc="row.max_label"/>
+                                <td class="pay-rose" t-esc="row.problem"/>
+                            </tr>
+                        </table>
+                    </div>
+                    <button class="pbim-btn primary sm"
+                            t-if="state.importing.good"
+                            t-att-disabled="state.busy"
+                            t-on-click="() => this.confirmImport()">
+                        <t t-out="ic('check', 14)"/>
+                        <t t-esc="importLabel"/>
+                    </button>
+                </t>
+            </div>
+
+        </div>
+    </div>
+</t>
+
+</templates>
