@@ -904,16 +904,21 @@ class PbProbationReview(models.Model):
     def _write_performance_rating(self):
         """Carry the average onto the employee's rating, if the field exists.
 
-        PROBED rather than depended on: `wfp_performance_rating` comes from the
-        workforce-planning module, which is not a dependency of this one, and a
-        hard reference would make this phase refuse to install on a database
-        that does not have it. Absent field, log line, carry on.
+        PROBED rather than depended on, and now against TWO field names.
+        The score used to live on a field the old workforce-planning module
+        put on the employee record; the Pay area owns it now and calls it
+        `pb_performance_rating`. Both are written where both exist, and a
+        build that has neither gets a log line and carries on — a probation
+        outcome must never fail to save because a score has nowhere to go.
         """
         self.ensure_one()
         if not self.avg_rating:
             return False
         emp = self.employee_id
-        if 'wfp_performance_rating' not in emp._fields:
+        names = [name for name in ('pb_performance_rating',
+                                   'wfp_performance_rating')
+                 if name in emp._fields]
+        if not names:
             _logger.info('pb_probation: no performance rating field on this '
                          'build — review %s did not write one', self.id)
             return False
@@ -922,10 +927,12 @@ class PbProbationReview(models.Model):
             # It is a SELECTION on this build ('1'..'5'), so the value has to
             # be the string. Probed rather than assumed, because a tenant whose
             # field is an integer must not get a silent write of "3".
-            field = emp._fields['wfp_performance_rating']
-            emp.sudo().write({
-                'wfp_performance_rating':
-                    str(value) if field.type == 'selection' else value})
+            values = {}
+            for name in names:
+                field = emp._fields[name]
+                values[name] = str(value) \
+                    if field.type == 'selection' else value
+            emp.sudo().write(values)
             self.message_post(body=_(
                 "Their performance rating was set to %s out of 5 from the "
                 "average of what colleagues said.", value))
