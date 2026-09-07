@@ -680,5 +680,226 @@ const FLAT_SHIFTS = {
        && C.easeOut(-1) === 0, `${C.easeOut(0.5)}`);
 }
 
+// =====================================================================
+//  GROUP Phase 4 — scope, several companies, several currencies
+// =====================================================================
+
+/** The single-company scope the room has always drawn, in the new shape. */
+const ONE_BLOCK = {
+    ...BASELINE,
+    single: true,
+    blocks: [{ company_id: 1, company: "Payobook Vietnam JSC",
+               currency: { code: "VND" }, teams: BASELINE.teams,
+               rules: FLAT, headcount: 300 }],
+};
+
+/** Two companies, two currencies: one VND, one SGD. */
+const SG_RULES = { ...FLAT, employer_rate_pct: 17, employee_rate_pct: 20,
+                   contribution_cap: 6800, night_uplift_pct: 0,
+                   work_days: 21, pit_ladder: { bands: [] } };
+const TWO_BLOCKS = {
+    asof: "2026-09-07", headcount: 320, source: "test", single: false,
+    mixed: true,
+    teams: [
+        { key: "c1", name: "Payobook Vietnam JSC", heads: 300,
+          pay_month_avg: 16000000, revenue: true, roles: [
+              { key: "t1", name: "Manufacturing", job_id: 0, heads: 200,
+                pay_month_avg: 10000000, level: 1 },
+              { key: "t2", name: "Corporate", job_id: 0, heads: 100,
+                pay_month_avg: 20000000, level: 1 },
+          ] },
+        { key: "c2", name: "Payobook Singapore Pte Ltd", heads: 20,
+          pay_month_avg: 8000, revenue: true, roles: [
+              { key: "t9", name: "Sales", job_id: 0, heads: 20,
+                pay_month_avg: 8000, level: 1 },
+          ] },
+    ],
+    blocks: [],
+};
+TWO_BLOCKS.blocks = [
+    { company_id: 1, company: "Payobook Vietnam JSC",
+      currency: { code: "VND" }, teams: [TWO_BLOCKS.teams[0]], rules: FLAT,
+      headcount: 300 },
+    { company_id: 2, company: "Payobook Singapore Pte Ltd",
+      currency: { code: "SGD" }, teams: [TWO_BLOCKS.teams[1]],
+      rules: SG_RULES, headcount: 20 },
+];
+
+/** One SGD = 18,000 VND, every month, and VND is the board's money. */
+const RATES = {
+    target: { code: "VND" },
+    rows: {
+        SGD: Array.from({ length: 12 }, (_v, m) => ({
+            month: m + 1, rate: 18000, known: true,
+            rate_date: `2026-${String(m + 1).padStart(2, "0")}-28`,
+        })),
+    },
+    unknown: [], known: true,
+};
+
+/** The same table with August missing, which is the state that matters. */
+const RATES_GAP = {
+    ...RATES,
+    rows: { SGD: RATES.rows.SGD.map((cell, m) => (
+        m === 7 ? { month: 8, rate: 0, known: false, rate_date: "" } : cell)) },
+    unknown: [{ code: "SGD", note: "no rate for August" }],
+    known: false,
+};
+
+// ---------------------------------------------------------------------- T48
+{
+    // The identity the whole phase rests on: ONE company through the new
+    // multi-block path is the same arithmetic, to the last bit.
+    const state = { ...E.defaultState(BASELINE, FLAT), raise: 6, ot: 12,
+                    moves: [{ team: "t1", role: null, n: 20, month: 4 }] };
+    const before = E.compute(BASELINE, FLAT, state);
+    const after = E.computeBlocks(ONE_BLOCK, state, { target: {}, rows: {} });
+    ok("T48", "one company through the group path is the same numbers",
+       after.single === true
+       && after.group.year.people === before.year.people
+       && after.group.year.profit === before.year.profit
+       && after.group.year.headcount === before.year.headcount
+       && JSON.stringify(after.group.rows) === JSON.stringify(before.rows),
+       `${after.group.year.people} vs ${before.year.people}`);
+}
+
+// ---------------------------------------------------------------------- T49
+{
+    const state = { ...E.defaultState(TWO_BLOCKS, FLAT), target: 0 };
+    const run = E.computeBlocks(TWO_BLOCKS, state, RATES);
+    const vn = run.blocks[0].plan.year.people;
+    const sg = run.blocks[1].plan.year.people;
+    ok("T49", "a group total is each company converted, and nothing else",
+       near(run.group.year.people, vn + sg * 18000, 1),
+       `${run.group.year.people} vs ${vn + sg * 18000}`);
+    ok("T49b", "and every company keeps its OWN rules",
+       run.blocks[0].rules.employer_rate_pct === 23.5
+       && run.blocks[1].rules.employer_rate_pct === 17
+       && run.blocks[1].plan.year.contributions > 0);
+    ok("T49c", "heads simply add up — a person is not converted",
+       run.group.year.headcount
+       === run.blocks[0].plan.year.headcount
+          + run.blocks[1].plan.year.headcount);
+}
+
+// ---------------------------------------------------------------------- T50
+{
+    const state = { ...E.defaultState(TWO_BLOCKS, FLAT), target: 0 };
+    const run = E.computeBlocks(TWO_BLOCKS, state, RATES_GAP);
+    const vnAug = run.blocks[0].plan.rows[7].people;
+    ok("T50", "a month nobody has priced leaves that company OUT of the total",
+       near(run.group.rows[7].people, vnAug, 1),
+       `${run.group.rows[7].people} vs ${vnAug}`);
+    ok("T50b", "and the company and the months are named, never guessed",
+       run.unknown.length === 1 && run.unknown[0].code === "SGD"
+       && run.unknown[0].months.length === 1
+       && run.unknown[0].months[0] === 7,
+       JSON.stringify(run.unknown));
+    ok("T50c", "the plan's own rows stay in the company's own money",
+       run.blocks[1].plan.rows[7].people > 0
+       && run.blocks[1].plan.rows[7].people < 1000000,
+       `${run.blocks[1].plan.rows[7].people}`);
+}
+
+// ---------------------------------------------------------------------- T51
+{
+    const shares = E.targetShares(TWO_BLOCKS.blocks);
+    ok("T51", "the revenue target is shared by where the pay bill actually is",
+       near(shares[0] + shares[1], 1, 1e-9) && shares[0] > shares[1],
+       shares.map((s) => s.toFixed(4)).join(" / "));
+    const state = { ...E.defaultState(TWO_BLOCKS, FLAT),
+                    target: 200000000000 };
+    const run = E.computeBlocks(TWO_BLOCKS, state, RATES);
+    ok("T51b", "and each company is given its share in its OWN money",
+       near(run.blocks[1].target * 18000, 200000000000 * shares[1], 1),
+       `${run.blocks[1].target}`);
+    ok("T51c", "so the group serves what the group was asked to serve",
+       run.group.year.revenue > 0 && run.group.year.coverage <= 1.0000001,
+       `${run.group.year.coverage}`);
+}
+
+// ---------------------------------------------------------------------- T52
+{
+    ok("T52", "the board's own money is never converted",
+       E.rateFor(RATES, "VND", 3).rate === 1
+       && E.rateFor(RATES, "VND", 3).known === true);
+    ok("T52b", "a currency with no row at all is unknown, not one for one",
+       E.rateFor(RATES, "IDR", 3).known === false
+       && E.rateFor(RATES, "IDR", 3).rate === 0);
+}
+
+// ---------------------------------------------------------------------- T53
+{
+    const actuals = {
+        available: true, year: 2026,
+        months: [
+            { month: 1, people: 300,
+              by_company: { 1: { cost: 6000000000, currency: "VND",
+                                 people: 300 } } },
+            { month: 2, people: 305,
+              by_company: { 1: { cost: 6200000000, currency: "VND",
+                                 people: 305 },
+                            2: { cost: 100000, currency: "SGD",
+                                 people: 5 } } },
+        ],
+    };
+    const monthly = E.actualSeries(actuals, RATES, false);
+    const running = E.actualSeries(actuals, RATES, true);
+    ok("T53", "a month with no closed run is nothing, and nothing is not zero",
+       monthly[0] === 6000000000 && monthly[2] === null
+       && monthly[1] === 6200000000 + 100000 * 18000,
+       `${monthly[1]}`);
+    ok("T53b", "and the line the stage draws is cumulative",
+       running[1] === monthly[0] + monthly[1] && running[2] === null);
+    ok("T53c", "people are counted, never converted",
+       E.actualPeople(actuals)[1] === 305
+       && E.actualPeople(actuals)[5] === null);
+}
+
+// ---------------------------------------------------------------------- T54
+{
+    const plan = E.compute(BASELINE, FLAT, E.defaultState(BASELINE, FLAT));
+    const actuals = {
+        available: true, year: 2026,
+        months: [{ month: 1, people: Math.round(plan.rows[0].heads) + 40,
+                   by_company: { 1: { cost: plan.rows[0].people * 1.2,
+                                      currency: "VND",
+                                      people: Math.round(plan.rows[0].heads)
+                                              + 40 } } }],
+    };
+    const said = E.actualVerdict(plan, actuals, RATES, fmt);
+    ok("T54", "the verdict names the month, the gap and the bigger reason",
+       said.includes("January") && said.includes("over plan")
+       && said.includes("more people"), said);
+    const none = E.actualVerdict(plan, { available: false, months: [] },
+                                 RATES, fmt);
+    ok("T54b", "and with no closed run it says so instead of drawing nothing",
+       none.length > 20 && !none.includes("undefined"), none);
+}
+
+// ---------------------------------------------------------------------- T55
+{
+    // The engine's search functions must be able to run a GROUP trial, or the
+    // goal finder and the headroom scan would quietly plan one company.
+    const state = E.defaultState(TWO_BLOCKS, FLAT);
+    const run = (trial) => E.computeBlocks(TWO_BLOCKS, trial, RATES).group;
+    const band = E.stressBand(TWO_BLOCKS, FLAT, state, 10, run);
+    const direct = run(state);
+    ok("T55", "a stress band over a group is a group on both sides",
+       band.lo.year.people === direct.year.people
+       && band.hi.year.people === direct.year.people,
+       "no revenue target, so demand cannot move cost");
+    const step = E.marginal(TWO_BLOCKS, FLAT, state, direct, "c2", 5, run);
+    ok("T55b", "and five more people in the Singapore entity cost SGD, read "
+       + "in VND", step && step.dCost > 0
+       && near(step.dCost,
+               (E.computeBlocks(TWO_BLOCKS,
+                                { ...state, moves: [{ team: "c2", role: null,
+                                                      n: 5, month: state.start }] },
+                                RATES).group.year.people
+                - direct.year.people), 1),
+       step ? String(Math.round(step.dCost)) : "no step");
+}
+
 console.log(`\n${checks - failures}/${checks} checks passed\n`);
 process.exit(failures ? 1 : 0);

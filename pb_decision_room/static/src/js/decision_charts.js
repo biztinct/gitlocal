@@ -62,6 +62,9 @@ export const STAGE = {
     base: "#8D84AC",
     band: "rgba(199,184,237,.10)",
     goal: "#F7A6C3",
+    // GROUP P4 — one company's own line, and what actually happened.
+    entity: "rgba(199,184,237,.42)",
+    actual: "#8ED9C0",
     grid: "rgba(255,255,255,.08)",
     axis: "#BDB6D6",
     good: "#C5B2F2",
@@ -102,10 +105,15 @@ export function drawHorizon(canvas, o) {
     const delta = plan.map((v, i) => v - (o.ref[i] || 0));
     const values = diff ? delta : plan;
 
+    const entityValues = [];
+    for (const entity of (o.entities || [])) {
+        entityValues.push(...(entity.values || []));
+    }
     const pool = diff
         ? [...delta, 0]
         : [...plan, ...(o.ref || []), ...(o.lo || []), ...(o.hi || []),
-           ...(o.goal || [])];
+           ...(o.goal || []), ...entityValues,
+           ...((o.actual || []).filter((v) => v !== null && v !== undefined))];
     let min = Math.min(...pool);
     let max = Math.max(...pool);
     if (!o.coverage || diff) { min = Math.min(min, 0); }
@@ -165,6 +173,38 @@ export function drawHorizon(canvas, o) {
             ctx.lineWidth = 1.6;
             ctx.stroke();
             ctx.setLineDash([]);
+        }
+        // GROUP P4 — one thin line per company, already in the board's money.
+        // A company whose month has no exchange rate is NOT drawn at a guessed
+        // height; it is named in the strip under the chart instead.
+        for (const entity of (o.entities || [])) {
+            const values = entity.values || [];
+            if (values.length !== 12) { continue; }
+            line(values);
+            ctx.strokeStyle = STAGE.entity;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+        }
+        // GROUP P4 — what the closed pay runs actually produced, over the plan.
+        if (o.actual && o.actual.length === 12) {
+            let started = false;
+            ctx.beginPath();
+            o.actual.forEach((v, i) => {
+                if (v === null || v === undefined) { started = false; return; }
+                if (started) { ctx.lineTo(X(i), Y(v)); }
+                else { ctx.moveTo(X(i), Y(v)); started = true; }
+            });
+            ctx.strokeStyle = STAGE.actual;
+            ctx.lineWidth = 2.4;
+            ctx.lineJoin = "round";
+            ctx.stroke();
+            o.actual.forEach((v, i) => {
+                if (v === null || v === undefined) { return; }
+                ctx.beginPath();
+                ctx.arc(X(i), Y(v), 3, 0, Math.PI * 2);
+                ctx.fillStyle = STAGE.actual;
+                ctx.fill();
+            });
         }
         // the plan
         line(plan);
