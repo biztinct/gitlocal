@@ -65,6 +65,9 @@ SEX_LABELS = {'female': 'Women', 'male': 'Men', 'other': 'Other'}
 
 class PbPayFairness(models.AbstractModel):
     _name = 'pb.pay.fairness'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Fairness'
 
     # ================================================================= gates
@@ -104,23 +107,32 @@ class PbPayFairness(models.AbstractModel):
         if not self._can_read():
             return []
         companies = self.env['pb.pay.bands']._companies()
+        # GROUP P7 — a rung this reader may not stand on is a rung that is not
+        # offered. Held to a division, the only question they are asked is
+        # their own.
+        held = self._visible_divisions()
         out = []
         group = None
         if 'pb.group' in self.env:
             group = self.env['pb.group'].sudo().search([], limit=1)
-        if group and len(companies) > 1:
+        if group and len(companies) > 1 and not held:
             out.append({'kind': 'group', 'ref': group.id,
                         'label': group.name,
                         'sub': _('%(count)s companies',
                                  count=len(companies))})
-        for company in companies:
+        for company in (companies if not held else companies.browse()):
             out.append({'kind': 'company', 'ref': company.id,
                         'label': company.display_name,
                         'sub': company.currency_id.name})
         if 'pb.division' in self.env:
             heads = self.env['pb.division'].sudo()._heads_by_division()
+            # GROUP P7 — a division head is offered their own division and
+            # nothing else; empty for everybody who has not been limited.
+            only = set(self._visible_divisions())
             for division in self.env['pb.division'].sudo().search([]):
                 if not heads.get(division.id):
+                    continue
+                if only and division.id not in only:
                     continue
                 out.append({'kind': 'division', 'ref': division.id,
                             'label': division.name,
@@ -132,6 +144,12 @@ class PbPayFairness(models.AbstractModel):
     def _resolve_scope(self, kind, ref):
         Bands = self.env['pb.pay.bands']
         companies = Bands._companies()
+        # GROUP P7 — somebody held to one division is answered at their
+        # division whatever they asked for; the group and company rungs are
+        # not theirs to stand on.
+        only = self._visible_divisions()
+        if only:
+            kind, ref = 'division', only[0]
         kind = kind if kind in ('group', 'company', 'division') else 'company'
         if kind == 'company' and ref:
             narrowed = companies.filtered(lambda c: c.id == int(ref))

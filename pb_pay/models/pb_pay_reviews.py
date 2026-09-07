@@ -42,6 +42,9 @@ READ_GROUPS = (
 
 class PbPayReviews(models.AbstractModel):
     _name = 'pb.pay.reviews'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Pay review screen'
 
     # ---------------------------------------------------------------- rails

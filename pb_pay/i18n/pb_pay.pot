@@ -1,0 +1,5053 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_pay
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 19:14+0000\n"
+"PO-Revision-Date: 2026-09-07 19:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"\"Paid least for the same work\" means at least %(pct)s%% under the middle "
+"pay of everybody in the same job, where at least three people hold it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"% of the way\n"
+"              through it. The guidance for this person is"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(amount)s shared between %(count)s people."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid ""
+"%(band)s already has a range in force from %(since)s. Two ranges for the "
+"same family, level and country cannot cover the same days — end the old one "
+"the day before the new one starts."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "%(bands)s bands and %(jobs)s jobs saved."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cell)s is not an amount"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s is not a country this product runs payroll for"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s is not a currency on file"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(code)s · %(count)s bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cost)s a year to bring %(people)s back in"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(cost)s a year would bring everybody back in"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(count)s above"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(count)s below"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s companies"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "%(count)s contracts are back on their old pay."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "%(count)s contracts would change on %(date)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(count)s pay decisions are waiting for you."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s people"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"%(count)s people are paid more than %(edge)s and sit on the right-hand edge."
+" Their own pay is on their label."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"%(count)s people have no gender on their record, so they are in no "
+"comparison above."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(count)s people measured."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(count)s rows"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"%(count)s rows break a limit this review will not bend. Open “What stops "
+"approval” and fix them, or change the limit."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(count)s scores read in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(count)s scores read, all of them good."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"%(count)s things are not ready. The old planning module must stay for now."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(division)s has proposed %(spent)s of %(allowed)s for the year."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(division)s may not spend more than %(amount)s a year."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(family)s · level %(level)s · %(country)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(good)s row(s) ready, %(bad)s to fix."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"%(good)s scores read. %(bad)s rows could not be placed and are listed below."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid ""
+"%(job)s is already in %(band)s over those days. A job sits in one band at a "
+"time."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"%(job)s is not in a band yet. Put it in one and the suggested offer appears "
+"here; until then the best guide is what %(people)s already doing it are "
+"paid."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "%(kind)s · %(who)s · %(when)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(made)s band(s) saved."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_migrate.py:0
+msgid "%(name)s (carried over)"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_migrate.py:0
+msgid "%(name)s — %(state)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"%(old)s budget rows are all on the new table, and what was spent adds up the"
+" same on both."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"%(old)s merit matrices have not been carried over into guidance grids yet."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "%(old)s old guidance grids, %(new)s carried over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "%(old)s old limits have not been carried over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "%(old)s old limits, %(new)s carried over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"%(old)s old pay rounds are on this database and only %(new)s have been kept "
+"as history."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "%(old)s old pay rounds, %(new)s kept as history."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"%(old)s people carry a score on the old field and only %(new)s have been "
+"kept."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "%(old)s people had a score, %(new)s kept."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(pay)s is above the top of %(band)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"%(pct)s%% is above the %(cap)s%% this company allows without a special case."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(pct)s%% is above the %(cap)s%% this review allows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(pct)s%% of the way through the band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"%(people)s already doing this job are paid from %(low)s to %(high)s, with "
+"%(mid)s in the middle."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(people)s would sit above the band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "%(people)s · %(low)s to %(high)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "%(rise)s is a bigger rise than this company allows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "%(rise)s is a bigger rise than this review allows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "%(rows)s people placed in %(ms)s ms."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(scope)s · %(year)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(used)s of %(budget)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"%(who)s has no open contract, so there is nothing to write a new figure "
+"onto."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"%(who)s is in the pay review “%(review)s”, which has not finished yet. "
+"Change their pay there, or finish that review first."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"%(who)s is in the pay review “%(review)s”, which has not finished. Change "
+"their pay there instead."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(who)s was sent back: %(why)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%(who)s · %(pct)s%%"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"%(women)s women and %(men)s men, %(compared)s of them in a group big enough "
+"to compare."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "%(women)s women, %(men)s men."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "%, from"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%s people selected"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_hr_contract__pb_position_pct
+msgid "0 is the bottom of the band and 100 the top."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_position__position_pct
+msgid ""
+"0 is the bottom of the band and 100 the top. Below 0 or above 100 means the "
+"pay is outside it."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_employee__pb_performance_rating__1
+msgid "1 - Needs Improvement"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__level
+msgid "1 is the most junior. Levels are this company's own ladder."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "1 pay decision is waiting for you."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "1 person"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "1 person selected"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_employee__pb_performance_rating__2
+msgid "2 - Developing"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_employee__pb_performance_rating__3
+msgid "3 - Meets Expectations"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__rating_scale__3
+msgid "3 levels"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_employee__pb_performance_rating__4
+msgid "4 - Exceeds Expectations"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__rating_scale__4
+msgid "4 levels"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_employee__pb_performance_rating__5
+msgid "5 - Outstanding"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__rating_scale__5
+msgid "5 levels"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "<span class=\"eyebrow\">PAY FAIRNESS STATEMENT</span>"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid ""
+"<span>Bottom of the range</span>\n"
+"              <span>Top of the range</span>"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "A band has a lowest and a highest edge."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"A band is the lowest, middle and highest monthly pay\n"
+"                            for one level of one kind of work. There is nobody\n"
+"                            with an open contract and a job title here yet, so\n"
+"                            there is nothing to draw one from — import a\n"
+"                            spreadsheet to start."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_band
+msgid ""
+"A band is the lowest, middle and highest monthly pay for one level of one "
+"job family. The Pay screen can suggest a full set from what you already pay."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid ""
+"A band needs a highest amount above zero, or nobody can be measured against "
+"it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid ""
+"A band reads lowest, middle, highest. On %(band)s the three numbers are not "
+"in that order."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"A comparison is made only where there are at least %(count)s people on each "
+"side. Everything smaller says so rather than printing a number nobody should"
+" act on."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "A copy of this database was taken at %(when)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_family.py:0
+msgid "A job family needs a name."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "A level runs from 1 to %(top)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "A limit belongs either to one review or to a company's pay settings."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "A manager paid less"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__change_finance_pct
+msgid "A one-off rise this big goes past finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "A pay change is waiting for you"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_apply
+msgid "A pay change that was written"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"A pay review is read by the pay roles. Your account holds none of them, so "
+"there is nothing here to show you."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "A pay review is waiting for you"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"A pay run covering %(date)s is already open. New pay is used by the next run"
+" unless that one is worked out again."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"A promotion, a correction or a counter-offer between\n"
+"                        reviews, through the same guidance and the same\n"
+"                        approvals."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"A promotion, a correction or a counter-offer between reviews —\n"
+"                with the same guidance, the same limits and the same approvals."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"A review opens with a suggested rise already filled in for everybody it "
+"covers, the budget already counting and the fairness check already run. "
+"Start one and look before you change anything."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_review_records
+msgid ""
+"A review opens with a suggested rise already filled in for everybody it "
+"covers. Start one from the Pay screen."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"A review opens with a suggested rise on every row, the budget\n"
+"                  already counting and the fairness check already run."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__is_legacy
+msgid ""
+"A review that came from the old planning screens. It is kept so the history "
+"is not lost and cannot be edited."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"A review that has been applied is kept. Nothing about what people were paid "
+"may be deleted."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "A score runs from 1 to %(top)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"A spreadsheet with one band per row: job family,\n"
+"                            level, country, currency, lowest, middle, highest,\n"
+"                            and the dates it is in force. Export first if you\n"
+"                            want the exact columns."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "A suggested rise runs from -100% to 200%. %(pct)s is outside that."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"A whole year's pay decided in one screen: a suggested\n"
+"                        rise on every row, a budget that counts as you work,\n"
+"                        four approvals, and a day to take it back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__annual_cost_delta
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "A year"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance_cell__position_band__above
+msgid "Above the band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Across everybody"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_needaction
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_needaction
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__active
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__active
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_state
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_type_icon
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Add 1%"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "After this, %(count)s of their team would be paid more than they are."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__compa
+msgid "Against the middle"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "All reviews"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Allow this site to open a new tab and press it again."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__value
+msgid "Amount"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"Amounts from companies that keep their books in different money are never "
+"added together without a rate."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Answer"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_apply__state__applied
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__applied
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__applied
+msgid "Applied"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__applied_by
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__applied_by
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__applied_by
+msgid "Applied by"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__applied_at
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__applied_at
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__applied_at
+msgid "Applied on"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Applied to %(count)s contracts, effective %(date)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Applied to %(count)s contracts. You can take it back until %(when)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "Applied. %(who)s is paid %(amount)s from %(date)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "Applied. You can take it back until %(when)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Apply"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Apply the new pay"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__approval_widget_json
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__approval_widget_json
+msgid "Approval Widget Json"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Approve for HR"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Approve for finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Approve it"
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_finance
+msgid "Approve pay reviews for finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__approved
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__approved
+msgid "Approved"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Approved — ready to apply"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Approved. It can be applied now."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"At least 15% under the middle pay of everybody doing\n"
+"                            the same job."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"At least 15% under the middle pay of everybody doing\n"
+"                            the same job. Names are for a pay manager to see."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_attachment_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_attachment_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "B"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Back"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__band_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__band_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__band_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__band_id
+msgid "Band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Band moved."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_band_state
+msgid "Band standing"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__band_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__band_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_list
+msgid "Bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"Basic monthly pay only. Overtime, bonuses and allowances vary month to month"
+" and would make a gap say more about last month than about pay."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Becomes"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_apply__letter_state__pending
+msgid "Being prepared"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__draft
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__draft
+msgid "Being written"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance_cell__position_band__below
+msgid "Below the band"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__decision_plan_id
+msgid "Born from a plan"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance_cell__position_band__low
+msgid "Bottom third"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_list
+msgid "Budget"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__budget_amount
+msgid "Budget for the year"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "By division"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "By level"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Calibration"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Call it"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__kh
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__kh
+msgid "Cambodia"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__undo_until
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__undo_until
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__undo_until
+msgid "Can be taken back until"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__is_legacy
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__legacy
+msgid "Carried over"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_migrate
+msgid "Carry the old planning data into Pay"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Change the filter above, or clear the search, and the people come\n"
+"              back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Changes"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Check it"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_retire
+msgid "Checks before the old planning module is removed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Choose a spreadsheet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Close the review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__closed
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__closed
+msgid "Closed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Closed."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__company_ids
+msgid "Companies"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__company_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__settings_id
+msgid "Company settings"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Compared with"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"Comparing every woman with every man, without regard to the work, the "
+"difference is %(pct)s%%."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__contract_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__contract_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__contract_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__contract_id
+msgid "Contract"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Copied."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Copy the sentence"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__country_code
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__country_code
+msgid "Country"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__scope_label
+msgid "Covers"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__create_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__create_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__currency_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Dense rows"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Dismiss"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_bands__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_fairness__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_migrate__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_retire__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_reviews__display_name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__division_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__division_id
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Division"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Does this already"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Done."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Download the letter"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Drop it"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Drop this review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Dropped. Nothing was changed."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Each in its own money"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_hr_employee
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__employee_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__employee_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__employee_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__employee_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_hr_contract
+msgid "Employee Contract"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every company you can see"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every country"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid ""
+"Every figure on this page was worked out when it was printed,\n"
+"                from the pay this company actually paid. Nothing here is stored\n"
+"                or carried forward."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Every job family"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Every job title has been put in a family and\n"
+"                                    on a level from the words in it, and the\n"
+"                                    range comes from the people doing that work\n"
+"                                    today. Nothing below is saved until you say\n"
+"                                    so, and every number can be changed\n"
+"                                    afterwards."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Every open contract, measured against the band in force today for its job."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Every person is a dot placed by their pay.\n"
+"                                    Drag a band's edge and the people who fall\n"
+"                                    outside light up, with what it would cost to\n"
+"                                    bring them back in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Every person is a dot: how well they did across, the rise they\n"
+"                are getting up. Drag one and its row follows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Every review started from here will use these numbers. Open a\n"
+"            review to put them onto its rows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Everybody"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_settings.py:0
+msgid "Everybody can open “Your pay, explained”."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"Everybody is still on the guidance, so each score sits on one line. Move a "
+"dot, or change a row in the worksheet, and the picture spreads out."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"Everything has been carried across. The old planning module can be removed."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid ""
+"Everything here is about you and nobody else. If a figure looks\n"
+"              wrong, your manager or the people team can look at it with you."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Export"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_fairness
+#: model:ir.model,name:pb_pay.model_pb_pay_fairness
+msgid "Fairness"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__fairness_dirty
+msgid "Fairness Dirty"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__fairness_after
+msgid "Fairness if applied"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Fairness is not switched on for you"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__fairness_before
+msgid "Fairness now"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Find a person, a job or a team"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Fit to this family"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Five questions about pay that nobody\n"
+"                                    remembers to ask. Press one to see who it\n"
+"                                    is about."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_follower_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_follower_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_partner_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_partner_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__activity_type_icon
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__effective_date
+msgid "From"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "From the payroll paid in %(month)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Gap"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__guidance_pct
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__guidance_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__guidance_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__guidance_pct
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_guidance_form
+msgid "Guidance"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__guidance_id
+msgid "Guidance a review opens with"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Guidance created. Change any square you like."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "HR"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Half-height rows with the extra lines dropped, so more bands fit on one "
+"screen."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__has_message
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__has_message
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__has_band
+msgid "Has a band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__max_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Highest"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Highest pay divided by lowest pay inside each band. Counted here when the "
+"highest is at least twice the lowest."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "How experienced this person is"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"How far apart the lowest and the highest paid people\n"
+"                            doing the same job are. A very wide spread is\n"
+"                            usually two jobs wearing one name."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "How it was decided"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__rating_scale
+msgid "How performance is scored"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "How this is measured"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "How this was measured"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"How well somebody did, down the side. Where their pay already sits,\n"
+"            across the top. The number in each square is what this company\n"
+"            means to give."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_rating
+msgid "How well somebody did, for a pay review"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__rating
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__rating
+msgid "How well they did"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "How wide each band has become"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_pay.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_bands__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_fairness__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_migrate__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_retire__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_reviews__id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__activity_exception_icon
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_needaction
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__message_needaction
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_sms_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__message_has_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__message_has_sms_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__message_has_error
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Import pay bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Import the %(count)s good rows"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__date_from
+msgid "In force from"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "In force since %(day)s"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__date_to
+msgid "In force until"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "In the band"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__in
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__in
+msgid "India"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__id
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__id
+msgid "Indonesia"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__in
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__in
+msgid "Inside the band"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_is_follower
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_is_follower
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Job"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_list
+msgid "Job families"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model,name:pb_pay.model_pb_pay_family
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__family_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__name
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_form
+msgid "Job family"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_band_job
+msgid "Job in a pay band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__job_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__job_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__job_id
+msgid "Job position"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__job_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__job_ids
+msgid "Jobs"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Jobs in this band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "K"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__kind__market
+msgid "Keeping up with the market"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__write_uid
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__write_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__company_ids
+msgid "Leave empty and every company in this country uses the band."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_guidance__company_ids
+msgid "Leave empty and every company may use it."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_guidance__country_code
+msgid "Leave empty and this guidance may be used anywhere."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__remaining_amount
+msgid "Left"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Left empty, it names itself"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Left out"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Less than %(new)s months of service, paid above the middle of everybody with"
+" %(old)s months or more in the same job and company. Jobs with fewer than "
+"three long-serving people are skipped."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Let go to save it. Nothing has changed yet."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__letter_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__letter_state
+msgid "Letter"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"Letters for %(count)s people are being prepared and will appear in their "
+"documents shortly."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__level
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__level
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Level"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__kind
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__name
+msgid "Limit"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_review_limit
+msgid "Limit on a pay review"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__limit_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "Limits"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__limit_ids
+msgid "Limits every review starts with"
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_viewer
+msgid ""
+"Look at the pay bands, the health cards and the fairness figures, without "
+"the names behind them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__min_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Lowest"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "M"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__company_id
+msgid "Main company"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__my
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__my
+msgid "Malaysia"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__manager_id
+msgid "Manager"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Men"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_error
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_has_error
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__mid_amount
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Middle"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Middle for the job"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Middle pay today"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance_cell__position_band__mid
+msgid "Middle third"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Migrated guidance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Migrated · %(name)s"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__wage
+msgid "Monthly pay"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "More"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Move the highest edge of this band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Move the lowest edge of this band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Much bigger than the others who scored the same."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "My team"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__new_job_id
+msgid "New job position"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__new_wage
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__new_wage
+msgid "New pay"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "New pay a month"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_change
+msgid "New pay change"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__effective_date
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__effective_date
+msgid "New pay starts on"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "New review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "New to this level"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Newer people paid more"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_summary
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_type_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Nguyen Van A, 4"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"No approved payroll to read yet, so these figures come from the pay written "
+"on open contracts."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_position.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__no_band
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__no_band
+msgid "No band for this job yet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"No copy of this database has been taken in the last %(hours)s hours. Take "
+"one before anything is removed."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "No job family"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "No job on record"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_apply__letter_state__none
+msgid "No letter"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_band
+msgid "No pay bands yet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "No pay change yet"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.actions.act_window,help:pb_pay.action_pb_pay_review_records
+msgid "No pay review yet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "No pay review yet."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "No rise"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__kind__max_raise_amount
+msgid "No rise is bigger than"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "No single rise is bigger than %(amount)s a month."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__kind__band_ceiling
+msgid "Nobody ends above the top of their band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Nobody ends up paid above the top of their band."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Nobody falls outside the band there."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"Nobody has priced %(codes)s against %(target)s, so those companies are left "
+"out rather than converted at a rate this product would have to invent."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"Nobody has said yet which people this scheme pays, so this review covers "
+"everybody in the company. Set that up on the “Who is paid by what” board and"
+" start this one again to narrow it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Nobody has scored this person, so the guidance used the middle."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Nobody in this review has a score on record."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Nobody in this review is called that."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Nobody matches that"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__kind__max_raise_pct
+msgid "Nobody rises by more than"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Nobody rises by more than %(pct)s%%."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Nobody scored below %(score)s gets a rise."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__kind__min_rating
+msgid "Nobody scored below this gets a rise"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Nobody to measure yet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not enough people to compare fairly"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not enough people to compare fairly."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"Not enough people to compare fairly. A gap needs at least %(count)s women "
+"and %(count)s men doing work at the same %(unit)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Not in a band yet — %(people)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Not in a division"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Not scored"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__note
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__note
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__manager_note
+msgid "Note"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__note
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__note
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__note
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Notes"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"Nothing connected to this system carries a score, so there is nothing to "
+"read in. Type or paste them instead."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "Nothing depends on the old planning module."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"Nothing has changed your pay through this system yet. When it does, what "
+"changed and why will appear here."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "Nothing installed depends on the old planning module."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Nothing on record"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Nothing on that list could be placed. The rows are below."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Nothing selected"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__new_wage
+msgid "Now paid"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_needaction_counter
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__message_needaction_counter
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__message_has_error_counter
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__message_has_error_counter
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Offer %(offer)s. That is inside %(band)s and %(compare)s what %(people)s "
+"already doing this job are paid."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__scope_kind__company
+msgid "One company"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__scope_kind__division
+msgid "One division"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__kind__division_budget
+msgid "One division may not spend more than"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__scope_kind__scheme
+msgid "One payroll scheme"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"One person a line: their name, a comma, and the score. Paste\n"
+"            straight out of a spreadsheet. Nothing is saved until you have read\n"
+"            what it found."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "Only an approved pay change can be applied."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Only an approved review can be applied. This one is %(state)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Only somebody who runs pay can write a new figure onto a contract."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Only somebody who runs pay reviews can change one."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__company_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__company_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Only these companies"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__open
+msgid "Open"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Open contracts only, and only where both people are paid by the same company"
+" — two entities keep their books in two currencies and there is no honest "
+"comparison without a rate."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Opening the pay changes…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Opening the pay reviews…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Over budget"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__above
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__above
+msgid "Paid above the band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__below
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__below
+msgid "Paid below the band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Paid least for the same work"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__current_wage
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__current_wage
+msgid "Paid now"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Paste scores"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__pasted
+msgid "Pasted from a spreadsheet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_band
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_band_id
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+msgid "Pay band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.act_window,name:pb_pay.action_pb_pay_band
+#: model:ir.actions.client,name:pb_pay.action_pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_bands
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_list
+msgid "Pay bands"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.module.category,name:pb_pay.module_category_pay
+#: model:res.groups.privilege,name:pb_pay.res_groups_privilege_pay
+msgid "Pay bands and fairness"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pay bands are not switched on for you"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: model:ir.model,name:pb_pay.model_pb_pay_change
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__change_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__name
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_form
+msgid "Pay change"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Pay change letter"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Pay change written. Send it for approval when you are ready."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Pay changed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.actions.act_window,name:pb_pay.action_pb_pay_change_records
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_list
+msgid "Pay changes"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Pay gap by gender"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_review
+#: model:ir.model,name:pb_pay.model_pb_pay_review
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "Pay review"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_guidance
+msgid "Pay review guidance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Pay review letter"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_reviews
+msgid "Pay review screen"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.actions.act_window,name:pb_pay.action_pb_pay_review_records
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_list
+msgid "Pay reviews"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Pay reviews are not open to you."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"Pay reviews are read by the pay roles. Your account holds none of them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_migrate.py:0
+msgid "Pay round"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_settings
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_settings_form
+msgid "Pay settings"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.actions.server,name:pb_pay.cron_pay_letters_ir_actions_server
+msgid "Payobook: print the pay letters that are waiting"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.actions.server,name:pb_pay.cron_pay_positions_ir_actions_server
+msgid "Payobook: work out where everybody sits in their pay band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__people_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__line_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__people
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_list
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "People"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_settings__portal_enabled
+msgid "People can see their own pay explained"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"People → Plan opens the planning room and no longer names the old screens."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"People → Plan still names the old planning screens, so removing them would "
+"leave a screen that opens nothing."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_employee__pb_performance_rating
+msgid "Performance Rating"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__person_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__person_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__person_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__person_id
+msgid "Person"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Person %(number)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Person and what to know"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_review_line
+msgid "Person in a pay review"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__ph
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__ph
+msgid "Philippines"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Pick a job"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Pick a job to place somebody in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Pick the job and say how much of it the person has\n"
+"                            done before. The suggested offer is the middle of\n"
+"                            the band, moved by up to a tenth of its width."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Pick the person first."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Pick who the review covers first."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_place
+msgid "Place a new hire"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__position_after
+msgid "Position after"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_position_pct
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__position_pct
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__position_pct
+msgid "Position in band"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__position_before
+msgid "Position now"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Prepared by %(reader)s on %(day)s · %(count)s people measured"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Print the statement"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__kind__promotion
+msgid "Promotion"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_list
+msgid "Proposed"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__allocated_amount
+msgid "Proposed for the year"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__proposal_pct
+msgid "Proposed rise"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Put back the way it was."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__kind__correction
+msgid "Putting a mistake right"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Putting this right is a pay review, which arrives in the\n"
+"                    next release. Until then, a band edge can be moved above\n"
+"                    and a contract changed on the person's own record."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Question"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__rating_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__rating_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__synced
+msgid "Read from the connected system"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Read scores in"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Reading the pay bands…"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_apply__letter_state__done
+msgid "Ready"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "Ready to apply"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__sex
+msgid "Recorded sex"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__activity_user_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__review_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__review_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__name
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__review_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__review_id
+msgid "Review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__pct
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__proposal_amount
+msgid "Rise"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__line_id
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__state
+msgid "Row"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__lines_blocked
+msgid "Rows that stop approval"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Same job, different pay"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Save the %(count)s good rows"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Say what has to change. Whoever wrote it sees this sentence."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"Say why it is being dropped. Nothing anybody proposed is deleted; the review"
+" simply stops here."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"Say why it is going back. A review that comes back with no reason cannot be "
+"acted on."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"Say why it is going back. A row that comes back with no reason cannot be "
+"acted on."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__rating_scale
+msgid "Scale"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__rating
+msgid "Score"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Scores"
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_viewer
+msgid "See the pay bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Send back"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Send for approval"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Send it back"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__refused
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__refused
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__returned
+msgid "Sent back"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Sent back to be worked on again."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__submitted
+msgid "Sent on"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Sent to HR."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Sent to finance."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Sent to the CEO."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__sequence
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_manager
+msgid "Set the pay bands"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Set up guidance"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__scope_note
+msgid ""
+"Set when the people this review covers had to be worked out a different way "
+"from the one that was asked for."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Share out what is left"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_family__code
+msgid "Short code"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__enforcement__warn
+msgid "Show a warning"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Show it all in the group's money"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Shown in %(target)s at the rate on file."
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,name:pb_pay.group_pay_ceo
+msgid "Sign a pay review off"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__sg
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__sg
+msgid "Singapore"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Somebody in their first year is paid more than the middle of what long-"
+"serving people in the same job earn."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Somebody is paid less than a person who reports to them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Somebody with the pay role can show you the bands\n"
+"                            and what they mean. Nothing is missing from your\n"
+"                            screen; this part of the product is simply not\n"
+"                            yours to open."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Someone"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__kind__other
+msgid "Something else"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Spread"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_guidance_cell
+msgid "Square of a pay review guidance grid"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__cell_count
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance__cell_ids
+msgid "Squares"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Standard guidance"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__state
+msgid "Standing"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Start the review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Start typing a name"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__state
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__state
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__state
+msgid "Status"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__activity_state
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_limit__enforcement__block
+msgid "Stop the review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Stops approval"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Suggested offer"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__pct
+msgid "Suggested rise"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Take it back"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Take off 1%"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_apply__state__undone
+msgid "Taken back"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid "Taken back. %(count)s contracts are on their old pay again."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "Taken back. The old pay is back in place."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__department_id
+msgid "Team"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__th
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__th
+msgid "Thailand"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That band could not be moved."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That band could not be put back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That band no longer exists."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That change could not be saved."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_settings_company_uniq
+msgid "That company already has its pay settings."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That could not be done to those rows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That could not be taken back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That file could not be read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That file could not be read. Save it as a CSV and try again."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "That file is empty."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"That is %(count)s rows, which is more than one paste can hold. Paste it in a"
+" few goes."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "That is a rise of"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That is not something a pay change can do."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That is not something a review can do."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "That job could not be placed just now."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_band_job_job_band_uniq
+msgid "That job is already in this band."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That list could not be read."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That pay change could not be written."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That pay change is not there any more."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_rating_rating_uniq
+msgid "That person already has a score in this review."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That person could not be read."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_review_line_line_uniq
+msgid "That person is already in this review."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That review could not be opened."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That review could not be sent back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That review could not be started."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That review is not there any more."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That row is not in this review."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That square could not be saved."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_guidance_cell_cell_uniq
+msgid "That square is already in this guidance."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "That square is not there any more."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "That step could not be taken."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "The CEO"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "The People screens are not on this server."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "The band picture"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The bands could not be exported."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"The budget rows have not all moved across: %(missing)s months are missing on"
+" the new table and %(differ)s do not add up the same."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"The budget rows have nowhere to live yet — the Budgets module has not been "
+"updated on this database."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__reason
+msgid "The case for it"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"The companies in this view keep their books in %(codes)s. Two amounts in two"
+" currencies cannot be compared without a rate, so only %(main)s is measured "
+"here — switch to the group's money to bring the rest in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"The contract screen does not read the new pay bands yet, so removing the old"
+" grades would empty it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "The contract screen reads the new pay bands."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The fairness figures could not be worked out just now."
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_finance
+msgid ""
+"The finance step of a pay review: check what it costs and send it on, or "
+"send it back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"The gap inside each level of the bands, which is the\n"
+"                            like-for-like comparison."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The guidance could not be created."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "The guidance for this person is %(guide)s%%; this is %(pct)s%%."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "The headline numbers"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"The highest paid person in a band, next to the lowest. A very wide band is "
+"usually two jobs wearing one name."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The jobs could not be read just now."
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_ceo
+msgid "The last step of a pay review: approve it so it can be applied."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "The lowest amount has to stay under the highest one."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "The manager"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"The middle pay of all women against the middle pay of all men. Published in "
+"some countries; it mostly measures which jobs each group holds."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid ""
+"The middle pay of each side, compared %(basis)s and averaged by how many "
+"women are in each. Never a straight average of everybody: that measures who "
+"holds which job."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_form
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "The money"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_hr_employee__pb_performance_rating
+msgid ""
+"The most recent score recorded for this person. A pay review copies it in as"
+" a starting point and then keeps its own."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The new pay could not be written."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"The new pay is the same as the old pay, so there is nothing to send for "
+"approval."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "The old pay is back in place."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "The old planning module is already gone from this database."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "The old planning module is installed here."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The pass could not be run just now."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The pay bands could not be read just now. Try again in a moment."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The pay changes could not be read just now."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_position__compa
+msgid "The pay divided by the middle of the band. 1.0 is exactly the middle."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The pay reviews could not be read just now. Try again in a moment."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The picture could not be drawn."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"The picture draws the first %(count)s people. The budget and the limits are "
+"worked out over all of them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The preview could not be worked out."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"The range for this kind of work runs from %(low)s to %(high)s a month, and "
+"your pay is %(pct)s%% of the way through it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"The range for this kind of work runs from %(low)s to %(high)s a month. Your "
+"pay is above it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"The range for this kind of work runs from %(low)s to %(high)s a month. Your "
+"pay is below it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"The scheme map could not be read just now, so this review covers everybody "
+"in the company."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The scores could not be read in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "The statement could not be prepared."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"The time to take this back ran out at %(when)s. Pay it back down with a pay "
+"change, which leaves a record of both moves."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"The time to take this back ran out at %(when)s. Put it back down with "
+"another pay change, which leaves a record of both moves."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"The time to take this back ran out at %(when)s. To move the pay again, make "
+"a pay change — that leaves a record of both moves."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "The whole group"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "The worksheet"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Their pay"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"Their pay is over the highest amount their band allows. That is not always "
+"wrong — it is always worth knowing."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "Their pay is under the lowest amount their band allows."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"There are no open contracts in this view, so there\n"
+"                            is nothing to compare. Add people and this fills\n"
+"                            itself in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"There are not enough people with a recorded sex to measure the gap fairly."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"There is no guidance yet, so every row would start at nothing.\n"
+"            Close this and press “Set up guidance” first — it takes one click\n"
+"            and you can change any square afterwards."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"There is no open contract on your record, so there is no monthly figure to "
+"show. The people team can put that right."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "There is nobody in that group of people to review."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "There is nobody selected to share it between."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "There is nobody to measure in this view yet."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "There is nobody to measure in this view."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "There is nothing here to take back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "There is nothing left of the budget to share out."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "There were no budget rows to move."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "There were no merit matrices to carry over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "There were no old limits to carry over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "There were no old pay rounds to carry over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "There were no scores on people to carry over."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid ""
+"These are still built on the old planning module and would be removed with "
+"it: %(names)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"These bands are a suggestion. Press “Use these” first and then you can move "
+"them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"These figures are about everybody's pay, so they are\n"
+"                            offered to the people who look after it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"These jobs are in no band, so nobody doing\n"
+"                                    them can be measured. What they are paid\n"
+"                                    today is beside each one."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "This band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_retire.py:0
+msgid "This check could not be run: %(why)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid ""
+"This company does not show pay details here. Your payslips are still under "
+"“Payslips”, and your manager or the people team can answer anything else."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"This covers %(count)s people, which is more than one review can hold. Run it"
+" for one company or one division at a time."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"This family is drawn on its own money scale,\n"
+"                                    so its widths no longer compare with the\n"
+"                                    other families. Everything else on the\n"
+"                                    screen is unchanged."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "This job has no band yet, so the guidance used the middle column."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"This job has no band yet, so there is nothing to measure the new pay "
+"against."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid ""
+"This pay change breaks a limit this company will not bend. The reason is on "
+"the card above."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"This pay change has been sent for approval, so its numbers cannot be "
+"changed. Send it back first."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"This pay change was taken back, so this letter no longer describes what "
+"happened."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"This person has no open contract, so there is nothing to write a new figure "
+"onto."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "This person is on the list twice."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "This puts them above the top of their band."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"This review %(verb)s the gap in %(where)s from %(now)s%% to %(then)s%%."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "This review gives no rise to anybody scored below %(score)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_apply.py:0
+msgid ""
+"This review has already been applied. Take it back first if you need to "
+"change it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"This review has already been decided, so its numbers cannot be changed."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"This review has no guidance behind it, so every row started at nothing. "
+"Create one and the whole review fills in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "This review leaves the gap in %(where)s where it is, at %(now)s%%."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "This review proposes %(over)s more than its budget."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"This review proposes %(over)s more than its budget. Lower some rises or "
+"raise the budget."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"This review was carried over from the old screens and is kept as history. It"
+" cannot be changed."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "This rise breaks a limit."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "This row has no score on it."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Those bands could not be saved."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Those scores could not be saved."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance_cell__position_band__high
+msgid "Top third"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.constraint,message:pb_pay.constraint_pb_pay_family_name_uniq
+msgid "Two job families cannot have the same name."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__activity_exception_decoration
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__entered
+msgid "Typed in"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Under by"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "Unnamed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Use it on every row"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Use the guidance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Use these"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_band__country_code__vn
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_guidance__country_code__vn
+msgid "Vietnam"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Waiting for HR"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Waiting for finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_palette.js:0
+#: model:ir.actions.client,name:pb_pay.action_pb_pay_awaiting
+msgid "Waiting for my approval"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Waiting for the CEO"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Waiting to be sent for approval"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Was"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_apply__old_wage
+msgid "Was paid"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__website_message_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__website_message_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_band__website_message_ids
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_change__website_message_ids
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_review__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "What Apply would change"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__enforcement
+msgid "What happens"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "What is wrong"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "What it means"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_family_form
+msgid "What kind of work this family covers"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "What last changed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "What stops approval"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__scope_note
+msgid "What that means"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"What this company means to pay for each kind of work,\n"
+"                        and where everybody actually sits. Nothing here changes\n"
+"                        anybody's pay."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__chips
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__chips
+msgid "What to know"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "What to measure"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__apply_ids
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__apply_ids
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "What was written"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "What you are paid today, where it sits, and what last changed it."
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_home_pay
+msgid "What you are paid, where it sits, and what last changed"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"When somebody is promoted, or a figure has to be put right, start\n"
+"              it here rather than editing the contract by hand — it keeps the\n"
+"              reason, the approvals and the letter together."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,help:pb_pay.field_pb_pay_settings__portal_enabled
+msgid ""
+"When this is on, everybody can open \"Your pay, explained\" and read what "
+"they are paid, where it sits and what last changed. Never anybody else's."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Where"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model,name:pb_pay.model_pb_pay_position
+msgid "Where a contract sits in its band"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__source
+msgid "Where it came from"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Where it sits"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_position_list
+msgid "Where people sit"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__position_band
+msgid "Where their pay sits"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__scope_ref
+msgid "Which one"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_form
+msgid "Who"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__scope_kind
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_form
+msgid "Who it covers"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__kind
+#: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_form
+msgid "Why"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__returned_note
+msgid "Why it came back"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__note
+msgid "Why this review"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Why:"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__proposed
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__proposed
+msgid "With HR"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__hr_review
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__hr_review
+msgid "With finance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__finance
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__finance
+msgid "With the CEO"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+msgid "Women"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women and men are paid the same, %(basis)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women earn %(pct)s%% less than men doing work at the same %(unit)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "Women earn %(pct)s%% more than men doing work at the same %(unit)s."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Work it out again"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"Worked out from the pay this company actually paid,\n"
+"                        every time you open it. Nothing is stored."
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__as_of
+msgid "Worked out on"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Working it out…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Worth a second look"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid "Worth knowing"
+msgstr ""
+
+#. module: pb_pay
+#: model:res.groups,comment:pb_pay.group_pay_manager
+msgid ""
+"Write and move pay bands, put jobs in them, import them, and see who is paid"
+" least for the same work."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Write it"
+msgstr ""
+
+#. module: pb_pay
+#: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__year
+msgid "Year"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid ""
+"You can look at the pay bands, but changing one is for a pay manager. Ask "
+"one of them to make the change."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"You can take the whole thing back for a day afterwards, on one\n"
+"            button."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "You cannot read the pay bands."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "You cannot read this."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay.xml:0
+msgid ""
+"You have no pay bands yet — here is a set\n"
+"                                    drawn from what you already pay"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_home_menu_pay
+msgid "Your pay"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Your pay today"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Your pay went from"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_home_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "Your pay, explained"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "a month, a rise of"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "a month, an increase of"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "a month, before anything is taken off"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "a month."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/controllers/portal.py:0
+msgid "a pay review"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "a payroll scheme"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "above"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "and %(count)s more not drawn"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "and %(count)s more."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "becomes"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "below"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "each division"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "guidance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "is paid"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "job"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "job by job"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "level"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_fairness.py:0
+msgid "level by level"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "level with"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "lowest, middle and highest are not in that order"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "narrows"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "no job family"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "not scored"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "people"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"people have not been scored, so\n"
+"                the guidance used the middle for them."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"people ·\n"
+"                new pay from"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "reports: %(name)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "rows stop approval"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "somebody"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
+msgid "the level has to be a number from 1 to %(top)s"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_band.py:0
+msgid "this band"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_change.py:0
+msgid "this person"
+msgstr ""
+
+#. module: pb_pay
+#: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
+msgid "to"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid "widens"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
+msgid ""
+"“%(name)s” covers %(people)s people and proposes %(amount)s for the year."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"“%(name)s” is ready: %(people)s people, each with a suggested rise already "
+"filled in."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "“%(score)s” is not a score."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_settings.py:0
+msgid "“Your pay, explained” is switched off for this company."
+msgstr ""

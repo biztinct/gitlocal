@@ -170,9 +170,15 @@
                                     bring them back in.
                                 </p>
                             </div>
+                            <button t-attf-class="pbim-btn ghost sm {{ state.dense ? 'is-on' : '' }}"
+                                    t-att-aria-pressed="state.dense"
+                                    title="Half-height rows with the extra lines dropped, so more bands fit on one screen."
+                                    t-on-click="() => this.toggleDense()">
+                                <t t-out="ic('list', 14)"/> Dense rows
+                            </button>
                         </div>
 
-                        <div class="pay-scroll">
+                        <div t-attf-class="pay-scroll {{ state.dense ? 'is-dense' : '' }}">
                         <div class="pay-lane" t-foreach="lanes" t-as="lane"
                              t-key="lane.currency_code">
                             <div class="pay-lane-h" t-esc="lane.title"/>
@@ -187,7 +193,36 @@
                             <p class="pay-axis-note" t-if="lane.axis.note"
                                t-esc="lane.axis.note"/>
 
-                            <div class="pay-band" t-foreach="lane.bands" t-as="band"
+                            <t t-foreach="familyGroups(lane)" t-as="group"
+                               t-key="group.name">
+                            <div class="pay-fam">
+                                <span class="pay-fam-n" t-esc="group.name"/>
+                                <button t-attf-class="pay-fitbtn {{ group.fitted ? 'is-on' : '' }}"
+                                        t-att-aria-pressed="group.fitted"
+                                        t-on-click="() => this.toggleFit(group.key)">
+                                    <t t-out="ic('maximize', 13)"/> Fit to this family
+                                </button>
+                            </div>
+                            <t t-if="group.fitted">
+                                <div class="pay-axis">
+                                    <span t-foreach="group.axis.ticks"
+                                          t-as="tick" t-key="tick_index"
+                                          t-attf-class="pay-axis-t {{ tick.last ? 'pay-axis-end' : '' }} {{ tick.first ? 'pay-axis-start' : '' }}"
+                                          t-attf-style="left:{{ axisPct(group, tick.value) }}%">
+                                        <t t-esc="tick.label"/>
+                                    </span>
+                                </div>
+                                <p class="pay-fam-warn">
+                                    This family is drawn on its own money scale,
+                                    so its widths no longer compare with the
+                                    other families. Everything else on the
+                                    screen is unchanged.
+                                </p>
+                                <p class="pay-axis-note" t-if="group.axis.note"
+                                   t-esc="group.axis.note"/>
+                            </t>
+
+                            <div class="pay-band" t-foreach="group.bands" t-as="band"
                                  t-key="band.id or band.name">
                                 <div class="pay-band-id">
                                     <div class="pay-band-n" t-esc="band.name"/>
@@ -205,32 +240,33 @@
                                      t-att-data-band="band.id"
                                      t-on-mousedown="(ev) => this.setTrack(band, ev.currentTarget)">
                                     <div t-attf-class="pay-range {{ band.suggested ? 'is-suggested' : '' }}"
-                                         t-att-style="rangeStyle(lane, band)"/>
-                                    <div class="pay-mid" t-att-style="midStyle(lane, band)"/>
+                                         t-att-style="rangeStyle(group, band)"/>
+                                    <div class="pay-mid" t-att-style="midStyle(group, band)"/>
                                     <button t-foreach="band.dots" t-as="dot"
                                             t-key="dot.id"
                                             t-att-class="dotClass(band, dot)"
-                                            t-att-style="dotStyle(lane, dot)"
+                                            t-att-style="dotStyle(group, dot)"
                                             t-att-title="dotTitle(dot)"
                                             t-att-aria-label="dotTitle(dot)"/>
                                     <button class="pay-grip" t-if="band.id"
                                             aria-label="Move the lowest edge of this band"
-                                            t-att-style="gripStyle(lane, band, 'min')"
-                                            t-on-mousedown="(ev) => this.startDrag(lane, band, 'min', ev)"
-                                            t-on-keydown="(ev) => this.onGripKey(lane, band, 'min', ev)"/>
+                                            t-att-style="gripStyle(group, band, 'min')"
+                                            t-on-mousedown="(ev) => this.startDrag(group, band, 'min', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(group, band, 'min', ev)"/>
                                     <button class="pay-grip" t-if="band.id"
                                             aria-label="Move the highest edge of this band"
-                                            t-att-style="gripStyle(lane, band, 'max')"
-                                            t-on-mousedown="(ev) => this.startDrag(lane, band, 'max', ev)"
-                                            t-on-keydown="(ev) => this.onGripKey(lane, band, 'max', ev)"/>
+                                            t-att-style="gripStyle(group, band, 'max')"
+                                            t-on-mousedown="(ev) => this.startDrag(group, band, 'max', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(group, band, 'max', ev)"/>
                                     <span class="pay-edge-lab"
-                                          t-att-style="gripStyle(lane, band, 'min')"
+                                          t-att-style="gripStyle(group, band, 'min')"
                                           t-esc="band.min_short"/>
                                     <span class="pay-edge-lab"
-                                          t-att-style="gripStyle(lane, band, 'max')"
+                                          t-att-style="gripStyle(group, band, 'max')"
                                           t-esc="band.max_short"/>
                                 </div>
                             </div>
+                            </t>
                         </div>
                         </div>
 
