@@ -72,6 +72,11 @@ LETTER_TYPES = [
     ('incentive', 'Incentive letter'),
     ('ff_cover', 'Final settlement cover'),
     ('pip', 'PIP letter'),
+    # The Pay area prints these two. They live here, with every other letter
+    # this product sends, because a company that re-words one of them expects
+    # to find all of them in one list.
+    ('pay_review', 'Pay review letter'),
+    ('pay_change', 'Pay change letter'),
     ('custom', 'Custom'),
 ]
 
