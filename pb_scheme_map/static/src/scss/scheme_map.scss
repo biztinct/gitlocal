@@ -147,6 +147,73 @@
 
         &.is-drafted { stroke-dasharray: 4 4; }
         &.is-on { stroke: var(--pbim-primary); stroke-width: 2.5; }
+        // GROUP P7 — following ONE line means everything else steps back.
+        &.is-dim { stroke: var(--pbim-line); opacity: .35; }
+    }
+
+    // =============================== GROUP P7 · the wires as a gesture
+    //
+    //  A row you can pick up says so before you touch it (the grip and the
+    //  grab cursor); a target you can drop on says so while you are over it
+    //  (the ring and the tint); and the one control that answers the drag —
+    //  the take-it-off bar — is `position: fixed`, because a bar at the foot
+    //  of a card that is four screens tall renders three thousand pixels
+    //  away from the mouse (GR40).
+    .smp-grip {
+        flex: none; display: inline-flex; color: var(--pbim-muted);
+        cursor: grab;
+    }
+    .smp-seg__row[draggable="true"] { cursor: grab; }
+    .smp-seg__row.is-held {
+        opacity: .45; border-style: dashed;
+        border-color: var(--pbim-primary);
+    }
+    .smp-seg__row.is-traced,
+    .smp-scheme.is-traced {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-soft);
+    }
+    .smp-scheme.is-drop {
+        border-color: var(--pbim-primary);
+        background: var(--pbim-soft);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .smp-wirechip[draggable="true"] { cursor: grab; }
+    .smp-wirechip.is-traced {
+        border-color: var(--pbim-primary);
+        background: var(--pbim-surface);
+        box-shadow: 0 0 0 2px var(--pbim-soft);
+    }
+    .smp-wirechip:focus-visible {
+        outline: 2px solid var(--pbim-primary);
+        outline-offset: 2px;
+    }
+    .smp-col__hint {
+        margin: 6px 0 0; font-size: 11.5px; color: var(--pbim-muted);
+        line-height: 1.5;
+    }
+    .smp-trash {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        border: 2px dashed var(--pbim-rose);
+        background: var(--pbim-surface);
+        color: var(--pbim-rose);
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 10px 30px var(--pbim-ring);
+
+        &.is-over {
+            border-style: solid;
+            background: var(--pbim-rose-soft);
+        }
     }
 
     .smp-col { min-width: 0; }

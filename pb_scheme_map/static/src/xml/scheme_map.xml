@@ -107,7 +107,7 @@
         <svg class="smp-lines" aria-hidden="true">
           <path t-foreach="state.paths" t-as="p" t-key="p.id"
                 t-att-d="p.d"
-                t-att-class="p.lit ? 'smp-line is-on' : (p.drafted ? 'smp-line is-drafted' : 'smp-line')"/>
+                t-att-class="p.lit ? 'smp-line is-on' : (p.dim ? 'smp-line is-dim' : (p.drafted ? 'smp-line is-drafted' : 'smp-line'))"/>
         </svg>
 
         <!-- ================================================ left: segments -->
@@ -127,13 +127,20 @@
 
           <div t-foreach="segments" t-as="segment" t-key="segment.key"
                class="smp-seg">
-            <div class="smp-seg__row"
-                 t-att-data-smp-seg="segment.key"
+            <div t-att-data-smp-seg="segment.key"
                  tabindex="0"
+                 t-att-draggable="canEdit ? 'true' : 'false'"
+                 t-attf-class="smp-seg__row {{ isDragging(segment.key) ? 'is-held' : '' }} {{ isTraced('segment', segment.key) ? 'is-traced' : '' }}"
                  t-att-aria-label="segment.label"
                  t-on-keydown="(ev) => this.onSegmentKey(ev, segment)"
+                 t-on-dragstart="(ev) => this.onSegmentDragStart(ev, segment)"
+                 t-on-dragend="onDragEnd"
                  t-on-mouseenter="() => this.setHover(segment.key)"
                  t-on-mouseleave="clearHover">
+              <span t-if="canEdit" class="smp-grip"
+                    title="Drag this team onto a scheme on the right">
+                <t t-out="ic('grip', 14)"/>
+              </span>
               <input type="checkbox" class="smp-tick"
                      t-att-aria-label="segment.label"
                      t-att-checked="isPicked(segment.key) ? 'checked' : false"
@@ -166,9 +173,17 @@
 
             <div t-if="wiresFor(segment.key).length" class="smp-seg__wires">
               <span t-foreach="wiresFor(segment.key)" t-as="wire" t-key="wire.id"
-                    class="smp-wirechip"
-                    t-on-mouseenter="() => this.setHover(segment.key)"
-                    t-on-mouseleave="clearHover">
+                    tabindex="0" role="button"
+                    t-att-draggable="canEdit ? 'true' : 'false'"
+                    t-attf-class="smp-wirechip {{ state.traced === wire.id ? 'is-traced' : '' }}"
+                    t-attf-aria-label="{{ wire.config }} pays {{ wire.segment_label }}. Press Delete to take it off."
+                    t-on-keydown="(ev) => this.onWireKey(ev, wire)"
+                    t-on-dragstart="(ev) => this.onWireDragStart(ev, wire)"
+                    t-on-dragend="onDragEnd"
+                    t-on-focus="() => this.traceWire(wire.id)"
+                    t-on-blur="clearTrace"
+                    t-on-mouseenter="() => this.traceWire(wire.id)"
+                    t-on-mouseleave="clearTrace">
                 <b t-esc="wire.config"/>
                 <span class="smp-badge" t-esc="wire.cycle_label"/>
                 <span t-if="wire.source !== 'manual'" class="smp-badge is-soft">proposed</span>
@@ -207,19 +222,39 @@
           </div>
         </div>
 
+        <!-- GROUP P7 — the bar that answers a wire drag. `position: fixed`
+             and not `position: sticky`, because a control that answers a
+             gesture has to resolve against the window the mouse is in
+             (GR40). It exists only while a line is in somebody's hand. -->
+        <div t-if="draggingWire"
+             t-attf-class="smp-trash {{ state.overTrash ? 'is-over' : '' }}"
+             role="status"
+             t-on-dragover="onTrashDragOver"
+             t-on-dragleave="onTrashDragLeave"
+             t-on-drop="onTrashDrop">
+          <t t-out="ic('unlink', 18)"/>
+          <span t-esc="trashLabel"/>
+        </div>
+
         <!-- ================================================= right: schemes -->
         <div class="smp-col is-right">
           <div class="smp-col__head">
             <h3 class="smp-col__title">Paid by</h3>
             <p class="smp-col__sub">The payroll schemes this company runs</p>
+            <p t-if="canEdit" class="smp-col__hint">
+              Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off.
+            </p>
           </div>
 
           <div t-foreach="schemeGroups" t-as="group" t-key="group.key"
                class="smp-group">
             <p class="smp-group__label" t-esc="group.label"/>
             <div t-foreach="group.items" t-as="scheme" t-key="scheme.id"
-                 class="smp-scheme"
                  t-att-data-smp-scheme="scheme.id"
+                 t-attf-class="smp-scheme {{ state.dropOn === scheme.id ? 'is-drop' : '' }} {{ isTraced('scheme', scheme.id) ? 'is-traced' : '' }}"
+                 t-on-dragover="(ev) => this.onSchemeDragOver(ev, scheme)"
+                 t-on-dragleave="() => this.onSchemeDragLeave(scheme)"
+                 t-on-drop="(ev) => this.onSchemeDrop(ev, scheme)"
                  t-on-mouseenter="() => this.setHover('scheme-' + scheme.id)"
                  t-on-mouseleave="clearHover">
               <svg class="smp-ring" viewBox="0 0 36 36" aria-hidden="true">
