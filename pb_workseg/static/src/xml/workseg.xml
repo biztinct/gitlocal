@@ -305,7 +305,23 @@
           <t t-esc="state.draft.date_from"/> to <t t-esc="state.draft.date_to"/>
         </p>
 
-        <div class="wsg-field">
+        <!-- A picker with nothing in it is a dead end with a label on it.
+             One company means there is nowhere for the days to go, and the
+             thing to do about that is on another screen. -->
+        <div t-if="!hostChoices.length" class="wsg-nowhere">
+          <t t-out="ic('info',15)"/>
+          <div>
+            <p>
+              <t t-esc="homeEmployment ? homeEmployment.company : ''"/> is the only entity here, so there is nowhere else for these days to go.
+            </p>
+            <p>Put two or more companies in a group and this month can be split between them.</p>
+            <button class="pbim-btn ghost sm" t-on-click="openGroupScreen">
+              <t t-out="ic('building',14)"/> Set up the group
+            </button>
+          </div>
+        </div>
+
+        <div t-else="" class="wsg-field">
           <label>Worked in</label>
           <select t-att-value="state.draft.host_company_id"
                   t-on-change="(ev) => this.setDraft('host_company_id', ev.target.value)">
@@ -435,7 +451,8 @@
 
         <div class="wsg-pop-f">
           <button class="pbim-btn ghost" t-on-click="closePopover">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.busy"
+          <button class="pbim-btn primary"
+                  t-att-disabled="state.busy or !hostChoices.length"
                   t-on-click="confirmSegment">
             <t t-out="ic('check',15)"/> Confirm
           </button>
