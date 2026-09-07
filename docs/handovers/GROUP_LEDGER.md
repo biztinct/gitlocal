@@ -225,7 +225,20 @@ Room, gotchas WF1–WF29, deploy ritual, credentials), `docs/handovers/RIZE_LEDG
 - Tenant deny-list: `pb_tenants/models/sync_rules.py:49 TENANT_SYNC_NEVER` (pb_tenants,
   pb_demo, pb_demo_portal, pb_website) + prefix `pb_platform`. `pb_group` needs no entry.
 
-### Legacy module (pb_hr_workforce_planning) — what P6 must absorb
+### Legacy module (pb_hr_workforce_planning) — RETIRED 2026-09-08 in P6b
+**It is uninstalled on p9clone, payobook, abm and payobook_template and none
+of its tables remain.** Everything below is kept as the record of what was
+absorbed and where it went: merit matrices → `pb.pay.guidance`, compensation
+cycles → read-only `pb.pay.review` history, the per-person score →
+`pb.pay.rating` plus `hr.employee.pb_performance_rating`, guardrails →
+`pb.pay.review.limit` templates on `pb.pay.settings`, `wfp.budget.actual` →
+`pb.budget.line` (in `pb_budget`, natively), pay grades → `pb.pay.band` (P6a).
+Not absorbed on purpose: planning scenarios, forecasts and monthly projections
+(the Decision Room is a different product with no sensible mapping) and the
+component tagging (retired by ruling G7). The files stay in the repository as
+history; nothing may import from them.
+
+### What the legacy module used to hold (historical)
 19 models, ~4,400 lines. External writes: `compensation_cycle.py:163` →
 `hr.contract.wage`; tagging wizard → `hr.formula.rule.wfp_category`. Contract columns
 `grade_id`, `compa_ratio`, `range_penetration` (stored) read by pb_contracts
@@ -603,6 +616,87 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   `module.name` in a test or validation URL; the short form is a
   coincidence, not a contract.
 
+- GR46 (P6b): **a contract write queues a rebuild of the whole position
+  table, and anything that flushes the cursor mid-loop runs it.** GR44 put
+  that rebuild on `cr.precommit` so it happens ONCE per transaction — which
+  is exactly right for a person saving one contract. Apply writes four
+  thousand, and something inside the loop flushes the cursor on nearly every
+  iteration, so the queued pass ran again and again: 4,510 rows rebuilt every
+  450 ms, for ever, with the apply never finishing and nothing in the log but
+  a wall of "positions rebuilt". The fix is the context flag the trigger
+  already honours — `pb_pay_no_rebuild=True` on the bulk write — and ONE
+  `recompute_all()` at the end. Any bulk write to a model that carries a
+  precommit trigger needs the same treatment; a precommit hook is a guard
+  against repetition, not against a loop.
+- GR47 (P6b): **`pb_demo` already defines `hr.employee.pb_performance_rating`,
+  and 4,502 people on the demo company carry one.** A new field of the same
+  name in another module is not an error on this platform — the two
+  definitions are merged and whichever loads last wins on `string`, `groups`
+  and `help`. Declaring a SECOND field for the same fact would have stranded
+  the demo's scores and opened every pay review saying "nobody has been
+  scored" on a database full of scores, so `pb_pay` deliberately declares the
+  SAME field with the same five values and, critically, WITHOUT the
+  `groups="hr.group_hr_user"` it was first written with: a shared field is
+  only safe while neither owner narrows it. Two modules, one column, written
+  down here because the next person to grep for it will find two definitions
+  and assume one is a mistake.
+- GR48 (P6b): **server-side QWeb compiles an expression as PYTHON, so `!x` is
+  a SyntaxError there and `not x` is a SyntaxError in the browser.** WFPLAN
+  WF3 taught the browser half: OWL rewrites `and`/`or` and not `not`. The
+  portal page is the first screen this programme has shipped on the OTHER
+  engine, and `t-if="!enabled"` came out as a five-hundred error page with the
+  real message four hundred lines up the log (`SyntaxError: invalid syntax
+  (<>, line 1)`), under a heap of unrelated favicon tracebacks. One product,
+  two template languages, and their rules are mirror images.
+- GR49 (P6b): **uninstalling a module cannot delete a group another module's
+  record rule still points at, and it does not come back for it.** The
+  platform tries `DELETE FROM res_groups WHERE id IN (…)`, the foreign key
+  refuses, it drops one id and tries again, and whatever is left at the end
+  simply survives — with its xmlid row, its users and its implications
+  intact. After the first rehearsal `pb_hr_workforce_planning.group_wfp_user`
+  was still there, showing in every tenant's list of roles as a group called
+  plainly "User" belonging to nothing. `pb.pay.retire.tidy_up()` runs after
+  the uninstall, scoped to `ir.model.data` rows the retired module owned by
+  name, and reports what it took. Any future retirement needs the same sweep.
+- GR50 (P6b): **a picture of a categorical scatter is a picture of four dots
+  until you jitter it.** Nine hundred people on five ratings and one guidance
+  grid land on five coordinates, and the calibration view drew five dots over
+  eight hundred and ninety-five invisible ones. Two things fix it and both
+  are needed: a deterministic sideways nudge per row (from the row's own id,
+  so a person does not move between reads), and a SENTENCE for the case where
+  the picture is genuinely flat — "everybody is still on the guidance, so each
+  score sits on one line" — because the honest version of that screen looks
+  exactly like the broken one.
+- GR51 (P6b): **a rating of 5 read by a four-level grid must be the top, not
+  the middle.** The first `pct_for` treated any out-of-range score as
+  "nobody has told us" and fell to the middle rating, which on the day a
+  company upgrades from a five-point scale to a four-level grid quietly
+  halves the rise of every one of its best people. Out of range HIGH is the
+  top; out of range LOW (zero, unscored) is the middle, and only that one
+  carries the "nobody has scored this person" chip. The default grid also now
+  SIZES ITSELF from the scores the reader can already see, across every
+  company they are entitled to rather than the one they are standing in
+  (GR41's family, on a different screen).
+- GR52 (P6b): **the migration read eleven columns another module had added to
+  a table it did not own, and the platform had just dropped them.** Removing
+  a field from a model removes its column, and `pb_budget`'s eleven additions
+  to `wfp.budget.actual` went the moment `budget_ext.py` did — AFTER the
+  post-migrate had copied the rows, so the data was safe and the same
+  migration re-run from a test blew up on `column "pb_budget_type" does not
+  exist`. A migration reads `information_schema.columns` first and selects
+  `NULL AS <name>` for anything that is not there; and it matches rows on the
+  columns that SURVIVE, or a second run duplicates every row whose kind the
+  old table can no longer state.
+- GR53 (P6b): **two grand totals are the wrong parity check for a table the
+  product writes to.** The pre-flight gate first compared
+  `SUM(actual_cost)` on the old table with the new one, which is true on the
+  day of the move and false for ever afterwards — the moment anybody enters a
+  budget the gate refuses and nobody can tell why. The check that keeps
+  meaning what it says is ROW BY ROW: every old row has a row on the new side
+  for the same company, team and month, and what was spent on it is the same
+  figure. The new table is allowed to hold more than the old one; it is not
+  allowed to hold less.
+
 
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
@@ -956,5 +1050,79 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   payobook_template beyond the module install and its derived position
   rows, so the demo company still has no pay bands and the screen opens
   on the suggestion; the `pbim` kit still has no dark palette (GR38).
-- P6b — "Pay: Review and Changes; retire legacy" (ruling G9). Not yet designed.
+- P6b — "Pay, part two: review, changes, and the old module retired" —
+  designed and BUILT 2026-09-08 (`GROUP_P6B_PAY_REVIEW_AND_RETIRE.md`).
+  Status: **COMPLETE**. `pb_pay` 19.0.2.0.0, `pb_budget` 19.0.2.0.0,
+  `pb_people_hub` 19.0.2.0.0, `pb_decision_room` 19.0.4.2.0, `pb_lifecycle`
+  19.0.1.3.0, `pb_hr_flow` 19.0.1.2.0, `pb_pip` 19.0.1.1.0, `pb_probation`
+  19.0.1.1.0 — all eight live on p9clone, payobook, abm and
+  payobook_template, every manifest version verified against
+  `ir_module_module.latest_version` on all four. `pb_import_kit` UNCHANGED:
+  every icon this phase needed was already in the shared set.
+  Shipped: `pb.pay.guidance` (+ cells) — how well somebody did across, where
+  their pay sits down, born seeded so a new grid answers rather than reading
+  zero, and sized from the scores the company already holds;
+  `pb.pay.rating` (one per person per review, typed, pasted with a preview,
+  or read in, plus the legacy snapshot); `pb.pay.review` (+ lines + limits) —
+  a worksheet that OPENS FULL with a suggested rise on every row, a budget
+  meter, a live fairness line, five kinds of self-explaining limit and a
+  "what stops approval" panel; the four-signature cascade on
+  `biz.approval.chain.mixin` with a real task raised for the next person and
+  a Drop that is logged rather than a delete; calibration (a dot per person,
+  jittered, draggable, outliers ringed on two tests); `pb.pay.apply` — one
+  preview, one write, one row per contract holding the old figure, letters
+  through `pb.hr.letter`, and a full undo for 24 hours; `pb.pay.change` for a
+  promotion or a correction between reviews, refused while a review is open
+  for that person; `/my/pay` "Your pay, explained" on the portal kit;
+  `pb.pay.settings` per company; `pb.pay.retire` — a ten-check pre-flight
+  gate and the sweep that follows the uninstall; ⌘K rows 3430 "Pay review",
+  3440 "New pay change", 3450 "Waiting for my approval".
+  `pb.budget.line` REPLACES `wfp.budget.actual`: the budget row came home,
+  all seven writers, both readers, five record rules (new xmlids, because a
+  `noupdate` record is never rewritten) and four views repointed, with a
+  migration that moved every row and proved the totals.
+  The People hub's Plan lens is now a MOUNT POINT: the seven legacy cards and
+  the "Classic planning tools" fold are gone, the gate is the planning room's
+  own roles, and `pb_hr_workforce_planning` is in no manifest.
+  Migration parity, per database: payobook 332 budget rows moved,
+  ₫1,667,834,296,228 on both sides, 2 performance scores kept, 0 matrices,
+  0 cycles, 0 guardrails; abm 10 rows, ₫1,818,376,130 both sides, 0 of
+  everything else; payobook_template 0 of everything; p9clone 332 rows and
+  the same total. The pre-flight gate answered "everything has been carried
+  across" on all four, on all ten checks.
+  **`pb_hr_workforce_planning` is UNINSTALLED on p9clone, payobook, abm and
+  payobook_template.** Zero `wfp_*` tables remain on any of them, zero
+  tracebacks in any uninstall log, and the Budget screen reads the same to
+  the digit before and after (payobook: 2.0tn budgeted, 1.7tn spent, 348.4bn
+  left, 83% against 67% of the year).
+  Tests: 203 green on p9clone before the uninstall (`pb_pay` 103 incl. the
+  new `test_pay_review.py`, `pb_decision_room` 71, `pb_people_hub` 33,
+  `pb_budget` 26) — 0 failed, 0 errors. The wide run over 410 tests reports
+  the SAME 3 failures the P6a entry recorded as p9clone data drift
+  (`pb_contracts` ×2, `pb_group` ×1) and nothing else: zero regressions.
+  Timings: a review of 902 people on payobook built in **2.6 s** and opens in
+  **162 ms** server-side; 4,510 people on p9clone built in **10.3 s** and
+  opened in **575 ms**; 450 rows renumbered in one gesture in **2.3 s**;
+  apply over 4,312 contracts **78 s** and undo **52 s**, both to the digit.
+  On payobook the Retail scheme review narrows to exactly **902 people**
+  through the scheme map, proposes **₫7.0B of a ₫15B budget** and says
+  "this review widens the gap in Payobook Retail — End-Month Payroll from
+  0.4% to 0.6%" — the number a pay round most needs to be told and never is.
+  B1-B10 walked on p9clone (every write flow, including apply and undo over
+  4,312 contracts and the portal page), payobook and abm (read and preview
+  only) at 1440 and 390. Screenshots: `docs/handovers/group_p6b_shots/`.
+  The p9clone rehearsal — one guidance grid, three reviews, one applied pay
+  change, 4,312 applied wages and 25 letters — was UNDONE and DELETED
+  afterwards and verified gone (the rehearsed wage is back at ₫9,396,000);
+  payobook and abm carry **0 reviews, 0 guidance grids, 0 ratings, 0 pay
+  changes and 0 applied rows** — nothing was written to production beyond the
+  module upgrade, the budget rows coming home and the two performance scores
+  being kept.
+  Owner debts: the payobook admin password in this ledger is still wrong
+  (GR24) — P6b used temporary `p6b.hr@`, `p6b.finance@`, `p6b.ceo@`,
+  `p6b.vi@` and `p6b.me@payobook.com`, all to be archived; the `pbim` kit
+  still has no dark palette (GR38); the six "Planning and pay" cards in the
+  old flow menu now point at the Decision Room and the Pay screens rather
+  than at the retired ones; `hr.employee.pb_performance_rating` is now shared
+  with `pb_demo` (GR47).
 - P7 — "Visibility, Vietnamese, closeout". Not yet designed.
