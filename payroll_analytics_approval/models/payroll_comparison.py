@@ -157,20 +157,30 @@ class PayrollComparison(models.Model):
             self.previous_period_to = self.current_period_to - relativedelta(years=1)
 
     def _get_period_data(self, date_from, date_to):
-        """Get payroll data for a specific period"""
+        """Get payroll data for a specific period, for THIS company.
+
+        GROUP P3: the company filter. `hr.payslip.run` has no company of its
+        own, so the run search cannot carry one — but its payslips do, and
+        without that test a comparison on a group added every company's
+        payslips together and reported the total as one entity's month. The
+        record already names a company; this is the first place that reads it.
+        """
         # Get payslip runs for the period
         payslip_runs = self.env['hr.payslip.run'].search([
             ('date_start', '>=', date_from),
             ('date_end', '<=', date_to),
             ('state', '=', 'done')
         ])
-        
+
+        company = self.company_id or self.env.company
         total_employees = 0
         total_payroll = 0
         components = {}
-        
+
         for run in payslip_runs:
             for payslip in run.slip_ids:
+                if payslip.company_id and payslip.company_id != company:
+                    continue
                 total_employees += 1
                 for line in payslip.line_ids:
                     if line.code == 'NETPAY':
