@@ -503,6 +503,37 @@ class PbPayFairness(models.AbstractModel):
         return (male - female) / male * 100.0
 
     @api.model
+    def gap_for(self, people):
+        """The like-for-like gap over a list of people somebody else built.
+
+        The Pay Review uses this to answer the only fairness question that
+        matters while a review is being written: what would this review DO to
+        the gap. It hands over its own rows twice — once with the pay people
+        are on and once with the pay they would be on — and the difference
+        between the two answers is the sentence at the top of the screen.
+
+        `people` is `[{'sex', 'level', 'job_id', 'wage'}]`. Level by level
+        where bands exist, job by job where they do not, exactly as the
+        Fairness screen does it, so the two can never disagree.
+        """
+        people = [person for person in (people or [])
+                  if float(person.get('wage') or 0.0) > 0]
+        if not people:
+            return {'gap': None, 'compared': 0, 'basis': 'none',
+                    'people': 0}
+        has_levels = any(person.get('level') for person in people)
+        key = 'level' if has_levels else 'job_id'
+        rows = [{'sex': (person.get('sex') or 'unknown'),
+                 'level': person.get('level') or 0,
+                 'job_id': person.get('job_id') or 0,
+                 'wage': float(person.get('wage') or 0.0)}
+                for person in people]
+        gap, compared, skipped = self._weighted_gap(rows, key)
+        return {'gap': gap, 'compared': compared, 'skipped': skipped,
+                'basis': 'level' if has_levels else 'job',
+                'people': len(rows)}
+
+    @api.model
     def _weighted_gap(self, people, key):
         """The gap inside each bucket, weighted by how many women are in it.
 

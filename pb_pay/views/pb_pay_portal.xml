@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       "Your pay, explained" — the one page in this module a person who is
+       not in HR ever opens.
+
+       It is built on the portal kit the rest of the self-service pages use
+       (`portal.portal_layout` inside a `.pbme` wrapper with the shared hero),
+       so it looks like the payslips page beside it rather than like a second
+       product bolted onto the same site.
+       ================================================================== -->
+
+  <template id="portal_my_home_menu_pay" name="Pay breadcrumb"
+            inherit_id="portal.portal_breadcrumbs" priority="36">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'pay'" class="breadcrumb-item active">Your pay</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_pay" name="Pay card on the portal home"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="24">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Your pay, explained</t>
+        <t t-set="text">What you are paid, where it sits, and what last changed</t>
+        <t t-set="url" t-value="'/my/pay'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'pay_change_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="portal_my_pay" name="Your pay, explained">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your pay, explained</t>
+          <t t-set="hero_sub">What you are paid today, where it sits, and what last changed it.</t>
+        </t>
+
+        <!-- SERVER-SIDE QWeb compiles an expression as PYTHON, so this is
+             `not` and not `!` — the exact opposite of the browser templates
+             in this module, where `not` is a SyntaxError (WFPLAN WF3). One
+             product, two template languages, and the two rules are mirror
+             images of each other. -->
+        <div t-if="not enabled" class="pbme-card paypf-off">
+          <p t-esc="off_note"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbme-card paypf-now">
+            <div t-if="has_pay">
+              <div class="paypf-eyebrow">Your pay today</div>
+              <div class="paypf-big" t-esc="pay_label"/>
+              <div class="paypf-sub">a month, before anything is taken off</div>
+            </div>
+            <p t-else="" t-esc="no_pay_note"/>
+          </div>
+
+          <div t-if="band" class="pbme-card paypf-band">
+            <div class="paypf-eyebrow">Where it sits</div>
+            <p class="paypf-sentence" t-esc="band_sentence"/>
+            <div class="paypf-track">
+              <span class="paypf-fill" t-attf-style="width:#{band_pct}%"/>
+              <span class="paypf-pin" t-attf-style="left:#{band_pct}%"/>
+            </div>
+            <div class="paypf-ends">
+              <span>Bottom of the range</span>
+              <span>Top of the range</span>
+            </div>
+          </div>
+
+          <div class="pbme-card paypf-change">
+            <div class="paypf-eyebrow">What last changed</div>
+            <t t-if="change">
+              <p class="paypf-sentence">
+                Your pay went from <strong t-esc="change['old']"/> to
+                <strong t-esc="change['new']"/> a month, an increase of
+                <strong t-esc="change['pct']"/>%, from
+                <strong t-esc="change['date_label']"/>.
+              </p>
+              <p t-if="change['reason']" class="paypf-why">
+                Why: <span t-esc="change['reason']"/>
+              </p>
+              <a t-if="change['letter_id']" class="btn btn-secondary btn-sm"
+                 t-attf-href="/my/pay/letter/#{change['letter_id']}">
+                Download the letter
+              </a>
+            </t>
+            <p t-else="" t-esc="no_change_note"/>
+          </div>
+
+          <div class="pbme-card paypf-ask">
+            <p>
+              Everything here is about you and nobody else. If a figure looks
+              wrong, your manager or the people team can look at it with you.
+            </p>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+</odoo>

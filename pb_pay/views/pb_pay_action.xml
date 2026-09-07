@@ -28,6 +28,24 @@
         <field name="context">{'pb_tab': 'bands', 'pb_focus': 'place', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
     </record>
 
+    <record id="action_pb_pay_review" model="ir.actions.client">
+        <field name="name">Pay review</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'review', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <record id="action_pb_pay_change" model="ir.actions.client">
+        <field name="name">New pay change</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'changes', 'pb_focus': 'new_change', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <record id="action_pb_pay_awaiting" model="ir.actions.client">
+        <field name="name">Waiting for my approval</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'review', 'pb_focus': 'awaiting', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
     <record id="action_pb_pay_band" model="ir.actions.act_window">
         <field name="name">Pay bands</field>
         <field name="res_model">pb.pay.band</field>
