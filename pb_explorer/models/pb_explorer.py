@@ -2022,7 +2022,8 @@ class PbExplorer(models.AbstractModel):
         """The honesty block that rides on every payload."""
         if not run_ids:
             return {'runs': 0, 'asof_fallback': 0, 'untyped_categories': 0,
-                    'provisional_runs': 0, 'built_runs': 0}
+                    'provisional_runs': 0, 'built_runs': 0,
+                    'division_fallback': 0}
         Fact = self.env['pb.fact.run'].sudo()
         facts = Fact.search([('run_id', 'in', run_ids)])
         return {
@@ -2032,4 +2033,5 @@ class PbExplorer(models.AbstractModel):
                 lambda f: f.basis == 'provisional')),
             'asof_fallback': sum(facts.mapped('asof_fallback_count')),
             'untyped_categories': sum(facts.mapped('untyped_category_count')),
+            'division_fallback': sum(facts.mapped('division_fallback_count')),
         }

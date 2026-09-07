@@ -228,6 +228,27 @@ class TestGroupP3(common.TransactionCase):
         emp_cols = [d[0] for d in self.env.cr.description]
         self.assertEqual(emp_cols[-2:], ['config_id', 'is_advance'])
 
+    def test_01d_a_period_before_the_attachment_uses_the_first_one(self):
+        """A division set up this month must not blank out every month
+        before it — the first attachment is used, and the count is surfaced."""
+        late = self.env['pb.division'].create({'name': 'P3 Logistics'})
+        dept = self.env['hr.department'].create({
+            'name': 'P3 Late', 'company_id': self.co_vn.id})
+        emp = self._mk_employee('P3 Late One', dept, self.co_vn)
+        run = self._mk_run('P3 Jul Salary', '2026-07-01', '2026-07-31')
+        self._mk_slip(run, emp, 100.0, 90.0, self.co_vn, self.scheme_main)
+        self.env['pb.division.link'].create({
+            'division_id': late.id, 'department_id': dept.id,
+            'date_from': '2026-09-01'})
+        self.builder.build_runs([run.id])
+        rows = self.env['pb.fact.emp'].search([('run_id', '=', run.id)])
+        self.assertTrue(rows)
+        self.assertTrue(all(r.division_id == late.id for r in rows),
+                        'July went blank because the division was set up later')
+        header = self.env['pb.fact.run'].search([('run_id', '=', run.id)])
+        self.assertTrue(header.division_fallback_count,
+                        'the fallback happened and nothing said so')
+
     def test_01c_division_follows_the_department_tree(self):
         """An attachment at the top of a branch covers everything under it."""
         self.assertEqual(
