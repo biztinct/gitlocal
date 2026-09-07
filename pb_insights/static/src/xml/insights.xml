@@ -31,6 +31,36 @@
               <b t-if="hero.run_name" t-esc="latestRunLabel"/>
             </p>
 
+            <!-- GROUP P3 — what money these figures are in, and which
+                 payroll schemes they cover. Both are read from the data,
+                 never assumed from whichever company is active. -->
+            <div class="pbin-scope">
+              <span class="pbin-chip">
+                <t t-out="ic('coins', 12)"/>
+                <span>Figures in <b t-esc="moneyInfo.name"/></span>
+              </span>
+              <span t-foreach="schemes" t-as="sch" t-key="sch.id" class="pbin-chip">
+                <t t-out="ic('gitMerge', 12)"/>
+                <span t-esc="sch.name"/>
+              </span>
+            </div>
+
+            <div t-if="moneyInfo.many" class="pbin-multi">
+              <t t-out="ic('alert', 14)"/>
+              <span>
+                <b>More than one currency.</b>
+                <t t-esc="moneyInfo.note"/>
+                <span t-foreach="moneyInfo.parts" t-as="prt" t-key="prt.name"
+                      class="pbin-part">
+                  <b t-esc="prt.name"/>
+                  <span t-esc="prt.symbol + num(prt.net)"/>
+                </span>
+                <span t-foreach="moneyInfo.unconverted" t-as="miss"
+                      t-key="miss.name" class="pbin-part warn"
+                      t-esc="miss.note"/>
+              </span>
+            </div>
+
             <div class="pbin-headline">
               <span class="v pbin-door" t-esc="money(state.heroNet)"
                     t-att-class="{ off: !explorerAvailable }"

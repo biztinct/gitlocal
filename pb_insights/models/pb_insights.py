@@ -319,9 +319,21 @@ class PbInsights(models.AbstractModel):
                          default={'available': False, 'xmlid': ''})
 
         company = self.env.company
+        money = timed('money', lambda: self._money(runs),
+                      default={'symbol': company.currency_id.symbol or '',
+                               'name': company.currency_id.name or '',
+                               'many': False, 'parts': [], 'note': ''})
+        schemes = timed('schemes', lambda: self._schemes(runs), default=[])
         timings['total'] = round((time.monotonic() - t0) * 1000, 1)
         return {
-            'currency': company.currency_id.symbol or '',
+            # GROUP P3: the symbol of the money these totals are ACTUALLY in,
+            # not the symbol of whichever company happens to be active. The
+            # figures are summed over every company in the switcher, so
+            # stamping one company's symbol on them was a straight mislabel
+            # the moment a group had two currencies.
+            'currency': money['symbol'],
+            'money': money,
+            'schemes': schemes,
             'company': company.name,
             'companies': self.env.companies.mapped('name'),
             'months': months,
@@ -336,6 +348,91 @@ class PbInsights(models.AbstractModel):
             'explorer': explorer,
             'timings': timings,
         }
+
+    # --------------------------------------------------------------- money
+    def _money(self, runs):
+        """Which money this board's totals are in, and whether they add up.
+
+        Every figure on this board is summed over the COMPANIES IN THE
+        SWITCHER. If those companies keep their books in one currency, the
+        answer is that currency and nothing else needs saying. If they do not,
+        the board says so and shows the parts, converting through the ONE
+        conversion service (`pb.fx`) at the group's own rate policy when a rate
+        exists — and refusing, in words, when it does not. It never adds two
+        currencies together and it never guesses a rate (GROUP rule 7).
+        """
+        # No sudo: `res.company` and `res.currency` are readable by every
+        # internal user, and `env.companies` is already the reader's own
+        # allowed set — a sudo here would widen nothing and hide the fact.
+        companies = self.env.companies
+        by_currency = {}
+        for co in companies:
+            if co.currency_id:
+                by_currency.setdefault(co.currency_id, []).append(co.id)
+        target = companies[:1].currency_id
+        if 'pb.fx' in self.env:
+            target = self.env['pb.fx'].presentation_currency(self.env.company) \
+                or target
+        if len(by_currency) < 2:
+            only = next(iter(by_currency), target)
+            return {'name': only.name if only else '',
+                    'symbol': (only.symbol or only.name) if only else '',
+                    'many': False, 'parts': [], 'note': '', 'unconverted': []}
+
+        # More than one money in scope: name the parts.
+        # Which company each run belongs to, in ONE indexed query — a run has
+        # no company of its own (C18.43), and reading it per run would put a
+        # query per row on a board that is measured in milliseconds.
+        owner = {}
+        if runs:
+            self.env.cr.execute(
+                "SELECT payslip_run_id, MIN(company_id) FROM hr_payslip "
+                "WHERE payslip_run_id IN %s AND state != 'cancel' GROUP BY 1",
+                (tuple(runs.ids),))
+            owner = dict(self.env.cr.fetchall())
+        totals = {}
+        for run in runs:
+            company_id = owner.get(run.id, 0)
+            for currency, ids in by_currency.items():
+                if company_id in ids:
+                    totals[currency] = totals.get(currency, 0.0) \
+                        + (run.pb_total_net or 0.0)
+        parts, unconverted = [], []
+        for currency, amount in totals.items():
+            parts.append({'name': currency.name,
+                          'symbol': currency.symbol or currency.name,
+                          'net': round(amount, 2)})
+            if currency != target and 'pb.fx' in self.env:
+                _v, known, meta = self.env['pb.fx'].convert(
+                    amount, currency, target, date.today())
+                if not known:
+                    unconverted.append({'name': currency.name,
+                                        'note': meta.get('note') or ''})
+        parts.sort(key=lambda p: -abs(p['net']))
+        return {
+            'name': target.name if target else '',
+            'symbol': (target.symbol or target.name) if target else '',
+            'many': True, 'parts': parts, 'unconverted': unconverted,
+            'note': _("These companies keep their books in more than one "
+                      "currency, so the parts are shown separately."),
+        }
+
+    def _schemes(self, runs):
+        """The payroll schemes behind what is on the board, as chips.
+
+        A group runs several schemes side by side and the headline says
+        nothing about which ones it covers. The chip list is read from the
+        runs already in memory, so it costs nothing.
+        """
+        if 'pb_formula_config_id' not in self.env['hr.payslip.run']._fields:
+            return []
+        seen = {}
+        for run in runs:
+            config = run.pb_formula_config_id
+            if config and config.id not in seen:
+                seen[config.id] = config.display_name
+        return [{'id': k, 'name': v} for k, v in
+                sorted(seen.items(), key=lambda kv: kv[1] or '')][:8]
 
     @staticmethod
     def _window_start(months):
@@ -762,25 +859,55 @@ class PbInsights(models.AbstractModel):
             })
         by_type.sort(key=lambda r: -r['hours'])
 
-        # near-ceiling: per-employee MTD vs the company monthly cap. The cap is
-        # the ONE limit source, pb.ot.ceiling (C18.55c); 0 == not enforced.
+        # near-ceiling: per-employee MTD vs THEIR OWN company's monthly cap.
+        # The cap is the ONE limit source, pb.ot.ceiling (C18.55c); 0 == not
+        # enforced.
+        #
+        # GROUP P3: this used to read the cap of `self.env.company` and apply
+        # it to everybody in the switcher. Two companies with different
+        # overtime limits — the ordinary case in a group — produced a count
+        # that was right for one of them and quietly wrong for the other. The
+        # cap is now looked up once per company and each person is measured
+        # against their own; the tile reports the RANGE when they differ,
+        # because one number would have to be a lie about somebody.
         near, cap = 0, 0.0
         near_ids = []
+        caps = {}
         per_emp = OT.read_group(dom, ['approved_hours:sum'], ['employee_id'])
         if 'pb.ot.ceiling' in self.env:
-            cap = self.env['pb.ot.ceiling']._for_company(self.env.company).monthly_cap or 0.0
-            if cap > 0:
+            # The pulse row already runs under the module's ONE justified
+            # sudo (`get_insights` hands it `su._pulse()`), so nothing here
+            # needs to ask for it a second time.
+            for company in self.env.companies:
+                caps[company.id] = self.env['pb.ot.ceiling']._for_company(
+                    company).monthly_cap or 0.0
+            cap = caps.get(self.env.company.id, 0.0)
+            emp_company = {}
+            emp_ids = [g['employee_id'][0] if isinstance(g.get('employee_id'),
+                                                         (list, tuple))
+                       else g.get('employee_id')
+                       for g in per_emp if g.get('employee_id')]
+            if emp_ids:
+                for emp in self.env['hr.employee'].browse(emp_ids).exists():
+                    emp_company[emp.id] = emp.company_id.id
+            if any(caps.values()):
                 # Keep the IDS, not just the count: "N employees near the
                 # ceiling" is only actionable if you can see which N.
                 for g in per_emp:
-                    if (g.get('approved_hours') or 0.0) >= cap * 0.9:
+                    emp = g.get('employee_id')
+                    emp_id = (emp[0] if isinstance(emp, (list, tuple)) else emp)
+                    own = caps.get(emp_company.get(emp_id), cap)
+                    if own > 0 and (g.get('approved_hours') or 0.0) >= own * 0.9:
                         near += 1
-                        emp = g.get('employee_id')
-                        if emp and len(near_ids) < _DRILL_IDS:
-                            near_ids.append(emp[0] if isinstance(emp, (list, tuple))
-                                            else emp)
+                        if emp_id and len(near_ids) < _DRILL_IDS:
+                            near_ids.append(emp_id)
+        real_caps = sorted({c for c in caps.values() if c > 0})
         return {'total': round(total, 2), 'by_type': by_type[:4],
-                'cap': cap, 'near_cap': near, 'near_cap_ids': near_ids,
+                'cap': cap or (real_caps[0] if real_caps else 0.0),
+                'cap_low': real_caps[0] if real_caps else 0.0,
+                'cap_high': real_caps[-1] if real_caps else 0.0,
+                'cap_varies': len(real_caps) > 1,
+                'near_cap': near, 'near_cap_ids': near_ids,
                 'employees': len(per_emp),
                 'date_from': start.isoformat(), 'date_to': end.isoformat()}
 
