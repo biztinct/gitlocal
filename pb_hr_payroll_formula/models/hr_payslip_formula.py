@@ -162,6 +162,19 @@ class HrPayslipFormula(models.Model):
             # Create/update payslip lines
             payslip._create_payslip_lines_from_formulas(rules, computed_values)
 
+            # GROUP P5 — "home pays, host is charged". The charge is a share
+            # of what the month actually cost the employer, and that is not
+            # known until the components have run, so it is written here and
+            # not with the inputs. Guarded on the registry and wrapped for the
+            # same reason the input hook is: a charge may never break a run.
+            if 'pb.work.segment' in payslip.env:
+                try:
+                    payslip.env['pb.work.segment'].write_transfers(payslip)
+                except Exception:       # noqa: BLE001
+                    _logger.warning(
+                        "Payslip %s: the charge between entities could not be "
+                        "written.", payslip.id, exc_info=True)
+
             # Mark calculation method
             payslip.calculation_method = 'formula'
 
@@ -739,6 +752,35 @@ class HrPayslipFormula(models.Model):
             values[rule.code] = value
             if provenance is not None:
                 provenance[rule.code] = input_provenance.entry(src, key=key, via=via)
+
+        # ==============================================================
+        # GROUP P5 — PEOPLE IN TWO PLACES.
+        #
+        # The ONE place a work segment can touch a payslip, and it is
+        # deliberately the last thing that happens to the input values: by
+        # here every source has been read and every number is the one this
+        # month would have paid. A segment only ever REDUCES fixed pay to the
+        # days it covers.
+        #
+        # Three rails, and each is load-bearing:
+        #   * the registry probe, so a database without `pb_workseg` never
+        #     reaches this line and behaves byte-for-byte as it did before
+        #     (the same shape as the scheme-map rung above);
+        #   * `apply_to_inputs` returns before touching anything when the
+        #     person has no confirmed segment in the period — which, on every
+        #     database this ships to today, is everybody;
+        #   * the whole call is wrapped. A segment may never break a pay run:
+        #     the failure is logged where the run summary can read it and the
+        #     payslip computes as a full month, exactly as it does today.
+        # ==============================================================
+        if 'pb.work.segment' in self.env:
+            try:
+                self.env['pb.work.segment'].apply_to_inputs(
+                    self, config, values, provenance)
+            except Exception:       # noqa: BLE001
+                _logger.warning(
+                    "Payslip %s: work segments could not be applied — it is "
+                    "computed as a full month.", self.id, exc_info=True)
 
         # NOTE constants are deliberately NOT added here. On this path they never
         # enter `input_values` (the rule evaluator reads `constant_value` directly),

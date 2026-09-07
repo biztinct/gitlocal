@@ -27,11 +27,29 @@ class HrPayrollProrationLine(models.Model):
         required=True,
         ondelete='restrict',
     )
+    # GROUP P5 — no longer required.
+    #
+    # Every proration this table held until now was produced BY an import
+    # batch, so the batch was the row's owner and its `cascade` was how the
+    # rows went away. A split month is prorated on the payslip itself, with no
+    # file and no batch anywhere, and a row that cannot be written is a
+    # provenance drawer that cannot explain the number on the payslip beside
+    # it. So the batch becomes optional and `payslip_id` below carries the
+    # ownership for the rows that have no batch. Widening a required field is
+    # additive: every existing row still has its batch and every existing
+    # reader still finds it.
     import_batch_id = fields.Many2one(
         'hr.payroll.import.batch',
         string='Import Batch',
-        required=True,
         ondelete='cascade',
+    )
+    payslip_id = fields.Many2one(
+        'hr.payslip',
+        string='Payslip',
+        index=True,
+        ondelete='cascade',
+        help="The payslip this proration was written for, when it came from "
+             "the payslip rather than from an uploaded pay-data file.",
     )
     employee_id = fields.Many2one(
         'hr.employee',
@@ -76,6 +94,10 @@ class HrPayrollProrationLine(models.Model):
     proration_basis = fields.Selection([
         ('calendar', 'Calendar Days'),
         ('workdays', 'Work Days'),
+        # GROUP P5 — "the person was only here for part of the month", as
+        # distinct from "their pay changed part-way through it". Same table,
+        # same drawer, different reason, and the reason is worth saying.
+        ('segment', 'Days Worked Here'),
     ], string='Proration Basis', required=True, default='calendar')
     period_days = fields.Float(string='Period Days')
     old_days = fields.Float(string='Old Days')
