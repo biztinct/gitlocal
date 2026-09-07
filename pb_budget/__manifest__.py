@@ -8,11 +8,12 @@ RIZE phase P9 — budgets on the engine that is already here.
 
 WHAT THIS MODULE IS
 
-  * **No fifth budget model.** Ruling D2 named `wfp.budget.actual` the canonical
-    budget object and this module EXTENDS it — budget type, its own currency and
-    a manual rate, where the row came from, and the function it belongs to. The
-    model shipped with zero rows, zero writers and zero screens; it now has all
-    three, and nothing that existed before it changes meaning.
+  * **One budget row, and it lives here.** A budget row is one month, one team
+    and one kind of money: what was planned, what was spent, what is left, the
+    currency it is in, where the figure came from and the function it rolls up
+    into. It used to live in the old planning module and was extended from the
+    outside; it has come home, with every row carried across and the totals
+    checked on both sides before anything was removed.
   * **A budget arrives as a spreadsheet.** Download a template with the year's
     twelve months across the top and the departments down the side, fill it in,
     drop it back. The upload PREVIEWS before it writes: what would be created,
@@ -47,7 +48,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -55,7 +56,6 @@ one accent. No emoji.
     'depends': [
         'base',
         'hr',
-        'pb_hr_workforce_planning',   # `wfp.budget.actual`, the canonical object
         'pb_explorer',                # the fact tables the actuals are read from
         'pb_import_kit',              # pbim tokens/primitives + the shared ic() set
         'pb_hub',                     # the global command palette registry

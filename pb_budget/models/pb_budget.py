@@ -156,7 +156,7 @@ class PbBudget(models.AbstractModel):
         # is one day called under `sudo()` — a report render, a job, a wizard —
         # would otherwise quietly widen to every company, which is exactly how
         # another company's departments got into a company-scoped PDF.
-        rows = self.env['wfp.budget.actual'].search([
+        rows = self.env['pb.budget.line'].search([
             ('pb_budget_type', '=', btype),
             ('period_month', '>=', months[0]),
             ('period_month', '<=', months[-1]),
@@ -207,7 +207,7 @@ class PbBudget(models.AbstractModel):
     def _fy_options(self, fy):
         """The years there is anything to look at, plus this one and next."""
         years = set()
-        rows = safe(lambda: self.env['wfp.budget.actual'].search_read(
+        rows = safe(lambda: self.env['pb.budget.line'].search_read(
             [], ['period_month'], limit=BOARD_ROW_CAP), [], 'the year list') or []
         for r in rows:
             if r.get('period_month'):
@@ -447,7 +447,7 @@ class PbBudget(models.AbstractModel):
 
     @api.model
     def _rows(self, function_id, months, btype, mode, cur):
-        recs = self.env['wfp.budget.actual'].search([
+        recs = self.env['pb.budget.line'].search([
             ('pb_function_id', '=', int(function_id or 0)),
             ('pb_budget_type', '=', btype),
             ('period_month', '>=', months[0]),

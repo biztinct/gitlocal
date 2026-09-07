@@ -136,7 +136,7 @@ class PbBudgetActuals(models.AbstractModel):
         for key in ('written', 'created', 'skipped_fx'):
             report[key] += (exp or {}).get(key, 0)
 
-        safe(lambda: self.env['wfp.budget.actual']._refresh_functions(), 0,
+        safe(lambda: self.env['pb.budget.line']._refresh_functions(), 0,
              'the function top-up')
 
         self.env['ir.config_parameter'].sudo().set_param(
@@ -258,7 +258,7 @@ class PbBudgetActuals(models.AbstractModel):
         heads = {(c, d or False, m): int(n or 0)
                  for c, d, m, n in self.env.cr.fetchall()}
 
-        Budget = self.env['wfp.budget.actual'].sudo()
+        Budget = self.env['pb.budget.line'].sudo()
         existing = Budget.search([
             ('pb_budget_type', '=', 'manpower'),
             ('company_id', 'in', companies),
@@ -306,7 +306,7 @@ class PbBudgetActuals(models.AbstractModel):
         # Every key that ALREADY has a row is re-totalled too, so deleting the
         # last expense of a month puts its total back to zero rather than
         # leaving the previous figure standing.
-        touched = self.env['wfp.budget.actual'].sudo().search([
+        touched = self.env['pb.budget.line'].sudo().search([
             ('pb_budget_type', 'in', ('hr_ops', 'admin')),
             ('company_id', 'in', companies),
             ('period_month', '>=', date_from),
@@ -328,7 +328,7 @@ class PbBudgetActuals(models.AbstractModel):
         """
         out = {'written': 0, 'created': 0, 'skipped_fx': 0, 'removed': 0}
         Expense = self.env['pb.budget.expense'].sudo()
-        Budget = self.env['wfp.budget.actual'].sudo()
+        Budget = self.env['pb.budget.line'].sudo()
         for key in list(keys or ()):
             company_id, dept_id, month, btype = key
             if not month or btype not in ('hr_ops', 'admin'):
@@ -394,7 +394,7 @@ class PbBudgetActuals(models.AbstractModel):
         `tests/test_budget.py`.
         """
         company_id, dept_id, month = key
-        Budget = self.env['wfp.budget.actual'].sudo()
+        Budget = self.env['pb.budget.line'].sudo()
         fx = self.env['pb.budget.fx']
         company = self.env['res.company'].sudo().browse(company_id)
 

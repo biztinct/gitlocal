@@ -2,7 +2,7 @@
 
 from . import budget_common
 from . import budget_fx
-from . import budget_ext
+from . import pb_budget_line
 from . import hr_department_ext
 from . import budget_expense
 from . import budget_actuals
