@@ -43,6 +43,37 @@ export class Employee360Drawer extends Component {
 
     ic(n, s = 16) { return ic(n, s); }
     catIcon(code) { return ic(CAT_ICON[code] || "file", 18); }
+
+    /**
+     * The chip seam on this drawer's header.
+     *
+     * The People cockpit's own drawer slot (`pb_people_drawer`) is
+     * single-occupant and this component fills it, so a second module has
+     * nowhere to say one line about a person. This registry is that place:
+     * `pb_employee_360_chips` holds small components that each render one chip
+     * beside the job, the manager and the contract state. GROUP P2's "Paid by"
+     * is the first of them.
+     *
+     * Read once per mount rather than in a getter that returns a fresh array
+     * on every paint (W21) — the chips receive stable props and must not
+     * remount while somebody is reading them.
+     */
+    get extraChips() {
+        if (!this._chips) {
+            const cat = registry.category("pb_employee_360_chips");
+            this._chips = cat.getEntries().map(
+                ([key, Component]) => ({ key, Component }));
+        }
+        return this._chips;
+    }
+
+    get chipProps() {
+        const id = Number(this.props.empId);
+        if (!this._chipProps || this._chipProps.empId !== id) {
+            this._chipProps = { empId: id };
+        }
+        return this._chipProps;
+    }
     get d() { return this.state.d || {}; }
     get profile() { return (this.state.d && this.state.d.profile) || {}; }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
@@ -208,8 +239,18 @@ export class Employee360Drawer extends Component {
         return Math.floor(days / 365) + "y ago";
     }
 
+    /**
+     * The server's own sentence, or ours — and never the platform's.
+     *
+     * The sentence lives at `error.data.message` on this platform's RPC error;
+     * the older `error.message.data.message` shape is kept as a second try.
+     * The top-level `.message` is NOT a rung: it is the literal string "Odoo
+     * Server Error", and falling back to it put the one word this product may
+     * never say in front of a user inside a red toast.
+     */
     _err(e, fallback) {
-        return (e && e.message && e.message.data && e.message.data.message) || (e && e.message) || fallback;
+        const data = (e && e.data) || (e && e.message && e.message.data);
+        return (data && data.message) || fallback;
     }
 }
 
