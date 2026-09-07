@@ -73,6 +73,25 @@ class PbGroup(models.Model):
         help="The month your financial year begins, 1 for January. Reports "
              "and plans read this to know what a year means here.")
 
+    # GROUP P5 — ruling G8. When somebody's month is split between two
+    # entities, WHO PAYS is a group policy with a per-stretch override, and it
+    # lives here because it is a statement about how this group settles between
+    # its own companies rather than about any one payroll.
+    #
+    # `each_pays` is the default because it is the pattern that keeps each
+    # entity's books its own, and because it is the only one of the two that
+    # produces a second payslip — a thing a reader can see. It is also inert
+    # until somebody writes a stretch of days, so shipping it changes nothing.
+    split_pay_policy = fields.Selection(
+        selection=[
+            ('each_pays', 'Each entity pays its own days'),
+            ('home_pays', 'Home pays, the other entity is charged'),
+        ],
+        string='How split months are paid', required=True,
+        default='each_pays', tracking=True,
+        help="When somebody works part of a month in another company in this "
+             "group, this decides who pays for those days.")
+
     company_ids = fields.One2many(
         'res.company', 'pb_group_id', string='Companies',
         help="The companies this group is made of.")

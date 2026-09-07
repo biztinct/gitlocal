@@ -307,6 +307,63 @@
           </div>
         </section>
 
+        <!-- ================= 4 · how split months are paid =============== -->
+        <!-- Drawn only where something acts on it. A switch that switches
+             nothing is a dead end with a tick in it. -->
+        <section t-if="hasWorkseg and group" class="pbim-card grp-card" id="pbg-split">
+          <div class="grp-card-h">
+            <div class="grp-card-id">
+              <span class="grp-card-ic"><t t-out="ic('route',18)"/></span>
+              <div>
+                <h3 class="grp-card-t">How split months are paid</h3>
+                <p class="grp-card-s">When somebody works part of a month in another company in this group, this decides who pays for those days.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grp-split-grid">
+            <button t-foreach="splitPolicies" t-as="sp" t-key="sp.key"
+                    t-att-disabled="!canEdit"
+                    t-att-aria-pressed="group.split_pay_policy === sp.key"
+                    t-attf-class="grp-split-opt {{ group.split_pay_policy === sp.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setSplitPolicy(sp.key)">
+              <span class="grp-split-tick">
+                <t t-if="group.split_pay_policy === sp.key" t-out="ic('checkCircle',16)"/>
+                <t t-else="" t-out="ic('circle',16)"/>
+              </span>
+              <span class="grp-split-body">
+                <b t-esc="sp.label"/>
+                <span t-esc="sp.help"/>
+              </span>
+            </button>
+          </div>
+
+          <div class="grp-split-sub">
+            <h4>Joiners and leavers</h4>
+            <p>Turning this on pays somebody who starts or leaves part-way through a month for the days they actually worked. Payslips for those people will change from the next pay run.</p>
+            <div class="grp-split-rows">
+              <div class="grp-split-row" t-foreach="members" t-as="co" t-key="co.id">
+                <span class="grp-split-co">
+                  <b t-esc="co.name"/>
+                  <span t-esc="co.currency"/>
+                </span>
+                <button t-att-disabled="!canEdit"
+                        t-attf-class="pbim-btn ghost sm grp-switch {{ co.prorate ? 'is-on' : '' }}"
+                        t-att-aria-pressed="co.prorate"
+                        t-on-click="() => this.toggleProrate(co)">
+                  <t t-if="co.prorate" t-out="ic('checkCircle',14)"/>
+                  <t t-else="" t-out="ic('circle',14)"/>
+                  <t t-if="co.prorate">Paid by the day</t>
+                  <t t-else="">Full month</t>
+                </button>
+              </div>
+              <div t-if="!members.length" class="grp-split-ghost">
+                Add a company to the group and its switch appears here.
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- ========================= the drawers ========================= -->
         <t t-call="pb_group.GroupDrawer"/>
         <t t-call="pb_group.DivisionDrawer"/>
