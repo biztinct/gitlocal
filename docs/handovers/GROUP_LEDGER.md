@@ -87,6 +87,25 @@ Room, gotchas WF1–WF29, deploy ritual, credentials), `docs/handovers/RIZE_LEDG
   full_final). Reports default to non-advance runs; headcount = distinct persons.
 - **G7 Component tagging (`wfp_category`) is retired** in favour of the engine's own
   `value_kind` / `net_role` classification (VALUEKIND programme).
+- **G8 Split-month pay pattern is configurable** (owner, 2026-09-07): a group setting
+  `split_pay_policy` = `each_pays` (each entity pays its own days) | `home_pays` (home
+  entity pays, host is charged), with a per-work-segment override. Home = the entity of
+  the person's standing employment. The charge is an internal cost line
+  (`pb.cost.transfer`) shown in reports and exportable; no accounting posting (owner's
+  earlier ruling: no accounting connection).
+- **G9 Part G is rebuilt from first principles, not ported** (owner, 2026-09-07: the old
+  screens are unused; design what a world-class tool would do). The area is **Pay** with
+  four surfaces: Pay Review (guidance pre-filled from a grid, worksheet, calibration
+  scatter, live fairness, self-explaining limits, manager→HR→finance→CEO cascade on
+  `biz.approval.chain.mixin`, apply with 24 h undo, letters via `pb.letter.template` /
+  `pb.hr.letter`, portal "Your pay, explained"), Pay Bands (band picture with people
+  dots, health cards, place-a-new-hire, import), Fairness (gap by gender/level/division,
+  same-job spread, computed from facts + contracts, live inside reviews), Pay changes
+  (one-off promotion/correction through the same guidance, limits, approvals, letter).
+  Merit matrix = the guidance grid inside review settings; component tagging is gone.
+  Legacy data migrates (grades→bands, matrices→grids, cycles→read-only history,
+  contract compa recomputed), pb_budget re-homed, then `pb_hr_workforce_planning` is
+  uninstalled. Benchmark: Lattice, Pave, Carta, Workday; our edge = payroll-native apply.
 
 ## Plumbing facts (verified 2026-09-07 — do not re-derive)
 
@@ -251,5 +270,6 @@ and tree-hash verification, never `pkill -f odoo-bin`).
 - P3 — "Numbers that remember". Not yet designed.
 - P4 — "Planning with scope". Not yet designed.
 - P5 — "People in two places". Not yet designed.
-- P6 — "Pay Review, Pay Bands, Merit Matrix; retire legacy". Not yet designed.
+- P6 — "Pay: Review, Bands, Fairness, Changes; retire legacy" (ruling G9; may split into
+  6a bands+fairness and 6b review+changes). Not yet designed.
 - P7 — "Visibility, Vietnamese, closeout". Not yet designed.
