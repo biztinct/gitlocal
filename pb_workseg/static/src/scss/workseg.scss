@@ -104,6 +104,47 @@
             box-shadow: 0 0 0 2px var(--pbim-ring);
         }
     }
+    // ------------------------------- the rough estimate under the strip
+    //
+    // IN THE FLOW, NOT PINNED. A running answer to a drag has to be where
+    // the hand is: the band picture's cost bar is `position: fixed` because
+    // that picture is four screens tall (ledger GR40), but the strip is the
+    // top of its own card and this sits directly beneath it. Reserving a
+    // minimum height stops the card jumping the moment the first day is
+    // drawn.
+    .wsg-est {
+        margin: 0 0 12px; padding: 12px 14px;
+        border: 1px dashed var(--pbim-primary-light);
+        border-radius: var(--pbim-r);
+        background: var(--pbim-soft);
+    }
+    .wsg-est-h {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 11.5px; font-weight: 800; letter-spacing: .3px;
+        text-transform: uppercase; color: var(--pbim-primary);
+    }
+    .wsg-est-tiles {
+        display: grid; gap: 10px; margin-top: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .wsg-est-tile {
+        display: flex; flex-direction: column; gap: 2px; min-width: 0;
+        padding: 10px 12px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line);
+    }
+    .wsg-est-co {
+        font-size: 11.5px; font-weight: 700; color: var(--pbim-muted);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .wsg-est-n {
+        font-size: 21px; font-weight: 800; letter-spacing: -.4px;
+        color: var(--pbim-ink); font-variant-numeric: tabular-nums;
+    }
+    .wsg-est-d { font-size: 11.5px; color: var(--pbim-muted); }
+    .wsg-est-w { font-size: 11.5px; color: var(--pbim-amber); }
+    .wsg-est-s { margin: 8px 0 0; font-size: 11.5px; color: var(--pbim-muted); }
+
     .wsg-legend {
         display: flex; gap: 16px; flex-wrap: wrap;
         font-size: 11.5px; color: var(--pbim-muted);
