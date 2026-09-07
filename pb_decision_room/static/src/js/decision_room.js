@@ -1781,6 +1781,30 @@ export class PbDecisionRoom extends Component {
     // ===================================================================
     // the dock
     // ===================================================================
+    /**
+     * The dock's column headings, said a second time.
+     *
+     * GROUP P7. Below 1200px the dock stops being a table and becomes one
+     * CARD per plan, and a card has no heading row above it — so every
+     * figure has to carry its own label. The heading is written HERE rather
+     * than as a `data-label` in the template, because the string extractor
+     * reads text nodes and a handful of attributes, and `data-label` is not
+     * one of them: a Vietnamese reader would have been shown seven English
+     * words nobody could find. Same words as the `<th>` above them, on
+     * purpose — they are the same column.
+     */
+    get dockColumns() {
+        return {
+            scope: _t("Plan for"),
+            stands: _t("Where it stands"),
+            heads: _t("People · Dec"),
+            cost: _t("Workforce cost"),
+            served: _t("Demand served"),
+            profit: _t("Operating profit"),
+            delta: _t("vs comparison"),
+        };
+    }
+
     get dockRows() {
         const c = this.calc;
         if (!c) { return []; }

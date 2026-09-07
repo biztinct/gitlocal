@@ -48,10 +48,31 @@ class PbDecisionScope(models.AbstractModel):
     # ------------------------------------------------------------- helpers
     @api.model
     def _allowed_companies(self):
-        """Every company this reader may plan, most useful one first."""
+        """Every company this reader may plan, most useful one first.
+
+        GROUP P7 — narrowed by "who sees what", and unchanged for anybody who
+        has not been limited.
+        """
         companies = self.env.user.company_ids or self.env.company
+        visible = set(self.env['pb.decision.room']._visible_companies(
+            companies.ids))
+        companies = companies.filtered(lambda c: c.id in visible)
         return companies.sudo().sorted(lambda c: (c.id != self.env.company.id,
                                                   c.id))
+
+    @api.model
+    def _held_division(self):
+        """The one division this reader is held to, or an empty recordset.
+
+        A division head plans THEIR division. Answering them at the company
+        rung would print a head count of four and a half thousand on a screen
+        whose whole promise is that they see nine hundred.
+        """
+        Division = self.env['pb.division']
+        held = self.env['pb.decision.room']._visible_divisions()
+        if not held:
+            return Division.browse()
+        return Division.sudo().browse(held[:1]).exists()
 
     @api.model
     def _group(self):
@@ -133,6 +154,12 @@ class PbDecisionScope(models.AbstractModel):
         """
         kind = kind if kind in SCOPE_KINDS else 'company'
         ref = str(ref or '').strip()
+        # GROUP P7 — a rung this reader may not stand on is not a rung. Held
+        # to a division, every question is answered at their division whatever
+        # was asked for; empty, and this is a no-op.
+        held = self._held_division()
+        if held:
+            kind, ref = 'division', str(held.id)
         allowed = self._allowed_companies()
         lost = ''
 
@@ -246,6 +273,19 @@ class PbDecisionScope(models.AbstractModel):
         heads = self._heads_by_company(allowed.ids)
         group = self._group()
         members = self._members()
+
+        # GROUP P7 — a division head is offered one node: their own division.
+        held = self._held_division()
+        if held:
+            nodes = []
+            for company in allowed:
+                nodes += [n for n in self._division_nodes(company)
+                          if n.get('ref') == str(held.id)]
+            return {
+                'has_group': bool(group),
+                'nodes': nodes,
+                'note': _("You plan %(what)s.", what=held.name or ''),
+            }
 
         def company_node(company):
             return {

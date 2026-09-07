@@ -110,9 +110,28 @@ class PbDecisionPlan(models.Model):
         index=True, tracking=True)
     scope_ref = fields.Char(string="Which one", index=True)
     scope_label = fields.Char(string="Scope", tracking=True)
+    # GROUP P7 — the division a plan is FOR, as a real link rather than as a
+    # number inside a Char. It exists so the "who sees what" record rule can
+    # be the same one-line domain every other model in this programme uses,
+    # and so a report can group plans by division without parsing `scope_ref`.
+    pb_division_id = fields.Many2one(
+        'pb.division', string="Division", index=True, store=True,
+        compute='_compute_pb_division_id',
+        help="Filled when this plan is a plan for one division.")
     company_ids = fields.Many2many(
         'res.company', 'pb_decision_plan_company_rel', 'plan_id', 'company_id',
         string="Companies in this plan")
+
+    @api.depends('scope_kind', 'scope_ref')
+    def _compute_pb_division_id(self):
+        for plan in self:
+            division = False
+            if plan.scope_kind == 'division' and plan.scope_ref:
+                try:
+                    division = int(plan.scope_ref)
+                except (TypeError, ValueError):
+                    division = False
+            plan.pb_division_id = division or False
 
     state = fields.Json(
         string="The levers",
