@@ -192,8 +192,11 @@
       <tr><td>Group plan in the board's currency</td><td>Each entity plans in its own money; the group view converts with the same service as the reports.</td><td><span class="pill p-new">New</span></td></tr>
       <tr><td>Cost a pay rise through the company's own payroll formulas</td><td>A "true cost" lane that runs each person through their scheme, carried over from the old module and made fast.</td><td><span class="pill p-new">New</span></td></tr>
       <tr><td>Plan against what actually happened</td><td>Once a run closes, the plan for that month gets an actual beside it.</td><td><span class="pill p-new">New</span></td></tr>
-      <tr><td>A pay review with proposals, limits, approvals and an audit trail</td><td>Rebuilt as a modern workflow. Part G.</td><td><span class="pill p-new">New</span></td></tr>
-      <tr><td>Pay bands and a merit table per country and currency</td><td>Rebuilt with local currency and a visual band explorer. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>A pay review with proposals, limits, approvals and an audit trail</td><td>Rebuilt from first principles as Pay Review: guidance pre-filled, calibration view, cascade, apply with undo, letters. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Pay bands and a merit table per country and currency</td><td>Pay Bands with the band pictured, health cards and a place-a-new-hire tool; the merit table becomes the guidance grid inside the review. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Is pay fair across gender and across people in the same job?</td><td>A Fairness lens computed from what payroll paid, live inside every review. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>A promotion or correction outside the review</td><td>Pay changes: one screen, same guidance, limits, approvals and letter. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Which entity pays a person split across two</td><td>A group setting with two patterns and a per-assignment override. Part E.</td><td><span class="pill p-new">New</span></td></tr>
     </tbody>
   </table></div>
 
@@ -307,6 +310,12 @@
     <div class="col"><h4>Home pays, host is charged</h4><ul><li>Vietnam pays 30 days, one payslip, one set of rules.</li><li>A charge of one third moves the cost to Singapore in the reports.</li><li>The person stays one employee with one contract.</li><li>Right for short secondments and many expatriate arrangements.</li></ul></div>
   </div>
 
+  <div class="note idea">
+    <h4>You choose the pattern, once, and can override it per person</h4>
+    <p>"How split months are paid" is a group setting with two choices: <strong>each entity pays its own days</strong>, or <strong>the home entity pays and the host is charged</strong>. Home means the entity of the person's standing employment. Any single assignment can override the group default, because a short secondment and a genuine dual employment are different arrangements even in the same company.</p>
+    <p>With the charge pattern, the charge appears as an internal cost line in every report and in an export you can hand to finance. There is no accounting connection, as you ruled earlier; the product shows the cost where the work happened and leaves the booking to you.</p>
+  </div>
+
   <div class="screen">
     <h4>Assignments</h4>
     <p class="where">People → Employees → a person → Where they work · new</p>
@@ -341,54 +350,81 @@
 <!-- ================= G ================= -->
 <section id="g">
   <p class="snum">PART G</p>
-  <h2>The old planning screens, reborn</h2>
-  <p class="lead">Seven old doors become three modern surfaces plus one thing that disappears into a screen you already have. Each is designed to the same bar as the Decision Room: a hero moment, no dead ends, plain language, motion with purpose, and keyboard and bulk ergonomics.</p>
+  <h2>Pay, rethought from the question a company actually has</h2>
+  <p class="lead">The old module was seven screens nobody opened, because each one asked a person to run a process the software should run for them: set up grades, then a matrix, then a scenario, then a cycle, then approvals, then apply, then export. I have not repainted them. I started from the question a company asks three or four times a year — <em>who should get what, can we afford it, is it fair, and how do we make it happen without a spreadsheet</em> — and designed one area, called <strong>Pay</strong>, that answers it. Four surfaces, and a lot of intelligence between them.</p>
+
+  <div class="note idea">
+    <h4>What "world class" means here, concretely</h4>
+    <p>Measured against Lattice, Pave, Carta and Workday's compensation tools. They all do three things well: a manager worksheet that opens pre-filled with guidance rather than blank; a calibration view where you see everyone at once and fix the outliers; and a cascade of budgets and approvals that never leaves the tool. The design matches all three. It does one thing they cannot: it is payroll-native. Apply writes the contract, prepares the next pay run and prints the payslip, with no export, no import and no second system to reconcile.</p>
+  </div>
 
   <div class="screen">
     <h4>Pay Review</h4>
-    <p class="where">People → Pay Review · replaces Compensation Cycles, Planning Scenarios, Employee Forecasts</p>
-    <p class="hero"><b>The hero:</b> one grid of the people in this review, each row a sentence — <em>Nguyen Thi Lan · Bread · ₫14.2M → ₫15.1M · +6.3%</em> — with a budget meter at the top that fills as managers type and turns amber before it turns red. Type a percentage on a selected block of rows and every row updates, the meter moves, and any row that breaks a limit shows the limit in a chip on the row itself.</p>
+    <p class="where">People → Pay → Review · replaces Compensation Cycles, Planning Scenarios, Employee Forecasts and the Merit Matrix</p>
+    <p class="hero"><b>The hero: guidance first, then judgement.</b> A review opens with a suggested raise already filled in for every person from the guidance grid, the budget meter already showing what that costs, and the fairness check already run. A manager's job becomes adjusting a good answer, not building one. Type a percentage over a selected block of rows and the meter, the fairness line and every row move together.</p>
     <ul>
-      <li>A cycle: scope (company, division or scheme), budget, deadline, approvers in order. Created from an approved Decision Room plan or from scratch.</li>
-      <li>Proposals: managers see their own people; inline editing, block selection, paste from a spreadsheet, undo.</li>
-      <li>Limits: maximum rise, band ceiling, division budget, minimum rating. Warn or block, with the reason on the row, never a pop-up.</li>
-      <li>Approvals: a horizontal timeline of who has signed and who is next, with a nudge button. Each step is a real task on the approver's Home.</li>
-      <li>Apply: a preview of every contract that will change, in local currency, with the exact date; apply writes the new salaries and keeps a one-click undo for 24 hours.</li>
-      <li>Trail: every state change, who and when, exportable, replacing the old audit table.</li>
-      <li>Money: each row in the person's currency; the budget meter in the cycle's currency; a group cycle shows both.</li>
+      <li><strong>Scope and budget.</strong> Whole company, a division, or a scheme. Budget in the review's currency; a group review shows each country's slice in its own money underneath. A review can be born from an approved Decision Room plan and inherit both.</li>
+      <li><strong>The worksheet.</strong> One row per person reads as a sentence: name, team, a small band bar with their dot on it, a rating chip, the guidance percentage, the proposal you can type into, the new pay, the cost. Block selection, keyboard everywhere, paste a column from a spreadsheet, undo. Rows sort by who is furthest below band, who is unrated, who is over budget.</li>
+      <li><strong>Calibration.</strong> A second view of the same review: every person as a dot, rating across and proposed raise up. Drag a dot to change a proposal. Outliers ring in rose; the budget meter follows. This is where a leadership team spends its hour, and it is the view the old tool never had.</li>
+      <li><strong>Fairness, live.</strong> Every change updates one sentence: "This review narrows the pay gap in Bread from 4.1% to 3.6%." Same-job pay spread and any inversion (a manager paid less than a report) surface as chips on the rows concerned.</li>
+      <li><strong>Limits that explain themselves.</strong> Maximum raise, band ceiling, division budget, minimum rating. A breach shows the limit on the row in plain words and a "What blocks approval" panel lists them all. Warn or block, set per review.</li>
+      <li><strong>The cascade.</strong> Each manager sees their people and their slice of the budget. Submit, then HR review, finance sign-off and CEO approval as a horizontal timeline with a nudge button. Each step is a real task on the approver's Home. Rejection returns the row to the manager with the reason on it.</li>
+      <li><strong>Apply, safely.</strong> A preview lists every contract that will change, in local currency, with the effective date. Apply writes the new pay onto the contracts, queues it for the next pay run, generates each person's letter, and keeps a one-click undo for 24 hours.</li>
+      <li><strong>Tell people.</strong> Letters through the existing letter engine, and a "Your pay, explained" page in the employee portal showing old, new, and why.</li>
+      <li><strong>The trail.</strong> Every proposal, change, sign-off and apply, who and when, exportable. A review closed is a review you can defend a year later.</li>
     </ul>
   </div>
 
   <div class="screen">
     <h4>Pay Bands</h4>
-    <p class="where">People → Pay Bands · replaces Pay Grades and the band figures on contracts</p>
-    <p class="hero"><b>The hero:</b> every band drawn as a horizontal range with every person in it as a dot; drag a band's edge and the dots outside it light up with what it would cost to bring them in.</p>
+    <p class="where">People → Pay → Bands · replaces Pay Grades and the band figures on contracts</p>
+    <p class="hero"><b>The hero: the band as a picture.</b> Every band is a horizontal range with every person in it as a dot. Drag a band's edge and the dots that fall outside light up with what it would cost to bring them back in. Hover a dot and the person's name, pay and position in band appear.</p>
     <ul>
-      <li>Bands per country and currency, with a job family and a level.</li>
-      <li>Each contract shows its band and its position in the band as a plain percentage, kept up to date.</li>
-      <li>Outliers, compression and inversion (a manager paid less than a report) surfaced as cards, not found by accident.</li>
+      <li>Bands per country and currency, per job family and level, with a from-date so history is kept when bands move.</li>
+      <li>Health cards you do not have to go looking for: below band, above band, compression (new joiners paid more than long-serving people in the same job), inversion, spread.</li>
+      <li><strong>Place a new hire.</strong> Pick the job and level; see the band, the median, the people already in it, and a suggested offer. A decision that takes a spreadsheet today takes one screen.</li>
+      <li>Import bands from a spreadsheet; every contract shows its band and position as a plain percentage, kept current.</li>
     </ul>
   </div>
 
   <div class="screen">
-    <h4>Merit Matrix</h4>
-    <p class="where">People → Pay Review → Rules · replaces Merit Matrix</p>
-    <p class="hero"><b>The hero:</b> a grid of performance across and position-in-band down, each cell a percentage you can type, with the total cost of applying it to the review's population recomputed live in the corner.</p>
+    <h4>Fairness</h4>
+    <p class="where">People → Pay → Fairness · new</p>
+    <p class="hero"><b>The hero: one honest number per question.</b> The pay gap by gender, by job level, by division; the spread of pay within the same job; the people who are paid least for the same work. Each with the plain-English reason behind it and a "show me the people" link for those allowed to see them.</p>
     <ul>
-      <li>One matrix per country or per scheme; a review picks one.</li>
-      <li>Performance ratings come from the employee record; position in band from Pay Bands.</li>
+      <li>Computed from what payroll actually paid, never from a survey, so it is always current.</li>
+      <li>Runs live inside a review, so a decision that widens a gap is visible before it is approved.</li>
+      <li>Exportable as a one-page statement for a board or a regulator.</li>
     </ul>
   </div>
 
   <div class="screen">
-    <h4>Component tagging, gone</h4>
-    <p class="where">Absorbed into the Mapping screen</p>
-    <p class="hero"><b>Why it disappears:</b> the payroll engine already knows what every column is — basic pay, allowance, deduction, employer cost — from the work done earlier this year on value kinds. The old tagging screen asked you to say it a second time. The planner and the review read the answer the engine already has.</p>
+    <h4>Pay changes</h4>
+    <p class="where">People → Pay → Changes · new</p>
+    <p class="hero"><b>The hero: a promotion in one screen.</b> Pick the person, the new job or pay, the date; the band, the guidance and the limits appear as you type; the same approval steps run; apply writes the contract and prints the letter.</p>
+    <ul>
+      <li>Covers promotions, corrections and market adjustments outside a review, so pay is never changed by editing a contract directly.</li>
+      <li>Every change lands on the same trail as the review, so the history of a person's pay is one list.</li>
+    </ul>
   </div>
+
+  <h3>Where the old pieces went</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Old screen</th><th>Becomes</th></tr></thead>
+    <tbody>
+      <tr><td>Planning Dashboard</td><td>The Decision Room (Part F) and the Explorer (Part C).</td></tr>
+      <tr><td>Planning Scenarios</td><td>Decision Room plans with approval and versions; a review can be born from one.</td></tr>
+      <tr><td>Employee Forecasts</td><td>The review worksheet, and the true-cost lane in the Decision Room.</td></tr>
+      <tr><td>Pay Grades</td><td>Pay Bands, with the band pictured and a place-a-new-hire tool.</td></tr>
+      <tr><td>Merit Matrix</td><td>The guidance grid inside Pay Review settings: performance across, position in band down, a percentage per cell, the cost of the guidance recomputed live in the corner. Ratings are entered per review, pasted, or synced from the connected HR system.</td></tr>
+      <tr><td>Compensation Cycles</td><td>Pay Review, with the cascade, the limits, the apply and the letters built in.</td></tr>
+      <tr><td>Tag Formula Components</td><td>Gone. The payroll engine already classifies every column from the value-kind work; the planner and the review read that.</td></tr>
+    </tbody>
+  </table></div>
 
   <div class="note">
     <h4>What is kept from the old data</h4>
-    <p>Pay grades, band positions on contracts, merit matrices, past compensation cycles with their approvals, and the budget table used by the Budget screen all migrate into the new records. Nothing you have entered is lost. When the last migration has run and every old door has a new one, the old module is uninstalled.</p>
+    <p>Pay grades become bands; band positions on contracts are recomputed; merit matrices become guidance grids; past compensation cycles with their approvals become read-only past reviews on the trail; the budget table used by the Budget screen is re-homed. Nothing you have entered is lost. When the last migration has run and every old door has a new one, the old module is uninstalled.</p>
   </div>
 </section>
 
@@ -403,7 +439,7 @@
     <li><b>Numbers that remember</b><p>Scheme, version, kind of run, currency, division and person on every summary row. The Explorer's breadcrumb, scheme comparison, group currency switch and rate badges. The three report screens that forget the company are fixed or retired.</p></li>
     <li><b>Planning with scope</b><p>The Decision Room's scope picker, country rule sets, group view, plan against actual, approvals and versions, and the true-cost lane carried over from the old engine.</p></li>
     <li><b>People in two places</b><p>The person identity, work segments, day-based proration in the engine, both payment patterns, fractional headcount everywhere. Rehearsed on the clone with the split cases before it goes anywhere near a live run.</p></li>
-    <li><b>Pay Review, Pay Bands, Merit Matrix</b><p>The three new surfaces, the migration of every old record, the Budget screen's table re-homed, and the old module uninstalled.</p></li>
+    <li><b>Pay: Review, Bands, Fairness, Changes</b><p>The Pay area rebuilt from first principles (Part G), the migration of every old record, the Budget screen's table re-homed, and the old module uninstalled. Large enough that it may run as two builds: Bands and Fairness first, then Review and Changes on top of them.</p></li>
     <li><b>Visibility, Vietnamese, closeout</b><p>Division and country visibility for every new screen, Vietnamese for every word, and a closeout that tells you what is live, what changed for your clients, and what to decide next.</p></li>
   </ol>
 
@@ -417,7 +453,7 @@
   <details class="eng">
     <summary>For the engineers · the same design with names and places</summary>
     <div class="body">
-      <p><strong>Modules.</strong> <code>pb_group</code> (P1: <code>pb.group</code> record with member companies via <code>res.company.pb_group_id</code> — NOT <code>parent_id</code>, because Odoo 19's <code>_get_company_root_delegated_field_names()</code> returns <code>['currency_id']</code>, so a branch copies the root's currency and shows it read-only; presentation currency + rate policy + fiscal start live on <code>pb.group</code>, <code>pb.fx</code> service lifted from <code>pb.budget.fx</code> with the same <code>(value, known)</code> contract and a <code>rate_for(currency, month)</code> that records source and date, <code>pb.division</code> + <code>pb.division.link</code> (department, division, date_from, date_to), Settings lens "Group"). <code>pb_scheme_map</code> (P2: makes <code>hr.formula.scheme.assignment</code> authoritative with <code>cycle_type</code>, <code>employment_type</code>/domain rules, <code>paid_by_config_id</code> computed on <code>hr.employee</code>, <code>pb.scheme.exception</code> view, pay-run wizard population + <code>formula_config_id</code> stamped at create, company-scoped contract search, ladder in <code>_find_formula_config</code> consulting the map above the country rung). <code>pb_explorer</code> extension (P3: <code>config_id</code>, <code>config_version</code>, <code>cycle</code>, <code>currency_id</code>, <code>division_id</code>, <code>person_id</code>, <code>fte</code> on <code>pb.fact.*</code>; dimensions/filters; presentation toggle; compare lens; fixes to <code>pb_hr_payroll_analytics</code> company filters and <code>pb_payruns</code> <code>search([])</code>). <code>pb_decision_room</code> 2.x (P4: scope on plans/assumptions, <code>pb.decision.ruleset</code> per country, group view via <code>pb.fx</code>, true-cost lane porting <code>wfp.employer.cost.calculator</code>, approvals/versions). <code>pb_workseg</code> (P5: <code>pb.person</code>, <code>pb.work.segment</code>, segment-driven population and per-segment payslips with day proration in <code>_get_formula_input_values</code>, <code>pb.cost.transfer</code>). <code>pb_pay_review</code>, <code>pb_pay_bands</code> (P6) with migrations from <code>wfp.*</code>, <code>pb_budget</code> re-homed to <code>pb.budget.line</code>, then <code>pb_hr_workforce_planning</code> uninstalled. P7: division/country record rules, <code>vi_VN.po</code>, closeout.</p>
+      <p><strong>Modules.</strong> <code>pb_group</code> (P1: <code>pb.group</code> record with member companies via <code>res.company.pb_group_id</code> — NOT <code>parent_id</code>, because Odoo 19's <code>_get_company_root_delegated_field_names()</code> returns <code>['currency_id']</code>, so a branch copies the root's currency and shows it read-only; presentation currency + rate policy + fiscal start live on <code>pb.group</code>, <code>pb.fx</code> service lifted from <code>pb.budget.fx</code> with the same <code>(value, known)</code> contract and a <code>rate_for(currency, month)</code> that records source and date, <code>pb.division</code> + <code>pb.division.link</code> (department, division, date_from, date_to), Settings lens "Group"). <code>pb_scheme_map</code> (P2: makes <code>hr.formula.scheme.assignment</code> authoritative with <code>cycle_type</code>, <code>employment_type</code>/domain rules, <code>paid_by_config_id</code> computed on <code>hr.employee</code>, <code>pb.scheme.exception</code> view, pay-run wizard population + <code>formula_config_id</code> stamped at create, company-scoped contract search, ladder in <code>_find_formula_config</code> consulting the map above the country rung). <code>pb_explorer</code> extension (P3: <code>config_id</code>, <code>config_version</code>, <code>cycle</code>, <code>currency_id</code>, <code>division_id</code>, <code>person_id</code>, <code>fte</code> on <code>pb.fact.*</code>; dimensions/filters; presentation toggle; compare lens; fixes to <code>pb_hr_payroll_analytics</code> company filters and <code>pb_payruns</code> <code>search([])</code>). <code>pb_decision_room</code> 2.x (P4: scope on plans/assumptions, <code>pb.decision.ruleset</code> per country, group view via <code>pb.fx</code>, true-cost lane porting <code>wfp.employer.cost.calculator</code>, approvals/versions). <code>pb_workseg</code> (P5: <code>pb.person</code>, <code>pb.work.segment</code>, segment-driven population and per-segment payslips with day proration in <code>_get_formula_input_values</code>, <code>pb.cost.transfer</code>). <code>pb_pay</code> (P6, possibly split 6a bands+fairness / 6b review+changes): <code>pb.pay.band</code> + <code>pb.pay.band.level</code> (country, currency, job family, level, min/mid/max, date_from), <code>pb.pay.guidance</code> grid, <code>pb.pay.rating</code> per review per person (entered, pasted, or via <code>pb_zoho_bridge</code>), <code>pb.pay.review</code> + <code>pb.pay.review.line</code> using <code>biz.approval.chain.mixin</code> / <code>biz.approval.step.log</code> for the cascade, <code>pb.pay.change</code> for one-offs, letters through <code>pb.letter.template</code> / <code>pb.hr.letter</code>, the portal page on the <code>pb_me_portal</code> kit; fairness computed from facts + open contracts, never stored; apply writes <code>hr.contract.wage</code> with an undo record; migrations from <code>wfp.pay.grade</code>, <code>wfp.merit.matrix</code>, <code>wfp.compensation.cycle</code> (read-only history), <code>hr.contract.grade_id/compa_ratio</code>; <code>pb_budget</code> re-homed to <code>pb.budget.line</code>; then <code>pb_hr_workforce_planning</code> uninstalled. Split-month policy: <code>pb.group.split_pay_policy</code> (<code>each_pays</code> | <code>home_pays</code>) with <code>pb.work.segment.pay_policy</code> override and <code>pb.cost.transfer</code> lines for the charge (report + export, no accounting posting). P7: division/country record rules, <code>vi_VN.po</code>, closeout.</p>
       <p><strong>Invariants enforced by tests across all phases.</strong> No stored converted amount anywhere. Sum of segment days per person per month equals the calendar (or a named exception). Sum of segment FTE per person ≤ 1 unless flagged. Facts: sum over any grouping equals the sum over runs of the same filter. Headcount = distinct persons. Kind-of-run default = main. A company with exactly one active scheme and no map entries produces the identical run population before and after P2.</p>
     </div>
   </details>
