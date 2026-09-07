@@ -382,11 +382,17 @@ class HrAnalyticsStatutoryContrib(models.Model):
     # ============================================================================
 
     def _get_payslips_for_period(self):
-        """Get payslips for the period filtered by country"""
+        """Get payslips for the period, for THIS company, filtered by country.
+
+        GROUP P3: the company filter. Without it a contributions report on a
+        group summed every company's payslips and presented them as one
+        entity's statutory position — the number a payroll manager files with.
+        """
         domain = [
             ('date_from', '>=', self.date_from),
             ('date_to', '<=', self.date_to),
-            ('state', 'in', ['done', 'paid'])
+            ('state', 'in', ['done', 'paid']),
+            ('company_id', '=', (self.company_id or self.env.company).id),
         ]
 
         # Filter by country - match employee's country to selected country
@@ -402,7 +408,17 @@ class HrAnalyticsStatutoryContrib(models.Model):
 
         country_name = country_map.get(self.country)
         if country_name:
-            domain.append(('employee_id.address_home_id.country_id.name', '=', country_name))
+            # `hr.employee.address_home_id` was REMOVED in Odoo 19, so this
+            # path raised KeyError and the report died the moment a country
+            # was set — which is always, the field is required. Probe, and
+            # fall back to the employee's own country.
+            Employee = self.env['hr.employee']
+            if 'address_home_id' in Employee._fields:
+                domain.append(('employee_id.address_home_id.country_id.name',
+                               '=', country_name))
+            elif 'country_id' in Employee._fields:
+                domain.append(('employee_id.country_id.name', '=',
+                               country_name))
 
         return self.env['hr.payslip'].search(domain)
 

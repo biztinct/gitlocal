@@ -29,8 +29,35 @@ class HrPayrollEmployeeDetail(models.TransientModel):
     contributions = fields.Monetary(string='Contributions', currency_field='currency_id')
     total = fields.Monetary(string='Total', compute='_compute_total', store=True, currency_field='currency_id')
     
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
+    # GROUP P3 — a row of money has to say WHOSE money it is. The company
+    # comes from the employee, and the currency follows the company rather
+    # than whichever company the reader happened to be in when the drill-down
+    # was built.
+    #
+    # NO `default=` on either of them. A stored computed field that is also
+    # writable takes its DEFAULT when create() is not given a value, and the
+    # compute never runs — so a default of `env.company` would quietly stamp
+    # the reader's company on a row belonging to somebody else's. The compute
+    # falls back to `env.company` itself when the employee has none.
+    company_id = fields.Many2one(
+        'res.company', string='Company', index=True,
+        compute='_compute_company_id', store=True, readonly=False)
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency',
+        compute='_compute_currency_id', store=True, readonly=False)
     country_code = fields.Char(string='Country Code')
+
+    @api.depends('employee_id')
+    def _compute_company_id(self):
+        for record in self:
+            record.company_id = record.employee_id.company_id \
+                or record.company_id or self.env.company
+
+    @api.depends('company_id')
+    def _compute_currency_id(self):
+        for record in self:
+            record.currency_id = (record.company_id or self.env.company)\
+                .currency_id
 
     @api.depends('month')
     def _compute_month_name(self):
