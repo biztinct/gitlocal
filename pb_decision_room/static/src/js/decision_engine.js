@@ -499,6 +499,322 @@ export function compute(baseline, assumptions, state) {
     return { rows, year, teams: teamOut, state: s };
 }
 
+// =====================================================================
+//  GROUP Phase 4 — several companies, several currencies, one board
+// =====================================================================
+
+/** Every money figure in a computed month. Hours and heads are not money. */
+export const MONEY_KEYS = [
+    "base", "allowance", "salary", "overtime", "premium", "bonus",
+    "contributions", "recruit", "severance", "learning", "people", "gross",
+    "withholding", "takehome", "demand", "capacity", "revenue", "other",
+    "profit",
+];
+
+/** Everything that is a COUNT of something and simply adds up. */
+const ADD_KEYS = ["heads", "hoursAvailable", "hoursDemand", "hoursServed"];
+
+/**
+ * The rate for one currency, in one month, into the board's money.
+ *
+ * The table comes from the server and every cell carries `known`. There is no
+ * fallback and there never will be: a missing rate answers `known: false` and
+ * the caller shows a sentence, exactly as `pb.fx` does on the server (group
+ * ledger rule 7).
+ */
+export function rateFor(rates, code, monthIndex) {
+    const target = (rates && rates.target && rates.target.code) || "";
+    if (!code || code === target) {
+        return { rate: 1, known: true, date: "" };
+    }
+    const row = ((rates && rates.rows) || {})[code];
+    const cell = row && row[monthIndex];
+    if (!cell) { return { rate: 0, known: false, date: "" }; }
+    return { rate: cell.known ? cell.rate : 0, known: !!cell.known,
+             date: cell.rate_date || "" };
+}
+
+/**
+ * How a group's revenue target is shared out between its companies.
+ *
+ * The target is a sentence about the WHOLE group, typed in the board's money.
+ * Somebody has to decide what share of it each entity is expected to earn, and
+ * the only thing the room can see without being told is how much of the
+ * group's workforce sits in each one. So that is the share, it is said on
+ * screen in those words, and a company can always be planned on its own with
+ * its own target if the split is wrong.
+ */
+export function targetShares(blocks) {
+    const weights = blocks.map((block) => {
+        const teams = block.teams || [];
+        return teams.reduce(
+            (sum, t) => sum + (t.heads || 0) * (t.pay_month_avg || 0), 0);
+    });
+    const total = weights.reduce((sum, v) => sum + v, 0);
+    if (total > 0) { return weights.map((v) => v / total); }
+    const heads = blocks.map((block) => (block.teams || [])
+        .reduce((sum, t) => sum + (t.heads || 0), 0));
+    const people = heads.reduce((sum, v) => sum + v, 0);
+    if (people > 0) { return heads.map((v) => v / people); }
+    return blocks.map(() => 1 / Math.max(1, blocks.length));
+}
+
+/**
+ * Twelve months of a whole group, one company at a time.
+ *
+ * Each company is computed with ITS OWN rules — Singapore's contribution
+ * ceiling on the Singapore entity, Vietnam's on the Vietnamese one — in ITS
+ * OWN money. Only then is anything converted, and only for reading. A company
+ * whose money has no rate this month is left OUT of the total and named, which
+ * is the only honest thing to do with a number nobody can stand behind.
+ *
+ * A scope with ONE company returns exactly what `compute()` returns, wrapped —
+ * same arithmetic, same keys, same order. That identity is the whole reason
+ * this phase could touch the engine at all.
+ */
+export function computeBlocks(baseline, state, rates) {
+    const blocks = (baseline && baseline.blocks) || [];
+    if (blocks.length <= 1) {
+        const only = blocks[0]
+            || { teams: (baseline && baseline.teams) || [], rules: {},
+                 currency: {} };
+        const plan = compute({ teams: only.teams }, only.rules, state);
+        return {
+            single: true, converted: false, unknown: [],
+            blocks: [{ ...only, plan, share: 1, target: state && state.target }],
+            group: plan,
+        };
+    }
+    const shares = targetShares(blocks);
+    const target = Math.max(0, num(state && state.target, 0));
+    const out = [];
+    const unknown = [];
+    blocks.forEach((block, i) => {
+        const code = (block.currency || {}).code || "";
+        // The share is converted INTO the company's own money, because that is
+        // the money its people are paid in and its rules are written in.
+        const january = rateFor(rates, code, 0);
+        const local = january.known && january.rate
+            ? (target * shares[i]) / january.rate : 0;
+        const plan = compute({ teams: block.teams }, block.rules,
+                             { ...state, target: local });
+        const misses = [];
+        for (let m = 0; m < 12; m++) {
+            if (!rateFor(rates, code, m).known) { misses.push(m); }
+        }
+        if (misses.length) {
+            unknown.push({ code, company: block.company, months: misses });
+        }
+        out.push({ ...block, plan, share: shares[i], target: local,
+                   code, known: !misses.length });
+    });
+
+    const rows = [];
+    for (let m = 0; m < 12; m++) {
+        const row = { index: m, name: MONTH_KEYS[m], headsByTeam: {},
+                      shifts: [], coverage: 1, margin: 0 };
+        for (const key of MONEY_KEYS) { row[key] = 0; }
+        for (const key of ADD_KEYS) { row[key] = 0; }
+        for (const block of out) {
+            const rate = rateFor(rates, block.code, m);
+            const source = block.plan.rows[m];
+            for (const key of ADD_KEYS) { row[key] += source[key] || 0; }
+            Object.assign(row.headsByTeam, source.headsByTeam || {});
+            if (!rate.known) { continue; }
+            for (const key of MONEY_KEYS) {
+                row[key] += (source[key] || 0) * rate.rate;
+            }
+        }
+        row.shifts = SHIFTS.map((key, i) => {
+            const add = (name) => out.reduce(
+                (sum, b) => sum + (b.plan.rows[m].shifts[i][name] || 0), 0);
+            const first = out[0].plan.rows[m].shifts[i];
+            return {
+                key, heads: add("heads"), share: first.share,
+                uplift: first.uplift, available: add("available"),
+                demand: target > 0 ? add("demand") : null,
+                served: target > 0 ? add("served") : null,
+            };
+        });
+        row.coverage = row.demand > 0 ? row.revenue / row.demand : 1;
+        row.margin = row.revenue > 0 ? row.profit / row.revenue : 0;
+        rows.push(row);
+    }
+    const year = {};
+    for (const key of [...MONEY_KEYS, ...ADD_KEYS]) {
+        year[key] = rows.reduce((sum, r) => sum + r[key], 0);
+    }
+    year.headcount = rows[11].heads;
+    year.headsAvg = year.heads / 12;
+    year.coverage = year.demand > 0 ? year.revenue / year.demand : 1;
+    year.unserved = Math.max(0, year.demand - year.revenue);
+    year.margin = year.revenue > 0 ? year.profit / year.revenue : 0;
+    year.costPerHead = year.headsAvg > 0 ? year.people / year.headsAvg : 0;
+    year.peopleShare = year.revenue > 0 ? year.people / year.revenue : 0;
+    year.peakMonth = rows.reduce(
+        (best, r) => (r.people > rows[best].people ? r.index : best), 0);
+    year.worstMonth = rows.reduce(
+        (worst, r) => (r.profit < rows[worst].profit ? r.index : worst), 0);
+    year.hires = out.reduce((sum, b) => sum + b.plan.year.hires, 0);
+    year.cuts = out.reduce((sum, b) => sum + b.plan.year.cuts, 0);
+    year.leavers = out.reduce((sum, b) => sum + b.plan.year.leavers, 0);
+    // Shifts are HOURS and heads, so they simply add up across companies —
+    // there is nothing to convert and nothing that can be unknown.
+    const shiftSum = (i, key) => out.reduce(
+        (sum, b) => sum + (b.plan.year.shifts[i][key] || 0), 0);
+    year.shifts = SHIFTS.map((key, i) => ({
+        key,
+        heads: shiftSum(i, "heads"),
+        share: out[0] ? out[0].plan.year.shifts[i].share : 0,
+        uplift: out[0] ? out[0].plan.year.shifts[i].uplift : 0,
+        demandShare: out[0] ? out[0].plan.year.shifts[i].demandShare : 0,
+        available: shiftSum(i, "available"),
+        demand: target > 0 ? shiftSum(i, "demand") : null,
+        served: target > 0 ? shiftSum(i, "served") : null,
+    }));
+
+    const teams = [];
+    for (const block of out) {
+        const rate0 = rateFor(rates, block.code, 0);
+        for (const team of block.plan.teams) {
+            teams.push({
+                ...team,
+                cost: team.cost.map((v, m) => {
+                    const rate = rateFor(rates, block.code, m);
+                    return rate.known ? v * rate.rate : 0;
+                }),
+                year: rate0.known ? team.year * rate0.rate : 0,
+                company: block.company,
+                currency: block.code,
+            });
+        }
+    }
+    return {
+        single: false,
+        converted: true,
+        unknown,
+        blocks: out,
+        group: { rows, year, teams, state: out[0].plan.state },
+    };
+}
+
+/** The month keys the engine has always used, kept as one list. */
+const MONTH_KEYS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+                    "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * What the closed pay runs actually cost, in the board's money, by month.
+ *
+ * A month with no closed run answers `null` rather than zero, because zero is
+ * a number and "we have not run it yet" is not. The line on the stage breaks
+ * where the answer breaks.
+ */
+export function actualSeries(actuals, rates, cumulative = true) {
+    const out = new Array(12).fill(null);
+    const months = (actuals && actuals.months) || [];
+    const byMonth = {};
+    for (const row of months) { byMonth[row.month] = row; }
+    let running = 0;
+    for (let m = 0; m < 12; m++) {
+        const row = byMonth[m + 1];
+        if (!row) { out[m] = null; continue; }
+        let total = 0;
+        let known = true;
+        for (const key of Object.keys(row.by_company || {})) {
+            const entry = row.by_company[key];
+            const rate = rateFor(rates, entry.currency, m);
+            if (!rate.known) { known = false; continue; }
+            total += (entry.cost || 0) * rate.rate;
+        }
+        if (!known && total === 0) { out[m] = null; continue; }
+        running += total;
+        out[m] = cumulative ? running : total;
+    }
+    return out;
+}
+
+/** How many people the closed runs actually paid, by month. */
+export function actualPeople(actuals) {
+    const out = new Array(12).fill(null);
+    for (const row of ((actuals && actuals.months) || [])) {
+        out[row.month - 1] = row.people || 0;
+    }
+    return out;
+}
+
+/**
+ * The last month that reads like a FULL payroll, and the last with anything.
+ *
+ * This distinction is the whole reason the verdict is trustworthy. A demo
+ * database — and a real one in the first week of a month — carries a month
+ * where three people were paid a correction. Naming that as "the month" turns
+ * a rounding into a headline: "November came in ₫108 billion under plan",
+ * which is arithmetically perfect and completely useless. A month counts as
+ * full when it paid at least half the people the plan expected.
+ */
+export function closedMonths(plan, actuals, rates) {
+    const monthly = actualSeries(actuals, rates, false);
+    const people = actualPeople(actuals);
+    let full = -1;
+    let any = -1;
+    for (let m = 0; m < 12; m++) {
+        if (monthly[m] === null) { continue; }
+        any = m;
+        const heads = plan.rows[m] ? plan.rows[m].heads : 0;
+        if (people[m] === null || !heads || people[m] >= heads * 0.5) {
+            full = m;
+        }
+    }
+    return { monthly, people, full, any };
+}
+
+/**
+ * One sentence about the month that has both a plan and an answer.
+ *
+ * It names the LAST full month, says which way it went, and names the
+ * biggest reason it could see — more people than planned, or more money per
+ * person. Anything more precise would be a guess, and this sentence is read by
+ * somebody who is about to repeat it in a meeting.
+ */
+export function actualVerdict(plan, actuals, rates, format) {
+    const f = format;
+    const months = (actuals && actuals.months) || [];
+    if (!months.length) {
+        return _t("No pay run has been closed for this year yet, so there is "
+                  + "nothing to draw over the plan.");
+    }
+    const { monthly, people, full, any } = closedMonths(plan, actuals, rates);
+    const last = full >= 0 ? full : any;
+    if (last < 0) {
+        return _t("The pay runs for this year cannot be added up in this "
+                  + "money yet, because a rate is missing.");
+    }
+    const partial = full < 0
+        ? _t(" Only %(n)s of the %(all)s people in this view have been paid in "
+             + "a closed run so far, so this is part of the picture rather "
+             + "than all of it.",
+             { n: f.int(people[any] || 0),
+               all: f.int(Math.round(plan.rows[any].heads)) })
+        : "";
+    const row = plan.rows[last];
+    const gap = monthly[last] - row.people;
+    const heads = people[last] === null ? null : people[last] - row.heads;
+    const direction = gap <= 0 ? _t("under plan") : _t("over plan");
+    let why = _t("pay per person was the difference");
+    if (heads !== null && Math.abs(heads) >= 1
+        && (Math.abs(heads) / Math.max(1, row.heads))
+           > Math.abs(gap) / Math.max(1, row.people) * 0.5) {
+        why = heads > 0
+            ? _t("there were %s more people on the payroll than planned",
+                 f.int(Math.abs(heads)))
+            : _t("there were %s fewer people on the payroll than planned",
+                 f.int(Math.abs(heads)));
+    }
+    return _t("%(month)s came in %(money)s %(direction)s; %(why)s.%(partial)s",
+              { month: monthName(last), money: f.money(Math.abs(gap)),
+                direction, why, partial });
+}
+
 // --------------------------------------------------------------------- goals
 /**
  * The six things a plan can be asked to be. `value` reads a computed plan;
@@ -633,11 +949,13 @@ export function series(plan, metric) {
 
 // ------------------------------------------------------------------- extras
 /** The same plan under softer and stronger demand. */
-export function stressBand(baseline, assumptions, state, width = 10) {
+export function stressBand(baseline, assumptions, state, width = 10,
+                           run = null) {
     const s = normalizeState(state, baseline, assumptions);
+    const go = run || ((trial) => compute(baseline, assumptions, trial));
     return {
-        lo: compute(baseline, assumptions, { ...s, stress: s.stress - width }),
-        hi: compute(baseline, assumptions, { ...s, stress: s.stress + width }),
+        lo: go({ ...s, stress: s.stress - width }),
+        hi: go({ ...s, stress: s.stress + width }),
     };
 }
 
@@ -1018,11 +1336,13 @@ export function teamsInDecember(plan, ref) {
 }
 
 /** What five more people in one team would do from here. */
-export function marginal(baseline, assumptions, state, plan, teamKey, n = 5) {
+export function marginal(baseline, assumptions, state, plan, teamKey, n = 5,
+                         run = null) {
     const team = ((baseline && baseline.teams) || [])
         .find((t) => t.key === teamKey);
     if (!team) { return null; }
-    const next = compute(baseline, assumptions, {
+    const go = run || ((trial) => compute(baseline, assumptions, trial));
+    const next = go({
         ...state,
         moves: [...(state.moves || []),
                 { team: teamKey, role: null, n, month: state.start }],
@@ -1061,7 +1381,7 @@ export function experimentSize(heads) {
  * second. The step is returned so the tab can say what it walked.
  */
 export function headroom(baseline, assumptions, state, goals, teamKey,
-                         format, roleKey = null) {
+                         format, roleKey = null, run = null) {
     const team = ((baseline && baseline.teams) || [])
         .find((t) => t.key === teamKey);
     const enabled = GOAL_ORDER.some((k) => goals && goals[k] && goals[k].on);
@@ -1074,9 +1394,10 @@ export function headroom(baseline, assumptions, state, goals, teamKey,
     // At most sixty points on the chart: more than that is a smear, and every
     // extra point is another twelve months of arithmetic.
     const step = [1, 2, 5, 10, 20].find((n) => max / n <= 60) || 25;
+    const go = run || ((trial) => compute(baseline, assumptions, trial));
     const points = [];
     for (let add = 0; add <= max; add += step) {
-        const trial = compute(baseline, assumptions, {
+        const trial = go({
             ...state,
             moves: add
                 ? [...(state.moves || []),
@@ -1125,7 +1446,8 @@ export const LANES = ["hire", "develop", "balanced"];
  * goal, so a percentage and a billion can be compared), then by the cheaper
  * plan, then by the one that changes least.
  */
-export function candidates(baseline, assumptions, state, goals, format) {
+export function candidates(baseline, assumptions, state, goals, format,
+                           run = null) {
     const teams = ((baseline && baseline.teams) || []);
     const earner = teams.filter((t) => t.revenue && t.heads > 0)
         .sort((a, b) => b.heads - a.heads)[0] || teams[0];
@@ -1149,8 +1471,9 @@ export function candidates(baseline, assumptions, state, goals, format) {
     const overtimes = uniq([0, 8, 16, Math.round(s.ot)]);
     const gains = uniq([0, 5, 10, Math.round(s.productivity)]);
 
+    const go = run || ((trial) => compute(baseline, assumptions, trial));
     const visit = (trial) => {
-        const result = compute(baseline, assumptions, trial);
+        const result = go(trial);
         const rating = gradeGoals(result, goals, format);
         const add = (trial.moves || [])
             .filter((m) => m.team === earner.key)
@@ -1189,14 +1512,15 @@ export function candidates(baseline, assumptions, state, goals, format) {
 }
 
 /** The reality-check sentence: what happens if demand is not what we said. */
-export function stressOutcome(baseline, assumptions, state, plan, format) {
+export function stressOutcome(baseline, assumptions, state, plan, format,
+                              run = null) {
     const f = format;
     const s = normalizeState(state, baseline, assumptions);
     if (!(s.target > 0)) {
         return _t("Type a revenue target and the room can stress-test the "
                   + "plan.");
     }
-    const band = stressBand(baseline, assumptions, s);
+    const band = stressBand(baseline, assumptions, s, 10, run);
     const low = Math.min(band.lo.year.profit, band.hi.year.profit);
     const high = Math.max(band.lo.year.profit, band.hi.year.profit);
     const label = s.stress < 0 ? _t("softer demand")
