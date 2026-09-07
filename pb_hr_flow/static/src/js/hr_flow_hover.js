@@ -176,15 +176,17 @@ const tertiaryData = {
             { label: _t('Báo tăng lao động'), icon: 'fa-file-excel-o', desc: _t('Tăng LĐ'), disabled: false, route: 'govt-tang' },
         ],
     },
+    // The six entries this menu used to hold opened screens of a planning
+    // module that has been retired; every one of them is now a screen built
+    // on this product's own engine, and a card that opens nothing is the
+    // worst thing a menu can contain.
     workforce_planning: {
-        title: _t('Workforce Planning'),
+        title: _t('Planning and pay'),
         items: [
-            { label: _t('Planning Scenarios'), icon: 'fa-cubes', desc: _t('Salary simulation & forecasting'), disabled: false, route: 'wfp-scenarios' },
-            { label: _t('Employee Forecasts'), icon: 'fa-users', desc: _t('Per-employee cost projections'), disabled: false, route: 'wfp-forecasts' },
-            { label: _t('Tag Components'), icon: 'fa-tags', desc: _t('Classify formula components'), disabled: false, route: 'wfp-tagging' },
-            { label: _t('Pay Grades'), icon: 'fa-signal', desc: _t('Salary bands & compa-ratios'), disabled: false, route: 'wfp-pay-grades' },
-            { label: _t('Merit Matrix'), icon: 'fa-th', desc: _t('Performance × compa-ratio grid'), disabled: false, route: 'wfp-merit-matrix' },
-            { label: _t('Compensation Cycles'), icon: 'fa-refresh', desc: _t('Budget → worksheets → approval'), disabled: false, route: 'wfp-comp-cycles' },
+            { label: _t('Plan the year'), icon: 'fa-cubes', desc: _t('What hiring, raises and overtime cost'), disabled: false, route: 'plan-room' },
+            { label: _t('Pay bands'), icon: 'fa-signal', desc: _t('The range for each level of each job'), disabled: false, route: 'pay-bands' },
+            { label: _t('Pay review'), icon: 'fa-refresh', desc: _t('Budget, guidance, approvals and apply'), disabled: false, route: 'pay-review' },
+            { label: _t('Fairness'), icon: 'fa-balance-scale', desc: _t('The pay gap, measured on what was paid'), disabled: false, route: 'pay-fairness' },
         ],
     },
 };

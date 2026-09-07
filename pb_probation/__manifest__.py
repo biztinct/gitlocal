@@ -43,7 +43,7 @@ letter, and puts a button in front of a human. That button reuses P4's own
 `setup_offboarding()` rather than growing a second way to open a leaving
 checklist.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

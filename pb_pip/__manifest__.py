@@ -33,7 +33,7 @@ VERDICT FAIL NEVER AUTO-OPENS AN EXIT, and neither does anything else here. A
 resignation that is approved CLOSES a running plan (P4's extension point), which
 is the opposite direction and the only automatic ending there is.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -846,27 +846,32 @@ class PbPipCase(models.Model):
     def _write_performance_rating(self):
         """Carry the agreed rating onto the employee record, if it exists.
 
-        PROBED rather than depended on, exactly as P5's is:
-        `wfp_performance_rating` comes from the workforce-planning module,
-        which is not a dependency of this one, and a hard reference would make
-        this phase refuse to install on a database that does not have it.
-        Absent field, log line, carry on. It is a SELECTION on this build, so
-        the value written is the STRING.
+        PROBED rather than depended on, and now against TWO field names.
+        The score used to live on a field the old workforce-planning module
+        put on the employee record; the Pay area owns it now and calls it
+        `pb_performance_rating`. Both are written where both exist, and a
+        build that has neither gets a log line and carries on — a probation
+        outcome must never fail to save because a score has nowhere to go.
         """
         self.ensure_one()
         if not self.final_rating:
             return False
         emp = self._person()
-        if 'wfp_performance_rating' not in emp._fields:
+        names = [name for name in ('pb_performance_rating',
+                                   'wfp_performance_rating')
+                 if name in emp._fields]
+        if not names:
             _logger.info('pb_pip: no performance rating field on this build — '
                          'plan %s did not write one', self.id)
             return False
         try:
             value = max(1, min(5, int(self.final_rating)))
-            field = emp._fields['wfp_performance_rating']
-            emp.sudo().write({
-                'wfp_performance_rating':
-                    str(value) if field.type == 'selection' else value})
+            values = {}
+            for name in names:
+                field = emp._fields[name]
+                values[name] = str(value) \
+                    if field.type == 'selection' else value
+            emp.sudo().write(values)
             self.message_post(body=_(
                 "Their performance rating was set to %s out of 5.", value))
             return True
