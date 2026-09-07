@@ -613,6 +613,10 @@ class PbExplorer(models.AbstractModel):
                       else (scope[:1].name if scope else '')) or ''
         return {
             'levels': levels,
+            # The rungs that carry exactly ONE value. They stay in the trail —
+            # they are where you are standing — and are never a destination,
+            # because a chart with one bar is a click that answers nothing.
+            'skip': [lv for lv, only in singular.items() if only],
             'path': spec['path'],
             'root': levels[0],
             'root_label': root_label,
@@ -672,19 +676,25 @@ class PbExplorer(models.AbstractModel):
         return ' AND '.join(clauses), params
 
     def _companies_for(self, key, vals):
-        """The companies a country code or a group id stands for."""
+        """The companies a country code or a group id stands for.
+
+        Matched in PYTHON over the handful of companies in scope, never in a
+        domain: `res.company.country_id` is a NON-STORED related field on Odoo
+        19, so `('country_id', 'in', …)` is not a slow search, it is a hard
+        `ValueError: Cannot convert … to SQL because it is not stored` — the
+        same trap as `hr.department.complete_name` (ledger GR6, now GR20).
+        """
         Company = self.env['res.company'].sudo().with_context(active_test=False)
-        scope = list(self._co_ids())
+        companies = Company.browse(list(self._co_ids())).exists()
+        ids = {int(v) for v in vals if str(v).lstrip('-').isdigit()}
         if key == 'group':
-            ids = [int(v) for v in vals if str(v).lstrip('-').isdigit()]
-            hit = Company.search([('id', 'in', scope),
-                                  ('pb_group_id', 'in', ids)]) \
-                if 'pb_group_id' in Company._fields else Company.browse()
-            return hit.ids
-        codes = [str(v) for v in vals if v]
-        ids = [int(v) for v in vals if str(v).lstrip('-').isdigit()]
-        domain = ['|', ('country_id', 'in', ids), ('country_id.code', 'in', codes)]
-        return Company.search([('id', 'in', scope)] + domain).ids
+            if 'pb_group_id' not in Company._fields:
+                return []
+            return [c.id for c in companies if c.pb_group_id.id in ids]
+        codes = {str(v) for v in vals if v}
+        return [c.id for c in companies
+                if c.country_id and (c.country_id.id in ids
+                                     or (c.country_id.code or '') in codes)]
 
     def _dim_expr(self, spec, table):
         """The SQL expression the chart's rows are grouped by."""
@@ -1235,7 +1245,11 @@ class PbExplorer(models.AbstractModel):
                        for k, v in _GRAINS.items()],
             'charts': [c for c in _CHARTS if c != 'compare'],
             'options': {
-                'division': [{'value': d, 'label': d.replace('_', ' ').title()}
+                # ONE "Division" in the filter list too, for the same reason
+                # it is one in the "By" list: the redundant one is offered
+                # with no values, so the chip rail never shows it.
+                'division': [] if use_division_id else
+                            [{'value': d, 'label': d.replace('_', ' ').title()}
                              for d in sorted(divisions)],
                 'division_id': division_opts,
                 'scheme': schemes,

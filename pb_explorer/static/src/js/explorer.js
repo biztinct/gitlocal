@@ -148,7 +148,13 @@ export class PbExplorer extends Component {
             } else {
                 // A pasted link reproduces the view it was copied from —
                 // breadcrumb, chips, money mode and all.
-                this.readHash();
+                const had = this.readHash();
+                // Otherwise the board OPENS on the first step of the walk.
+                // A breadcrumb whose next rung is Country, over a chart
+                // already broken down by department, asks the reader to
+                // guess that the two are connected.
+                const next = this.state.schema?.trail?.next;
+                if (!had && next) { this.state.spec.dimension = next; }
             }
             await this.run();
             this.state.loaded = true;
@@ -235,7 +241,7 @@ export class PbExplorer extends Component {
     readHash() {
         try {
             const raw = (window.location.hash || "").replace(/^#/, "");
-            if (!raw.startsWith(`${HASH_KEY}=`)) { return; }
+            if (!raw.startsWith(`${HASH_KEY}=`)) { return false; }
             const c = JSON.parse(decodeURIComponent(raw.slice(HASH_KEY.length + 1)));
             const s = this.state.spec;
             if (c.m) { s.measure = c.m; }
@@ -248,9 +254,11 @@ export class PbExplorer extends Component {
             if (c.u) { s.currency = c.u; }
             s.target_currency = Number(c.t) || 0;
             s.per_head = !!c.h;
+            return true;
         } catch {
             // A hash somebody edited by hand is not an error state — the
             // board simply opens on its own default view.
+            return false;
         }
     }
 
@@ -281,11 +289,18 @@ export class PbExplorer extends Component {
             && this.state.spec.dimension !== "job_id";
     }
 
-    /** The level shown below the one the reader is standing on. */
+    /** The level shown below the one the reader is standing on.
+     *  A rung with only one value is skipped: a chart with one bar is a
+     *  click that answers nothing. */
     nextLevelAfter(level) {
         const levels = this.trail.levels || [];
-        const at = levels.indexOf(level);
-        return at >= 0 && at + 1 < levels.length ? levels[at + 1] : "";
+        const skip = this.trail.skip || [];
+        let at = levels.indexOf(level);
+        if (at < 0) { return ""; }
+        for (let i = at + 1; i < levels.length; i++) {
+            if (!skip.includes(levels[i])) { return levels[i]; }
+        }
+        return "";
     }
 
     stepDown(key, label) {
@@ -331,10 +346,17 @@ export class PbExplorer extends Component {
     }
 
     // ------------------------------------------------------------- money
-    get money() { return this.state.data?.money || null; }
+    /**
+     * NOT `money`. This component already has a `money(value)` FORMATTER, and
+     * a class may not hold a getter and a method of the same name — the later
+     * definition simply wins, silently. It cost a browser walk: every rate
+     * badge was missing because `this.money?.rates` was reading a property off
+     * the formatter function. One name, one meaning.
+     */
+    get moneyMeta() { return this.state.data?.money || null; }
 
     get shownCurrency() {
-        return this.activePart?.currency || this.money?.target || null;
+        return this.activePart?.currency || this.moneyMeta?.target || null;
     }
 
     get parts() { return this.state.data?.parts || []; }
@@ -367,14 +389,30 @@ export class PbExplorer extends Component {
             : _t("Shown in %s.", cur.name);
     }
 
-    get rates() { return this.money?.rates || []; }
+    get rates() { return this.moneyMeta?.rates || []; }
 
-    get unconverted() { return this.money?.unconverted || []; }
+    get unconverted() { return this.moneyMeta?.unconverted || []; }
+
+    /** Just the number: "17,450". */
+    rateValue(rate) {
+        return new Intl.NumberFormat(undefined,
+            { maximumFractionDigits: rate.rate >= 100 ? 0 : 4 }).format(rate.rate);
+    }
+
+    /** "1 SGD = 20,000 VND · 2026-08-31".
+     *
+     *  Built in ONE string rather than from four template nodes: the spaces
+     *  between adjacent `t-esc` nodes are whitespace the browser is free to
+     *  collapse, and the first browser walk read back "20,000VND· 2026-08-31".
+     */
+    rateSentence(rate) {
+        const base = `1 ${rate.src} = ${this.rateValue(rate)} ${rate.dst}`;
+        return rate.rate_date ? `${base} · ${rate.rate_date}` : base;
+    }
 
     /** "at 17,450 · 31 Aug" — the whole of a rate badge. */
     rateChip(rate) {
-        const value = new Intl.NumberFormat(undefined,
-            { maximumFractionDigits: rate.rate >= 100 ? 0 : 4 }).format(rate.rate);
+        const value = this.rateValue(rate);
         return rate.rate_date ? `${value} · ${rate.rate_date}` : value;
     }
 
