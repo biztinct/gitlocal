@@ -269,7 +269,14 @@ class TestDecisionRoomStaticContract(TransactionCase):
         manifest = ast.literal_eval(_read(HERE, '__manifest__.py'))
         self.assertIn('data/pb_decision_ruleset.xml', manifest['data'])
         self.assertIn('data/pb_decision_cron.xml', manifest['data'])
-        self.assertEqual(manifest['version'], '19.0.4.0.0')
+        # The MAJOR version, not the exact one. P4 pinned `19.0.4.0.0` to say
+        # "the country rules arrived in the 4 series"; read literally it means
+        # this module may never be released again, and GROUP P5 tripped over
+        # it on its first bump. What the test is actually protecting is that
+        # the rules stay `noupdate` data inside the 4 series — so that is what
+        # it asserts.
+        self.assertTrue(manifest['version'].startswith('19.0.4.'),
+                        manifest['version'])
         self.assertIn('pb_group', manifest['depends'])
 
     def test_p4_the_upgrade_leaves_every_existing_row_where_it_was(self):
