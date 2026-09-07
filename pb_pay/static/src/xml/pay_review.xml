@@ -248,16 +248,15 @@
             <table class="pay-ws">
               <thead>
                 <tr>
-                  <th>Person</th>
-                  <th>Team</th>
-                  <th>Score</th>
-                  <th>In the band</th>
+                  <th class="pay-wsp">Person and what to know</th>
+                  <th class="pay-wst">Team</th>
+                  <th class="pay-wssc">Score</th>
+                  <th class="pay-wsb">In the band</th>
                   <th class="num">Paid now</th>
                   <th class="num">Guidance</th>
                   <th class="num">Rise</th>
                   <th class="num">New pay</th>
                   <th class="num">A year</th>
-                  <th>What to know</th>
                 </tr>
               </thead>
               <tbody>
@@ -265,16 +264,22 @@
                     t-att-class="rowClass(row, row_index)"
                     t-on-click="(ev) => this.pick(row, row_index, ev)"
                     t-on-dblclick="() => this.startEdit(row, row_index)">
-                  <td>
+                  <td class="pay-wsp">
                     <span class="pay-wsname" t-esc="row.name"/>
                     <span class="pay-wsjob" t-esc="row.job"/>
+                    <span class="pay-chips pay-wschips" t-if="row.chips.length">
+                      <span t-foreach="row.chips" t-as="chip" t-key="chip.key"
+                            t-attf-class="pay-chip pay-chip--#{chip.tone}"
+                            t-att-title="chip.text"
+                            t-esc="chip.text"/>
+                    </span>
                   </td>
-                  <td t-esc="row.team"/>
-                  <td>
+                  <td class="pay-wst" t-att-title="row.team" t-esc="row.team"/>
+                  <td class="pay-wssc">
                     <span class="pay-score" t-if="row.rating" t-esc="row.rating"/>
                     <span class="pay-score is-none" t-if="!row.rating">not scored</span>
                   </td>
-                  <td t-esc="row.position_label"/>
+                  <td class="pay-wsb" t-esc="row.position_label"/>
                   <td class="num" t-esc="row.current_label"/>
                   <td class="num"><t t-esc="row.guidance_pct"/>%</td>
                   <td class="num">
@@ -290,14 +295,6 @@
                   </td>
                   <td class="num" t-esc="row.new_label"/>
                   <td class="num" t-esc="row.annual_label"/>
-                  <td class="pay-wschips">
-                    <span class="pay-chips">
-                      <span t-foreach="row.chips" t-as="chip" t-key="chip.key"
-                            t-attf-class="pay-chip pay-chip--#{chip.tone}"
-                            t-att-title="chip.text"
-                            t-esc="chip.text"/>
-                    </span>
-                  </td>
                 </tr>
               </tbody>
             </table>

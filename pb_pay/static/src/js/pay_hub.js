@@ -49,6 +49,37 @@ const FAIRNESS = "pb.pay.fairness";
 /** How long a drag waits before asking the server for the exact cost. */
 const DRAG_SETTLE = 160;
 
+/**
+ * Two per-reader conveniences, remembered in this browser and nowhere else.
+ *
+ * Namespaced, because one browser holds every cockpit this product has and an
+ * un-namespaced key is one screen silently reading another's memory. Neither
+ * is configuration: they change how the picture is DRAWN for one person and
+ * nothing about what anybody is paid.
+ */
+const FIT_KEY = "pbpay.bands.fit.v1";
+const DENSE_KEY = "pbpay.bands.dense.v1";
+
+/** localStorage throws outright in some contexts (a private window, a browser
+ *  told to block site data), so every touch of it answers rather than dies. */
+function remembered(key, fallback) {
+    try {
+        const raw = window.localStorage.getItem(key);
+        return raw === null ? fallback : JSON.parse(raw);
+    } catch (error) {
+        return fallback;
+    }
+}
+
+function remember(key, value) {
+    try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        // A reader whose browser refuses to remember still gets the screen
+        // they asked for; they just get the default again tomorrow.
+    }
+}
+
 /** The four surfaces of the Pay area. All of them are live now. */
 function tabDefs() {
     return [
@@ -102,6 +133,10 @@ export class PbPayScreen extends Component {
             drag: null,
             preview: null,
             undo: null,
+
+            // how this reader likes the picture drawn (their browser only)
+            fit: remembered(FIT_KEY, {}) || {},
+            dense: Boolean(remembered(DENSE_KEY, false)),
 
             // one drawer at a time, each one plain state
             health: null,
@@ -259,9 +294,74 @@ export class PbPayScreen extends Component {
                        && this.state.suggestion.lanes.length);
     }
 
-    /** Where a value sits on a lane's axis, as a percentage of its width. */
-    axisPct(lane, value) {
-        const top = (lane.axis && lane.axis.max) || 1;
+    // ------------------------------------------------- one family at a time
+    /**
+     * The bands of one lane, gathered into their job families.
+     *
+     * The SHARED axis is still the default and still the point: a level 2
+     * band and a level 8 band are meant to be comparable at a glance. But a
+     * family of low-paid roles beside a family of directors is drawn as a
+     * sliver of a picture, so each family may be asked to fit the axis to its
+     * own bands instead. That is a per-reader convenience: it is remembered
+     * in their browser, it changes nothing anybody is paid, and while it is
+     * on the family says out loud that its widths no longer compare with the
+     * rest.
+     *
+     * Every position on the screen — the ranges, the middle marks, the grips,
+     * the dots, the ticks — is measured against the SCALE this returns, so a
+     * fitted family and a shared one can sit in the same lane and both be
+     * right.
+     */
+    familyGroups(lane) {
+        const axes = {};
+        (lane.families || []).forEach((family) => {
+            axes[family.key] = family;
+        });
+        const groups = [];
+        const seen = {};
+        (lane.bands || []).forEach((band) => {
+            const key = band.family || "";
+            if (seen[key] === undefined) {
+                const family = axes[key] || {};
+                const fitted = Boolean(this.state.fit[key]);
+                seen[key] = groups.length;
+                groups.push({
+                    key,
+                    name: family.name || key || _t("No job family"),
+                    fitted: fitted && Boolean(family.axis),
+                    own: family.axis || lane.axis,
+                    axis: fitted && family.axis ? family.axis : lane.axis,
+                    bands: [],
+                });
+            }
+            groups[seen[key]].bands.push(band);
+        });
+        return groups;
+    }
+
+    /** "Fit to this family" — on for one family, off again, remembered. */
+    toggleFit(key) {
+        const next = { ...this.state.fit };
+        if (next[key]) {
+            delete next[key];
+        } else {
+            next[key] = true;
+        }
+        this.state.fit = next;
+        remember(FIT_KEY, next);
+    }
+
+    /** Half-height rows with the secondary lines dropped, so a company with
+     *  many bands sees all of them without scrolling. */
+    toggleDense() {
+        this.state.dense = !this.state.dense;
+        remember(DENSE_KEY, this.state.dense);
+    }
+
+    /** Where a value sits on an axis, as a percentage of its width. Handed a
+     *  lane or a family group — both carry the `axis` this measures against. */
+    axisPct(scope, value) {
+        const top = (scope && scope.axis && scope.axis.max) || 1;
         const pct = (Number(value || 0) / top) * 100;
         return Math.max(0, Math.min(100, pct));
     }
@@ -276,25 +376,25 @@ export class PbPayScreen extends Component {
         return { min: band.min, mid: band.mid, max: band.max };
     }
 
-    rangeStyle(lane, band) {
+    rangeStyle(scope, band) {
         const now = this.live(band);
-        const left = this.axisPct(lane, now.min);
-        const right = this.axisPct(lane, now.max);
+        const left = this.axisPct(scope, now.min);
+        const right = this.axisPct(scope, now.max);
         return "left:" + left + "%;width:" + Math.max(0.4, right - left) + "%";
     }
 
-    midStyle(lane, band) {
-        return "left:" + this.axisPct(lane, this.live(band).mid) + "%";
+    midStyle(scope, band) {
+        return "left:" + this.axisPct(scope, this.live(band).mid) + "%";
     }
 
-    gripStyle(lane, band, side) {
+    gripStyle(scope, band, side) {
         const now = this.live(band);
-        return "left:" + this.axisPct(lane, side === "min" ? now.min : now.max)
+        return "left:" + this.axisPct(scope, side === "min" ? now.min : now.max)
             + "%";
     }
 
-    dotStyle(lane, dot) {
-        return "left:" + this.axisPct(lane, dot.wage) + "%";
+    dotStyle(scope, dot) {
+        return "left:" + this.axisPct(scope, dot.wage) + "%";
     }
 
     /** A dot's standing against the edges being held RIGHT NOW, so the picture
@@ -315,7 +415,7 @@ export class PbPayScreen extends Component {
     }
 
     // --------------------------------------------------------------- the drag
-    startDrag(lane, band, side, ev) {
+    startDrag(scope, band, side, ev) {
         if (!this.state.board || !this.state.board.can_write) { return; }
         if (!band.id) {
             this.notif.add(_t(
@@ -325,7 +425,8 @@ export class PbPayScreen extends Component {
         }
         ev.preventDefault();
         this.state.drag = {
-            bandId: band.id, side, laneMax: (lane.axis && lane.axis.max) || 1,
+            bandId: band.id, side,
+            laneMax: (scope && scope.axis && scope.axis.max) || 1,
             min: band.min, mid: band.mid, max: band.max,
             before: { min: band.min, mid: band.mid, max: band.max },
         };
@@ -424,9 +525,9 @@ export class PbPayScreen extends Component {
 
     /** Arrows nudge an edge by a hundredth of the axis; Shift by a twentieth.
      *  Enter saves, Escape puts it back — the keyboard reaches the hero. */
-    onGripKey(lane, band, side, ev) {
-        const step = (lane.axis && lane.axis.max ? lane.axis.max : 1)
-            * (ev.shiftKey ? 0.05 : 0.01);
+    onGripKey(scope, band, side, ev) {
+        const top = scope && scope.axis && scope.axis.max ? scope.axis.max : 1;
+        const step = top * (ev.shiftKey ? 0.05 : 0.01);
         if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight"
                 && ev.key !== "Enter" && ev.key !== "Escape") {
             return;
@@ -440,8 +541,7 @@ export class PbPayScreen extends Component {
         let drag = this.state.drag;
         if (!drag || drag.bandId !== band.id) {
             drag = {
-                bandId: band.id, side,
-                laneMax: (lane.axis && lane.axis.max) || 1,
+                bandId: band.id, side, laneMax: top,
                 min: band.min, mid: band.mid, max: band.max,
                 before: { min: band.min, mid: band.mid, max: band.max },
             };

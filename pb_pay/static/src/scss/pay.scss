@@ -101,6 +101,33 @@
     .pay-axis-note {
         margin: 6px 0 0 214px; font-size: 11px; color: var(--pbim-muted);
     }
+    // One job family, and the switch that gives it its own money scale.
+    .pay-fam {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin: 14px 0 2px;
+    }
+    .pay-fam-n {
+        font-size: 12px; font-weight: 800; color: var(--pbim-ink);
+        letter-spacing: .2px;
+    }
+    .pay-fitbtn {
+        appearance: none; cursor: pointer; display: inline-flex;
+        align-items: center; gap: 5px; padding: 3px 10px;
+        font: inherit; font-size: 11px; font-weight: 700;
+        color: var(--pbim-muted); background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
+        &:hover { color: var(--pbim-ink); border-color: var(--pbim-primary-light); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &.is-on {
+            background: var(--pbim-soft); color: var(--pbim-primary);
+            border-color: var(--pbim-primary);
+        }
+    }
+    // Said out loud while the scale is off the shared one, and only then.
+    .pay-fam-warn {
+        margin: 6px 0 0 214px; font-size: 11px; font-weight: 650;
+        color: var(--pbim-amber);
+    }
     .pay-band {
         display: grid; grid-template-columns: 206px minmax(0, 1fr);
         gap: 8px; align-items: center; padding: 7px 0;
@@ -178,6 +205,26 @@
     .pay-dragbar-t { font-size: 14px; font-weight: 700; }
     .pay-dragbar-s { font-size: 12px; opacity: .85; }
     .pay-dragbar .pbim-btn { margin-left: auto; }
+
+    // ------------------------------------------------------- dense rows
+    //
+    // A company with sixty bands cannot see its own shape four rows at a
+    // time. Dense mode halves the row and drops the SECONDARY lines — the
+    // count, the range under the name, the standing chips and the two edge
+    // figures — all of which are still on the band's own hover label and in
+    // the health cards. The dots, the ranges and the grips are untouched:
+    // this makes the picture shorter, never less true.
+    .pay-scroll.is-dense {
+        .pay-band { padding: 2px 0; }
+        .pay-band-n { font-size: 12px; }
+        .pay-band-sub, .pay-chips, .pay-edge-lab { display: none; }
+        .pay-track { height: 24px; }
+        .pay-range { top: 4px; bottom: 4px; }
+        .pay-mid { top: 3px; bottom: 3px; }
+        .pay-grip::before { height: 16px; }
+        .pay-fam { margin-top: 10px; }
+        .pay-lane { margin-bottom: 16px; }
+    }
 
     // ------------------------------------------------------ health cards
     .pay-health {
@@ -410,27 +457,52 @@
     .pay-step-in { width: 70px; }
     .pay-selcount { font-size: 12px; font-weight: 700; color: var(--pbim-primary); }
 
+    // ------------------------------------------------------ the worksheet
+    //
+    // NINE COLUMNS THAT FIT A 1440 SCREEN. "What to know" used to be a tenth
+    // column of long sentences on the far right, and it pushed the money off
+    // the side: a person had to scroll sideways to read the figure they had
+    // come to decide. The chips now sit UNDER the person's name, where they
+    // are read at the same moment as the name they are about, and the money
+    // columns take exactly the width of their own widest number and no more
+    // (`width: 1%` with `nowrap` — the same trick the fairness tables use).
+    // Nothing was dropped; it was moved.
     .pay-wswrap { overflow-x: auto; margin-top: 10px; }
     .pay-ws {
         width: 100%; border-collapse: collapse; font-size: 13px;
+        table-layout: auto;
         th {
             text-align: left; font-size: 11px; font-weight: 700;
             letter-spacing: .4px; text-transform: uppercase;
-            color: var(--pbim-muted); padding: 8px 10px;
+            color: var(--pbim-muted); padding: 7px 8px;
             border-bottom: 1px solid var(--pbim-line); white-space: nowrap;
         }
         td {
-            padding: 8px 10px; border-bottom: 1px solid var(--pbim-line-2);
+            padding: 7px 8px; border-bottom: 1px solid var(--pbim-line-2);
             color: var(--pbim-ink); vertical-align: top;
         }
-        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .num {
+            text-align: right; font-variant-numeric: tabular-nums;
+            white-space: nowrap; width: 1%;
+        }
     }
+    // The person carries the name, the job and the chips, so it is the one
+    // column allowed to take the room that is left.
+    .pay-wsp { min-width: 230px; }
+    // A team name wraps rather than being cut: an ellipsis in the middle of
+    // "Manufacturing — Line 2" is a team nobody can tell from another.
+    .pay-wst { max-width: 160px; white-space: normal; word-break: break-word; }
+    .pay-wssc { width: 1%; white-space: nowrap; }
+    .pay-wsb { width: 1%; min-width: 88px; }
     .pay-wsrow {
         cursor: pointer;
         &:hover { background: var(--pbim-line-2); }
         &.is-picked { background: var(--pbim-soft); }
         &.is-here td:first-child { box-shadow: inset 3px 0 0 var(--pbim-primary); }
-        &.is-stopped td:last-child { color: var(--pbim-rose); }
+        // The "what stops approval" mark follows the CHIPS, which is where
+        // the reason now lives — it used to sit on the last cell, and the
+        // last cell is a money figure that has nothing wrong with it.
+        &.is-stopped .pay-wsname { color: var(--pbim-rose); }
     }
     .pay-wsname { display: block; font-weight: 700; }
     .pay-wsjob { display: block; font-size: 11.5px; color: var(--pbim-muted); }
@@ -446,7 +518,16 @@
         }
     }
     .pay-chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 0; }
-    .pay-wschips { max-width: 320px; }
+    // Under the name, at the size of a footnote: what to know about this
+    // person, read at the same moment as the person.
+    .pay-wschips {
+        margin-top: 5px;
+        .pay-chip {
+            font-size: 11px; font-weight: 650; line-height: 1.35;
+            padding: 1px 7px; border-radius: var(--pbim-pill);
+            white-space: normal;
+        }
+    }
     .pay-chip--bad { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
     .pay-chip--warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
     .pay-chip--info { background: var(--pbim-line-2); color: var(--pbim-muted); }
@@ -544,6 +625,7 @@
     @media (max-width: 720px) {
         .pay-axis { margin-left: 0; }
         .pay-axis-note { margin-left: 0; }
+        .pay-fam-warn { margin-left: 0; }
         .pay-band { grid-template-columns: minmax(0, 1fr); }
         .pay-drawer { width: 100%; }
         .pay-head-actions { width: 100%; }

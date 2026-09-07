@@ -101,6 +101,9 @@ _SHORT_STEPS = ((1e9, 'B'), (1e6, 'M'), (1e3, 'K'))
 
 class PbPayBands(models.AbstractModel):
     _name = 'pb.pay.bands'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Pay bands'
 
     # ================================================================= gates
@@ -192,6 +195,10 @@ class PbPayBands(models.AbstractModel):
         tick five boxes first (GR27, GR37 — this family has cost four bugs).
         """
         allowed = self.env.user.company_ids
+        # GROUP P7 — narrowed to what this reader may see, and untouched for
+        # anybody who has not been limited.
+        visible = set(self._visible_companies(allowed.ids))
+        allowed = allowed.filtered(lambda c: c.id in visible)
         if company_ids:
             wanted = {int(c) for c in company_ids}
             narrowed = allowed.filtered(lambda c: c.id in wanted)
@@ -345,6 +352,47 @@ class PbPayBands(models.AbstractModel):
                 'note': note}
 
     @api.model
+    def _family_axes(self, entries, wages_for, currency):
+        """One money axis per job family, for a reader who asks to fit to it.
+
+        The shared axis above is the RIGHT default and stays the default: the
+        whole point of the picture is that a level 2 band and a level 8 band
+        can be compared at a glance. But a company whose cleaners and whose
+        directors are in the same currency draws the cleaning family as a
+        sliver, and "how wide is this band compared with its own neighbours"
+        is a real question the shared axis cannot answer.
+
+        So every family also gets its own axis, computed by exactly the same
+        rule as the shared one (the top of the highest band or the 95th
+        person, whichever is greater, and the tail named rather than hidden —
+        ledger GR43). Which one is drawn is the reader's choice, remembered
+        in their own browser, and the screen says out loud that widths stop
+        being comparable between families while it is on.
+
+        Computed here rather than in the browser because the tick labels are
+        MONEY, and money is written the way its own currency writes it, not
+        the way the reader's browser happens to.
+        """
+        groups, order = {}, []
+        for entry in entries:
+            key = entry.get('family') or ''
+            if key not in groups:
+                groups[key] = []
+                order.append(key)
+            groups[key].append(entry)
+        out = []
+        for key in order:
+            members = groups[key]
+            rows = [{'wage': wage} for wage in wages_for(members)]
+            out.append({
+                'key': key,
+                'name': key or _('No job family'),
+                'bands': len(members),
+                'axis': self._lane_axis(members, rows, currency),
+            })
+        return out
+
+    @api.model
     def _dot(self, row, band, currency):
         span = (band['max'] - band['min']) or 1.0
         pct = ((row['wage'] - band['min']) / span) * 100.0
@@ -459,6 +507,12 @@ class PbPayBands(models.AbstractModel):
                     entries,
                     [r for r in rows
                      if r['band_id'] in {e['id'] for e in entries}],
+                    currency),
+                'families': self._family_axes(
+                    entries,
+                    lambda group: [
+                        r['wage'] for r in rows
+                        if r['band_id'] in {m['id'] for m in group}],
                     currency),
                 'bands': entries,
             })
@@ -1137,6 +1191,11 @@ class PbPayBands(models.AbstractModel):
                     members,
                     [{'wage': dot['wage']} for band in members
                      for dot in band['dots']], currency),
+                'families': self._family_axes(
+                    members,
+                    lambda group: [dot['wage'] for band in group
+                                   for dot in band['dots']],
+                    currency),
                 'bands': members,
             })
         out.sort(key=lambda lane: -sum(b['people'] for b in lane['bands']))

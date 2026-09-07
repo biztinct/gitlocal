@@ -57,7 +57,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.3.0.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
