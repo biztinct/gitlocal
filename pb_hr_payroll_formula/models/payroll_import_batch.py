@@ -4664,6 +4664,21 @@ class HrPayrollImportBatch(models.Model):
             _run_adjustment('carryover', lambda: self._apply_mid_cycle_carryover(
                 input_values, employee))
 
+        # GROUP P5 — people in two places, on THIS path too.
+        #
+        # A run built from an uploaded pay file resolves its values here and
+        # never reaches the payslip's own input builder, so without this door a
+        # split month would be honoured on one of the two ways a run can be
+        # computed and silently ignored on the other. Same registry probe, same
+        # "returns before touching anything when there is no stretch of days",
+        # and it goes through `_run_adjustment` so the source chips say the
+        # number was scaled rather than pretending it arrived that way.
+        if employee and 'pb.work.segment' in self.env:
+            _run_adjustment('segment', lambda: self.env['pb.work.segment']
+                            .apply_to_batch_inputs(self, config, employee,
+                                                   contract, input_values,
+                                                   prov))
+
         return input_values
 
     def _get_excel_connector(self):
