@@ -17,9 +17,15 @@ same question here and gets the same answer with the same reason attached.
 
 THE LADDER, AND WHY IT ENDS WHERE IT DOES
 -----------------------------------------
-    1. segment       reserved for P5 (a person working in two places at once).
-                     It answers nothing today; the rung exists so P5 is one
-                     edit and not a re-numbering of everything below it.
+    1. segment       P5. A confirmed stretch of days says where this person
+                     worked and, when somebody named one, which scheme pays
+                     those days. It is the most specific statement there is —
+                     a person went to the trouble of drawing it on a calendar
+                     — so nothing below it can beat it. It answers only for
+                     the employments a segment actually names; everybody else
+                     falls straight through to rung 2 exactly as before, which
+                     is what keeps this rung free on every database that has
+                     never written a segment.
     2. department    the person's own team, then its parent, then its parent's
                      parent. Attaching at the top of a branch covers the branch;
                      a team further down overrides it, because the more specific
@@ -282,6 +288,50 @@ class PbSchemeMap(models.AbstractModel):
         return {'config_id': 0, 'config_name': '', 'rung': 'none',
                 'via': _("No scheme covers this person yet.")}
 
+    # =============================================================== rung 1
+    @api.model
+    def _segment_schemes(self, employee_ids, on_date=None):
+        """`{employee_id: answer}` for the employments a segment names.
+
+        SOFT, like every other cross-module read in this file: a database
+        without `pb_workseg` never reaches the search, and one that has it but
+        has never written a segment gets an empty dict for the price of one
+        indexed search. Only a segment that NAMES a scheme answers here — a
+        stretch of days with no scheme on it is a fact about where somebody
+        worked, not a statement about who pays them, and the rungs below know
+        how to answer that.
+        """
+        if 'pb.work.segment' not in self.env or not employee_ids:
+            return {}
+        day = fields.Date.to_date(on_date) if on_date else \
+            fields.Date.context_today(self)
+        try:
+            rows = self.env['pb.work.segment'].sudo().search([
+                ('state', '=', 'confirmed'),
+                ('config_id', '!=', False),
+                ('date_from', '<=', day), ('date_to', '>=', day),
+                ('host_employee_id', 'in', list(employee_ids)),
+            ], order='date_from desc, id desc')
+        except Exception:       # noqa: BLE001 — a segment that cannot be read
+            # must never stop a payslip resolving; the rungs below still
+            # answer, exactly as they did before this rung existed.
+            _logger.warning('Scheme map: work segments could not be read',
+                            exc_info=True)
+            return {}
+        out = {}
+        for row in rows:
+            employee_id = row.host_employee_id.id
+            if employee_id in out:
+                continue
+            out[employee_id] = {
+                'config_id': row.config_id.id,
+                'config_name': row.config_id.name or '',
+                'rung': 'segment',
+                'via': _("from the days worked in %(company)s",
+                         company=row.host_company_id.name or ''),
+            }
+        return out
+
     @api.model
     def resolve_many(self, employee_ids, cycle_type='any', on_date=None):
         """The same answer for thousands of people, in a handful of queries."""
@@ -319,10 +369,21 @@ class PbSchemeMap(models.AbstractModel):
             if matched:
                 rule_hits.append((row, set(matched.ids)))
 
+        # 1 — the segments. Read ONCE for the whole roster and only where the
+        # module that owns them is installed; an empty answer costs one
+        # search that returns nothing.
+        by_segment = self._segment_schemes(ids, on_date)
+
         only_cache = {}
         out = {}
         for employee_id, (dept_id, company_id) in roster.items():
             chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
+
+            # 1 — a stretch of days somebody drew, naming its own scheme.
+            segment = by_segment.get(employee_id)
+            if segment:
+                out[employee_id] = segment
+                continue
 
             # 2 — the department map, deepest first.
             found = None
