@@ -595,6 +595,21 @@ export class PbAssignmentsScreen extends Component {
         this.load(personId);
     }
 
+    /**
+     * The way out of "there is only one entity here".
+     *
+     * A screen that can only say no has to say where yes lives. On a database
+     * with one company a split month is not a thing that can exist yet, and
+     * the thing to do about it is on the Group screen.
+     */
+    openGroupScreen() {
+        this.action.doAction("pb_group.action_pb_group",
+                             { clearBreadcrumbs: false })
+            .catch(() => this.notif.add(
+                _t("The Group screen is not switched on for this database."),
+                { type: "warning" }));
+    }
+
     openTransfers() {
         this.action.doAction("pb_workseg.action_pb_cost_transfers",
                              { clearBreadcrumbs: false });
