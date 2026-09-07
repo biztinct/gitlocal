@@ -1040,6 +1040,8 @@ $dr-teal:       #0F766E;
         margin: 2px 0 14px; font-size: 11px;
         color: var(--pbim-muted, #64748B);
         .dr-link { display: inline-flex; align-items: center; gap: 4px; }
+        // GROUP P5 — a fact about the roster, in the roster's own line.
+        .dr-splitnote { flex-basis: 100%; }
     }
     .dr-assume {
         display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
