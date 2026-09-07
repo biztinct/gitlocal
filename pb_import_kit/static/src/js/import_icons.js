@@ -240,6 +240,16 @@ export const IC = {
     // records confirmed to be one human being.
     circle:       '<circle cx="12" cy="12" r="10"/>',
     userCheck:    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',
+
+    // GROUP P6a — pay bands and fairness. A pair of SCALES is the one drawing
+    // everybody reads as "is this even-handed" without a caption, and it is
+    // the only icon in this set that means fairness rather than measurement
+    // (`gauge` and `sliders` both already mean "a number on a dial"). A user
+    // with a PLUS is somebody who has not joined yet, which is exactly what
+    // "place a new hire" is about — `userCheck` is a person confirmed and
+    // `users` is a crowd, and neither says "not here yet".
+    scale:        '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+    userPlus:     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
 };
 
 /**
