@@ -1,158 +1,104 @@
 # -*- coding: utf-8 -*-
-"""`pb.budget.fx` — one reporting currency, and an honest refusal to invent one.
+"""`pb.budget.fx` — now a thin shim over `pb.fx` (ruling G3).
 
-WHY THIS FILE EXISTS (ruling D2, second half)
----------------------------------------------
-The presentation-currency capability was written inside `pb_demo`
-(`pb_demo/models/res_company.py:16-40`) — a demo module, which is the wrong home
-for a rule about how a group reports its money. D2 says promote it out.
+WHAT THIS FILE USED TO BE, AND WHY IT IS NOT THAT ANY MORE
+----------------------------------------------------------
+This file held the product's only honest conversion helper: it refused an
+implicit 1.0 between two different currencies, it refused to convert a currency
+nobody has ever priced, and it answered `(value, known)` so a screen could show
+the parts separately rather than a plausible lie. That behaviour was right, and
+GROUP phase 1 promoted it — unchanged in spirit — into `pb.fx`, which is now the
+ONE conversion service every screen in this product uses.
 
-THE CHOICE MADE HERE, AND WHY IT IS NOT A RELOCATION.
-`pb_demo` is INSTALLED on this database and its `res.company.presentation_currency_id`
-column already exists and already holds whatever an administrator set. Moving the
-FIELD would mean either a second column with the same meaning (two answers to one
-question) or editing pb_demo, which changes a demo module's behaviour for the sake
-of a budget screen.
+Two things made the promotion necessary rather than tidy:
 
-So the LOGIC is promoted and the COLUMN is left where it is:
+  * a group needs a RATE POLICY (which of a month's rates a figure is converted
+    at) and a rate DATE on every converted number, neither of which this file
+    could express;
+  * the company filter here was `self.env.company`, so a rate row owned by the
+    head office was invisible to every subsidiary — the whole of ledger gotcha
+    GR2.
 
-  * every rule about which currency a number is reported in lives HERE, in a
-    product module, and nothing in `pb_budget` imports `pb_demo` or depends on it;
-  * the field is PROBED — `'presentation_currency_id' in res.company._fields` —
-    and used when it is there, which on this database it is;
-  * where it is absent (a tenant without pb_demo), the reporting currency is the
-    ROOT company's own currency, which is the same answer pb_demo's helper gives
-    when nobody has set one.
+WHAT IS PRESERVED, EXACTLY
+--------------------------
+The public surface: `presentation_currency`, `_has_rate`, `rate_known`,
+`convert` (still a TWO-tuple) and `unknown_rate_note`. Every caller in
+`pb_budget` and every test it has keeps working with no edit.
 
-The result: this module works identically with or without pb_demo, pb_demo's
-behaviour is untouched, and there is exactly one definition of "the reporting
-currency" in the product. Should the field ever be promoted into a core module
-too, this file keeps working — it asks the registry, not a module name.
+And the behaviour, deliberately, to the digit:
 
-THE HONESTY RAIL (R23)
-----------------------
-`currency._convert()` with no rate returns the amount UNCHANGED. It does not
-raise and it does not answer zero: 32,000,000 ₫ comes back as "32,000,000 USD".
-So before this file converts anything it asks whether the two currencies are
-actually reported at DIFFERENT rates. If they are not, nobody has told the
-database what a dong is worth, and the honest answer is no number at all.
+  * the budget screen has always converted at the rate on or before a given
+    DAY, so the shim asks `pb.fx` for the `payment_date` policy rather than
+    letting the group's own policy change a budget number that was signed off
+    at the old one;
+  * the budget screen has always rounded to two decimal places, so the shim
+    asks for two rather than the target currency's own — a dong figure here
+    keeps the shape its stored numbers and its tests have.
 """
 
 import logging
 
-from odoo import _, api, fields, models
+from odoo import _, api, models
 
 _logger = logging.getLogger(__name__)
+
+#: The budget screen's own reading of a rate: the one in force on the day.
+BUDGET_POLICY = 'payment_date'
+#: And its own rounding, which its stored numbers and its tests are built on.
+BUDGET_DECIMALS = 2
 
 
 class PbBudgetFx(models.AbstractModel):
     _name = 'pb.budget.fx'
     _description = 'Reporting currency and conversion, for budgets'
 
+    @api.model
+    def _fx(self):
+        return self.env['pb.fx']
+
     # --------------------------------------------------------------- the rate
     @api.model
     def presentation_currency(self, company=None):
-        """The currency a group's budgets are reported in.
-
-        The ROOT company's presentation currency when this build has that field
-        and it is set, else the root company's own currency, else the active
-        company's. Never `False` — a caller that has to null-check a currency
-        writes the null-check in five places and forgets one.
-        """
-        company = company or self.env.company
-        root = company
-        # A parent chain is short; the guard is against a cycle, not depth.
-        for _hop in range(10):
-            if not root.parent_id:
-                break
-            root = root.parent_id
-        if 'presentation_currency_id' in self.env['res.company']._fields:
-            picked = root.sudo().presentation_currency_id
-            if picked:
-                return picked
-        return root.currency_id or company.currency_id or self.env.company.currency_id
+        """The currency a group's budgets are reported in. Never empty."""
+        return self._fx().presentation_currency(company)
 
     @api.model
     def _has_rate(self, currency, day):
-        """Has anybody ever told this database what this currency is worth?
-
-        THE PRIMARY TEST, and it had to be. R23's original tell — two different
-        currencies coming back at exactly 1.0 — is necessary but not sufficient
-        on a database that holds rates for SOME currencies: a currency with no
-        rate row at all silently defaults to 1.0, so converting it into one that
-        DOES have a rate produces a plausible-looking number built on a fiction.
-        A brand-new currency converted into dong came back "known" at 26,330 to
-        one, which is the same lie R23 records wearing a different hat. What is
-        actually being asked is whether a `res.currency.rate` row exists, so
-        that is what is asked.
-
-        AND WHOSE ROW IT IS. A rate row belongs to a COMPANY, and `_get_rates`
-        reads only the rows whose company is empty or is the one being
-        converted for. So the probe asks exactly what the conversion will ask —
-        anything looser answers "known" about a rate the conversion is then not
-        allowed to use. On this tenant every rate row belongs to company 1, so
-        the operating company genuinely cannot convert, and the per-row manual
-        rate is the answer rather than a number nobody can stand behind.
-        """
-        if not currency:
-            return False
-        return bool(self.env['res.currency.rate'].sudo().search_count([
-            ('currency_id', '=', currency.id), ('name', '<=', day),
-            '|', ('company_id', '=', False),
-            ('company_id', '=', self.env.company.id)]))
+        """Has anybody priced this currency, for the companies that may see
+        this one's rates? Widened from the active company alone — see GR2."""
+        return self._fx().has_rate(currency, day, policy=BUDGET_POLICY)
 
     @api.model
     def rate_known(self, src, dst, date=None):
-        """Is there a real exchange rate between these two, or only silence?
-
-        Same currency both sides is trivially known — there is nothing to
-        convert. Otherwise BOTH sides need a rate of their own, and the rate
-        between them must not be the 1.0 that means "nobody said".
-        """
-        if not src or not dst or src == dst:
-            return True
-        day = date or fields.Date.context_today(self)
-        if not (self._has_rate(src, day) and self._has_rate(dst, day)):
-            return False
-        try:
-            # `@api.model` on `res.currency` (base/models/res_currency.py:273) —
-            # called on the model, with both currencies passed in.
-            a = self.env['res.currency']._get_conversion_rate(
-                src, dst, self.env.company, day)
-        except Exception:                      # noqa: BLE001 — an unknown rate
-            _logger.debug('pb_budget: no conversion rate %s -> %s', src.name, dst.name)
-            return False
-        # A rate of exactly 1.0 between two different currencies is the tell.
-        return bool(a) and abs(a - 1.0) > 1e-9
+        """Is there a real exchange rate between these two, or only silence?"""
+        return self._fx().rate(src, dst, date, policy=BUDGET_POLICY)['known']
 
     # ------------------------------------------------------------ the convert
     @api.model
     def convert(self, amount, src, dst, date=None, manual_rate=0.0):
         """`(value, known)` — never a number this file is not sure of.
 
-        `manual_rate` is a MULTIPLIER on the row's own amount: reporting =
-        amount x rate. It is the row's answer and it always wins, because a
-        person who typed a rate has a reason the database does not know.
+        `manual_rate` is a MULTIPLIER on the row's own amount and it always
+        wins, because a person who typed a rate has a reason the database does
+        not know.
         """
-        amount = float(amount or 0.0)
-        if manual_rate and float(manual_rate) > 0:
-            return round(amount * float(manual_rate), 2), True
-        if not src or not dst or src == dst:
-            return round(amount, 2), True
-        if not self.rate_known(src, dst, date):
-            return 0.0, False
-        day = date or fields.Date.context_today(self)
-        try:
-            return round(src._convert(amount, dst, self.env.company, day,
-                                      round=False), 2), True
-        except Exception as e:                 # noqa: BLE001
-            _logger.debug('pb_budget: conversion failed: %s', e)
-            return 0.0, False
+        value, known, _meta = self._fx().convert(
+            amount, src, dst, date, policy=BUDGET_POLICY,
+            manual_rate=manual_rate, decimals=BUDGET_DECIMALS)
+        return value, known
 
     # ------------------------------------------------------------- the words
     @api.model
     def unknown_rate_note(self, src, dst):
-        """What the screen says INSTEAD of a number it cannot stand behind."""
+        """What the screen says INSTEAD of a number it cannot stand behind.
+
+        KEPT HERE rather than delegated, and that is on purpose. `pb.fx`'s
+        sentence names the MONTH and points at the exchange-rate list, which is
+        the right sentence on a group screen. This one points at the budget
+        ROW's own manual rate, which only exists on this screen — a reader here
+        would otherwise be sent to look for a door that is not in front of
+        them. Same refusal, the words each screen can act on.
+        """
         return _(
             "Nobody has told this system what one %(src)s is worth in %(dst)s, "
             "so these figures stay in %(src)s. Set an exchange rate, or type "
