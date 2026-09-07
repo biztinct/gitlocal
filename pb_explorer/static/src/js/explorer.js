@@ -59,6 +59,20 @@ const LEVEL_LABEL = {
     job_id: _t("Job position"),
 };
 
+/** The same rungs in the plural, because the "look inside" cue names what
+ *  the reader would find down there — "Look inside Retail · departments" —
+ *  and "Department" reads as a heading rather than as a promise. */
+const LEVEL_MANY = {
+    country: _t("countries"), company_id: _t("companies"),
+    division_id: _t("divisions"), department_id: _t("departments"),
+    job_id: _t("job positions"),
+};
+
+/** How long the descent takes. Long enough to be read as one movement,
+ *  short enough that nobody waits for it. */
+const DESCENT_MS = 300;
+const ARRIVE_MS = 340;
+
 /** The one place the URL is written and read. Keys are short on purpose —
  *  the hash is a link somebody pastes into a message, not a payload. */
 const HASH_KEY = "pbex";
@@ -77,6 +91,7 @@ export class PbExplorer extends Component {
         this.levelIcon = LEVEL_ICON;
         this.levelLabel = LEVEL_LABEL;
         this.canvasRef = useRef("canvas");
+        this.vizRef = useRef("viz");
 
         this.state = useState({
             loaded: false,
@@ -115,6 +130,14 @@ export class PbExplorer extends Component {
             story: null,        // narrate() payload
             storyBusy: false,
             showStory: false,
+            // GROUP P7 — a bar is a DOOR. `peek` is the bar the pointer or
+            // the keyboard is on, `doors` are the focusable proxies laid over
+            // a canvas the keyboard cannot otherwise reach, and `descent` /
+            // `arrived` are the two halves of the walk down.
+            peek: null,
+            doors: [],
+            descent: null,
+            arrived: false,
         });
 
         this._chart = null;
@@ -173,11 +196,26 @@ export class PbExplorer extends Component {
         onMounted(() => {
             this.syncChart();
             window.addEventListener("keydown", this._onKey, { capture: true });
+            // The doors are laid over the bars in pixels, so they go stale the
+            // moment the board is resized — and the hub rail can be folded at
+            // any time. A short delay lets the chart finish its own resize
+            // first; the doors are invisible, so nothing flickers.
+            if (window.ResizeObserver && this.vizRef.el) {
+                this._ro = new ResizeObserver(() => {
+                    clearTimeout(this._roT);
+                    this._roT = setTimeout(() => this.syncDoors(), 120);
+                });
+                this._ro.observe(this.vizRef.el);
+            }
         });
         onPatched(() => this.syncChart());
         onWillUnmount(() => {
             this.destroyChart();
             window.removeEventListener("keydown", this._onKey, { capture: true });
+            this._ro?.disconnect();
+            clearTimeout(this._roT);
+            clearTimeout(this._descentT);
+            clearTimeout(this._arriveT);
         });
     }
 
@@ -306,16 +344,255 @@ export class PbExplorer extends Component {
         return "";
     }
 
-    stepDown(key, label) {
+    stepDown(key, label, box = null) {
         const level = this.state.spec.dimension;
         const next = this.nextLevelAfter(level);
         if (!next) { return; }
+        this.clearPeek();
+        this.descendFrom(box);
         this.state.spec.path = [...(this.state.spec.path || []),
                                 { level, key, label }];
         this.state.spec.dimension = next;
         this.state.lensId = "";
         this.destroyChart();
         this.run();
+    }
+
+    // ------------------------------------------------- the door on every bar
+    /**
+     * "Look inside Retail · departments."
+     *
+     * A bar in this board is a DOOR — clicking it walks the breadcrumb one
+     * rung down the group. Nothing on screen ever said so, so most readers
+     * never found the walk at all. Three things fix that and they belong
+     * together: the pointer changes over a bar that opens, the bar itself
+     * lights up, and a chip names WHERE the click would take you.
+     *
+     * Empty at the bottom of the walk, and empty whenever the chart is
+     * showing something that is not a place — and then no cue is offered
+     * anywhere, because there is nothing to look inside.
+     */
+    get nextRungLabel() {
+        if (!this.canStepDown) { return ""; }
+        const next = this.nextLevelAfter(this.state.spec.dimension);
+        if (!next) { return ""; }
+        return LEVEL_MANY[next] || LEVEL_LABEL[next] || "";
+    }
+
+    /** The cue, and the same words a screen reader is given. */
+    lookInside(name) { return _t("Look inside %s", name); }
+
+    setPeek(key, label) {
+        if (!this.nextRungLabel || key === "" || key === "_all") { return; }
+        if (this.state.peek && this.state.peek.key === key) { return; }
+        this.state.peek = { key, label };
+    }
+
+    clearPeek() {
+        if (this.state.peek) { this.state.peek = null; }
+    }
+
+    onArcEnter(arc) {
+        this.state.hover = arc.key;
+        this.setPeek(arc.key, arc.label);
+    }
+
+    onArcLeave() {
+        this.state.hover = null;
+        this.clearPeek();
+    }
+
+    /**
+     * Chart.js paints on a canvas, and a canvas has no children a keyboard
+     * can reach: without these there is no way to walk down the group
+     * without a mouse. Each door is a real button laid over one bar. It
+     * takes NO pointer events — the chart keeps its own tooltip and its own
+     * click — but it still takes focus, and Enter or Space on a focused
+     * button fires its click the way any button does.
+     *
+     * One tab stop per series (the tallest bar of it); the rest are reachable
+     * only through it, so a year of twelve months does not become twelve tab
+     * stops per team.
+     */
+    syncDoors() {
+        const part = this.activePart;
+        if (!this._chart || !this.isCanvasChart || this.isCompare
+            || !this.nextRungLabel || !part) {
+            if (this.state.doors.length) {
+                this.state.doors = [];
+                this._doorSig = "";
+            }
+            return;
+        }
+        const doors = [];
+        part.series.forEach((ser, di) => {
+            if (ser.key === "" || ser.key === "_all") { return; }
+            const meta = this._chart.getDatasetMeta(di);
+            if (!meta || meta.hidden) { return; }
+            let tallest = null;
+            (meta.data || []).forEach((el, ci) => {
+                const box = this.barBox(el);
+                if (!box) { return; }
+                const door = {
+                    id: di + ":" + ci, key: ser.key, label: ser.label,
+                    tab: false, ...box,
+                };
+                if (!tallest || door.h > tallest.h) { tallest = door; }
+                doors.push(door);
+            });
+            if (tallest) { tallest.tab = true; }
+        });
+        // A year of twelve months across twenty teams is 240 nodes nobody
+        // asked for. Past that only the tab stops are drawn: every team is
+        // still reachable, the highlight simply follows one bar per team.
+        const kept = doors.length > 240 ? doors.filter((d) => d.tab) : doors;
+        // Handing OWL a fresh array on every patch would re-render for ever.
+        // The geometry is deterministic, so a signature ends the loop after
+        // one extra pass.
+        const sig = JSON.stringify(kept);
+        if (sig !== this._doorSig) {
+            this._doorSig = sig;
+            this.state.doors = kept;
+        }
+    }
+
+    /** One Chart.js element as a box in the canvas wrapper's own pixels.
+     *  A line chart has points rather than bars, so a point becomes a small
+     *  square around itself. */
+    barBox(el) {
+        if (!el || !isFinite(el.x) || !isFinite(el.y)) { return null; }
+        const hasBase = isFinite(el.base);
+        const w = isFinite(el.width) && el.width > 0 ? el.width : 24;
+        const top = hasBase ? Math.min(el.y, el.base) : el.y - 12;
+        const h = hasBase ? Math.max(Math.abs(el.base - el.y), 8) : 24;
+        return {
+            x: Math.round(el.x - w / 2), y: Math.round(top),
+            w: Math.round(w), h: Math.round(h),
+        };
+    }
+
+    /** The offset of the chart wrapper inside the result panel, so a box
+     *  measured on the canvas can be drawn over the panel. */
+    _wrapOffset() {
+        const wrap = this.canvasRef.el ? this.canvasRef.el.parentElement : null;
+        return wrap ? { x: wrap.offsetLeft, y: wrap.offsetTop } : { x: 0, y: 0 };
+    }
+
+    doorBox(door) {
+        const off = this._wrapOffset();
+        return { x: door.x + off.x, y: door.y + off.y, w: door.w, h: door.h };
+    }
+
+    /** Any clicked element — a slice, a legend row, a table row — as a box
+     *  in the result panel's own pixels. */
+    eventBox(ev) {
+        const viz = this.vizRef.el;
+        let el = ev && ev.currentTarget;
+        if (!viz || !el || !el.getBoundingClientRect) { return null; }
+        // A table's door is a small round button, but what the reader is
+        // walking into is the whole row, so the descent starts from the row.
+        el = (el.closest && el.closest("tr")) || el;
+        const a = el.getBoundingClientRect();
+        const b = viz.getBoundingClientRect();
+        if (!a.width || !a.height) { return null; }
+        return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+    }
+
+    onDoorClick(door) {
+        this.stepDown(door.key, door.label, this.doorBox(door));
+    }
+
+    /**
+     * WHICH bar the pointer is actually on.
+     *
+     * The chart reads its own hover in "index" mode, which is right for the
+     * tooltip — a month should list every team at once — but it hands back
+     * one element per SERIES at that month, in series order. Taking the first
+     * of them means the cue names the first team on the chart wherever the
+     * pointer is, and the click that follows opens that team rather than the
+     * bar under the finger. So the element is picked by asking each one
+     * whether the point is inside it. Between two bars nothing is inside
+     * anything: strictly, that is no cue at all; for a click, the chart's own
+     * first answer stands, exactly as it always has.
+     */
+    _pickElement(evt, els, strict) {
+        if (!els || !els.length) { return null; }
+        const x = evt ? evt.x : null, y = evt ? evt.y : null;
+        if (isFinite(x) && isFinite(y)) {
+            const hit = els.find((e) => e.element && e.element.inRange
+                                        && e.element.inRange(x, y, true));
+            if (hit) { return hit; }
+        }
+        return strict ? null : els[0];
+    }
+
+    /** Chart.js tells us what the pointer is over; we turn that into the cue
+     *  and the pointer shape, and remember the bar so a click can descend
+     *  from exactly where it was pressed. */
+    onChartHover(evt, els) {
+        const canvas = this.canvasRef.el;
+        const part = this.activePart;
+        const pick = part ? this._pickElement(evt, els, true) : null;
+        const ser = pick ? part.series[pick.datasetIndex] : null;
+        if (!ser || !this.nextRungLabel || ser.key === "" || ser.key === "_all") {
+            if (canvas) { canvas.style.cursor = ser ? "pointer" : ""; }
+            this._hoverBox = null;
+            this.clearPeek();
+            return;
+        }
+        if (canvas) { canvas.style.cursor = "zoom-in"; }
+        this._hoverBox = this.barBox(pick.element);
+        this.setPeek(ser.key, ser.label);
+    }
+
+    /** True when this machine has asked for calm. It then gets the finished
+     *  chart on the first frame and no overlay at all. */
+    get calm() {
+        return !!(window.matchMedia
+            && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    }
+
+    /**
+     * The descent. The bar that was pressed grows out into the board and
+     * fades, and the chart that replaces it settles in from just below —
+     * so the walk reads as going INTO something rather than as the board
+     * being swapped out from under the reader.
+     */
+    descendFrom(box) {
+        clearTimeout(this._descentT);
+        clearTimeout(this._arriveT);
+        this.state.arrived = false;
+        if (this.calm || !box || !box.w || !box.h) {
+            if (this.state.descent) { this.state.descent = null; }
+            return;
+        }
+        const viz = this.vizRef.el;
+        const rect = viz ? viz.getBoundingClientRect() : null;
+        const cap = (v) => Math.max(1.2, Math.min(8, v || 1));
+        this.state.descent = {
+            ...box,
+            sx: rect ? cap(rect.width / box.w) : 4,
+            sy: rect ? cap(rect.height / box.h) : 3,
+        };
+        this._descentT = setTimeout(() => {
+            this.state.descent = null;
+            this.state.arrived = true;
+            this._arriveT = setTimeout(() => {
+                this.state.arrived = false;
+            }, ARRIVE_MS);
+        }, DESCENT_MS);
+    }
+
+    get descentStyle() {
+        const d = this.state.descent;
+        if (!d) { return ""; }
+        return `left:${d.x}px;top:${d.y}px;width:${d.w}px;height:${d.h}px;`
+            + `--pbex-sx:${d.sx.toFixed(2)};--pbex-sy:${d.sy.toFixed(2)}`;
+    }
+
+    doorStyle(door) {
+        return `left:${door.x}px;top:${door.y}px;`
+            + `width:${door.w}px;height:${door.h}px`;
     }
 
     /** A crumb is a way BACK: everything after it is dropped, filters too. */
@@ -599,6 +876,7 @@ export class PbExplorer extends Component {
     syncChart() {
         if (!this.isCanvasChart || this.isCompare || !this.activePart) {
             this.destroyChart();
+            this.syncDoors();
             return;
         }
         const canvas = this.canvasRef.el;
@@ -616,6 +894,7 @@ export class PbExplorer extends Component {
             part.series.map((s) => [s.key, s.values]),
         ]);
         if (sig === this._chartSig && this._chart && this._canvasEl === canvas) {
+            this.syncDoors();
             return;
         }
         this._chartSig = sig;
@@ -628,16 +907,21 @@ export class PbExplorer extends Component {
         const cfg = chartConfig(this.state.spec.chart, part,
                                 { money: (v, s) => this.money(v, s) });
         cfg.options.onClick = (evt, els) => {
-            if (!els || !els.length) { return; }
-            const el = els[0];
+            const el = this._pickElement(evt, els, false);
+            if (!el) { return; }
             const s = part.series[el.datasetIndex];
             const c = part.categories[el.index];
-            if (s && c) { this.onCellClick(s.key, c.key, s.label, c.label); }
+            if (s && c) {
+                this.onCellClick(s.key, c.key, s.label, c.label, null,
+                                 this.barBox(el.element) || this._hoverBox);
+            }
         };
+        cfg.options.onHover = (evt, els) => this.onChartHover(evt, els);
         this._chart = new window.Chart(canvas, cfg);
         // Force final geometry synchronously — never depend on an animation
         // frame to make the bars visible.
         this._chart.update("none");
+        this.syncDoors();
     }
 
     destroyChart() {
@@ -647,6 +931,7 @@ export class PbExplorer extends Component {
             this._chartSig = "";
             this._canvasEl = null;
         }
+        this._hoverBox = null;
     }
 
     // ----------------------------------------------------------------- drill
@@ -660,9 +945,17 @@ export class PbExplorer extends Component {
      * headline's own "Who is in this number" button reaches the people at any
      * level, so neither meaning is ever a dead end.
      */
-    onCellClick(seriesKey, categoryKey, seriesLabel, categoryLabel) {
-        if (this.canStepDown && seriesKey !== "" && seriesKey !== "_all") {
-            this.stepDown(seriesKey, seriesLabel);
+    onCellClick(seriesKey, categoryKey, seriesLabel, categoryLabel,
+                ev = null, box = null) {
+        // The test is the same one the cue uses. `canStepDown` alone was one
+        // rung too generous: standing on a level whose every remaining rung
+        // carries a single value, the click walked into `stepDown`, found no
+        // destination and returned — a bar that looked clickable and did
+        // nothing at all. If there is nowhere to go, the click shows the
+        // people instead, which is never a dead end.
+        if (this.nextRungLabel && seriesKey !== "" && seriesKey !== "_all") {
+            this.stepDown(seriesKey, seriesLabel,
+                          box || (ev ? this.eventBox(ev) : null));
             return;
         }
         this.openDrill(seriesKey, categoryKey, seriesLabel, categoryLabel);

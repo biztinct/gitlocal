@@ -436,9 +436,28 @@
             </span>
           </div>
 
-          <div class="pbex-viz" t-att-class="{ busy: state.busy }">
+          <div class="pbex-viz" t-ref="viz"
+               t-att-class="{ busy: state.busy, 'can-open': !!nextRungLabel,
+                              descending: !!state.descent,
+                              arrived: state.arrived }">
 
             <div t-if="state.busy" class="pbex-veil"><div class="pbex-spin sm"/></div>
+
+            <!-- The cue. A bar in this board is a door, and nothing on screen
+                 ever said so. Decoration for a screen reader, which is given
+                 the same words on the door itself. -->
+            <div t-if="state.peek and nextRungLabel" class="pbex-peek"
+                 aria-hidden="true">
+              <t t-out="ic('search', 13)"/>
+              <b t-esc="lookInside(state.peek.label)"/>
+              <t t-out="ic('arrowRight', 12)"/>
+              <span t-esc="nextRungLabel"/>
+            </div>
+
+            <!-- The bar that was pressed, growing out into the board it is
+                 about to become. Never drawn on a machine that asked for calm. -->
+            <div t-if="state.descent" class="pbex-descent" aria-hidden="true"
+                 t-att-style="descentStyle"/>
 
             <div t-if="!state.data" class="pbex-empty">
               <t t-out="ic('alert', 26)"/>
@@ -501,6 +520,22 @@
             <!-- canvas forms: column / stacked / line -->
             <div t-elif="isCanvasChart" class="pbex-canvas-wrap">
               <canvas t-ref="canvas"/>
+              <!-- One focusable door per bar, laid over the chart. A canvas
+                   has no children a keyboard can reach, so without these
+                   there is no way to walk down the group without a mouse.
+                   They take no pointer events, so the chart keeps its own
+                   tooltip and its own click. -->
+              <div t-if="state.doors.length" class="pbex-doors">
+                <button t-foreach="state.doors" t-as="door" t-key="door.id"
+                        type="button" class="pbex-door"
+                        t-att-class="{ on: state.peek and state.peek.key === door.key }"
+                        t-att-tabindex="door.tab ? '0' : '-1'"
+                        t-att-style="doorStyle(door)"
+                        t-att-aria-label="lookInside(door.label)"
+                        t-on-focus="() => this.setPeek(door.key, door.label)"
+                        t-on-blur="() => this.clearPeek()"
+                        t-on-click="() => this.onDoorClick(door)"/>
+              </div>
             </div>
 
             <!-- donut -->
@@ -509,10 +544,11 @@
                 <g t-foreach="donut.arcs" t-as="arc" t-key="arc.key">
                   <path t-att-d="arc.d" t-att-fill="arc.colour"
                         class="pbex-arc"
-                        t-att-class="{ dim: state.hover and state.hover !== arc.key }"
-                        t-on-mouseenter="() => { state.hover = arc.key; }"
-                        t-on-mouseleave="() => { state.hover = null; }"
-                        t-on-click="() => this.onCellClick(arc.key, '_all', arc.label, 'All periods')"/>
+                        t-att-class="{ dim: state.hover and state.hover !== arc.key,
+                                       open: !!nextRungLabel }"
+                        t-on-mouseenter="() => this.onArcEnter(arc)"
+                        t-on-mouseleave="() => this.onArcLeave()"
+                        t-on-click="(ev) => this.onCellClick(arc.key, '_all', arc.label, 'All periods', ev)"/>
                 </g>
                 <text x="120" y="114" class="pbex-donut-val" text-anchor="middle"
                       t-esc="money(donut.total)"/>
@@ -522,9 +558,12 @@
                 <button t-foreach="donut.arcs" t-as="arc" t-key="arc.key"
                         class="pbex-leg"
                         t-att-class="{ dim: state.hover and state.hover !== arc.key }"
-                        t-on-mouseenter="() => { state.hover = arc.key; }"
-                        t-on-mouseleave="() => { state.hover = null; }"
-                        t-on-click="() => this.onCellClick(arc.key, '_all', arc.label, 'All periods')">
+                        t-att-aria-label="nextRungLabel ? lookInside(arc.label) : false"
+                        t-on-mouseenter="() => this.onArcEnter(arc)"
+                        t-on-mouseleave="() => this.onArcLeave()"
+                        t-on-focus="() => this.setPeek(arc.key, arc.label)"
+                        t-on-blur="() => this.clearPeek()"
+                        t-on-click="(ev) => this.onCellClick(arc.key, '_all', arc.label, 'All periods', ev)">
                   <i t-att-style="'background:' + arc.colour"/>
                   <span class="nm" t-esc="arc.label"/>
                   <span class="vl" t-esc="money(arc.value)"/>
@@ -548,13 +587,25 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr t-foreach="heatmap.rows" t-as="row" t-key="row.key">
-                    <th class="rowh" t-esc="row.label"/>
+                  <tr t-foreach="heatmap.rows" t-as="row" t-key="row.key"
+                      t-on-mouseenter="() => this.setPeek(row.key, row.label)"
+                      t-on-mouseleave="() => this.clearPeek()">
+                    <th class="rowh">
+                      <button t-if="nextRungLabel" type="button" class="pbex-into"
+                              t-att-title="lookInside(row.label)"
+                              t-att-aria-label="lookInside(row.label)"
+                              t-on-focus="() => this.setPeek(row.key, row.label)"
+                              t-on-blur="() => this.clearPeek()"
+                              t-on-click="(ev) => this.stepDown(row.key, row.label, this.eventBox(ev))">
+                        <t t-out="ic('chevron', 12)"/>
+                      </button>
+                      <span t-esc="row.label"/>
+                    </th>
                     <td t-foreach="row.cells" t-as="cell" t-key="cell.col"
                         class="pbex-heat-cell"
                         t-att-style="'background:' + cell.colour + ';color:' + cell.ink"
                         t-att-title="row.label + ' · ' + cell.colLabel"
-                        t-on-click="() => this.onCellClick(row.key, cell.col, row.label, cell.colLabel)">
+                        t-on-click="(ev) => this.onCellClick(row.key, cell.col, row.label, cell.colLabel, ev)">
                       <t t-esc="money(cell.value, true)"/>
                     </td>
                   </tr>
@@ -579,10 +630,18 @@
                 </thead>
                 <tbody>
                   <tr t-foreach="activePart.series" t-as="ser" t-key="ser.key">
-                    <th class="rowh">
-                      <button t-if="canStepDown" class="pbex-into"
-                              t-on-click="() => this.stepDown(ser.key, ser.label)"
-                              t-att-title="'Look inside ' + ser.label">
+                    <!-- The cue belongs on the NAME, not on the row: a number
+                         in this table opens the people behind it, which is a
+                         different door and says so for itself. -->
+                    <th class="rowh"
+                        t-on-mouseenter="() => this.setPeek(ser.key, ser.label)"
+                        t-on-mouseleave="() => this.clearPeek()">
+                      <button t-if="nextRungLabel" type="button" class="pbex-into"
+                              t-on-click="(ev) => this.stepDown(ser.key, ser.label, this.eventBox(ev))"
+                              t-on-focus="() => this.setPeek(ser.key, ser.label)"
+                              t-on-blur="() => this.clearPeek()"
+                              t-att-title="lookInside(ser.label)"
+                              t-att-aria-label="lookInside(ser.label)">
                         <t t-out="ic('chevron', 12)"/>
                       </button>
                       <i class="swatch" t-att-style="'background:' + colourAt(ser_index)"/>

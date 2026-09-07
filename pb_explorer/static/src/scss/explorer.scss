@@ -693,9 +693,110 @@
     .pbex-into {
         display: inline-flex; align-items: center; justify-content: center;
         width: 18px; height: 18px; padding: 0; flex-shrink: 0;
-        border: 0; border-radius: 50%; cursor: pointer;
+        border: 0; border-radius: 50%; cursor: zoom-in;
         background: var(--line-2); color: var(--muted);
         &:hover { background: var(--p); color: #fff; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    // ======================================================= GROUP P7
+    //  "Look inside." A bar in this board is a DOOR — clicking it walks the
+    //  breadcrumb one rung down the group — and until now nothing on screen
+    //  said so. Three things say it together: the pointer changes, the bar
+    //  lights up, and a chip names where the click would land. At the bottom
+    //  of the walk `nextRungLabel` is empty, none of this renders, and the
+    //  board says nothing it cannot do.
+    // ================================================================
+    .pbex-viz.can-open {
+        .pbex-canvas-wrap canvas { cursor: zoom-in; }
+        .pbex-arc.open { cursor: zoom-in; }
+        .pbex-heat-cell { cursor: zoom-in; }
+        .pbex-leg { cursor: zoom-in; }
+    }
+
+    .pbex-peek {
+        position: absolute; z-index: 6; top: 10px; right: 14px;
+        display: inline-flex; align-items: center; gap: 7px;
+        max-width: 92%; padding: 6px 12px; border-radius: 999px;
+        background: var(--soft); color: var(--p-deep);
+        border: 1px solid var(--p-light);
+        font-size: 12px; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; pointer-events: none;
+        b { font-weight: 700; }
+        span { color: var(--p); }
+        svg { flex-shrink: 0; }
+    }
+
+    // The focusable doors over a canvas. Transparent until the bar under
+    // them is the one being pointed at or tabbed to, and never in the way of
+    // the pointer: the chart keeps its own tooltip and its own click.
+    .pbex-doors {
+        position: absolute; inset: 0; pointer-events: none;
+    }
+    .pbex-door {
+        position: absolute; padding: 0; margin: 0;
+        border: 1.5px solid transparent; border-radius: 6px;
+        background: transparent; pointer-events: none;
+        // A tint over the bar would change the colour the reader is reading,
+        // so the door announces itself with an edge instead: a ring round the
+        // bar and a thick cap on top of it, both in the one primary.
+        &.on {
+            border-color: var(--p);
+            box-shadow: inset 0 3px 0 0 var(--p);
+        }
+        &:focus-visible {
+            outline: 2px solid var(--p); outline-offset: 2px;
+            border-color: var(--p);
+        }
+    }
+
+    // The bar that was pressed, growing out into the board it is about to
+    // become. Drawn only for the length of the descent, and never at all on
+    // a machine that asked for calm — that reader gets the finished chart on
+    // the first frame.
+    .pbex-viz.descending { overflow: hidden; }
+    .pbex-descent {
+        position: absolute; z-index: 6; pointer-events: none;
+        border-radius: 6px; opacity: 0;
+        background: var(--soft); border: 1.5px solid var(--p);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbex-descent {
+            animation: pbex-descend .3s cubic-bezier(.3, .7, .3, 1) forwards;
+        }
+        @keyframes pbex-descend {
+            from { opacity: .85; transform: scale(1); }
+            to   { opacity: 0;
+                   transform: scale(var(--pbex-sx, 4), var(--pbex-sy, 3)); }
+        }
+        .pbex-viz.arrived {
+            .pbex-canvas-wrap, .pbex-donut, .pbex-heat-wrap, .pbex-table-wrap {
+                animation: pbex-arrive .34s cubic-bezier(.22, .8, .3, 1) both;
+            }
+        }
+        // translateY only: a scale would change what the chart library
+        // measures its own container as, and it redraws on every change.
+        @keyframes pbex-arrive {
+            from { opacity: 0; transform: translateY(9px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .pbex-door { transition: box-shadow .16s ease, border-color .16s ease; }
+        .pbex-peek { animation: pbex-peek-in .16s ease-out both; }
+        @keyframes pbex-peek-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: none; }
+        }
+    }
+
+    // The heat map's row label now carries the same door as the table's, so
+    // the cell becomes a row of two things and the NAME is what truncates.
+    .pbex-heat tbody th.rowh {
+        display: flex; align-items: center; gap: 7px;
+        span {
+            min-width: 0; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .pbex-table.cmp {

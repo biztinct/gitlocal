@@ -263,6 +263,9 @@ _LENSES = [
 
 class PbExplorer(models.AbstractModel):
     _name = 'pb.explorer'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Payobook Analytics Explorer — read-only query facade'
 
     # ------------------------------------------------------------- access
@@ -281,8 +284,18 @@ class PbExplorer(models.AbstractModel):
                             "analytics managers."))
 
     def _co_ids(self):
-        """Every SELECTED company (C18.11/18)."""
-        return tuple(self.env.companies.ids or [self.env.company.id])
+        """Every SELECTED company (C18.11/18), narrowed by who sees what.
+
+        GROUP P7. `_visible_companies` hands the list straight back for
+        anybody who has not been limited, so this is the switcher exactly as
+        it always was until an administrator says otherwise.
+        """
+        chosen = self.env.companies.ids or [self.env.company.id]
+        # An empty tuple would be `IN ()`, a SQL syntax error rather than an
+        # empty answer, so a reader whose scope matches no company in the
+        # switcher gets the impossible predicate this file already uses
+        # elsewhere: they see nothing, and the screen says why.
+        return tuple(self._visible_companies(chosen)) or (0,)
 
     # -------------------------------------------------------------- entry
     @api.model
@@ -648,6 +661,12 @@ class PbExplorer(models.AbstractModel):
         """(sql, params) — every value bound, nothing interpolated."""
         clauses = ['run_id IN %s', 'company_id IN %s']
         params = [tuple(run_ids), self._co_ids()]
+        # GROUP P7 — a division head reads their own division's facts. Empty
+        # for everybody else, and the clause is then not added at all.
+        only = self._visible_divisions()
+        if only:
+            clauses.append('division_id IN %s')
+            params.append(tuple(only))
         meas = _MEASURES[spec['measure']]
         types = meas.get('types')
         if types:
@@ -1250,6 +1269,14 @@ class PbExplorer(models.AbstractModel):
         # when it exists; the key the scheme carried is the fallback for a
         # database that never set a group up. The reader is never asked to
         # choose between two menu entries called "Division".
+        # GROUP P7 — the chip rail may only offer what this reader may read.
+        only_divisions = set(self._visible_divisions())
+        if only_divisions:
+            div_ids &= only_divisions
+            visible_depts = set(self._visible_departments())
+            if visible_depts:
+                dept_ids = [d for d in dept_ids if d in visible_depts]
+                depts = [d for d in depts if d['value'] in visible_depts]
         use_division_id = bool(div_ids)
         hidden = {'division_id'} if not use_division_id else {'division'}
         if not cfg_ids:
