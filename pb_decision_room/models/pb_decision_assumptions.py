@@ -15,12 +15,32 @@ when, and what it used to be. `EDIT_FORM` below is the single description of
 that editing surface — label, help, kind and range — so the dialog in the
 browser is GENERATED from the model rather than hand-written a second time and
 allowed to drift from it.
+
+GROUP PHASE 4 gave the row a SCOPE. There is no longer one set of assumptions
+per company: there is one per thing a plan can be about — the group, a country,
+a company, a division, a payroll scheme — created on first read, exactly as the
+company row always was. Two consequences worth knowing before reading further:
+
+  * the statutory half of this record (contribution rates, the ceiling, the
+    allowance share, working days, the bonus, the tax ladder) now has a
+    SOURCE. `use_country_rules` says whether it comes from
+    `pb.decision.ruleset` for the company's own country or from the numbers
+    typed here. A row somebody has already tuned keeps its numbers — the
+    upgrade sets the switch OFF for every row that existed before this phase,
+    because a picture that changed by itself on the morning of an upgrade is
+    the one thing a planning record may never do;
+  * the business half (the revenue target, demand, shifts, other costs) is
+    always this row's own, whatever the scope. Singapore's law does not have an
+    opinion about your revenue target.
 """
 
 import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+
+#: The statutory half — the fields a country ruleset can supply.
+from .pb_decision_ruleset import RULE_FIELDS  # noqa: E402  (documented above)
 
 #: Vietnam 2026, simplified. Monthly figures in the company's own currency.
 VN_PIT_LADDER = {
@@ -86,7 +106,42 @@ class PbDecisionAssumptions(models.Model):
     company_id = fields.Many2one(
         'res.company', string="Company", required=True, ondelete='cascade',
         default=lambda self: self.env.company,
-        help="The company these assumptions describe. One row per company.")
+        help="The company these assumptions describe. For a group or a "
+             "country this is the first company in it, and the scope below is "
+             "what the row is really about.")
+
+    # ------------------------------------------------------------- the scope
+    scope_kind = fields.Selection(
+        [('group', "Whole group"), ('country', "Country"),
+         ('company', "Company"), ('division', "Division"),
+         ('scheme', "Payroll scheme")],
+        string="These numbers are for", required=True, default='company',
+        index=True, tracking=True,
+        help="What these assumptions describe: the whole group, one country, "
+             "one company, one division, or the people one payroll scheme "
+             "pays.")
+    scope_ref = fields.Char(
+        string="Which one", index=True,
+        help="Which group, country, company, division or scheme.")
+    scope_label = fields.Char(
+        string="Scope", tracking=True,
+        help="The name a reader sees on the chip at the top of the room.")
+    company_ids = fields.Many2many(
+        'res.company', 'pb_decision_assumptions_company_rel',
+        'assumptions_id', 'company_id', string="Companies in this scope",
+        help="Every legal entity these assumptions cover.")
+
+    use_country_rules = fields.Boolean(
+        string="Follow the rules for this country", default=True,
+        tracking=True,
+        help="On: contributions, the ceiling, allowances, working days and "
+             "the bonus come from the rules shipped for this company's "
+             "country. Off: they are the numbers typed here.")
+    ruleset_id = fields.Many2one(
+        'pb.decision.ruleset', string="Country rules",
+        compute='_compute_ruleset_id',
+        help="The set of country rules this scope follows when the switch "
+             "above is on.")
 
     # ------------------------------------------------------- what we sell
     revenue_target = fields.Monetary(
@@ -212,11 +267,38 @@ class PbDecisionAssumptions(models.Model):
         help="Anything a reader should know about these numbers.")
 
     currency_id = fields.Many2one(
-        'res.currency', related='company_id.currency_id', readonly=True)
+        'res.currency', string="Currency", compute='_compute_currency_id',
+        help="The money the amounts on this row are written in. For a scope "
+             "that spans two currencies it is the group's own money.")
 
-    _company_uniq = models.Constraint(
-        'unique(company_id)',
-        "This company already has a set of Decision Room assumptions.")
+    _scope_uniq = models.Constraint(
+        'unique(scope_kind, scope_ref)',
+        "There is already a set of Decision Room assumptions for this.")
+
+    # ------------------------------------------------------------- computes
+    @api.depends('company_id', 'company_ids', 'scope_kind')
+    def _compute_currency_id(self):
+        """One currency, or the group's when the scope spans several.
+
+        Never a guess and never a conversion: this only decides which money the
+        numbers a person TYPES on this row are written in.
+        """
+        for row in self:
+            currencies = (row.company_ids or row.company_id).mapped(
+                'currency_id')
+            if len(currencies) == 1:
+                row.currency_id = currencies
+                continue
+            group = row.company_id.sudo().pb_group_id \
+                if 'pb_group_id' in self.env['res.company']._fields else None
+            row.currency_id = (group.presentation_currency_id if group
+                               else row.company_id.currency_id)
+
+    @api.depends('company_id', 'scope_kind')
+    def _compute_ruleset_id(self):
+        Ruleset = self.env['pb.decision.ruleset']
+        for row in self:
+            row.ruleset_id = Ruleset.for_company(row.company_id)
 
     # ------------------------------------------------------------- rails
     @api.constrains('demand_day_pct', 'demand_evening_pct',
@@ -280,10 +362,81 @@ class PbDecisionAssumptions(models.Model):
         own rights and the company rule.
         """
         company = company or self.env.company
-        row = self.sudo().search([('company_id', '=', company.id)], limit=1)
+        return self.get_for_scope({
+            'kind': 'company', 'ref': str(company.id),
+            'label': company.display_name, 'company_ids': company.ids,
+        })
+
+    @api.model
+    def get_for_scope(self, scope):
+        """The row for one scope, created on first read.
+
+        A company scope keeps the row it has always had — same record, same
+        chatter, same numbers — which is what makes the identity test possible
+        at all. Every other scope gets a row of its own the first time somebody
+        looks at it.
+        """
+        scope = scope or {}
+        kind = scope.get('kind') or 'company'
+        ref = str(scope.get('ref') or '')
+        ids = [int(i) for i in (scope.get('company_ids') or []) if i]
+        company = self.env['res.company'].sudo().browse(
+            ids[0]) if ids else self.env.company
+        row = self.sudo().search(
+            [('scope_kind', '=', kind), ('scope_ref', '=', ref)], limit=1)
+        if not row and kind == 'company':
+            # The row this company has carried since Phase 1, before scopes
+            # existed. Adopted rather than duplicated.
+            row = self.sudo().search(
+                [('company_id', '=', company.id),
+                 ('scope_kind', '=', 'company'),
+                 '|', ('scope_ref', '=', False), ('scope_ref', '=', '')],
+                limit=1)
+            if row:
+                row.write({'scope_ref': ref or str(company.id),
+                           'scope_label': company.display_name})
         if not row:
-            row = self.sudo().create(self._defaults_for(company))
+            vals = self._defaults_for(company)
+            vals.update({
+                'scope_kind': kind,
+                'scope_ref': ref,
+                'scope_label': scope.get('label') or company.display_name,
+                'company_ids': [(6, 0, ids or company.ids)],
+            })
+            row = self.sudo().create(vals)
+        elif scope.get('label') and row.scope_label != scope.get('label'):
+            row.sudo().write({'scope_label': scope.get('label')})
+        if ids and set(row.company_ids.ids) != set(ids):
+            row.sudo().write({'company_ids': [(6, 0, ids)]})
         return self.browse(row.id)
+
+    @api.model
+    def effective(self, row, company, config=None):
+        """The whole assumption dictionary the engine is handed for a company.
+
+        The business half is the ROW's; the statutory half is whatever
+        `pb.decision.ruleset.effective_for()` resolves. One function, so the
+        picture on screen and the exact-cost job can never disagree about which
+        rules were used.
+        """
+        Ruleset = self.env['pb.decision.ruleset']
+        rules = Ruleset.effective_for(company, config=config)
+        out = self.env['pb.decision.room']._assumptions_dict(row)
+        if row and not row.use_country_rules:
+            rules['source'] = 'company' if not config else rules.get(
+                'source', 'company')
+            rules['overrides'] = list(RULE_FIELDS)
+            for name in RULE_FIELDS:
+                rules[name] = out.get(name, rules.get(name))
+            rules['cap_note'] = ''
+        for name in RULE_FIELDS:
+            out[name] = rules[name]
+        out['rules_source'] = rules.get('source', 'country')
+        out['rules_country'] = rules.get('country_code', '')
+        out['rules_name'] = rules.get('ruleset_name', '')
+        out['cap_note'] = rules.get('cap_note', '')
+        out['cap_currency'] = rules.get('cap_currency', '')
+        return out
 
     # --------------------------------------------------------- the form
     @api.model
@@ -310,8 +463,9 @@ class PbDecisionAssumptions(models.Model):
             })
         return out
 
-    @api.depends('company_id')
+    @api.depends('company_id', 'scope_label')
     def _compute_display_name(self):
         for row in self:
             row.display_name = _("Assumptions · %s",
-                                 row.company_id.display_name or "")
+                                 row.scope_label
+                                 or row.company_id.display_name or "")
