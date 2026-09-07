@@ -34,7 +34,7 @@ tier. All assets are local — no CDN, no external chart library.
     # with the caller's rights behind W105/W111's rules; the three sudos left
     # are people/workforce reads, narrowed to their own line and explained
     # there.
-    'version': '19.0.5.0.0',
+    'version': '19.0.5.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -44,8 +44,11 @@ tier. All assets are local — no CDN, no external chart library.
     #           lands on a hub lens WITH a return door instead of replacing the
     #           board with a bare list (W5).
     # pb_wf_kit — the shared drawer, imported and never forked (W6).
+    # pb_group — GROUP P7: `pb.group.scoped`, so this board honours "who
+    # sees what" exactly like every other GROUP surface. No cycle: pb_group
+    # depends on pb_settings and pb_hub, neither of which reaches back here.
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_payruns',
-                'pb_import_kit', 'pb_hub', 'pb_wf_kit'],
+                'pb_import_kit', 'pb_hub', 'pb_wf_kit', 'pb_group'],
     'data': [
         'views/pb_insights_action.xml',
     ],

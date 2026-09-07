@@ -250,6 +250,16 @@ export const IC = {
     // `users` is a crowd, and neither says "not here yet".
     scale:        '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
     userPlus:     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
+
+    // GROUP P7 — "who sees what". `eyeOff` has been in this set since the
+    // Integrations cycle and means "an end is hidden"; its opposite was never
+    // added, and a visibility card whose only icon is the NEGATIVE one reads
+    // as a warning rather than as a setting. `eye` is what a person is being
+    // shown; `grip` is the two-column drag handle on the scheme wires, the
+    // one thing on that board that has to say "this row can be picked up"
+    // before anybody touches it.
+    eye:          '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    grip:         '<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
 };
 
 /**

@@ -39,6 +39,37 @@
         <field name="implied_ids" eval="[(4, ref('pb_group.group_group_admin'))]"/>
     </record>
 
+    <!-- ==================================================================
+         GROUP P7 — WHO SEES WHAT.
+
+         This rule and its three siblings in `pb_pay`, `pb_workseg` and
+         `pb_decision_room` all have the SAME two-branch shape, and it is
+         worth reading once:
+
+           * `user.pb_vis_kind` is empty for everybody who has not been given
+             a visibility row, and the domain is then `[(1, '=', 1)]` — no
+             narrowing whatsoever. That is the promise of this phase: nothing
+             changes for anyone until an administrator says it should.
+           * A DIVISION scope filters on the division, because a division
+             already implies the companies its departments sit in.
+           * Every other scope filters on the company.
+
+         The three fields are computed and NOT stored (see
+         `pb_group/models/pb_group_visibility.py`), so a rule's domain is
+         plain attribute access on `user`, exactly like every rule the
+         platform ships.
+
+         NOT `noupdate`: this is plumbing, and a correction to it has to
+         reach a database that already carries yesterday's version (GR25).
+         ================================================================== -->
+
+    <record id="rule_division_link_visibility" model="ir.rule">
+        <field name="name">Department in a division: who sees what</field>
+        <field name="model_id" ref="model_pb_division_link"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[(1, '=', 1)] if not user.pb_vis_kind else ([('division_id', 'in', user.pb_vis_division_ids.ids)] if user.pb_vis_division_ids else ['|', ('company_id', '=', False), ('company_id', 'in', user.pb_vis_company_ids.ids)])</field>
+    </record>
+
 <data noupdate="1">
 
     <!-- ==================================================================

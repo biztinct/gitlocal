@@ -96,6 +96,9 @@ _LEGACY_CONTRIB_CODES = ['SI_EMP', 'SI_COMP', 'HI_EMP', 'HI_COMP',
 
 class PbInsights(models.AbstractModel):
     _name = 'pb.insights'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Payobook Insights — executive analytics cockpit'
 
     # ------------------------------------------------------------- access
@@ -131,8 +134,15 @@ class PbInsights(models.AbstractModel):
 
     # ------------------------------------------------------------ helpers
     def _co_ids(self):
-        """Every SELECTED company (C18.11/18 — render them all)."""
-        return tuple(self.env.companies.ids or [self.env.company.id])
+        """Every SELECTED company, narrowed by who sees what (GROUP P7).
+
+        Unchanged for a reader with no visibility row.
+        """
+        chosen = self.env.companies.ids or [self.env.company.id]
+        # `IN ()` is a syntax error, not an empty answer — a reader whose
+        # scope matches no company in the switcher gets an impossible
+        # predicate and an explained empty board.
+        return tuple(self._visible_companies(chosen)) or (0,)
 
     @staticmethod
     def _safe(fn, default=None):
@@ -332,6 +342,10 @@ class PbInsights(models.AbstractModel):
             # stamping one company's symbol on them was a straight mislabel
             # the moment a group had two currencies.
             'currency': money['symbol'],
+            # GROUP P7 — one sentence when this reader is held to part of the
+            # group, '' for everybody else.
+            'scope_note': self._safe(lambda: self._visibility_note(),
+                                     default='') or '',
             'money': money,
             'schemes': schemes,
             'company': company.name,
@@ -547,6 +561,11 @@ class PbInsights(models.AbstractModel):
         """
         done = runs.filtered(lambda r: r.state == 'done')[:1]
         col = self._dept_source()
+        # GROUP P7 — a division head's leaderboard is their own teams. Empty
+        # for everybody else, and the fragment is then the empty string.
+        only = self._visible_departments()
+        only_sql = ('AND %s IN %%s' % col) if (only and col) else ''
+        only_params = (tuple(only),) if only_sql else ()
         if done and col:
             run = done[0]
             join = ('LEFT JOIN hr_version v ON v.id = e.current_version_id'
@@ -561,9 +580,10 @@ class PbInsights(models.AbstractModel):
                 JOIN hr_employee e ON e.id = p.employee_id
                 {join}
                 WHERE p.payslip_run_id = %s AND p.company_id IN %s
-                  AND c.code = 'NET'
+                  AND c.code = 'NET' {only}
                 GROUP BY 1
-            """.format(col=col, join=join), (run.id, self._co_ids()))
+            """.format(col=col, join=join, only=only_sql),
+                                 (run.id, self._co_ids()) + only_params)
             raw = self.env.cr.fetchall()
             names = {}
             dept_ids = [r[0] for r in raw if r[0]]

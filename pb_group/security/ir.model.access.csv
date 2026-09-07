@@ -8,3 +8,6 @@ access_pb_division_system,division system,model_pb_division,base.group_system,1,
 access_pb_division_link_user,division link read,model_pb_division_link,base.group_user,1,0,0,0
 access_pb_division_link_admin,division link admin,model_pb_division_link,pb_group.group_group_admin,1,1,1,1
 access_pb_division_link_system,division link system,model_pb_division_link,base.group_system,1,1,1,1
+access_pb_group_visibility_user,who sees what read,model_pb_group_visibility,base.group_user,1,0,0,0
+access_pb_group_visibility_admin,who sees what admin,model_pb_group_visibility,pb_group.group_group_admin,1,1,1,1
+access_pb_group_visibility_system,who sees what system,model_pb_group_visibility,base.group_system,1,1,1,1

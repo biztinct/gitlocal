@@ -1,213 +1,25 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_group
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-09-07 00:00+0000\n"
-"Last-Translator: Payobook\n"
-"Language-Team: Vietnamese\n"
-"Language: vi_VN\n"
+"POT-Creation-Date: 2026-09-07 19:16+0000\n"
+"PO-Revision-Date: 2026-09-07 19:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_palette.js:0
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Your group"
-msgstr "Tập đoàn của bạn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_palette.js:0
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.actions.act_window,name:pb_group.action_pb_exchange_rates
-msgid "Exchange rates"
-msgstr "Tỷ giá"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_palette.js:0
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.actions.act_window,name:pb_group.action_pb_division_records
-#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_list
-msgid "Divisions"
-msgstr "Khối"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group__presentation_currency_id
-msgid "Group currency"
-msgstr "Đồng tiền của tập đoàn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group__fx_policy
-msgid "How rates are picked"
-msgstr "Cách chọn tỷ giá"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group__fiscal_start_month
-msgid "Fiscal year starts in"
-msgstr "Năm tài chính bắt đầu từ"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Create your group"
-msgstr "Tạo tập đoàn của bạn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Add a division"
-msgstr "Thêm một khối"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Attach a department"
-msgstr "Gắn một phòng ban"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Rate"
-msgstr "Có tỷ giá"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Older"
-msgstr "Tỷ giá cũ"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "None"
-msgstr "Chưa có"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "January"
-msgstr "Tháng 1"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "February"
-msgstr "Tháng 2"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "March"
-msgstr "Tháng 3"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "April"
-msgstr "Tháng 4"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "May"
-msgstr "Tháng 5"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "June"
-msgstr "Tháng 6"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "July"
-msgstr "Tháng 7"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "August"
-msgstr "Tháng 8"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "September"
-msgstr "Tháng 9"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "October"
-msgstr "Tháng 10"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "November"
-msgstr "Tháng 11"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "December"
-msgstr "Tháng 12"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Your group is saved."
-msgstr "Đã lưu tập đoàn của bạn."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Division saved."
-msgstr "Đã lưu khối."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Division added."
-msgstr "Đã thêm khối."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Department attached."
-msgstr "Đã gắn phòng ban."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_fx.py:0
-msgid ""
-"Nobody has told this system what one %(src)s is worth in %(dst)s in "
-"%(month)s, so these figures stay in %(src)s. Add an exchange rate and the "
-"group figure appears."
-msgstr ""
-"Chưa ai cho hệ thống biết 1 %(src)s bằng bao nhiêu %(dst)s trong %(month)s, "
-"nên các số này vẫn để bằng %(src)s. Thêm một tỷ giá và con số của tập đoàn "
-"sẽ hiện ra."
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "%(company)s pays joiners and leavers a full month, as before."
 msgstr ""
-"%(company)s vẫn trả đủ cả tháng cho người mới vào và người nghỉ việc, như "
-"trước."
 
 #. module: pb_group
 #. odoo-javascript
@@ -216,8 +28,19 @@ msgid ""
 "%(company)s will pay joiners and leavers for the days they work, from the "
 "next pay run."
 msgstr ""
-"Từ kỳ trả lương tới, %(company)s sẽ trả cho người mới vào và người nghỉ việc"
-" theo đúng số ngày họ làm."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(count)s attached."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid ""
+"%(count)s could not be attached — they may already be in this division."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
@@ -227,9 +50,6 @@ msgid ""
 "only be in one division at a time — give the first one an end date, or start"
 " this one later."
 msgstr ""
-"%(department)s đã thuộc %(division)s từ %(since)s. Một phòng ban chỉ thuộc "
-"một khối tại một thời điểm — hãy đặt ngày kết thúc cho lần gắn trước, hoặc "
-"cho lần này bắt đầu muộn hơn."
 
 #. module: pb_group
 #. odoo-python
@@ -238,14 +58,12 @@ msgid ""
 "%(department)s joined %(division)s on %(since)s. Pick that day or a later "
 "one to take it out."
 msgstr ""
-"%(department)s vào %(division)s ngày %(since)s. Hãy chọn đúng ngày đó hoặc "
-"một ngày sau đó để tách ra."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "%(month)s: a rate from this month. Click to open it."
-msgstr "%(month)s: có tỷ giá của chính tháng này. Bấm để mở."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -254,26 +72,68 @@ msgid ""
 "%(month)s: nothing on file, so %(src)s stays in %(src)s. Click to add a "
 "rate."
 msgstr ""
-"%(month)s: chưa có gì trong hệ thống, nên %(src)s vẫn để bằng %(src)s. Bấm "
-"để thêm một tỷ giá."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "%(month)s: the newest rate is from %(date)s. Click to add one."
-msgstr "%(month)s: tỷ giá mới nhất là từ %(date)s. Bấm để thêm một tỷ giá."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid ""
+"%(name)s has not been limited, so they see everything their companies "
+"already let them see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(name)s is no longer limited."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees %(what)s only — %(count)s of the group's companies."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees %(what)s only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees every company in the group."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees the %(what)s division only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "%(what)s only"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid ", and the group reads in"
-msgstr ", và tập đoàn đọc số bằng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid ". There is nothing to convert."
-msgstr ". Không có gì cần quy đổi."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -282,12 +142,11 @@ msgid ""
 "A division with this name already exists — these departments will be added "
 "to it."
 msgstr ""
-"Đã có một khối trùng tên — các phòng ban này sẽ được thêm vào khối đó."
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__code
 msgid "A few letters for reports and file names. Optional."
-msgstr "Vài chữ cái dùng cho báo cáo và tên tệp. Không bắt buộc."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -296,40 +155,43 @@ msgid ""
 "A group is the companies you own, read as one business. Setting it up takes "
 "a minute and it decides three things:"
 msgstr ""
-"Tập đoàn là các công ty bạn sở hữu, được đọc như một doanh nghiệp duy nhất. "
-"Thiết lập chỉ mất một phút và nó quyết định ba điều:"
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "A rate from that month"
-msgstr "Tỷ giá của chính tháng đó"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_needaction
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_needaction
 msgid "Action Needed"
-msgstr "Cần xử lý"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__active
 #: model:ir.model.fields,field_description:pb_group.field_pb_division_link__active
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__active
 msgid "Active"
-msgstr "Đang hoạt động"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Add a company"
-msgstr "Thêm một công ty"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Add a company to the group and its switch appears here."
 msgstr ""
-"Thêm một công ty vào tập đoàn và công tắc của công ty đó sẽ hiện ở đây."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Add a division"
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.actions.act_window,help:pb_group.action_pb_exchange_rates
@@ -337,32 +199,30 @@ msgid ""
 "Add a rate and every group figure that needs it appears. Until then, amounts"
 " stay in the money they were paid in."
 msgstr ""
-"Thêm một tỷ giá và mọi con số của tập đoàn cần đến nó sẽ hiện ra. Từ giờ tới"
-" lúc đó, các khoản vẫn để nguyên đồng tiền đã trả."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Add it"
-msgstr "Thêm vào"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_palette.js:0
 msgid "Admin"
-msgstr "Quản trị"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Already in"
-msgstr "Đã thuộc"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "An older rate is used — the cell says which day"
-msgstr "Đang dùng một tỷ giá cũ hơn — ô sẽ cho biết là ngày nào"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.constraint,message:pb_group.constraint_pb_division_code_uniq
@@ -370,8 +230,6 @@ msgid ""
 "Another division already uses that short code. Give this one a code of its "
 "own, or leave it empty."
 msgstr ""
-"Một khối khác đã dùng mã ngắn đó. Hãy đặt cho khối này một mã riêng, hoặc để"
-" trống."
 
 #. module: pb_group
 #: model:ir.model.constraint,message:pb_group.constraint_pb_group_code_uniq
@@ -379,73 +237,122 @@ msgid ""
 "Another group already uses that short code. Give this one a code of its own,"
 " or leave it empty."
 msgstr ""
-"Một tập đoàn khác đã dùng mã ngắn đó. Hãy đặt cho tập đoàn này một mã riêng,"
-" hoặc để trống."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Anything worth remembering"
-msgstr "Điều gì đáng ghi nhớ"
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
 msgid "Anything worth remembering about this division"
-msgstr "Điều gì đáng ghi nhớ về khối này"
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
 msgid "Anything worth remembering about this group"
-msgstr "Điều gì đáng ghi nhớ về tập đoàn này"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Apr"
-msgstr "Thg 4"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "April"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "As %(name)s, you would see everything in %(count)s %(word)s."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "As %(name)s, you would see: %(what)s · %(count)s %(word)s."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Ask an administrator for access if you need to see it."
-msgstr "Nếu bạn cần xem, hãy đề nghị quản trị viên cấp quyền."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Ask an administrator to set the group up."
-msgstr "Hãy nhờ quản trị viên thiết lập tập đoàn."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Assignments"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Attach a department"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Attach these"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_attachment_count
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_attachment_count
 msgid "Attachment Count"
-msgstr "Số tệp đính kèm"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Aug"
-msgstr "Thg 8"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "August"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"By default everybody sees whatever their companies already allow. Limit "
+"somebody here and every screen in this product follows — the group, who is "
+"paid by what, the Explorer, the Decision Room, assignments and pay."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Cancel"
-msgstr "Huỷ"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Close"
-msgstr "Đóng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__color
 msgid "Colour"
-msgstr "Màu"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -455,24 +362,40 @@ msgstr "Màu"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__company_ids
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
 msgid "Companies"
-msgstr "Các công ty"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__company_count
 msgid "Companies in the group"
-msgstr "Các công ty trong tập đoàn"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_company_ids
+msgid "Companies they see"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division_link__company_id
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__company_id
 msgid "Company"
-msgstr "Công ty"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__country_id
+msgid "Country"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Create them"
-msgstr "Tạo các khối này"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Create your group"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__create_uid
@@ -480,7 +403,7 @@ msgstr "Tạo các khối này"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__create_uid
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__create_uid
 msgid "Created by"
-msgstr "Người tạo"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__create_date
@@ -488,7 +411,7 @@ msgstr "Người tạo"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__create_date
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__create_date
 msgid "Created on"
-msgstr "Ngày tạo"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
@@ -497,41 +420,57 @@ msgid ""
 "Day-based pay for people who join or leave part-way through a month is not "
 "switched on for this database yet."
 msgstr ""
-"Cách trả lương theo ngày cho người vào hoặc nghỉ giữa tháng chưa được bật "
-"cho cơ sở dữ liệu này."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Dec"
-msgstr "Thg 12"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "December"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Decision Room"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division_link__department_id
 msgid "Department"
-msgstr "Phòng ban"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Department attached."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model,name:pb_group.model_pb_division_link
 msgid "Department in a division"
-msgstr "Phòng ban trong một khối"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Department taken out. The history is kept."
-msgstr "Đã tách phòng ban ra. Lịch sử vẫn được giữ lại."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__link_ids
 msgid "Departments"
-msgstr "Phòng ban"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Departments in it"
-msgstr "Các phòng ban trong khối"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__display_name
@@ -544,7 +483,7 @@ msgstr "Các phòng ban trong khối"
 #: model:ir.model.fields,field_description:pb_group.field_res_company__display_name
 #: model:ir.model.fields,field_description:pb_group.field_res_users__display_name
 msgid "Display Name"
-msgstr "Tên hiển thị"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -555,134 +494,221 @@ msgstr "Tên hiển thị"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__division_id
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
 msgid "Division"
-msgstr "Khối"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Division added."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Division put away."
-msgstr "Đã cất khối đi."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Division saved."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.actions.act_window,name:pb_group.action_pb_division_records
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_list
+msgid "Divisions"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Divisions created from your departments."
-msgstr "Các khối được tạo từ phòng ban của bạn."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_division_ids
+msgid "Divisions they see"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Divisions we can make from your departments"
-msgstr "Các khối có thể tạo từ phòng ban của bạn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: model:ir.model.fields.selection,name:pb_group.selection__pb_group__split_pay_policy__each_pays
 msgid "Each entity pays its own days"
-msgstr "Mỗi pháp nhân trả cho số ngày của mình"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Edit the group"
-msgstr "Sửa tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Edit your group"
-msgstr "Sửa tập đoàn của bạn"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_res_users__pb_vis_kind
+msgid "Empty when this person has not been limited to part of the group."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Every company in the group."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Every company in your group is paid in"
-msgstr "Mọi công ty trong tập đoàn của bạn đều trả lương bằng"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Every company of the group in one country."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Everybody sees what their companies allow, exactly as they do today. Limit a"
+" division head to their division, or country HR to their country, and their "
+"screens narrow with no other change."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Everybody whose department is not attached anywhere yet."
-msgstr "Tất cả những người có phòng ban chưa được gắn vào đâu cả."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__all
+msgid "Everything"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Exchange rate coverage by month"
-msgstr "Mức phủ tỷ giá theo tháng"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.actions.act_window,name:pb_group.action_pb_exchange_rates
+msgid "Exchange rates"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model,name:pb_group.model_pb_fx
 msgid "Exchange rates and conversion"
-msgstr "Tỷ giá và quy đổi"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Exchange rates · %(src)s to %(dst)s"
-msgstr "Tỷ giá · %(src)s sang %(dst)s"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Exchange rates · %(src)s to %(dst)s · %(month)s %(year)s"
-msgstr "Tỷ giá · %(src)s sang %(dst)s · %(month)s %(year)s"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Explorer"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Feb"
-msgstr "Thg 2"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "February"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__fiscal_start_month
+msgid "Fiscal year starts in"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_follower_ids
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_follower_ids
 msgid "Followers"
-msgstr "Người theo dõi"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_partner_ids
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Người theo dõi (Đối tác)"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Free"
-msgstr "Còn trống"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 #: model:ir.model.fields,field_description:pb_group.field_pb_division_link__date_from
 msgid "From"
-msgstr "Từ ngày"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Full month"
-msgstr "Cả tháng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Give it a name first."
-msgstr "Hãy đặt tên trước đã."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Give the division a name first."
-msgstr "Hãy đặt tên cho khối trước đã."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Give the group a name first."
-msgstr "Hãy đặt tên cho tập đoàn trước đã."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -697,61 +723,75 @@ msgstr "Hãy đặt tên cho tập đoàn trước đã."
 #: model:res.groups.privilege,name:pb_group.res_groups_privilege_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
 msgid "Group"
-msgstr "Tập đoàn"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__presentation_currency_id
+msgid "Group currency"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.actions.act_window,name:pb_group.action_pb_group_records
 msgid "Group history"
-msgstr "Lịch sử tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__name
 msgid "Group name"
-msgstr "Tên tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model,name:pb_group.model_pb_group_room
 msgid "Group screen data"
-msgstr "Dữ liệu màn hình tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_list
 msgid "Groups"
-msgstr "Các tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__has_message
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__has_message
 msgid "Has Message"
-msgstr "Có tin nhắn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "History"
-msgstr "Lịch sử"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: model:ir.model.fields.selection,name:pb_group.selection__pb_group__split_pay_policy__home_pays
 msgid "Home pays, the other entity is charged"
-msgstr "Nơi chính trả lương, pháp nhân kia được ghi chi phí"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "How exchange rates are picked"
-msgstr "Cách chọn tỷ giá"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__fx_policy
+msgid "How rates are picked"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__split_pay_policy
 msgid "How split months are paid"
-msgstr "Cách trả lương cho tháng bị chia"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__id
@@ -764,13 +804,13 @@ msgstr "Cách trả lương cho tháng bị chia"
 #: model:ir.model.fields,field_description:pb_group.field_res_company__id
 #: model:ir.model.fields,field_description:pb_group.field_res_users__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__message_needaction
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Nếu được đánh dấu, có tin nhắn mới cần bạn xử lý."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__message_has_error
@@ -778,37 +818,55 @@ msgstr "Nếu được đánh dấu, có tin nhắn mới cần bạn xử lý."
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_error
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Nếu được đánh dấu, một số tin nhắn gặp lỗi gửi."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_is_follower
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_is_follower
 msgid "Is Follower"
-msgstr "Là người theo dõi"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Jan"
-msgstr "Thg 1"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "January"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Joiners and leavers"
-msgstr "Người vào và người nghỉ"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Jul"
-msgstr "Thg 7"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "July"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Jun"
-msgstr "Thg 6"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "June"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__write_uid
@@ -816,7 +874,7 @@ msgstr "Thg 6"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__write_uid
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__write_uid
 msgid "Last Updated by"
-msgstr "Cập nhật lần cuối bởi"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__write_date
@@ -824,49 +882,73 @@ msgstr "Cập nhật lần cuối bởi"
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__write_date
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__write_date
 msgid "Last Updated on"
-msgstr "Cập nhật lần cuối lúc"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Leave it empty to start today."
-msgstr "Để trống để bắt đầu từ hôm nay."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Lift it"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Limit somebody"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Mar"
-msgstr "Thg 3"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "March"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "May"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Merge"
-msgstr "Gộp"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Merge the ticked ones"
-msgstr "Gộp những mục đã tích"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_error
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_error
 msgid "Message Delivery error"
-msgstr "Lỗi gửi tin nhắn"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_ids
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_ids
 msgid "Messages"
-msgstr "Tin nhắn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Name"
-msgstr "Tên"
+msgstr ""
 
 #. module: pb_group
 #: model:res.groups,comment:pb_group.group_group_admin
@@ -874,25 +956,31 @@ msgid ""
 "Name the group, choose its companies, its currency and how exchange rates "
 "are picked, and build its divisions."
 msgstr ""
-"Đặt tên tập đoàn, chọn các công ty, đồng tiền và cách chọn tỷ giá, rồi dựng "
-"các khối."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"No company matches this yet. They would see an empty screen with a sentence "
+"telling them to ask an administrator."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "No departments yet — open it to attach the first one."
-msgstr "Chưa có phòng ban nào — mở ra để gắn phòng ban đầu tiên."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "No divisions yet"
-msgstr "Chưa có khối nào"
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.actions.act_window,help:pb_group.action_pb_exchange_rates
 msgid "No exchange rates yet"
-msgstr "Chưa có tỷ giá nào"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -902,27 +990,45 @@ msgid ""
 "needs it appears. Until then, the amounts stay in the money they were paid "
 "in."
 msgstr ""
-"Chưa có tỷ giá cho tháng này. Hãy bấm Mới để thêm một tỷ giá và mọi con số "
-"của tập đoàn cần đến nó sẽ hiện ra. Từ giờ tới lúc đó, các khoản vẫn để "
-"nguyên đồng tiền đã trả."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "No rate, so the figures stay in their own money"
-msgstr "Chưa có tỷ giá, nên các con số vẫn để nguyên đồng tiền của mình"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_fx.py:0
+msgid ""
+"Nobody has told this system what one %(src)s is worth in %(dst)s in "
+"%(month)s, so these figures stay in %(src)s. Add an exchange rate and the "
+"group figure appears."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Nobody is limited yet"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "None"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Not in a division"
-msgstr "Không thuộc khối nào"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Not in use right now — adding it to the group switches it back on."
-msgstr "Hiện không dùng — thêm vào tập đoàn sẽ bật lại."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -931,7 +1037,7 @@ msgstr "Hiện không dùng — thêm vào tập đoàn sẽ bật lại."
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__note
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
 msgid "Notes"
-msgstr "Ghi chú"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -940,7 +1046,6 @@ msgid ""
 "Nothing is attached yet. Attach the first department and the people count "
 "fills in."
 msgstr ""
-"Chưa gắn gì cả. Hãy gắn phòng ban đầu tiên và số người sẽ tự điền vào."
 
 #. module: pb_group
 #. odoo-javascript
@@ -949,16 +1054,12 @@ msgid ""
 "Nothing is stored in it — every figure keeps the currency it was paid in and"
 " is converted when you look at it."
 msgstr ""
-"Không có gì được lưu bằng đồng tiền này — mọi con số giữ nguyên đồng tiền đã"
-" trả và chỉ được quy đổi khi bạn xem."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Nothing is stored in it. Every figure keeps the money it was paid in."
 msgstr ""
-"Không có gì được lưu bằng đồng tiền này. Mọi con số giữ nguyên đồng tiền đã "
-"trả."
 
 #. module: pb_group
 #. odoo-javascript
@@ -967,50 +1068,102 @@ msgid ""
 "Nothing is stored in the group currency. Every figure keeps the money it was"
 " paid in and is converted when you look at it."
 msgstr ""
-"Không có gì được lưu bằng đồng tiền của tập đoàn. Mọi con số giữ nguyên đồng"
-" tiền đã trả và chỉ được quy đổi khi bạn xem."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Nothing matches that. Try part of a department name."
-msgstr "Không có gì khớp. Hãy thử một phần tên phòng ban."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Nov"
-msgstr "Thg 11"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "November"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_needaction_counter
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Số việc cần làm"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_error_counter
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_error_counter
 msgid "Number of errors"
-msgstr "Số lỗi"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__message_needaction_counter
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Số tin nhắn cần xử lý"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__message_has_error_counter
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Số tin nhắn bị lỗi gửi"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Oct"
-msgstr "Thg 10"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "October"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Older"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "On every screen"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__company
+msgid "One company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__country
+msgid "One country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__division
+msgid "One division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "One division, in whatever company it sits in."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1020,9 +1173,12 @@ msgid ""
 "tick two and merge them, then create the ones you want. Nothing is created "
 "until you press the button."
 msgstr ""
-"Mỗi phòng ban cấp cao nhất ở các công ty của bạn được đề xuất thành một "
-"khối. Bạn có thể đổi tên, tích hai cái để gộp lại, rồi tạo những khối bạn "
-"muốn. Chưa có gì được tạo cho tới khi bạn bấm nút."
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "One legal entity."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1031,49 +1187,101 @@ msgid ""
 "One part of the business, across every company in the group. Attach a "
 "department at the top and everything under it comes too."
 msgstr ""
-"Một mảng của doanh nghiệp, xuyên suốt mọi công ty trong tập đoàn. Gắn một "
-"phòng ban ở trên cùng thì mọi phòng ban bên dưới cũng theo vào."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Open the rate list"
-msgstr "Mở danh sách tỷ giá"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Optional"
-msgstr "Không bắt buộc"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__note
+msgid "Optional. Why this person is limited to this."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Paid by the day"
-msgstr "Trả theo ngày"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pay"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__people_count
 msgid "People"
-msgstr "Số người"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__user_id
+msgid "Person"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Pick a division and a department first."
-msgstr "Hãy chọn một khối và một phòng ban trước đã."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick a person"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Pick a person first."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Pick how exchange rates should be chosen."
-msgstr "Hãy chọn cách lấy tỷ giá."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Pick one of the two patterns."
-msgstr "Hãy chọn một trong hai cách."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick one…"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick somebody…"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the company they see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the country they see."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1081,102 +1289,162 @@ msgstr "Hãy chọn một trong hai cách."
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Pick the currency the group reads in."
-msgstr "Hãy chọn đồng tiền mà tập đoàn đọc số."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the division they see."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group.py:0
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Pick the month your financial year starts in."
-msgstr "Hãy chọn tháng bắt đầu năm tài chính của bạn."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Pick the one they should see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick what this person should see."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Put away"
-msgstr "Cất đi"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Rate"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__rating_ids
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__rating_ids
 msgid "Ratings"
-msgstr "Đánh giá"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Read the group again"
-msgstr "Đọc lại tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Reading your group…"
-msgstr "Đang đọc tập đoàn của bạn…"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_pb_group_scoped
+msgid "Reads that honour who sees what"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Retail, Manufacturing, Logistics…"
-msgstr "Bán lẻ, Sản xuất, Logistics…"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_sms_error
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr "Lỗi gửi tin nhắn SMS"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Save"
-msgstr "Lưu"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Save the group"
-msgstr "Lưu tập đoàn"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Save what they see"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Saved."
-msgstr "Đã lưu."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Saved. Every converted figure now uses that rate."
-msgstr "Đã lưu. Mọi con số quy đổi giờ dùng tỷ giá đó."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Saved. They see that from their next screen."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Search a department or a company"
-msgstr "Tìm một phòng ban hoặc một công ty"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "See as them"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_kind
+msgid "Sees"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Sep"
-msgstr "Thg 9"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "September"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__sequence
 msgid "Sequence"
-msgstr "Thứ tự"
+msgstr ""
 
 #. module: pb_group
 #: model:res.groups,name:pb_group.group_group_admin
 msgid "Set up the group"
-msgstr "Thiết lập tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Set your group up first and this fills in on its own."
-msgstr "Hãy thiết lập tập đoàn trước, phần này sẽ tự điền."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1184,85 +1452,105 @@ msgstr "Hãy thiết lập tập đoàn trước, phần này sẽ tự điền.
 #: model:ir.model.fields,field_description:pb_group.field_pb_division__code
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__code
 msgid "Short code"
-msgstr "Mã ngắn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Split months: %(pattern)s."
-msgstr "Tháng bị chia: %(pattern)s."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Suggest divisions"
-msgstr "Gợi ý các khối"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Suggest divisions from your departments"
-msgstr "Gợi ý các khối từ phòng ban của bạn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Suggested divisions"
-msgstr "Các khối được gợi ý"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Take a department out"
-msgstr "Tách một phòng ban ra"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Take it out"
-msgstr "Tách ra"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Take it out from which day?"
-msgstr "Tách ra từ ngày nào?"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Take out"
-msgstr "Tách ra"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "That attachment is no longer here."
-msgstr "Liên kết này không còn ở đây nữa."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "That change could not be saved."
-msgstr "Không lưu được thay đổi này."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "That company is no longer here."
-msgstr "Công ty này không còn ở đây nữa."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "That division is no longer here."
-msgstr "Khối này không còn ở đây nữa."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "That group is no longer here."
-msgstr "Tập đoàn này không còn ở đây nữa."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.constraint,message:pb_group.constraint_pb_group_visibility_user_uniq
+msgid ""
+"That person already has a row here. Change the one they have rather than "
+"adding a second."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "That person is no longer here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "That preview could not be read."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1271,8 +1559,6 @@ msgid ""
 "The attachment is kept with an end date, so last quarter still reads the way"
 " it did."
 msgstr ""
-"Liên kết vẫn được giữ kèm ngày kết thúc, nên quý trước vẫn đọc ra đúng như "
-"cũ."
 
 #. module: pb_group
 #. odoo-python
@@ -1281,15 +1567,13 @@ msgid ""
 "The average of that month's rates. If there are none, the figure is shown "
 "unconverted."
 msgstr ""
-"Trung bình các tỷ giá của tháng đó. Nếu không có tỷ giá nào, con số được "
-"hiện ra ở dạng chưa quy đổi."
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__month_avg
 msgid "The average rate for the month"
-msgstr "Tỷ giá trung bình của tháng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1298,19 +1582,17 @@ msgid ""
 "The companies in it, the group currency, how rates are picked, and your "
 "divisions."
 msgstr ""
-"Các công ty trong tập đoàn, đồng tiền của tập đoàn, cách chọn tỷ giá, và các"
-" khối của bạn."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "The companies in this group"
-msgstr "Các công ty trong tập đoàn này"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__company_ids
 msgid "The companies this group is made of."
-msgstr "Các công ty tạo nên tập đoàn này."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1319,14 +1601,12 @@ msgid ""
 "The companies you own, the money the board reads in, and the parts of the "
 "business that cross company lines. An administrator looks after it."
 msgstr ""
-"Các công ty bạn sở hữu, đồng tiền mà ban lãnh đạo đọc số, và những mảng kinh"
-" doanh vắt qua ranh giới công ty. Quản trị viên là người trông coi phần này."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "The companies, currency and divisions every report and plan will use."
-msgstr "Các công ty, đồng tiền và khối mà mọi báo cáo và kế hoạch sẽ dùng."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
@@ -1335,19 +1615,17 @@ msgid ""
 "The end date is before the start date. A department cannot leave a division "
 "before it joins it."
 msgstr ""
-"Ngày kết thúc trước ngày bắt đầu. Một phòng ban không thể rời khối trước khi"
-" vào khối."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "The group could not be read."
-msgstr "Không đọc được tập đoàn."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_res_company__pb_group_id
 msgid "The group of companies this one belongs to."
-msgstr "Tập đoàn mà công ty này thuộc về."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
@@ -1356,8 +1634,6 @@ msgid ""
 "The home entity pays the whole month and the other entity is charged its "
 "share as an internal cost line. One payslip."
 msgstr ""
-"Pháp nhân chính trả lương cả tháng và pháp nhân kia được ghi phần chi phí "
-"của mình thành một dòng chi phí nội bộ. Một phiếu lương."
 
 #. module: pb_group
 #. odoo-python
@@ -1366,21 +1642,19 @@ msgid ""
 "The home entity's payslip is reduced to the days that stayed at home, and "
 "the other entity runs its own payslip for its own days, in its own money."
 msgstr ""
-"Phiếu lương ở pháp nhân chính chỉ còn số ngày làm việc tại đó, còn pháp nhân"
-" kia tự chạy phiếu lương cho số ngày của mình, bằng đồng tiền của mình."
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__month_end
 msgid "The last rate of the month"
-msgstr "Tỷ giá cuối cùng của tháng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "The last rate on or before the end of the month."
-msgstr "Tỷ giá cuối cùng vào hoặc trước ngày cuối tháng."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__presentation_currency_id
@@ -1389,15 +1663,12 @@ msgid ""
 "amount keeps the currency it was paid in and is converted when somebody "
 "looks at it."
 msgstr ""
-"Đồng tiền mà ban lãnh đạo dùng để đọc các con số của tập đoàn. Không có gì "
-"được lưu bằng đồng tiền này: mọi khoản giữ nguyên đồng tiền đã trả và chỉ "
-"được quy đổi khi có người xem."
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "The money the board reads in."
-msgstr "Đồng tiền mà ban lãnh đạo đọc số."
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__fiscal_start_month
@@ -1405,39 +1676,87 @@ msgid ""
 "The month your financial year begins, 1 for January. Reports and plans read "
 "this to know what a year means here."
 msgstr ""
-"Tháng bắt đầu năm tài chính của bạn, 1 là tháng Một. Báo cáo và kế hoạch đọc"
-" con số này để biết một năm ở đây là gì."
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__user_id
+msgid ""
+"The person this applies to. Somebody with no row here sees whatever their "
+"companies already let them see."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 msgid "The rate on or before the day the pay run ends."
-msgstr "Tỷ giá vào hoặc trước ngày kết thúc kỳ trả lương."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__payment_date
 msgid "The rate on the day the pay run ends"
-msgstr "Tỷ giá vào ngày kết thúc kỳ trả lương"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"There is nothing to pick yet. Add a division, or add a company to the group,"
+" and it appears here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__kind
+msgid "They see"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "This is where your group is set up"
-msgstr "Đây là nơi thiết lập tập đoàn của bạn"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"This side shows exactly what they would see, on every screen, before you "
+"save anything."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Tick at least one department first."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Tick at least one to create."
-msgstr "Hãy tích ít nhất một mục để tạo."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Tick everything shown"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Tick the departments you want"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Try again"
-msgstr "Thử lại"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1447,14 +1766,37 @@ msgid ""
 "for the days they actually worked. Payslips for those people will change "
 "from the next pay run."
 msgstr ""
-"Bật mục này thì người vào hoặc nghỉ giữa tháng sẽ được trả theo đúng số ngày"
-" họ thực sự làm. Phiếu lương của những người đó sẽ thay đổi kể từ kỳ trả "
-"lương tới."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Untick everything shown"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_division_link__date_to
 msgid "Until"
-msgstr "Đến ngày"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__company_id
+msgid "Used when they see one company."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__country_id
+msgid "Used when they see one country."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__division_id
+msgid "Used when they see one division."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_res_users
+msgid "User"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1463,47 +1805,53 @@ msgid ""
 "We can propose one for each top-level department you already have, and you "
 "can rename or merge them before anything is created."
 msgstr ""
-"Hệ thống có thể đề xuất một khối cho mỗi phòng ban cấp cao nhất bạn đang có,"
-" và bạn được đổi tên hoặc gộp lại trước khi tạo bất cứ thứ gì."
 
 #. module: pb_group
 #: model:ir.model.fields,field_description:pb_group.field_pb_group__website_message_ids
 #: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__website_message_ids
 msgid "Website Messages"
-msgstr "Tin nhắn trên trang web"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__website_message_ids
 #: model:ir.model.fields,help:pb_group.field_pb_group_visibility__website_message_ids
 msgid "Website communication history"
-msgstr "Lịch sử trao đổi trên trang web"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid ""
+"What %(name)s was limited to is no longer here, so they can see everything "
+"they could see before. Give them a new one."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/js/group_palette.js:0
 msgid "What one currency is worth in another, by date."
-msgstr "Một đồng tiền bằng bao nhiêu đồng tiền khác, theo từng ngày."
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
 msgid "What this group is called"
-msgstr "Tên gọi của tập đoàn này"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "What this group of companies is called"
-msgstr "Tên gọi của nhóm công ty này"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__name
 msgid "What this group of companies is called on screen."
-msgstr "Tên gọi của nhóm công ty này hiện trên màn hình."
+msgstr ""
 
 #. module: pb_group
 #: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
 msgid "What this part of the business is called"
-msgstr "Tên gọi của mảng kinh doanh này"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1513,13 +1861,17 @@ msgid ""
 "When somebody works part of a month in another company in this group, this "
 "decides who pays for those days."
 msgstr ""
-"Khi một người làm việc một phần của tháng ở công ty khác trong tập đoàn, mục"
-" này quyết định ai trả cho những ngày đó."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Where it sits"
+msgstr ""
 
 #. module: pb_group
 #: model:ir.model.fields,help:pb_group.field_pb_group__fx_policy
 msgid "Which exchange rate a month's figures are converted at."
-msgstr "Các con số của một tháng được quy đổi theo tỷ giá nào."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1527,19 +1879,62 @@ msgstr "Các con số của một tháng được quy đổi theo tỷ giá nào
 msgid ""
 "Which months already have a rate for the money your companies are paid in."
 msgstr ""
-"Những tháng nào đã có tỷ giá cho đồng tiền mà các công ty của bạn trả lương."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Which one"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Who changed what, and when"
-msgstr "Ai đã đổi gì, và đổi khi nào"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Who is paid by what"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model,name:pb_group.model_pb_group_visibility
+msgid "Who sees what"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__note
+msgid "Why"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Working out what they would see…"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Year starts in"
-msgstr "Năm bắt đầu từ"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "You are seeing %(what)s only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "You are seeing the %(what)s division only."
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
@@ -1548,14 +1943,18 @@ msgid ""
 "You can look at the group, but setting it up is for an administrator. Ask "
 "one of them to make the change."
 msgstr ""
-"Bạn có thể xem tập đoàn, nhưng việc thiết lập là của quản trị viên. Hãy nhờ "
-"một người trong số họ thực hiện thay đổi."
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "You can look at the group, but this is for an administrator."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "You have not set up a group yet"
-msgstr "Bạn chưa thiết lập tập đoàn nào"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1564,44 +1963,109 @@ msgid ""
 "Your companies, the money the board reads in, exchange rates and the parts "
 "of the business that cross company lines."
 msgstr ""
-"Các công ty của bạn, đồng tiền ban lãnh đạo đọc số, tỷ giá và những mảng "
-"kinh doanh vắt qua ranh giới công ty."
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Your group"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "Your group could not be read"
-msgstr "Không đọc được tập đoàn của bạn"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Your group is saved."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "and"
-msgstr "và"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "chosen"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "companies"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "everything they already have"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "for a month, so every converted number can say where it came from."
-msgstr "cho một tháng, để mọi con số đã quy đổi đều nói được nó đến từ đâu."
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "in"
-msgstr "bằng"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "more"
-msgstr "nữa"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "nothing yet — no company matches"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "of them move out of another division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "one company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "one country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "one division"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "pay schemes"
-msgstr "phương án lương"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1610,19 +2074,19 @@ msgstr "phương án lương"
 #: code:addons/pb_group/static/src/js/group_room.js:0
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "people"
-msgstr "người"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "people in the group"
-msgstr "người trong tập đoàn"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "people in this division today"
-msgstr "người trong khối này hôm nay"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
@@ -1630,615 +2094,59 @@ msgstr "người trong khối này hôm nay"
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "person"
-msgstr "người"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "until"
-msgstr "đến"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "· from"
-msgstr "· từ"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "— the parts of the business that do not stop at a company border."
-msgstr "— những mảng kinh doanh không dừng lại ở ranh giới của một công ty."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "— this moves it"
-msgstr "— thao tác này sẽ chuyển nó đi"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "— ticking it moves it here."
-msgstr "— tích vào sẽ chuyển nó sang đây."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "%(count)s attached."
-msgstr "Đã gắn %(count)s."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid ""
-"%(count)s could not be attached — they may already be in this division."
-msgstr "Không gắn được %(count)s — có thể chúng đã nằm trong khối này."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid ""
-"%(name)s has not been limited, so they see everything their companies "
-"already let them see."
 msgstr ""
-"%(name)s chưa bị giới hạn, nên vẫn thấy mọi thứ mà các công ty của họ đã cho"
-" phép."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "%(name)s is no longer limited."
-msgstr "%(name)s không còn bị giới hạn nữa."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "%(name)s sees %(what)s only — %(count)s of the group's companies."
-msgstr "%(name)s chỉ thấy %(what)s — %(count)s công ty của tập đoàn."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "%(name)s sees %(what)s only."
-msgstr "%(name)s chỉ thấy %(what)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "%(name)s sees every company in the group."
-msgstr "%(name)s thấy mọi công ty trong tập đoàn."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "%(name)s sees the %(what)s division only."
-msgstr "%(name)s chỉ thấy khối %(what)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "%(what)s only"
-msgstr "chỉ %(what)s"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "As %(name)s, you would see everything in %(count)s %(word)s."
-msgstr "Là %(name)s, bạn sẽ thấy mọi thứ trong %(count)s %(word)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "As %(name)s, you would see: %(what)s · %(count)s %(word)s."
-msgstr "Là %(name)s, bạn sẽ thấy: %(what)s · %(count)s %(word)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Assignments"
-msgstr "Phân công"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Attach these"
-msgstr "Gắn các mục này"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid ""
-"By default everybody sees whatever their companies already allow. Limit "
-"somebody here and every screen in this product follows — the group, who is "
-"paid by what, the Explorer, the Decision Room, assignments and pay."
-msgstr ""
-"Mặc định, mọi người thấy những gì công ty của họ đã cho phép. Giới hạn một "
-"người ở đây thì mọi màn hình trong sản phẩm này đều theo — tập đoàn, ai được"
-" trả lương theo phương án nào, Nhà thám hiểm, Phòng Quyết định, phân công và"
-" lương."
-
-#. module: pb_group
-#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_company_ids
-msgid "Companies they see"
-msgstr "Công ty họ thấy"
-
-#. module: pb_group
-#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__country_id
-msgid "Country"
-msgstr "Quốc gia"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Decision Room"
-msgstr "Phòng Quyết định"
-
-#. module: pb_group
-#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_division_ids
-msgid "Divisions they see"
-msgstr "Khối họ thấy"
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_res_users__pb_vis_kind
-msgid "Empty when this person has not been limited to part of the group."
-msgstr "Để trống khi người này không bị giới hạn vào một phần của tập đoàn."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Every company in the group."
-msgstr "Mọi công ty trong tập đoàn."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Every company of the group in one country."
-msgstr "Mọi công ty của tập đoàn trong một quốc gia."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid ""
-"Everybody sees what their companies allow, exactly as they do today. Limit a"
-" division head to their division, or country HR to their country, and their "
-"screens narrow with no other change."
-msgstr ""
-"Mọi người thấy đúng những gì công ty của họ cho phép, y như hôm nay. Giới "
-"hạn một giám đốc khối vào khối của họ, hay nhân sự quốc gia vào quốc gia của"
-" họ, thì màn hình của họ hẹp lại mà không có thay đổi nào khác."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__all
-msgid "Everything"
-msgstr "Tất cả"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Explorer"
-msgstr "Nhà thám hiểm"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Lift it"
-msgstr "Bỏ giới hạn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Limit somebody"
-msgstr "Giới hạn một người"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid ""
-"No company matches this yet. They would see an empty screen with a sentence "
-"telling them to ask an administrator."
-msgstr ""
-"Chưa có công ty nào khớp. Họ sẽ thấy một màn hình trống kèm câu nhắn bảo họ "
-"hỏi quản trị viên."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Nobody is limited yet"
-msgstr "Chưa ai bị giới hạn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "On every screen"
-msgstr "Trên mọi màn hình"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__company
-msgid "One company"
-msgstr "Một công ty"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__country
-msgid "One country"
-msgstr "Một quốc gia"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__division
-msgid "One division"
-msgstr "Một khối"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "One division, in whatever company it sits in."
-msgstr "Một khối, dù nó nằm ở công ty nào."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "One legal entity."
-msgstr "Một pháp nhân."
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__note
-msgid "Optional. Why this person is limited to this."
-msgstr "Không bắt buộc. Vì sao người này bị giới hạn như vậy."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Pay"
-msgstr "Lương"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__user_id
-msgid "Person"
-msgstr "Người"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Pick a person"
-msgstr "Chọn một người"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Pick a person first."
-msgstr "Hãy chọn một người trước."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Pick one…"
-msgstr "Chọn một…"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Pick somebody…"
-msgstr "Chọn một người…"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "Pick the company they see."
-msgstr "Chọn công ty họ được thấy."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "Pick the country they see."
-msgstr "Chọn quốc gia họ được thấy."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "Pick the division they see."
-msgstr "Chọn khối họ được thấy."
-
-#. module: pb_group
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Pick the one they should see."
-msgstr "Chọn mục họ được thấy."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "Pick what this person should see."
-msgstr "Hãy chọn những gì người này được thấy."
-
-#. module: pb_group
-#: model:ir.model,name:pb_group.model_pb_group_scoped
-msgid "Reads that honour who sees what"
-msgstr "Dữ liệu đọc ra theo đúng ai thấy được gì"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Save what they see"
-msgstr "Lưu những gì họ thấy"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Saved. They see that from their next screen."
-msgstr "Đã lưu. Họ sẽ thấy điều đó từ màn hình kế tiếp."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "See as them"
-msgstr "Xem như họ"
-
-#. module: pb_group
-#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_kind
-msgid "Sees"
-msgstr "Thấy được"
-
-#. module: pb_group
-#: model:ir.model.constraint,message:pb_group.constraint_pb_group_visibility_user_uniq
-msgid ""
-"That person already has a row here. Change the one they have rather than "
-"adding a second."
-msgstr ""
-"Người này đã có một dòng ở đây. Hãy sửa dòng đang có thay vì thêm dòng thứ "
-"hai."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "That person is no longer here."
-msgstr "Người này không còn ở đây nữa."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "That preview could not be read."
-msgstr "Không đọc được bản xem trước."
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__user_id
-msgid ""
-"The person this applies to. Somebody with no row here sees whatever their "
-"companies already let them see."
-msgstr ""
-"Người mà giới hạn này áp dụng cho. Ai không có dòng ở đây sẽ thấy mọi thứ mà"
-" các công ty của họ đã cho phép."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid ""
-"There is nothing to pick yet. Add a division, or add a company to the group,"
-" and it appears here."
-msgstr ""
-"Chưa có gì để chọn. Hãy thêm một khối, hoặc thêm một công ty vào tập đoàn, "
-"rồi nó sẽ hiện ở đây."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__kind
-msgid "They see"
-msgstr "Họ thấy"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid ""
-"This side shows exactly what they would see, on every screen, before you "
-"save anything."
-msgstr ""
-"Bên này cho thấy đúng những gì họ sẽ thấy, trên mọi màn hình, trước khi bạn "
-"lưu bất cứ điều gì."
-
-#. module: pb_group
-#. odoo-javascript
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-#: code:addons/pb_group/static/src/js/group_room.js:0
-msgid "Tick at least one department first."
-msgstr "Hãy tích ít nhất một phòng ban trước."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Tick everything shown"
-msgstr "Tích tất cả đang hiện"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Tick the departments you want"
-msgstr "Tích những phòng ban bạn muốn"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Untick everything shown"
-msgstr "Bỏ tích tất cả đang hiện"
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__company_id
-msgid "Used when they see one company."
-msgstr "Dùng khi họ chỉ thấy một công ty."
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__country_id
-msgid "Used when they see one country."
-msgstr "Dùng khi họ chỉ thấy một quốc gia."
-
-#. module: pb_group
-#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__division_id
-msgid "Used when they see one division."
-msgstr "Dùng khi họ chỉ thấy một khối."
-
-#. module: pb_group
-#: model:ir.model,name:pb_group.model_res_users
-msgid "User"
-msgstr "Người dùng"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid ""
-"What %(name)s was limited to is no longer here, so they can see everything "
-"they could see before. Give them a new one."
-msgstr ""
-"Phạm vi giới hạn của %(name)s không còn nữa, nên họ lại thấy được mọi thứ "
-"như trước. Hãy đặt cho họ một phạm vi mới."
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Which one"
-msgstr "Cụ thể là"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "Who is paid by what"
-msgstr "Ai được trả lương theo phương án nào"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model,name:pb_group.model_pb_group_visibility
-msgid "Who sees what"
-msgstr "Ai thấy được gì"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__note
-msgid "Why"
-msgstr "Lý do"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Working out what they would see…"
-msgstr "Đang tính xem họ sẽ thấy gì…"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "You are seeing %(what)s only."
-msgstr "Bạn chỉ đang thấy %(what)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "You are seeing the %(what)s division only."
-msgstr "Bạn chỉ đang thấy khối %(what)s."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "You can look at the group, but this is for an administrator."
-msgstr "Bạn có thể xem tập đoàn, nhưng phần này dành cho quản trị viên."
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "chosen"
-msgstr "phần đã chọn"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "companies"
-msgstr "công ty"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "company"
-msgstr "công ty"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "everything they already have"
-msgstr "mọi thứ họ đang có"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "nothing yet — no company matches"
-msgstr "chưa có gì — không công ty nào khớp"
-
-#. module: pb_group
-#. odoo-javascript
-#: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "of them move out of another division"
-msgstr "trong số đó chuyển ra khỏi khối khác"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "one company"
-msgstr "một công ty"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_visibility.py:0
-msgid "one country"
-msgstr "một quốc gia"
-
-#. module: pb_group
-#. odoo-python
-#: code:addons/pb_group/models/pb_group_room.py:0
-msgid "one division"
-msgstr "một khối"
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_visibility.py:0
 msgid "that company"
-msgstr "công ty đó"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_visibility.py:0
 msgid "that country"
-msgstr "quốc gia đó"
+msgstr ""
 
 #. module: pb_group
 #. odoo-python
 #: code:addons/pb_group/models/pb_group_room.py:0
 #: code:addons/pb_group/models/pb_group_visibility.py:0
 msgid "this person"
-msgstr "người này"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
 msgid "ticked ·"
-msgstr "đã tích ·"
+msgstr ""
 
 #. module: pb_group
 #. odoo-javascript
 #: code:addons/pb_group/static/src/xml/group_room.xml:0
-msgid "Where it sits"
-msgstr "Khối này nằm ở đâu"
+msgid "until"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "· from"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— the parts of the business that do not stop at a company border."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— this moves it"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— ticking it moves it here."
+msgstr ""

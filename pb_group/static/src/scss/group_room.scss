@@ -506,10 +506,157 @@
         .grp-co::before { top: 50%; left: -18px; width: 18px; height: 2px; }
         .grp-board { grid-template-columns: minmax(0, 1fr); }
         .grp-drawer { width: 100%; }
+        .grp-vis { grid-template-columns: minmax(0, 1fr); }
+        .grp-who-row { flex-wrap: wrap; }
+        .grp-vis-surface b { min-width: 110px; }
         .grp-strip-head, .grp-strip-row {
             grid-template-columns: minmax(120px, 140px) repeat(12, minmax(58px, 1fr));
         }
     }
+
+    // ------------------------------------- GROUP P7 · who sees what
+    //
+    //  Three pieces: the strip a limited reader sees at the top of their
+    //  own screen, the administrator's list, and the two-column drawer
+    //  whose RIGHT half is the hero — the screen the person will get,
+    //  drawn before anything is saved.
+    .grp-scope {
+        display: flex; align-items: center; gap: 8px;
+        padding: 9px 14px; margin-bottom: 14px;
+        border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-line-2);
+        background: var(--pbim-soft); color: var(--pbim-primary-dark);
+        font-size: 12.5px; font-weight: 700;
+    }
+
+    .grp-who-warn {
+        display: flex; gap: 10px; align-items: flex-start;
+        padding: 10px 12px; margin-bottom: 12px;
+        border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-amber);
+        background: var(--pbim-amber-soft); color: var(--pbim-ink);
+        font-size: 12.5px;
+        p { margin: 0 0 4px; &:last-child { margin-bottom: 0; } }
+    }
+    .grp-who-empty {
+        display: flex; gap: 14px; align-items: flex-start;
+        padding: 16px; border-radius: var(--pbim-r-sm);
+        border: 1px dashed var(--pbim-line-2); background: var(--pbim-bg);
+        b { font-size: 13.5px; color: var(--pbim-ink); }
+        p { margin: 4px 0 0; font-size: 12.5px; color: var(--pbim-muted);
+            max-width: 620px; }
+    }
+    .grp-who-empty-ic { flex: none; color: var(--pbim-primary); }
+    .grp-who-rows { display: flex; flex-direction: column; gap: 6px; }
+    .grp-who-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 9px 12px; border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-line-2); background: var(--pbim-surface);
+    }
+    .grp-who-av { flex: none; color: var(--pbim-primary); display: flex; }
+    .grp-who-tx {
+        min-width: 0; flex: 1; display: flex; flex-direction: column;
+        b { font-size: 13px; color: var(--pbim-ink); }
+    }
+    .grp-who-sub { font-size: 11.5px; color: var(--pbim-muted); }
+    .grp-who-tag { flex: none; }
+    .grp-who-tag.is-stale { color: var(--pbim-amber); }
+
+    // the drawer: setting on the left, the screen they get on the right
+    .grp-vis {
+        display: grid; gap: 18px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    }
+    .grp-vis-set {
+        min-width: 0;
+        .grp-f { margin-bottom: 14px; }
+        .grp-f-l { display: block; margin-bottom: 5px; }
+    }
+    .grp-vis-kinds { display: flex; flex-direction: column; gap: 6px; }
+    .grp-vis-kind {
+        display: flex; align-items: flex-start; gap: 9px; width: 100%;
+        text-align: left; cursor: pointer;
+        padding: 9px 11px; border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-line-2); background: var(--pbim-surface);
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+        }
+    }
+    .grp-vis-tick { flex: none; display: flex; color: var(--pbim-primary); }
+    .grp-vis-kind-tx {
+        min-width: 0; display: flex; flex-direction: column;
+        b { font-size: 12.5px; color: var(--pbim-ink); }
+        span { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .grp-vis-see {
+        min-width: 0; border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-line-2); background: var(--pbim-bg);
+        padding: 14px;
+    }
+    .grp-vis-ghost {
+        text-align: center; padding: 26px 12px; color: var(--pbim-muted);
+        b { display: block; margin-top: 8px; font-size: 13px;
+            color: var(--pbim-ink); }
+        p { margin: 4px auto 0; font-size: 12px; max-width: 260px; }
+    }
+    .grp-vis-ghost-ic { color: var(--pbim-primary-light); }
+    .grp-vis-headline {
+        margin: 0 0 12px; font-size: 15px; font-weight: 800;
+        color: var(--pbim-primary-dark); line-height: 1.35;
+    }
+    .grp-vis-warn {
+        margin: 0 0 10px; padding: 8px 10px; font-size: 12px;
+        border-radius: var(--pbim-r-sm);
+        border: 1px solid var(--pbim-amber);
+        background: var(--pbim-amber-soft); color: var(--pbim-ink);
+    }
+    .grp-vis-tree {
+        margin-bottom: 12px;
+        h4 {
+            margin: 0 0 6px; font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .05em;
+            color: var(--pbim-muted);
+        }
+    }
+    .grp-vis-node {
+        display: flex; align-items: center; gap: 8px;
+        padding: 7px 10px; margin-bottom: 4px;
+        border-radius: var(--pbim-r-sm); background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line);
+        b { font-size: 12.5px; color: var(--pbim-ink); }
+    }
+    .grp-vis-node-ic { flex: none; display: flex; color: var(--pbim-primary); }
+    .grp-vis-node-sub { font-size: 11.5px; color: var(--pbim-muted); }
+    .grp-vis-node-n {
+        margin-left: auto; font-size: 12px; font-weight: 700;
+        color: var(--pbim-primary-dark);
+    }
+    .grp-vis-none {
+        font-size: 12px; color: var(--pbim-muted);
+        padding: 8px 10px; border-radius: var(--pbim-r-sm);
+        border: 1px dashed var(--pbim-line-2);
+    }
+    .grp-vis-surface {
+        display: flex; align-items: baseline; gap: 8px;
+        padding: 5px 2px; font-size: 12px;
+        b { min-width: 150px; color: var(--pbim-ink); }
+        span { color: var(--pbim-muted); }
+    }
+
+    // ------------------------ GROUP P7 · bulk attach (polish item P1)
+    .grp-dp-all { margin-bottom: 8px; }
+    .grp-dp.is-on {
+        border-color: var(--pbim-primary); background: var(--pbim-soft);
+    }
+    .grp-dp-tick { flex: none; display: flex; color: var(--pbim-primary); }
+    .grp-dp-foot { justify-content: space-between; }
+    .grp-dp-count {
+        display: flex; flex-direction: column; font-size: 12.5px;
+        color: var(--pbim-ink);
+    }
+    .grp-dp-line { display: block; }
+    .grp-dp-moves { display: block; font-size: 11.5px;
+                    color: var(--pbim-amber); }
 
     // ------------------------------------------------------------- motion
     @media (prefers-reduced-motion: no-preference) {
