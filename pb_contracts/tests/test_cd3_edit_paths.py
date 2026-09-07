@@ -278,7 +278,7 @@ class TestCd3EditPaths(TransactionCase):
     def test_05_the_picker_is_whitelisted_and_answers(self):
         whitelist = ['hr.payroll.structure', 'hr.contract.type',
                      'resource.calendar', 'hr.department', 'hr.job',
-                     'res.users', 'wfp.pay.grade', 'account.journal']
+                     'res.users', 'pb.pay.band', 'account.journal']
         answered = []
         for comodel in whitelist:
             Model = self.env.get(comodel)
@@ -378,7 +378,7 @@ class TestCd3EditPaths(TransactionCase):
             self.contract.id,
             terms={'wage': 'abc', 'dependents': 'two', 'hirestatus': 'NOPE',
                    'resource_calendar_id': False, 'date_start': 'yesterday',
-                   'not_a_field_at_all': 1, 'compa_ratio': 3},
+                   'not_a_field_at_all': 1, 'pb_position_pct': 3},
             components={'edits': {self.l_base.id: {'text_value': 'words'}},
                         'removes': [self.l_mapped.id, 999999999],
                         'adds': [{'template_id': 999999999}]}))

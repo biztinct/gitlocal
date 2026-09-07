@@ -47,7 +47,7 @@ _MASKED = '••••••'
 # name the comodels the terms payload itself produces.
 _M2O_WHITELIST = {
     'hr.payroll.structure', 'hr.contract.type', 'resource.calendar',
-    'hr.department', 'hr.job', 'res.users', 'wfp.pay.grade', 'account.journal',
+    'hr.department', 'hr.job', 'res.users', 'pb.pay.band', 'account.journal',
 }
 
 _TERM_GROUPS = [
@@ -65,9 +65,13 @@ _TERMS = [
     ('money', 'struct_id', "Salary structure", 'm2o', False, False),
     ('money', 'type_id', "Employee category", 'm2o', False, False),
     ('money', 'schedule_pay', "Paid", 'select', False, False),
-    ('money', 'grade_id', "Pay grade", 'm2o', False, True),
-    ('money', 'compa_ratio', "Where the wage sits in the grade", 'readonly',
-     "100 means the middle of the band.", True),
+    # GROUP P6a. The band and the position come from `pb.pay.position`,
+    # which `pb_pay` rebuilds whenever a wage OR a band moves; the old stored
+    # `grade_id`/`compa_ratio` pair only ever recomputed on the wage, so it
+    # drifted the moment a grade's midpoint changed and nothing said so.
+    ('money', 'pb_band_id', "Pay band", 'm2o', False, True),
+    ('money', 'pb_position_pct', "Where the pay sits in the band", 'readonly',
+     "0 is the bottom of the band and 100 the top.", True),
     ('money', 'journal_id', "Salary journal", 'm2o', False, True),
 
     ('dates', 'date_start', "Contract starts", 'date', False, False),
@@ -544,15 +548,38 @@ class PbContracts(models.AbstractModel):
             if field is None:
                 # the module that carries it is not installed (rail 8)
                 continue
-            if name == 'compa_ratio' and not getattr(contract, 'grade_id',
-                                                     False):
+            if name == 'pb_position_pct' and not getattr(
+                    contract, 'pb_band_id', False):
                 continue
             entry = self._cd_field_entry(contract, field, name, label, kind,
                                          hint, symbol, can_write, unmask)
             if entry:
+                if name == 'pb_position_pct':
+                    entry = self._cd_band_position(contract, entry)
                 buckets[group].append(entry)
         return [{'key': key, 'label': label, 'fields': buckets[key]}
                 for key, label in _TERM_GROUPS]
+
+    @api.model
+    def _cd_band_position(self, contract, entry):
+        """"62% of the way through the band" rather than "62.00".
+
+        A number on its own is a figure somebody has to be taught to read.
+        The sentence is written once, in `pb_pay`, so this drawer and the Pay
+        screen can never end up saying it two different ways.
+        """
+        state = getattr(contract, 'pb_band_state', False)
+        pct = entry.get('value') or 0.0
+        if state == 'below':
+            entry['display'] = _("Below the band")
+            entry['tone'] = 'warn'
+        elif state == 'above':
+            entry['display'] = _("Above the band")
+            entry['tone'] = 'warn'
+        elif state == 'in':
+            entry['display'] = _("%s%% of the way through the band"
+                                 ) % int(round(pct))
+        return entry
 
     @api.model
     def _cd_field_entry(self, contract, field, name, label, kind, hint,
