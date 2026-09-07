@@ -518,7 +518,15 @@ class PbFactBuilder(models.AbstractModel):
                     'config_id', 'config_name', 'config_version',
                     'currency_id', 'division_id', 'person_id', 'fte',
                     'is_advance',
+                    'charged_to', 'charged_from', 'is_split',
                     'create_uid', 'create_date', 'write_uid', 'write_date')
+            # GROUP P5 — the person behind each employment, the share of the
+            # month it was there for, and what was charged across entity
+            # lines. Three small lookups shared by thousands of rows, resolved
+            # once per chunk exactly like the currency and the division above.
+            people = ctx['person_of']
+            shares = ctx['share_of']
+            charges = ctx['charges']
             vals = []
             for (run_id, company_id, cycle, division, emp_id, dept_id, job_id,
                  cat_type, amount, config_id, is_advance) in rows:
@@ -531,13 +539,20 @@ class PbFactBuilder(models.AbstractModel):
                 if div_id:
                     divisions.setdefault(run_id, set()).add(div_id)
                 cfg_name, cfg_version = config_meta(config_id, ends.get(run_id))
+                share = shares.get((emp_id, h.month))
+                charge = charges.get((emp_id, h.month)) or (0.0, 0.0)
                 vals.append((h.id, run_id, company_id, h.month,
                              h.year, h.quarter, cycle, division, h.basis, emp_id,
                              dept_id, job_id, cat_type, amount or 0.0,
                              int(config_id or 0), cfg_name, cfg_version,
                              currency.get(company_id, 0), div_id,
-                             # One person, one employment — for now (P5).
-                             emp_id or 0, 1.0, bool(is_advance),
+                             # THE PERSON, not the employment. One person may
+                             # hold two of these; the employment id stands in
+                             # only where nobody has said who the human is.
+                             people.get(emp_id) or emp_id or 0,
+                             1.0 if share is None else share,
+                             bool(is_advance),
+                             charge[0], charge[1], share is not None,
                              uid, now, uid, now))
         if not vals:
             return counts, divisions, fallbacks
@@ -662,8 +677,80 @@ class PbFactBuilder(models.AbstractModel):
             meta_cache[key] = (name, version)
             return name, version
 
+        # --- GROUP P5: the person, the share of the month, the charges -----
+        #
+        # All three are EMPTY on a database without `pb_workseg`, and empty on
+        # one that has it but has never written a segment — which is what
+        # keeps every fact row identical to the one this builder produced
+        # before this phase (`test_01_aggregate_parity`).
+        person_of, share_of, charges = {}, {}, {}
+        if 'pb.person' in self.env:
+            self.env.cr.execute(
+                "SELECT id, pb_person_id FROM hr_employee "
+                " WHERE pb_person_id IS NOT NULL")
+            person_of = dict(self.env.cr.fetchall())
+        months = {d.replace(day=1) for d in ends.values() if d}
+        if months and 'pb.work.segment' in self.env:
+            for row in self.env['pb.work.segment'].sudo().search_read(
+                    [('state', '=', 'confirmed'),
+                     ('month', 'in', sorted(months))],
+                    ['home_employee_id', 'host_employee_id', 'month', 'fte',
+                     'share', 'kind', 'host_company_id', 'home_company_id']):
+                month = row['month']
+                fte = row['fte'] or row['share'] or 0.0
+                host = (row['host_employee_id'] or [0])[0]
+                home = (row['home_employee_id'] or [0])[0]
+                crossed = ((row['host_company_id'] or [0])[0]
+                           != (row['home_company_id'] or [0])[0])
+                if host:
+                    key = (host, month)
+                    share_of[key] = min(1.0, share_of.get(key, 0.0) + fte)
+                if home and (crossed or row['kind'] in ('joiner', 'leaver')):
+                    # The home employment is worth the month LESS the days
+                    # that were worked somewhere else. Written as a
+                    # subtraction from a full month so two stretches in two
+                    # entities settle at the right total rather than at the
+                    # last one read.
+                    key = (home, month)
+                    base = share_of.get(key)
+                    base = 1.0 if base is None else base
+                    share_of[key] = max(0.0, round(base - fte, 6))
+        if months and 'pb.cost.transfer' in self.env:
+            # A charge has TWO sides and they land on two different rows: the
+            # entity that paid carries it as "charged to other entities", and
+            # the entity whose days they were carries it as "charged from".
+            # The second side is only reachable where that entity has an
+            # employment for the person — with no employment there is no fact
+            # row to attach it to, and inventing one would be inventing a
+            # person on a payroll.
+            employment_in = {}
+            if 'pb.person' in self.env:
+                self.env.cr.execute(
+                    "SELECT pb_person_id, company_id, id FROM hr_employee "
+                    " WHERE pb_person_id IS NOT NULL")
+                for person, company, employee in self.env.cr.fetchall():
+                    employment_in.setdefault((person, company), employee)
+            for row in self.env['pb.cost.transfer'].sudo().search_read(
+                    [('month', 'in', sorted(months))],
+                    ['home_employee_id', 'month', 'amount', 'to_company_id',
+                     'person_id']):
+                amount = row['amount'] or 0.0
+                payer = (row['home_employee_id'] or [0])[0]
+                if payer:
+                    key = (payer, row['month'])
+                    to_others, from_others = charges.get(key, (0.0, 0.0))
+                    charges[key] = (to_others + amount, from_others)
+                other = employment_in.get(((row['person_id'] or [0])[0],
+                                           (row['to_company_id'] or [0])[0]))
+                if other:
+                    key = (other, row['month'])
+                    to_others, from_others = charges.get(key, (0.0, 0.0))
+                    charges[key] = (to_others, from_others + amount)
+
         return {'ends': ends, 'currency': currency,
-                'division_for': division_for, 'config_meta': config_meta}
+                'division_for': division_for, 'config_meta': config_meta,
+                'person_of': person_of, 'share_of': share_of,
+                'charges': charges}
 
     # ------------------------------------------------------------- coverage
     def _coverage(self, run_ids):
