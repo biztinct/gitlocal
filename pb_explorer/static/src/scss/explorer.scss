@@ -565,6 +565,148 @@
         font-size: 12.5px; color: var(--muted);
     }
 
+    // ======================================================= GROUP P3
+    //  The breadcrumb (the hero), the money chip, the people strip, the
+    //  rate badges and the compare table. Tokens only — no invented hex.
+    // ================================================================
+    .pbex-trail {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px 16px;
+        margin: 2px 0 14px; padding: 10px 14px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh);
+    }
+    .pbex-crumbs {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+        min-width: 0;
+    }
+    .pbex-crumb {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 10px; border: 0; border-radius: 999px;
+        background: transparent; color: var(--muted);
+        font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: background .18s ease, color .18s ease;
+
+        &:hover:not(:disabled) { background: var(--soft); color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        &.last { color: var(--ink); cursor: default; }
+        &:disabled { cursor: default; }
+    }
+    .pbex-sep { display: inline-flex; color: var(--line); }
+    .pbex-next {
+        display: inline-flex; align-items: center; gap: 4px;
+        margin-left: 2px; color: var(--muted); font-size: 12px;
+        i { font-style: normal; opacity: .8; }
+    }
+
+    .pbex-money { display: flex; align-items: center; gap: 10px; }
+    .pbex-cur {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 999px;
+        background: var(--soft); color: var(--p-deep);
+        font-size: 12.5px; b { font-weight: 700; }
+    }
+    .pbex-seg {
+        display: inline-flex; padding: 3px; gap: 2px;
+        background: var(--line-2); border-radius: 999px;
+
+        button {
+            border: 0; background: transparent; cursor: pointer;
+            padding: 5px 12px; border-radius: 999px;
+            font-size: 12.5px; font-weight: 600; color: var(--muted);
+            transition: background .18s ease, color .18s ease;
+            &:hover { color: var(--p); }
+            &.on { background: var(--surface); color: var(--p-deep);
+                   box-shadow: 0 1px 3px rgba(16, 12, 40, .1); }
+            &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        }
+    }
+
+    .pbex-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; cursor: pointer;
+        background: var(--soft); color: var(--p-deep);
+        font-size: 11.5px; font-weight: 600; white-space: nowrap;
+        &:hover { background: var(--p-light); }
+    }
+
+    .pbex-heads {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px;
+        padding: 10px 18px 0;
+
+        .hd { display: inline-flex; align-items: baseline; gap: 6px;
+              b { font-size: 16px; font-weight: 700; color: var(--ink);
+                  font-variant-numeric: tabular-nums; }
+              i { font-style: normal; font-size: 12.5px; color: var(--muted); } }
+        .note { font-size: 12px; color: var(--muted); font-style: italic; }
+        .pbex-btn.sm { margin-left: auto; padding: 6px 10px; font-size: 12.5px; }
+    }
+
+    .pbex-parts {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+        padding: 12px 18px 0;
+        .lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+        .note { font-size: 12px; color: var(--muted); flex-basis: 100%; }
+    }
+    .pbex-part {
+        display: inline-flex; align-items: baseline; gap: 8px;
+        padding: 7px 13px; border-radius: var(--r-sm); cursor: pointer;
+        border: 1px solid var(--line); background: var(--surface);
+        font-size: 13px; color: var(--ink);
+        b { font-weight: 700; color: var(--muted); font-size: 11.5px;
+            letter-spacing: .04em; }
+        &:hover { border-color: var(--p-light); }
+        &.on { border-color: var(--p); background: var(--soft);
+               b { color: var(--p-deep); } }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+
+    .pbex-rates {
+        margin: 12px 18px 0; padding: 12px 14px;
+        background: var(--line-2); border-radius: var(--r-sm);
+    }
+    .pbex-rates-head {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12.5px; font-weight: 600; color: var(--p-deep);
+        span { display: inline-flex; align-items: center; gap: 6px; }
+    }
+    .pbex-rate-rows {
+        display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px;
+    }
+    .pbex-rate {
+        display: inline-flex; align-items: baseline; gap: 7px;
+        font-size: 12.5px; color: var(--ink);
+        b { color: var(--muted); font-weight: 600; }
+    }
+
+    .pbex-alert.nocv {
+        .nocv-row { display: block; font-variant-numeric: tabular-nums; }
+        .nocv-why { display: block; margin-top: 4px; opacity: .9; }
+    }
+    .pbex-link {
+        border: 0; background: transparent; padding: 0; margin-top: 6px;
+        color: var(--p); font-weight: 600; font-size: 12.5px; cursor: pointer;
+        text-decoration: underline;
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    .pbex-into {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 18px; height: 18px; padding: 0; flex-shrink: 0;
+        border: 0; border-radius: 50%; cursor: pointer;
+        background: var(--line-2); color: var(--muted);
+        &:hover { background: var(--p); color: #fff; }
+    }
+
+    .pbex-table.cmp {
+        td.spark, th.spark { width: 76px; padding-right: 4px; }
+        td.spark svg { display: block; }
+    }
+    .pbex-tag.runs {
+        background: var(--line-2); color: var(--ink);
+        &.warn { background: var(--amber-s); color: var(--amber); }
+    }
+
     // --------------------------------------------------------- responsive
     @media (max-width: 900px) {
         .pbex-wrap { padding: 16px 14px 32px; }
@@ -574,6 +716,15 @@
     }
     @media (max-width: 620px) {
         .pbex-rail { padding: 12px; gap: 10px 12px; }
+        .pbex-trail { flex-direction: column; align-items: flex-start; }
+        .pbex-money { width: 100%; flex-wrap: wrap; }
+        .pbex-seg button { padding: 5px 9px; font-size: 12px; }
+        .pbex-crumb { padding: 5px 7px; font-size: 12.5px; }
+        .pbex-next { display: none; }
+        .pbex-heads { padding: 10px 14px 0; gap: 6px 12px;
+                      .pbex-btn.sm { margin-left: 0; } }
+        .pbex-parts { padding: 10px 14px 0; }
+        .pbex-rates { margin: 10px 14px 0; }
         .pbex-chip-group.grow { flex-basis: 100%; }
         .pbex-head-tools .lbl { display: none; }
         .pbex-btn { padding: 8px 10px; }

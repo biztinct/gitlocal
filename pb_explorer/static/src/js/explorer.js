@@ -26,16 +26,39 @@ const CHART_META = {
     donut:   { icon: "pie",       label: _t("Share") },
     heatmap: { icon: "thermo",    label: _t("Heatmap") },
     table:   { icon: "table",     label: _t("Table") },
+    compare: { icon: "gitMerge",  label: _t("Compare") },
 };
 
 const FILTER_META = {
     department_id: _t("Department"),
+    division_id:   _t("Division"),
     division:      _t("Division"),
+    scheme:        _t("Payroll scheme"),
+    kind:          _t("Kind of run"),
+    country:       _t("Country"),
+    group:         _t("Group"),
     category_type: _t("Component type"),
     code:          _t("Component"),
-    cycle:         _t("Cycle"),
+    cycle:         _t("Kind of run"),
     basis:         _t("Basis"),
 };
+
+/** The icon each rung of the walk down the group wears. */
+const LEVEL_ICON = {
+    group: "globe", country: "globe", company_id: "building",
+    division_id: "layers", department_id: "users", job_id: "user",
+};
+
+/** Where the reader is standing, in the words on the screen. */
+const LEVEL_LABEL = {
+    group: _t("Group"), country: _t("Country"), company_id: _t("Company"),
+    division_id: _t("Division"), department_id: _t("Department"),
+    job_id: _t("Job position"),
+};
+
+/** The one place the URL is written and read. Keys are short on purpose —
+ *  the hash is a link somebody pastes into a message, not a payload. */
+const HASH_KEY = "pbex";
 
 export class PbExplorer extends Component {
     static template = "pb_explorer.PbExplorer";
@@ -48,6 +71,8 @@ export class PbExplorer extends Component {
         this.ic = ic;
         this.chartMeta = CHART_META;
         this.filterMeta = FILTER_META;
+        this.levelIcon = LEVEL_ICON;
+        this.levelLabel = LEVEL_LABEL;
         this.canvasRef = useRef("canvas");
 
         this.state = useState({
@@ -64,7 +89,16 @@ export class PbExplorer extends Component {
                 filters: {},
                 date_from: null,
                 date_to: null,
+                // GROUP P3 — the three switches that change what a number
+                // MEANS, so each one travels in the spec and in the link.
+                advances: "main",
+                currency: "group",
+                target_currency: 0,
+                per_head: false,
+                path: [],
             },
+            part: 0,            // which currency the chart shows in own mode
+            showRates: false,   // the "what rate was used" fold
             openPicker: "",     // which chip dropdown is open
             filterKey: "",      // which filter is being added
             drill: null,
@@ -95,18 +129,26 @@ export class PbExplorer extends Component {
             // exactly what was chosen — arriving pre-filtered must never feel
             // like a dead end.
             const ctx = this.props.action?.context || {};
-            if (ctx.pbex_spec || ctx.pbex_lens) {
+            // A ⌘K row says what it MEANT through `pb_focus` — "compare the
+            // schemes", not just "open the Explorer".
+            const lens = ctx.pbex_lens || (ctx.pb_focus === "compare"
+                ? "compare" : "");
+            if (ctx.pbex_spec || lens) {
                 try {
                     const resolved = await this.orm.call(MODEL, "resolve_spec",
-                        [ctx.pbex_lens || false, ctx.pbex_spec || false]);
+                        [lens || false, ctx.pbex_spec || false]);
                     this.state.spec = { ...this.state.spec, ...resolved };
-                    this.state.lensId = ctx.pbex_lens || "";
+                    this.state.lensId = lens || "";
                     // An incoming question is the point of the visit; fold the
                     // lens grid away so the answer is what you land on.
                     this.state.lensesOpen = false;
                 } catch (e) {
                     this.notif.add(this._msg(e), { type: "warning" });
                 }
+            } else {
+                // A pasted link reproduces the view it was copied from —
+                // breadcrumb, chips, money mode and all.
+                this.readHash();
             }
             await this.run();
             this.state.loaded = true;
@@ -114,9 +156,20 @@ export class PbExplorer extends Component {
         // BOTH hooks are required: the payload is already loaded by the time
         // the first render happens, so onPatched never fires for it and the
         // canvas would sit at its default 300x150, empty.
-        onMounted(() => this.syncChart());
+        // WF4: the platform's hotkey service listens on `window` and stops
+        // propagation for the keys it claims, so a bubble-phase listener in a
+        // cockpit never fires. Capture phase, and nothing is prevented that
+        // the platform still needs.
+        this._onKey = (ev) => this.onKeydown(ev);
+        onMounted(() => {
+            this.syncChart();
+            window.addEventListener("keydown", this._onKey, { capture: true });
+        });
         onPatched(() => this.syncChart());
-        onWillUnmount(() => this.destroyChart());
+        onWillUnmount(() => {
+            this.destroyChart();
+            window.removeEventListener("keydown", this._onKey, { capture: true });
+        });
     }
 
     // ------------------------------------------------------------- loading
@@ -135,6 +188,8 @@ export class PbExplorer extends Component {
             const spec = JSON.parse(JSON.stringify(this.state.spec));
             this.state.data = await this.orm.call(MODEL, "query", [spec]);
             this.state.drill = null;
+            this.state.part = 0;
+            this.writeHash();
         } catch (e) {
             this.state.error = this._msg(e);
             this.state.data = null;
@@ -143,8 +198,241 @@ export class PbExplorer extends Component {
         }
     }
 
+    /**
+     * The server's own sentence, or ours — and never the platform's (GR17).
+     *
+     * The top-level `.message` of every RPC error on this platform is the
+     * literal string "Odoo Server Error". Falling back to it prints the one
+     * word this product may never say, in a red box, on the screen the reader
+     * is looking at. So it is not a rung on this ladder: either the server
+     * told us something a person can act on (`error.data.message`, or the
+     * older `error.message.data.message` shape), or we say our own sentence.
+     */
     _msg(e) {
-        return (e && (e.data?.message || e.message)) || _t("Something went wrong.");
+        const data = (e && e.data) || (e && e.message && e.message.data);
+        return (data && data.message) || _t("Something went wrong.");
+    }
+
+    // ----------------------------------------------------------- the link
+    /** The view, in the address bar, so a link reproduces exactly this. */
+    writeHash() {
+        try {
+            const s = this.state.spec;
+            const compact = {
+                m: s.measure, d: s.dimension, g: s.grain, c: s.chart,
+                f: s.filters, p: s.path, a: s.advances, u: s.currency,
+                t: s.target_currency || 0, h: s.per_head ? 1 : 0,
+            };
+            const hash = `#${HASH_KEY}=${encodeURIComponent(JSON.stringify(compact))}`;
+            if (window.location.hash !== hash) {
+                window.history.replaceState(null, "", hash);
+            }
+        } catch {
+            // A URL is a convenience. It never gets in the way of a chart.
+        }
+    }
+
+    readHash() {
+        try {
+            const raw = (window.location.hash || "").replace(/^#/, "");
+            if (!raw.startsWith(`${HASH_KEY}=`)) { return; }
+            const c = JSON.parse(decodeURIComponent(raw.slice(HASH_KEY.length + 1)));
+            const s = this.state.spec;
+            if (c.m) { s.measure = c.m; }
+            if (c.d) { s.dimension = c.d; }
+            if (c.g) { s.grain = c.g; }
+            if (c.c) { s.chart = c.c; }
+            if (c.f && typeof c.f === "object") { s.filters = c.f; }
+            if (Array.isArray(c.p)) { s.path = c.p; }
+            if (c.a) { s.advances = c.a; }
+            if (c.u) { s.currency = c.u; }
+            s.target_currency = Number(c.t) || 0;
+            s.per_head = !!c.h;
+        } catch {
+            // A hash somebody edited by hand is not an error state — the
+            // board simply opens on its own default view.
+        }
+    }
+
+    // ------------------------------------------------------ the breadcrumb
+    get trail() {
+        return this.state.data?.trail || this.state.schema?.trail
+            || { levels: [], path: [], root_label: "", next: "" };
+    }
+
+    /** Group › Vietnam › Retail › Bread — the root plus every step walked. */
+    get crumbs() {
+        const t = this.trail;
+        const out = [{
+            level: t.root || "group",
+            label: t.root_label || _t("Everything"),
+            index: -1,
+        }];
+        (t.path || []).forEach((step, i) => {
+            out.push({ level: step.level, label: step.label, index: i });
+        });
+        return out;
+    }
+
+    /** Can a click on a bar take the reader one level deeper? */
+    get canStepDown() {
+        const levels = this.trail.levels || [];
+        return levels.includes(this.state.spec.dimension)
+            && this.state.spec.dimension !== "job_id";
+    }
+
+    /** The level shown below the one the reader is standing on. */
+    nextLevelAfter(level) {
+        const levels = this.trail.levels || [];
+        const at = levels.indexOf(level);
+        return at >= 0 && at + 1 < levels.length ? levels[at + 1] : "";
+    }
+
+    stepDown(key, label) {
+        const level = this.state.spec.dimension;
+        const next = this.nextLevelAfter(level);
+        if (!next) { return; }
+        this.state.spec.path = [...(this.state.spec.path || []),
+                                { level, key, label }];
+        this.state.spec.dimension = next;
+        this.state.lensId = "";
+        this.destroyChart();
+        this.run();
+    }
+
+    /** A crumb is a way BACK: everything after it is dropped, filters too. */
+    goToCrumb(index) {
+        const path = (this.state.spec.path || []).slice(0, index + 1);
+        const dropped = (this.state.spec.path || []).slice(index + 1);
+        const filters = { ...this.state.spec.filters };
+        for (const step of dropped) {
+            delete filters[step.level];
+        }
+        const level = index < 0 ? (this.trail.root || "")
+            : path[path.length - 1].level;
+        this.state.spec.path = path;
+        this.state.spec.filters = filters;
+        const next = this.nextLevelAfter(level);
+        if (next) { this.state.spec.dimension = next; }
+        this.destroyChart();
+        this.run();
+    }
+
+    onKeydown(ev) {
+        // ← walks back up the group, the way a file browser does.
+        if (ev.key === "ArrowLeft" && !ev.metaKey && !ev.ctrlKey
+            && !/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target?.tagName || "")) {
+            const path = this.state.spec.path || [];
+            if (path.length) {
+                ev.preventDefault();
+                this.goToCrumb(path.length - 2);
+            }
+        }
+    }
+
+    // ------------------------------------------------------------- money
+    get money() { return this.state.data?.money || null; }
+
+    get shownCurrency() {
+        return this.activePart?.currency || this.money?.target || null;
+    }
+
+    get parts() { return this.state.data?.parts || []; }
+
+    get activePart() {
+        const parts = this.parts;
+        if (!parts.length) { return this.state.data; }
+        return parts[Math.min(this.state.part, parts.length - 1)];
+    }
+
+    get isMixed() { return !!this.state.data?.mixed; }
+
+    /** The switch appears only when there is genuinely a choice to make. */
+    get showCurrencySwitch() {
+        if (this.state.data?.measure_kind === "count") { return false; }
+        const known = this.state.schema?.money || {};
+        return !!(known.many || this.isMixed || this.state.data?.converted);
+    }
+
+    get currencyTitle() {
+        const cur = this.shownCurrency;
+        const money = this.state.schema?.money || {};
+        if (!cur) { return _t("Every figure in the money it was paid in."); }
+        if (this.state.spec.currency === "own") {
+            return _t("Every figure in the money it was paid in.");
+        }
+        return money.policy
+            ? _t("Shown in %(currency)s, converted using %(policy)s.",
+                 { currency: cur.name, policy: money.policy.toLowerCase() })
+            : _t("Shown in %s.", cur.name);
+    }
+
+    get rates() { return this.money?.rates || []; }
+
+    get unconverted() { return this.money?.unconverted || []; }
+
+    /** "at 17,450 · 31 Aug" — the whole of a rate badge. */
+    rateChip(rate) {
+        const value = new Intl.NumberFormat(undefined,
+            { maximumFractionDigits: rate.rate >= 100 ? 0 : 4 }).format(rate.rate);
+        return rate.rate_date ? `${value} · ${rate.rate_date}` : value;
+    }
+
+    setCurrencyMode(mode) {
+        if (this.state.spec.currency === mode) { return; }
+        this.state.spec.currency = mode;
+        this.state.part = 0;
+        this.destroyChart();
+        this.run();
+    }
+
+    showPart(index) {
+        if (this.state.part === index) { return; }
+        this.state.part = index;
+        this.destroyChart();
+    }
+
+    toggleRates() { this.state.showRates = !this.state.showRates; }
+
+    openRates() {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: _t("Exchange rates"),
+            res_model: "res.currency.rate",
+            views: [[false, "list"], [false, "form"]],
+        }).catch((e) => this.notif.add(this._msg(e), { type: "danger" }));
+    }
+
+    // ------------------------------------------------- runs, people, ratio
+    toggleAdvances() {
+        this.state.spec.advances =
+            this.state.spec.advances === "main" ? "all" : "main";
+        this.destroyChart();
+        this.run();
+    }
+
+    togglePerHead() {
+        this.state.spec.per_head = !this.state.spec.per_head;
+        this.destroyChart();
+        this.run();
+    }
+
+    get heads() { return this.state.data?.heads || { people: 0, fte: 0 }; }
+
+    get isCompare() { return this.state.spec.chart === "compare"; }
+
+    /** A row's shape over time, in 68x18 px. Points only — the reader is
+     *  comparing directions, not reading values off it. */
+    sparkline(values) {
+        const nums = (values || []).map((v) => Number(v || 0));
+        if (nums.length < 2) { return ""; }
+        const min = Math.min(...nums);
+        const max = Math.max(...nums);
+        const span = max - min || 1;
+        const step = 68 / (nums.length - 1);
+        return nums.map((v, i) =>
+            `${(i * step).toFixed(1)},${(16 - ((v - min) / span) * 14).toFixed(1)}`
+        ).join(" ");
     }
 
     // ----------------------------------------------------------- chip edits
@@ -247,19 +535,28 @@ export class PbExplorer extends Component {
     }
 
     get donut() {
-        const d = this.state.data;
+        const d = this.activePart;
         if (!d) { return { arcs: [], total: 0, dropped: 0 }; }
         return donutArcs(d.series, { size: 240, thickness: 36 });
     }
 
     get heatmap() {
-        const d = this.state.data;
+        const d = this.activePart;
         if (!d) { return { rows: [] }; }
         return heatmapCells(d.series, d.categories);
     }
 
+    /** The money on screen, with its own symbol on it. */
+    moneyWithSymbol(value) {
+        const text = this.money(value);
+        const cur = this.shownCurrency;
+        if (!cur || this.state.data?.measure_kind === "count") { return text; }
+        return cur.position === "before"
+            ? `${cur.symbol}${text}` : `${text}${cur.symbol ? " " + cur.symbol : ""}`;
+    }
+
     syncChart() {
-        if (!this.isCanvasChart || !this.state.data) {
+        if (!this.isCanvasChart || this.isCompare || !this.activePart) {
             this.destroyChart();
             return;
         }
@@ -271,9 +568,11 @@ export class PbExplorer extends Component {
         // branch re-renders, and a signature-only check would then keep an
         // instance bound to a detached element while the visible canvas
         // stayed empty.
+        const part = this.activePart;
         const sig = JSON.stringify([
-            this.state.spec.chart, this.state.data.categories.map((c) => c.key),
-            this.state.data.series.map((s) => [s.key, s.values]),
+            this.state.spec.chart, this.state.part,
+            part.categories.map((c) => c.key),
+            part.series.map((s) => [s.key, s.values]),
         ]);
         if (sig === this._chartSig && this._chart && this._canvasEl === canvas) {
             return;
@@ -285,14 +584,14 @@ export class PbExplorer extends Component {
         // (ours or a leftover) must go, or `new Chart()` throws "Canvas is
         // already in use".
         window.Chart.getChart?.(canvas)?.destroy();
-        const cfg = chartConfig(this.state.spec.chart, this.state.data,
+        const cfg = chartConfig(this.state.spec.chart, part,
                                 { money: (v, s) => this.money(v, s) });
         cfg.options.onClick = (evt, els) => {
             if (!els || !els.length) { return; }
             const el = els[0];
-            const s = this.state.data.series[el.datasetIndex];
-            const c = this.state.data.categories[el.index];
-            if (s && c) { this.openDrill(s.key, c.key, s.label, c.label); }
+            const s = part.series[el.datasetIndex];
+            const c = part.categories[el.index];
+            if (s && c) { this.onCellClick(s.key, c.key, s.label, c.label); }
         };
         this._chart = new window.Chart(canvas, cfg);
         // Force final geometry synchronously — never depend on an animation
@@ -310,6 +609,24 @@ export class PbExplorer extends Component {
     }
 
     // ----------------------------------------------------------------- drill
+    /**
+     * One click, two honest meanings.
+     *
+     * While the reader is walking down the group, a bar is a PLACE — clicking
+     * "Retail" goes into Retail. At the bottom of the walk, and whenever the
+     * chart is showing something that is not a place (a component, a kind of
+     * run), a bar is a NUMBER and clicking it shows the people inside it. The
+     * headline's own "Who is in this number" button reaches the people at any
+     * level, so neither meaning is ever a dead end.
+     */
+    onCellClick(seriesKey, categoryKey, seriesLabel, categoryLabel) {
+        if (this.canStepDown && seriesKey !== "" && seriesKey !== "_all") {
+            this.stepDown(seriesKey, seriesLabel);
+            return;
+        }
+        this.openDrill(seriesKey, categoryKey, seriesLabel, categoryLabel);
+    }
+
     async openDrill(seriesKey, categoryKey, seriesLabel, categoryLabel, page = 0) {
         this.state.drillBusy = true;
         this.state.drill = {
@@ -393,6 +710,14 @@ export class PbExplorer extends Component {
 
     openLens(lens) {
         this.state.spec = {
+            // A starting point is a fresh question: it keeps the period and
+            // the money settings the reader chose, and drops the breadcrumb
+            // they walked, because the lens names its own level.
+            advances: this.state.spec.advances,
+            currency: this.state.spec.currency,
+            target_currency: this.state.spec.target_currency,
+            per_head: false,
+            path: [],
             ...JSON.parse(JSON.stringify(lens.spec)),
             date_from: this.state.spec.date_from,
             date_to: this.state.spec.date_to,
@@ -487,7 +812,7 @@ export class PbExplorer extends Component {
     }
 
     // --------------------------------------------------------------- totals
-    get grandTotal() { return this.state.data?.grand_total || 0; }
+    get grandTotal() { return this.activePart?.grand_total || 0; }
 
     get hasPending() { return (this.state.data?.pending || []).length > 0; }
 

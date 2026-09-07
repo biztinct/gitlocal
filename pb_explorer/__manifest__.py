@@ -29,15 +29,17 @@ Chart.js comes from Odoo's own lazy ``web.chartjs_lib`` bundle, never a CDN.
 """,
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
-    'version': '19.0.1.3.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     # pb_import_kit supplies the shared --pbim-* design tokens + primitives;
     # pb_insights supplies the cockpit precedent this one is a sibling of.
+    # pb_group supplies `pb.fx` (the ONE conversion service) and `pb.division`
+    # (the group-level division a fact row is stamped with) — GROUP P3.
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_payruns',
-                'pb_import_kit', 'pb_insights'],
+                'pb_import_kit', 'pb_insights', 'pb_group'],
     'data': [
         'security/ir.model.access.csv',
         'views/pb_explorer_action.xml',
@@ -48,6 +50,7 @@ Chart.js comes from Odoo's own lazy ``web.chartjs_lib`` bundle, never a CDN.
             'pb_explorer/static/src/js/pbex_icons.js',
             'pb_explorer/static/src/js/pbex_charts.js',
             'pb_explorer/static/src/js/explorer.js',
+            'pb_explorer/static/src/js/explorer_palette.js',
             'pb_explorer/static/src/xml/explorer.xml',
         ],
     },

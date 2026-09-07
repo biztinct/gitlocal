@@ -1,7 +1,14 @@
 /** @odoo-module **/
 // Lucide icon paths + ic() for the Analytics Explorer. 24x24 viewBox,
 // currentColor stroke, no fills. NEVER emoji, never Font Awesome (C11).
+//
+// ONE REGISTRY OF RECORD. The shared set lives in pb_import_kit
+// (`import_icons.js`) and every name in it is available here — this file only
+// holds the handful the Explorer drew before the kit existed, plus its own
+// wrapper (which carries the `pbex-ic` class the stylesheet sizes on). A new
+// icon goes in the KIT, so the next surface that needs it already has it.
 import { markup } from "@odoo/owl";
+import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 
 export const IC = {
     alert:      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/>',
@@ -28,9 +35,12 @@ export const IC = {
     x:          '<path d="M18 6 6 18M6 6l12 12"/>',
 };
 
+/** Every name the kit knows, plus this module's own. Local wins. */
+const ALL = { ...KIT_IC, ...IC };
+
 /** Inline an icon at `size` px. Returns markup (safe: our own constants). */
 export function ic(name, size = 16, cls = "") {
-    const path = IC[name] || IC.grid;
+    const path = ALL[name] || IC.grid;
     return markup(
         `<svg class="pbex-ic ${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" ` +
         `fill="none" stroke="currentColor" stroke-width="1.9" ` +
