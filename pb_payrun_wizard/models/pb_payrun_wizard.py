@@ -161,6 +161,134 @@ class PbPayrunWizard(models.AbstractModel):
             'why': _("No scheme covers this person yet."),
         } for employee in names]
 
+    # ==================================================================
+    # GROUP P5 — people in two places.
+    #
+    # A pay run for a scheme takes the people that scheme's map covers. It now
+    # also takes the employments somebody's DAYS point at: when a person spent
+    # ten days of the month in this company, the employment that pays those
+    # ten days belongs in this company's run even though nothing about the
+    # person's standing arrangement puts them here.
+    #
+    # Two rails, both load-bearing:
+    #   * the registry probe — a database without `pb_workseg` never reaches
+    #     any of this and its population is byte-for-byte the one that shipped;
+    #   * the employment must belong to THIS company. A pay run happens inside
+    #     one legal entity (GR16), and a host employment in a third company is
+    #     that company's business.
+    # ==================================================================
+    @api.model
+    def _segment_hosts(self, config_id, date_start, date_end):
+        """`{employee_id: chip}` for the host employments this run should add.
+
+        The chip is what the review step shows beside the row: the other
+        entity's name and how many days it is for. Never raises — a run must
+        not fail because a calendar could not be read.
+        """
+        if 'pb.work.segment' not in self.env \
+                or not (date_start and date_end):
+            return {}
+        try:
+            rows = self.env['pb.work.segment'].sudo().search([
+                ('state', '=', 'confirmed'),
+                ('host_employee_id', '!=', False),
+                ('date_from', '<=', date_end), ('date_to', '>=', date_start),
+                ('host_company_id', '=', self.env.company.id),
+            ])
+        except Exception:       # noqa: BLE001
+            _logger.exception('Work segments could not be read for the run')
+            return {}
+        out = {}
+        for row in rows:
+            if row.home_company_id == row.host_company_id:
+                continue
+            # A stretch that names a scheme belongs to THAT scheme's run and
+            # to no other. One that names none belongs to whichever run the
+            # host company builds, because that is the answer the map gives.
+            if config_id and row.config_id and row.config_id.id != int(config_id):
+                continue
+            hit = out.setdefault(row.host_employee_id.id, {
+                'employee_id': row.host_employee_id.id,
+                'emp': row.host_employee_id.name or '',
+                'other': row.home_company_id.name or '',
+                'days': 0.0,
+                'month_days': row.month_days or 0.0,
+            })
+            hit['days'] += row.days or 0.0
+        for hit in out.values():
+            hit['why'] = _(
+                "%(days)s of %(total)s working days worked here — the rest "
+                "were worked in %(other)s.",
+                days='%g' % hit['days'], total='%g' % (hit['month_days'] or 0),
+                other=hit['other'])
+        return out
+
+    @api.model
+    def split_chips(self, vals=None):
+        """The "Split" chips for a period, for the review step.
+
+        One place answers "who is paid in two places this month" for this
+        screen; the Decision Room and the Explorer ask the same question of
+        `pb.assignments.split_people` so the two figures cannot disagree.
+        """
+        vals = vals or {}
+        chips = self._segment_hosts(int(vals.get('formula_config_id') or 0),
+                                    vals.get('date_start'),
+                                    vals.get('date_end'))
+        away = {}
+        if 'pb.work.segment' in self.env and vals.get('date_start'):
+            try:
+                rows = self.env['pb.work.segment'].sudo().search([
+                    ('state', '=', 'confirmed'),
+                    ('date_from', '<=', vals.get('date_end')),
+                    ('date_to', '>=', vals.get('date_start')),
+                    ('home_company_id', '=', self.env.company.id),
+                ])
+                for row in rows:
+                    if row.home_company_id == row.host_company_id:
+                        continue
+                    hit = away.setdefault(row.home_employee_id.id, {
+                        'employee_id': row.home_employee_id.id,
+                        'emp': row.home_employee_id.name or '',
+                        'other': row.host_company_id.name or '',
+                        'days': 0.0,
+                        'month_days': row.month_days or 0.0,
+                    })
+                    hit['days'] += row.days or 0.0
+                for hit in away.values():
+                    hit['why'] = _(
+                        "%(days)s of %(total)s working days were worked in "
+                        "%(other)s.",
+                        days='%g' % hit['days'],
+                        total='%g' % (hit['month_days'] or 0),
+                        other=hit['other'])
+            except Exception:       # noqa: BLE001
+                _logger.exception('Work segments could not be read')
+        rows = list(chips.values()) + list(away.values())
+        return {
+            'rows': rows[:200],
+            'count': len({r['employee_id'] for r in rows}),
+            'sentence': _(
+                "%(count)s people are paid in two places this month.",
+                count=len({r['employee_id'] for r in rows})),
+        }
+
+    @api.model
+    def preview_split(self, employee_id, date_start=None):
+        """Both payslips for somebody paid in two places, before the run.
+
+        Delegated rather than reimplemented: `pb.assignments` already computes
+        a pair of payslips inside a savepoint and rolls them back, and two
+        implementations of "what will this person be paid" is exactly the
+        drift this programme exists to close.
+        """
+        if 'pb.assignments' not in self.env:
+            return {'ok': False, 'slips': [],
+                    'note': _("Splitting a month between entities is not "
+                              "switched on for this database.")}
+        return self.env['pb.assignments'].preview_saved(employee_id,
+                                                        date_start)
+
     @api.model
     def _require_scheme(self, vals):
         """The scheme this run is for, or an empty recordset — never a guess.
@@ -202,11 +330,19 @@ class PbPayrunWizard(models.AbstractModel):
             statuses=vals.get('statuses'),
             employee_ids=vals.get('employee_ids'))
         covered, missed = self._scheme_population(config_id, base)
+        # GROUP P5 — the host employments this run would gain, counted before
+        # anything is created, exactly like the rest of this preview.
+        hosts = self._segment_hosts(config_id, vals.get('date_start'),
+                                    vals.get('date_end'))
+        known = set(covered)
+        extra = [e for e in hosts if e not in known]
         return {
             'formula_config_id': config_id,
-            'covered': len(covered),
+            'covered': len(covered) + len(extra),
             'not_covered': len(missed),
             'people': missed[:100],
+            'split': [hosts[e] for e in extra],
+            'split_count': len(extra),
         }
 
     # ---------------- Step 1: defaults ----------------
@@ -240,7 +376,8 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     def _eligible_employees(self, statuses=None, employee_ids=None,
-                            formula_config_id=None):
+                            formula_config_id=None, date_start=None,
+                            date_end=None):
         """Who this run should produce a payslip for.
 
         `formula_config_id` — the scheme this run is for. When it is given, the
@@ -298,6 +435,19 @@ class PbPayrunWizard(models.AbstractModel):
         # the shortlist already agreed on rather than re-admitting anybody.
         if formula_config_id:
             base, _missed = self._scheme_population(formula_config_id, base)
+
+        # GROUP P5 — and then the days. An employment this company hosts for
+        # part of the month belongs in this company's run whatever the map
+        # says about the person's standing arrangement, because the map
+        # answers about where somebody normally works and a segment answers
+        # about where they actually were. Added LAST and de-duplicated, so it
+        # can only ever ADD somebody the run would otherwise have missed.
+        if date_start and date_end:
+            hosts = self._segment_hosts(formula_config_id, date_start,
+                                        date_end)
+            if hosts:
+                known = set(base)
+                base = list(base) + [e for e in hosts if e not in known]
         return base
 
     def _employee_signals(self):
@@ -635,7 +785,8 @@ class PbPayrunWizard(models.AbstractModel):
         emp_ids = [e for e in self._eligible_employees(
                        statuses=vals.get('statuses'),
                        employee_ids=vals.get('employee_ids'),
-                       formula_config_id=config.id if config else None)
+                       formula_config_id=config.id if config else None,
+                       date_start=ds, date_end=de)
                    if e not in set(adopted.mapped('employee_id').ids)]
         payload = {
             'run_id': run.id, 'name': name,
@@ -1513,19 +1664,46 @@ class PbPayrunWizard(models.AbstractModel):
         # sudo: the run/slips may have been created as sudo (see compute_batch).
         run = self.env['hr.payslip.run'].sudo().browse(run_id)
         slips = run.slip_ids
+        # GROUP P5 — who in this run is paid in two places, worked out once
+        # and attached to the rows so the review step can chip them without a
+        # second round trip.
+        split = {}
+        try:
+            split = self.split_chips({
+                'formula_config_id': (run.pb_formula_config_id.id
+                                      if 'pb_formula_config_id' in run._fields
+                                      and run.pb_formula_config_id else 0),
+                'date_start': run.date_start, 'date_end': run.date_end,
+            })
+        except Exception:       # noqa: BLE001 — a chip may not break a summary
+            _logger.exception('Split chips could not be read for run %s',
+                              run.id)
+            split = {'rows': [], 'count': 0, 'sentence': ''}
+        chips = {row['employee_id']: row for row in (split.get('rows') or [])}
+
         rows, total_net = [], 0.0
         for s in slips:
             net = self._slip_net(s)
             total_net += net
+            chip = chips.get(s.employee_id.id)
             rows.append({
                 'id': s.id, 'emp': s.employee_id.name, 'state': s.state,
+                'employee_id': s.employee_id.id,
                 'net': net, 'flag': (net <= 0),
+                'split': bool(chip),
+                'split_why': (chip or {}).get('why', ''),
+                'split_other': (chip or {}).get('other', ''),
             })
+        in_run = len([r for r in rows if r['split']])
         return {
             'run_id': run.id, 'name': run.name, 'state': run.state,
             'count': len(slips), 'total_net': total_net,
             'flagged': len([r for r in rows if r['flag']]),
             'rows': rows,
+            'split_count': in_run,
+            'split_sentence': _(
+                "%(count)s people in this run are paid in two places this "
+                "month.", count=in_run) if in_run else '',
         }
 
     @api.model
