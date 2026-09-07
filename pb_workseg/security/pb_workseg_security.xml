@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE TIER. Reading where somebody works is part of reading a roster,
+         and everybody who may plan or run payroll may look. CHANGING it moves
+         money between legal entities, so it is a payroll manager's act.
+         ================================================================== -->
+
+    <record id="module_category_workseg" model="ir.module.category">
+        <field name="name">Where people work</field>
+        <field name="sequence">53</field>
+    </record>
+
+    <record id="res_groups_privilege_workseg" model="res.groups.privilege">
+        <field name="name">Where people work</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_workseg"/>
+    </record>
+
+    <record id="group_workseg_manager" model="res.groups">
+        <field name="name">Set where people work</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_workseg"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Split a person's month between entities, join two employee records into one person, and choose how a split month is paid.</field>
+    </record>
+
+    <!-- Additive: this only ADDS an implication to groups somebody else owns. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('pb_workseg.group_workseg_manager'))]"/>
+    </record>
+
+<data noupdate="1">
+
+    <!-- A charge is a fact about the entity that CARRIED it, so the paying
+         company owns the row and the platform's own company rules scope it. -->
+    <record id="rule_cost_transfer_company" model="ir.rule">
+        <field name="name">Charged between entities: company</field>
+        <field name="model_id" ref="model_pb_cost_transfer"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A segment belongs to the HOME entity's books: it is that entity's
+         payslip the days come out of. -->
+    <record id="rule_work_segment_company" model="ir.rule">
+        <field name="name">Work segment: company</field>
+        <field name="model_id" ref="model_pb_work_segment"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('home_company_id', '=', False), ('home_company_id', 'in', company_ids)]</field>
+    </record>
+
+</data>
+</odoo>

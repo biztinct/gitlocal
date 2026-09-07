@@ -1,0 +1,299 @@
+// =====================================================================
+//  Where people work — .wsg-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page wsg". Nothing here declares a colour of its own,
+//  so this screen re-tints with the rest of the app in light and in dark
+//  and cannot drift into a second palette.
+//
+//  The one thing this file owns that the kit does not is THE STRIP: a
+//  month drawn as its days. Three states a person has to be able to tell
+//  apart at a glance and without colour alone — a working day, a day the
+//  calendar does not work, and a day already spent somewhere else — so
+//  every state carries a border or a weight as well as a tone, and the
+//  legend spells all three out in words underneath.
+//
+//  Every animation lives inside a `prefers-reduced-motion: no-preference`
+//  block, so a machine asked for calm gets the finished screen on the
+//  first frame with nothing to recover from.
+// =====================================================================
+
+.pbim.pbim-page.wsg {
+
+    .wsg-wrap { padding-bottom: 28px; }
+
+    // -------------------------------------------------------- the header
+    .wsg-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .wsg-head-id { min-width: 0; }
+    .wsg-h { margin: 6px 0 0; font-size: 20px; font-weight: 800; color: var(--pbim-ink); }
+    .wsg-s { margin: 4px 0 0; font-size: 13px; color: var(--pbim-muted); max-width: 640px; }
+    .wsg-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // --------------------------------------------------------- the cards
+    .wsg-card {
+        padding: 20px 22px; margin-bottom: 16px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg);
+        background: var(--pbim-surface);
+    }
+    .wsg-card-h {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .wsg-card-id { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+    .wsg-card-ic {
+        width: 34px; height: 34px; flex: none; border-radius: 10px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+    }
+    .wsg-card-t { margin: 0; font-size: 15px; font-weight: 800; color: var(--pbim-ink); }
+    .wsg-card-s { margin: 3px 0 0; font-size: 12.5px; color: var(--pbim-muted); max-width: 640px; }
+    .wsg-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wsg-empty { text-align: center; padding: 30px 16px; }
+    .wsg-empty-ic { color: var(--pbim-primary); margin-bottom: 8px; }
+
+    // -------------------------------------------------------- the person
+    .wsg-person {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap;
+    }
+    .wsg-person-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .wsg-person-ic {
+        width: 40px; height: 40px; flex: none; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+    }
+    .wsg-person-n { margin: 0; font-size: 16px; font-weight: 800; color: var(--pbim-ink); }
+    .wsg-person-s { margin: 2px 0 0; font-size: 12px; color: var(--pbim-muted); }
+    .wsg-emps { gap: 6px; }
+    .wsg-emp.is-on { background: var(--pbim-soft); color: var(--pbim-primary); font-weight: 700; }
+
+    // ========================================================= THE STRIP
+    .wsg-strip {
+        display: grid; gap: 6px; margin: 4px 0 12px;
+        grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+    }
+    .wsg-day {
+        display: flex; align-items: center; justify-content: center;
+        aspect-ratio: 1 / 1; min-height: 38px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); color: var(--pbim-text);
+        cursor: pointer; user-select: none;
+        b { font-size: 12.5px; font-weight: 700; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &:disabled { cursor: default; }
+        // A day the calendar does not work. Muted AND borderless, so it is
+        // told apart without relying on the tone alone.
+        &.is-off {
+            background: var(--pbim-bg); color: var(--pbim-muted);
+            border-style: dashed;
+        }
+        // Already spent somewhere else.
+        &.is-seg {
+            background: var(--pbim-soft); color: var(--pbim-primary-dark);
+            border-color: var(--pbim-primary);
+        }
+        // Being drawn right now.
+        &.is-picked {
+            background: var(--pbim-primary); color: #fff;
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 2px var(--pbim-ring);
+        }
+    }
+    .wsg-legend {
+        display: flex; gap: 16px; flex-wrap: wrap;
+        font-size: 11.5px; color: var(--pbim-muted);
+    }
+    .wsg-leg { display: inline-flex; align-items: center; gap: 6px; }
+    .wsg-dot {
+        width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        &--off { background: var(--pbim-bg); border-style: dashed; }
+        &--seg { background: var(--pbim-soft); border-color: var(--pbim-primary); }
+    }
+    .wsg-hint {
+        display: flex; align-items: flex-start; gap: 8px;
+        margin-top: 12px; padding: 10px 12px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg); color: var(--pbim-muted);
+        font-size: 12.5px;
+    }
+
+    // ------------------------------------------------- the stretches drawn
+    .wsg-segs {
+        display: grid; gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .wsg-seg {
+        padding: 14px 16px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: var(--pbim-bg);
+    }
+    .wsg-seg-top {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        b { font-size: 13.5px; color: var(--pbim-ink); }
+    }
+    .wsg-seg-pol { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .wsg-seg-days { margin-top: 6px; font-size: 12.5px; color: var(--pbim-text); }
+    .wsg-seg-meta { margin-top: 4px; font-size: 11.5px; color: var(--pbim-muted); }
+    .wsg-seg-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .wsg-seg-auto { font-size: 11.5px; color: var(--pbim-muted); }
+
+    .wsg-xfers {
+        margin-top: 16px; padding-top: 14px;
+        border-top: 1px solid var(--pbim-line);
+        h4 { margin: 0 0 8px; font-size: 13px; font-weight: 800; color: var(--pbim-ink); }
+    }
+    .wsg-xfer {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 10px; margin-bottom: 6px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft); color: var(--pbim-ink); font-size: 12.5px;
+    }
+
+    // ------------------------------------------------------- the history
+    .wsg-hist { display: grid; gap: 6px; }
+    .wsg-hist-r {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 8px 10px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg); font-size: 12.5px;
+    }
+    .wsg-hist-d { font-weight: 700; color: var(--pbim-ink); }
+    .wsg-hist-c { color: var(--pbim-text); }
+    .wsg-hist-p { color: var(--pbim-muted); }
+
+    // --------------------------------------------------- "Same person?"
+    .wsg-pairs { display: grid; gap: 12px; }
+    .wsg-pair {
+        padding: 14px 16px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: var(--pbim-bg);
+    }
+    .wsg-pair-ev { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .wsg-pair-ev .is-on { background: var(--pbim-soft); color: var(--pbim-primary); font-weight: 700; }
+    .wsg-pair-people {
+        display: grid; gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .wsg-pair-p {
+        display: flex; flex-direction: column; gap: 2px;
+        padding: 10px 12px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        b { font-size: 13px; color: var(--pbim-ink); }
+    }
+    .wsg-pair-c { font-size: 11.5px; color: var(--pbim-muted); }
+    .wsg-pair-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+    // --------------------------------------------------------- the popover
+    .wsg-scrim {
+        position: fixed; inset: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(30, 27, 46, .42); padding: 18px;
+    }
+    .wsg-pop {
+        width: 100%; max-width: 560px; max-height: 86vh; overflow-y: auto;
+        background: var(--pbim-surface); border-radius: var(--pbim-r-lg);
+        border: 1px solid var(--pbim-line); padding: 20px 22px;
+    }
+    .wsg-pop-h {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px;
+        h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--pbim-ink); }
+    }
+    .wsg-pop-s { margin: 4px 0 12px; font-size: 12.5px; color: var(--pbim-muted); }
+    .wsg-pop-pol { margin: 8px 0 0; font-size: 12px; color: var(--pbim-primary); font-weight: 700; }
+    .wsg-pop-err {
+        margin: 12px 0 0; padding: 10px 12px; font-size: 12.5px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-rose-soft); color: var(--pbim-rose);
+    }
+    .wsg-pop-f {
+        display: flex; justify-content: flex-end; gap: 8px;
+        margin-top: 16px; padding-top: 14px;
+        border-top: 1px solid var(--pbim-line);
+    }
+    .wsg-field {
+        display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px;
+        label { font-size: 11.5px; font-weight: 700; color: var(--pbim-muted); }
+        select, input {
+            width: 100%; padding: 8px 10px; font-size: 13px;
+            border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+            background: var(--pbim-surface); color: var(--pbim-text);
+        }
+    }
+    .wsg-pats { display: grid; gap: 10px; margin: 12px 0 0; }
+    .wsg-pat {
+        display: flex; align-items: flex-start; gap: 10px; text-align: left;
+        padding: 12px 14px; cursor: pointer;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r);
+        background: var(--pbim-surface); color: var(--pbim-text);
+        b { display: block; font-size: 13px; color: var(--pbim-ink); }
+        span { display: block; font-size: 12px; color: var(--pbim-muted); }
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+        }
+    }
+    .wsg-pat-tick { flex: none; color: var(--pbim-primary); line-height: 0; padding-top: 2px; }
+    .wsg-pat-body { min-width: 0; }
+
+    .wsg-make {
+        margin-top: 14px; padding: 12px 14px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-amber-soft); color: var(--pbim-ink);
+        font-size: 12.5px;
+        p { margin: 0 0 10px; }
+    }
+    .wsg-make-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .wsg-prev { margin-top: 16px; }
+    .wsg-prevbody { margin-top: 12px; }
+    .wsg-slips {
+        display: grid; gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .wsg-slip {
+        display: flex; flex-direction: column; gap: 2px;
+        padding: 14px 16px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: var(--pbim-soft);
+        b { font-size: 13px; color: var(--pbim-ink); }
+    }
+    .wsg-slip-d { font-size: 11.5px; color: var(--pbim-muted); }
+    .wsg-slip-n { font-size: 20px; font-weight: 800; color: var(--pbim-ink); }
+    .wsg-slip-s { font-size: 11.5px; color: var(--pbim-muted); }
+    .wsg-slipx {
+        display: flex; align-items: center; gap: 8px; margin-top: 10px;
+        padding: 10px 12px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft); color: var(--pbim-ink); font-size: 13px;
+    }
+
+    .wsg-chip { background: var(--pbim-soft); color: var(--pbim-primary); }
+
+    // ------------------------------------------------------------- phone
+    @media (max-width: 720px) {
+        .wsg-card { padding: 16px 14px; }
+        .wsg-strip { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+        // A button whose label is a whole sentence is wider than a phone. It
+        // wraps rather than pushing the card off the side of the screen.
+        .pbim-btn { max-width: 100%; white-space: normal; text-align: left; }
+        .wsg-pop { max-width: 100%; }
+    }
+
+    // ------------------------------------------------------------ motion
+    @media (prefers-reduced-motion: no-preference) {
+        .wsg-day { transition: transform .12s ease, background .12s ease; }
+        .wsg-day:hover:enabled { transform: translateY(-1px); }
+        .wsg-seg, .wsg-pair { animation: wsg-rise .3s ease both; }
+        .wsg-pop { animation: wsg-pop .18s ease both; }
+    }
+}
+
+@keyframes wsg-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes wsg-pop {
+    from { opacity: 0; transform: scale(.97); }
+    to   { opacity: 1; transform: none; }
+}
