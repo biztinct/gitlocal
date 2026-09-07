@@ -155,6 +155,10 @@ export class PayrunWizard extends Component {
             // it leaves out, both known BEFORE anything is created.
             scheme: { preview: null, loading: false, open: false },
             summary: null,
+            // GROUP P5 — both payslips for one person paid in two places,
+            // computed in a savepoint and rolled back. Small metadata, so it
+            // lives in `useState` (GR26) and not on the instance.
+            split: { open: false, loading: false, data: null },
             progress: null,   // { done, total } during chunked compute → determinate bar
             // NETROLE P3 — the month's spreadsheet.
             // VALUEKIND P4 — who this run covers. `statuses` is null until the
@@ -247,6 +251,52 @@ export class PayrunWizard extends Component {
 
     /** "" when this database has no Import door, and then no button is offered. */
     get importDoorAction() { return importDoor(registry.category("actions")); }
+
+    // ------------------------------------------------------------ GROUP P5
+    /**
+     * The rows of this run whose people were paid in two places this month.
+     *
+     * Read off the summary the server already built rather than asked for
+     * again: the run has just been computed and a second round trip would be
+     * a second chance for the two lists to disagree.
+     */
+    get splitRows() {
+        const rows = (this.state.summary && this.state.summary.rows) || [];
+        return rows.filter((r) => r.split);
+    }
+
+    /**
+     * Both payslips for one split person, computed for real and thrown away.
+     *
+     * The run's payslips are drafts and the segment is already saved, so the
+     * only honest preview is the payroll engine's own answer — worked out in
+     * a savepoint that is rolled back, so nothing here can leave a second
+     * payslip behind for a later compute to find.
+     */
+    async openSplitPreview(row) {
+        this.state.split.loading = true;
+        this.state.split.open = true;
+        this.state.split.data = null;
+        try {
+            this.state.split.data = await this.orm.call(
+                "pb.payrun.wizard", "preview_split",
+                [row.employee_id || 0, this.state.form.date_start]);
+        } catch (e) {
+            const data = (e && e.data) || (e && e.message && e.message.data);
+            this.state.split.data = {
+                ok: false, slips: [],
+                note: (data && data.message)
+                    || "Those two payslips could not be worked out.",
+            };
+        } finally {
+            this.state.split.loading = false;
+        }
+    }
+
+    closeSplitPreview() {
+        this.state.split.open = false;
+        this.state.split.data = null;
+    }
 
     openImportWizard() {
         const door = this.importDoorAction;

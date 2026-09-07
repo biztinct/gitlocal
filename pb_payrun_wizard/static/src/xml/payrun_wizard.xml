@@ -467,6 +467,25 @@
                             </button>
                         </div>
                     </div>
+                    <!-- GROUP P5 — people paid in two places this month. Not
+                         an exception and not a warning: a fact about the run,
+                         with the days named and both payslips one press away. -->
+                    <div class="pw-splitbox" t-if="state.summary.split_count">
+                        <t t-out="ic('arrowLeftRight',16)"/>
+                        <div class="pw-splitbody">
+                            <p><b t-esc="state.summary.split_sentence"/></p>
+                            <div class="pw-splitrow" t-foreach="splitRows" t-as="sp"
+                                 t-key="sp.id">
+                                <span class="pw-splitname" t-esc="sp.emp"/>
+                                <span class="pw-splitwhy" t-esc="sp.split_why"/>
+                                <button class="pw-btn ghost sm"
+                                        t-on-click="() => this.openSplitPreview(sp)">
+                                    <t t-out="ic('receipt',14)"/> Preview both slips
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <t t-if="exc.length or state.summary.flagged">
                         <p class="pw-muted mb">These items need a look before approval:</p>
                         <div class="pw-list" data-coach="pw-exceptions">
@@ -501,6 +520,45 @@
                     <t t-esc="sheetContinueLabel"/> <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="stepKey === 'compute'" t-on-click="() => this.gotoKey('review')">Review exceptions <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="stepKey === 'review'" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
+            </div>
+
+            <!-- GROUP P5 — both payslips for one person, side by side, in
+                 whatever money each entity keeps its books in. Nothing here is
+                 saved: the numbers come from a real compute that was rolled
+                 back the moment it was read. -->
+            <div class="pw-splitdlg" t-if="state.split.open" role="dialog"
+                 aria-modal="true" t-on-click.self="closeSplitPreview">
+                <div class="pw-splitcard">
+                    <div class="pw-splithead">
+                        <h3>Both payslips</h3>
+                        <button class="pw-btn ghost sm" t-on-click="closeSplitPreview">
+                            <t t-out="ic('x',14)"/> Close
+                        </button>
+                    </div>
+                    <p class="pw-muted" t-if="state.split.loading">Working both payslips out…</p>
+                    <t t-if="!state.split.loading and state.split.data">
+                        <p class="pw-muted" t-if="state.split.data.policy_label"
+                           t-esc="state.split.data.policy_label"/>
+                        <div class="pw-splitcards">
+                            <div class="pw-slipcard" t-foreach="state.split.data.slips"
+                                 t-as="sl" t-key="sl_index">
+                                <b t-esc="sl.company"/>
+                                <span class="pw-slipdays">
+                                    <t t-esc="sl.days"/> of <t t-esc="sl.month_days"/> working days
+                                </span>
+                                <span class="pw-slipnet" t-esc="sl.net_label"/>
+                                <span class="pw-muted">Take-home pay</span>
+                            </div>
+                        </div>
+                        <div class="pw-slipxfer" t-if="state.split.data.transfer">
+                            <t t-out="ic('arrowLeftRight',15)"/>
+                            <span t-esc="state.split.data.transfer.sentence"/>
+                        </div>
+                        <p class="pw-muted" t-if="state.split.data.note"
+                           t-esc="state.split.data.note"/>
+                        <p class="pw-muted">Nothing here was saved. These are the numbers this run will produce.</p>
+                    </t>
+                </div>
             </div>
         </div>
     </div>

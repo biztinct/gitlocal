@@ -367,3 +367,59 @@ $pw-lock-bd: #A7E3D5;
     background: #FFF5F7; border: 1px solid #F6C8D6;
 }
 .pw-root .pw-notcovered .pw-plist { max-height: 190px; overflow-y: auto; }
+
+/* =====================================================================
+   GROUP P5 — people paid in two places.
+
+   Not styled as a warning. A split month is a normal arrangement somebody
+   set up on purpose, so it reads as a statement about the run with the
+   days named — the red is reserved for the things that need fixing.
+   ===================================================================== */
+.pw-root .pw-splitbox {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin: 0 0 14px; padding: 12px 14px;
+    border: 1px solid var(--pw-border); border-radius: 12px;
+    background: var(--pw-soft);
+    color: var(--pw-brand);
+}
+.pw-root .pw-splitbody { flex: 1 1 auto; min-width: 0; color: var(--pw-ink); }
+.pw-root .pw-splitbody p { margin: 0 0 8px; font-size: 13px; }
+.pw-root .pw-splitrow {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 7px 0; border-top: 1px solid var(--pw-soft2);
+}
+.pw-root .pw-splitname { font-weight: 700; font-size: 12.5px; }
+.pw-root .pw-splitwhy { flex: 1 1 220px; font-size: 12px; color: var(--pw-muted); }
+
+.pw-root .pw-splitdlg {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(27,23,51,.42); padding: 18px;
+}
+.pw-root .pw-splitcard {
+    width: 100%; max-width: 620px; max-height: 82vh; overflow-y: auto;
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    border: 1px solid var(--pw-border);
+}
+.pw-root .pw-splithead {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 10px;
+    h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--pw-ink); }
+}
+.pw-root .pw-splitcards {
+    display: grid; gap: 12px; margin: 12px 0;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.pw-root .pw-slipcard {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 14px 16px; border-radius: 12px;
+    border: 1px solid var(--pw-border); background: var(--pw-soft);
+    b { font-size: 13px; color: var(--pw-ink); }
+}
+.pw-root .pw-slipdays { font-size: 11.5px; color: var(--pw-muted); }
+.pw-root .pw-slipnet { font-size: 20px; font-weight: 800; color: var(--pw-ink); }
+.pw-root .pw-slipxfer {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-radius: 12px;
+    background: var(--pw-soft); color: var(--pw-ink); font-size: 13px;
+}
