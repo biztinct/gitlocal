@@ -83,6 +83,55 @@ class PbPayrunWizardDemo(models.AbstractModel):
     def _gen(self):
         return self.env['pb.demo.generator']
 
+    # ==================================================================
+    # GROUP P2 — the scheme picker and this division path, reconciled.
+    #
+    # The Run Payroll screen now asks "pay run for which scheme?" and sends
+    # `formula_config_id`. This path has always been driven by a DIVISION tag
+    # instead, and resolved the End-cycle config for it. Both statements are
+    # about the same run, so they are made to agree here rather than fighting:
+    #
+    #   * the division is taken from the chosen scheme when the screen did not
+    #     send one (every demo scheme carries its division tag), so nothing
+    #     else in this file has to change;
+    #   * the CHOSEN scheme is what computes, not "the End-cycle one for this
+    #     division" — otherwise picking the Mid-Month Advance card would
+    #     silently run the End-Month payroll;
+    #   * a mid-month run deducts no advance from itself.
+    #
+    # The generic path is untouched: with no division and no scheme this class
+    # still calls super and the salary-structure run happens exactly as before.
+    # ==================================================================
+    def _demo_division_for(self, vals):
+        """The division this run is about — from the tag, else from the scheme."""
+        key = vals.get('division')
+        if key and cat.DIVISIONS.get(key):
+            return key
+        config = self._demo_chosen_config(vals)
+        tag = getattr(config, 'pb_division', '') if config else ''
+        return tag if tag and cat.DIVISIONS.get(tag) else None
+
+    def _demo_chosen_config(self, vals):
+        """The scheme the Run Payroll screen picked, or an empty recordset."""
+        Config = self.env['hr.formula.config'].sudo()
+        config_id = int(vals.get('formula_config_id') or 0)
+        if not config_id:
+            return Config.browse()
+        return Config.browse(config_id).exists()
+
+    def _demo_run_config(self, vals, key):
+        """Which scheme actually computes this run.
+
+        The chosen one when the screen named one belonging to this division,
+        and the division's End-cycle scheme otherwise — which is what every
+        caller before this phase meant.
+        """
+        chosen = self._demo_chosen_config(vals)
+        if chosen and getattr(chosen, 'pb_division', '') == key \
+                and chosen.state == 'active':
+            return chosen
+        return self._gen().resolve_config(key, 'end')
+
     def _division_options(self):
         """Divisions with an End config in the active company set + eligible count."""
         gen = self._gen()
@@ -214,11 +263,10 @@ class PbPayrunWizardDemo(models.AbstractModel):
     # both keep the SAME division-scoped, formula-config-native compute per slip.
     @api.model
     def prepare_run(self, vals):
-        key = vals.get('division')
-        if not key or not cat.DIVISIONS.get(key):
+        key = self._demo_division_for(vals)
+        if not key:
             return super().prepare_run(vals)          # generic (non-demo) path
-        gen = self._gen()
-        end_cfg = gen.resolve_config(key, 'end')
+        end_cfg = self._demo_run_config(vals, key)
         if not end_cfg:
             return super().prepare_run(vals)
 
@@ -253,23 +301,29 @@ class PbPayrunWizardDemo(models.AbstractModel):
             run_vals['company_id'] = company_id
         if 'is_demo' in Run._fields:
             run_vals['is_demo'] = True
+        # GROUP P2 — the run says which scheme it is for, on this path too.
+        if 'pb_formula_config_id' in Run._fields:
+            run_vals['pb_formula_config_id'] = end_cfg.id
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)
         return {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de, 'division': key,
+            'formula_config_id': end_cfg.id,
             'emp_ids': list(cmap), 'total': len(cmap),
         }
 
     @api.model
     def compute_batch(self, payload):
-        key = payload.get('division')
-        if not key or not cat.DIVISIONS.get(key):
+        key = self._demo_division_for(payload)
+        if not key:
             return super().compute_batch(payload)
         gen = self._gen()
-        end_cfg = gen.resolve_config(key, 'end')
-        mid_cfg = gen.resolve_config(key, 'mid')
+        end_cfg = self._demo_run_config(payload, key)
+        # A mid-month run pays the advance; it does not deduct one from itself.
+        mid_cfg = (gen.resolve_config(key, 'mid')
+                   if end_cfg and end_cfg.cycle_type != 'mid_cycle' else None)
         if not end_cfg:
             return super().compute_batch(payload)
 
@@ -335,14 +389,15 @@ class PbPayrunWizardDemo(models.AbstractModel):
     # --------------------------------------------------------- step 2 create+compute
     @api.model
     def create_and_compute(self, vals):
-        key = vals.get('division')
-        if not key or not cat.DIVISIONS.get(key):
-            # No division → generic (salary-structure) path.
+        key = self._demo_division_for(vals)
+        if not key:
+            # No division and no scheme → generic (salary-structure) path.
             return super().create_and_compute(vals)
 
         gen = self._gen()
-        end_cfg = gen.resolve_config(key, 'end')
-        mid_cfg = gen.resolve_config(key, 'mid')
+        end_cfg = self._demo_run_config(vals, key)
+        mid_cfg = (gen.resolve_config(key, 'mid')
+                   if end_cfg and end_cfg.cycle_type != 'mid_cycle' else None)
         if not end_cfg:
             return super().create_and_compute(vals)
 
@@ -388,6 +443,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
             run_vals['company_id'] = company_id
         if 'is_demo' in Run._fields:
             run_vals['is_demo'] = True
+        # GROUP P2 — the run says which scheme it is for, on this path too.
+        if 'pb_formula_config_id' in Run._fields:
+            run_vals['pb_formula_config_id'] = end_cfg.id
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)
