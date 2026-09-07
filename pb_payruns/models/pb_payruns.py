@@ -56,9 +56,21 @@ class PbPayruns(models.AbstractModel):
             or user.has_group('pb_hr_payroll_base.group_payroll_final_approver') \
             or user.has_group('pb_hr_payroll_base.group_payroll_super_admin')
 
+        # GROUP P3 — the board used to list EVERY pay run on the database.
+        # `hr.payslip.run` has no `company_id` of its own, so nothing scoped
+        # it: on a group, one company's board showed another company's runs
+        # and priced them all in the active company's money. A run belongs to
+        # the company that its payslips belong to (and, since P2, to the
+        # company of the scheme it was run for), so that is what scopes it.
         runs = self._safe(
-            lambda: Run.search([], order='date_end desc, id desc', limit=BOARD_LIMIT),
+            lambda: Run.search([], order='date_end desc, id desc',
+                               limit=BOARD_LIMIT * 4),
             default=Run.browse())
+        owner = self._run_companies(runs)
+        allowed = set(self.env.companies.ids or [company.id])
+        runs = runs.filtered(
+            lambda r: owner.get(r.id, company.id) in allowed)[:BOARD_LIMIT]
+        currency_of = self._currency_by_company()
 
         # Batch-compute all run totals in ONE pass (single SQL) instead of letting
         # each per-run field access trigger its own aggregation.
@@ -99,7 +111,12 @@ class PbPayruns(models.AbstractModel):
             back_to = PB_SEND_BACK.get(state, '')
 
             net = self._safe(lambda r=run: r.pb_total_net)
-            if state == 'done':
+            run_company = owner.get(run.id, company.id)
+            run_currency = currency_of.get(run_company) or {
+                'name': cur.name or '', 'symbol': cur.symbol or ''}
+            if state == 'done' and run_currency['name'] == (cur.name or ''):
+                # Only ever add up money of the SAME kind. A cross-currency
+                # total is not a rounding problem, it is a wrong number.
                 period_net += net or 0.0
 
             batches.append({
@@ -132,6 +149,10 @@ class PbPayruns(models.AbstractModel):
                 # the same stored field, which is why only the board was poorer.
                 'division': run.pb_division or '',
                 'division_label': run.pb_division_label or '',
+                # Each run priced in ITS OWN company's money.
+                'company_id': run_company,
+                'currency': run_currency['symbol'],
+                'currency_name': run_currency['name'],
             })
 
         columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
@@ -160,8 +181,15 @@ class PbPayruns(models.AbstractModel):
             is_demo_user = False
         demo_period = {'from': '2026-06-01', 'to': '2026-06-30'} if is_demo_user else None
 
+        currencies = sorted({b['currency_name'] for b in batches if
+                             b.get('currency_name')})
         return {
             'currency': cur.symbol or '',
+            'currency_name': cur.name or '',
+            # More than one money on the board is worth SAYING: the stage
+            # total below only ever adds up the active company's own runs.
+            'many_currencies': len(currencies) > 1,
+            'currencies': currencies,
             'company': company.name,
             'divisions': divisions,
             'is_demo_user': is_demo_user,
@@ -183,6 +211,45 @@ class PbPayruns(models.AbstractModel):
         }
 
     # ---------------- helpers ----------------
+    @api.model
+    def _run_companies(self, runs):
+        """{run id: company id} — the entity a pay run actually happened in.
+
+        `hr.payslip.run` carries no company of its own on this build. Its
+        payslips do, and since GROUP P2 so does the scheme it was run for, so
+        the answer is read from those in ONE indexed query rather than guessed
+        from whichever company the reader is looking at.
+        """
+        if not runs:
+            return {}
+        out = {}
+        Run = self.env['hr.payslip.run']
+        if 'pb_formula_config_id' in Run._fields:
+            for run in runs:
+                config = run.pb_formula_config_id
+                if config and config.company_id:
+                    out[run.id] = config.company_id.id
+        self.env.cr.execute(
+            "SELECT payslip_run_id, MIN(company_id) FROM hr_payslip "
+            "WHERE payslip_run_id IN %s AND state != 'cancel' GROUP BY 1",
+            (tuple(runs.ids),))
+        for run_id, company_id in self.env.cr.fetchall():
+            if company_id:
+                out[run_id] = company_id      # payslip truth wins
+        return out
+
+    @api.model
+    def _currency_by_company(self):
+        rows = self.env['res.company'].sudo().with_context(
+            active_test=False).search_read([], ['currency_id'])
+        currencies = self.env['res.currency'].sudo().with_context(
+            active_test=False).browse(
+            [r['currency_id'][0] for r in rows if r['currency_id']]).exists()
+        by_id = {c.id: {'name': c.name, 'symbol': c.symbol or c.name}
+                 for c in currencies}
+        return {r['id']: by_id.get(r['currency_id'][0])
+                for r in rows if r['currency_id']}
+
     @api.model
     def _fmt_period(self, d1, d2):
         if not d1 and not d2:

@@ -93,6 +93,14 @@
     .pbr-new .ic svg, .pbr-rejected-h .chev svg { display: block; }
 
     /* division chips — the filter the payload has always carried */
+    // GROUP P3 — one line, only when the board really holds two currencies.
+    .pbr-note {
+        display: flex; align-items: flex-start; gap: 8px;
+        margin: 0 0 16px; padding: 10px 13px; border-radius: 10px;
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12.5px; line-height: 1.45;
+    }
     .pbr-divs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
     .pbr-divchip {
         border: 1px solid var(--line); background: #fff; color: var(--muted);
