@@ -8400,6 +8400,30 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # F10 adapter 4 — Employee → scheme assignment (departments → schemes)
     # ------------------------------------------------------------------
+    # GROUP P2 — THE THREE THINGS THAT WERE WRONG HERE, AND WHAT REPLACED THEM.
+    #
+    #   1. NO COMPANY DOMAIN AT ALL (ledger gotcha GR3). Departments and schemes
+    #      were searched across the whole database, so on a group this canvas
+    #      offered Vietnam's teams beside Singapore's schemes and let somebody
+    #      wire one to the other. Both searches are now scoped to ONE company —
+    #      the active one — and shared (company-less) schemes travel with it.
+    #
+    #   2. MID-MONTH ADVANCES WERE FILTERED OUT (`cycle_type != 'mid_cycle'`),
+    #      so a division's advance scheme could never be attached to anything
+    #      and every advance run resolved down the old ladder to whatever it
+    #      found first. Every live scheme is offered now, and each wire says
+    #      which KIND OF RUN it answers.
+    #
+    #   3. ATTACHING ONE SCHEME DELETED EVERY OTHER LINE FOR THAT TEAM. With
+    #      one line per team that was invisible; with a line per kind of run it
+    #      would silently destroy the advance mapping every time somebody set
+    #      the end-of-month one. `scheme_mapping_create` now replaces only the
+    #      SAME kind of run.
+    #
+    # This generic two-column payload is still what a database without
+    # `pb_scheme_map` sees. Where that module IS installed, the Mapping screen
+    # renders its own board instead — coverage rings, the drafted map and the
+    # people nobody pays — and this adapter is the fallback, not the ceiling.
     @api.model
     def scheme_mapping_data(self, config_id=None, context_id=None):
         config = self._pick_config(config_id)
@@ -8407,9 +8431,10 @@ class PbFormulaStudio(models.AbstractModel):
         Dept = self.env['hr.department']
         Config = self.env['hr.formula.config']
         Assign = self.env['hr.formula.scheme.assignment']
-        # LEFT = departments that actually have employees (with coverage counts)
+        company = self.env.company
+        # LEFT = this company's departments that actually have employees
         counts = {}
-        for d in Dept.search([]):
+        for d in Dept.search([('company_id', '=', company.id)]):
             n = Emp.search_count([('department_id', '=', d.id)])
             if n:
                 counts[d.id] = n
@@ -8417,22 +8442,25 @@ class PbFormulaStudio(models.AbstractModel):
         left = [{'id': d.id, 'label': d.name or '(dept)',
                  'sublabel': '%s employees' % '{:,}'.format(counts[d.id]),
                  'meta': {'count': counts[d.id]}} for d in depts]
-        # RIGHT = the primary payroll schemes (active, not the mid-cycle advance)
-        schemes = Config.search([('state', '=', 'active'),
-                                 ('cycle_type', '!=', 'mid_cycle')], order='name')
+        # RIGHT = every live scheme this company runs, advances included
+        schemes = Config.search(
+            ['|', ('company_id', '=', False), ('company_id', '=', company.id),
+             ('state', '=', 'active')], order='cycle_type, name')
         scheme_ids = set(schemes.ids)
         assigns = Assign.search([('config_id', 'in', schemes.ids)])
         cov = defaultdict(int)
         wires = []
         for a in assigns:
-            if a.department_id and a.config_id.id in scheme_ids:
+            if a.department_id and a.config_id.id in scheme_ids \
+                    and a.department_id.id in counts:
                 wires.append({'id': 'sa%s' % a.id, 'kind': 'mapping', 'ref': a.id,
                               'leftId': a.department_id.id, 'rightId': a.config_id.id,
                               'state': 'accepted'})
                 cov[a.config_id.id] += counts.get(a.department_id.id, 0)
         right = [{'id': c.id, 'label': c.name,
                   'sublabel': (('%s covered' % '{:,}'.format(cov[c.id])) if cov[c.id]
-                               else (c.country_code or 'scheme')),
+                               else (self._scheme_cycle_label(c) or c.country_code
+                                     or 'scheme')),
                   'meta': {'coverage': cov[c.id]}} for c in schemes]
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
@@ -8445,6 +8473,16 @@ class PbFormulaStudio(models.AbstractModel):
         }
 
     @api.model
+    def _scheme_cycle_label(self, config):
+        """A scheme's kind of run, in the words a person uses."""
+        return {
+            'regular': _("Regular payroll"),
+            'mid_cycle': _("Mid-month advance"),
+            'end_cycle': _("End of month"),
+            'full_final': _("Final settlement"),
+        }.get(config.cycle_type or '', '')
+
+    @api.model
     def scheme_mapping_create(self, config_id, context_id, department_id, target_config_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
@@ -8454,9 +8492,22 @@ class PbFormulaStudio(models.AbstractModel):
         cfg = self.env['hr.formula.config'].browse(self._as_id(target_config_id))
         if not (dept.exists() and cfg.exists()):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
-        # one scheme per department: drop this department's other assignments
-        Assign.search([('department_id', '=', dept.id)]).unlink()
-        Assign.create({'department_id': dept.id, 'config_id': cfg.id})
+        if cfg.company_id and dept.company_id and cfg.company_id != dept.company_id:
+            return {'ok': False, 'msg': _(
+                "%(scheme)s belongs to another company, so it cannot pay "
+                "%(team)s.", scheme=cfg.name or '', team=dept.name or '')}
+        # One scheme per team PER KIND OF RUN. A team paid by an end-of-month
+        # scheme and a mid-month advance has two lines and both are correct;
+        # dropping every other line on attach would delete one of them.
+        cycle = cfg.cycle_type or 'any'
+        if 'cycle_type' in Assign._fields:
+            Assign.search([('department_id', '=', dept.id),
+                           ('cycle_type', '=', cycle)]).unlink()
+            Assign.create({'department_id': dept.id, 'config_id': cfg.id,
+                           'cycle_type': cycle})
+        else:
+            Assign.search([('department_id', '=', dept.id)]).unlink()
+            Assign.create({'department_id': dept.id, 'config_id': cfg.id})
         return {'ok': True}
 
     @api.model

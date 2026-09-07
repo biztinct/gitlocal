@@ -173,6 +173,16 @@ export class MappingStudio extends Component {
             config_id: Number(ctx.pb_config) || 0,
         };
         const askedMode = MODES.some((m) => m.id === ctx.pb_mode) ? ctx.pb_mode : "";
+        // GROUP P2 — a ⌘K row can only carry `focus`, never a whole context
+        // (the palette forwards the destination and `pb_focus` and nothing
+        // else). So a focus of "scheme" — or "scheme:<something>" — also names
+        // the tab. Scoped to that one word on purpose, and applied only when
+        // `pb_mode` said nothing: every pre-existing door keeps meaning exactly
+        // what it meant, because no other tab id is ever read as a mode here.
+        // Applied just after the state is built (a few lines below), so the
+        // cold-start default above stays exactly the one sentence it was.
+        const focusRaw = (ctx.pb_focus || "").toString();
+        const focusIsScheme = focusRaw.split(":")[0] === "scheme";
         // a deep link that NAMES a connector has chosen one
         const linkedConnector = !!this.arrival.connector_id;
 
@@ -248,13 +258,23 @@ export class MappingStudio extends Component {
             // it through the arrival reader once was the handover's explicit
             // instruction, and the alternative — every tab learning to read a
             // context key — is six places to keep in step for one feature.
-            focus: (ctx.pb_focus || "").toString(),
+            // "scheme:exceptions" asked for a tab AND a place inside it; the
+            // tab has been taken already, so what travels on is the rest.
+            focus: focusIsScheme ? focusRaw.split(":").slice(1).join(":")
+                                 : focusRaw,
             // Set when a Journey node opened this tab, so the tab can offer the
             // way BACK to the picture. `HubBackChip` leaves the whole cockpit;
             // this is a move within it, and conflating the two would make the
             // Journey a place you can only leave.
             fromJourney: false,
         });
+
+        // GROUP P2 — the ⌘K rows for "Who is paid by what" and "People not
+        // covered" can only carry `focus`, so a focus that names the scheme
+        // board lands on it. Applied here rather than inside the state literal
+        // so the cold-start default above remains the one sentence it was, and
+        // only when `pb_mode` said nothing — an explicit mode always wins.
+        if (!askedMode && focusIsScheme) { this.state.mode = "scheme"; }
 
         // J3 S2 — when the conflict dialog appears, focus goes INTO it. Without
         // this the shell keeps focus, Escape reaches nothing and a keyboard user
@@ -583,6 +603,35 @@ export class MappingStudio extends Component {
     get isJourney() { return this.state.mode === "journey"; }
 
     get isTreatment() { return this.state.mode === "treatment"; }
+
+    // GROUP P2 — the scheme tab's own board, when a module ships one.
+    //
+    // `pb_scheme_map` registers a component into the soft `pb_mapping_boards`
+    // registry. Where it is installed, the scheme tab renders THAT — coverage
+    // rings, the map drafted from what was actually paid, and the people
+    // nobody pays — and where it is not, the generic two-column wire canvas
+    // this tab has always drawn still answers, unchanged. The dependency runs
+    // one way: that module knows this screen exists; this screen only knows
+    // that something MAY have registered a board.
+    get schemeBoard() {
+        const boards = registry.category("pb_mapping_boards");
+        return boards.contains("scheme") ? boards.get("scheme") : null;
+    }
+
+    get isSchemeBoard() {
+        return this.state.mode === "scheme" && !!this.schemeBoard;
+    }
+
+    get schemeBoardProps() {
+        // Memoised on the two things it depends on: a getter returning a fresh
+        // object as child props re-renders the child on every paint (W21), and
+        // this child measures the DOM on every patch.
+        const focus = this.state.focus || "";
+        if (!this._schemeProps || this._schemeProps.focus !== focus) {
+            this._schemeProps = { focus };
+        }
+        return this._schemeProps;
+    }
 
     /** How many components the treatment board is showing. */
     get treatmentCount() { return this.state.treatmentCount || 0; }
@@ -2024,7 +2073,13 @@ export class MappingStudio extends Component {
         // VALUEKIND P5 — never on Component treatment, for the plainest
         // reason of the three: that board has no wires at all, so "draw a wire"
         // is an instruction for a different screen.
-        if (this.isTransform || this.isJourney || this.isTreatment) { return false; }
+        // GROUP P2 — never over the scheme board either, and for the sharpest
+        // reason yet: that board's own empty state IS the invitation ("press
+        // Draft the map from what you paid"), and a strip above it saying
+        // "pick your source, pick your scheme, draw a wire" describes three
+        // steps none of which exist there.
+        if (this.isTransform || this.isJourney || this.isTreatment
+                || this.isSchemeBoard) { return false; }
         return !!(this.state.data && this.state.data.ok && !this.mappedCount);
     }
 
