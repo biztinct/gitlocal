@@ -356,6 +356,55 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   The same shape bit the counts a second time: a scheme's coverage must be read
   for the scheme's OWN kind of run, or every mid-month card says "nobody yet".
 
+- GR19 (P3): **a rate between two currencies is one rate row DIVIDED BY
+  another**, so pricing only the foreign currency answers "nobody has priced
+  this". `pb.fx._side_rate` looks up a `res.currency.rate` row for EACH side;
+  a company's own currency usually has no row at all (it is the implicit 1.0),
+  and the group's presentation currency is normally exactly that currency. So
+  a fixture — or a customer — that adds one SGD row and expects SGD→VND to
+  work gets `known=False` and a perfectly correct refusal. BOTH sides need a
+  row under a company the group may read (`pb.fx.rate_companies`). Cost half
+  an hour in the P3 test suite before it was written down.
+- GR20 (P3): **`res.company.country_id` is NOT STORED on Odoo 19** — it is a
+  related field through the company's partner. `('country_id', 'in', ids)` in
+  a domain is therefore not a slow search, it is a hard
+  `ValueError: Cannot convert res.company.country_id to SQL because it is not
+  stored`, and the screen goes blank. Exactly the family of GR6
+  (`hr.department.complete_name`). Match countries in PYTHON over the handful
+  of companies in scope; the READ (`company.country_id.code`) is fine, only
+  the domain is not.
+- GR21 (P3): **a JavaScript class may not hold a getter and a method of the
+  same name** — the later definition silently wins, with no warning anywhere.
+  The Explorer already had a `money(value)` FORMATTER and P3 added a
+  `get money()` for the currency metadata; the formatter won, so
+  `this.money?.rates` read a property off a function, and every rate badge and
+  the whole "Not converted" list vanished while the payload was perfectly
+  correct. Two hours of looking at the right JSON and the wrong screen. One
+  name, one meaning: the getter is `moneyMeta`.
+- GR22 (P3): **the whitespace between two adjacent `t-esc` nodes is whitespace
+  the browser may collapse**, even under `xml:space="preserve"`. A rate
+  sentence assembled from four template nodes rendered as
+  `1 SGD = 20,000VND· 2026-08-31`. A sentence that must read as a sentence is
+  built as ONE string in JS and printed with a single `t-esc`.
+- GR23 (P3): **an effective-dated attachment defaults to TODAY, and that
+  silently erases all of history.** `pb.division.link.date_from` defaults to
+  `context_today`, so the eight divisions P1 created this month were not live
+  on any date the demo's payroll history covers: the first full fact rebuild
+  produced 197,834 rows of which **35** had a division, and the phase's hero —
+  a breadcrumb that walks down to a division — had nothing to walk. A period
+  earlier than a department's FIRST attachment now uses that first attachment
+  and is counted in `pb.fact.run.division_fallback_count`, the same honesty as
+  the as-of department fallback. A department that genuinely MOVED between
+  divisions still reads its old one for old periods. Any effective-dated
+  dimension added later needs the same "before the first record" answer
+  decided on purpose.
+- GR24 (P3): **the payobook admin password in this ledger is WRONG.**
+  `ash@biztinct.com` / `{withheld: rize-admin}` is refused by `res.users` on the
+  master database (verified directly, not just through the login form); the
+  same shape as WFPLAN's WF15 for abm. P3 validated with a temporary
+  `group.p3@payobook.com`, archived afterwards. Resetting the owner's own
+  password is an owner decision and was not done.
+
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
   Status: **COMPLETE**. `pb_group` 19.0.1.0.1 live on p9clone, payobook, abm and
@@ -428,7 +477,55 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   lines) — that is real configuration, not a test fixture; `pb_group`'s
   `_msg()` still carries the "Odoo Server Error" fallback (GR17, one line);
   the abm validator (id 246) was reactivated for the walk and archived again.
-- P3 — "Numbers that remember". Not yet designed.
+- P3 — "Numbers that remember" — designed and BUILT 2026-09-07
+  (`GROUP_P3_NUMBERS_THAT_REMEMBER.md`). Status: **COMPLETE**.
+  `pb_explorer` 19.0.2.0.8 live on p9clone, payobook, abm and
+  payobook_template (it now DEPENDS on `pb_group` — `pb.fx` and
+  `pb.division`); `pb_insights` 19.0.5.0.0, `pb_payruns` 19.0.1.18.0,
+  `pb_hr_payroll_analytics` 19.0.1.2.0, `payroll_analytics_approval`
+  19.0.1.3.0, `pb_group` 19.0.1.1.0 (GR17 closed). `pb_import_kit`
+  UNCHANGED — every icon this phase needed was already in the shared set, and
+  `pb_explorer`/`pb_insights` now fall through to it rather than keeping a
+  second registry.
+  Shipped: the fact tables remember their scheme, its name and the version in
+  force, the currency, the group division as at the period end, the person and
+  the full-time equivalent, and whether the row is a mid-month advance — all
+  APPENDED LAST (GR4), with `test_01_aggregate_parity` pinning the column
+  count; the Explorer's breadcrumb (Group › Country › Company › Division ›
+  Department › Job, built server-side from the rungs that exist, singular
+  rungs skipped, the whole view in the URL hash); the group-currency switch
+  through `pb.fx.convert_many` with a rate badge on every converted figure and
+  a "Not converted" list with the reason; "Main runs only" as a removable
+  default; People and full-time equivalents "counted once across the group";
+  "Per person" on any money measure; the Compare schemes lens (months across,
+  schemes down, a sparkline per row) and ⌘K row 3350; seven new plain-English
+  phrases. Insights names the money it is showing and measures each person
+  against their OWN company's overtime ceiling; the pay-run board is scoped to
+  the switcher's companies and prices each run in its own currency; the two
+  old analytics reports and the period comparison filter by company (and their
+  country filter no longer dies on Odoo 19's removed `address_home_id`).
+  46 `pb_explorer` tests green on p9clone; the neighbouring suites show the
+  SAME 2 failures + 12 errors as before this phase over 675 tests — zero
+  regressions.
+  Full fact rebuild (`rebuild_all_timed`): p9clone **92.6 s**, payobook
+  **90.6 s** (45 runs, 6,158 T1 rows, 197,834 T2 rows), abm **0.7 s**,
+  payobook_template **0.0 s** (no payroll yet). 1,000 conversions through
+  `convert_many` stay at P1's 52 ms.
+  On payobook: 197,806 of 197,834 fact rows carry a division across the
+  group's six real ones, 92,596 are advance rows, 5,223 are dated before their
+  department joined a division and say so.
+  B1–B10 walked on payobook, p9clone (the two-currency rehearsal) and abm at
+  1440 and 390, light and dark. Screenshots: `docs/handovers/group_p3_shots/`.
+  The p9clone rehearsal (a group, an SGD→VND rate of 20,000 for August, a
+  Singapore run of S$6,000) was DELETED afterwards and verified gone.
+  Owner debts: the payobook admin password in this ledger is wrong (GR24) —
+  P3 used a temporary `group.p3@payobook.com`, archived again, as were
+  p9clone's copy and abm's `wfplan.validator@payobook.com` (id 246); the
+  Explorer's ⌘K row could not be opened by a synthesised keypress in the
+  automation, so the row was proven by its registration and by opening its
+  destination — a person should press ⌘K once to confirm; `pb_insights`'s new
+  scheme chips stay empty on the demo data because P2 stamps the run's scheme
+  only on runs created since, which is correct and will fill itself.
 - P4 — "Planning with scope". Not yet designed.
 - P5 — "People in two places". Not yet designed.
 - P6 — "Pay: Review, Bands, Fairness, Changes; retire legacy" (ruling G9; may split into
