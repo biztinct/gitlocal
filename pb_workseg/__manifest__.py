@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   amounts, to the digit. Nothing here posts to accounting: a charge between
   entities is a report line and an export.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

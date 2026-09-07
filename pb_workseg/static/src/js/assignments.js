@@ -52,6 +52,22 @@ function kindOptions() {
     ];
 }
 
+/**
+ * The two steps the compact money form uses, biggest first.
+ *
+ * A FUNCTION, not a constant: a `_t()` evaluated in the module body runs
+ * before the translator exists, so a Vietnamese reader would get the English
+ * letter for ever (WFPLAN WF23). Nothing below a million is compacted — a
+ * Singapore dollar figure written "S$3.3K" loses the very digits somebody is
+ * reading it for, and only the large currencies need shortening at all.
+ */
+function shortSteps() {
+    return [
+        { at: 1e9, unit: _t("B") },
+        { at: 1e6, unit: _t("M") },
+    ];
+}
+
 const BLANK_DRAFT = {
     id: 0, host_company_id: 0, host_employee_id: 0, division_id: 0,
     config_id: 0, kind: "split", pay_policy: "inherit",
@@ -265,6 +281,139 @@ export class PbAssignmentsScreen extends Component {
 
     get workingDays() {
         return this.days.filter((d) => d.working).length;
+    }
+
+    // ====================================== the rough estimate under the strip
+    /**
+     * THE ANSWER THAT ARRIVES WHILE THE MOUSE IS STILL DOWN.
+     *
+     * The exact figures come from the payroll engine and take about twenty
+     * seconds, which is the right price for the truth and the wrong price for
+     * a question somebody is asking with their hand. So the strip answers
+     * itself: the standing monthly pay of each employment, times the share of
+     * the month each entity ends up with, printed under the days as they are
+     * drawn. It is named an estimate on screen and it points at the preview
+     * that settles it — the preview itself is untouched and still runs both
+     * real payslips inside a savepoint.
+     *
+     * EACH ENTITY IN ITS OWN MONEY, AND NEVER A TOTAL. Two amounts in two
+     * currencies sit side by side; this product does not invent an exchange
+     * rate and it never adds a dong to a dollar, so there is no third number
+     * here and the screen says why when the two differ.
+     */
+    get estimateHostCompany() {
+        return this.hostCompany || this.hostChoices[0] || null;
+    }
+
+    get estimateHostEmployment() {
+        const company = this.estimateHostCompany;
+        if (!company) { return null; }
+        return this.employments.find((e) => e.company_id === company.id) || null;
+    }
+
+    get estimate() {
+        if (!this.canEdit) { return null; }
+        const picked = this.selection;
+        const home = this.homeEmployment;
+        const away = this.estimateHostCompany;
+        if (!picked.days || !picked.total || !home || !away) { return null; }
+        const share = picked.days / picked.total;
+        const host = this.estimateHostEmployment;
+        const homePays = this.draftPolicy === "home_pays";
+        const tiles = [{
+            key: "home",
+            company: home.company,
+            amount: this._shortMoney(
+                homePays ? home.wage : (home.wage || 0) * (1 - share), home),
+            sub: homePays ? _t("The whole month")
+                : this._daysPhrase(picked.total - picked.days),
+            note: "",
+        }];
+        if (homePays) {
+            tiles.push({
+                key: "host",
+                company: away.name,
+                amount: this._shortMoney((home.wage || 0) * share, home),
+                sub: _t("Charged across for %(days)s",
+                        { days: this._daysPhrase(picked.days) }),
+                note: "",
+            });
+        } else if (host) {
+            tiles.push({
+                key: "host",
+                company: host.company,
+                amount: this._shortMoney((host.wage || 0) * share, host),
+                sub: this._daysPhrase(picked.days),
+                note: "",
+            });
+        } else {
+            tiles.push({
+                key: "host",
+                company: away.name,
+                amount: "",
+                sub: this._daysPhrase(picked.days),
+                note: _t(
+                    "Nobody is paid here yet, so this side cannot be worked "
+                    + "out until the employment exists."),
+            });
+        }
+        // Two currencies are two answers, never one. Only a genuine second
+        // currency earns the sentence: under "the home entity pays" BOTH
+        // amounts are in the home entity's money, and a warning about a
+        // danger that is not there is noise.
+        const mixed = !homePays && host && home.currency && host.currency
+            && home.currency !== host.currency;
+        return {
+            tiles,
+            mixed: Boolean(mixed),
+            mixed_note: _t(
+                "Two currencies. These amounts stand side by side and are "
+                + "never added together."),
+            foot: _t(
+                "Monthly pay times the share of the month. Press “Show me "
+                + "both payslips” for the exact figures."),
+        };
+    }
+
+    /** "12 working days", and "1 working day" when there is one of them.
+     *
+     *  The platform's translator has no plural form, so the phrase is written
+     *  once here and the count is branched on inside it — never a number
+     *  dropped into a sentence that then reads "1 working days" (GR42). */
+    _daysPhrase(count) {
+        const days = Math.max(0, Math.round(Number(count) || 0));
+        return days === 1 ? _t("1 working day")
+            : _t("%(count)s working days", { count: days });
+    }
+
+    /** One amount, written the way its own currency writes it, with the
+     *  symbol exactly once (WFPLAN WF22) and its digits grouped the way the
+     *  rest of this product groups them rather than the browser's locale. */
+    _shortMoney(amount, employment) {
+        const raw = Number(amount) || 0;
+        const sign = raw < 0 ? "-" : "";
+        const value = Math.abs(raw);
+        let body = "";
+        shortSteps().forEach((step) => {
+            if (body || value < step.at) { return; }
+            const shown = value / step.at;
+            body = this._grouped(shown, shown < 10 ? 1 : 0) + step.unit;
+        });
+        if (!body) { body = this._grouped(value, 0); }
+        const symbol = (employment && employment.symbol) || "";
+        if (employment && employment.symbol_before === false) {
+            return sign + body + " " + symbol;
+        }
+        return sign + symbol + body;
+    }
+
+    /** Thousands separated, decimals kept. Named `_grouped` and not `_group`
+     *  because this class already answers to `group` for the company group,
+     *  and one name may only ever mean one thing here (ledger GR21). */
+    _grouped(value, decimals) {
+        const parts = (Number(value) || 0).toFixed(decimals || 0).split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
     }
 
     /** The stretch a given day already belongs to, or null. */

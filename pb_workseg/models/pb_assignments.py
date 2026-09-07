@@ -56,6 +56,9 @@ class _PreviewDone(Exception):
 
 class PbAssignments(models.AbstractModel):
     _name = 'pb.assignments'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Where they work'
 
     # ================================================================= gates
@@ -197,17 +200,58 @@ class PbAssignments(models.AbstractModel):
         }
 
     @api.model
+    def _basic_pay(self, employees):
+        """The standing monthly pay behind each employment, in ONE query.
+
+        This is what the rough estimate under the strip is multiplied by, and
+        it is deliberately the OPEN CONTRACT'S WAGE and nothing else: a
+        standing monthly amount is exactly the part of a payslip that a
+        fraction of a month may scale (ledger GR35). Everything else on a
+        payslip — a pay-data file, overtime, a one-off — is already this
+        month's figure and is left alone, which is precisely why the strip
+        calls its answer an estimate and the preview behind it is the thing
+        that settles the money.
+
+        Sent down with the screen rather than fetched on the drag: a figure
+        that has to be true WHILE the mouse is down cannot afford a round
+        trip per day.
+        """
+        out = {}
+        if not employees or 'hr.contract' not in self.env:
+            return out
+        rows = self.env['hr.contract'].sudo().search_read(
+            [('employee_id', 'in', employees.ids), ('state', '=', 'open')],
+            ['employee_id', 'wage'], order='wage desc')
+        for row in rows:
+            employee_id = (row['employee_id'] or [0])[0]
+            if employee_id and employee_id not in out:
+                out[employee_id] = row['wage'] or 0.0
+        return out
+
+    @api.model
     def _person(self, person):
         if not person:
             return None
         employments = []
-        for employee in person.employee_ids[:MAX_ROWS]:
+        people = person.employee_ids[:MAX_ROWS]
+        wages = self._safe(lambda: self._basic_pay(people), default={})
+        for employee in people:
+            currency = employee.company_id.currency_id
+            wage = wages.get(employee.id, 0.0)
             employments.append({
                 'id': employee.id,
                 'name': employee.name or '',
                 'company_id': employee.company_id.id,
                 'company': employee.company_id.name or '',
-                'currency': employee.company_id.currency_id.name or '',
+                'currency': currency.name or '',
+                # The three things the browser needs to write this money the
+                # way this currency writes it, without inventing a locale of
+                # its own: the symbol, which side it goes, and the decimals.
+                'symbol': currency.symbol or '',
+                'symbol_before': (currency.position or 'before') == 'before',
+                'decimals': currency.decimal_places,
+                'wage': wage,
+                'wage_label': self._money(wage, currency),
                 'home': employee.id == person.home_employee_id.id,
                 'active': bool(employee.active),
             })
@@ -331,7 +375,8 @@ class PbAssignments(models.AbstractModel):
         # in — not the switcher (GR27). Somebody splitting a month between two
         # entities is by definition looking at two entities.
         companies = group.company_ids if group else Company.browse(
-            self.env.user.company_ids.ids or self.env.companies.ids)
+            self._visible_companies(
+                self.env.user.company_ids.ids or self.env.companies.ids))
         return [{
             'id': company.id,
             'name': company.name or '',
@@ -801,8 +846,9 @@ class PbAssignments(models.AbstractModel):
         # on one company the review found the pair and reported "nobody looks
         # like a duplicate", which is the most convincing possible way to be
         # wrong.
-        scope = company_ids or self.env.user.company_ids.ids \
-            or self.env.companies.ids
+        scope = self._visible_companies(
+            company_ids or self.env.user.company_ids.ids
+            or self.env.companies.ids)
         suggestions = self._safe(
             lambda: Person.suggest_merges(scope), default=[])
         return {
@@ -825,7 +871,8 @@ class PbAssignments(models.AbstractModel):
         """Join every pair whose national identity numbers agree."""
         self._require_write()
         Person = self.env['pb.person'].sudo()
-        scope = self.env.user.company_ids.ids or self.env.companies.ids
+        scope = self._visible_companies(
+            self.env.user.company_ids.ids or self.env.companies.ids)
         pairs = [s['person_ids'] for s in Person.suggest_merges(scope)
                  if s.get('strong')]
         answer = Person.merge_pairs(pairs)

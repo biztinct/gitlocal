@@ -132,6 +132,32 @@
               </button>
             </div>
 
+            <!-- ============ the rough estimate, while the drag happens ====
+                 Directly under the days, because it answers the gesture the
+                 hand is making. It is in the FLOW rather than pinned to the
+                 foot of the window: the strip is the first thing in this
+                 card and the sentence sits a few pixels beneath the mouse,
+                 so the reason a running answer has to be `position: fixed`
+                 elsewhere (ledger GR40) does not arise here. -->
+            <div class="wsg-est" t-if="estimate">
+              <div class="wsg-est-h">
+                <t t-out="ic('coins',14)"/>
+                <span>A rough estimate, while you draw</span>
+              </div>
+              <div class="wsg-est-tiles">
+                <div class="wsg-est-tile" t-foreach="estimate.tiles" t-as="et"
+                     t-key="et.key">
+                  <span class="wsg-est-co" t-esc="et.company"/>
+                  <b class="wsg-est-n" t-if="et.amount" t-esc="et.amount"/>
+                  <span class="wsg-est-d" t-esc="et.sub"/>
+                  <span class="wsg-est-w" t-if="et.note" t-esc="et.note"/>
+                </div>
+              </div>
+              <p class="wsg-est-s" t-if="estimate.mixed"
+                 t-esc="estimate.mixed_note"/>
+              <p class="wsg-est-s" t-esc="estimate.foot"/>
+            </div>
+
             <div class="wsg-legend">
               <span class="wsg-leg"><i class="wsg-dot wsg-dot--work"/> A working day here</span>
               <span class="wsg-leg"><i class="wsg-dot wsg-dot--off"/> Not a working day</span>
