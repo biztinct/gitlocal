@@ -314,6 +314,30 @@ class HrPayslipFormula(models.Model):
 
         Every lookup is company-scoped: without it, a multi-company database
         can hand a payslip a config belonging to another company.
+
+        GROUP P2 — THE SCHEME MAP, AND WHY THE SIBLING RUNG MOVED
+        ---------------------------------------------------------
+        Two rungs joined this ladder, and one was demoted.
+
+          * A RUN NOW KNOWS ITS OWN SCHEME. The Run Payroll screen asks "pay run
+            for which scheme?" before it creates anything and writes the answer
+            on the run (`pb_formula_config_id`). That is the most specific fact
+            available and nothing can beat it.
+
+          * THE MAP ANSWERS FOR THE PERSON. `pb.scheme.map` says which scheme
+            pays this employee — their team, the team above it, their division,
+            a rule, or the company's only scheme. It is consulted through a soft
+            probe (`'pb.scheme.map' in self.env`) so this module keeps working,
+            unchanged, on a database that does not have it.
+
+          * THE SIBLING RUNG IS NOW BELOW THE MAP. "Another payslip in this run
+            resolved to X, so I am X too" is only true when every payslip in the
+            run belongs to one scheme — which is exactly what a run that names
+            its scheme guarantees, and exactly what a run of two divisions'
+            people does not. Left first, it let ONE person's answer infect a
+            whole mixed run. It is still here, because a run built by an older
+            path still carries that signal and it is better than a structure
+            guess; it is simply asked after the person's own map.
         """
         self.ensure_one()
         Config = self.env['hr.formula.config']
@@ -324,24 +348,50 @@ class HrPayslipFormula(models.Model):
             '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)
         ] if self.company_id else []
 
-        # 1. A sibling payslip in the same run already resolved this. Strongest
-        #    signal available and free of the ambiguity below.
-        if self.payslip_run_id:
-            sibling = self.payslip_run_id.slip_ids.filtered(
+        run = self.payslip_run_id
+        # 1. The run was run FOR a scheme. Chosen by a person, before anything
+        #    was created; there is no more specific statement than that.
+        if run and 'pb_formula_config_id' in run._fields \
+                and run.pb_formula_config_id:
+            return run.pb_formula_config_id
+
+        if run:
+            # 2. The import batch that produced the run records the config it
+            #    was run with.
+            batch = self.env['hr.payroll.import.batch'].search(
+                [('payslip_run_id', '=', run.id)], limit=1
+            )
+            if batch.formula_config_id:
+                return batch.formula_config_id
+
+        # 3. The scheme map: which scheme pays THIS person. Soft — a database
+        #    without `pb_scheme_map` never reaches this rung and behaves
+        #    exactly as it did before.
+        if self.employee_id and 'pb.scheme.map' in self.env:
+            wanted = self.env.context.get('pb_cycle_type') or 'any'
+            try:
+                answer = self.env['pb.scheme.map'].resolve(
+                    self.employee_id, wanted)
+            except Exception:       # noqa: BLE001 — a map that cannot be read
+                # must never stop a payslip computing; the rungs below still
+                # answer, exactly as they did before this rung existed.
+                _logger.exception(
+                    "Payslip %s: the scheme map could not be read", self.id)
+                answer = None
+            if answer and answer.get('config_id'):
+                found = Config.browse(answer['config_id']).exists()
+                if found:
+                    return found
+
+        # 4. A sibling payslip in the same run already resolved this.
+        if run:
+            sibling = run.slip_ids.filtered(
                 lambda s: s.id != self.id and s.formula_config_id
             )[:1]
             if sibling:
                 return sibling.formula_config_id
 
-            # 2. The import batch that produced the run records the config it
-            #    was run with.
-            batch = self.env['hr.payroll.import.batch'].search(
-                [('payslip_run_id', '=', self.payslip_run_id.id)], limit=1
-            )
-            if batch.formula_config_id:
-                return batch.formula_config_id
-
-        # 3. Payroll structure — only when it identifies exactly one config.
+        # 5. Payroll structure — only when it identifies exactly one config.
         if self.struct_id:
             configs = Config.search(company_domain + [
                 ('structure_id', '=', self.struct_id.id),
@@ -357,7 +407,7 @@ class HrPayslipFormula(models.Model):
                     ", ".join(configs.mapped('name')),
                 )
 
-        # 4. Employee's country.
+        # 6. Employee's country.
         if self.employee_id and self.employee_id.country_id:
             config = Config.search(company_domain + [
                 ('country_code', '=', self.employee_id.country_id.code),
@@ -366,7 +416,7 @@ class HrPayslipFormula(models.Model):
             if config:
                 return config
 
-        # 5. Any active config for this company.
+        # 7. Any active config for this company.
         return Config.search(company_domain + [('state', '=', 'active')], limit=1)
 
     def _j3_feed_hits_by_rule(self, config):
