@@ -38,13 +38,44 @@
         <field name="comment">Write and move pay bands, put jobs in them, import them, and see who is paid least for the same work.</field>
     </record>
 
+    <!-- ==================================================================
+         TWO MORE TIERS, and they are STEPS OF A DECISION rather than more
+         permission.
+
+         A pay review is signed off by finance and then by the person who runs
+         the company, and the approval chain asks "does this user hold the
+         group for this step". So finance and the chief executive are groups —
+         not because they need to see more (they see the same review), but
+         because the chain has to be able to tell whose turn it is.
+
+         Neither implies the other and neither implies the pay manager: a
+         finance controller who is also allowed to WRITE proposals is given
+         that separately, on purpose.
+         ================================================================== -->
+
+    <record id="group_pay_finance" model="res.groups">
+        <field name="name">Approve pay reviews for finance</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_pay"/>
+        <field name="implied_ids" eval="[(4, ref('pb_pay.group_pay_viewer'))]"/>
+        <field name="comment">The finance step of a pay review: check what it costs and send it on, or send it back.</field>
+    </record>
+
+    <record id="group_pay_ceo" model="res.groups">
+        <field name="name">Sign a pay review off</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" ref="res_groups_privilege_pay"/>
+        <field name="implied_ids" eval="[(4, ref('pb_pay.group_pay_viewer'))]"/>
+        <field name="comment">The last step of a pay review: approve it so it can be applied.</field>
+    </record>
+
     <!-- Additive: this only ADDS an implication to groups somebody else owns. -->
     <record id="hr.group_hr_manager" model="res.groups">
         <field name="implied_ids" eval="[(4, ref('pb_pay.group_pay_viewer'))]"/>
     </record>
 
     <record id="base.group_system" model="res.groups">
-        <field name="implied_ids" eval="[(4, ref('pb_pay.group_pay_manager'))]"/>
+        <field name="implied_ids" eval="[(4, ref('pb_pay.group_pay_manager')), (4, ref('pb_pay.group_pay_finance')), (4, ref('pb_pay.group_pay_ceo'))]"/>
     </record>
 
 <data noupdate="1">
@@ -64,6 +95,73 @@
         <field name="model_id" ref="model_pb_pay_position"/>
         <field name="global" eval="True"/>
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         A review is a company's own business.
+
+         The rule reads `company_ids` — the switcher — deliberately, and NOT
+         the reader's entitlement: a pay review is the one screen where being
+         able to see a company's people is exactly the question, and widening
+         it would show one entity's salaries to somebody standing in another.
+         ================================================================== -->
+
+    <record id="rule_review_company" model="ir.rule">
+        <field name="name">Pay review: company</field>
+        <field name="model_id" ref="model_pb_pay_review"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_review_line_company" model="ir.rule">
+        <field name="name">Person in a pay review: company</field>
+        <field name="model_id" ref="model_pb_pay_review_line"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_change_company" model="ir.rule">
+        <field name="name">Pay change: company</field>
+        <field name="model_id" ref="model_pb_pay_change"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_apply_company" model="ir.rule">
+        <field name="name">Applied pay: company</field>
+        <field name="model_id" ref="model_pb_pay_apply"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rating_company" model="ir.rule">
+        <field name="name">Score: company</field>
+        <field name="model_id" ref="model_pb_pay_rating"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_settings_company" model="ir.rule">
+        <field name="name">Pay settings: company</field>
+        <field name="model_id" ref="model_pb_pay_settings"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A manager who is not in HR sees the rows of the people who report to
+         them, and nobody else's. The pay tiers see the whole review. -->
+    <record id="rule_review_line_all" model="ir.rule">
+        <field name="name">Person in a pay review: the pay roles see all of it</field>
+        <field name="model_id" ref="model_pb_pay_review_line"/>
+        <field name="groups" eval="[(4, ref('pb_pay.group_pay_manager')), (4, ref('pb_pay.group_pay_finance')), (4, ref('pb_pay.group_pay_ceo')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_review_line_own_team" model="ir.rule">
+        <field name="name">Person in a pay review: my own team</field>
+        <field name="model_id" ref="model_pb_pay_review_line"/>
+        <field name="groups" eval="[(4, ref('pb_pay.group_pay_viewer'))]"/>
+        <field name="domain_force">['|', ('manager_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
     </record>
 
 </data>

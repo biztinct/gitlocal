@@ -25,4 +25,17 @@
         <field name="active" eval="True"/>
     </record>
 
+    <!-- The letters Apply left for later. Same rail as above: a model every
+         worker has always had, and the code probes the registry. -->
+
+    <record id="cron_pay_letters" model="ir.cron">
+        <field name="name">Payobook: print the pay letters that are waiting</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.pay.apply']._cron_letters() if 'pb.pay.apply' in env else None</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>

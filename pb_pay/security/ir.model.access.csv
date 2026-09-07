@@ -11,3 +11,37 @@ access_pb_pay_band_job_system,job in band system,model_pb_pay_band_job,base.grou
 access_pb_pay_position_viewer,position read,model_pb_pay_position,pb_pay.group_pay_viewer,1,0,0,0
 access_pb_pay_position_manager,position manager,model_pb_pay_position,pb_pay.group_pay_manager,1,0,0,0
 access_pb_pay_position_system,position system,model_pb_pay_position,base.group_system,1,1,1,1
+access_pb_pay_guidance_viewer,guidance read,model_pb_pay_guidance,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_guidance_manager,guidance manager,model_pb_pay_guidance,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_guidance_system,guidance system,model_pb_pay_guidance,base.group_system,1,1,1,1
+access_pb_pay_guidance_cell_viewer,guidance square read,model_pb_pay_guidance_cell,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_guidance_cell_manager,guidance square manager,model_pb_pay_guidance_cell,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_guidance_cell_system,guidance square system,model_pb_pay_guidance_cell,base.group_system,1,1,1,1
+access_pb_pay_settings_viewer,pay settings read,model_pb_pay_settings,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_settings_manager,pay settings manager,model_pb_pay_settings,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_settings_system,pay settings system,model_pb_pay_settings,base.group_system,1,1,1,1
+access_pb_pay_rating_viewer,score read,model_pb_pay_rating,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_rating_manager,score manager,model_pb_pay_rating,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_rating_system,score system,model_pb_pay_rating,base.group_system,1,1,1,1
+access_pb_pay_review_viewer,pay review read,model_pb_pay_review,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_review_manager,pay review manager,model_pb_pay_review,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_review_finance,pay review finance,model_pb_pay_review,pb_pay.group_pay_finance,1,1,0,0
+access_pb_pay_review_ceo,pay review sign off,model_pb_pay_review,pb_pay.group_pay_ceo,1,1,0,0
+access_pb_pay_review_system,pay review system,model_pb_pay_review,base.group_system,1,1,1,1
+access_pb_pay_review_line_viewer,pay review row read,model_pb_pay_review_line,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_review_line_manager,pay review row manager,model_pb_pay_review_line,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_review_line_finance,pay review row finance,model_pb_pay_review_line,pb_pay.group_pay_finance,1,1,0,0
+access_pb_pay_review_line_ceo,pay review row sign off,model_pb_pay_review_line,pb_pay.group_pay_ceo,1,0,0,0
+access_pb_pay_review_line_system,pay review row system,model_pb_pay_review_line,base.group_system,1,1,1,1
+access_pb_pay_review_limit_viewer,limit read,model_pb_pay_review_limit,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_review_limit_manager,limit manager,model_pb_pay_review_limit,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_review_limit_finance,limit finance,model_pb_pay_review_limit,pb_pay.group_pay_finance,1,1,1,1
+access_pb_pay_review_limit_system,limit system,model_pb_pay_review_limit,base.group_system,1,1,1,1
+access_pb_pay_apply_viewer,applied pay read,model_pb_pay_apply,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_apply_manager,applied pay manager,model_pb_pay_apply,pb_pay.group_pay_manager,1,1,1,0
+access_pb_pay_apply_system,applied pay system,model_pb_pay_apply,base.group_system,1,1,1,1
+access_pb_pay_change_viewer,pay change read,model_pb_pay_change,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_pay_change_manager,pay change manager,model_pb_pay_change,pb_pay.group_pay_manager,1,1,1,1
+access_pb_pay_change_finance,pay change finance,model_pb_pay_change,pb_pay.group_pay_finance,1,1,0,0
+access_pb_pay_change_ceo,pay change sign off,model_pb_pay_change,pb_pay.group_pay_ceo,1,1,0,0
+access_pb_pay_change_system,pay change system,model_pb_pay_change,base.group_system,1,1,1,1
