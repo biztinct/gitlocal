@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   A company with exactly one scheme and no map notices nothing at all: its
   pay run covers exactly the people it always did.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
