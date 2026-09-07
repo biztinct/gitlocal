@@ -442,7 +442,8 @@ class PbFactBuilder(models.AbstractModel):
             headers[run.id] = hdr
 
         # ---- T1 + T2 via the shared aggregate --------------------------
-        n_line, divisions = self._insert_facts('line', live_ids, headers, ctx)
+        n_line, divisions, div_fallback = self._insert_facts(
+            'line', live_ids, headers, ctx)
         self._insert_facts('emp', live_ids, headers, ctx)
 
         ms = int((time.time() - t0) * 1000)
@@ -452,7 +453,8 @@ class PbFactBuilder(models.AbstractModel):
             # picking a winner.
             seen = divisions.get(run_id) or set()
             hdr.write({'build_ms': ms, 'fact_line_count': n_line.get(run_id, 0),
-                       'division_id': list(seen)[0] if len(seen) == 1 else 0})
+                       'division_id': list(seen)[0] if len(seen) == 1 else 0,
+                       'division_fallback_count': div_fallback.get(run_id, 0)})
         _logger.info('pb_explorer: built %s run(s) in %s ms', len(headers), ms)
         return len(headers)
 
@@ -467,10 +469,10 @@ class PbFactBuilder(models.AbstractModel):
         cr.execute(self._aggregate_sql(grain), (run_ids,))
         rows = cr.fetchall()
         if not rows:
-            return {}, {}
+            return {}, {}, {}
         uid = self.env.uid
         now = fields.Datetime.now()
-        counts, divisions = {}, {}
+        counts, divisions, fallbacks = {}, {}, {}
         currency = ctx['currency']
         division_for = ctx['division_for']
         config_meta = ctx['config_meta']
@@ -494,9 +496,11 @@ class PbFactBuilder(models.AbstractModel):
                     continue
                 counts[run_id] = counts.get(run_id, 0) + 1
                 company_id = company_id or h.company_id.id
-                div_id = division_for(dept_id, ends.get(run_id))
+                div_id, div_fallback = division_for(dept_id, ends.get(run_id))
                 if div_id:
                     divisions.setdefault(run_id, set()).add(div_id)
+                    if div_fallback:
+                        fallbacks[run_id] = fallbacks.get(run_id, 0) + 1
                 cfg_name, cfg_version = config_meta(config_id, ends.get(run_id))
                 vals.append((h.id, run_id, company_id, h.month,
                              h.year, h.quarter, cycle, division, h.basis, dept_id,
@@ -523,7 +527,7 @@ class PbFactBuilder(models.AbstractModel):
                     continue
                 counts[run_id] = counts.get(run_id, 0) + 1
                 company_id = company_id or h.company_id.id
-                div_id = division_for(dept_id, ends.get(run_id))
+                div_id, _fb = division_for(dept_id, ends.get(run_id))
                 if div_id:
                     divisions.setdefault(run_id, set()).add(div_id)
                 cfg_name, cfg_version = config_meta(config_id, ends.get(run_id))
@@ -536,7 +540,7 @@ class PbFactBuilder(models.AbstractModel):
                              emp_id or 0, 1.0, bool(is_advance),
                              uid, now, uid, now))
         if not vals:
-            return counts, divisions
+            return counts, divisions, fallbacks
         placeholder = '(' + ','.join(['%s'] * len(cols)) + ')'
         args = []
         for v in vals:
@@ -545,7 +549,7 @@ class PbFactBuilder(models.AbstractModel):
             'INSERT INTO %s (%s) VALUES %s' % (
                 table, ','.join(cols), ','.join([placeholder] * len(vals))),
             args)
-        return counts, divisions
+        return counts, divisions, fallbacks
 
     # ------------------------------------------------ GROUP P3 dimensions
     def _p3_context(self, runs, coverage):
@@ -567,7 +571,7 @@ class PbFactBuilder(models.AbstractModel):
                     for r in rows}
 
         # --- divisions, as at each period end -----------------------------
-        chains, links = {}, {}
+        chains, links, earliest = {}, {}, {}
         if 'pb.division' in self.env:
             self.env.cr.execute("SELECT id, parent_path FROM hr_department")
             for dept_id, path in self.env.cr.fetchall():
@@ -577,23 +581,48 @@ class PbFactBuilder(models.AbstractModel):
             Division = self.env['pb.division'].sudo()
             for day in {d for d in ends.values() if d}:
                 links[day] = Division._links_on(day)
+            # The FIRST attachment each department ever had. A division is
+            # usually set up long after the payroll history it describes: the
+            # eight divisions on the demo group were created this month, and
+            # resolving strictly as-of the period end would have left every
+            # month before that with no division at all — the whole point of
+            # the group view, blank. So a period that predates the first
+            # attachment uses that first attachment and is COUNTED, exactly
+            # as an employee with no version dated in the period is counted
+            # (this module's contract 4). A department that genuinely MOVED
+            # between divisions still reads its old one for old periods,
+            # because the earliest link is the old one.
+            for row in self.env['pb.division.link'].sudo().search_read(
+                    [('active', '=', True)],
+                    ['department_id', 'division_id', 'date_from'],
+                    order='date_from asc'):
+                if row['department_id'] and row['division_id']:
+                    earliest.setdefault(row['department_id'][0],
+                                        row['division_id'][0])
 
         cache = {}
 
         def division_for(dept_id, day):
+            """(division id, used_the_first_attachment)."""
             if not dept_id or not day or day not in links:
-                return 0
+                return 0, False
             key = (dept_id, day)
             if key in cache:
                 return cache[key]
-            found = 0
+            found, fallback = 0, False
+            chain = list(reversed(chains.get(dept_id) or [dept_id]))
             on_day = links[day]
-            for candidate in reversed(chains.get(dept_id) or [dept_id]):
+            for candidate in chain:
                 if candidate in on_day:
                     found = on_day[candidate]
                     break
-            cache[key] = found
-            return found
+            if not found:
+                for candidate in chain:
+                    if candidate in earliest:
+                        found, fallback = earliest[candidate], True
+                        break
+            cache[key] = (found, fallback)
+            return cache[key]
 
         # --- scheme name and the version in force -------------------------
         names, edited, releases = {}, {}, {}

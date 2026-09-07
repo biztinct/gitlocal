@@ -603,6 +603,12 @@
               <t t-esc="state.data.coverage.asof_fallback"/> payslips had no
               org history for their period — earliest known placement used
             </span>
+            <span t-if="state.data.coverage.division_fallback">
+              <t t-out="ic('alert', 12)"/>
+              <t t-esc="state.data.coverage.division_fallback"/> rows are from
+              before their team joined a division — the division it is in
+              today was used
+            </span>
             <span t-if="state.data.coverage.untyped_categories">
               <t t-out="ic('alert', 12)"/>
               <t t-esc="state.data.coverage.untyped_categories"/> untyped

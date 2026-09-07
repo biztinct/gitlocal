@@ -123,6 +123,12 @@ class PbFactRun(models.Model):
         string='Advance run', index=True,
         help='A mid-month advance. Excluded by default so a person is not '
              'counted, and their pay not added, twice in one month.')
+    division_fallback_count = fields.Integer(
+        string='Divisions taken from the first attachment',
+        help='Rows whose period is EARLIER than the day their department was '
+             'first attached to a division. The first attachment was used, '
+             'and the count is surfaced rather than the row dropped — the '
+             'same honesty as the as-of department fallback.')
 
     _sql_constraints = [
         ('run_uniq', 'unique(run_id)', 'One fact header per pay run.'),
