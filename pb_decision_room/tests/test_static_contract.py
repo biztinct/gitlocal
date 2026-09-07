@@ -358,16 +358,10 @@ class TestDecisionRoomStaticContract(TransactionCase):
         self.assertNotIn('embedded: true', code,
                          'the hero is handed `inPlan`, never `embedded`')
         self.assertIn('inPlan: true', code)
-        self.assertNotIn('@pb_hr_workforce_planning/', code)
-        self.assertIn('clearBreadcrumbs: false', code)
-        self.assertIn('this._opening', code)
-        self.assertIn('"pb.settings", "resolve_actions"', code)
-        self.assertIn('registry.category("actions").contains', code)
-        # the descriptor the hub's own tests parse must still parse
-        block = re.search(r'export const PLAN_CARDS = \[(.*?)\n\];', code,
-                          re.S)
-        self.assertTrue(block, 'PLAN_CARDS is gone')
-        self.assertEqual(len(re.findall(r'\bid: "', block.group(1))), 7)
+        # The seven legacy cards, and the module behind them, are retired: the
+        # Plan lens is a mount point and the room is the only thing in it.
+        self.assertNotIn('pb_hr_workforce_planning', code)
+        self.assertNotIn('PLAN_CARDS', code)
 
         hub = _read(HUB, 'static', 'src', 'js', 'people_hub.js')
         self.assertIn('heroGroups', hub)
@@ -376,7 +370,8 @@ class TestDecisionRoomStaticContract(TransactionCase):
                                 ('plan', 'trendingUp')])
 
         xml = _read(HUB, 'static', 'src', 'xml', 'people_hub.xml')
-        self.assertIn('Classic planning tools', xml)
+        self.assertNotIn('Classic planning tools', xml,
+                         'the classic fold went with the module it folded')
         self.assertIn('t-component="hero.Component"', xml)
 
         sidebar = _read(HUB, 'data', 'pb_sidebar.xml')

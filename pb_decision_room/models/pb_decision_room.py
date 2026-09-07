@@ -1355,20 +1355,52 @@ class PbDecisionRoom(models.AbstractModel):
     @api.model
     def awaiting_approval(self):
         """The plans waiting on this reader, for the home page's chip."""
+        blank = {'count': 0, 'plans': []}
+        # The PAY half is answered first and on its own gate. A finance
+        # controller who signs pay reviews and never opens a plan is exactly
+        # the person this strip exists for, and reading the planning
+        # permission before answering them would tell them nothing is waiting
+        # while a review sat on their desk.
         if not self._can_read():
-            return {'count': 0, 'plans': []}
+            return blank
+        pay = self._awaiting_pay()
         if not self._can_manage():
-            return {'count': 0, 'plans': []}
+            return dict(blank, **pay)
         plans = self._with_companies(self.env.user.company_ids.ids)\
             .env['pb.decision.plan'].search(
                 [('status', '=', 'proposed')], limit=MAX_PLANS)
-        return {
+        out = {
             'count': len(plans),
             'plans': [{'id': p.id, 'name': p.name,
                        'scope_label': p.scope_label or '',
                        'by': p.proposed_by.display_name or ''}
                       for p in plans],
         }
+        out.update(pay)
+        return out
+
+    @api.model
+    def _awaiting_pay(self):
+        """Pay decisions waiting on this reader, where the Pay area exists.
+
+        A SOFT probe rather than a dependency, in both directions: this module
+        does not depend on `pb_pay` and `pb_pay` does not depend on this one.
+        The Home strip is the one place in the product where a person expects
+        to be told what is waiting for them, so it counts everything it can
+        see and stays silent about everything it cannot.
+        """
+        blank = {'pay_count': 0, 'pay_rows': [], 'pay_sentence': ''}
+        if 'pb.pay.reviews' not in self.env:
+            return blank
+        try:
+            answer = self.env['pb.pay.reviews'].awaiting() or {}
+        except Exception:                       # noqa: BLE001
+            _logger.info('pb_decision_room: the pay area could not be asked '
+                         'what is waiting')
+            return blank
+        return {'pay_count': answer.get('count', 0),
+                'pay_rows': answer.get('rows', []),
+                'pay_sentence': answer.get('sentence', '')}
 
     # ------------------------------------------------------- the exact cost
     @api.model
