@@ -486,6 +486,73 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   Every lookup of a settings row now carries its SCOPE, and a lookup by
   company means `('scope_kind', '=', 'company')` out loud.
 
+- GR33 (P5): **a demo-generated pay run cannot be reproduced by re-running
+  it, and never could.** GROUP P2's T10 recorded a June re-run of Retail
+  End-Month coming back "identical to the digit"; the same recipe now
+  produces ₫14.77B against a stored ₫4.88B, and the difference is not this
+  phase's. The run's INPUTS (`INCOMM` ₫6,355,041, `INKPI` ₫1,166,451, `OTWD`
+  10 days on the first payslip alone) were written by the demo generator, not
+  by anything the batch-free resolver can read back: with no pay-data file
+  and no import batch those components resolve to their defaults, so the
+  recompute is a different — and perfectly correct — calculation. So a
+  PARITY test must not compare a recompute against the stored numbers. It
+  must compare the SAME payslips computed twice, once with the change and
+  once with it neutered, inside one savepoint. P5's T1 does that over all 902
+  payslips: `Seg.apply_to_inputs` is monkey-patched to a no-op for the second
+  pass, both totals come to ₫14,768,030,400, and 0 of 902 differ. Any later
+  phase that touches compute should use that shape and not P2's.
+- GR34 (P5): **a stored compute with `readonly=False` never runs if the field
+  also has a `default`.** `pb.work.segment.fte` was declared
+  `compute='_compute_fte', store=True, readonly=False, default=0.0`, and the
+  ORM treats the default as a value the caller supplied — so the compute was
+  skipped on every create and every stretch of days was worth ZERO full-time
+  people, which is the entire figure the field exists to carry. Nothing is
+  logged and the field looks perfectly well defined. An editable stored
+  compute takes its initial value from the compute or from nowhere.
+- GR35 (P5): **"the components net pay ADDS" is not the same set as "the
+  components that mean per month", and on this build it is empty.** The first
+  attempt at deciding what a fraction of a month may scale used the VALUEKIND
+  classification: input rules whose `net_role` is `earning`. On the live
+  Retail scheme that set has NO members — its earnings are all derived
+  columns and its inputs are raw — so a 45 %-of-a-month segment reduced
+  nothing at all, silently, with `ok` everywhere. The test that means what it
+  says is WHERE THE NUMBER CAME FROM: a value the provenance attributes to
+  the contract (`via` in `contract_field` / `contract` / `contract_default`,
+  or `src == 'contract_component'`) is a standing monthly amount and is
+  scaled; everything else — a pay-data file, a feed, overtime, a one-off —
+  is already this month's figure and is left alone. And a no-op is now
+  LOGGED with the factor and the scheme, because an empty set is the one
+  answer a payroll rail may not give in silence.
+- GR36 (P5): **two ways to compute a run, and a hook in only one of them.**
+  `hr.payslip._get_formula_input_values` is the batch-free producer; a run
+  built from an uploaded pay-data file resolves its values in
+  `hr.payroll.import.batch._resolve_input_values` and never reaches it. A
+  hook placed only in the first is honoured on one of the two ways a customer
+  can run payroll and silently ignored on the other. `pb.work.segment` now
+  exposes `apply_to_inputs` (payslip) and `apply_to_batch_inputs` (batch)
+  over ONE body, and the batch call goes through `_run_adjustment('segment',
+  …)` so the source chips say the number was scaled rather than pretending it
+  arrived that way.
+- GR37 (P5): **`env.companies` is the switcher, again — this time it made a
+  review lie.** "Same person?" looked for duplicate employee records across
+  `self.env.companies`, i.e. the companies ticked in the menu. The whole
+  point of the review is that the two records are in DIFFERENT companies, so
+  with one company switched on it found the pair and reported "nobody looks
+  like a duplicate" — the most convincing possible way to be wrong. It now
+  reads `res.users.company_ids`, every company the reader is entitled to,
+  which is P4's `_with_companies` reasoning (GR27) applied to a read. Third
+  time this family has cost a bug: GR3, GR16, GR27.
+- GR38 (P5): **the `pbim` kit has no dark palette at all.** Every phase of
+  this programme has reported walking its screens "light and dark"; what
+  actually happens is that the PLATFORM's chrome re-tints and the `.pbim`
+  surface stays exactly as designed, because `pb_import_kit`'s
+  `import_tokens.scss` defines one set of `--pbim-*` values and no
+  `prefers-color-scheme` block and no `.o_dark_mode` override. Emulating a
+  dark colour scheme therefore changes nothing inside a cockpit. This is
+  programme-wide and pre-existing, not P5's; it is written down here so the
+  next phase stops claiming a pass it cannot make. Giving the kit a dark
+  palette is a `pb_import_kit` job and belongs to P7 or later.
+
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
   Status: **COMPLETE**. `pb_group` 19.0.1.0.1 live on p9clone, payobook, abm and
@@ -667,7 +734,90 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   working, not litter; every temporary validator is archived again (payobook
   4408/4409, abm 246, p9clone 3968); the "Board draft" plan and the ₫2,200B
   revenue target from WFPLAN P1 are still on payobook company 5.
-- P5 — "People in two places". Not yet designed.
+- P5 — "People in two places" — designed and BUILT 2026-09-07
+  (`GROUP_P5_PEOPLE_IN_TWO_PLACES.md`). Status: **COMPLETE**.
+  `pb_workseg` 19.0.1.0.2 live on p9clone, payobook, abm and
+  payobook_template; `pb_group` 19.0.1.3.1 (the split-pay policy and the
+  "How split months are paid" card), `pb_hr_payroll_formula` 19.0.1.123.0
+  (the three guarded hooks and the segment proration row),
+  `pb_payrun_wizard` 19.0.1.20.1 (host employments in the population, the
+  Split chip, both payslips previewed), `pb_explorer` 19.0.2.1.1 (person,
+  full-time equivalent, charged-to / charged-from and the "Paid in two
+  places" chip), `pb_decision_room` 19.0.4.1.1 (the full-time figure and the
+  split note), `pb_scheme_map` 19.0.1.1.1 (rung 1 answers), `pb_import_kit`
+  19.0.1.15.0 (`circle`, `userCheck`).
+  All eight module trees verified byte-identical to the repository on the
+  server, and every manifest version verified against
+  `ir_module_module.latest_version` on all four databases.
+  Shipped: `pb.person` (one human, however many employments, bootstrapped
+  one-per-employee on install and on upgrade, with `merge`, `suggest_merges`
+  and a "Same person?" review); `pb.work.segment` (the days somebody spent
+  elsewhere, with working days from the home calendar, a share, a full-time
+  equivalent, the two payment patterns and a per-stretch override, and
+  refusals in plain sentences for a month-crossing stretch, an overlap, more
+  than a full month, a host employment in the wrong entity and a month that
+  is already paid); `pb.cost.transfer` (what one entity carried for another,
+  stored in the money it was paid in and converted only at read time);
+  `res.company.prorate_joiners_leavers`, shipped OFF; `factor_for` and ONE
+  guarded, wrapped hook on each of the two ways a run can be computed;
+  proration rows with `basis='segment'` so the payslip's own drawer explains
+  a split month; the Assignments screen with the month strip, the popover,
+  the two-payslip preview and the history; ⌘K rows 3380 and 3390; and a
+  Vietnamese catalogue for every sentence the screens print.
+  On p9clone: 80 tests green (`pb_workseg` 34 + `pb_explorer` 46) and 63
+  green (`pb_decision_room`), 0 failed and 0 errors in both; `pb_group` 34
+  and `pb_scheme_map` 31 green in the combined 184-test run. The 12 errors
+  that run reports in `pb_payrun_wizard` are the SAME 12 the ledger has
+  recorded since P2 as p9clone data drift — `prepare_run` answers
+  "this month's payroll already exists" on a clone that has it, so the
+  test's `prep['adopted']` is not in the payload — and they predate this
+  phase.
+  Persons bootstrapped: payobook 4,561 · abm 153 · payobook_template 1 ·
+  p9clone 4,562. Segments, charges and companies with day-based joiner pay:
+  ZERO on all four. The module ships inert.
+  The hook is on BOTH compute paths (GR36): the payslip's own input builder
+  and the import batch's, over one body, so a run built from an uploaded pay
+  file honours a split month too.
+  `pb.fact.emp.charged_from` is written only where the two entities keep
+  their books in the same money — a charge carries the PAYER's currency and
+  a fact row carries its company's, and printing one as the other is a lie
+  no rate badge can repair (rule 7). `charged_to`, on the payer's own rows,
+  is always right.
+  **T1 parity (GR33's shape): 902 Retail End-Month payslips computed twice
+  inside one savepoint, hook live and hook neutered — ₫14,768,030,400 both
+  times, 0 of 902 differing.** Run BEFORE anything was built on the hook and
+  again AFTER every change this phase made; both runs identical, both left
+  0 scratch rows. On payobook and abm five existing computed payslips were
+  re-read after the install and came back to the digit
+  (payobook 144,281 ₫15,245,550 · 144,280 ₫16,996,050 · 144,279
+  ₫14,583,875 · 144,278 ₫27,767,200 · 144,277 ₫17,600,400).
+  Timings on company 5 (4,533 people): the full 902-payslip compute
+  **288.8 s** with the hook live and **430.1 s** with it neutered (the
+  difference is warm caches, not the hook); the Assignments screen reads in
+  **under 200 ms**; both payslips preview in about 20 s, which is two real
+  payroll computes.
+  On p9clone the rehearsal proved the whole story end to end: one person
+  with a Vietnam home and a Singapore host employment, ten days in one
+  stretch and four in another, ₫43,749,067 and S$3,335,066 under "each
+  entity pays its own days", and ₫62,389,245 plus "₫11,343,488 charged to
+  Payobook Singapore Pte Ltd" under "home pays". A real September run for
+  the pair wrote basic pay of ₫129,800,000 → ₫70,800,059 and S$8,000 →
+  S$5,091, each with its own `basis='segment'` proration row and its own
+  sentence; the Explorer then read the person ONCE and the full-time
+  equivalents as **0.36 in Vietnam + 0.64 in Singapore = 1.00**. The
+  Decision Room read **4,534 people · 4,533.4 full-time · 1 person is paid
+  in two places this month**. Previewing both payslips left **0** payslips
+  behind.
+  Note for a later phase: the full-time figure follows PRESENCE (where the
+  person was), and the money follows the PATTERN (who pays). Under "home
+  pays" those two deliberately differ, and both are right.
+  B1–B10 walked on p9clone, payobook and abm at 1440 and 390.
+  Screenshots: `docs/handovers/group_p5_shots/`.
+  Owner debts: the p9clone rehearsal (a group, a copied Singapore scheme,
+  one host employment and two stretches of days) was deleted afterwards and
+  verified gone; every temporary validator is archived again; the `pbim`
+  kit still has no dark palette (GR38), so "dark" means the platform's
+  chrome only.
 - P6 — "Pay: Review, Bands, Fairness, Changes; retire legacy" (ruling G9; may split into
   6a bands+fairness and 6b review+changes). Not yet designed.
 - P7 — "Visibility, Vietnamese, closeout". Not yet designed.
