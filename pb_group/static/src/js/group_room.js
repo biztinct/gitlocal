@@ -125,8 +125,16 @@ export class PbGroupRoom extends Component {
             attaching: 0,
             attachSearch: "",
             attachDate: "",
+            // GROUP P7 — ticking many, then one press (polish item P1)
+            attachPicks: [],
             detaching: 0,
             detachDate: "",
+
+            // GROUP P7 — who sees what
+            visOpen: false,
+            visDraft: { user_id: 0, kind: "all", ref_id: 0, note: "" },
+            preview: null,
+            previewBusy: false,
 
             // the suggestions
             suggesting: false,
@@ -645,9 +653,13 @@ export class PbGroupRoom extends Component {
         this.state.attaching = divisionId;
         this.state.attachSearch = "";
         this.state.attachDate = "";
+        this.state.attachPicks = [];
     }
 
-    closeAttach() { this.state.attaching = 0; }
+    closeAttach() {
+        this.state.attaching = 0;
+        this.state.attachPicks = [];
+    }
 
     setAttachSearch(ev) { this.state.attachSearch = ev.target.value; }
     setAttachDate(ev) { this.state.attachDate = ev.target.value; }
@@ -658,7 +670,94 @@ export class PbGroupRoom extends Component {
             [this.state.attaching, departmentId,
              this.state.attachDate || false],
             _t("Department attached."));
-        if (done) { this.state.attaching = 0; }
+        if (done) { this.closeAttach(); }
+    }
+
+    // ------------------------------------------------ many at once (P7, P1)
+    /**
+     * TICK MANY, PRESS ONCE.
+     *
+     * The picker used to attach on click, one department per press — which on
+     * a company with forty teams is forty presses and forty rebuilds of a
+     * screen that draws four thousand people. Ticking is the gesture the list
+     * already looks like it wants; a row is now a checkbox, the footer counts
+     * what is ticked and how many people it brings, and the whole set goes in
+     * ONE call.
+     */
+    isPicked(departmentId) {
+        return this.state.attachPicks.includes(departmentId);
+    }
+
+    togglePickDept(departmentId) {
+        const picks = this.state.attachPicks;
+        this.state.attachPicks = picks.includes(departmentId)
+            ? picks.filter((id) => id !== departmentId)
+            : [...picks, departmentId];
+    }
+
+    onDeptKeydown(ev, departmentId) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.togglePickDept(departmentId);
+        }
+    }
+
+    /** Everything the search currently shows, ticked or untied in one press. */
+    toggleAllShown() {
+        const shown = this.attachChoices.flatMap((cg) => cg.rows)
+            .map((d) => d.id);
+        const every = shown.length
+            && shown.every((id) => this.state.attachPicks.includes(id));
+        this.state.attachPicks = every
+            ? this.state.attachPicks.filter((id) => !shown.includes(id))
+            : [...new Set([...this.state.attachPicks, ...shown])];
+    }
+
+    get allShownPicked() {
+        const shown = this.attachChoices.flatMap((cg) => cg.rows)
+            .map((d) => d.id);
+        return !!shown.length
+            && shown.every((id) => this.state.attachPicks.includes(id));
+    }
+
+    get pickedCount() { return this.state.attachPicks.length; }
+
+    /** How many people the ticked departments bring, so the press is informed. */
+    get pickedPeople() {
+        const picked = new Set(this.state.attachPicks);
+        return this.departments
+            .filter((d) => picked.has(d.id))
+            .reduce((sum, d) => sum + (d.heads || 0), 0);
+    }
+
+    /** How many of the ticked ones are being MOVED out of another division. */
+    get pickedMoves() {
+        const picked = new Set(this.state.attachPicks);
+        return this.departments
+            .filter((d) => picked.has(d.id) && d.division_id).length;
+    }
+
+    async attachPicked() {
+        const picks = [...this.state.attachPicks];
+        if (!picks.length) {
+            this.notif.add(_t("Tick at least one department first."),
+                           { type: "warning" });
+            return;
+        }
+        const done = await this._write(
+            "attach_departments",
+            [this.state.attaching, picks, this.state.attachDate || false],
+            _t("%(count)s attached.", { count: picks.length }));
+        if (done) {
+            const room = this.state.room || {};
+            if (room.attach_failed) {
+                this.notif.add(
+                    _t("%(count)s could not be attached — they may already be in this division.",
+                       { count: room.attach_failed }),
+                    { type: "warning" });
+            }
+            this.closeAttach();
+        }
     }
 
     openDetach(linkId) {
@@ -751,12 +850,138 @@ export class PbGroupRoom extends Component {
         if (done) { this.state.suggesting = false; }
     }
 
+    // =========================================================== who sees what
+    /**
+     * THE HERO OF THIS PHASE: "as this person".
+     *
+     * A permission model is the hardest thing in any product to be sure of,
+     * because the only way to check it is normally to log in as somebody else
+     * and look. So the card does that for you: pick a person, and it says in
+     * one sentence exactly what they would see — the division, the companies,
+     * the head count — and lists every screen in the product with the same
+     * answer beside it. It is the SAME `scope_for` the screens themselves
+     * call, so it cannot drift away from the thing it describes.
+     */
+    get visibility() {
+        return this.room.visibility || {
+            rows: [], people: [], kinds: [], countries: [], companies: [],
+            divisions: [], warnings: [], mine: "",
+        };
+    }
+
+    get visRows() { return this.visibility.rows || []; }
+    get visKinds() { return this.visibility.kinds || []; }
+    get visWarnings() { return this.visibility.warnings || []; }
+    get visPeople() { return this.visibility.people || []; }
+    get scopeNote() { return this.room.scope_note || ""; }
+
+    /** The one list the second dropdown offers, whichever kind is picked. */
+    get visRefChoices() {
+        const kind = this.state.visDraft.kind;
+        if (kind === "country") { return this.visibility.countries || []; }
+        if (kind === "company") { return this.visibility.companies || []; }
+        if (kind === "division") { return this.visibility.divisions || []; }
+        return [];
+    }
+
+    get visNeedsRef() {
+        return ["country", "company", "division"]
+            .includes(this.state.visDraft.kind);
+    }
+
+    get visDraftReady() {
+        const draft = this.state.visDraft;
+        if (!draft.user_id) { return false; }
+        return !this.visNeedsRef || !!draft.ref_id;
+    }
+
+    openVisibility(row) {
+        this.state.visDraft = row
+            ? { user_id: row.user_id, kind: row.kind,
+                ref_id: row.ref_id || 0, note: row.note || "" }
+            : { user_id: 0, kind: "all", ref_id: 0, note: "" };
+        this.state.dialogError = "";
+        this.state.visOpen = true;
+        if (row) { this.previewAs(row.user_id); }
+        else { this.state.preview = null; }
+    }
+
+    closeVisibility() {
+        this.state.visOpen = false;
+        this.state.preview = null;
+        this.state.dialogError = "";
+    }
+
+    pickVisKind(key) {
+        this.state.visDraft.kind = key;
+        this.state.visDraft.ref_id = 0;
+    }
+
+    setVisDraft(field, ev) {
+        const value = ev.target.value;
+        if (field === "kind") {
+            this.state.visDraft.kind = value;
+            this.state.visDraft.ref_id = 0;
+        } else if (field === "note") {
+            this.state.visDraft.note = value;
+        } else {
+            this.state.visDraft[field] = Number(value || 0);
+        }
+        if (field === "user_id" && this.state.visDraft.user_id) {
+            this.previewAs(this.state.visDraft.user_id);
+        }
+    }
+
+    /** What this person would see, read from the server, never guessed here. */
+    async previewAs(userId) {
+        const id = Number(userId || 0);
+        if (!id) { this.state.preview = null; return; }
+        this.state.previewBusy = true;
+        try {
+            this.state.preview = await this.orm.call(
+                "pb.group.room", "preview_visibility", [id]);
+        } catch (e) {
+            this.state.preview = null;
+            this.state.dialogError = this._msg(
+                e, _t("That preview could not be read."));
+        } finally {
+            this.state.previewBusy = false;
+        }
+    }
+
+    async saveVisibility() {
+        const draft = this.state.visDraft;
+        if (!draft.user_id) {
+            this.notif.add(_t("Pick a person first."), { type: "warning" });
+            return;
+        }
+        if (this.visNeedsRef && !draft.ref_id) {
+            this.notif.add(_t("Pick the one they should see."),
+                           { type: "warning" });
+            return;
+        }
+        const done = await this._write(
+            "set_visibility",
+            [draft.user_id, draft.kind, draft.ref_id || false,
+             draft.note || false],
+            _t("Saved. They see that from their next screen."), true);
+        if (done) { this.closeVisibility(); }
+    }
+
+    /** Take the limit away — back to whatever their companies allow. */
+    async liftVisibility(row) {
+        await this._write(
+            "set_visibility", [row.user_id, false, false, false],
+            _t("%(name)s is no longer limited.", { name: row.user }));
+    }
+
     // ================================================================ keyboard
     onEscape(ev) {
         if (ev.key !== "Escape") { return; }
         // Never `preventDefault` on Escape: the platform still gets its turn.
+        if (this.state.visOpen) { this.closeVisibility(); return; }
         if (this.state.suggesting) { this.state.suggesting = false; return; }
-        if (this.state.attaching) { this.state.attaching = 0; return; }
+        if (this.state.attaching) { this.closeAttach(); return; }
         if (this.state.detaching) { this.state.detaching = 0; return; }
         if (this.state.adding) { this.state.adding = false; return; }
         if (this.state.editing) { this.state.editing = false; return; }

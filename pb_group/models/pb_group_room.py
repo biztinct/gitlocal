@@ -45,10 +45,26 @@ MAX_COMPANIES = 200
 MAX_DIVISIONS = 200
 MAX_SUGGESTIONS = 60
 MAX_NAME = 120
+MAX_USERS = 400
+
+#: The surfaces the "as this person" preview walks, in the order a person
+#: would meet them. `model` is checked against the registry first, so a
+#: database without a module simply does not list its screen.
+PREVIEW_SURFACES = [
+    ('pb.group.room', 'Group'),
+    ('pb.scheme.board', 'Who is paid by what'),
+    ('pb.explorer', 'Explorer'),
+    ('pb.decision.room', 'Decision Room'),
+    ('pb.assignments', 'Assignments'),
+    ('pb.pay.bands', 'Pay'),
+]
 
 
 class PbGroupRoom(models.AbstractModel):
     _name = 'pb.group.room'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Group screen data'
 
     # ================================================================= gates
@@ -114,15 +130,35 @@ class PbGroupRoom(models.AbstractModel):
         # to be useful, so the companies the reader can see stand in.
         scope_ids = member_ids or (self.env.companies.ids
                                    or [self.env.company.id])
+        # GROUP P7. Somebody held to one country or one division counts the
+        # people of THEIR part of the group, not of all of it. Untouched for
+        # everybody else.
+        scope_ids = self._visible_companies(scope_ids)
 
         heads = self._safe(
             lambda: Division._heads_by_department(scope_ids), default={})
         chains = self._safe(
             lambda: Division._department_chains(scope_ids), default={})
         links_on = self._safe(lambda: Division._links_on(), default={})
+
+        # GROUP P7. A division head's screen is THEIR division: the counts
+        # stop at their own teams, and the board draws their own card rather
+        # than eleven they cannot act on. Both lists are empty for anybody who
+        # has not been limited, and the two lines below are then no-ops.
+        only_departments = set(self._safe(lambda: self._visible_departments(),
+                                          default=[]) or [])
+        only_divisions = set(self._safe(lambda: self._visible_divisions(),
+                                        default=[]) or [])
+        narrowed = bool(self._safe(
+            lambda: self.env['pb.group.visibility'].is_restricted(),
+            default=False))
+        if only_departments:
+            heads = {d: n for d, n in heads.items() if d in only_departments}
         rolled = self._rollup(heads, chains)
 
         divisions = self._divisions(Division, heads, chains, links_on)
+        if only_divisions:
+            divisions = [d for d in divisions if d['id'] in only_divisions]
         assigned = sum(d['people'] for d in divisions)
         total = sum(heads.values())
 
@@ -131,7 +167,8 @@ class PbGroupRoom(models.AbstractModel):
             'can_edit': self._can_write(),
             'group': self._group(group),
             'groups': groups,
-            'companies': self._companies(group),
+            'companies': self._companies(group, scope_ids, heads,
+                                         only_departments, narrowed),
             'currencies': self._currencies(),
             'policies': self._policies(),
             'coverage': self._safe(lambda: self._coverage(group),
@@ -144,17 +181,27 @@ class PbGroupRoom(models.AbstractModel):
             'people_total': total,
             'year': fields.Date.context_today(self).year,
             'rate_action': 'pb_group.action_pb_exchange_rates',
+            # GROUP P7 — one sentence at the top of a narrowed screen, and ''
+            # for everybody else, so the strip is simply not drawn.
+            'scope_note': self._scope_note(),
             # GROUP P5 — the two split-month patterns, and whether the module
             # that acts on them is even here. The card is drawn only when it
             # is, so a database without it sees a screen unchanged.
             'split_policies': self._split_policies(),
             'has_workseg': 'pb.work.segment' in self.env,
+            # GROUP P7 — who sees what. Drawn for an administrator only: it is
+            # a list of named people and what each of them is held to, which
+            # is not a thing every reader of this screen should have.
+            'visibility': self._safe(lambda: self._visibility(group),
+                                     default={'rows': [], 'people': [],
+                                              'kinds': [], 'countries': [],
+                                              'divisions': [], 'warnings': []}),
         }
         payload['ms'] = int((time.time() - started) * 1000)
         # `rolled` is the department roll-up the pickers use so a person can
         # see how many people an attachment brings before they make it.
         payload['departments'] = self._departments(scope_ids, rolled, links_on,
-                                                   divisions)
+                                                   divisions, only_departments)
         return payload
 
     # ------------------------------------------------------------ the pieces
@@ -187,7 +234,8 @@ class PbGroupRoom(models.AbstractModel):
         }
 
     @api.model
-    def _companies(self, group):
+    def _companies(self, group, scope_ids=None, heads=None,
+                   only_departments=None, narrowed=False):
         # `active_test=False` on purpose. A company that has been switched off
         # is still a legal entity a group can be made of, and on a real
         # database the second-currency subsidiary is very often exactly that —
@@ -200,10 +248,26 @@ class PbGroupRoom(models.AbstractModel):
         companies = Company.search([], order='id', limit=MAX_COMPANIES)
         people = self._safe(lambda: self._people_by_company(companies.ids),
                             default={})
+        # GROUP P7 — A NARROWED READER'S TREE COUNTS THEIR OWN PEOPLE.
+        #
+        # The card said "4,533 people" under a heading that said 902, which is
+        # the kind of contradiction that makes somebody stop believing the
+        # rest of the screen. When the reader is held to a set of teams, each
+        # company's figure is the people of THOSE teams inside it.
+        if only_departments:
+            people = self._safe(
+                lambda: self._people_by_company_for(heads or {},
+                                                    only_departments),
+                default={})
         schemes = self._safe(lambda: self._schemes_by_company(companies.ids),
                              default={})
         out = []
+        # A company this reader may not see is not drawn in their tree at all
+        # — whichever kind of scope narrowed them.
+        allowed = set(scope_ids or []) if narrowed else None
         for company in companies:
+            if allowed is not None and company.id not in allowed:
+                continue
             other = company.pb_group_id
             out.append({
                 'id': company.id,
@@ -225,6 +289,23 @@ class PbGroupRoom(models.AbstractModel):
                                         False)),
             })
         return out
+
+    @api.model
+    def _people_by_company_for(self, heads, department_ids):
+        """company id -> people, counted over a named set of teams only."""
+        wanted = [int(d) for d in department_ids if d]
+        if not wanted:
+            return {}
+        rows = self.env['hr.department'].sudo().with_context(
+            active_test=False).search_read(
+            [('id', 'in', wanted)], ['company_id'])
+        by_company = {}
+        for row in rows:
+            company = (row['company_id'] or [0])[0]
+            if company:
+                by_company[company] = (by_company.get(company, 0)
+                                       + heads.get(row['id'], 0))
+        return by_company
 
     @api.model
     def _people_by_company(self, company_ids):
@@ -257,11 +338,19 @@ class PbGroupRoom(models.AbstractModel):
     def _policies(self):
         """The three ways a rate can be picked, in words a person can choose
         between. The labels are the field's own, so there is one list."""
-        # `fields_get` and not `_fields[...].selection`: the labels a person
-        # reads have to be the reader's own language, and the raw definition
-        # is only ever the English source.
-        described = self.env['pb.group'].fields_get(['fx_policy'])
-        labels = dict(described['fx_policy']['selection'])
+        # GR58 — the labels are written HERE with `_()` and not read out of
+        # `fields_get`. A selection's translated label lives in
+        # `ir.model.fields.selection` and reaches a screen through
+        # `_get_fields_cached`, which is `ormcache`d on the language and is
+        # not filled by a `.po` import in another process: three of these
+        # labels stayed English on a Vietnamese screen while every other word
+        # on it was translated. A label a person reads is a string this
+        # module owns.
+        labels = {
+            'month_end': _("The last rate of the month"),
+            'payment_date': _("The rate on the day the pay run ends"),
+            'month_avg': _("The average rate for the month"),
+        }
         helps = {
             'month_end': _("The last rate on or before the end of the month."),
             'payment_date': _("The rate on or before the day the pay run "
@@ -275,8 +364,11 @@ class PbGroupRoom(models.AbstractModel):
     @api.model
     def _split_policies(self):
         """The two ways a split month can be paid, in words (ruling G8)."""
-        described = self.env['pb.group'].fields_get(['split_pay_policy'])
-        labels = dict(described['split_pay_policy']['selection'])
+        # GR58 — written here, not read from `fields_get`.
+        labels = {
+            'each_pays': _("Each entity pays its own days"),
+            'home_pays': _("Home pays, the other entity is charged"),
+        }
         helps = {
             'each_pays': _("The home entity's payslip is reduced to the days "
                            "that stayed at home, and the other entity runs "
@@ -385,7 +477,8 @@ class PbGroupRoom(models.AbstractModel):
         return list(rows.values())
 
     @api.model
-    def _departments(self, company_ids, rolled, links_on, divisions):
+    def _departments(self, company_ids, rolled, links_on, divisions,
+                     only_departments=None):
         """Every department a person can attach, and what it already belongs
         to — so the picker never offers a move without saying it is one."""
         names = {d['id']: d['name'] for d in divisions}
@@ -401,6 +494,9 @@ class PbGroupRoom(models.AbstractModel):
                                  r['complete_name'] or r['name'] or ''))
         out = []
         for row in rows:
+            # GROUP P7 — a picker may not offer a team this reader cannot see.
+            if only_departments and row['id'] not in only_departments:
+                continue
             taken = links_on.get(row['id'], 0)
             out.append({
                 'id': row['id'],
@@ -413,6 +509,241 @@ class PbGroupRoom(models.AbstractModel):
                 'division_id': taken,
                 'division': names.get(taken, ''),
             })
+        return out
+
+    @api.model
+    def _scope_note(self):
+        """One sentence at the top of a narrowed screen, and '' otherwise.
+
+        Its own guard rather than `_safe`, which logs at DEBUG: a sentence
+        that silently becomes an empty string is a screen that quietly stops
+        telling somebody they are only seeing part of the group, and that is
+        worth a line in the log.
+        """
+        try:
+            return self._visibility_note() or ''
+        except Exception as e:      # noqa: BLE001 - never take the screen down
+            _logger.warning('Group screen scope sentence failed: %s', e)
+            return ''
+
+    # ======================================================= who sees what
+    # GROUP P7. The card answers three questions in one place: who has been
+    # limited, to what, and — the hero — WHAT WOULD I SEE IF I WERE THEM. The
+    # last one is the only honest way to hand somebody a permission model: not
+    # a matrix of ticks, but the screen they will actually get.
+    @api.model
+    def _visibility(self, group):
+        Visibility = self.env['pb.group.visibility'].sudo()
+        rows = Visibility.search([], limit=MAX_USERS)
+        members = (group.company_ids if group
+                   else self.env['res.company'].sudo().browse(
+                       self.env.companies.ids))
+        out, warnings = [], []
+        for row in rows:
+            scope = Visibility.scope_for(row.user_id)
+            out.append({
+                'id': row.id,
+                'user_id': row.user_id.id,
+                'user': row.user_id.name or '',
+                'login': row.user_id.login or '',
+                'kind': row.kind,
+                'kind_label': scope.get('kind_label') or '',
+                'ref_id': scope.get('ref_id') or 0,
+                'ref_name': scope.get('ref_name') or '',
+                'sentence': scope.get('sentence') or '',
+                'ok': bool(scope.get('ref_ok')),
+                'note': row.note or '',
+                'companies': len(scope.get('company_ids') or []),
+            })
+            if scope.get('warning'):
+                warnings.append(scope['warning'])
+        held = {r['user_id'] for r in out}
+        # Every person who could be given one. Internal users only: a portal
+        # account has no group screen to be limited on.
+        people = self.env['res.users'].sudo().search_read(
+            [('share', '=', False), ('active', '=', True)],
+            ['name', 'login'], order='name', limit=MAX_USERS)
+        countries = []
+        seen = set()
+        for company in members:
+            country = company.country_id
+            if country and country.id not in seen:
+                seen.add(country.id)
+                countries.append({'id': country.id, 'name': country.name})
+        return {
+            'rows': sorted(out, key=lambda r: (r['user'] or '').lower()),
+            'people': [{'id': p['id'], 'name': p['name'],
+                        'login': p['login'] or '',
+                        'held': p['id'] in held} for p in people],
+            'kinds': self._visibility_kinds(),
+            'countries': sorted(countries, key=lambda c: c['name'] or ''),
+            'companies': [{'id': c.id, 'name': c.name} for c in members],
+            'divisions': [{'id': d.id, 'name': d.name}
+                          for d in self.env['pb.division'].sudo().search(
+                              [], limit=MAX_DIVISIONS)],
+            'warnings': warnings,
+            'mine': Visibility.scope_for(self.env.user).get('sentence') or '',
+        }
+
+    @api.model
+    def _visibility_kinds(self):
+        # GR58 — written here, not read from `fields_get`.
+        # A DICT and not a list of tuples: the string extractor reading
+        # `('country', _("One country"))` also collects the bare key
+        # `"country"` as a term somebody has to translate, and a catalogue
+        # full of one-word junk is a catalogue nobody trusts.
+        labels = {
+            'all': _("Everything"),
+            'country': _("One country"),
+            'company': _("One company"),
+            'division': _("One division"),
+        }
+        described = [(key, labels[key]) for key in
+                     ('all', 'country', 'company', 'division')]
+        helps = {
+            'all': _("Every company in the group."),
+            'country': _("Every company of the group in one country."),
+            'company': _("One legal entity."),
+            'division': _("One division, in whatever company it sits in."),
+        }
+        return [{'key': key, 'label': label, 'help': helps.get(key, '')}
+                for key, label in described]
+
+    @api.model
+    def set_visibility(self, user_id, kind, ref_id=None, note=None):
+        """Limit somebody, change what they are limited to, or lift it."""
+        self._require_write()
+        self.env['pb.group.visibility'].set_for(user_id, kind, ref_id, note)
+        return self.get_room()
+
+    @api.model
+    def preview_visibility(self, user_id):
+        """THE HERO: what this person would see, everywhere, in one answer.
+
+        Built from the SAME `scope_for` every facade in this programme calls,
+        so the preview cannot drift away from the screens it describes — a
+        permission preview that is a second implementation of the rule is a
+        preview that lies the first time somebody changes one of them.
+
+        The counts run under `sudo()` after the gate above (WFPLAN WF10): they
+        are aggregates — a company, a division and a number — never a person
+        and never a wage.
+        """
+        if not self._can_read():
+            raise AccessError(_(
+                "You can look at the group, but this is for an "
+                "administrator."))
+        Visibility = self.env['pb.group.visibility'].sudo()
+        Division = self.env['pb.division'].sudo()
+        who = self.env['res.users'].sudo().browse(int(user_id or 0)).exists()
+        if not who:
+            raise UserError(_("That person is no longer here."))
+        scope = Visibility.scope_for(who)
+
+        entitled = who.company_ids.ids
+        company_ids = (scope['company_ids'] if scope['restricted']
+                       else entitled)
+        heads = self._safe(lambda: self._people_by_company(company_ids),
+                           default={})
+        Company = self.env['res.company'].sudo().with_context(
+            active_test=False)
+        # A DIVISION SCOPE DOES NOT GET A COMPANY HEAD COUNT.
+        #
+        # Retail is 902 people inside a company of 4,533, and printing "4,533"
+        # under a headline that says 902 is the kind of contradiction that
+        # makes a reader stop trusting the screen. When the scope is a
+        # division the company rows say WHERE the division sits and nothing
+        # else; the number belongs to the division above them.
+        by_company = scope['kind'] != 'division'
+        companies = [{'id': c.id, 'name': c.name or '',
+                      'country': c.country_id.name or '',
+                      'currency': c.currency_id.name or '',
+                      'people': heads.get(c.id, 0) if by_company else -1}
+                     for c in Company.browse(sorted(company_ids)).exists()]
+
+        by_division = self._safe(lambda: Division._heads_by_division(),
+                                 default={})
+        wanted = scope['division_ids']
+        division_rows = Division.search(
+            [('id', 'in', wanted)] if wanted else [], limit=MAX_DIVISIONS)
+        divisions = [{'id': d.id, 'name': d.name or '',
+                      'people': by_division.get(d.id, 0)}
+                     for d in division_rows]
+
+        people = (sum(d['people'] for d in divisions)
+                  if scope['kind'] == 'division'
+                  else sum(c['people'] for c in companies))
+        return {
+            'user_id': who.id,
+            'user': who.name or '',
+            'kind': scope['kind'],
+            'kind_label': scope['kind_label'],
+            'ref_name': scope['ref_name'],
+            'sentence': scope['sentence'],
+            'warning': scope['warning'],
+            'restricted': scope['restricted'],
+            'headline': self._preview_headline(scope, people, companies,
+                                               divisions),
+            'companies': companies,
+            'divisions': divisions,
+            'people': people,
+            'surfaces': self._preview_surfaces(scope, companies, divisions),
+        }
+
+    @api.model
+    def _preview_headline(self, scope, people, companies, divisions):
+        """The one sentence at the top of the preview — the whole point."""
+        name = scope['user_name'] or _("this person")
+        if not scope['restricted']:
+            return _(
+                "As %(name)s, you would see everything in %(count)s "
+                "%(word)s.", name=name, count=len(companies),
+                word=(_("company") if len(companies) == 1
+                      else _("companies")))
+        if scope['kind'] == 'division':
+            return _("As %(name)s, you would see: %(what)s · %(count)s "
+                     "%(word)s.", name=name,
+                     what=scope['ref_name'] or _("one division"),
+                     count=people,
+                     word=(_("person") if people == 1 else _("people")))
+        return _("As %(name)s, you would see: %(what)s · %(count)s %(word)s.",
+                 name=name,
+                 what=(scope['ref_name']
+                       or ', '.join(c['name'] for c in companies[:3])),
+                 count=people,
+                 word=(_("person") if people == 1 else _("people")))
+
+    @api.model
+    def _preview_surfaces(self, scope, companies, divisions):
+        """One line per screen, so the answer is not an abstraction.
+
+        A screen whose module is not on this database is simply not listed —
+        naming a door that does not exist is the dead end this preview is here
+        to remove.
+        """
+        labels = {
+            'pb.group.room': _("Group"),
+            'pb.scheme.board': _("Who is paid by what"),
+            'pb.explorer': _("Explorer"),
+            'pb.decision.room': _("Decision Room"),
+            'pb.assignments': _("Assignments"),
+            'pb.pay.bands': _("Pay"),
+        }
+        if scope['restricted'] and scope['kind'] == 'division':
+            line = _("%(what)s only", what=', '.join(
+                d['name'] for d in divisions) or _("one division"))
+        elif scope['restricted']:
+            names = ', '.join(c['name'] for c in companies[:3])
+            line = (_("%(what)s only", what=names) if names
+                    else _("nothing yet — no company matches"))
+        else:
+            line = _("everything they already have")
+        out = []
+        for model, _english in PREVIEW_SURFACES:
+            if model not in self.env:
+                continue
+            out.append({'key': model, 'label': labels.get(model, model),
+                        'line': line})
         return out
 
     # ============================================================= the write
@@ -572,6 +903,38 @@ class PbGroupRoom(models.AbstractModel):
         self._require_write()
         self._attach(division_id, department_id, date_from)
         return self.get_room()
+
+    @api.model
+    def attach_departments(self, division_id, department_ids, date_from=None):
+        """GROUP P7 — many at once, in ONE call and ONE rebuild.
+
+        The picker used to be one department per press, which on a real
+        company is forty presses and forty rebuilds of a screen that draws
+        four thousand people. Ticking is the gesture people already expect
+        from a list with checkboxes in it; this is the door behind it.
+
+        A department that cannot be attached does not take the others down
+        with it: the failures are counted and named back, because "18 of 20
+        attached, these two are already in Retail" is a sentence somebody can
+        act on and a stack trace is not.
+        """
+        self._require_write()
+        wanted = [int(d) for d in (department_ids or []) if d][:MAX_DIVISIONS]
+        if not wanted:
+            raise UserError(_("Tick at least one department first."))
+        done, failed = 0, []
+        for department_id in wanted:
+            try:
+                self._attach(division_id, department_id, date_from)
+                done += 1
+            except Exception as e:      # noqa: BLE001 - one bad row, not all
+                _logger.info('Attach refused for department %s: %s',
+                             department_id, e)
+                failed.append(department_id)
+        room = self.get_room()
+        room['attached'] = done
+        room['attach_failed'] = len(failed)
+        return room
 
     @api.model
     def detach(self, link_id, date_to=None):

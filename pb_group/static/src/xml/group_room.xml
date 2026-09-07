@@ -72,6 +72,13 @@
           </div>
         </div>
 
+        <!-- GROUP P7 — drawn only for somebody who has been limited to part
+             of the group. Everybody else never sees this strip at all. -->
+        <div t-if="scopeNote" class="grp-scope" role="status">
+          <t t-out="ic('eye',15)"/>
+          <span t-esc="scopeNote"/>
+        </div>
+
         <!-- ===================== 1 · the group tree ====================== -->
         <section class="pbim-card grp-card" id="pbg-group">
 
@@ -364,8 +371,65 @@
           </div>
         </section>
 
+        <!-- ==================== 5 · who sees what ======================== -->
+        <!-- GROUP P7. An administrator's card: who has been limited, to what,
+             and — the hero — what they would actually see. -->
+        <section t-if="canEdit" class="pbim-card grp-card" id="pbg-who">
+          <div class="grp-card-h">
+            <div class="grp-card-id">
+              <span class="grp-card-ic"><t t-out="ic('eye',18)"/></span>
+              <div>
+                <h3 class="grp-card-t">Who sees what</h3>
+                <p class="grp-card-s">By default everybody sees whatever their companies already allow. Limit somebody here and every screen in this product follows — the group, who is paid by what, the Explorer, the Decision Room, assignments and pay.</p>
+              </div>
+            </div>
+            <button class="pbim-btn primary" t-on-click="() => this.openVisibility(null)">
+              <t t-out="ic('userPlus',15)"/> Limit somebody
+            </button>
+          </div>
+
+          <div t-if="visWarnings.length" class="grp-who-warn" role="alert">
+            <t t-out="ic('alert',15)"/>
+            <div>
+              <p t-foreach="visWarnings" t-as="wn" t-key="wn_index" t-esc="wn"/>
+            </div>
+          </div>
+
+          <div t-if="!visRows.length" class="grp-who-empty">
+            <div class="grp-who-empty-ic"><t t-out="ic('users',26)"/></div>
+            <div>
+              <b>Nobody is limited yet</b>
+              <p>Everybody sees what their companies allow, exactly as they do today. Limit a division head to their division, or country HR to their country, and their screens narrow with no other change.</p>
+            </div>
+          </div>
+
+          <div t-else="" class="grp-who-rows">
+            <div class="grp-who-row" t-foreach="visRows" t-as="vr" t-key="vr.id">
+              <span class="grp-who-av"><t t-out="ic('userX',15)"/></span>
+              <span class="grp-who-tx">
+                <b t-esc="vr.user"/>
+                <span class="grp-who-sub" t-esc="vr.sentence"/>
+              </span>
+              <span t-attf-class="pbim-chip grp-who-tag {{ vr.ok ? '' : 'is-stale' }}">
+                <t t-esc="vr.kind_label"/>
+                <t t-if="vr.ref_name">·</t>
+                <t t-if="vr.ref_name" t-esc="vr.ref_name"/>
+              </span>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.openVisibility(vr)">
+                <t t-out="ic('eye',14)"/> See as them
+              </button>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.liftVisibility(vr)">
+                <t t-out="ic('unlink',14)"/> Lift it
+              </button>
+            </div>
+          </div>
+        </section>
+
         <!-- ========================= the drawers ========================= -->
         <t t-call="pb_group.GroupDrawer"/>
+        <t t-call="pb_group.VisibilityDrawer"/>
         <t t-call="pb_group.DivisionDrawer"/>
         <t t-call="pb_group.AttachDrawer"/>
         <t t-call="pb_group.SuggestDrawer"/>
@@ -562,6 +626,141 @@
     </div>
   </t>
 
+  <!-- ================== who sees what · the drawer ======================= -->
+  <!-- Two halves, and the RIGHT one is the point. The left is the setting;
+       the right is the screen the person will get, read from the server with
+       the very same call every one of those screens makes. -->
+  <t t-name="pb_group.VisibilityDrawer">
+    <div t-if="state.visOpen" class="grp-scrim" t-on-click="closeVisibility">
+      <aside class="grp-drawer grp-drawer--wide" t-on-click.stop="() => {}"
+             role="dialog" aria-label="Who sees what">
+        <header class="grp-drawer-h">
+          <h3>Who sees what</h3>
+          <button class="pbim-btn ghost" t-on-click="closeVisibility" title="Close">
+            <t t-out="ic('x',15)"/>
+          </button>
+        </header>
+        <div class="grp-drawer-b grp-vis">
+
+          <div class="grp-vis-set">
+            <label class="grp-f">
+              <span class="grp-f-l">Person</span>
+              <select class="grp-select" t-att-value="state.visDraft.user_id"
+                      t-on-change="(ev) => this.setVisDraft('user_id', ev)">
+                <option value="0">Pick somebody…</option>
+                <option t-foreach="visPeople" t-as="pp" t-key="pp.id"
+                        t-att-value="pp.id"
+                        t-att-selected="pp.id === state.visDraft.user_id"
+                        t-esc="pp.name"/>
+              </select>
+            </label>
+
+            <div class="grp-f">
+              <span class="grp-f-l">They see</span>
+              <div class="grp-vis-kinds">
+                <button t-foreach="visKinds" t-as="vk" t-key="vk.key"
+                        t-att-aria-pressed="state.visDraft.kind === vk.key"
+                        t-attf-class="grp-vis-kind {{ state.visDraft.kind === vk.key ? 'is-on' : '' }}"
+                        t-on-click="() => this.pickVisKind(vk.key)">
+                  <span class="grp-vis-tick">
+                    <t t-if="state.visDraft.kind === vk.key" t-out="ic('checkCircle',15)"/>
+                    <t t-else="" t-out="ic('circle',15)"/>
+                  </span>
+                  <span class="grp-vis-kind-tx">
+                    <b t-esc="vk.label"/>
+                    <span t-esc="vk.help"/>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <label t-if="visNeedsRef" class="grp-f">
+              <span class="grp-f-l">Which one</span>
+              <select class="grp-select" t-att-value="state.visDraft.ref_id"
+                      t-on-change="(ev) => this.setVisDraft('ref_id', ev)">
+                <option value="0">Pick one…</option>
+                <option t-foreach="visRefChoices" t-as="rc" t-key="rc.id"
+                        t-att-value="rc.id"
+                        t-att-selected="rc.id === state.visDraft.ref_id"
+                        t-esc="rc.name"/>
+              </select>
+              <span t-if="!visRefChoices.length" class="grp-f-h">There is nothing to pick yet. Add a division, or add a company to the group, and it appears here.</span>
+            </label>
+
+            <label class="grp-f">
+              <span class="grp-f-l">Why</span>
+              <input class="grp-input" type="text" placeholder="Optional"
+                     t-att-value="state.visDraft.note"
+                     t-on-input="(ev) => this.setVisDraft('note', ev)"/>
+            </label>
+
+            <p t-if="state.dialogError" class="grp-refuse" role="alert"
+               t-esc="state.dialogError"/>
+          </div>
+
+          <!-- ================= the hero: as this person ================= -->
+          <div class="grp-vis-see">
+            <div t-if="state.previewBusy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Working out what they would see…</span>
+            </div>
+            <div t-elif="!state.preview" class="grp-vis-ghost">
+              <div class="grp-vis-ghost-ic"><t t-out="ic('eye',28)"/></div>
+              <b>Pick a person</b>
+              <p>This side shows exactly what they would see, on every screen, before you save anything.</p>
+            </div>
+            <div t-else="" class="grp-vis-body">
+              <p class="grp-vis-headline" t-esc="state.preview.headline"/>
+              <p t-if="state.preview.warning" class="grp-vis-warn" role="alert"
+                 t-esc="state.preview.warning"/>
+
+              <div t-if="state.preview.divisions.length" class="grp-vis-tree">
+                <h4>Divisions</h4>
+                <div class="grp-vis-node" t-foreach="state.preview.divisions"
+                     t-as="dv" t-key="dv.id">
+                  <span class="grp-vis-node-ic"><t t-out="ic('layers',14)"/></span>
+                  <b t-esc="dv.name"/>
+                  <span class="grp-vis-node-n"><t t-esc="num(dv.people)"/> <t t-esc="peopleWord(dv.people)"/></span>
+                </div>
+              </div>
+
+              <div class="grp-vis-tree">
+                <h4 t-if="state.preview.kind === 'division'">Where it sits</h4>
+                <h4 t-else="">Companies</h4>
+                <div t-if="!state.preview.companies.length" class="grp-vis-none">
+                  No company matches this yet. They would see an empty screen with a sentence telling them to ask an administrator.
+                </div>
+                <div class="grp-vis-node" t-foreach="state.preview.companies"
+                     t-as="cv" t-key="cv.id">
+                  <span class="grp-vis-node-ic"><t t-out="ic('building',14)"/></span>
+                  <b t-esc="cv.name"/>
+                  <span class="grp-vis-node-sub" t-esc="cv.country"/>
+                  <span t-if="cv.people >= 0" class="grp-vis-node-n"><t t-esc="num(cv.people)"/> <t t-esc="peopleWord(cv.people)"/></span>
+                </div>
+              </div>
+
+              <div class="grp-vis-tree">
+                <h4>On every screen</h4>
+                <div class="grp-vis-surface" t-foreach="state.preview.surfaces"
+                     t-as="sf" t-key="sf.key">
+                  <b t-esc="sf.label"/>
+                  <span t-esc="sf.line"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="grp-drawer-f">
+          <button class="pbim-btn ghost" t-on-click="closeVisibility">Cancel</button>
+          <button class="pbim-btn primary"
+                  t-att-disabled="state.busy or !visDraftReady"
+                  t-on-click="saveVisibility">
+            <t t-out="ic('check',15)"/> Save what they see
+          </button>
+        </footer>
+      </aside>
+    </div>
+  </t>
+
   <!-- ======================== the attach picker ========================== -->
   <t t-name="pb_group.AttachDrawer">
     <div t-if="state.attaching" class="grp-scrim grp-scrim--top"
@@ -592,22 +791,59 @@
           <div t-if="!attachChoices.length" class="pbim-note grp-note">
             Nothing matches that. Try part of a department name.
           </div>
-          <div t-else="" class="grp-cogroup" t-foreach="attachChoices"
-               t-as="cg" t-key="cg.id">
-            <div class="grp-cogroup-h" t-esc="cg.name"/>
-            <button class="grp-dp" t-foreach="cg.rows" t-as="dp" t-key="dp.id"
-                    t-on-click="() => this.attach(dp.id)">
-              <span class="grp-dp-tx">
-                <b t-esc="dp.complete_name"/>
-                <span class="grp-dp-sub"><t t-esc="num(dp.heads)"/> <t t-esc="peopleWord(dp.heads)"/></span>
-              </span>
-              <span t-if="dp.division_id" class="pbim-chip grp-dp-tag">
-                in <t t-esc="dp.division"/> — this moves it
-              </span>
-              <span t-else="" class="pbim-chip grp-dp-tag grp-dp-tag--free">Free</span>
+          <t t-else="">
+            <button class="pbim-btn ghost sm grp-dp-all"
+                    t-on-click="toggleAllShown">
+              <t t-if="allShownPicked" t-out="ic('checkCircle',14)"/>
+              <t t-else="" t-out="ic('circle',14)"/>
+              <t t-if="allShownPicked">Untick everything shown</t>
+              <t t-else="">Tick everything shown</t>
             </button>
-          </div>
+            <div class="grp-cogroup" t-foreach="attachChoices"
+                 t-as="cg" t-key="cg.id">
+              <div class="grp-cogroup-h" t-esc="cg.name"/>
+              <div t-foreach="cg.rows" t-as="dp" t-key="dp.id"
+                   role="checkbox" tabindex="0"
+                   t-att-aria-checked="isPicked(dp.id)"
+                   t-attf-class="grp-dp {{ isPicked(dp.id) ? 'is-on' : '' }}"
+                   t-on-click="() => this.togglePickDept(dp.id)"
+                   t-on-keydown="(ev) => this.onDeptKeydown(ev, dp.id)">
+                <span class="grp-dp-tick">
+                  <t t-if="isPicked(dp.id)" t-out="ic('checkCircle',15)"/>
+                  <t t-else="" t-out="ic('circle',15)"/>
+                </span>
+                <span class="grp-dp-tx">
+                  <b t-esc="dp.complete_name"/>
+                  <span class="grp-dp-sub"><t t-esc="num(dp.heads)"/> <t t-esc="peopleWord(dp.heads)"/></span>
+                </span>
+                <span t-if="dp.division_id" class="pbim-chip grp-dp-tag">
+                  in <t t-esc="dp.division"/> — this moves it
+                </span>
+                <span t-else="" class="pbim-chip grp-dp-tag grp-dp-tag--free">Free</span>
+              </div>
+            </div>
+          </t>
         </div>
+        <!-- GROUP P7 polish item P1 — tick many, press once. The footer says
+             what the press will do BEFORE it is pressed: how many teams, how
+             many people they bring, and how many are being moved out of
+             another division. -->
+        <footer class="grp-drawer-f grp-dp-foot">
+          <span class="grp-dp-count">
+            <span t-if="pickedCount" class="grp-dp-line">
+              <b t-esc="num(pickedCount)"/> ticked · <t t-esc="num(pickedPeople)"/> <t t-esc="peopleWord(pickedPeople)"/>
+            </span>
+            <span t-else="" class="grp-dp-line">Tick the departments you want</span>
+            <span t-if="pickedMoves" class="grp-dp-moves">
+              <t t-esc="num(pickedMoves)"/> of them move out of another division
+            </span>
+          </span>
+          <button class="pbim-btn primary"
+                  t-att-disabled="state.busy or !pickedCount"
+                  t-on-click="attachPicked">
+            <t t-out="ic('check',15)"/> Attach these
+          </button>
+        </footer>
       </aside>
     </div>
   </t>

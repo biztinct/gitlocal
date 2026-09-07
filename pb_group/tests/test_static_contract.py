@@ -297,8 +297,11 @@ class TestGroupStaticContract(TransactionCase):
     def test_every_class_in_the_markup_is_prefixed(self):
         """One prefix per surface, so a `.grp-` grep finds every rule that
         paints this screen and no other kit can shadow it."""
-        allowed = {'pbim', 'grp', 'primary', 'ghost', 'is-on', 'warn', 'green',
-                   'o_view_nocontent_smiley_face'}
+        # `sm` is the shared kit's own SIZE modifier on `.pbim-btn`, exactly
+        # like `primary` and `ghost` beside it — a size is not a second
+        # palette and adding a `grp-` twin of it would be one.
+        allowed = {'pbim', 'grp', 'primary', 'ghost', 'sm', 'is-on', 'warn',
+                   'green', 'o_view_nocontent_smiley_face'}
         bad = []
         for path in _walk(os.path.join(HERE, 'static'), ('.xml',)):
             for number, line in enumerate(_read(path).splitlines(), 1):
