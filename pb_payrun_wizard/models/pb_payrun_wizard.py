@@ -265,13 +265,26 @@ class PbPayrunWizard(models.AbstractModel):
             except Exception:       # noqa: BLE001
                 _logger.exception('Work segments could not be read')
         rows = list(chips.values()) + list(away.values())
+        count = len({r['employee_id'] for r in rows})
         return {
             'rows': rows[:200],
-            'count': len({r['employee_id'] for r in rows}),
-            'sentence': _(
-                "%(count)s people are paid in two places this month.",
-                count=len({r['employee_id'] for r in rows})),
+            'count': count,
+            'sentence': self._split_sentence(count),
         }
+
+    @api.model
+    def _split_sentence(self, count):
+        """"1 person", never "1 people".
+
+        A sentence that cannot count to one makes a reader trust the number
+        beside it less, and this one sits next to a payroll total.
+        """
+        if not count:
+            return ''
+        if count == 1:
+            return _("1 person is paid in two places this month.")
+        return _("%(count)s people are paid in two places this month.",
+                 count=count)
 
     @api.model
     def preview_split(self, employee_id, date_start=None):
@@ -1701,9 +1714,7 @@ class PbPayrunWizard(models.AbstractModel):
             'flagged': len([r for r in rows if r['flag']]),
             'rows': rows,
             'split_count': in_run,
-            'split_sentence': _(
-                "%(count)s people in this run are paid in two places this "
-                "month.", count=in_run) if in_run else '',
+            'split_sentence': self._split_sentence(in_run),
         }
 
     @api.model
