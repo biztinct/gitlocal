@@ -122,6 +122,30 @@ class PbFactBuilder(models.AbstractModel):
                 if self._has_config_field('cycle_type') else "''")
 
     @api.model
+    def _config_sql(self):
+        """The payroll scheme the payslip was computed with, or nothing.
+
+        GROUP P3. `hr.payslip.formula_config_id` is the operative field (the
+        run's own `pb_formula_config_id` is P2's answer to "what was this run
+        FOR", which the header uses); at the row grain the payslip is the
+        truth, because a run can — and on a badly configured database does —
+        hold payslips from more than one scheme.
+        """
+        return ("p.formula_config_id" if self._has_formula() else "NULL::int")
+
+    @api.model
+    def _advance_sql(self):
+        """Is this a mid-month advance?
+
+        Kept as its OWN column rather than left to `cycle = 'mid_cycle'` at
+        read time: every report defaults to main runs, and a default that
+        depends on a string comparison in nine different places is a default
+        that will be wrong in one of them.
+        """
+        return ("(COALESCE(fc.cycle_type, '') = 'mid_cycle')"
+                if self._has_config_field('cycle_type') else "FALSE")
+
+    @api.model
     def _division_sql(self):
         """Division, in order of truth. The config-level key is the finer grain
         (a run *could* mix divisions); where it does not exist, hr_payslip_run
@@ -203,6 +227,7 @@ class PbFactBuilder(models.AbstractModel):
         """
         cyc, div, frm = self._cycle_sql(), self._division_sql(), self._from_sql()
         ctype, roll = self._category_type_sql(), self._rollup_sql()
+        cfg, adv = self._config_sql(), self._advance_sql()
         if grain == 'line':
             return """
                 SELECT r.id                                   AS run_id,
@@ -223,13 +248,22 @@ class PbFactBuilder(models.AbstractModel):
                        -- in the middle silently shifts every index after it.
                        -- `test_01_aggregate_parity` caught exactly that
                        -- (C18.127).
-                       {roll}                                 AS is_rollup
+                       {roll}                                 AS is_rollup,
+                       -- GROUP P3, appended after is_rollup for the same
+                       -- reason. Everything else P3 remembers (currency,
+                       -- division, the scheme's name and version, the person)
+                       -- is resolved in Python from these two plus the
+                       -- company and the department, because each of those
+                       -- lookups is a handful of rows shared by thousands.
+                       {cfg}                                  AS config_id,
+                       {adv}                                  AS is_advance
                 {frm}
                  WHERE r.id IN %s
                  GROUP BY r.id, {cyc}, {div}, v.department_id, pl.category_id,
-                          {ctype}, pl.code, pl.salary_rule_id, {roll}
-            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll,
-                       label=_COMPONENT_LABEL, frm=frm)
+                          {ctype}, pl.code, pl.salary_rule_id, {roll},
+                          {cfg}, {adv}
+            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll, cfg=cfg,
+                       adv=adv, label=_COMPONENT_LABEL, frm=frm)
         if grain == 'emp':
             # The employee grain is what money measures read, so a roll-up must
             # not reach it at all — there is no per-component row here to skip
@@ -243,12 +277,15 @@ class PbFactBuilder(models.AbstractModel):
                        v.department_id                        AS department_id,
                        v.job_id                               AS job_id,
                        {ctype}                                AS category_type,
-                       SUM(pl.total) FILTER (WHERE NOT {roll}) AS amount
+                       SUM(pl.total) FILTER (WHERE NOT {roll}) AS amount,
+                       {cfg}                                  AS config_id,
+                       {adv}                                  AS is_advance
                 {frm}
                  WHERE r.id IN %s
                  GROUP BY r.id, {cyc}, {div}, p.employee_id, v.department_id,
-                          v.job_id, {ctype}
-            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll, frm=frm)
+                          v.job_id, {ctype}, {cfg}, {adv}
+            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll, cfg=cfg,
+                       adv=adv, frm=frm)
         raise ValueError('unknown grain %r' % (grain,))
 
     # -------------------------------------------------------------- freshness
@@ -359,14 +396,21 @@ class PbFactBuilder(models.AbstractModel):
 
         # ---- headers ---------------------------------------------------
         coverage = self._coverage(live_ids)
+        ends = {r.id: (r.date_end or r.date_start) for r in live}
+        ctx = self._p3_context(live, coverage)
         headers = {}
         for run in live:
             cov = coverage.get(run.id, {})
             start = run.date_start or run.date_end
             month = start.replace(day=1) if start else False
+            company_id = cov.get('company_id') or self.env.company.id
+            # The scheme this RUN was for: P2 writes it on the run itself, and
+            # that answer beats a vote among its payslips.
+            cfg_id = int(cov.get('run_config') or cov.get('config') or 0)
+            name, version = ctx['config_meta'](cfg_id, ends.get(run.id))
             hdr = Fact.create({
                 'run_id': run.id,
-                'company_id': cov.get('company_id') or self.env.company.id,
+                'company_id': company_id,
                 'name': run.name or '',
                 'date_start': run.date_start,
                 'date_end': run.date_end,
@@ -388,29 +432,49 @@ class PbFactBuilder(models.AbstractModel):
                 'source_line_count': cov.get('lines', 0),
                 'asof_fallback_count': cov.get('asof_fallback', 0),
                 'untyped_category_count': cov.get('untyped', 0),
+                # ---- GROUP P3 --------------------------------------------
+                'config_id': cfg_id,
+                'config_name': name,
+                'config_version': version,
+                'currency_id': ctx['currency'].get(company_id, 0),
+                'is_advance': bool(cov.get('cycle') == 'mid_cycle'),
             })
             headers[run.id] = hdr
 
         # ---- T1 + T2 via the shared aggregate --------------------------
-        n_line = self._insert_facts('line', live_ids, headers)
-        self._insert_facts('emp', live_ids, headers)
+        n_line, divisions = self._insert_facts('line', live_ids, headers, ctx)
+        self._insert_facts('emp', live_ids, headers, ctx)
 
         ms = int((time.time() - t0) * 1000)
         for run_id, hdr in headers.items():
-            hdr.write({'build_ms': ms, 'fact_line_count': n_line.get(run_id, 0)})
+            # A run's own division is only a fact when its people are all in
+            # ONE — a run that crosses divisions says nothing rather than
+            # picking a winner.
+            seen = divisions.get(run_id) or set()
+            hdr.write({'build_ms': ms, 'fact_line_count': n_line.get(run_id, 0),
+                       'division_id': list(seen)[0] if len(seen) == 1 else 0})
         _logger.info('pb_explorer: built %s run(s) in %s ms', len(headers), ms)
         return len(headers)
 
-    def _insert_facts(self, grain, run_ids, headers):
-        """Run the shared aggregate and INSERT the result. Returns {run_id: n}."""
+    def _insert_facts(self, grain, run_ids, headers, ctx=None):
+        """Run the shared aggregate and INSERT the result.
+
+        Returns ``({run_id: n}, {run_id: {division ids}})``.
+        """
         cr = self.env.cr
+        ctx = ctx or self._p3_context(
+            self.env['hr.payslip.run'].sudo().browse(list(run_ids)).exists(), {})
         cr.execute(self._aggregate_sql(grain), (run_ids,))
         rows = cr.fetchall()
         if not rows:
-            return {}
+            return {}, {}
         uid = self.env.uid
         now = fields.Datetime.now()
-        counts = {}
+        counts, divisions = {}, {}
+        currency = ctx['currency']
+        division_for = ctx['division_for']
+        config_meta = ctx['config_meta']
+        ends = ctx['ends']
         if grain == 'line':
             table = 'pb_fact_line'
             cols = ('fact_run_id', 'run_id', 'company_id', 'month', 'year',
@@ -418,39 +482,61 @@ class PbFactBuilder(models.AbstractModel):
                     'category_id', 'category_type', 'is_rollup', 'code',
                     'rule_id', 'component_name', 'amount', 'headcount',
                     'line_count',
+                    'config_id', 'config_name', 'config_version',
+                    'currency_id', 'division_id', 'is_advance',
                     'create_uid', 'create_date', 'write_uid', 'write_date')
             vals = []
             for (run_id, company_id, cycle, division, dept_id, cat_id,
                  cat_type, code, rule_id, comp_name, amount, heads, nlines,
-                 is_rollup) in rows:
+                 is_rollup, config_id, is_advance) in rows:
                 h = headers.get(run_id)
                 if not h:
                     continue
                 counts[run_id] = counts.get(run_id, 0) + 1
-                vals.append((h.id, run_id, company_id or h.company_id.id, h.month,
+                company_id = company_id or h.company_id.id
+                div_id = division_for(dept_id, ends.get(run_id))
+                if div_id:
+                    divisions.setdefault(run_id, set()).add(div_id)
+                cfg_name, cfg_version = config_meta(config_id, ends.get(run_id))
+                vals.append((h.id, run_id, company_id, h.month,
                              h.year, h.quarter, cycle, division, h.basis, dept_id,
                              cat_id, cat_type, bool(is_rollup), code, rule_id,
                              comp_name, amount or 0.0, heads or 0, nlines or 0,
+                             int(config_id or 0), cfg_name, cfg_version,
+                             currency.get(company_id, 0), div_id,
+                             bool(is_advance),
                              uid, now, uid, now))
         else:
             table = 'pb_fact_emp'
             cols = ('fact_run_id', 'run_id', 'company_id', 'month', 'year',
                     'quarter', 'cycle', 'division', 'basis', 'employee_id',
                     'department_id', 'job_id', 'category_type', 'amount',
+                    'config_id', 'config_name', 'config_version',
+                    'currency_id', 'division_id', 'person_id', 'fte',
+                    'is_advance',
                     'create_uid', 'create_date', 'write_uid', 'write_date')
             vals = []
             for (run_id, company_id, cycle, division, emp_id, dept_id, job_id,
-                 cat_type, amount) in rows:
+                 cat_type, amount, config_id, is_advance) in rows:
                 h = headers.get(run_id)
                 if not h:
                     continue
                 counts[run_id] = counts.get(run_id, 0) + 1
-                vals.append((h.id, run_id, company_id or h.company_id.id, h.month,
+                company_id = company_id or h.company_id.id
+                div_id = division_for(dept_id, ends.get(run_id))
+                if div_id:
+                    divisions.setdefault(run_id, set()).add(div_id)
+                cfg_name, cfg_version = config_meta(config_id, ends.get(run_id))
+                vals.append((h.id, run_id, company_id, h.month,
                              h.year, h.quarter, cycle, division, h.basis, emp_id,
                              dept_id, job_id, cat_type, amount or 0.0,
+                             int(config_id or 0), cfg_name, cfg_version,
+                             currency.get(company_id, 0), div_id,
+                             # One person, one employment — for now (P5).
+                             emp_id or 0, 1.0, bool(is_advance),
                              uid, now, uid, now))
         if not vals:
-            return counts
+            return counts, divisions
         placeholder = '(' + ','.join(['%s'] * len(cols)) + ')'
         args = []
         for v in vals:
@@ -459,7 +545,96 @@ class PbFactBuilder(models.AbstractModel):
             'INSERT INTO %s (%s) VALUES %s' % (
                 table, ','.join(cols), ','.join([placeholder] * len(vals))),
             args)
-        return counts
+        return counts, divisions
+
+    # ------------------------------------------------ GROUP P3 dimensions
+    def _p3_context(self, runs, coverage):
+        """The lookups every row of this chunk shares, resolved ONCE.
+
+        Currency, division, scheme name and scheme version are each a handful
+        of rows shared by thousands of facts. Joining them into the aggregate
+        would add four joins to the one statement this module exists to keep
+        fast; resolving them here costs four small queries per chunk and lets
+        the division walk reuse `pb.division.division_for`'s own rules (an
+        attachment at the top of a branch covers everything under it) instead
+        of restating them in SQL where they would drift.
+        """
+        ends = {r.id: (r.date_end or r.date_start) for r in runs}
+
+        rows = self.env['res.company'].sudo().with_context(
+            active_test=False).search_read([], ['currency_id'])
+        currency = {r['id']: (r['currency_id'][0] if r['currency_id'] else 0)
+                    for r in rows}
+
+        # --- divisions, as at each period end -----------------------------
+        chains, links = {}, {}
+        if 'pb.division' in self.env:
+            self.env.cr.execute("SELECT id, parent_path FROM hr_department")
+            for dept_id, path in self.env.cr.fetchall():
+                trail = (path or '').strip('/')
+                chains[dept_id] = ([int(x) for x in trail.split('/') if x]
+                                   or [dept_id])
+            Division = self.env['pb.division'].sudo()
+            for day in {d for d in ends.values() if d}:
+                links[day] = Division._links_on(day)
+
+        cache = {}
+
+        def division_for(dept_id, day):
+            if not dept_id or not day or day not in links:
+                return 0
+            key = (dept_id, day)
+            if key in cache:
+                return cache[key]
+            found = 0
+            on_day = links[day]
+            for candidate in reversed(chains.get(dept_id) or [dept_id]):
+                if candidate in on_day:
+                    found = on_day[candidate]
+                    break
+            cache[key] = found
+            return found
+
+        # --- scheme name and the version in force -------------------------
+        names, edited, releases = {}, {}, {}
+        if 'hr.formula.config' in self.env:
+            for cfg in self.env['hr.formula.config'].sudo().with_context(
+                    active_test=False).search_read(
+                    [], ['name', 'write_date']):
+                names[cfg['id']] = cfg['name'] or ''
+                edited[cfg['id']] = cfg['write_date']
+        if 'hr.formula.release' in self.env:
+            for rel in self.env['hr.formula.release'].sudo().search_read(
+                    [], ['config_id', 'name', 'approved_date'],
+                    order='approved_date asc'):
+                if rel['config_id']:
+                    releases.setdefault(rel['config_id'][0], []).append(
+                        (rel['approved_date'], rel['name'] or ''))
+
+        meta_cache = {}
+
+        def config_meta(config_id, day):
+            config_id = int(config_id or 0)
+            if not config_id:
+                return '', ''
+            key = (config_id, day)
+            if key in meta_cache:
+                return meta_cache[key]
+            name = names.get(config_id, '')
+            version = ''
+            for approved, label in releases.get(config_id, []):
+                if not day or (approved and approved.date() <= day):
+                    version = label
+            if not version:
+                # No signed-off release: the month the scheme was last edited
+                # is the honest answer to "which version paid this".
+                when = edited.get(config_id)
+                version = when.strftime('%Y-%m') if when else ''
+            meta_cache[key] = (name, version)
+            return name, version
+
+        return {'ends': ends, 'currency': currency,
+                'division_for': division_for, 'config_meta': config_meta}
 
     # ------------------------------------------------------------- coverage
     def _coverage(self, run_ids):
@@ -475,7 +650,8 @@ class PbFactBuilder(models.AbstractModel):
                    COUNT(DISTINCT pl.category_id)
                      FILTER (WHERE c.id IS NOT NULL AND c.category_type IS NULL),
                    MIN({cyc}),
-                   MIN({div})
+                   MIN({div}),
+                   MIN({cfg})
               FROM hr_payslip_run r
               JOIN hr_payslip p
                 ON p.payslip_run_id = r.id AND p.state != 'cancel'
@@ -486,16 +662,25 @@ class PbFactBuilder(models.AbstractModel):
              WHERE r.id IN %s
              GROUP BY r.id
         """.format(cyc=self._cycle_sql(), div=self._division_sql(),
-                   formula=formula, asof=_ASOF_JOIN), (run_ids,))
+                   cfg=self._config_sql(), formula=formula, asof=_ASOF_JOIN),
+            (run_ids,))
         out = {}
         for (rid, company_id, slips, lines, fallback, untyped,
-             cycle, division) in self.env.cr.fetchall():
+             cycle, division, config) in self.env.cr.fetchall():
             out[rid] = {
                 'company_id': company_id, 'slips': slips or 0,
                 'lines': lines or 0, 'asof_fallback': fallback or 0,
                 'untyped': untyped or 0, 'cycle': cycle or '',
-                'division': division or '',
+                'division': division or '', 'config': config or 0,
             }
+        # P2 writes the scheme a run was RUN FOR on the run itself, and that
+        # beats a vote among its payslips. Probed: `pb_scheme_map` is not a
+        # dependency of this module.
+        Run = self.env['hr.payslip.run']
+        if 'pb_formula_config_id' in Run._fields:
+            for run in Run.sudo().browse(list(run_ids)).exists():
+                if run.pb_formula_config_id and run.id in out:
+                    out[run.id]['run_config'] = run.pb_formula_config_id.id
         return out
 
     # --------------------------------------------------------------- manual
@@ -522,3 +707,23 @@ class PbFactBuilder(models.AbstractModel):
         self.env['pb.fact.run'].sudo().search(
             [('run_id', 'in', runs.ids)]).unlink()
         return self.build_runs(runs.ids)
+
+    @api.model
+    def rebuild_all_timed(self, limit=None):
+        """`rebuild_all` that says how long it took and how much it moved.
+
+        A full rebuild is the one operation on this module that a person waits
+        for, so it reports rather than returning a bare count: seconds, runs,
+        and the two fact-row counts a deploy check compares before and after.
+        """
+        t0 = time.time()
+        built = self.rebuild_all(limit=limit)
+        seconds = round(time.time() - t0, 1)
+        self.env.cr.execute(
+            'SELECT (SELECT COUNT(*) FROM pb_fact_line), '
+            '       (SELECT COUNT(*) FROM pb_fact_emp)')
+        n_line, n_emp = self.env.cr.fetchone() or (0, 0)
+        _logger.info('pb_explorer: full rebuild — %s run(s) in %ss '
+                     '(%s T1 rows, %s T2 rows)', built, seconds, n_line, n_emp)
+        return {'runs': built, 'seconds': seconds,
+                'fact_lines': n_line, 'fact_emps': n_emp}

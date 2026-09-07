@@ -100,6 +100,30 @@ class PbFactRun(models.Model):
     line_ids = fields.One2many('pb.fact.line', 'fact_run_id')
     emp_ids = fields.One2many('pb.fact.emp', 'fact_run_id')
 
+    # ---- GROUP P3: what this row remembers about where it came from ------
+    # APPENDED LAST, in the order the shared aggregate returns them (GR4).
+    config_id = fields.Integer(
+        string='Payroll scheme', index=True,
+        help='hr.formula.config id. A plain integer rather than a Many2one: '
+             'the builder INSERTs raw rows and a fact is always rebuildable, '
+             'so a foreign key would buy a cascade nobody needs.')
+    config_name = fields.Char(string='Scheme name')
+    config_version = fields.Char(
+        string='Scheme version',
+        help='The signed-off release in force at the end of the period, or the '
+             'month the scheme was last edited when there is no release.')
+    currency_id = fields.Integer(
+        string='Currency',
+        help="The company's own currency when this row was built. Amounts are "
+             'stored in it and NEVER stored converted.')
+    division_id = fields.Integer(
+        string='Division', index=True,
+        help='pb.division as at the end of the period.')
+    is_advance = fields.Boolean(
+        string='Advance run', index=True,
+        help='A mid-month advance. Excluded by default so a person is not '
+             'counted, and their pay not added, twice in one month.')
+
     _sql_constraints = [
         ('run_uniq', 'unique(run_id)', 'One fact header per pay run.'),
     ]
@@ -145,6 +169,14 @@ class PbFactLine(models.Model):
              'components — use pb.fact.emp for headcount measures.')
     line_count = fields.Integer()
 
+    # ---- GROUP P3, APPENDED LAST (GR4) ----------------------------------
+    config_id = fields.Integer(string='Payroll scheme', index=True)
+    config_name = fields.Char(string='Scheme name')
+    config_version = fields.Char(string='Scheme version')
+    currency_id = fields.Integer(string='Currency')
+    division_id = fields.Integer(string='Division', index=True)
+    is_advance = fields.Boolean(string='Advance run', index=True)
+
 
 class PbFactEmp(models.Model):
     _name = 'pb.fact.emp'
@@ -168,3 +200,21 @@ class PbFactEmp(models.Model):
     category_type = fields.Char(index=True)
 
     amount = fields.Float(digits=(16, 2))
+
+    # ---- GROUP P3, APPENDED LAST (GR4) ----------------------------------
+    config_id = fields.Integer(string='Payroll scheme', index=True)
+    config_name = fields.Char(string='Scheme name')
+    config_version = fields.Char(string='Scheme version')
+    currency_id = fields.Integer(string='Currency')
+    division_id = fields.Integer(string='Division', index=True)
+    # PERSON, not employment. Today one person is one employee record and this
+    # is a copy of employee_id; when a person can hold two employments (P5) the
+    # builder fills it differently and every headcount measure — which already
+    # counts DISTINCT person_id — starts counting people instead of contracts
+    # without a single query changing.
+    person_id = fields.Integer(string='Person', index=True)
+    fte = fields.Float(
+        string='Full-time equivalent', digits=(16, 4), default=1.0,
+        help='How much of a full-time person this row represents. 1.0 until '
+             'work segments exist.')
+    is_advance = fields.Boolean(string='Advance run', index=True)

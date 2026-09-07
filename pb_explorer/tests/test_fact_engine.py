@@ -139,21 +139,27 @@ class TestFactEngine(common.TransactionCase):
         live = {}
         for row in self.env.cr.fetchall():
             # (run, company, cycle, division, dept, cat, ctype, code, rule,
-            #  name, amt, heads, lines, is_rollup)
+            #  name, amt, heads, lines, is_rollup, config_id, is_advance)
             #
             # Read POSITIONALLY, which is the whole point of this test: a new
             # column inserted rather than appended shifts every index after it
             # and both consumers of the shared statement start reading the
-            # wrong thing (C18.127). New columns go on the END.
-            live[(row[4], row[6], row[7])] = round(float(row[10] or 0.0), 2)
+            # wrong thing (C18.127). New columns go on the END — GROUP P3
+            # appended `config_id` and `is_advance` there.
+            #
+            # SUMMED, not assigned: the grain can legitimately split a key
+            # (two schemes inside one run), and an assignment would silently
+            # keep the last row instead of comparing the money.
+            key = (row[4], row[6], row[7])
+            live[key] = round(live.get(key, 0.0) + float(row[10] or 0.0), 2)
 
         stored = {}
         for f in self.env['pb.fact.line'].search([('run_id', '=', self.april.id)]):
-            stored[(f.department_id.id or None, f.category_type, f.code)] = \
-                round(f.amount, 2)
+            key = (f.department_id.id or None, f.category_type, f.code)
+            stored[key] = round(stored.get(key, 0.0) + f.amount, 2)
 
         self.assertTrue(live, "the aggregate returned nothing — fixture is broken")
-        self.assertEqual(columns, 14,
+        self.assertEqual(columns, 16,
                          "the shared aggregate's column list changed shape; "
                          "both consumers read it positionally")
         self.assertEqual(stored, live,
