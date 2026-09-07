@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Group screen.
+
+       Comments are ruled with `=`, never a doubled hyphen: two hyphens
+       inside an XML comment is a PARSE ERROR that takes the whole file down
+       and every template in it with it (WF17).
+
+       `t-if` / `t-elif` / `t-else` are ADJACENT siblings with no comment
+       between them — a comment breaks the chain at runtime with nothing in
+       the server log (WF23).
+
+       No template expression says `not`: OWL rewrites `and` and `or` and
+       leaves `not` alone, which compiles to a SyntaxError that kills the
+       whole file at mount (WF3). Every negation here is `!`.
+
+       No loop variable is named lt / gt / lte / gte / and / or / not / in:
+       the company loop is `co`, the division loop is `dv`, the chip loop is
+       `lk`, the pair loop is `pr`, the cell loop is `cl`, the suggestion
+       loop is `sg`, the picker loop is `dp`.
+       ==================================================================== -->
+
+  <t t-name="pb_group.PbGroupRoom">
+    <div class="pbim pbim-page grp" t-ref="root">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your group…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty grp-empty">
+          <div class="grp-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>Your group could not be read</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="reload">Try again</button>
+        </div>
+      </div>
+
+      <div t-elif="!allowed" class="pbim-wrap">
+        <div class="pbim-empty grp-empty">
+          <div class="grp-empty-ic"><t t-out="ic('landmark',30)"/></div>
+          <h3>This is where your group is set up</h3>
+          <p>The companies you own, the money the board reads in, and the parts of the business that cross company lines. An administrator looks after it.</p>
+          <p class="pbim-sub">Ask an administrator for access if you need to see it.</p>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap grp-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="grp-head">
+          <div class="grp-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h2 class="grp-h">Your group</h2>
+            <p class="grp-s">The companies, currency and divisions every report and plan will use.</p>
+          </div>
+          <div class="grp-head-actions">
+            <button class="pbim-btn ghost" t-on-click="reload"
+                    title="Read the group again">
+              <t t-out="ic('refresh',15)"/>
+            </button>
+            <button t-if="group" class="pbim-btn ghost" t-on-click="openHistory"
+                    title="Who changed what, and when">
+              <t t-out="ic('history',15)"/> History
+            </button>
+            <button t-if="canEdit and group" class="pbim-btn primary"
+                    t-on-click="openEdit">
+              <t t-out="ic('pencil',15)"/> Edit the group
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================== 1 · the group tree ====================== -->
+        <section class="pbim-card grp-card" id="pbg-group">
+
+          <div t-if="!group" class="grp-teach">
+            <div class="grp-teach-ic"><t t-out="ic('landmark',34)"/></div>
+            <div class="grp-teach-tx">
+              <h3>You have not set up a group yet</h3>
+              <p>A group is the companies you own, read as one business. Setting it up takes a minute and it decides three things:</p>
+              <ul class="grp-teach-list">
+                <li><b>The money the board reads in.</b> Nothing is stored in it — every figure keeps the currency it was paid in and is converted when you look at it.</li>
+                <li><b>How exchange rates are picked</b> for a month, so every converted number can say where it came from.</li>
+                <li><b>Divisions</b> — the parts of the business that do not stop at a company border.</li>
+              </ul>
+              <button t-if="canEdit" class="pbim-btn primary"
+                      t-on-click="openCreate">
+                <t t-out="ic('plus',15)"/> Create your group
+              </button>
+              <p t-else="" class="pbim-sub">Ask an administrator to set the group up.</p>
+            </div>
+          </div>
+
+          <div t-else="" class="grp-tree">
+            <div class="grp-root">
+              <div class="grp-root-ic"><t t-out="ic('landmark',20)"/></div>
+              <div class="grp-root-tx">
+                <div class="grp-root-name" t-esc="group.name"/>
+                <div class="grp-root-chips">
+                  <span class="pbim-chip" t-attf-title="Group currency: {{ group.currency }}">
+                    <t t-out="ic('banknote',13)"/> <t t-esc="group.currency"/>
+                  </span>
+                  <span class="pbim-chip">
+                    <t t-out="ic('coins',13)"/> <t t-esc="policyLabel"/>
+                  </span>
+                  <span class="pbim-chip">
+                    <t t-out="ic('calendar',13)"/> Year starts in <t t-esc="fiscalLabel"/>
+                  </span>
+                  <span t-if="group.code" class="pbim-chip" t-esc="group.code"/>
+                </div>
+              </div>
+              <div class="grp-root-count">
+                <span class="grp-root-n" t-att-data-pbg-count="room.people_total"
+                      data-pbg-key="total">0</span>
+                <span class="grp-root-l">people in the group</span>
+              </div>
+            </div>
+
+            <div class="grp-stem"/>
+
+            <div class="grp-branch">
+              <div class="grp-co" t-foreach="members" t-as="co" t-key="co.id">
+                <div class="grp-co-top">
+                  <span t-if="co.flag_code" class="grp-flag" t-esc="co.flag_code"/>
+                  <span t-else="" class="grp-flag grp-flag--none">
+                    <t t-out="ic('globe',12)"/>
+                  </span>
+                  <span class="grp-co-cur" t-esc="co.currency"/>
+                </div>
+                <div class="grp-co-name" t-esc="co.name"/>
+                <div class="grp-co-facts">
+                  <span class="grp-co-fact">
+                    <t t-out="ic('users',13)"/>
+                    <b t-att-data-pbg-count="co.people"
+                       t-attf-data-pbg-key="co{{ co.id }}">0</b>
+                    <t t-esc="peopleWord(co.people)"/>
+                  </span>
+                  <span class="grp-co-fact">
+                    <t t-out="ic('sigma',13)"/>
+                    <b t-esc="co.schemes"/> pay schemes
+                  </span>
+                </div>
+              </div>
+
+              <button t-if="canEdit" class="grp-co grp-co--ghost"
+                      t-on-click="openEdit">
+                <span class="grp-ghost-ic"><t t-out="ic('plus',18)"/></span>
+                <span class="grp-ghost-tx">Add a company</span>
+              </button>
+            </div>
+
+            <p class="grp-foot">Nothing is stored in the group currency. Every figure keeps the money it was paid in and is converted when you look at it.</p>
+          </div>
+        </section>
+
+        <!-- ==================== 2 · the exchange rates =================== -->
+        <section class="pbim-card grp-card" id="pbg-rates">
+          <div class="grp-card-h">
+            <div class="grp-card-id">
+              <span class="grp-card-ic"><t t-out="ic('coins',18)"/></span>
+              <div>
+                <h3 class="grp-card-t">Exchange rates</h3>
+                <p class="grp-card-s">Which months already have a rate for the money your companies are paid in.</p>
+              </div>
+            </div>
+            <div class="grp-card-actions">
+              <button class="pbim-btn ghost" t-on-click="openRateList">
+                <t t-out="ic('external',15)"/> Open the rate list
+              </button>
+            </div>
+          </div>
+
+          <div t-if="!group" class="pbim-note grp-note">
+            Set your group up first and this fills in on its own.
+          </div>
+
+          <div t-else="" class="grp-rates">
+            <div class="grp-policy">
+              <label class="grp-policy-l" for="pbg-policy">How rates are picked</label>
+              <select t-if="canEdit" id="pbg-policy" class="grp-select"
+                      t-on-change="setLivePolicy">
+                <option t-foreach="policies" t-as="pr" t-key="pr.key"
+                        t-att-value="pr.key"
+                        t-att-selected="pr.key === group.fx_policy"
+                        t-esc="pr.label"/>
+              </select>
+              <span t-else="" class="grp-policy-v" t-esc="policyLabel"/>
+              <p class="grp-policy-help" t-esc="policyHelp"/>
+            </div>
+
+            <div t-if="coverageEmpty" class="pbim-note grp-note">
+              Every company in your group is paid in <t t-esc="memberCurrencyWord"/>, and the group reads in <t t-esc="group.currency"/>. There is nothing to convert.
+            </div>
+
+            <div t-else="" class="grp-strip" t-ref="strip" role="grid"
+                 aria-label="Exchange rate coverage by month">
+              <div class="grp-strip-head" role="row">
+                <span class="grp-strip-pair"/>
+                <span class="grp-strip-m" role="columnheader"
+                      t-foreach="months" t-as="mn" t-key="mn_index"
+                      t-esc="mn"/>
+              </div>
+              <div class="grp-strip-row" role="row"
+                   t-foreach="coverage.pairs" t-as="pr" t-key="pr.src_id">
+                <span class="grp-strip-pair">
+                  <b t-esc="pr.src"/>
+                  <t t-out="ic('arrowLeftRight',13)"/>
+                  <b t-esc="pr.dst"/>
+                </span>
+                <button t-foreach="pr.cells" t-as="cl"
+                        t-key="cl.month" role="gridcell"
+                        t-attf-class="grp-cell grp-cell--{{ cl.state }}"
+                        data-pbg-cell="1"
+                        t-att-data-pbg-row="pr_index"
+                        t-att-data-pbg-col="cl_index"
+                        t-att-title="cellTitle(pr, cl)"
+                        t-att-aria-label="cellTitle(pr, cl)"
+                        t-on-keydown="onCellKeydown"
+                        t-on-click="() => this.openRates(pr, cl)">
+                  <span class="grp-cell-m" t-esc="months[cl.month - 1]"/>
+                  <span class="grp-cell-w" t-esc="cellWord(cl)"/>
+                </button>
+              </div>
+              <div class="grp-legend">
+                <span class="grp-leg"><i class="grp-dot grp-dot--ok"/> A rate from that month</span>
+                <span class="grp-leg"><i class="grp-dot grp-dot--old"/> An older rate is used — the cell says which day</span>
+                <span class="grp-leg"><i class="grp-dot grp-dot--none"/> No rate, so the figures stay in their own money</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================= 3 · the divisions ===================== -->
+        <section class="pbim-card grp-card" id="pbg-divisions">
+          <div class="grp-card-h">
+            <div class="grp-card-id">
+              <span class="grp-card-ic"><t t-out="ic('layers',18)"/></span>
+              <div>
+                <h3 class="grp-card-t">Divisions</h3>
+                <p class="grp-card-s">One part of the business, across every company in the group. Attach a department at the top and everything under it comes too.</p>
+              </div>
+            </div>
+            <div class="grp-card-actions">
+              <button t-if="canEdit and suggestions.length" class="pbim-btn ghost"
+                      t-on-click="openSuggest">
+                <t t-out="ic('sparkles',15)"/> Suggest divisions
+              </button>
+              <button t-if="canEdit" class="pbim-btn primary" t-on-click="openAdd">
+                <t t-out="ic('plus',15)"/> Add a division
+              </button>
+            </div>
+          </div>
+
+          <div t-if="!divisions.length" class="pbim-empty grp-empty">
+            <div class="grp-empty-ic"><t t-out="ic('layers',28)"/></div>
+            <h3>No divisions yet</h3>
+            <p>We can propose one for each top-level department you already have, and you can rename or merge them before anything is created.</p>
+            <button t-if="canEdit and suggestions.length" class="pbim-btn primary"
+                    t-on-click="openSuggest">
+              <t t-out="ic('sparkles',15)"/> Suggest divisions from your departments
+            </button>
+          </div>
+
+          <div t-else="" class="grp-board">
+            <div class="grp-dv" t-foreach="divisions" t-as="dv" t-key="dv.id"
+                 tabindex="0" role="button"
+                 t-att-aria-label="dv.name"
+                 t-on-click="() => this.openDivision(dv.id)"
+                 t-on-keydown="(ev) => this.onCardKeydown(ev, dv.id)">
+              <div class="grp-dv-top">
+                <i t-attf-class="grp-dvdot grp-c{{ dv.color }}"/>
+                <span class="grp-dv-name" t-esc="dv.name"/>
+                <span t-if="dv.code" class="pbim-chip grp-dv-code" t-esc="dv.code"/>
+              </div>
+              <div class="grp-dv-count">
+                <b t-att-data-pbg-count="dv.people"
+                   t-attf-data-pbg-key="dv{{ dv.id }}">0</b>
+                <span t-esc="peopleWord(dv.people)"/>
+              </div>
+              <div t-if="dv.links.length" class="pbim-chips grp-dv-chips">
+                <span class="pbim-chip" t-foreach="dv.links.slice(0,6)" t-as="lk"
+                      t-key="lk.id" t-attf-title="{{ lk.company }} · {{ lk.complete_name }}">
+                  <t t-esc="lk.department"/>
+                </span>
+                <span t-if="dv.links.length > 6" class="pbim-chip grp-more">
+                  and <t t-esc="dv.links.length - 6"/> more
+                </span>
+              </div>
+              <div t-else="" class="grp-dv-ghost">
+                <t t-out="ic('link',14)"/> No departments yet — open it to attach the first one.
+              </div>
+            </div>
+
+            <div class="grp-dv grp-dv--rest">
+              <div class="grp-dv-top">
+                <i class="grp-dvdot grp-dvdot--rest"/>
+                <span class="grp-dv-name">Not in a division</span>
+              </div>
+              <div class="grp-dv-count">
+                <b t-att-data-pbg-count="unassigned" data-pbg-key="rest">0</b>
+                <span>people</span>
+              </div>
+              <div class="grp-dv-ghost">Everybody whose department is not attached anywhere yet.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================= the drawers ========================= -->
+        <t t-call="pb_group.GroupDrawer"/>
+        <t t-call="pb_group.DivisionDrawer"/>
+        <t t-call="pb_group.AttachDrawer"/>
+        <t t-call="pb_group.SuggestDrawer"/>
+        <t t-call="pb_group.AddDivision"/>
+        <t t-call="pb_group.DetachDialog"/>
+
+      </div>
+    </div>
+  </t>
+
+  <!-- ==================== the group drawer (name, money) ================= -->
+  <t t-name="pb_group.GroupDrawer">
+    <div t-if="state.editing" class="grp-scrim" t-on-click="closeEdit">
+      <aside class="grp-drawer" t-on-click.stop="() => {}"
+             role="dialog" aria-label="Your group">
+        <header class="grp-drawer-h">
+          <h3 t-if="state.draft.id">Edit your group</h3>
+          <h3 t-else="">Create your group</h3>
+          <button class="pbim-btn ghost" t-on-click="closeEdit"
+                  title="Close">
+            <t t-out="ic('x',15)"/>
+          </button>
+        </header>
+        <div class="grp-drawer-b">
+          <label class="grp-f">
+            <span class="grp-f-l">Group name</span>
+            <input class="grp-input" type="text" t-att-value="state.draft.name"
+                   placeholder="What this group of companies is called"
+                   t-on-input="(ev) => this.setDraft('name', ev)"/>
+          </label>
+          <label class="grp-f">
+            <span class="grp-f-l">Short code</span>
+            <input class="grp-input" type="text" t-att-value="state.draft.code"
+                   placeholder="Optional"
+                   t-on-input="(ev) => this.setDraft('code', ev)"/>
+          </label>
+          <label class="grp-f">
+            <span class="grp-f-l">Group currency</span>
+            <select class="grp-select"
+                    t-on-change="(ev) => this.setDraft('currency_id', ev)">
+              <option t-foreach="currencies" t-as="cu" t-key="cu.id"
+                      t-att-value="cu.id"
+                      t-att-selected="cu.id === state.draft.currency_id"
+                      t-esc="cu.name"/>
+            </select>
+            <span class="grp-f-h">Nothing is stored in it. Every figure keeps the money it was paid in.</span>
+          </label>
+
+          <div class="grp-f">
+            <span class="grp-f-l">How rates are picked</span>
+            <div t-foreach="policies" t-as="pr" t-key="pr.key"
+                 t-attf-class="grp-pol {{ pr.key === state.draft.fx_policy ? 'is-on' : '' }}"
+                 role="button" tabindex="0"
+                 t-on-click="() => this.setPolicy(pr.key)">
+              <b t-esc="pr.label"/>
+              <span t-esc="pr.help"/>
+            </div>
+          </div>
+
+          <label class="grp-f">
+            <span class="grp-f-l">Fiscal year starts in</span>
+            <select class="grp-select"
+                    t-on-change="(ev) => this.setDraft('fiscal_start_month', ev)">
+              <option t-foreach="monthChoices" t-as="mo" t-key="mo.value"
+                      t-att-value="mo.value"
+                      t-att-selected="mo.value === state.draft.fiscal_start_month"
+                      t-esc="mo.label"/>
+            </select>
+          </label>
+
+          <div class="grp-f">
+            <span class="grp-f-l">The companies in this group</span>
+            <div class="grp-pick" t-foreach="companies" t-as="co" t-key="co.id">
+              <label class="grp-pick-row">
+                <input type="checkbox" t-att-checked="draftHas(co.id)"
+                       t-on-change="() => this.toggleDraftCompany(co.id)"/>
+                <span class="grp-pick-tx">
+                  <b t-esc="co.name"/>
+                  <span class="grp-pick-sub">
+                    <t t-esc="co.currency"/> ·
+                    <t t-esc="num(co.people)"/> <t t-esc="peopleWord(co.people)"/> ·
+                    <t t-esc="co.schemes"/> pay schemes
+                  </span>
+                  <span t-if="co.group_id and (!group or co.group_id !== group.id)"
+                        class="grp-pick-warn">
+                    Already in <t t-esc="co.group_name"/> — ticking it moves it here.
+                  </span>
+                  <span t-if="!co.active" class="grp-pick-warn">
+                    Not in use right now — adding it to the group switches it back on.
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <label class="grp-f">
+            <span class="grp-f-l">Notes</span>
+            <textarea class="grp-input" rows="2"
+                      placeholder="Anything worth remembering"
+                      t-on-change="(ev) => this.setDraft('note', ev)"
+                      t-esc="state.draft.note"/>
+          </label>
+        </div>
+        <footer class="grp-drawer-f">
+          <button class="pbim-btn ghost" t-on-click="closeEdit">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.busy"
+                  t-on-click="saveGroup">
+            <t t-out="ic('check',15)"/> Save the group
+          </button>
+        </footer>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ======================== the division drawer ======================== -->
+  <t t-name="pb_group.DivisionDrawer">
+    <div t-if="openDivisionRow" class="grp-scrim" t-on-click="closeDivision">
+      <aside class="grp-drawer" t-on-click.stop="() => {}"
+             role="dialog" aria-label="Division">
+        <header class="grp-drawer-h">
+          <h3 t-esc="openDivisionRow.name"/>
+          <button class="pbim-btn ghost" t-on-click="closeDivision"
+                  title="Close">
+            <t t-out="ic('x',15)"/>
+          </button>
+        </header>
+        <div class="grp-drawer-b">
+          <div class="grp-dv-hero">
+            <b t-esc="num(openDivisionRow.people)"/>
+            <span>people in this division today</span>
+          </div>
+
+          <t t-if="canEdit">
+            <label class="grp-f">
+              <span class="grp-f-l">Name</span>
+              <input class="grp-input" type="text"
+                     t-att-value="state.divisionDraft.name"
+                     t-on-input="(ev) => this.setDivisionDraft('name', ev)"/>
+            </label>
+            <label class="grp-f">
+              <span class="grp-f-l">Short code</span>
+              <input class="grp-input" type="text"
+                     t-att-value="state.divisionDraft.code"
+                     placeholder="Optional"
+                     t-on-input="(ev) => this.setDivisionDraft('code', ev)"/>
+            </label>
+            <div class="grp-f">
+              <span class="grp-f-l">Colour</span>
+              <div class="grp-swatches">
+                <button t-foreach="colourChoices" t-as="cx" t-key="cx"
+                        t-attf-class="grp-swatch grp-c{{ cx }} {{ cx === state.divisionDraft.color ? 'is-on' : '' }}"
+                        t-attf-aria-label="Colour {{ cx + 1 }}"
+                        t-on-click="() => this.pickColour(cx)"/>
+              </div>
+            </div>
+          </t>
+
+          <h4 class="grp-sub-h">Departments in it</h4>
+          <div t-if="!openDivisionRow.links.length" class="pbim-note grp-note">
+            Nothing is attached yet. Attach the first department and the people count fills in.
+          </div>
+          <div t-else="" class="grp-links">
+            <div class="grp-link" t-foreach="openDivisionRow.links" t-as="lk"
+                 t-key="lk.id">
+              <div class="grp-link-tx">
+                <b t-esc="lk.complete_name"/>
+                <span class="grp-link-sub">
+                  <t t-esc="lk.company"/> · <t t-esc="num(lk.heads)"/> <t t-esc="peopleWord(lk.heads)"/> · from <t t-esc="lk.date_from"/>
+                  <t t-if="lk.date_to"> until <t t-esc="lk.date_to"/></t>
+                </span>
+              </div>
+              <button t-if="canEdit and !lk.date_to" class="pbim-btn ghost"
+                      t-on-click="() => this.openDetach(lk.id)">
+                Take out
+              </button>
+            </div>
+          </div>
+        </div>
+        <footer class="grp-drawer-f">
+          <button t-if="canEdit" class="pbim-btn ghost"
+                  t-on-click="archiveDivision">
+            <t t-out="ic('archive',15)"/> Put away
+          </button>
+          <button t-if="canEdit" class="pbim-btn ghost"
+                  t-on-click="() => this.openAttach(openDivisionRow.id)">
+            <t t-out="ic('link',15)"/> Attach a department
+          </button>
+          <button t-if="canEdit" class="pbim-btn primary"
+                  t-att-disabled="state.busy" t-on-click="saveDivision">
+            <t t-out="ic('check',15)"/> Save
+          </button>
+        </footer>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ======================== the attach picker ========================== -->
+  <t t-name="pb_group.AttachDrawer">
+    <div t-if="state.attaching" class="grp-scrim grp-scrim--top"
+         t-on-click="closeAttach">
+      <aside class="grp-drawer" t-on-click.stop="() => {}"
+             role="dialog" aria-label="Attach a department">
+        <header class="grp-drawer-h">
+          <h3>Attach a department</h3>
+          <button class="pbim-btn ghost" t-on-click="closeAttach" title="Close">
+            <t t-out="ic('x',15)"/>
+          </button>
+        </header>
+        <div class="grp-drawer-b">
+          <label class="grp-f">
+            <span class="grp-f-l">From</span>
+            <input class="grp-input" type="date"
+                   t-att-value="state.attachDate"
+                   t-on-input="setAttachDate"/>
+            <span class="grp-f-h">Leave it empty to start today.</span>
+          </label>
+          <div class="grp-search">
+            <t t-out="ic('search',15)"/>
+            <input class="grp-input" type="text"
+                   placeholder="Search a department or a company"
+                   t-att-value="state.attachSearch"
+                   t-on-input="setAttachSearch"/>
+          </div>
+          <div t-if="!attachChoices.length" class="pbim-note grp-note">
+            Nothing matches that. Try part of a department name.
+          </div>
+          <div t-else="" class="grp-cogroup" t-foreach="attachChoices"
+               t-as="cg" t-key="cg.id">
+            <div class="grp-cogroup-h" t-esc="cg.name"/>
+            <button class="grp-dp" t-foreach="cg.rows" t-as="dp" t-key="dp.id"
+                    t-on-click="() => this.attach(dp.id)">
+              <span class="grp-dp-tx">
+                <b t-esc="dp.complete_name"/>
+                <span class="grp-dp-sub"><t t-esc="num(dp.heads)"/> <t t-esc="peopleWord(dp.heads)"/></span>
+              </span>
+              <span t-if="dp.division_id" class="pbim-chip grp-dp-tag">
+                in <t t-esc="dp.division"/> — this moves it
+              </span>
+              <span t-else="" class="pbim-chip grp-dp-tag grp-dp-tag--free">Free</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ========================= the detach dialog ========================= -->
+  <t t-name="pb_group.DetachDialog">
+    <div t-if="state.detaching" class="grp-scrim grp-scrim--top"
+         t-on-click="closeDetach">
+      <div class="grp-dialog" t-on-click.stop="() => {}"
+           role="dialog" aria-label="Take a department out">
+        <h3>Take it out from which day?</h3>
+        <p class="pbim-sub">The attachment is kept with an end date, so last quarter still reads the way it did.</p>
+        <input class="grp-input" type="date" t-att-value="state.detachDate"
+               t-on-input="setDetachDate"/>
+        <p t-if="state.dialogError" class="grp-refuse" role="alert"
+           t-esc="state.dialogError"/>
+        <div class="grp-dialog-f">
+          <button class="pbim-btn ghost" t-on-click="closeDetach">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.busy"
+                  t-on-click="detach">Take it out</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ========================== add a division =========================== -->
+  <t t-name="pb_group.AddDivision">
+    <div t-if="state.adding" class="grp-scrim grp-scrim--top"
+         t-on-click="closeAdd">
+      <div class="grp-dialog" t-on-click.stop="() => {}"
+           role="dialog" aria-label="Add a division">
+        <h3>Add a division</h3>
+        <label class="grp-f">
+          <span class="grp-f-l">Name</span>
+          <input class="grp-input" type="text"
+                 t-att-value="state.newDivision.name"
+                 placeholder="Retail, Manufacturing, Logistics…"
+                 t-on-input="(ev) => this.setNewDivision('name', ev)"/>
+        </label>
+        <label class="grp-f">
+          <span class="grp-f-l">Short code</span>
+          <input class="grp-input" type="text"
+                 t-att-value="state.newDivision.code" placeholder="Optional"
+                 t-on-input="(ev) => this.setNewDivision('code', ev)"/>
+        </label>
+        <p t-if="state.dialogError" class="grp-refuse" role="alert"
+           t-esc="state.dialogError"/>
+        <div class="grp-dialog-f">
+          <button class="pbim-btn ghost" t-on-click="closeAdd">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.busy"
+                  t-on-click="createDivision">Add it</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ======================== the suggestions ============================ -->
+  <t t-name="pb_group.SuggestDrawer">
+    <div t-if="state.suggesting" class="grp-scrim" t-on-click="closeSuggest">
+      <aside class="grp-drawer grp-drawer--wide" t-on-click.stop="() => {}"
+             role="dialog" aria-label="Suggested divisions">
+        <header class="grp-drawer-h">
+          <h3>Divisions we can make from your departments</h3>
+          <button class="pbim-btn ghost" t-on-click="closeSuggest" title="Close">
+            <t t-out="ic('x',15)"/>
+          </button>
+        </header>
+        <div class="grp-drawer-b">
+          <p class="pbim-sub">One for each top-level department across your companies. Rename anything, tick two and merge them, then create the ones you want. Nothing is created until you press the button.</p>
+          <div class="grp-sg" t-foreach="state.picks" t-as="sg" t-key="sg.key">
+            <div class="grp-sg-top">
+              <input type="checkbox" t-att-checked="sg.chosen"
+                     t-attf-aria-label="Create {{ sg.name }}"
+                     t-on-change="() => this.togglePick(sg.key)"/>
+              <input class="grp-input grp-sg-name" type="text"
+                     t-att-value="sg.name"
+                     t-on-input="(ev) => this.renamePick(sg.key, ev)"/>
+              <span class="grp-sg-n"><t t-esc="num(sg.people)"/> <t t-esc="peopleWord(sg.people)"/></span>
+              <label class="grp-sg-merge">
+                <input type="checkbox" t-att-checked="sg.merging"
+                       t-on-change="() => this.toggleMerge(sg.key)"/>
+                <span>Merge</span>
+              </label>
+            </div>
+            <div class="pbim-chips grp-sg-chips">
+              <span class="pbim-chip" t-foreach="sg.labels" t-as="lb"
+                    t-key="lb_index" t-esc="lb"/>
+            </div>
+            <div t-if="sg.existing_id" class="grp-sg-note">
+              A division with this name already exists — these departments will be added to it.
+            </div>
+          </div>
+        </div>
+        <footer class="grp-drawer-f">
+          <button class="pbim-btn ghost" t-att-disabled="mergeCount &lt; 2"
+                  t-on-click="mergePicks">
+            <t t-out="ic('gitMerge',15)"/> Merge the ticked ones
+          </button>
+          <button class="pbim-btn primary" t-att-disabled="state.busy"
+                  t-on-click="acceptSuggestions">
+            <t t-out="ic('check',15)"/> Create them
+          </button>
+        </footer>
+      </aside>
+    </div>
+  </t>
+
+</templates>

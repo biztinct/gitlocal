@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE TIER, and that is the whole ladder.
+
+         Setting a group up is a rare, structural act: naming the member
+         companies, choosing the currency the board reads in, deciding how
+         exchange rates are picked. Everybody who may read a roster may LOOK
+         at all of it (the facade's own gate), because a division that only
+         its author can see is a division nobody plans with.
+
+         In the Odoo 19 shape: a privilege record, not `category_id` on the
+         group, which no longer exists.
+         ================================================================== -->
+
+    <record id="module_category_group" model="ir.module.category">
+        <field name="name">Group</field>
+        <field name="sequence">52</field>
+    </record>
+
+    <record id="res_groups_privilege_group" model="res.groups.privilege">
+        <field name="name">Group</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_group"/>
+    </record>
+
+    <record id="group_group_admin" model="res.groups">
+        <field name="name">Set up the group</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_group"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Name the group, choose its companies, its currency and how exchange rates are picked, and build its divisions.</field>
+    </record>
+
+    <!-- Additive: this only ADDS an implication to a group somebody else
+         owns, it never restates that group. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('pb_group.group_group_admin'))]"/>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY SCOPE, on the one model that has a company.
+
+         A division is group-level and has no company by design; an
+         ATTACHMENT names a department, and a department belongs to a
+         company. So the attachment carries the rule and the division does
+         not.
+         ================================================================== -->
+
+    <record id="rule_division_link_company" model="ir.rule">
+        <field name="name">Department in a division: company</field>
+        <field name="model_id" ref="model_pb_division_link"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</data>
+</odoo>

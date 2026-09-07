@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_group_user,group read,model_pb_group,base.group_user,1,0,0,0
+access_pb_group_admin,group admin,model_pb_group,pb_group.group_group_admin,1,1,1,0
+access_pb_group_system,group system,model_pb_group,base.group_system,1,1,1,1
+access_pb_division_user,division read,model_pb_division,base.group_user,1,0,0,0
+access_pb_division_admin,division admin,model_pb_division,pb_group.group_group_admin,1,1,1,0
+access_pb_division_system,division system,model_pb_division,base.group_system,1,1,1,1
+access_pb_division_link_user,division link read,model_pb_division_link,base.group_user,1,0,0,0
+access_pb_division_link_admin,division link admin,model_pb_division_link,pb_group.group_group_admin,1,1,1,1
+access_pb_division_link_system,division link system,model_pb_division_link,base.group_system,1,1,1,1
