@@ -989,7 +989,7 @@
                         <span class="dr-tag" t-elif="row.who">· <t t-esc="row.who"/></span>
                         <span class="dr-exact" t-if="row.exactText" t-esc="row.exactText"/>
                       </td>
-                      <td>
+                      <td t-att-data-label="dockColumns.scope">
                         <t t-if="row.tag === 'saved'">
                           <span class="dr-scopecell" t-att-title="row.scope"
                                 t-esc="row.scope"/>
@@ -999,7 +999,9 @@
                           <span class="dr-scopecell" t-esc="state.scope.label"/>
                         </t>
                       </td>
-                      <td class="dr-standscell">
+                      <td class="dr-standscell"
+                          t-att-class="{ 'dr-cardhide': row.tag !== 'saved' }"
+                          t-att-data-label="row.tag === 'saved' ? dockColumns.stands : false">
                         <t t-if="row.tag === 'saved'">
                           <span class="dr-status"
                                 t-att-class="'dr-status--' + row.status"
@@ -1023,12 +1025,17 @@
                           </small>
                         </t>
                       </td>
-                      <td t-esc="row.heads"/>
-                      <td t-esc="row.cost"/>
-                      <td t-if="hasTarget" t-esc="row.served"/>
-                      <td><strong t-esc="row.profit"/></td>
-                      <td t-att-class="{ 'dr-neg': row.bad }" t-esc="row.delta"/>
-                      <td class="dr-row-actions">
+                      <td t-att-data-label="dockColumns.heads" t-esc="row.heads"/>
+                      <td t-att-data-label="dockColumns.cost" t-esc="row.cost"/>
+                      <td t-if="hasTarget" t-att-data-label="dockColumns.served"
+                          t-esc="row.served"/>
+                      <td t-att-data-label="dockColumns.profit">
+                        <strong t-esc="row.profit"/>
+                      </td>
+                      <td t-att-data-label="dockColumns.delta"
+                          t-att-class="{ 'dr-neg': row.bad }" t-esc="row.delta"/>
+                      <td class="dr-row-actions"
+                          t-att-class="{ 'dr-cardhide': row.tag !== 'saved' }">
                         <t t-if="row.tag === 'saved'">
                           <button class="pbim-btn-sm" t-on-click="() => this.openPlan(row)">Open</button>
                           <button class="pbim-btn-sm" t-att-disabled="!row.sameMoney"

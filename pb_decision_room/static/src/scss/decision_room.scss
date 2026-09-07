@@ -690,14 +690,23 @@ $dr-teal:       #0F766E;
     // A control you cannot reach is worse than a control that is not there, so
     // the wrapper scrolls and the actions column is pinned to the right edge:
     // the numbers slide under it, the buttons never leave.
+    //
+    // GROUP P7: pinning is the answer at a DESK width. Below 1200px the same
+    // nine columns are a table nobody can read sideways, so the dock stops
+    // being a table at all — see "the dock as cards" at the foot of this file.
     .dr-dock .pbim-tablewrap { overflow-x: auto; }
     .dr-table {
         td, th { white-space: nowrap; padding: 10px 9px; }
-        th:last-child, td:last-child {
-            position: sticky; right: 0; background: #fff;
-            box-shadow: -8px 0 8px -8px rgba(30, 27, 46, .18);
+        @media (min-width: 1200px) {
+            th:last-child, td:last-child {
+                position: sticky; right: 0;
+                background: var(--pbim-surface, white);
+                box-shadow: -8px 0 8px -8px rgba(30, 27, 46, .18);
+            }
+            .dr-row--now td:last-child {
+                background: var(--pbim-soft, #EDEAF8);
+            }
         }
-        .dr-row--now td:last-child { background: var(--pbim-soft, #EDEAF8); }
         .dr-tag { font-size: 9px; color: var(--pbim-muted, #64748B); }
         .dr-neg { color: $dr-rose; }
         .dr-row--now { background: var(--pbim-soft, #EDEAF8); }
@@ -1736,6 +1745,79 @@ $dr-teal:       #0F766E;
             -webkit-overflow-scrolling: touch;
         }
         .dr-month { flex: 0 0 78px; scroll-snap-align: center; }
+    }
+}
+
+// =====================================================================
+//  THE DOCK AS CARDS  (< 1200px)
+//
+//  GROUP P7. Nine columns — plan, scope, where it stands, people, cost,
+//  demand, profit, movement, and five verbs — are a desk-width table. On
+//  anything narrower the reader had to drag sideways to reach the numbers
+//  they came for, and WF6 says a wrapper that clips loses the last column
+//  entirely. So below 1200px the dock stops being a table: one CARD per
+//  plan, every figure carrying its own label (written in the component so
+//  it can be translated), the actions in a row of their own under a
+//  hairline. Nothing scrolls sideways and nothing is out of reach.
+//
+//  At 1200px and above the table is back and the actions column is pinned
+//  to the right edge (see `.dr-table` above), so the money slides under the
+//  buttons rather than the buttons off the screen.
+// =====================================================================
+@media (max-width: 1199px) {
+    .pbim.dr {
+        // The kit's wrapper clips and rounds; a stack of cards wants neither.
+        .dr-dock .pbim-tablewrap {
+            overflow: visible; border: 0; border-radius: 0;
+        }
+        .dr-table {
+            display: block;
+            // The headings are said again on every card, so the row of them
+            // is hidden from the eye and kept for a screen reader.
+            thead {
+                position: absolute; width: 1px; height: 1px; margin: -1px;
+                padding: 0; border: 0; overflow: hidden;
+                clip-path: inset(50%); white-space: nowrap;
+            }
+            tbody, tr, td { display: block; }
+            tr {
+                margin-bottom: 10px; padding: 13px 15px;
+                border: 1px solid var(--pbim-line, #E2E8F0);
+                border-radius: var(--pbim-r-sm, 10px);
+                background: var(--pbim-surface, white);
+            }
+            tr:last-child { margin-bottom: 0; }
+            .dr-row--now {
+                border-color: var(--pbim-primary-light, #CBC2EE);
+            }
+            td { padding: 0; border: 0; white-space: normal; }
+            td + td { margin-top: 9px; }
+            // The title already carries the gap under its own hairline.
+            td:first-child + td { margin-top: 0; }
+            // A cell that says nothing on this row is not an empty label.
+            .dr-cardhide { display: none; }
+            // The plan's own name is the card's title, not a labelled figure.
+            th:first-child, td:first-child { max-width: none; }
+            td:first-child {
+                font-size: 15px; font-weight: 650;
+                color: var(--pbim-ink, #1B1733);
+                padding-bottom: 10px; margin-bottom: 10px;
+                border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            }
+            td[data-label]::before {
+                content: attr(data-label); display: block;
+                margin-bottom: 2px; font-size: 9px; font-weight: 700;
+                letter-spacing: .5px; text-transform: uppercase;
+                color: var(--pbim-muted, #64748B);
+            }
+            .dr-scopecell { max-width: none; white-space: normal; }
+            .dr-standscell { min-width: 0; }
+            .dr-exact { max-width: none; }
+            .dr-row-actions {
+                flex-wrap: wrap; gap: 6px; padding-top: 11px; margin-top: 11px;
+                border-top: 1px solid var(--pbim-line, #E2E8F0);
+            }
+        }
     }
 }
 

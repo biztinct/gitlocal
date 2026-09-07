@@ -97,7 +97,7 @@ WHAT IT NEVER DOES
   reads the roster and it saves plans. That promise is on the screen, in
   those words, and the facade has no write path to any `hr.*` model.
 """,
-    'version': '19.0.4.2.0',
+    'version': '19.0.4.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

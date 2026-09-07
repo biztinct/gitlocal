@@ -125,6 +125,9 @@ def _level_of(name):
 
 class PbDecisionRoom(models.AbstractModel):
     _name = 'pb.decision.room'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Decision Room data'
 
     # ------------------------------------------------------------------ gates
@@ -193,7 +196,10 @@ class PbDecisionRoom(models.AbstractModel):
 
     @api.model
     def _company_for(self, company_id):
-        allowed = self.env.companies.ids or [self.env.company.id]
+        allowed = self._visible_companies(
+            self.env.companies.ids or [self.env.company.id])
+        if not allowed:
+            return self.env['res.company'].browse()
         if company_id and company_id in allowed:
             return self.env['res.company'].browse(company_id)
         if self.env.company.id in allowed:
@@ -883,8 +889,10 @@ class PbDecisionRoom(models.AbstractModel):
         company nobody gave this person is still invisible.
         """
         entitled = set(self.env.user.company_ids.ids) or {self.env.company.id}
+        # GROUP P7 — and never wider than what this person may see.
+        entitled &= set(self._visible_companies(sorted(entitled)))
         wanted = {int(i) for i in (company_ids or []) if i} & entitled
-        allowed = sorted(set(self.env.companies.ids) | wanted)
+        allowed = sorted((set(self.env.companies.ids) & entitled) | wanted)
         if not allowed:
             return self
         return self.with_context(allowed_company_ids=allowed)
