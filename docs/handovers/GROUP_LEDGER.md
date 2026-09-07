@@ -697,6 +697,79 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   figure. The new table is allowed to hold more than the old one; it is not
   allowed to hold less.
 
+- GR54 (P7): **the platform's own `_()` reads the CALLING FRAME's local
+  variables, and a local called `user` that is `None` kills it.**
+  `odoo/tools/translate.py:517` is `return int(frame.f_locals['user'])` with
+  no guard — the translator looks one frame up for the reader whose language
+  to answer in, and any local of that name is taken to BE that reader. So a
+  perfectly ordinary method signature — `def scope_note(self, user=None)` —
+  that calls `_()` anywhere in its body dies with
+  `TypeError: int() argument must be a string, a bytes-like object or a real
+  number, not 'NoneType'`, raised hundreds of lines away inside the platform,
+  with nothing in the traceback that names the parameter. It cost an hour and
+  three probes, and it only appears when the argument is actually left out,
+  which is exactly how every internal caller calls it. **Never name a local
+  or a parameter `user` in a method that calls `_()`** — this programme's
+  convention is now `who`. (The same trap is waiting for `lang` and `env`,
+  which `_get_translation_source` also reads out of the frame.)
+- GR55 (P7): **a record rule's `domain_force` may read a COMPUTED,
+  NON-STORED field off `user`, and that is the cheapest way to make one
+  rule shape answer four models.** `safe_eval` allows attribute access and a
+  ternary, so `[(1, '=', 1)] if not user.pb_vis_kind else [...]` is a legal
+  domain; the three fields are computed on `res.users` from
+  `pb.group.visibility` and stored nowhere, so there is nothing to keep in
+  step and a division that gains a department is honoured on the next read.
+  The compute must do its own reads under `sudo()` or the rule recurses into
+  itself. A method CALL in a domain would also have worked; a field read is
+  what every rule the platform ships already does, which is the reason to
+  prefer it.
+- GR56 (P7): **`odoo-bin i18n export` is a SUBCOMMAND and rejects the server
+  options** — `--http-port` / `--gevent-port` are `unrecognized arguments`,
+  and it needs no ports because it never binds one (WF28 said the subcommand
+  exists; this is the other half). It also writes as the `odoo` user, so a
+  staging directory made with `sudo mkdir` under `/tmp` is a
+  `PermissionError` on the first file with the rest of the loop still
+  running. Make the directory as `odoo`, or `chmod 777` it.
+- GR57 (P7): **the test-run log does not come back on stdout.** The server
+  config names a `logfile`, so a detached `--test-enable` run writes its
+  results into `/var/log/odoo/odoo-server.log` INTERLEAVED with the live
+  service's own lines, and the redirect captures nothing but docutils
+  warnings about the manifest descriptions. Every test run in this phase
+  passes `--logfile=/tmp/<name>.log`, which also has to exist and be owned by
+  `odoo` before `systemd-run` starts.
+
+- GR58 (P7): **a selection LABEL is not a string `_()` can find, and the two
+  halves of the same catalogue live in different places.** A `.po` entry whose
+  only occurrence is `#: model:ir.model.fields.selection,name:…` is imported
+  into the database column and is invisible to `code_translations`, which is
+  what `_()` reads — so `_("The last rate of the month")` came back in ENGLISH
+  on a screen where every other server-built sentence in the same method was
+  Vietnamese. Going the other way is no better: `fields_get` translates a
+  selection through `ir.model.fields._get_fields_cached`, which is `ormcache`d
+  on the language with `cache='stable'`, so a `.po` imported by another process
+  does not reach the running worker until it is restarted. The rule this
+  programme now follows: **a label a person reads is a string the module owns**
+  — written with `_()` in the facade, never read back out of `fields_get` —
+  and the same literal then appears in the catalogue with BOTH a `model:` and a
+  `code:` occurrence, which is what makes it work on both paths. Re-export the
+  `.pot` after any such change and refresh the `.po`'s occurrences from it,
+  because an entry with the wrong references is silently half-loaded.
+- GR59 (P7): **`('country', _("One country"))` puts the bare word `country`
+  into the catalogue as a term somebody has to translate.** The Python string
+  extractor collects the first string of a tuple that also contains a `_()`
+  call, so a list of `(key, label)` pairs produces one junk one-word msgid per
+  pair — and the completeness test then fails on words no reader will ever
+  see. Build the labels as a DICT keyed by the value and derive the ordered
+  list from it.
+- GR60 (P7): **the P2 board was invisible on any database whose OLD mapping
+  canvas had nothing to say.** `pb_formula_studio`'s scheme tab renders the
+  generic "Nothing to map yet" empty state in a `t-elif` that came BEFORE the
+  branch mounting `pb_scheme_map`'s board, so a company with four and a half
+  thousand mapped people was shown an empty state belonging to a canvas it no
+  longer uses. The board's branch now answers first; it has an empty state of
+  its own and a much better one. Any soft-registry board mounted into a tab
+  that already has its own data call needs the same ordering.
+
 
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
@@ -1125,4 +1198,87 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   old flow menu now point at the Decision Room and the Pay screens rather
   than at the retired ones; `hr.employee.pb_performance_rating` is now shared
   with `pb_demo` (GR47).
-- P7 — "Visibility, Vietnamese, closeout". Not yet designed.
+- P7 — "Visibility, Vietnamese, closeout" — designed and BUILT 2026-09-08
+  (`GROUP_P7_VISIBILITY_VIETNAMESE_CLOSEOUT.md`). Status: **COMPLETE**.
+  `pb_group` 19.0.2.0.0, `pb_scheme_map` 19.0.2.0.0, `pb_explorer`
+  19.0.2.2.0, `pb_decision_room` 19.0.4.4.0, `pb_workseg` 19.0.1.1.0,
+  `pb_pay` 19.0.3.0.0, `pb_insights` 19.0.5.1.0, `pb_import_kit`
+  19.0.1.17.0 (`eye`, `grip`), `pb_formula_studio` 19.0.1.180.0 — all nine
+  live on p9clone, payobook, abm and payobook_template, every manifest
+  version verified against `ir_module_module.latest_version` on all four and
+  every module tree verified byte-identical to the repository on the server.
+  Shipped: **`pb.group.visibility`** — one named person, one scope
+  (Everything / one country / one company / one division), narrowing only and
+  never widening (every answer intersected with `res.users.company_ids`); the
+  `pb.group.scoped` mixin that every GROUP facade now inherits, so there is
+  ONE definition of what somebody may see; three computed, unstored fields on
+  `res.users` and four global record rules of the same two-branch shape
+  (`pb.division.link`, `pb.pay.review.line`, `pb.work.segment` +
+  `pb.cost.transfer`, `pb.decision.plan` via a new derived
+  `pb_division_id`); a dead scope falling back to everything the person could
+  see before, with a warning for the administrator; and the **"Who sees what"
+  card** whose right half is the hero — pick a person and it says, in one
+  sentence, exactly what they would see, before anything is saved.
+  **THE PROMISE, TEST-ENFORCED: a person with no row is narrowed by nothing
+  at all** — on the helper, on the rules and on every facade
+  (`test_t1_nobody_is_narrowed_until_somebody_says_so`,
+  `test_t2b_an_everything_reader_is_unchanged`,
+  `test_t2c_every_group_facade_narrows`).
+  The seven polish items: bulk attach in the department picker (tick many,
+  one call, a footer that counts the people and the moves first); the scheme
+  wires as a GESTURE (drag a team onto a scheme, hover or tab a line to trace
+  it, pull a line off onto a `position: fixed` bar, every one with a keyboard
+  equivalent written on the screen); a "look inside Retail → departments" cue
+  on Explorer bars with an animated descent and real focusable doors over the
+  canvas; the Decision Room dock as cards below 1200 px and pinned actions
+  above; a live estimate under the Assignments month strip while dragging,
+  each entity in its own money and never a total; "Fit to this family" and
+  "Dense rows" on Pay Bands; and the review worksheet's chips under the
+  person's name, the table measuring 1,282 px inside a 1,282 px canvas at
+  1440 with no column dropped.
+  Vietnamese: **100% of every exported term**, with the `.pot` now COMMITTED
+  beside each catalogue and a completeness test in each module comparing the
+  two — `pb_group` 332, `pb_scheme_map` 149, `pb_explorer` 230, `pb_workseg`
+  237, `pb_pay` 761, 0 survivors each, 0 lost placeholders, 0 fuzzy, and the
+  word "Odoo" in no translation anywhere.
+  Tests: **892 on p9clone across ten modules** (`pb_formula_studio` 410,
+  `pb_pay` 108, `pb_decision_room` 71, `pb_explorer` 55, `pb_group` 54,
+  `pb_contracts` 48, `pb_workseg` 43, `pb_scheme_map` 36, `pb_hub` 34,
+  `pb_people_hub` 33) with **5 failures, every one pre-existing p9clone data
+  drift**: the three the ledger has recorded since P6a (`pb_contracts` ×2,
+  `pb_group` `test_t9`) and two in `pb_formula_studio`
+  (`test_07a2_the_board_opens_on_a_connector_that_HAS_rules`,
+  `test_03j_the_run_lane_is_a_ghost_when_nothing_was_processed`) that a
+  CONTROL RUN with `mapping_studio.xml` reverted to HEAD reproduces exactly.
+  Zero regressions.
+  Proven live on p9clone, same database, same minute: a division head reads
+  **902 people, one division, one company, 5 departments and 5 Explorer
+  series**, and the "Everything" reader reads **4,533 people, 6 divisions, 30
+  departments and 24 series** — and the preview said 902 before either was
+  opened. The Decision Room answered the division head **"You plan Retail",
+  902**. On payobook, country HR held to Vietnam reads one company and the
+  sentence "You are seeing Vietnam only."
+  Timings: a full fact rebuild on p9clone **112.2 s** (45 runs, 6,158 T1 rows,
+  197,834 T2 rows); a 902-person review built in **2.3 s**; the Group screen,
+  the scheme board and the Pay screens unchanged.
+  B1–B12 walked on p9clone (every write flow, both gestures, the bulk attach,
+  the live estimate, the band toggles and the worksheet), payobook and abm at
+  1440 and 390, in English and Vietnamese. Screenshots:
+  `docs/handovers/group_p7_shots/`. Closeout:
+  `docs/handovers/GROUP_CLOSEOUT.md`.
+  The p9clone rehearsal — a group, eleven divisions and their links, twelve
+  accepted map lines, one drag-created attachment, one 902-person review and
+  five validators — was DELETED afterwards and verified gone (0 groups, 0
+  divisions, 0 links, 0 assignments, 0 reviews, 0 visibility rows, company 6
+  archived again). **payobook, abm and payobook_template carry 0 visibility
+  rows**: nothing was written to production beyond the module upgrade.
+  Owner debts: the payobook administrator password in this ledger is still
+  wrong (GR24) and so is abm's (WF15) — P7 used `p7.ceo@`, `p7.country@`,
+  `p7.head@`, `p7.me@` and `p7.vi@payobook.com`, all archived again on all
+  three databases; `pb_insights` narrows by COMPANY and by its department
+  leaderboard but has no division dimension of its own, so a division head
+  inside a single company reads that board at company level (recorded as a
+  deviation in the P7 report and as a Phase 8 candidate); the `pbim` kit
+  still has no dark palette (GR38), which is a platform release of its own;
+  and the two `pb_formula_studio` drift failures above are now part of the
+  p9clone baseline.
