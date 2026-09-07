@@ -103,6 +103,15 @@
           </div>
         </div>
 
+        <!-- ============================== waiting on the person reading -->
+        <div class="dr-await" t-if="awaitingText">
+          <span t-out="ic('checkCircle', 15)"/>
+          <span t-esc="awaitingText"/>
+          <button class="pbim-btn-sm" t-on-click="() => this.goToPlans()">
+            Take a look
+          </button>
+        </div>
+
         <div class="dr-layout">
 
           <!-- ======================================== the control room -->
@@ -385,6 +394,21 @@
                   <span class="dr-dot"/>
                   <span t-esc="state.sceneName"/>
                 </div>
+
+                <!-- ============================== what this is a plan FOR -->
+                <button class="dr-scope" id="dr-scope-chip"
+                        aria-haspopup="true"
+                        t-att-aria-expanded="state.scopeOpen"
+                        t-att-title="'Plan for ' + scopeChip"
+                        t-on-click="() => this.openScope()">
+                  <span class="dr-scope-ic" t-out="ic(scopeIcon, 13)"/>
+                  <span class="dr-scope-k" t-esc="scopeWord"/>
+                  <span class="dr-scope-n" t-esc="scopeChip"/>
+                  <span class="dr-scope-m" t-if="scopeCurrencies"
+                        t-esc="scopeCurrencies"/>
+                  <span t-out="ic('chevronDown', 13)"/>
+                </button>
+
                 <div class="dr-stage-tools">
                   <button t-att-aria-pressed="state.motion"
                           t-att-class="{ 'is-on': state.motion }"
@@ -440,6 +464,50 @@
                 <span><i class="dr-k-plan"/>Your plan</span>
                 <span><i class="dr-k-base"/><t t-esc="comparison.name"/></span>
                 <span t-if="!state.diff"><i class="dr-k-band"/>If demand lands 10% either side</span>
+                <span t-if="entityLines.length"><i class="dr-k-entity"/>Each company</span>
+                <span t-if="actualLine"><i class="dr-k-actual"/>What actually happened</span>
+              </div>
+
+              <!-- ================================ what actually happened -->
+              <p class="dr-actual" t-if="actualVerdictText">
+                <span t-out="ic('history', 13)"/>
+                <span t-esc="actualVerdictText"/>
+              </p>
+
+              <!-- ==================================== a group on one stage -->
+              <div class="dr-group" t-if="isGroupScope">
+                <div class="dr-group-h">
+                  <span class="dr-group-note" t-esc="groupMoneyNote"/>
+                  <button class="dr-mini" t-att-aria-pressed="state.ownMoney"
+                          t-att-class="{ 'is-on': state.ownMoney }"
+                          t-on-click="() => this.toggleOwnMoney()">
+                    <t t-if="state.ownMoney">Show the group total</t>
+                    <t t-else="">Each in its own money</t>
+                  </button>
+                </div>
+                <div class="dr-grouprows">
+                  <div t-foreach="companyRows" t-as="c" t-key="c.key"
+                       class="dr-grouprow"
+                       t-att-class="{ 'dr-grouprow--unknown': !c.known }">
+                    <span class="dr-gr-n"><t t-esc="c.company"/>
+                      <small t-esc="c.code"/></span>
+                    <span class="dr-gr-p"><t t-esc="c.heads"/> people</span>
+                    <span class="dr-gr-c">
+                      <t t-if="state.ownMoney"><t t-esc="c.ownCost"/></t>
+                      <t t-else=""><t t-esc="c.cost"/></t>
+                    </span>
+                    <span class="dr-gr-f">
+                      <t t-if="state.ownMoney"><t t-esc="c.ownProfit"/></t>
+                      <t t-else=""><t t-esc="c.profit"/></t>
+                    </span>
+                  </div>
+                </div>
+                <p class="dr-rate" t-if="rateBadge" t-esc="rateBadge"/>
+                <div class="dr-unknown" t-if="notConverted.length">
+                  <strong>Not converted</strong>
+                  <p t-foreach="notConverted" t-as="u" t-key="u.code"
+                     t-esc="u.note"/>
+                </div>
               </div>
 
               <div class="dr-timeline">
@@ -887,8 +955,9 @@
                 <select id="dr-compare" class="dr-select"
                         t-on-change="(ev) => this.onComparison(ev)">
                   <option t-foreach="comparisonOptions" t-as="o" t-key="o.value"
-                          t-att-value="o.value" t-att-selected="o.value === comparisonValue">
-                    <t t-esc="o.label"/>
+                          t-att-value="o.value" t-att-disabled="o.disabled"
+                          t-att-selected="o.value === comparisonValue">
+                    <t t-esc="o.label"/><t t-esc="o.suffix"/>
                   </option>
                 </select>
                 <button class="pbim-btn" t-on-click="() => this.useAsComparison()">
@@ -900,9 +969,11 @@
                   <thead>
                     <tr>
                       <th>Plan</th>
+                      <th>Plan for</th>
+                      <th>Where it stands</th>
                       <th>People · Dec</th>
                       <th>Workforce cost</th>
-                      <th>Demand served</th>
+                      <th t-if="hasTarget">Demand served</th>
                       <th>Operating profit</th>
                       <th>vs comparison</th>
                       <th/>
@@ -916,16 +987,59 @@
                         <span class="dr-tag" t-if="row.tag === 'comparison'">· comparison</span>
                         <span class="dr-tag" t-elif="row.tag === 'current'">· on screen</span>
                         <span class="dr-tag" t-elif="row.who">· <t t-esc="row.who"/></span>
+                        <span class="dr-exact" t-if="row.exactText" t-esc="row.exactText"/>
+                      </td>
+                      <td>
+                        <t t-if="row.tag === 'saved'">
+                          <span class="dr-scopecell" t-att-title="row.scope"
+                                t-esc="row.scope"/>
+                          <small t-esc="row.scopeWord"/>
+                        </t>
+                        <t t-else="">
+                          <span class="dr-scopecell" t-esc="state.scope.label"/>
+                        </t>
+                      </td>
+                      <td class="dr-standscell">
+                        <t t-if="row.tag === 'saved'">
+                          <span class="dr-status"
+                                t-att-class="'dr-status--' + row.status"
+                                t-esc="row.statusLabel"/>
+                          <div class="dr-verbs">
+                            <button t-if="row.canPropose and row.status !== 'proposed'"
+                                    t-on-click="() => this.proposePlan(row)">Propose</button>
+                            <button t-if="row.canDecide" class="is-good"
+                                    t-on-click="() => this.openDecide(row, true)">Approve</button>
+                            <button t-if="row.canDecide"
+                                    t-on-click="() => this.openDecide(row, false)">Send back</button>
+                            <button t-if="row.approved"
+                                    t-on-click="() => this.keepEditing(row)">Keep editing a copy</button>
+                            <button t-if="row.versions"
+                                    t-on-click="() => this.openVersions(row)">
+                              <t t-esc="row.versions"/> versions
+                            </button>
+                          </div>
+                          <small class="dr-decided" t-if="row.decidedBy">
+                            by <t t-esc="row.decidedBy"/>
+                          </small>
+                        </t>
                       </td>
                       <td t-esc="row.heads"/>
                       <td t-esc="row.cost"/>
-                      <td t-esc="row.served"/>
+                      <td t-if="hasTarget" t-esc="row.served"/>
                       <td><strong t-esc="row.profit"/></td>
                       <td t-att-class="{ 'dr-neg': row.bad }" t-esc="row.delta"/>
                       <td class="dr-row-actions">
                         <t t-if="row.tag === 'saved'">
                           <button class="pbim-btn-sm" t-on-click="() => this.openPlan(row)">Open</button>
-                          <button class="pbim-btn-sm" t-on-click="() => this.compareWith(row)">Compare</button>
+                          <button class="pbim-btn-sm" t-att-disabled="!row.sameMoney"
+                                  t-att-title="row.sameMoney ? 'Measure everything against this plan' : 'This plan is in ' + row.currency + ', so it cannot be lined up beside one in ' + (state.scope.currency.code or '')"
+                                  t-on-click="() => this.compareWith(row)">Compare</button>
+                          <button class="pbim-btn-sm" t-att-disabled="row.busy"
+                                  title="Run this plan's people through their own payroll scheme"
+                                  t-on-click="() => this.startExact(row)">
+                            <t t-if="row.busy"><t t-esc="state.exactNote"/></t>
+                            <t t-else="">Exact cost</t>
+                          </button>
                           <button class="pbim-btn-sm" t-if="row.mine or state.canManage"
                                   t-att-aria-label="'Remove ' + row.name"
                                   t-on-click="() => this.removePlan(row)">
@@ -1121,6 +1235,33 @@
             </button>
             <span class="pbim-eyebrow">THE THINKING BEHIND THE PICTURE</span>
             <h2>What this room believes.</h2>
+
+            <!-- ================================ whose rules these are -->
+            <div class="dr-rules">
+              <div class="dr-rules-h">
+                <span class="dr-rules-ic" t-out="ic('landmark', 15)"/>
+                <div>
+                  <strong t-esc="rulesTitle"/>
+                  <small t-esc="state.scope.label"/>
+                </div>
+                <div class="dr-rules-a" t-if="canOverrideRules">
+                  <button class="pbim-btn-sm" t-if="followsCountry"
+                          t-att-disabled="state.assumeBusy"
+                          t-on-click="() => this.toggleCountryRules()">
+                    <t t-if="state.scope.kind === 'scheme'">Override for this scheme</t>
+                    <t t-else="">Type our own numbers</t>
+                  </button>
+                  <button class="pbim-btn-sm" t-else=""
+                          t-att-disabled="state.assumeBusy"
+                          t-on-click="() => this.resetToCountryRules()">
+                    Reset to country rules
+                  </button>
+                </div>
+              </div>
+              <p class="dr-rules-n" t-if="rulesNote" t-esc="rulesNote"/>
+              <p class="dr-rules-w" t-if="capNote" t-esc="capNote"/>
+            </div>
+
             <div class="dr-asof">
               <span>
                 <t t-esc="fmt.int(baseline.headcount)"/> people ·
@@ -1238,6 +1379,118 @@
               <button class="pbim-btn primary" t-on-click="() => this.addSketchTeam()">
                 Add this team
               </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================== what this plan is a plan FOR
+             The tree, with a head count on every node. Arrows walk it and
+             Enter picks; the row a person is standing on is marked, so the
+             picker always says where you are as well as where you could go. -->
+        <div t-if="state.scopeOpen" class="dr-scrim dr-scrim--top"
+             t-on-click="() => this.closeScope()">
+          <div class="dr-dialog dr-dialog--tree" t-on-click.stop="() => {}"
+               role="dialog" aria-labelledby="dr-scope-t">
+            <button class="dr-x" aria-label="Close"
+                    t-on-click="() => this.closeScope()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">PLAN FOR</span>
+            <h2 id="dr-scope-t">What is this a plan for?</h2>
+            <p class="dr-tiny" t-if="scopeTreeNote" t-esc="scopeTreeNote"/>
+            <div t-if="state.scopeBusy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Reading your group…</span>
+            </div>
+            <div t-else="" class="dr-tree" role="tree">
+              <div t-foreach="scopeRows" t-as="row" t-key="row.key"
+                   class="dr-scope-row" role="treeitem" tabindex="0"
+                   t-att-aria-selected="row.current"
+                   t-att-aria-expanded="row.expanded"
+                   t-att-aria-level="row.level"
+                   t-att-class="{ 'is-current': row.current }"
+                   t-att-style="'padding-left:' + (10 + row.depth * 18) + 'px'"
+                   t-on-keydown="(ev) => this.onScopeKey(row, ev)"
+                   t-on-click="() => this.pickScope(row)">
+                <button class="dr-tw" t-if="row.hasKids"
+                        t-att-aria-label="row.open ? 'Fold ' + row.label : 'Unfold ' + row.label"
+                        t-on-click.stop="() => this.toggleNode(row)">
+                  <span t-out="ic(row.chevron, 12)"/>
+                </button>
+                <span class="dr-tw dr-tw--none" t-else=""/>
+                <span class="dr-tl" t-esc="row.label"/>
+                <span class="dr-tk" t-esc="row.word"/>
+                <span class="dr-tp"><t t-esc="fmt.int(row.people)"/> people</span>
+              </div>
+            </div>
+            <p class="dr-tiny">Picking one changes the roster, the rules and
+              every number together. Nothing about payroll changes.</p>
+          </div>
+        </div>
+
+        <!-- ======================================= approve, or send back -->
+        <div t-if="state.decideOpen" class="dr-scrim"
+             t-on-click="() => this.closeDecide()">
+          <div class="dr-dialog" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close"
+                    t-on-click="() => this.closeDecide()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">A DECISION, RECORDED</span>
+            <h2 t-esc="decideTitle"/>
+            <p class="dr-tiny" t-esc="decideCopy"/>
+            <p class="dr-warn" t-if="decideWarning" t-esc="decideWarning"/>
+            <label for="dr-decide-n">Anything to say with it?</label>
+            <textarea id="dr-decide-n" rows="3" maxlength="400"
+                      t-att-value="state.decideNote"
+                      t-on-input="(ev) => this.onDecideNote(ev)"/>
+            <div class="dr-dialog-actions">
+              <button class="pbim-btn" t-on-click="() => this.closeDecide()">
+                Not now
+              </button>
+              <button class="pbim-btn primary" t-att-disabled="state.decideBusy"
+                      t-on-click="() => this.confirmDecide()">
+                <t t-if="state.decideApprove">Approve it</t>
+                <t t-else="">Send it back</t>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================ what was agreed -->
+        <div t-if="state.versionsOpen" class="dr-scrim"
+             t-on-click="() => this.closeVersions()">
+          <div class="dr-dialog dr-dialog--wide" t-on-click.stop="() => {}">
+            <button class="dr-x" aria-label="Close"
+                    t-on-click="() => this.closeVersions()">
+              <span t-out="ic('x', 15)"/>
+            </button>
+            <span class="pbim-eyebrow">KEPT, EXACTLY AS IT STOOD</span>
+            <h2>Versions of this plan.</h2>
+            <p class="dr-tiny">Every time a plan is proposed or approved, the
+              levers, the goals, the numbers and the rules behind them are
+              kept. Editing the plan afterwards never changes these.</p>
+            <div t-if="!versionRows.length" class="dr-none dr-none--inline">
+              <span class="dr-none-t">Nothing kept yet.</span>
+              <span class="dr-none-s">Propose the plan and the first version
+                is kept the moment you do.</span>
+            </div>
+            <div t-else="" class="dr-versions">
+              <div t-foreach="versionRows" t-as="v" t-key="v.id"
+                   class="dr-version">
+                <div class="dr-version-h">
+                  <strong t-esc="v.title"/>
+                  <small><t t-esc="v.who"/> · <t t-esc="v.when"/></small>
+                </div>
+                <div class="dr-version-b">
+                  <span><t t-esc="v.scope"/></span>
+                  <span><t t-esc="v.heads"/> people</span>
+                  <span><t t-esc="v.cost"/> cost</span>
+                  <span><t t-esc="v.profit"/> profit</span>
+                </div>
+                <p class="dr-warn" t-if="v.unconverted">
+                  Not converted at the time: <t t-esc="v.unconverted"/>
+                </p>
+              </div>
             </div>
           </div>
         </div>

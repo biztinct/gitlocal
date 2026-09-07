@@ -90,3 +90,32 @@ palette.add("decision_room_plans", {
     requires: "pb_decision_room",
     action: { xmlid: HUB_XMLID, lens: "plan", focus: "plans" },
 }, { sequence: 2310 });
+
+/**
+ * GROUP Phase 4 — the two doors a group needs, in the 3300 block the group
+ * programme owns (3300/3310/3320 are Phase 1's, 3330/3340 Phase 2's, 3350
+ * Phase 3's).
+ *
+ * "Plan the group" carries the scope in its own arrival, so the room opens on
+ * the group rather than on whatever the reader last looked at — a ⌘K row that
+ * lands somewhere other than where its words said is worse than no row.
+ */
+palette.add("decision_room_group", {
+    id: "decision_room_group",
+    label: _t("Plan the group"),
+    sublabel: _t("Decision Room"),
+    icon: "globe",
+    groups: DECISION_GATE,
+    requires: "pb_decision_room",
+    action: { xmlid: HUB_XMLID, lens: "plan", focus: "group" },
+}, { sequence: 3360 });
+
+palette.add("decision_room_approvals", {
+    id: "decision_room_approvals",
+    label: _t("Plans awaiting approval"),
+    sublabel: _t("Decision Room"),
+    icon: "checkCircle",
+    groups: ["pb_decision_room.group_decision_manager", "base.group_system"],
+    requires: "pb_decision_room",
+    action: { xmlid: HUB_XMLID, lens: "plan", focus: "plans" },
+}, { sequence: 3370 });

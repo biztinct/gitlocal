@@ -50,6 +50,8 @@ import {
     balanceShifts, payStory, teamsInDecember, headroom, candidates,
     stressOutcome, briefModel, changes, describeChange, experimentSize,
     GOAL_DEFS, GOAL_ORDER, cloneState, SHIFTS,
+    computeBlocks, rateFor, actualSeries, actualPeople, actualVerdict,
+    closedMonths,
     useTranslator as useEngineTranslator,
 } from "@pb_decision_room/js/decision_engine";
 
@@ -82,6 +84,16 @@ const TWEEN_MS = 350;
 const CHART_MS = 300;
 /** Below this width the control room becomes a sheet you pull up. */
 const PHONE = 720;
+/** Where the scope a person last planned is remembered, per database. */
+const SCOPE_KEY = "pbdr.scope.v1";
+/** The five things a plan can be about, in the words a reader sees. */
+const SCOPE_WORDS = () => ({
+    group: _t("Whole group"),
+    country: _t("Country"),
+    company: _t("Company"),
+    division: _t("Division"),
+    scheme: _t("Payroll scheme"),
+});
 
 /**
  * A money box a person can actually type into.
@@ -223,6 +235,11 @@ export class PbDecisionRoom extends Component {
 
         /** Stable identities, built ONCE: a money box handed a freshly made
          *  function on every paint re-renders on every paint (W21). */
+        /** How the engine's search functions compute one trial year. Bound
+         *  ONCE: a fresh arrow on every call is a fresh identity, and these
+         *  are passed into memoised getters. */
+        this._runner = (trial) => this._run(trial).group;
+
         this.moneyApi = {
             format: (v) => this.fmt.money(v),
             parse: (text) => this.fmt.parse(text),
@@ -287,6 +304,40 @@ export class PbDecisionRoom extends Component {
             sketchPeople: 10,
             sketchPay: 0,
 
+            // ---- GROUP P4 ------------------------------------------------
+            // what this plan is a plan FOR, and the picker that changes it
+            scope: { kind: "company", ref: "", label: "", mixed: false,
+                     currencies: [], company_ids: [] },
+            scopeOpen: false,
+            scopeBusy: false,
+            scopeNote: "",
+            openNodes: {},
+            // a group read in each entity's own money instead of the board's
+            ownMoney: false,
+            year: new Date().getFullYear(),
+            // the decision
+            decideOpen: false,
+            decideFor: 0,
+            decideApprove: true,
+            decideNote: "",
+            decideBusy: false,
+            versionsOpen: false,
+            versionsFor: 0,
+            versions: [],
+            exactBusy: 0,
+            exactNote: "",
+            // Where this scope's statutory numbers come from. Reactive,
+            // because the dialog redraws the moment the switch is pressed.
+            assumeMeta: {},
+            // THE HOME DECISION (asked for in the handover): approvals reach
+            // the reader as a CHIP on the Decision Room lens they already
+            // have, not as a second Home lens. A rail the IA programme spent
+            // five cycles cutting from thirty-eight items to eight does not
+            // get a ninth whose content is empty on most days — and a chip
+            // that vanishes when there is nothing to decide is the honest
+            // shape for something that is usually nothing.
+            awaiting: { count: 0, plans: [] },
+
             toast: "",
             busy: false,
         });
@@ -319,6 +370,15 @@ export class PbDecisionRoom extends Component {
         this._onVisibility = null;
         this.assumptionsForm = [];
         this.assumptionsGroups = [];
+        // ---- GROUP P4, held off the reactive state for the same reason the
+        // computed years are: they are replaced wholesale, never edited.
+        this.blocks = [];
+        this.rates = { target: {}, rows: {}, unknown: [], known: true };
+        this.actuals = { available: false, months: [] };
+        this.scopeTree = null;
+        this.rulesets = [];
+        this._calcBlocks = null;
+        this._exactTimer = null;
 
         // The reader's language decides how money is SAID, not only which
         // words surround it: ₫2.200 tỷ and ₫2,200B are the same amount
@@ -373,23 +433,87 @@ export class PbDecisionRoom extends Component {
     // ===================================================================
     // reading
     // ===================================================================
-    async load(refresh = false) {
+    /**
+     * The scope this room opens on.
+     *
+     * Three places, in order, and every one of them is somebody saying
+     * something: the URL (a link a colleague sent, and the thing that makes a
+     * scope shareable at all), then what this person was last looking at, then
+     * their own company. A hash that names a scope nobody can reach falls back
+     * silently on the server and the chip says so.
+     */
+    _startScope() {
+        const fromHash = this._scopeFromHash();
+        if (fromHash) { return fromHash; }
         try {
+            const raw = window.localStorage.getItem(SCOPE_KEY);
+            const saved = raw ? JSON.parse(raw) : null;
+            if (saved && saved.kind) {
+                return { kind: saved.kind, ref: String(saved.ref || "") };
+            }
+        } catch { /* a private window has no storage; that is not an error */ }
+        return { kind: "company", ref: "" };
+    }
+
+    _scopeFromHash() {
+        try {
+            const hash = new URLSearchParams(
+                String(window.location.hash || "").replace(/^#/, ""));
+            const kind = hash.get("dr_scope");
+            if (!kind) { return null; }
+            return { kind, ref: String(hash.get("dr_ref") || "") };
+        } catch {
+            return null;
+        }
+    }
+
+    _rememberScope(scope) {
+        try {
+            window.localStorage.setItem(SCOPE_KEY, JSON.stringify(
+                { kind: scope.kind, ref: scope.ref }));
+        } catch { /* nothing to do about it, and nothing to say */ }
+        try {
+            const hash = new URLSearchParams(
+                String(window.location.hash || "").replace(/^#/, ""));
+            hash.set("dr_scope", scope.kind);
+            hash.set("dr_ref", String(scope.ref || ""));
+            window.history.replaceState(null, "", "#" + hash.toString());
+        } catch { /* a hash we cannot write is not worth a dialog */ }
+    }
+
+    async load(refresh = false, scope = null) {
+        try {
+            const asked = scope || this._startScope();
             const data = await this.orm.call(
-                "pb.decision.room", "get_room", [], { refresh });
+                "pb.decision.room", "get_room", [],
+                { refresh, scope: asked, year: this.state.year });
             this.state.allowed = !!data.allowed;
             this.state.canManage = !!data.can_manage;
             this.state.company = data.company || {};
             this.state.plans = data.plans || [];
+            this.state.awaiting = data.awaiting || { count: 0, plans: [] };
             this.state.limits = data.limits || { max_plans: 20 };
             this.state.error = "";
             this.baseline = data.baseline
-                || { asof: "", headcount: 0, teams: [], source: "" };
+                || { asof: "", headcount: 0, teams: [], blocks: [],
+                     source: "" };
+            this.blocks = this.baseline.blocks || [];
             this.assumptions = data.assumptions || {};
             this.assumptionsForm = data.assumptions_form || [];
             this.assumptionsGroups = data.assumptions_groups || [];
-            this.fmt = makeFormat((data.company || {}).currency || {},
-                                  this.lang);
+            this.state.assumeMeta = data.assumptions_scope || {};
+            this.rates = data.rates
+                || { target: {}, rows: {}, unknown: [], known: true };
+            this.actuals = data.actuals || { available: false, months: [] };
+            this.state.scope = data.scope || this.state.scope;
+            this.state.scopeNote = (data.scope || {}).lost || "";
+            this.state.year = data.year || this.state.year;
+            this._rememberScope(this.state.scope);
+            // The money the STAGE speaks. For a group that is the board's own
+            // currency; for anything else it is the company's.
+            this.fmt = makeFormat(
+                (this.state.scope || {}).currency
+                || (data.company || {}).currency || {}, this.lang);
 
             this.planState = defaultState(this.baseline, this.assumptions);
             this.goals = null;                     // built after the first sum
@@ -431,8 +555,155 @@ export class PbDecisionRoom extends Component {
         await this.load(true);
     }
 
+    // ===================================================================
+    // GROUP P4 — the scope chip and its picker
+    // ===================================================================
+    get scopeWord() {
+        return SCOPE_WORDS()[this.state.scope.kind] || "";
+    }
+
+    /** What the chip reads: "Retail scheme · Vietnam", in the words a
+     *  person uses. Never the scope's code name. */
+    get scopeChip() {
+        const scope = this.state.scope || {};
+        const parts = [scope.label || _t("This company")];
+        if (scope.kind !== "group" && scope.group_name) {
+            parts.push(scope.group_name);
+        }
+        return parts.join(" · ");
+    }
+
+    get scopeIcon() {
+        return { group: "globe", country: "mapPin", company: "building",
+                 division: "layers", scheme: "route" }[
+            this.state.scope.kind] || "building";
+    }
+
+    get isGroupScope() {
+        return (this.state.scope.company_ids || []).length > 1;
+    }
+
+    get scopeCurrencies() {
+        return (this.state.scope.currencies || []).join(" · ");
+    }
+
+    async openScope() {
+        this.stopPlay();
+        if (this.state.scopeOpen) { this.state.scopeOpen = false; return; }
+        this._openDialog("scopeOpen");
+        if (this.scopeTree) { return; }
+        this.state.scopeBusy = true;
+        try {
+            this.scopeTree = await this.orm.call(
+                "pb.decision.room", "get_scopes", []);
+            // Everything above the scope a person is standing in is open, so
+            // the tree arrives showing where they are rather than making them
+            // hunt for it.
+            for (const node of (this.scopeTree.nodes || [])) {
+                this.state.openNodes[this._nodeKey(node)] = true;
+                for (const child of (node.children || [])) {
+                    this.state.openNodes[this._nodeKey(child)] = true;
+                }
+            }
+        } catch (e) {
+            this.scopeTree = { has_group: false, nodes: [],
+                               note: this._reason(e) };
+        } finally {
+            this.state.scopeBusy = false;
+            this.state.rev++;
+        }
+    }
+
+    closeScope() { this.state.scopeOpen = false; }
+
+    _nodeKey(node) { return `${node.kind}:${node.ref}`; }
+
+    /** The tree, flattened to rows the template can draw with one loop. */
+    get scopeRows() {
+        void this.state.rev;
+        const rows = [];
+        const words = SCOPE_WORDS();
+        const walk = (node, depth) => {
+            const key = this._nodeKey(node);
+            const open = !!this.state.openNodes[key];
+            const kids = node.children || [];
+            rows.push({
+                key, depth, node, open,
+                hasKids: kids.length > 0,
+                // OWL renders a bare `undefined` identifier as an attribute,
+                // so the "no aria-expanded here" case is FALSE, which OWL
+                // drops, and never the word itself.
+                expanded: kids.length ? (open ? "true" : "false") : false,
+                // A tree read aloud has to say how deep it is, or every row
+                // sounds like a top-level one.
+                level: depth + 1,
+                chevron: open ? "chevronDown" : "chevron",
+                word: words[node.kind] || "",
+                label: node.label,
+                people: node.people || 0,
+                current: node.kind === this.state.scope.kind
+                    && String(node.ref) === String(this.state.scope.ref),
+            });
+            if (open) { for (const child of kids) { walk(child, depth + 1); } }
+        };
+        for (const node of ((this.scopeTree && this.scopeTree.nodes) || [])) {
+            walk(node, 0);
+        }
+        return rows;
+    }
+
+    get scopeTreeNote() {
+        return (this.scopeTree && this.scopeTree.note) || "";
+    }
+
+    toggleNode(row) {
+        this.state.openNodes[row.key] = !this.state.openNodes[row.key];
+        this.state.rev++;
+    }
+
+    onScopeKey(row, event) {
+        const key = event.key;
+        if (key === "ArrowRight" && row.hasKids && !row.open) {
+            event.preventDefault();
+            this.toggleNode(row);
+        } else if (key === "ArrowLeft" && row.hasKids && row.open) {
+            event.preventDefault();
+            this.toggleNode(row);
+        } else if (key === "ArrowDown" || key === "ArrowUp") {
+            event.preventDefault();
+            const all = [...document.querySelectorAll(".dr-scope-row")];
+            const at = all.indexOf(event.currentTarget);
+            const next = all[at + (key === "ArrowDown" ? 1 : -1)];
+            if (next) { next.focus(); }
+        }
+    }
+
+    async pickScope(row) {
+        this.state.scopeOpen = false;
+        await this.changeScope({ kind: row.node.kind, ref: row.node.ref });
+    }
+
+    /** Change what the room is about. Everything reloads together. */
+    async changeScope(scope) {
+        this.state.loaded = false;
+        this.state.busy = true;
+        try {
+            await this.load(false, scope);
+            this._toast(_t("Now planning %s.", this.state.scope.label || ""));
+        } finally {
+            this.state.busy = false;
+            this.state.loaded = true;
+        }
+    }
+
     _focusArrival() {
         const focus = (this.props.arrival && this.props.arrival.focus) || "";
+        if (focus === "group") {
+            // A door whose words say "the group" must open ON the group, not
+            // on wherever this person happened to be last.
+            this.changeScope({ kind: "group", ref: "" });
+            return;
+        }
         if (focus !== "plans") { return; }
         // One frame later: the dock is in the first render, but the canvas is
         // still being laid out at mount and scrolling to it now lands nowhere.
@@ -468,15 +739,31 @@ export class PbDecisionRoom extends Component {
         };
     }
 
+    /**
+     * The year, for a scope that may span several companies.
+     *
+     * With one company this IS `compute()` — the same function, the same
+     * arguments, the same numbers, which is exactly what the identity test
+     * holds it to. With several, every company is computed with its own rules
+     * in its own money and only the reading is converted (group ledger rule 7).
+     */
+    _run(state) {
+        return computeBlocks(this.baseline, state, this.rates);
+    }
+
     _recompute() {
         const base = this.baseline;
         const a = this.assumptions;
-        const basePlan = compute(base, a, this._baseState());
-        const plan = compute(base, a, this.planState);
+        const baseRun = this._run(this._baseState());
+        const basePlan = baseRun.group;
+        const planRun = this._run(this.planState);
+        const plan = planRun.group;
+        this._calcBlocks = planRun;
         const refState = this.comparison.state
             ? normalizeState(this.comparison.state, base, a)
             : normalizeState(this._baseState(), base, a);
-        const ref = this.comparison.state ? compute(base, a, refState) : basePlan;
+        const ref = this.comparison.state
+            ? this._run(refState).group : basePlan;
         // Until somebody sets a goal of their own, the goals ARE the defaults —
         // recomputed every time, so typing a revenue target switches on the
         // three goals that only mean something once there is revenue.
@@ -487,7 +774,7 @@ export class PbDecisionRoom extends Component {
                                     this.planState.target > 0);
         this._calc = {
             basePlan, plan, ref, refState,
-            band: stressBand(base, a, this.planState),
+            band: stressBand(base, a, this.planState, 10, this._runner),
             checks: evaluateGoals(plan, this.goals, this.fmt),
             story: story(plan, ref, normalizeState(this.planState, base, a),
                          refState, this.comparison.name, base, this.fmt),
@@ -504,6 +791,157 @@ export class PbDecisionRoom extends Component {
     get calc() {
         void this.state.rev;
         return this._calc;
+    }
+
+    // ===================================================================
+    // GROUP P4 — a group on the stage
+    // ===================================================================
+    get blockRuns() {
+        void this.state.rev;
+        return (this._calcBlocks && this._calcBlocks.blocks) || [];
+    }
+
+    /** One thin line per company, already in the board's money. A company
+     *  whose rate is missing has no line — it is named under the chart. */
+    get entityLines() {
+        if (!this.isGroupScope || this.state.diff) { return []; }
+        const key = this.metric === "people" ? "people" : "profit";
+        if (this.metric === "coverage") { return []; }
+        return this.blockRuns.filter((b) => b.known).map((block) => {
+            let running = 0;
+            return {
+                label: block.company,
+                values: block.plan.rows.map((row, m) => {
+                    const rate = rateFor(this.rates, block.code, m);
+                    running += (row[key] || 0) * (rate.known ? rate.rate : 0);
+                    return running;
+                }),
+            };
+        });
+    }
+
+    /** The per-company table under the stage: each line in its own money,
+     *  and the same line in the board's money beside it. */
+    get companyRows() {
+        void this.state.rev;
+        if (!this.isGroupScope) { return []; }
+        return this.blockRuns.map((block) => {
+            const own = makeFormat(block.currency || {}, this.lang);
+            const rate = rateFor(this.rates, block.code, 11);
+            const year = block.plan.year;
+            return {
+                key: block.company_id,
+                company: block.company,
+                code: block.code,
+                heads: this.fmt.int(year.headcount),
+                ownCost: own.money(year.people),
+                ownProfit: own.money(year.profit),
+                cost: rate.known ? this.fmt.money(year.people * rate.rate)
+                    : _t("not converted"),
+                profit: rate.known ? this.fmt.money(year.profit * rate.rate)
+                    : _t("not converted"),
+                known: rate.known,
+                share: Math.round((block.share || 0) * 100),
+            };
+        });
+    }
+
+    /** The sentence under a converted total: which rate, and when from. */
+    get rateBadge() {
+        if (!this.isGroupScope) { return ""; }
+        const codes = Object.keys(this.rates.rows || {});
+        const target = (this.rates.target || {}).code || "";
+        const parts = [];
+        for (const code of codes) {
+            if (code === target) { continue; }
+            const cell = rateFor(this.rates, code, 11);
+            if (!cell.known) { continue; }
+            // GR22: a sentence that must READ as a sentence is built as ONE
+            // string here, not out of adjacent template nodes.
+            parts.push(_t("1 %(src)s = %(rate)s %(dst)s%(when)s",
+                          { src: code, rate: this._rateText(cell.rate),
+                            dst: target,
+                            when: cell.date ? " \u00b7 " + cell.date : "" }));
+        }
+        return parts.join("   ");
+    }
+
+    get notConverted() {
+        if (!this.isGroupScope) { return []; }
+        return (this.rates.unknown || []).map((row) => {
+            const hit = (this._calcBlocks && this._calcBlocks.unknown || [])
+                .find((u) => u.code === row.code);
+            return {
+                code: row.code,
+                note: row.note,
+                company: hit ? hit.company : "",
+            };
+        });
+    }
+
+    get groupMoneyNote() {
+        if (!this.isGroupScope) { return ""; }
+        return _t("Every company is worked out in its own money and added up "
+                  + "in %(money)s. The revenue target is shared out by how "
+                  + "much of the group's pay bill sits in each one.",
+                  { money: (this.rates.target || {}).code
+                      || this.fmt.code || "" });
+    }
+
+    toggleOwnMoney() { this.state.ownMoney = !this.state.ownMoney; }
+
+    // ===================================================================
+    // GROUP P4 — what actually happened, over the plan
+    // ===================================================================
+    get hasActuals() {
+        return !!(this.actuals && this.actuals.available
+                  && (this.actuals.months || []).length);
+    }
+
+    /** The solid line: only for money metrics, only for closed months. */
+    get actualLine() {
+        if (!this.hasActuals || this.state.diff) { return null; }
+        if (this.metric !== "people") { return null; }
+        return actualSeries(this.actuals, this.rates, true);
+    }
+
+    get actualVerdictText() {
+        if (!this.calc) { return ""; }
+        if (!this.hasActuals) {
+            return (this.actuals && this.actuals.note) || "";
+        }
+        return actualVerdict(this.calc.plan, this.actuals, this.rates,
+                             this.fmt);
+    }
+
+
+    /** The tile: the last closed month, plan against answer. */
+    get actualTile() {
+        if (!this.hasActuals || !this.calc) { return null; }
+        const { monthly, people, full, any } =
+            closedMonths(this.calc.plan, this.actuals, this.rates);
+        const last = full >= 0 ? full : any;
+        if (last < 0) { return null; }
+        const row = this.calc.plan.rows[last];
+        const gap = monthly[last] - row.people;
+        return {
+            label: _t("Plan against what happened · %s", monthLong(last)),
+            value: this.fmt.money(monthly[last]),
+            planned: this.fmt.money(row.people),
+            delta: this.fmt.signedMoney(gap),
+            bad: gap > 0,
+            people: people[last] === null ? "" : this.fmt.int(people[last]),
+        };
+    }
+
+    /** A rate a person can read: 20,000 and 0.00005 are both rates. */
+    _rateText(rate) {
+        const n = Number(rate) || 0;
+        if (n >= 1000) { return this.fmt.int(Math.round(n)); }
+        if (n >= 1) {
+            return String(Number(n.toFixed(4)));
+        }
+        return String(Number(n.toPrecision(4)));
     }
 
     get hasRoster() { return (this.baseline.teams || []).length > 0; }
@@ -900,6 +1338,18 @@ export class PbDecisionRoom extends Component {
                 delta: this.fmt.signedMoney(row.takehome - refRow.takehome),
                 bad: false,
             });
+        // GROUP P4 — a month that has actually been run gets its own tile, so
+        // "the plan said" and "it came to" sit next to each other rather than
+        // in two different places on the page.
+        const actual = this.actualTile;
+        if (actual) {
+            tiles.push({
+                label: actual.label.toUpperCase(),
+                value: actual.value,
+                delta: actual.delta,
+                bad: actual.bad,
+            });
+        }
         return tiles;
     }
 
@@ -1289,6 +1739,9 @@ export class PbDecisionRoom extends Component {
         this.state.goalsOpen = false;
         this.state.assumptionsOpen = false;
         this.state.sketchOpen = false;
+        this.state.scopeOpen = false;
+        this.state.decideOpen = false;
+        this.state.versionsOpen = false;
         if (name) { this.state[name] = true; }
     }
 
@@ -1348,31 +1801,318 @@ export class PbDecisionRoom extends Component {
             delta: this.fmt.signedMoney(c.plan.year.profit - refProfit),
             bad: c.plan.year.profit < refProfit - 1, mine: false,
         }];
+        const words = SCOPE_WORDS();
+        const mine = this.fmt.code || "";
         for (const plan of this.state.plans) {
             const s = plan.summary || {};
+            // A plan saved in another currency cannot be lined up beside this
+            // one, and the honest thing is to say which money it is in and
+            // refuse the comparison rather than print two numbers that look
+            // like the same kind of number and are not.
+            const sameMoney = !plan.currency || !mine
+                || plan.currency === mine;
             rows.push({
                 id: plan.id, name: plan.name, tag: "saved",
                 who: plan.user,
                 heads: this.fmt.int(s.heads || 0),
-                cost: this.fmt.money(s.cost || 0),
+                cost: sameMoney ? this.fmt.money(s.cost || 0)
+                    : this._otherMoney(s.cost || 0, plan.currency),
                 served: this.hasTarget && s.coverage !== undefined
                     ? this.fmt.pct((s.coverage || 0) * 100) : "—",
-                profit: this.fmt.money(s.profit || 0),
-                delta: this.fmt.signedMoney((s.profit || 0) - refProfit),
-                bad: (s.profit || 0) < refProfit - 1,
+                profit: sameMoney ? this.fmt.money(s.profit || 0)
+                    : this._otherMoney(s.profit || 0, plan.currency),
+                delta: sameMoney
+                    ? this.fmt.signedMoney((s.profit || 0) - refProfit) : "—",
+                bad: sameMoney && (s.profit || 0) < refProfit - 1,
                 mine: !!plan.mine,
                 reference: !!plan.is_reference,
+                // ---- GROUP P4 -------------------------------------------
+                scope: plan.scope_label || "",
+                scopeWord: words[plan.scope_kind] || "",
+                sameMoney,
+                currency: plan.currency || "",
+                status: plan.status || "draft",
+                statusLabel: this._statusWord(plan.status),
+                versions: plan.versions || 0,
+                exact: plan.exact || {},
+                exactText: this._exactText(plan),
+                canPropose: (plan.mine || this.state.canManage)
+                    && plan.status !== "approved",
+                canDecide: this.state.canManage && plan.status === "proposed",
+                approved: plan.status === "approved",
+                decidedBy: plan.decided_by || "",
+                note: plan.decision_note || "",
+                busy: this.state.exactBusy === plan.id,
             });
         }
         return rows;
     }
 
+    /** A figure in a money this stage does not speak, said in that money. */
+    _otherMoney(value, code) {
+        const own = makeFormat({ code, symbol: code, position: "after",
+                                 decimals: 0 }, this.lang);
+        return own.money(value);
+    }
+
+    _statusWord(status) {
+        return {
+            draft: _t("Draft"),
+            proposed: _t("Waiting for approval"),
+            approved: _t("Approved"),
+            rejected: _t("Sent back"),
+        }[status || "draft"] || "";
+    }
+
+    _exactText(plan) {
+        const result = plan.exact || {};
+        if (!result || !Object.keys(result).length) { return ""; }
+        if (!result.ok) { return result.note || ""; }
+        const estimate = (plan.summary || {}).cost || 0;
+        const gap = estimate ? (result.year - estimate) / estimate * 100 : 0;
+        // A percentage CHANGE, not percentage points: "the estimate was 2.1%
+        // low" is the sentence, and "pp" is the wrong unit for it.
+        const sign = gap >= 0 ? "+" : "\u2212";
+        return _t("Exact cost %(exact)s · the estimate was %(estimate)s "
+                  + "(%(gap)s)",
+                  { exact: this.fmt.money(result.year),
+                    estimate: this.fmt.money(estimate),
+                    gap: sign + this.fmt.pct(Math.abs(gap)) });
+    }
+
+    // ===================================================================
+    // GROUP P4 — proposing, approving, versions and the exact cost
+    // ===================================================================
+    _planById(id) {
+        return this.state.plans.find((p) => p.id === id) || null;
+    }
+
+    _replacePlan(plan) {
+        const at = this.state.plans.findIndex((p) => p.id === plan.id);
+        if (at >= 0) { this.state.plans[at] = plan; }
+        else { this.state.plans = [plan, ...this.state.plans]; }
+        this.state.rev++;
+    }
+
+    async proposePlan(row) {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            const plan = await this.orm.call(
+                "pb.decision.room", "propose_plan", [row.id]);
+            this._replacePlan(plan);
+            this._toast(_t("“%s” is with your approver. They will find it on "
+                           + "their home page.", row.name));
+        } catch (e) {
+            this._toast(this._reason(e));
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    openDecide(row, approve) {
+        this.stopPlay();
+        this.state.decideFor = row.id;
+        this.state.decideApprove = !!approve;
+        this.state.decideNote = "";
+        this._openDialog("decideOpen");
+    }
+
+    closeDecide() { this.state.decideOpen = false; }
+
+    onDecideNote(event) { this.state.decideNote = event.target.value; }
+
+    get decidePlan() { return this._planById(this.state.decideFor); }
+
+    get decideTitle() {
+        const plan = this.decidePlan;
+        const name = plan ? plan.name : "";
+        return this.state.decideApprove
+            ? _t("Approve “%s”?", name) : _t("Send “%s” back?", name);
+    }
+
+    get decideCopy() {
+        return this.state.decideApprove
+            ? _t("Approving keeps a version of this plan exactly as it stands, "
+                 + "so what you agreed to survives every edit made afterwards. "
+                 + "Nothing about payroll changes.")
+            : _t("The plan goes back to its author as a draft, with whatever "
+                 + "you write below.");
+    }
+
+    /** An approval taken over a missing rate says so in its own record.
+     *
+     *  Read from the PLAN's own summary and not from the scope on screen: a
+     *  person may be standing on a group view while approving a plan that was
+     *  saved for one company, and the sentence has to be about the thing being
+     *  approved. */
+    get decideWarning() {
+        const plan = this.decidePlan;
+        const missing = ((plan && plan.summary) || {}).unconverted || [];
+        if (!this.state.decideApprove || !missing.length) { return ""; }
+        return _t("%s of this group's money could not be converted when this "
+                  + "plan was saved, so the total in it is a partial one. The "
+                  + "version keeps that note.", missing.join(", "));
+    }
+
+    async confirmDecide() {
+        const row = this.decidePlan;
+        if (!row) { this.state.decideOpen = false; return; }
+        this.state.decideBusy = true;
+        try {
+            const plan = await this.orm.call(
+                "pb.decision.room", "decide_plan",
+                [row.id, this.state.decideApprove, this.state.decideNote]);
+            this._replacePlan(plan);
+            this.state.decideOpen = false;
+            this._toast(this.state.decideApprove
+                ? _t("“%s” is approved.", row.name)
+                : _t("“%s” went back to %s.", row.name, row.who || ""));
+        } catch (e) {
+            this._toast(this._reason(e));
+        } finally {
+            this.state.decideBusy = false;
+        }
+    }
+
+    async keepEditing(row) {
+        this.state.busy = true;
+        try {
+            const plan = await this.orm.call(
+                "pb.decision.room", "copy_plan", [row.id]);
+            this._replacePlan(plan);
+            this._toast(_t("“%s” is a fresh draft that starts where the "
+                           + "approved plan ends.", plan.name));
+        } catch (e) {
+            this._toast(this._reason(e));
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    async openVersions(row) {
+        this.stopPlay();
+        this.state.versionsFor = row.id;
+        this.state.versions = [];
+        this._openDialog("versionsOpen");
+        try {
+            this.state.versions = await this.orm.call(
+                "pb.decision.room", "plan_versions", [row.id]);
+        } catch (e) {
+            this._toast(this._reason(e));
+        }
+    }
+
+    closeVersions() { this.state.versionsOpen = false; }
+
+    get versionRows() {
+        const words = SCOPE_WORDS();
+        return (this.state.versions || []).map((version) => {
+            const snapshot = version.snapshot || {};
+            const summary = snapshot.summary || {};
+            const scope = snapshot.scope || {};
+            return {
+                id: version.id,
+                title: _t("Version %(n)s · %(label)s",
+                          { n: version.number,
+                            label: version.label || _t("kept") }),
+                who: version.by,
+                when: (version.at || "").slice(0, 16).replace("T", " "),
+                scope: [words[scope.kind] || "", scope.label || ""]
+                    .filter(Boolean).join(" · "),
+                cost: this.fmt.money(summary.cost || 0),
+                profit: this.fmt.money(summary.profit || 0),
+                heads: this.fmt.int(summary.heads || 0),
+                unconverted: (snapshot.unconverted || []).join(", "),
+            };
+        });
+    }
+
+    async startExact(row) {
+        this.state.exactBusy = row.id;
+        this.state.exactNote = _t("Working it out…");
+        try {
+            await this.orm.call("pb.decision.room", "start_exact", [row.id]);
+            this._pollExact(row.id, 0);
+        } catch (e) {
+            this.state.exactBusy = 0;
+            this._toast(this._reason(e));
+        }
+    }
+
+    /** Ask again, backing off, until the job says it is finished.
+     *  Bounded: a job that never answers stops asking and says so. */
+    _pollExact(planId, tries) {
+        clearTimeout(this._exactTimer);
+        if (tries > 90) {
+            this.state.exactBusy = 0;
+            this.state.exactNote = "";
+            this._toast(_t("The exact cost is taking longer than expected. "
+                           + "It will appear on the plan when it finishes."));
+            return;
+        }
+        this._exactTimer = setTimeout(async () => {
+            let job = {};
+            try {
+                job = await this.orm.call(
+                    "pb.decision.room", "exact_status", [planId]);
+            } catch {
+                this.state.exactBusy = 0;
+                return;
+            }
+            if (job.state === "done" || job.state === "failed") {
+                this.state.exactBusy = 0;
+                this.state.exactNote = "";
+                const plan = this._planById(planId);
+                if (plan) {
+                    plan.exact = job.result || {};
+                    this.state.rev++;
+                }
+                this._toast(job.state === "done"
+                    ? _t("Exact cost worked out in %s seconds.",
+                         Math.round(job.seconds || 0))
+                    : (job.message || _t("The exact cost could not be worked "
+                                         + "out. Try again.")));
+                return;
+            }
+            this.state.exactNote = job.state === "queued"
+                ? _t("Waiting to start…")
+                : _t("Working it out… %s%%", job.progress || 0);
+            this._pollExact(planId, tries + 1);
+        }, tries < 5 ? 800 : 2000);
+    }
+
     get comparisonOptions() {
+        const mine = this.fmt.code || "";
         return [
             { value: "baseline", label: _t("The company as it is today") },
-            ...this.state.plans.map((p) => ({ value: String(p.id),
-                                              label: p.name })),
+            ...this.state.plans.map((p) => ({
+                value: String(p.id),
+                label: p.name,
+                // A plan in another money is offered but not selectable: the
+                // reason is on the option itself rather than in a toast after
+                // somebody has already clicked.
+                disabled: !!(p.currency && mine && p.currency !== mine),
+                suffix: (p.currency && mine && p.currency !== mine)
+                    ? _t(" — in %s, cannot be compared", p.currency) : "",
+            })),
         ];
+    }
+
+    /** The chip: how many plans are waiting on this reader right now. */
+    get awaitingText() {
+        const n = (this.state.awaiting || {}).count || 0;
+        if (!n) { return ""; }
+        return n === 1
+            ? _t("1 plan is waiting for your decision.")
+            : _t("%s plans are waiting for your decision.", n);
+    }
+
+    goToPlans() {
+        const dock = document.querySelector(".dr-dock");
+        if (!dock) { return; }
+        dock.scrollIntoView({
+            behavior: this.state.motion ? "smooth" : "auto", block: "start" });
     }
 
     get comparisonValue() {
@@ -1493,6 +2233,8 @@ export class PbDecisionRoom extends Component {
             await this.orm.call("pb.decision.room", "save_plan", [{
                 name,
                 replace,
+                scope: { kind: this.state.scope.kind,
+                         ref: this.state.scope.ref },
                 state: cloneState(this.planState),
                 goals: JSON.parse(JSON.stringify(this.goals)),
                 summary: {
@@ -1502,9 +2244,19 @@ export class PbDecisionRoom extends Component {
                     coverage: c.plan.year.coverage,
                     heads: c.plan.year.headcount,
                     margin: c.plan.year.margin,
+                    // The money this plan's numbers are IN. Without it the
+                    // dock lines up a dong figure beside a dollar one and
+                    // calls the difference a decision.
+                    currency: this.fmt.code || "",
+                    scope_label: this.state.scope.label || "",
+                    unconverted: this.notConverted.map((r) => r.code),
                 },
             }]);
-            const data = await this.orm.call("pb.decision.room", "get_room", []);
+            const data = await this.orm.call(
+                "pb.decision.room", "get_room", [],
+                { scope: { kind: this.state.scope.kind,
+                           ref: this.state.scope.ref },
+                  year: this.state.year });
             this.state.plans = data.plans || [];
             this.state.sceneName = name;
             this.state.saveOpen = false;
@@ -1518,10 +2270,23 @@ export class PbDecisionRoom extends Component {
         }
     }
 
+    /**
+     * The server's own sentence, or ours — never the platform's.
+     *
+     * GR17: the platform's RPC error object carries "Odoo Server Error" in its
+     * `message`, and the real sentence is at `error.data.message`. So
+     * `error.message` is NOT a rung on this ladder: falling back to it prints
+     * the one word this product may never say, in a red box, on the screen the
+     * reader is looking at.
+     */
     _reason(error) {
-        const data = error && error.data;
-        return (data && (data.message || data.arguments && data.arguments[0]))
-            || (error && error.message) || String(error);
+        const data = (error && error.data)
+            || (error && error.message && error.message.data);
+        const said = data
+            && (data.message || (data.arguments && data.arguments[0]));
+        return String(said || "").trim()
+            || _t("That did not go through. Try again, and tell your "
+                  + "administrator if it keeps happening.");
     }
 
     // ===================================================================
@@ -1948,7 +2713,8 @@ export class PbDecisionRoom extends Component {
         const started = performance.now();
         this._room = headroom(
             this.baseline, this.assumptions, this.planState, this.goals,
-            this.roomTeamObj.key, this.fmt, this.state.roomRole || null);
+            this.roomTeamObj.key, this.fmt, this.state.roomRole || null,
+            this._runner);
         this._room.ms = Math.round(performance.now() - started);
         this._roomKey = key;
         return this._room;
@@ -2165,7 +2931,8 @@ export class PbDecisionRoom extends Component {
         await new Promise((resolve) => setTimeout(resolve, 40));
         try {
             const found = candidates(this.baseline, this.assumptions,
-                                     this.planState, this.goals, this.fmt);
+                                     this.planState, this.goals, this.fmt,
+                                     this._runner);
             this._paths = found.lanes;
             this._paths.team = found.team;
             this.state.searchNote = found.lanes.length
@@ -2298,7 +3065,7 @@ export class PbDecisionRoom extends Component {
         const c = this.calc;
         if (!c) { return ""; }
         return stressOutcome(this.baseline, this.assumptions, this.planState,
-                             c.plan, this.fmt);
+                             c.plan, this.fmt, this._runner);
     }
 
     // ===================================================================
@@ -2323,7 +3090,7 @@ export class PbDecisionRoom extends Component {
         if (!c || !team) { return null; }
         const n = this.experimentN;
         const step = marginal(this.baseline, this.assumptions, this.planState,
-                              c.plan, team.key, n);
+                              c.plan, team.key, n, this._runner);
         if (!step) { return null; }
         const good = step.dProfit >= 0;
         const people = this.fmt.int(n);
@@ -2470,8 +3237,11 @@ export class PbDecisionRoom extends Component {
         try {
             const fresh = await this.orm.call(
                 "pb.decision.room", "save_assumptions",
-                [{ ...this.state.assumeDraft }]);
+                [{ ...this.state.assumeDraft,
+                   scope: { kind: this.state.scope.kind,
+                            ref: this.state.scope.ref } }]);
             this.assumptions = fresh;
+            this.state.assumeMeta = fresh.scope || this.state.assumeMeta;
             this.state.assumeDraft = {};
             this.state.assumeError = "";
             // Which teams earn revenue is part of the BASELINE, so the roster
@@ -2479,7 +3249,7 @@ export class PbDecisionRoom extends Component {
             await this.load(true);
             this.state.assumptionsOpen = true;
             this._toast(_t("Assumptions saved for %s. Every plan now uses "
-                           + "them.", this.state.company.name || ""));
+                           + "them.", this.state.scope.label || ""));
         } catch (e) {
             this.state.assumeError = this._reason(e);
         } finally {
@@ -2499,10 +3269,92 @@ export class PbDecisionRoom extends Component {
         });
     }
 
+    // ---- GROUP P4: whose rules these are, and how to change that --------
+    /** "Rules for Vietnam", or "Rules for this scheme (instead of Vietnam)".
+     *  The scope's own name is printed BESIDE this, so it is never repeated
+     *  inside it — a heading that says the same thing twice reads as a bug. */
+    get rulesTitle() {
+        const meta = this.state.assumeMeta || {};
+        const country = meta.country_name || "";
+        if (!meta.use_country_rules) {
+            return meta.scope_kind === "scheme"
+                ? _t("Rules for this payroll scheme%s",
+                     country ? _t(" (instead of %s)", country) : "")
+                : _t("Your own numbers%s",
+                     country ? _t(" (instead of %s)", country) : "");
+        }
+        return country || _t("Rules for this company");
+    }
+
+    get rulesNote() {
+        const meta = this.state.assumeMeta || {};
+        if (!meta.use_country_rules) {
+            return _t("These numbers were typed here and are not touched by "
+                      + "an upgrade. Put them back on the country's rules "
+                      + "below if you would rather follow those.");
+        }
+        return meta.note || "";
+    }
+
+    get capNote() { return (this.assumptions || {}).cap_note || ""; }
+
+    get canOverrideRules() {
+        return !!(this.state.canManage
+                  && (this.state.assumeMeta || {}).can_override);
+    }
+
+    get followsCountry() {
+        return !!(this.state.assumeMeta || {}).use_country_rules;
+    }
+
+    async toggleCountryRules() {
+        if (!this.state.canManage) { return; }
+        this.state.assumeBusy = true;
+        try {
+            const fresh = await this.orm.call(
+                "pb.decision.room", "save_assumptions",
+                [{ use_country_rules: !this.followsCountry,
+                   scope: { kind: this.state.scope.kind,
+                            ref: this.state.scope.ref } }]);
+            this.assumptions = fresh;
+            this.state.assumeMeta = fresh.scope || this.state.assumeMeta;
+            await this.load(true);
+            this.state.assumptionsOpen = true;
+            this._toast(this.followsCountry
+                ? _t("Back on the rules for %s.",
+                     (this.state.assumeMeta || {}).country_name || "")
+                : _t("These numbers are now this scope's own."));
+        } catch (e) {
+            this.state.assumeError = this._reason(e);
+        } finally {
+            this.state.assumeBusy = false;
+        }
+    }
+
+    async resetToCountryRules() {
+        if (!this.state.canManage) { return; }
+        this.state.assumeBusy = true;
+        try {
+            const fresh = await this.orm.call(
+                "pb.decision.room", "reset_assumptions",
+                [{ kind: this.state.scope.kind, ref: this.state.scope.ref }]);
+            this.assumptions = fresh;
+            this.state.assumeMeta = fresh.scope || this.state.assumeMeta;
+            await this.load(true);
+            this.state.assumptionsOpen = true;
+            this._toast(_t("Back on the rules for %s.",
+                           (this.state.assumeMeta || {}).country_name || ""));
+        } catch (e) {
+            this.state.assumeError = this._reason(e);
+        } finally {
+            this.state.assumeBusy = false;
+        }
+    }
+
     get assumptionsWho() {
         if (this.state.canManage) {
-            return _t("You can change these numbers. Everyone planning at %s "
-                      + "will see the change.", this.state.company.name || "");
+            return _t("You can change these numbers. Everyone planning %s "
+                      + "will see the change.", this.state.scope.label || "");
         }
         const who = this.assumptions.changed_by;
         const when = (this.assumptions.changed_on || "").slice(0, 10);
@@ -2716,6 +3568,10 @@ export class PbDecisionRoom extends Component {
             coverage,
             months: this.months,
             goodUp: this.metricDef.goodUp,
+            // GROUP P4 — the companies inside a group, and what the closed
+            // pay runs actually produced.
+            entities: this.entityLines,
+            actual: this.actualLine,
             fmt: (v) => (coverage ? `${Math.round(v)}%` : this.fmt.money(v)),
         });
         drawRing(this.ringRef.el, {
@@ -2825,10 +3681,15 @@ export class PbDecisionRoom extends Component {
     onKey(event) {
         if (event.key === "Escape") {
             if (this.state.saveOpen || this.state.goalsOpen
-                || this.state.sketchOpen || this.state.assumptionsOpen) {
+                || this.state.sketchOpen || this.state.assumptionsOpen
+                || this.state.scopeOpen || this.state.decideOpen
+                || this.state.versionsOpen) {
                 this.state.saveOpen = false;
                 this.state.goalsOpen = false;
                 this.state.sketchOpen = false;
+                this.state.scopeOpen = false;
+                this.state.decideOpen = false;
+                this.state.versionsOpen = false;
                 if (this.state.assumptionsOpen) { this.closeAssumptions(); }
                 return;
             }

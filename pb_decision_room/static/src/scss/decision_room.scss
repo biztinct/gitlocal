@@ -701,9 +701,272 @@ $dr-teal:       #0F766E;
         .dr-tag { font-size: 9px; color: var(--pbim-muted, #64748B); }
         .dr-neg { color: $dr-rose; }
         .dr-row--now { background: var(--pbim-soft, #EDEAF8); }
+        // GROUP P4, and WF6 all over again. A plan now carries five verbs —
+        // open, compare, propose, price exactly, remove — and a single row of
+        // them is wider than the money columns it is pinned in front of, so
+        // the profit a person came to read sat UNDER the buttons. The column
+        // wraps to two short rows and is capped, so the numbers stay visible
+        // and the wrapper scrolls the rest under a control that never leaves.
         .dr-row-actions { display: flex; gap: 4px; }
+        // The verbs of a DECISION live in the column about the decision,
+        // under the chip that says where it stands. Five buttons pinned to
+        // the right edge of a row covered the very numbers a person opened
+        // the dock to read (WF6 again, at twice the width).
+        .dr-standscell { white-space: normal; min-width: 140px; }
+        // GROUP P4 added two columns to a table that was already as wide as
+        // its card. The wrapper scrolls (WF6) but a reader must not have to
+        // scroll to see the two numbers they came for, so the two widest
+        // TEXT columns are capped and truncate with their full text on hover.
+        th:first-child, td:first-child { max-width: 170px; }
+        .dr-scopecell {
+            display: block; max-width: 160px; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
+        }
+        .dr-verbs {
+            display: flex; flex-direction: column; align-items: flex-start;
+            gap: 1px; margin-top: 4px;
+            button {
+                padding: 1px 0; border: 0; background: none; cursor: pointer;
+                font: inherit; font-size: 10px; text-align: left;
+                color: var(--pbim-primary, #5A4BB0);
+                text-decoration: underline;
+                text-underline-offset: 2px;
+                &:hover { color: var(--pbim-ink, #1B1733); }
+                &.is-good { color: $dr-good; font-weight: 600; }
+            }
+        }
+        // A person's NAME is not a label: the uppercase treatment the
+        // scope word gets would shout it.
+        .dr-decided {
+            display: block; margin-top: 3px; font-size: 9px;
+            text-transform: none; letter-spacing: 0;
+            color: var(--pbim-muted, #64748B);
+        }
     }
     .dr-dock-foot { margin-top: 12px; }
+
+    // =================================================================
+    //  GROUP P4 — scope, a group on the stage, and what actually happened
+    // =================================================================
+
+    // ---- the approvals chip, on the room the reader already opens
+    .dr-await {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin: 0 0 14px; padding: 11px 15px; font-size: 12px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid #C9E3D4; background: #EEF7F1; color: $dr-good;
+        > span:first-child { display: inline-flex; }
+        > span:nth-child(2) { flex: 1 1 auto; font-weight: 600; }
+    }
+
+    // ---- the chip. It sits ON the stage, so its colours are the stage's.
+    .dr-scope {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 11px; cursor: pointer; max-width: 100%;
+        border-radius: 999px; font: inherit; font-size: 11px;
+        border: 1px solid rgba(199, 192, 232, .34);
+        background: rgba(244, 241, 255, .07); color: $dr-onstage-2;
+        transition: background .16s ease, border-color .16s ease;
+        &:hover, &:focus-visible {
+            background: rgba(244, 241, 255, .16);
+            border-color: rgba(199, 192, 232, .6);
+        }
+        .dr-scope-ic { display: inline-flex; color: $dr-plan; }
+        .dr-scope-k {
+            text-transform: uppercase; letter-spacing: .8px; font-size: 8px;
+            color: $dr-onstage; white-space: nowrap;
+        }
+        .dr-scope-n {
+            font-weight: 620; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; max-width: 320px;
+        }
+        .dr-scope-m {
+            font-size: 9px; color: $dr-onstage; padding: 2px 6px;
+            border-radius: 999px; background: rgba(244, 241, 255, .1);
+        }
+    }
+
+    // ---- the picker. A tree, one row per node, indented by depth.
+    .dr-scrim--top { align-items: start; padding-top: 8vh; }
+    .dr-dialog--tree { width: 620px; }
+    .dr-tree {
+        margin: 16px 0 12px; max-height: 52vh; overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); background: #fff;
+    }
+    .dr-scope-row {
+        display: flex; align-items: center; gap: 8px; cursor: pointer;
+        padding: 8px 12px 8px 10px; font-size: 12px;
+        border-bottom: 1px solid #F1EFF7;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: -2px;
+        }
+        &.is-current {
+            background: var(--pbim-soft, #EDEAF8); font-weight: 620;
+            box-shadow: inset 3px 0 0 var(--pbim-primary, #5A4BB0);
+        }
+        .dr-tl { flex: 1 1 auto; min-width: 0; }
+        .dr-tk {
+            font-size: 9px; text-transform: uppercase; letter-spacing: .6px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-tp {
+            font-size: 10px; color: var(--pbim-muted, #64748B);
+            white-space: nowrap;
+        }
+    }
+    .dr-tw {
+        width: 20px; height: 20px; flex: 0 0 20px; padding: 0; border: 0;
+        border-radius: var(--pbim-r-sm, 10px); cursor: pointer;
+        display: grid; place-items: center; background: transparent;
+        color: var(--pbim-muted, #64748B);
+        &:hover { background: #ECE9F6; }
+        &.dr-tw--none { cursor: default; }
+    }
+
+    // ---- what actually happened
+    .dr-actual {
+        display: flex; align-items: flex-start; gap: 8px; margin: 6px 0 2px;
+        font-size: 11px; line-height: 1.65; color: #D8F0E5;
+        > span:first-child { flex: 0 0 auto; padding-top: 1px; }
+    }
+    .dr-key .dr-k-entity { background: rgba(199, 184, 237, .5); }
+    .dr-key .dr-k-actual { background: #8ED9C0; }
+
+    // ---- a group on the stage
+    .dr-group {
+        margin: 14px 0 4px; padding: 13px 14px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid rgba(199, 192, 232, .2);
+        background: rgba(244, 241, 255, .04);
+    }
+    .dr-group-h {
+        display: flex; justify-content: space-between; gap: 12px;
+        align-items: flex-start; flex-wrap: wrap;
+    }
+    .dr-group-note {
+        font-size: 10px; line-height: 1.6; color: $dr-onstage;
+        max-width: 620px;
+    }
+    .dr-mini {
+        font-size: 10px; padding: 5px 9px; cursor: pointer; white-space: nowrap;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid rgba(199, 192, 232, .28);
+        background: rgba(244, 241, 255, .05); color: $dr-onstage;
+        &:hover { background: rgba(244, 241, 255, .12); }
+        &.is-on { background: $dr-plan-soft; color: $dr-stage; font-weight: 600; }
+    }
+    .dr-grouprows { margin-top: 10px; display: grid; gap: 2px; }
+    .dr-grouprow {
+        display: grid; gap: 10px; align-items: baseline;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr)
+                               minmax(0, 1fr) minmax(0, 1fr);
+        padding: 6px 0; font-size: 11px; color: $dr-onstage-2;
+        border-bottom: 1px solid rgba(173, 168, 197, .12);
+        &:last-child { border-bottom: 0; }
+        &.dr-grouprow--unknown { color: #CBBFD6; }
+        .dr-gr-n {
+            font-weight: 600; overflow: hidden; text-overflow: ellipsis;
+            small {
+                margin-left: 6px; font-weight: 400; font-size: 9px;
+                color: $dr-onstage;
+            }
+        }
+        .dr-gr-p, .dr-gr-c { color: $dr-onstage; }
+        .dr-gr-f { font-weight: 600; }
+    }
+    .dr-rate {
+        margin: 9px 0 0; font-size: 10px; color: $dr-onstage;
+        letter-spacing: .2px;
+    }
+    .dr-unknown {
+        margin-top: 10px; padding: 9px 11px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: rgba(247, 166, 195, .09);
+        border: 1px solid rgba(247, 166, 195, .26);
+        strong {
+            display: block; font-size: 10px; letter-spacing: .7px;
+            text-transform: uppercase; color: #F7C7D8; margin-bottom: 4px;
+        }
+        p { margin: 0 0 4px; font-size: 10px; line-height: 1.65;
+            color: $dr-onstage-2; &:last-child { margin-bottom: 0; } }
+    }
+
+    // ---- whose rules these are
+    .dr-rules {
+        margin: 14px 0 6px; padding: 13px 15px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid #E1DCEF; background: #F4F1FA;
+    }
+    .dr-rules-h {
+        display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
+        > div { flex: 1 1 220px; min-width: 0; }
+        strong { display: block; font-size: 13px; }
+        small {
+            display: block; font-size: 10px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-rules-ic {
+        display: grid; place-items: center; width: 30px; height: 30px;
+        border-radius: 50%; background: #fff;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .dr-rules-n {
+        margin: 9px 0 0; font-size: 11px; line-height: 1.7;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-rules-w {
+        margin: 7px 0 0; font-size: 11px; line-height: 1.7; color: $dr-amber;
+    }
+    .dr-warn {
+        margin: 10px 0 0; font-size: 11px; line-height: 1.7; color: $dr-amber;
+    }
+
+    // ---- the dock's new columns
+    .dr-table {
+        .dr-scopecell { display: block; }
+        td small {
+            font-size: 9px; text-transform: uppercase; letter-spacing: .5px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-exact {
+            display: block; font-size: 9px; margin-top: 2px; color: $dr-teal;
+            white-space: normal; max-width: 320px;
+        }
+        .dr-status {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 9px; font-weight: 600; background: #EEECF6;
+            color: var(--pbim-muted, #64748B);
+            &.dr-status--proposed { background: #FDF0DC; color: $dr-amber; }
+            &.dr-status--approved { background: #DFF1E6; color: $dr-good; }
+            &.dr-status--rejected { background: #FCE4EC; color: $dr-rose; }
+        }
+    }
+
+    // ---- versions
+    .dr-versions { display: grid; gap: 9px; margin-top: 16px; }
+    .dr-version {
+        padding: 12px 14px; border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+    }
+    .dr-version-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        align-items: baseline; flex-wrap: wrap;
+        small { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-version-b {
+        display: flex; gap: 16px; flex-wrap: wrap; margin-top: 7px;
+        font-size: 11px; color: var(--pbim-muted, #64748B);
+    }
+    .dr-none--inline {
+        padding: 26px 10px; margin-top: 14px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+    }
 
     // ---------------------------------------------------------- dialogs
     .dr-scrim {
@@ -1334,6 +1597,16 @@ $dr-teal:       #0F766E;
         .dr-goals { grid-template-columns: 1fr; }
         .dr-dialog { padding: 24px 18px; width: 100%; }
         .dr-dialog h2 { font-size: 21px; }
+        // GROUP P4 on a phone: the chip keeps its whole name but wraps, the
+        // group rows become two lines rather than four squeezed columns, and
+        // the picker fills the screen because a tree in a 320px box is a list
+        // of truncated words.
+        .dr-scope { width: 100%; justify-content: flex-start; }
+        .dr-scope .dr-scope-n { max-width: none; }
+        .dr-scrim--top { padding-top: 4vh; }
+        .dr-grouprow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        .dr-tree { max-height: 60vh; }
+        .dr-version-b { gap: 10px; }
         .dr-head-actions { width: 100%; justify-content: flex-start; }
         &.dr--embedded { padding: 14px 12px 22px; }
         .dr-dock-controls .dr-select { width: 100%; min-width: 0; }
