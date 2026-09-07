@@ -82,6 +82,15 @@ _MEASURES = {
                       'table': 'emp', 'kind': 'count', 'agg': 'fte'},
     'cost_per_head': {'label': 'Cost per person', 'kind': 'money',
                       'derived': ('total_cost', 'headcount')},
+    # GROUP P5 — the two sides of "home paid, the other entity was charged".
+    # They live on the employee grain because a charge is about one person's
+    # month, and they are money like every other money measure here: shown in
+    # the money each entity paid in, or converted at read time, never stored
+    # converted (rule 7).
+    'charged_to':    {'label': 'Charged to other entities', 'types': None,
+                      'table': 'emp', 'kind': 'money', 'agg': 'charged_to'},
+    'charged_from':  {'label': 'Charged from other entities', 'types': None,
+                      'table': 'emp', 'kind': 'money', 'agg': 'charged_from'},
 }
 
 # The four kinds of pay run, in the words a person uses. The keys are
@@ -159,6 +168,11 @@ _FILTERS = {
     'job_id':        ('job_id', 'int'),
     'employee_id':   ('employee_id', 'int'),
     'basis':         ('basis', 'char'),
+    # GROUP P5 — people who worked part of the month in another company in
+    # the group. A chip, because it is a question somebody asks of a figure
+    # they are already looking at ("is this the people in two places?"), not
+    # a dimension to break the chart down by.
+    'split':         ('is_split', 'bool'),
 }
 
 # Money shown in the group's currency, or each company's own.
@@ -434,7 +448,13 @@ class PbExplorer(models.AbstractModel):
                      or any(_MEASURES[k].get('table') == 'emp' for k in derived)
                      or d in _T2_ONLY
                      or 'employee_id' in spec['filters']
-                     or 'job_id' in spec['filters'])
+                     or 'job_id' in spec['filters']
+                     # GROUP P5 — "paid in two places" is a fact about a
+                     # PERSON'S month, so it only exists at the employee
+                     # grain. Asked for it beside a component breakdown, the
+                     # refusal below names both halves rather than quietly
+                     # dropping the chip and showing figures nobody asked for.
+                     or 'split' in spec['filters'])
         needs_line = (d in _T1_ONLY or m == 'component'
                       or 'code' in spec['filters'])
         if needs_emp and needs_line:
@@ -650,8 +670,16 @@ class PbExplorer(models.AbstractModel):
         if spec.get('advances', 'main') == 'main':
             clauses.append('COALESCE(is_advance, FALSE) = FALSE')
         for key, vals in spec['filters'].items():
-            col, _typ = _FILTERS[key]
+            col, typ = _FILTERS[key]
             if key == 'run_id':          # already in the run scope
+                continue
+            if typ == 'bool':
+                # A yes/no chip is one predicate, never an `IN` list: the
+                # values arrive from the URL hash and may be anything.
+                wanted = any(str(v).lower() not in ('0', 'false', '')
+                             for v in vals)
+                clauses.append('COALESCE(%s, FALSE) = %%s' % col)
+                params.append(wanted)
                 continue
             if table == 'emp' and key == 'code':
                 continue                  # unreachable: _resolve_table refused
@@ -741,6 +769,22 @@ class PbExplorer(models.AbstractModel):
                 ) t GROUP BY 1, 2, 3
             """.format(dim=dim_col, tim=time_col, cur=cur_col, person=person,
                        tbl=table, where=where)
+        elif agg_kind in ('charged_to', 'charged_from'):
+            # GROUP P5 — a charge is a property of the PERSON'S MONTH, not of
+            # each component row they appear on, so it is deduped per person
+            # exactly the way the full-time equivalent above is. Summing the
+            # column flat would multiply one charge by the number of component
+            # types on the payslip.
+            sql = """
+                SELECT dkey, tkey, ckey, SUM(val) AS val FROM (
+                    SELECT {dim} AS dkey, {tim} AS tkey, {cur} AS ckey,
+                           {person} AS person, MAX({col}) AS val
+                      FROM pb_fact_{tbl}
+                     WHERE {where}
+                     GROUP BY 1, 2, 3, 4
+                ) t GROUP BY 1, 2, 3
+            """.format(dim=dim_col, tim=time_col, cur=cur_col, person=person,
+                       col=agg_kind, tbl=table, where=where)
         else:
             agg = ('COUNT(DISTINCT %s)' % person
                    if agg_kind in ('distinct_person', 'distinct_employee')
@@ -1189,6 +1233,15 @@ class PbExplorer(models.AbstractModel):
             (self._co_ids(),))
         dmin, dmax = self.env.cr.fetchone() or (None, None)
 
+        # GROUP P5 — is anybody in scope actually paid in two places? One
+        # cheap indexed count, because the chip is offered only when it has
+        # something to answer.
+        self.env.cr.execute("""
+            SELECT COUNT(*) FROM pb_fact_emp
+             WHERE company_id IN %s AND is_split
+        """, (self._co_ids(),))
+        split_rows = (self.env.cr.fetchone() or (0,))[0]
+
         Fact = self.env['pb.fact.run'].sudo()
         total_runs = self.env['hr.payslip.run'].sudo().search_count(
             [('state', '!=', 'cancel')])
@@ -1263,6 +1316,13 @@ class PbExplorer(models.AbstractModel):
                 'basis': [{'value': b, 'label': b.title()} for b in sorted(bases)],
                 'department_id': depts,
                 'code': codes,
+                # GROUP P5 — offered ONLY where somebody is actually paid in
+                # two places. A chip with no matching rows behind it is a
+                # filter that answers "nothing", which reads as a broken
+                # screen rather than as an honest empty.
+                'split': ([{'value': '1',
+                            'label': _("Paid in two places")}]
+                          if split_rows else []),
             },
             'bounds': {'date_from': str(dmin) if dmin else None,
                        'date_to': str(dmax) if dmax else None},
@@ -1407,6 +1467,13 @@ class PbExplorer(models.AbstractModel):
             elif key in ('country', 'group'):
                 clauses.append('p.company_id IN %s')
                 params.append(tuple(self._companies_for(key, vals)) or (0,))
+                continue
+            elif key == 'split':
+                # GROUP P5 — the drill must cover exactly the people the chart
+                # covered, so the chip travels down with it.
+                clauses.append('COALESCE(fe.is_split, FALSE) = %s')
+                params.append(any(str(v).lower() not in ('0', 'false', '')
+                                  for v in vals))
                 continue
             else:
                 continue

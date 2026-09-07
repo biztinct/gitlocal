@@ -224,3 +224,22 @@ class PbFactEmp(models.Model):
         help='How much of a full-time person this row represents. 1.0 until '
              'work segments exist.')
     is_advance = fields.Boolean(string='Advance run', index=True)
+
+    # ---- GROUP P5, APPENDED LAST AGAIN (GR4) ----------------------------
+    # What this employment's month cost an entity that did not pay it, and
+    # what another entity carried on its behalf. Stored in the money the
+    # payroll was paid in and NEVER converted on the way in (rule 7); the
+    # Explorer converts at read time through `pb.fx` like every other money
+    # measure on this table.
+    charged_to = fields.Float(
+        string='Charged to other entities', digits=(16, 2),
+        help='Cost this entity paid that belongs to another company in the '
+             'group.')
+    charged_from = fields.Float(
+        string='Charged from other entities', digits=(16, 2),
+        help='Cost another company in the group paid on this entity\'s '
+             'behalf.')
+    is_split = fields.Boolean(
+        string='Paid in two places', index=True,
+        help='This person worked part of the month in another company in the '
+             'group.')

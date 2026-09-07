@@ -41,6 +41,9 @@ const FILTER_META = {
     code:          _t("Component"),
     cycle:         _t("Kind of run"),
     basis:         _t("Basis"),
+    // GROUP P5 — offered by the server only where somebody really is paid in
+    // two places, so on every other database this row simply never appears.
+    split:         _t("Where they work"),
 };
 
 /** The icon each rung of the walk down the group wears. */
