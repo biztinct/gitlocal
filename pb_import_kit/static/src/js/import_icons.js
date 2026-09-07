@@ -216,6 +216,14 @@ export const IC = {
     // this completes the set rather than rotating one in CSS, because an icon
     // that means "up" should say so in the markup a screen reader reads.
     chevronUp:    '<path d="m18 15-6-6-6 6"/>',
+    // GROUP P1 — the group screen. `globe` is a company in another country
+    // (the tree's company cards and the "add a company" door); `coins` is the
+    // exchange-rate card and its coverage strip. The treasury (`landmark`),
+    // the money (`banknote`), the building, the layers and the two-way arrow
+    // were all already here. One shared registry, never a module-local map
+    // (W2), Lucide paths only — no emoji, no flag characters.
+    globe:        '<circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20Z"/><path d="M2 12h20"/>',
+    coins:        '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/>',
 };
 
 /**
