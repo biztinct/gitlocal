@@ -185,10 +185,22 @@ export class PbGroupRoom extends Component {
         await this.load();
     }
 
+    /**
+     * The server's own sentence, or ours — and never the platform's (GR17).
+     *
+     * The top-level `.message` of every RPC error on this platform is the
+     * literal string "Odoo Server Error". Falling back to it printed the one
+     * word this product may never say, in a red box, on the screen the reader
+     * was looking at. So it is not a rung on this ladder at all: either the
+     * server told us something a person can act on — `error.data.message`, or
+     * the older `error.message.data.message` shape some cockpits still raise
+     * — or we say our own sentence.
+     */
     _msg(error, fallback) {
-        const data = error && error.data;
-        const message = (data && (data.message || data.arguments
-            && data.arguments[0])) || (error && error.message);
+        const data = (error && error.data)
+            || (error && error.message && error.message.data);
+        const message = data && (data.message
+            || (data.arguments && data.arguments[0]));
         return message || fallback;
     }
 
