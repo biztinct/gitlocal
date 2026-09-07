@@ -1,13 +1,12 @@
-# Translation of Odoo Server.
+# Translation of Payobook.
 # This file contains the translation of the following modules:
 # 	* pb_decision_room
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 15:44+0000\n"
-"PO-Revision-Date: 2026-09-06 15:44+0000\n"
+"POT-Creation-Date: 2026-09-07 12:13+0000\n"
+"PO-Revision-Date: 2026-09-07 12:13+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,7 +17,21 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " (instead of %s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid " Joining and leaving costs land here."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+" Only %(n)s of the %(all)s people in this view have been paid in a closed "
+"run so far, so this is part of the picture rather than all of it."
 msgstr ""
 
 #. module: pb_decision_room
@@ -66,6 +79,12 @@ msgid " with 1 smaller change"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " — in %s, cannot be compared"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-python
 #: code:addons/pb_decision_room/models/pb_decision_room.py:0
 msgid "\"%(label)s\" has to be between %(low)s and %(high)s."
@@ -74,7 +93,27 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-python
 #: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%(name)s\" was saved by %(who)s. Ask them to propose it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
 msgid "\"%s\" cannot be negative."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "\"%s\" has already been approved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"\"%s\" has been approved, so its numbers stay as they were agreed. Use "
+"\"Keep editing a copy\" to carry on from here."
 msgstr ""
 
 #. module: pb_decision_room
@@ -101,6 +140,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(bound)s %(target)s · %(gap)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "%(companies)s companies in %(group)s."
 msgstr ""
 
 #. module: pb_decision_room
@@ -184,6 +229,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(met)s of %(all)s goals met. Room to think bigger."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(month)s came in %(money)s %(direction)s; %(why)s.%(partial)s"
 msgstr ""
 
 #. module: pb_decision_room
@@ -305,6 +356,14 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"%(n)s of the schemes here have not had their components classified yet "
+"(%(names)s), so their people are not in this figure."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "%(n)s people"
@@ -341,6 +400,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(name)s %(before)s → your plan %(after)s. %(tail)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(name)s (carrying on %(n)s)"
 msgstr ""
 
 #. module: pb_decision_room
@@ -387,6 +452,36 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "%(value)s pp"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s approved this plan.%(note)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s proposed this plan for approval."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s sent this plan back.%(note)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s would like a decision on \"%(plan)s\" (%(scope)s)."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%s (carrying on)"
 msgstr ""
 
 #. module: pb_decision_room
@@ -488,6 +583,14 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%s of this group's money could not be converted when this plan was saved, so"
+" the total in it is a partial one. The version keeps that note."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%s of work goes unserved on this shift"
 msgstr ""
 
@@ -521,6 +624,12 @@ msgstr ""
 #: code:addons/pb_decision_room/models/pb_decision_room.py:0
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%s plans are saved for this company. Remove one first."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s plans are waiting for your decision."
 msgstr ""
 
 #. module: pb_decision_room
@@ -634,7 +743,14 @@ msgid "0 people"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 %(src)s = %(rate)s %(dst)s%(when)s"
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
 msgid "1 is January. Zero means no yearly bonus."
 msgstr ""
 
@@ -643,6 +759,12 @@ msgstr ""
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "1 month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 plan is waiting for your decision."
 msgstr ""
 
 #. module: pb_decision_room
@@ -678,6 +800,12 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A DECISION, RECORDED"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "A LITTLE HELP, A BETTER PLAN"
 msgstr ""
 
@@ -688,6 +816,13 @@ msgid "A POSSIBILITY WORTH KEEPING"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__label
+msgid ""
+"A few words about why this version exists — \"proposed to the board\", "
+"\"after the pay review\"."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "A goal breaks here"
@@ -695,6 +830,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ramp_first_month_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ramp_first_month_pct
 msgid "A new person delivers (%) in their first month"
 msgstr ""
 
@@ -713,8 +849,15 @@ msgid "A plan called “"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__status
+msgid ""
+"A plan starts as a draft, is proposed, and is then approved or sent back. "
+"Nothing about payroll changes at any point."
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_plan_name_uniq
-msgid "A plan with this name already exists."
+msgid "A plan with this name already exists for this scope."
 msgstr ""
 
 #. module: pb_decision_room
@@ -746,12 +889,34 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction
 msgid "Action Needed"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__active
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__active
 msgid "Active"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Activity Type Icon"
 msgstr ""
 
 #. module: pb_decision_room
@@ -787,6 +952,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__allowance_pct
 msgid "Allowances (% of pay)"
 msgstr ""
 
@@ -809,8 +975,72 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Anything to say with it?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Applies to everyone from the month you choose."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve it"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Approve the plan \"%s\""
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Approve “%s”?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__approved
+msgid "Approved"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — it is waiting on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — they will see it waiting on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Approving keeps a version of this plan exactly as it stands, so what you "
+"agreed to survives every edit made afterwards. Nothing about payroll "
+"changes."
 msgstr ""
 
 #. module: pb_decision_room
@@ -830,6 +1060,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "As planned"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__user_id
+msgid "Asked by"
 msgstr ""
 
 #. module: pb_decision_room
@@ -874,6 +1109,7 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_attachment_count
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_attachment_count
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
@@ -888,6 +1124,12 @@ msgstr ""
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "August"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Back on the rules for %s."
 msgstr ""
 
 #. module: pb_decision_room
@@ -917,11 +1159,13 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
 msgid "Bonus is paid in month"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_months
 msgid "Bonus size (months of pay)"
 msgstr ""
 
@@ -941,6 +1185,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "CHANGE THE NUMBERS"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__kh
+msgid "Cambodia"
 msgstr ""
 
 #. module: pb_decision_room
@@ -987,8 +1236,28 @@ msgid "Close"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Closed pay runs are not being collected on this database yet."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_ids
+msgid "Companies in this plan"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Companies in this scope"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_id
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__company
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__company
 msgid "Company"
 msgstr ""
 
@@ -1029,6 +1298,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__contribution_cap
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__contribution_cap
 msgid "Contributions are capped at"
 msgstr ""
 
@@ -1051,12 +1321,19 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__severance_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__severance_months
 msgid "Cost to let someone go (months of pay)"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__recruit_cost_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__recruit_cost_months
 msgid "Cost to recruit someone (months of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__failed
+msgid "Could not finish"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1065,14 +1342,39 @@ msgid "Counted once in the month the role ends."
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__country_code
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__country
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__country
+msgid "Country"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.actions.act_window,name:pb_decision_room.action_pb_decision_ruleset
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_list
+msgid "Country rules"
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_uid
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_date
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_date
 msgid "Created on"
 msgstr ""
 
@@ -1136,6 +1438,16 @@ msgid "December"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_by
+msgid "Decided by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_at
+msgid "Decided on"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
 #: model:ir.actions.client,name:pb_decision_room.action_pb_decision_room
@@ -1153,13 +1465,43 @@ msgid "Decision Room assumptions"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_ruleset
+msgid "Decision Room country rules"
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model,name:pb_decision_room.model_pb_decision_room
 msgid "Decision Room data"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact
+msgid "Decision Room exact cost"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact_job
+msgid "Decision Room exact-cost job"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_plan_version
+msgid "Decision Room plan version"
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model,name:pb_decision_room.model_pb_decision_plan
 msgid "Decision Room saved plan"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_scope
+msgid "Decision Room scope"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.actions.server,name:pb_decision_room.cron_decision_exact_ir_actions_server
+msgid "Decision Room: work out an exact cost"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1243,15 +1585,34 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__display_name
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__display_name
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__division
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__division
+msgid "Division"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__done
 msgid "Done"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__progress
+msgid "Done (%)"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1274,8 +1635,27 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__draft
+msgid "Draft"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "EVERY MONTH TELLS A STORY"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each in its own money"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1305,6 +1685,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employee_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
 msgid "Employee contributions (% of pay)"
 msgstr ""
 
@@ -1330,6 +1711,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
 msgid "Employer contributions (% of pay)"
 msgstr ""
 
@@ -1362,6 +1744,15 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__evening_uplift_pct
 msgid "Evening work uplift (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every company is worked out in its own money and added up in %(money)s. The "
+"revenue target is shared out by how much of the group's pay bill sits in "
+"each one."
 msgstr ""
 
 #. module: pb_decision_room
@@ -1417,6 +1808,11 @@ msgid "Every hour of this shift is covered"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Every legal entity these assumptions cover."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid ""
@@ -1426,6 +1822,17 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Every time a plan is proposed or approved, the\n"
+"              levers, the goals, the numbers and the rules behind them are\n"
+"              kept. Editing the plan afterwards never changes these."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Everyone"
 msgstr ""
@@ -1434,6 +1841,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Everyone at"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid "Everything as it stood"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1459,6 +1871,25 @@ msgstr ""
 msgid ""
 "Everything you moved: people per team, the raise, overtime, when the hires "
 "arrive, and the revenue target."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__exact_result
+msgid "Exact cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost %(exact)s · the estimate was %(estimate)s (%(gap)s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost worked out in %s seconds."
 msgstr ""
 
 #. module: pb_decision_room
@@ -1521,6 +1952,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
 msgid "Extra pay for night shifts, on top of base pay."
 msgstr ""
 
@@ -1569,6 +2001,16 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__finished_at
+msgid "Finished"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid "Follow the rules for this country"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Follow the whole way from the comparison to your result."
@@ -1577,13 +2019,20 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_follower_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_follower_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_partner_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_partner_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_partner_ids
 msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1639,6 +2088,7 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__has_message
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__has_message
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__has_message
 msgid "Has Message"
 msgstr ""
 
@@ -1672,6 +2122,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Hours beyond the normal month, and the uplift for evenings and nights"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Hours, joining and leaving"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1740,14 +2195,30 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__id
 msgid "ID"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr ""
 
@@ -1756,6 +2227,8 @@ msgstr ""
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -1771,9 +2244,20 @@ msgid "In one sentence"
 msgstr ""
 
 #. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Income tax"
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__pit_ladder
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
 msgid "Income tax ladder"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__in
+msgid "India"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1783,6 +2267,11 @@ msgid ""
 "Individual people, working-capital timing, roster legality and tax filings. "
 "This is a planning sketch, not a payroll calculation — and nothing here "
 "changes payroll."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__id
+msgid "Indonesia"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1805,6 +2294,7 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_is_follower
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_is_follower
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_is_follower
 msgid "Is Follower"
 msgstr ""
 
@@ -1886,7 +2376,29 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "KEPT, EXACTLY AS IT STOOD"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Keep editing a copy"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Keep this direction"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_by
+msgid "Kept by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_at
+msgid "Kept on"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1897,13 +2409,19 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_uid
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_date
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -1935,6 +2453,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "MOST FLEXIBLE"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__my
+msgid "Malaysia"
 msgstr ""
 
 #. module: pb_decision_room
@@ -1995,6 +2518,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__allowance_pct
 msgid "Meal, transport and phone allowances, as a share of base pay."
 msgstr ""
 
@@ -2017,12 +2541,14 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_ids
 msgid "Messages"
 msgstr ""
 
@@ -2030,6 +2556,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Met"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid "Money the cap is written in"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2047,6 +2578,13 @@ msgstr ""
 msgid ""
 "Monthly pay above this does not raise contributions. Zero means there is no "
 "cap."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__contribution_cap
+msgid ""
+"Monthly pay above this does not raise contributions. Zero means there is no "
+"ceiling."
 msgstr ""
 
 #. module: pb_decision_room
@@ -2088,9 +2626,20 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "NOBODY ON RECORD YET"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__name
+msgid "Name"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2101,6 +2650,26 @@ msgid "New people arrive in"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Night"
@@ -2108,6 +2677,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
 msgid "Night work uplift (%)"
 msgstr ""
 
@@ -2121,6 +2691,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "No additional hiring meets every goal."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "No company in the group is in that country any more."
 msgstr ""
 
 #. module: pb_decision_room
@@ -2143,15 +2719,58 @@ msgid "No overtime, and 8% more productive time"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"No pay run has been closed for %s yet, so there is nothing to draw over the "
+"plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"No pay run has been closed for this year yet, so there is nothing to draw "
+"over the plan."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "No yearly bonus is assumed."
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"Nobody has confirmed what each part of %(names)s does, so the scheme's own "
+"net pay formula was read to work it out. Confirm the components on the "
+"scheme and this figure becomes final."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted at the time:"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Not met yet"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not now"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2165,6 +2784,12 @@ msgstr ""
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
 msgid "Nothing differs — this is the comparison itself."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Nothing kept yet."
 msgstr ""
 
 #. module: pb_decision_room
@@ -2204,26 +2829,36 @@ msgid "Now %(now)s · %(gap)s"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Now planning %s."
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
@@ -2259,9 +2894,23 @@ msgid "October"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid ""
+"On: contributions, the ceiling, allowances, working days and the bonus come "
+"from the rules shipped for this company's country. Off: they are the numbers"
+" typed here."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "One ambition. More than one way there."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "One company, so a plan is a plan for that company."
 msgstr ""
 
 #. module: pb_decision_room
@@ -2392,6 +3041,12 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Override for this scheme"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Overtime"
 msgstr ""
@@ -2416,6 +3071,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ot_multiplier
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
 msgid "Overtime is paid at"
 msgstr ""
 
@@ -2455,6 +3111,17 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "PLAN FOR"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
+msgid "Paid by the business on top of pay."
+msgstr ""
+
+#. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
 msgid ""
 "Paid by the business on top of pay: social, health and unemployment "
@@ -2477,13 +3144,32 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__work_days
 msgid "Paid working days a month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Pay and contributions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__groups
+msgid "Pay bands priced"
 msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Pay, development & available time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__scheme
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__scheme
+msgid "Payroll scheme"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2543,6 +3229,11 @@ msgid "People on the night shift (%)"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__people
+msgid "People priced"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "People to add"
@@ -2560,6 +3251,11 @@ msgid "People · Dec"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__ph
+msgid "Philippines"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Pick a team to explore."
@@ -2568,8 +3264,30 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Picking one changes the roster, the rules and\n"
+"              every number together. Nothing about payroll changes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__plan_id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__plan_id
 #: model:res.groups,name:pb_decision_room.group_decision_user
 msgid "Plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Plan against what happened · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Plan for"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2581,10 +3299,22 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plan the group"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid ""
 "Planning the year is done by the people who hold the Decision Room role. Ask"
 " your HR or finance lead to add you, and this screen fills itself in."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plans awaiting approval"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2629,12 +3359,43 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Propose"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Propose the plan and the first version\n"
+"                is kept the moment you do."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Proposed"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_by
+msgid "Proposed by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_at
+msgid "Proposed on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Put every lever back where the company is today"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__rating_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__rating_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__rating_ids
 msgid "Ratings"
 msgstr ""
 
@@ -2642,6 +3403,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Read the roster again. Your plan stays exactly as it is."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reading your group…"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2721,6 +3488,17 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reset to country rules"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Revenue delivered"
 msgstr ""
@@ -2758,6 +3536,24 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this payroll scheme%s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Run this plan's people through their own payroll scheme"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "SHAPE YOUR PLAN"
 msgstr ""
@@ -2777,6 +3573,7 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
 
@@ -2848,6 +3645,17 @@ msgid "Say what a good year looks like"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_label
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_label
+msgid "Scope"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__seconds
+msgid "Seconds taken"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "See the assumptions"
@@ -2857,6 +3665,37 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "See the year before you commit to it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send back"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send it back"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Send “%s” back?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Sending a plan back is your HR or finance lead's to do."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__rejected
+msgid "Sent back"
 msgstr ""
 
 #. module: pb_decision_room
@@ -2933,6 +3772,17 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Show the group total"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__sg
+msgid "Singapore"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Six goals. The room keeps score."
 msgstr ""
 
@@ -2965,6 +3815,20 @@ msgstr ""
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Some people leave during the year"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__started_at
+msgid "Started"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3053,6 +3917,12 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Take a look"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Take-home %s"
 msgstr ""
@@ -3062,6 +3932,11 @@ msgstr ""
 msgid ""
 "Taken out of the employee's pay. Not an extra cost to the business — it only"
 " changes what reaches the employee."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
+msgid "Taken out of the employee's pay. Not an extra cost to the business."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3093,6 +3968,53 @@ msgid "Teams that earn revenue"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__th
+msgid "Thailand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"That did not go through. Try again, and tell your administrator if it keeps "
+"happening."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That division has no teams on it any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "That division has no teams on it, so there is nobody to price."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That payroll scheme is not here any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "That plan is not here any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+msgid ""
+"The %(country)s ceiling is written in %(cap)s and this company keeps its "
+"books in %(own)s, so no ceiling is applied here. Type one under Pay & "
+"contributions if you need it."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The Decision Room is not open to you."
@@ -3108,6 +4030,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__pit_ladder
 msgid ""
 "The bands used to estimate what an employee takes home. It never changes the"
 " cost to the business."
@@ -3127,13 +4050,46 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_id
-msgid "The company these assumptions describe. One row per company."
+msgid ""
+"The company these assumptions describe. For a group or a country this is the"
+" first company in it, and the scope below is what the row is really about."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__country_code
+msgid ""
+"The country these rules describe. A company picks up the rules for its own "
+"country automatically."
 msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The difference in %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The exact cost could not be worked out. Try again."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The exact cost is taking longer than expected. It will appear on the plan "
+"when it finishes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"The exact cost is worked out from the payroll scheme that pays each person. "
+"Nobody here has a scheme that says what each of its parts does, so there is "
+"nothing to run. Open Mapping → Who is paid by what, then re-classify the "
+"scheme's components, and try again."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3151,6 +4107,46 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__state
 msgid "The levers"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid ""
+"The levers, the goals, the headline numbers, the scope and the rules the "
+"numbers were built on, exactly as they were."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__currency_id
+msgid ""
+"The money the amounts on this row are written in. For a scope that spans two"
+" currencies it is the group's own money."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_label
+msgid "The name a reader sees on the chip at the top of the room."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "The pay engine stopped part way through: %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"The pay runs for this year cannot be added up in this money yet, because a "
+"rate is missing."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The plan goes back to its author as a draft, with whatever you write below."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3185,6 +4181,17 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The search could not finish. %s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "The sentence that came with the decision."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+msgid ""
+"The set of country rules this scope follows when the switch above is on."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3285,9 +4292,36 @@ msgid "The yearly bonus, paid in its month"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_assumptions_scope_uniq
+msgid "There is already a set of Decision Room assumptions for this."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_ruleset_country_uniq
+msgid "There is already a set of rules for this country."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "There is no group on this database yet, so this is one company."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "There is nobody on this scope's roster to price."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "These apply to every plan at"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid "These numbers are for"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3296,6 +4330,20 @@ msgstr ""
 msgid ""
 "These numbers are looked after by your HR or finance lead. Ask them if one "
 "of them looks wrong."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "These numbers are now this scope's own."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"These numbers were typed here and are not touched by an upgrade. Put them "
+"back on the country's rules below if you would rather follow those."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3316,8 +4364,9 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
-#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_assumptions_company_uniq
-msgid "This company already has a set of Decision Room assumptions."
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "This company"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3330,6 +4379,20 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "This is %s. Nothing has changed yet."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_kind
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "This is a plan for"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"This is taking longer than ten minutes, so it stopped. Try a smaller scope —"
+" one company or one scheme."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3363,6 +4426,19 @@ msgstr ""
 msgid ""
 "This stays on your screen. It is not saved to\n"
 "              anybody's record and it changes nothing."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid ""
+"Three letters, for example SGD. A contribution ceiling is a sentence about "
+"one country's money; it is only applied to a company that keeps its books in"
+" it."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
+msgid "Times the normal hourly rate."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3443,6 +4519,17 @@ msgid ""
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Type our own numbers"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Typical mix"
@@ -3501,7 +4588,49 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__work_days
 msgid "Used to turn a monthly salary into an hourly rate."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__number
+msgid "Version"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Version %(n)s · %(label)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Version %(n)s · %(plan)s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_ids
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Versions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_count
+msgid "Versions kept"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Versions of this plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__vn
+msgid "Vietnam"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3514,6 +4643,24 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "WORKFORCE COST · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__proposed
+msgid "Waiting for approval"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__queued
+msgid "Waiting to start"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Waiting to start…"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3533,13 +4680,26 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__website_message_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__website_message_ids
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__note
+msgid "What a reader should know before trusting these numbers."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What actually happened"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3554,9 +4714,20 @@ msgid "What do you plan to earn this year?"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__message
+msgid "What happened"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "What if we…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What is this a plan for?"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3619,6 +4790,23 @@ msgid "What the team could deliver"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid ""
+"What these assumptions describe: the whole group, one country, one company, "
+"one division, or the people one payroll scheme pays."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__name
+msgid "What these rules are called on screen."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "What they said"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "What this leaves out"
@@ -3630,9 +4818,27 @@ msgid "What this picture believed"
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__exact_result
+msgid ""
+"What this plan's people cost when each one is run through their own payroll "
+"scheme's formulas, rather than through company averages."
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "What this room believes."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__note
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "What this simplifies"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__label
+msgid "What this version was"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3669,7 +4875,12 @@ msgid "Where a year of pay goes"
 msgstr ""
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__state
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__status
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
 msgid "Where it stands"
 msgstr ""
 
@@ -3677,6 +4888,17 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Where the comparison sits"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_ref
+msgid "Which group, country, company, division or scheme."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_ref
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_ref
+msgid "Which one"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3701,6 +4923,16 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Who this is about"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__group
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__group
+msgid "Whole group"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3789,6 +5021,23 @@ msgid "Workforce cost is unchanged."
 msgstr ""
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__running
+msgid "Working it out"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out… %s%%"
+msgstr ""
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "YOUR DEFINITION OF A GOOD YEAR"
@@ -3829,7 +5078,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid ""
-"You can change these numbers. Everyone planning at %s will see the change."
+"You can change these numbers. Everyone planning %s will see the change."
 msgstr ""
 
 #. module: pb_decision_room
@@ -3864,6 +5113,12 @@ msgstr ""
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
 msgid "Your goals"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your own numbers%s"
 msgstr ""
 
 #. module: pb_decision_room
@@ -3942,6 +5197,12 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "by"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "capacity"
 msgstr ""
 
@@ -3949,6 +5210,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "change in what you can serve"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "cost"
 msgstr ""
 
 #. module: pb_decision_room
@@ -4014,6 +5281,12 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "kept"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "lowest-profit"
 msgstr ""
 
@@ -4045,6 +5318,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "none"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "not converted"
 msgstr ""
 
 #. module: pb_decision_room
@@ -4085,7 +5364,19 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "over plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "overtime from %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "pay per person was the difference"
 msgstr ""
 
 #. module: pb_decision_room
@@ -4127,6 +5418,12 @@ msgstr ""
 msgid ""
 "plans ·\n"
 "                  nothing here changes payroll."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "profit"
 msgstr ""
 
 #. module: pb_decision_room
@@ -4183,14 +5480,38 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s fewer people on the payroll than planned"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s more people on the payroll than planned"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "today"
 msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "under plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "value"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "versions"
 msgstr ""
 
 #. module: pb_decision_room
@@ -4280,6 +5601,18 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is a fresh draft that starts where the approved plan ends."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is approved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "“%s” is on the canvas."
 msgstr ""
 
@@ -4292,7 +5625,19 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is with your approver. They will find it on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "“%s” removed."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” went back to %s."
 msgstr ""
 
 #. module: pb_decision_room

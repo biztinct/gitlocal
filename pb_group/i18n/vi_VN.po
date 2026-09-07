@@ -179,3 +179,15 @@ msgstr "Đã thêm khối."
 #: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Department attached."
 msgstr "Đã gắn phòng ban."
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_fx.py:0
+msgid ""
+"Nobody has told this system what one %(src)s is worth in %(dst)s in "
+"%(month)s, so these figures stay in %(src)s. Add an exchange rate and the "
+"group figure appears."
+msgstr ""
+"Chưa ai cho hệ thống biết 1 %(src)s bằng bao nhiêu %(dst)s trong %(month)s, "
+"nên các số này vẫn để bằng %(src)s. Thêm một tỷ giá và con số của tập đoàn "
+"sẽ hiện ra."

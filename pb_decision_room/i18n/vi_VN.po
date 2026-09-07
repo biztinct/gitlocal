@@ -1,10 +1,12 @@
-#
+# Vietnamese translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_decision_room
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 15:44+0000\n"
-"PO-Revision-Date: 2026-09-07 01:44+0000\n"
+"POT-Creation-Date: 2026-09-07 12:13+0000\n"
+"PO-Revision-Date: 2026-09-07 11:30+0000\n"
 "Last-Translator: Payobook\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,8 +18,24 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " (instead of %s)"
+msgstr " (thay cho %s)"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid " Joining and leaving costs land here."
 msgstr " Chi phí tuyển dụng và nghỉ việc rơi vào tháng này."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+" Only %(n)s of the %(all)s people in this view have been paid in a closed "
+"run so far, so this is part of the picture rather than all of it."
+msgstr ""
+" Mới chỉ %(n)s trong %(all)s người ở đây được trả trong một đợt lương đã "
+"chốt, nên đây là một phần chứ chưa phải toàn bộ bức tranh."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -66,6 +84,12 @@ msgid " with 1 smaller change"
 msgstr " cùng 1 thay đổi nhỏ hơn"
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " — in %s, cannot be compared"
+msgstr " — bằng %s, không so sánh được"
+
+#. module: pb_decision_room
 #. odoo-python
 #: code:addons/pb_decision_room/models/pb_decision_room.py:0
 msgid "\"%(label)s\" has to be between %(low)s and %(high)s."
@@ -74,8 +98,30 @@ msgstr "\"%(label)s\" phải nằm trong khoảng %(low)s đến %(high)s."
 #. module: pb_decision_room
 #. odoo-python
 #: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%(name)s\" was saved by %(who)s. Ask them to propose it."
+msgstr "\"%(name)s\" do %(who)s lưu. Hãy nhờ họ đề xuất kế hoạch này."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
 msgid "\"%s\" cannot be negative."
 msgstr "\"%s\" không được là số âm."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "\"%s\" has already been approved."
+msgstr "\"%s\" đã được phê duyệt rồi."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"\"%s\" has been approved, so its numbers stay as they were agreed. Use "
+"\"Keep editing a copy\" to carry on from here."
+msgstr ""
+"\"%s\" đã được phê duyệt, nên các con số giữ nguyên như đã thống nhất. Dùng "
+"\"Chép ra bản mới để sửa tiếp\" để đi tiếp từ đây."
 
 #. module: pb_decision_room
 #. odoo-python
@@ -104,6 +150,12 @@ msgstr "\"%s\" do %s lưu. Chỉ họ hoặc phụ trách nhân sự của bạn
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(bound)s %(target)s · %(gap)s"
 msgstr "%(bound)s %(target)s · %(gap)s"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "%(companies)s companies in %(group)s."
+msgstr "%(companies)s công ty trong %(group)s."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -199,6 +251,12 @@ msgstr "Đạt %(met)s trên %(all)s mục tiêu. Hãy cùng thu hẹp khoảng 
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(met)s of %(all)s goals met. Room to think bigger."
 msgstr "Đạt %(met)s trên %(all)s mục tiêu. Vẫn còn dư địa để nghĩ lớn hơn."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(month)s came in %(money)s %(direction)s; %(why)s.%(partial)s"
+msgstr "%(month)s thực tế %(money)s %(direction)s; %(why)s.%(partial)s"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -322,6 +380,16 @@ msgstr ""
 "tất cả."
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"%(n)s of the schemes here have not had their components classified yet "
+"(%(names)s), so their people are not in this figure."
+msgstr ""
+"%(n)s phương án lương ở đây chưa được phân loại thành phần (%(names)s), nên "
+"nhân sự của các phương án đó chưa nằm trong con số này."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "%(n)s people"
@@ -362,6 +430,12 @@ msgstr "%(n)s triệu giờ"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%(name)s %(before)s → your plan %(after)s. %(tail)s"
 msgstr "%(name)s %(before)s → kế hoạch của bạn %(after)s. %(tail)s"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(name)s (carrying on %(n)s)"
+msgstr "%(name)s (đi tiếp %(n)s)"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -412,6 +486,36 @@ msgstr "%(share)s công việc không được đáp ứng — bỏ lỡ %(money
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "%(value)s pp"
 msgstr "%(value)s điểm %"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s approved this plan.%(note)s"
+msgstr "%(who)s đã phê duyệt kế hoạch này.%(note)s"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s proposed this plan for approval."
+msgstr "%(who)s đã đề xuất kế hoạch này để phê duyệt."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s sent this plan back.%(note)s"
+msgstr "%(who)s đã trả kế hoạch này về.%(note)s"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s would like a decision on \"%(plan)s\" (%(scope)s)."
+msgstr "%(who)s cần một quyết định cho \"%(plan)s\" (%(scope)s)."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%s (carrying on)"
+msgstr "%s (đi tiếp)"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -516,6 +620,16 @@ msgstr "đáp ứng %s công việc"
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%s of this group's money could not be converted when this plan was saved, so"
+" the total in it is a partial one. The version keeps that note."
+msgstr ""
+"%s của tập đoàn chưa quy đổi được khi lưu kế hoạch này, nên tổng trong đó "
+"chỉ là một phần. Bản lưu sẽ ghi lại điều đó."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%s of work goes unserved on this shift"
 msgstr "%s công việc không được đáp ứng trong ca này"
 
@@ -550,6 +664,12 @@ msgstr "%s người"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "%s plans are saved for this company. Remove one first."
 msgstr "Công ty này đã lưu %s kế hoạch. Hãy xoá bớt một kế hoạch trước."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s plans are waiting for your decision."
+msgstr "%s kế hoạch đang chờ bạn quyết định."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -664,7 +784,14 @@ msgid "0 people"
 msgstr "0 người"
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 %(src)s = %(rate)s %(dst)s%(when)s"
+msgstr "1 %(src)s = %(rate)s %(dst)s%(when)s"
+
+#. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
 msgid "1 is January. Zero means no yearly bonus."
 msgstr "1 là tháng Một. Số 0 nghĩa là không có thưởng hằng năm."
 
@@ -674,6 +801,12 @@ msgstr "1 là tháng Một. Số 0 nghĩa là không có thưởng hằng năm."
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "1 month"
 msgstr "1 tháng"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 plan is waiting for your decision."
+msgstr "1 kế hoạch đang chờ bạn quyết định."
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -710,6 +843,12 @@ msgstr "Tăng 5% từ tháng Một, và thêm 5% thời gian làm việc hiệu 
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A DECISION, RECORDED"
+msgstr "MỘT QUYẾT ĐỊNH ĐƯỢC GHI LẠI"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "A LITTLE HELP, A BETTER PLAN"
 msgstr "MỘT CHÚT TRỢ GIÚP, MỘT KẾ HOẠCH TỐT HƠN"
 
@@ -720,6 +859,15 @@ msgid "A POSSIBILITY WORTH KEEPING"
 msgstr "MỘT KHẢ NĂNG ĐÁNG GIỮ LẠI"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__label
+msgid ""
+"A few words about why this version exists — \"proposed to the board\", "
+"\"after the pay review\"."
+msgstr ""
+"Vài chữ về lý do có bản lưu này — \"đề xuất lên hội đồng\", \"sau đợt xét "
+"lương\"."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "A goal breaks here"
@@ -727,6 +875,7 @@ msgstr "Một mục tiêu bị phá vỡ ở đây"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ramp_first_month_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ramp_first_month_pct
 msgid "A new person delivers (%) in their first month"
 msgstr "Người mới làm được (%) trong tháng đầu tiên"
 
@@ -747,9 +896,18 @@ msgid "A plan called “"
 msgstr "Kế hoạch tên “"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__status
+msgid ""
+"A plan starts as a draft, is proposed, and is then approved or sent back. "
+"Nothing about payroll changes at any point."
+msgstr ""
+"Kế hoạch bắt đầu ở dạng nháp, được đề xuất, rồi được phê duyệt hoặc trả về. "
+"Không có gì trong bảng lương thay đổi ở bất kỳ bước nào."
+
+#. module: pb_decision_room
 #: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_plan_name_uniq
-msgid "A plan with this name already exists."
-msgstr "Đã có một kế hoạch trùng tên."
+msgid "A plan with this name already exists for this scope."
+msgstr "Đã có một kế hoạch trùng tên trong phạm vi này."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -780,13 +938,35 @@ msgstr "MỘT CÂU TRẢ LỜI TRƯỚC KHI CAM KẾT THÊM"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction
 msgid "Action Needed"
 msgstr "Cần xử lý"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__active
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__active
 msgid "Active"
 msgstr "Đang hoạt động"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -823,6 +1003,7 @@ msgstr "Phụ cấp"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__allowance_pct
 msgid "Allowances (% of pay)"
 msgstr "Phụ cấp (% lương)"
 
@@ -846,9 +1027,80 @@ msgstr "Bất kỳ điều gì người đọc nên biết về những con số
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Anything to say with it?"
+msgstr "Bạn muốn nói thêm điều gì không?"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Applies to everyone from the month you choose."
 msgstr "Áp dụng cho tất cả mọi người kể từ tháng bạn chọn."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve it"
+msgstr "Phê duyệt"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Approve the plan \"%s\""
+msgstr "Phê duyệt kế hoạch \"%s\""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Approve “%s”?"
+msgstr "Phê duyệt “%s”?"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__approved
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — it is waiting on their home page."
+msgstr ""
+"Việc phê duyệt kế hoạch thuộc về trưởng bộ phận nhân sự hoặc tài chính. Hãy "
+"nhờ họ xem — kế hoạch đang chờ trên trang chủ của họ."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — they will see it waiting on their home page."
+msgstr ""
+"Việc phê duyệt kế hoạch thuộc về trưởng bộ phận nhân sự hoặc tài chính. Hãy "
+"nhờ họ xem — họ sẽ thấy kế hoạch đang chờ trên trang chủ."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Approving keeps a version of this plan exactly as it stands, so what you "
+"agreed to survives every edit made afterwards. Nothing about payroll "
+"changes."
+msgstr ""
+"Khi phê duyệt, hệ thống lưu lại kế hoạch đúng như hiện tại, nên điều bạn "
+"đồng ý vẫn còn nguyên dù về sau có sửa gì. Không có gì trong bảng lương thay"
+" đổi."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -868,6 +1120,11 @@ msgstr "Tháng Tư"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "As planned"
 msgstr "Như dự kiến"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__user_id
+msgid "Asked by"
+msgstr "Người yêu cầu"
 
 #. module: pb_decision_room
 #: model:res.groups,name:pb_decision_room.group_decision_manager
@@ -914,6 +1171,7 @@ msgstr ""
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_attachment_count
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_attachment_count
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_attachment_count
 msgid "Attachment Count"
 msgstr "Số tệp đính kèm"
 
@@ -929,6 +1187,12 @@ msgstr "Th8"
 #: code:addons/pb_decision_room/static/src/js/decision_format.js:0
 msgid "August"
 msgstr "Tháng Tám"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Back on the rules for %s."
+msgstr "Đã quay lại quy định của %s."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -957,11 +1221,13 @@ msgstr "Thưởng"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
 msgid "Bonus is paid in month"
 msgstr "Thưởng được trả vào tháng"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_months
 msgid "Bonus size (months of pay)"
 msgstr "Mức thưởng (số tháng lương)"
 
@@ -982,6 +1248,11 @@ msgstr "Đang dựng bản tóm tắt…"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "CHANGE THE NUMBERS"
 msgstr "THAY ĐỔI CÁC CON SỐ"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__kh
+msgid "Cambodia"
+msgstr "Campuchia"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1030,8 +1301,29 @@ msgid "Close"
 msgstr "Đóng"
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Closed pay runs are not being collected on this database yet."
+msgstr ""
+"Dữ liệu các đợt lương đã chốt chưa được thu thập trên cơ sở dữ liệu này."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_ids
+msgid "Companies in this plan"
+msgstr "Các công ty trong kế hoạch này"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Companies in this scope"
+msgstr "Các công ty trong phạm vi này"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_id
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__company
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__company
 msgid "Company"
 msgstr "Công ty"
 
@@ -1072,6 +1364,7 @@ msgstr "Đóng góp & khấu trừ"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__contribution_cap
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__contribution_cap
 msgid "Contributions are capped at"
 msgstr "Đóng góp tối đa ở mức"
 
@@ -1094,13 +1387,20 @@ msgstr "Chi phí cho một điểm năng suất"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__severance_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__severance_months
 msgid "Cost to let someone go (months of pay)"
 msgstr "Chi phí cho một người nghỉ việc (số tháng lương)"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__recruit_cost_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__recruit_cost_months
 msgid "Cost to recruit someone (months of pay)"
 msgstr "Chi phí tuyển một người (số tháng lương)"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__failed
+msgid "Could not finish"
+msgstr "Không hoàn thành được"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__severance_months
@@ -1108,14 +1408,39 @@ msgid "Counted once in the month the role ends."
 msgstr "Tính một lần vào tháng vị trí đó kết thúc."
 
 #. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__country_code
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__country
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__country
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_decision_room
+#: model:ir.actions.act_window,name:pb_decision_room.action_pb_decision_ruleset
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_list
+msgid "Country rules"
+msgstr "Quy định theo quốc gia"
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_uid
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_uid
 msgid "Created by"
 msgstr "Người tạo"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_date
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
@@ -1183,6 +1508,16 @@ msgid "December"
 msgstr "Tháng Mười hai"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_by
+msgid "Decided by"
+msgstr "Người quyết định"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_at
+msgid "Decided on"
+msgstr "Quyết định ngày"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
 #: model:ir.actions.client,name:pb_decision_room.action_pb_decision_room
@@ -1200,14 +1535,44 @@ msgid "Decision Room assumptions"
 msgstr "Giả định của Phòng Quyết định"
 
 #. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_ruleset
+msgid "Decision Room country rules"
+msgstr "Quy định quốc gia của Phòng Quyết Định"
+
+#. module: pb_decision_room
 #: model:ir.model,name:pb_decision_room.model_pb_decision_room
 msgid "Decision Room data"
 msgstr "Dữ liệu của Phòng Quyết định"
 
 #. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact
+msgid "Decision Room exact cost"
+msgstr "Chi phí chính xác của Phòng Quyết Định"
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact_job
+msgid "Decision Room exact-cost job"
+msgstr "Tác vụ tính chi phí chính xác của Phòng Quyết Định"
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_plan_version
+msgid "Decision Room plan version"
+msgstr "Bản lưu kế hoạch của Phòng Quyết Định"
+
+#. module: pb_decision_room
 #: model:ir.model,name:pb_decision_room.model_pb_decision_plan
 msgid "Decision Room saved plan"
 msgstr "Kế hoạch đã lưu của Phòng Quyết định"
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_scope
+msgid "Decision Room scope"
+msgstr "Phạm vi của Phòng Quyết Định"
+
+#. module: pb_decision_room
+#: model:ir.actions.server,name:pb_decision_room.cron_decision_exact_ir_actions_server
+msgid "Decision Room: work out an exact cost"
+msgstr "Phòng Quyết Định: tính chi phí chính xác"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1295,16 +1660,35 @@ msgstr "Chênh lệch lợi nhuận"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__display_name
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__display_name
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__division
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__division
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__done
 msgid "Done"
 msgstr "Xong"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__progress
+msgid "Done (%)"
+msgstr "Đã xong (%)"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1326,9 +1710,28 @@ msgstr "Đường chấm: mục tiêu công việc đáp ứng của bạn"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "EVERY MONTH TELLS A STORY"
 msgstr "MỖI THÁNG KỂ MỘT CÂU CHUYỆN"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each company"
+msgstr "Từng công ty"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each in its own money"
+msgstr "Mỗi bên theo tiền của mình"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1360,6 +1763,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employee_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
 msgid "Employee contributions (% of pay)"
 msgstr "Đóng góp của người lao động (% lương)"
 
@@ -1387,6 +1791,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
 msgid "Employer contributions (% of pay)"
 msgstr "Đóng góp của doanh nghiệp (% lương)"
 
@@ -1422,6 +1827,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__evening_uplift_pct
 msgid "Evening work uplift (%)"
 msgstr "Phụ trội ca chiều (%)"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every company is worked out in its own money and added up in %(money)s. The "
+"revenue target is shared out by how much of the group's pay bill sits in "
+"each one."
+msgstr ""
+"Mỗi công ty được tính theo tiền của mình rồi cộng lại bằng %(money)s. Mục "
+"tiêu doanh thu được chia theo tỷ trọng quỹ lương của từng công ty trong tập "
+"đoàn."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1480,6 +1897,11 @@ msgid "Every hour of this shift is covered"
 msgstr "Mọi giờ của ca này đều được đáp ứng"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Every legal entity these assumptions cover."
+msgstr "Mọi pháp nhân mà các giả định này áp dụng."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid ""
@@ -1491,6 +1913,20 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Every time a plan is proposed or approved, the\n"
+"              levers, the goals, the numbers and the rules behind them are\n"
+"              kept. Editing the plan afterwards never changes these."
+msgstr ""
+"Mỗi lần một kế hoạch được đề xuất hoặc phê duyệt, các thanh điều chỉnh, mục "
+"tiêu, con số và quy định phía sau đều được lưu lại. Sửa kế hoạch về sau "
+"không bao giờ làm thay đổi những bản lưu này."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Everyone"
 msgstr "Tất cả mọi người"
@@ -1500,6 +1936,11 @@ msgstr "Tất cả mọi người"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Everyone at"
 msgstr "Tất cả mọi người tại"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid "Everything as it stood"
+msgstr "Toàn bộ đúng như lúc đó"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1527,6 +1968,25 @@ msgid ""
 msgstr ""
 "Mọi thứ bạn đã điều chỉnh: số người mỗi bộ phận, mức tăng lương, làm thêm "
 "giờ, thời điểm người mới vào làm, và mục tiêu doanh thu."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__exact_result
+msgid "Exact cost"
+msgstr "Chi phí chính xác"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost %(exact)s · the estimate was %(estimate)s (%(gap)s)"
+msgstr "Chi phí chính xác %(exact)s · ước tính là %(estimate)s (%(gap)s)"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost worked out in %s seconds."
+msgstr "Đã tính xong chi phí chính xác trong %s giây."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1594,6 +2054,7 @@ msgstr "Tiền trả thêm cho ca chiều, trên lương cơ bản."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
 msgid "Extra pay for night shifts, on top of base pay."
 msgstr "Tiền trả thêm cho ca đêm, trên lương cơ bản."
 
@@ -1644,6 +2105,16 @@ msgstr ""
 "của bạn."
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__finished_at
+msgid "Finished"
+msgstr "Kết thúc"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid "Follow the rules for this country"
+msgstr "Theo quy định của quốc gia này"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Follow the whole way from the comparison to your result."
@@ -1652,14 +2123,21 @@ msgstr "Đi trọn đường từ mốc so sánh tới kết quả của bạn."
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_follower_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_follower_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_follower_ids
 msgid "Followers"
 msgstr "Người theo dõi"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_partner_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_partner_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ fa-tasks"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1714,6 +2192,7 @@ msgstr "TUYỂN DỤNG & GIỜ LÀM"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__has_message
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__has_message
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__has_message
 msgid "Has Message"
 msgstr "Có tin nhắn"
 
@@ -1752,6 +2231,11 @@ msgstr ""
 msgid "Hours beyond the normal month, and the uplift for evenings and nights"
 msgstr ""
 "Số giờ vượt tháng làm việc bình thường, và phụ trội cho ca chiều và ca đêm"
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Hours, joining and leaving"
+msgstr "Giờ làm, tuyển vào và nghỉ việc"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1823,14 +2307,30 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__id
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__id
 msgid "ID"
 msgstr "ID"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng cho hoạt động ngoại lệ."
+
+#. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Nếu được đánh dấu, có tin nhắn mới cần bạn xử lý."
 
@@ -1839,6 +2339,8 @@ msgstr "Nếu được đánh dấu, có tin nhắn mới cần bạn xử lý."
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Nếu được đánh dấu, một số tin nhắn gặp lỗi gửi."
 
@@ -1854,10 +2356,21 @@ msgid "In one sentence"
 msgstr "Tóm trong một câu"
 
 #. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Income tax"
+msgstr "Thuế thu nhập"
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__pit_ladder
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
 msgid "Income tax ladder"
 msgstr "Biểu thuế thu nhập"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__in
+msgid "India"
+msgstr "Ấn Độ"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1870,6 +2383,11 @@ msgstr ""
 "Từng con người cụ thể, thời điểm dòng vốn lưu động, tính hợp pháp của lịch "
 "làm việc và các tờ khai thuế. Đây là một bản phác thảo kế hoạch, không phải "
 "một phép tính lương — và không có gì ở đây thay đổi bảng lương."
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__id
+msgid "Indonesia"
+msgstr "Indonesia"
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -1891,6 +2409,7 @@ msgstr "Đầu tư vào con người"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_is_follower
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_is_follower
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_is_follower
 msgid "Is Follower"
 msgstr "Là người theo dõi"
 
@@ -1982,8 +2501,30 @@ msgstr "GIỮ MỘT Ý HAY. THỬ MỘT Ý KHÁC."
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "KEPT, EXACTLY AS IT STOOD"
+msgstr "ĐƯỢC LƯU ĐÚNG NHƯ LÚC ĐÓ"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Keep editing a copy"
+msgstr "Chép ra bản mới để sửa tiếp"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Keep this direction"
 msgstr "Giữ hướng này"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_by
+msgid "Kept by"
+msgstr "Người lưu"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_at
+msgid "Kept on"
+msgstr "Lưu ngày"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -1993,13 +2534,19 @@ msgstr "Đã giữ lại. Bạn vẫn có thể hoàn tác."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_uid
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_uid
 msgid "Last Updated by"
 msgstr "Cập nhật lần cuối bởi"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_date
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_date
 msgid "Last Updated on"
 msgstr "Cập nhật lần cuối lúc"
 
@@ -2034,6 +2581,11 @@ msgstr "Xem kỹ hơn quyết định này"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "MOST FLEXIBLE"
 msgstr "LINH HOẠT NHẤT"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__my
+msgid "Malaysia"
+msgstr "Malaysia"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2095,6 +2647,7 @@ msgstr "Th5"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__allowance_pct
 msgid "Meal, transport and phone allowances, as a share of base pay."
 msgstr "Phụ cấp ăn ca, đi lại và điện thoại, tính theo tỷ lệ lương cơ bản."
 
@@ -2117,12 +2670,14 @@ msgstr "Đạt mọi mục tiêu bạn đã bật"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error
 msgid "Message Delivery error"
 msgstr "Lỗi gửi tin nhắn"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_ids
 msgid "Messages"
 msgstr "Tin nhắn"
 
@@ -2131,6 +2686,11 @@ msgstr "Tin nhắn"
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Met"
 msgstr "Đã đạt"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid "Money the cap is written in"
+msgstr "Trần được ghi bằng tiền nào"
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -2150,6 +2710,15 @@ msgid ""
 msgstr ""
 "Phần lương tháng vượt mức này không làm tăng đóng góp. Số 0 nghĩa là không "
 "có mức trần."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__contribution_cap
+msgid ""
+"Monthly pay above this does not raise contributions. Zero means there is no "
+"ceiling."
+msgstr ""
+"Phần lương tháng vượt mức này không làm tăng khoản đóng. Số 0 nghĩa là không"
+" có trần."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2192,10 +2761,21 @@ msgstr ""
 " được và lợi nhuận cùng phản ứng."
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn hoạt động của tôi"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "NOBODY ON RECORD YET"
 msgstr "CHƯA CÓ AI TRONG HỒ SƠ"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__name
+msgid "Name"
+msgstr "Tên"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2205,6 +2785,26 @@ msgid "New people arrive in"
 msgstr "Người mới vào làm từ"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện lịch của hoạt động kế tiếp"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn của hoạt động kế tiếp"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động kế tiếp"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động kế tiếp"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Night"
@@ -2212,6 +2812,7 @@ msgstr "Ca đêm"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
 msgid "Night work uplift (%)"
 msgstr "Phụ trội ca đêm (%)"
 
@@ -2226,6 +2827,12 @@ msgstr "Không"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "No additional hiring meets every goal."
 msgstr "Không có mức tuyển thêm nào đạt được mọi mục tiêu."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "No company in the group is in that country any more."
+msgstr "Không còn công ty nào của tập đoàn ở quốc gia đó."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2249,16 +2856,66 @@ msgid "No overtime, and 8% more productive time"
 msgstr "Không làm thêm giờ, và thêm 8% thời gian làm việc hiệu quả"
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"No pay run has been closed for %s yet, so there is nothing to draw over the "
+"plan."
+msgstr ""
+"Chưa có đợt lương nào được chốt cho %s, nên chưa có gì để vẽ chồng lên kế "
+"hoạch."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"No pay run has been closed for this year yet, so there is nothing to draw "
+"over the plan."
+msgstr ""
+"Chưa có đợt lương nào được chốt trong năm nay, nên chưa có gì để vẽ chồng "
+"lên kế hoạch."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "No yearly bonus is assumed."
 msgstr "Không giả định có thưởng hằng năm."
 
 #. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"Nobody has confirmed what each part of %(names)s does, so the scheme's own "
+"net pay formula was read to work it out. Confirm the components on the "
+"scheme and this figure becomes final."
+msgstr ""
+"Chưa ai xác nhận từng thành phần của %(names)s làm gì, nên hệ thống đã đọc "
+"chính công thức lương thực nhận của phương án để suy ra. Hãy xác nhận các "
+"thành phần trên phương án và con số này sẽ là chính thức."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted"
+msgstr "Chưa quy đổi"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted at the time:"
+msgstr "Chưa quy đổi được vào lúc đó:"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Not met yet"
 msgstr "Chưa đạt"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not now"
+msgstr "Để sau"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__note
@@ -2272,6 +2929,12 @@ msgstr "Ghi chú"
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
 msgid "Nothing differs — this is the comparison itself."
 msgstr "Không có gì khác biệt — đây chính là mốc so sánh."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Nothing kept yet."
+msgstr "Chưa lưu bản nào."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2310,26 +2973,36 @@ msgid "Now %(now)s · %(gap)s"
 msgstr "Hiện tại %(now)s · %(gap)s"
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Now planning %s."
+msgstr "Đang lập kế hoạch cho %s."
+
+#. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Số việc cần làm"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
 msgid "Number of errors"
 msgstr "Số lỗi"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Số tin nhắn cần xử lý"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Số tin nhắn bị lỗi gửi"
 
@@ -2365,10 +3038,26 @@ msgid "October"
 msgstr "Tháng Mười"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid ""
+"On: contributions, the ceiling, allowances, working days and the bonus come "
+"from the rules shipped for this company's country. Off: they are the numbers"
+" typed here."
+msgstr ""
+"Bật: khoản đóng, trần, phụ cấp, ngày công và thưởng lấy theo quy định của "
+"quốc gia công ty này. Tắt: dùng các con số nhập ở đây."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "One ambition. More than one way there."
 msgstr "Một tham vọng. Nhiều hơn một con đường."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "One company, so a plan is a plan for that company."
+msgstr "Chỉ có một công ty, nên kế hoạch là kế hoạch cho công ty đó."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2501,6 +3190,12 @@ msgstr "Các bộ phận khác"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Override for this scheme"
+msgstr "Đặt riêng cho phương án này"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Overtime"
 msgstr "Làm thêm giờ"
@@ -2525,6 +3220,7 @@ msgstr "Làm thêm giờ từ"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ot_multiplier
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
 msgid "Overtime is paid at"
 msgstr "Làm thêm giờ được trả ở mức"
 
@@ -2566,6 +3262,17 @@ msgid ""
 msgstr "CON NGƯỜI, TIỀN LƯƠNG VÀ PHẦN HỌ THỰC NHẬN"
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "PLAN FOR"
+msgstr "LẬP KẾ HOẠCH CHO"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
+msgid "Paid by the business on top of pay."
+msgstr "Doanh nghiệp trả thêm ngoài lương."
+
+#. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
 msgid ""
 "Paid by the business on top of pay: social, health and unemployment "
@@ -2592,14 +3299,33 @@ msgstr "Ngày công hưởng lương"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__work_days
 msgid "Paid working days a month"
 msgstr "Số ngày công hưởng lương mỗi tháng"
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Pay and contributions"
+msgstr "Lương và các khoản đóng"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__groups
+msgid "Pay bands priced"
+msgstr "Số bậc lương đã tính"
 
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Pay, development & available time"
 msgstr "Lương, phát triển & thời gian sẵn có"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__scheme
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__scheme
+msgid "Payroll scheme"
+msgstr "Phương án lương"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2658,6 +3384,11 @@ msgid "People on the night shift (%)"
 msgstr "Số người làm ca đêm (%)"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__people
+msgid "People priced"
+msgstr "Số người đã tính"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "People to add"
@@ -2675,6 +3406,11 @@ msgid "People · Dec"
 msgstr "Người · T12"
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__ph
+msgid "Philippines"
+msgstr "Philippines"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Pick a team to explore."
@@ -2683,9 +3419,33 @@ msgstr "Hãy chọn một bộ phận để xem."
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Picking one changes the roster, the rules and\n"
+"              every number together. Nothing about payroll changes."
+msgstr ""
+"Chọn một mục sẽ đổi danh sách nhân sự, quy định và mọi con số cùng lúc. "
+"Không có gì trong bảng lương thay đổi."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__plan_id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__plan_id
 #: model:res.groups,name:pb_decision_room.group_decision_user
 msgid "Plan"
 msgstr "Kế hoạch"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Plan against what happened · %s"
+msgstr "Kế hoạch so với thực tế · %s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Plan for"
+msgstr "Lập kế hoạch cho"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2693,6 +3453,12 @@ msgstr "Kế hoạch"
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__name
 msgid "Plan name"
 msgstr "Tên kế hoạch"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plan the group"
+msgstr "Lập kế hoạch cho cả tập đoàn"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2704,6 +3470,12 @@ msgstr ""
 "Việc hoạch định cả năm do những người có quyền Phòng Quyết định thực hiện. "
 "Hãy đề nghị phụ trách nhân sự hoặc tài chính thêm bạn vào, và màn hình này "
 "sẽ tự hiện đầy đủ."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plans awaiting approval"
+msgstr "Kế hoạch đang chờ phê duyệt"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2749,12 +3521,43 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Propose"
+msgstr "Đề xuất"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Propose the plan and the first version\n"
+"                is kept the moment you do."
+msgstr "Đề xuất kế hoạch và bản lưu đầu tiên sẽ được giữ ngay lúc đó."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Proposed"
+msgstr "Đã đề xuất"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_by
+msgid "Proposed by"
+msgstr "Người đề xuất"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_at
+msgid "Proposed on"
+msgstr "Đề xuất ngày"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Put every lever back where the company is today"
 msgstr "Đưa mọi thanh điều chỉnh về đúng công ty hôm nay"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__rating_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__rating_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__rating_ids
 msgid "Ratings"
 msgstr "Đánh giá"
 
@@ -2763,6 +3566,12 @@ msgstr "Đánh giá"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Read the roster again. Your plan stays exactly as it is."
 msgstr "Đọc lại danh sách nhân sự. Kế hoạch của bạn giữ nguyên."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reading your group…"
+msgstr "Đang đọc tập đoàn của bạn…"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -2845,6 +3654,17 @@ msgstr "Đặt lại"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reset to country rules"
+msgstr "Trả về quy định quốc gia"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "Revenue delivered"
 msgstr "Doanh thu thực hiện"
@@ -2882,6 +3702,24 @@ msgstr "Đã đọc lại danh sách nhân sự. Kế hoạch của bạn không
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this company"
+msgstr "Quy định cho công ty này"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this payroll scheme%s"
+msgstr "Quy định cho phương án lương này%s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Run this plan's people through their own payroll scheme"
+msgstr "Chạy nhân sự của kế hoạch này qua đúng phương án lương của họ"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "SHAPE YOUR PLAN"
 msgstr "ĐỊNH HÌNH KẾ HOẠCH CỦA BẠN"
@@ -2901,6 +3739,7 @@ msgstr "KỸ NĂNG & GIỜ LÀM"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Lỗi gửi tin nhắn SMS"
 
@@ -2972,6 +3811,17 @@ msgid "Say what a good year looks like"
 msgstr "Hãy nói một năm tốt trông như thế nào"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_label
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_label
+msgid "Scope"
+msgstr "Phạm vi"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__seconds
+msgid "Seconds taken"
+msgstr "Số giây đã dùng"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "See the assumptions"
@@ -2982,6 +3832,37 @@ msgstr "Xem các giả định"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "See the year before you commit to it."
 msgstr "Nhìn thấy cả năm trước khi bạn cam kết."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send back"
+msgstr "Trả về"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send it back"
+msgstr "Trả về"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Send “%s” back?"
+msgstr "Trả “%s” về?"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Sending a plan back is your HR or finance lead's to do."
+msgstr "Việc trả kế hoạch về thuộc về trưởng bộ phận nhân sự hoặc tài chính."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__rejected
+msgid "Sent back"
+msgstr "Đã trả về"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3059,6 +3940,17 @@ msgstr "Hiện toàn bộ bức tranh"
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Show the group total"
+msgstr "Xem tổng của tập đoàn"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__sg
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Six goals. The room keeps score."
 msgstr "Sáu mục tiêu. Căn phòng này chấm điểm."
 
@@ -3092,6 +3984,24 @@ msgstr "Cột đậm: kế hoạch của bạn. Cột nhạt:"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Some people leave during the year"
 msgstr "Có người nghỉ việc trong năm"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__started_at
+msgid "Started"
+msgstr "Đã bắt đầu"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái theo hoạt động\n"
+"Quá hạn: đã qua ngày đến hạn\n"
+"Hôm nay: hoạt động đến hạn hôm nay\n"
+"Đã lên lịch: hoạt động trong tương lai."
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -3186,6 +4096,12 @@ msgstr "ĐANG THỬ MỘT KHẢ NĂNG"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Take a look"
+msgstr "Xem ngay"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Take-home %s"
 msgstr "Thực nhận %s"
@@ -3198,6 +4114,12 @@ msgid ""
 msgstr ""
 "Trừ vào lương của người lao động. Không phải chi phí tăng thêm của doanh "
 "nghiệp — nó chỉ thay đổi số tiền người lao động thực nhận."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
+msgid "Taken out of the employee's pay. Not an extra cost to the business."
+msgstr ""
+"Trừ vào lương của nhân viên. Không phải chi phí thêm của doanh nghiệp."
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -3228,6 +4150,58 @@ msgid "Teams that earn revenue"
 msgstr "Các bộ phận tạo doanh thu"
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__th
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"That did not go through. Try again, and tell your administrator if it keeps "
+"happening."
+msgstr ""
+"Việc đó chưa thực hiện được. Hãy thử lại, và báo quản trị viên nếu vẫn còn "
+"lỗi."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That division has no teams on it any more."
+msgstr "Khối đó không còn phòng ban nào."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "That division has no teams on it, so there is nobody to price."
+msgstr "Khối đó không có phòng ban nào, nên không có ai để tính."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That payroll scheme is not here any more."
+msgstr "Phương án lương đó không còn nữa."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "That plan is not here any more."
+msgstr "Kế hoạch đó không còn nữa."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+msgid ""
+"The %(country)s ceiling is written in %(cap)s and this company keeps its "
+"books in %(own)s, so no ceiling is applied here. Type one under Pay & "
+"contributions if you need it."
+msgstr ""
+"Trần của %(country)s được ghi bằng %(cap)s trong khi công ty này ghi sổ bằng"
+" %(own)s, nên ở đây không áp trần nào. Nếu cần, hãy nhập một mức trong mục "
+"Lương và các khoản đóng."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The Decision Room is not open to you."
@@ -3245,6 +4219,7 @@ msgstr ""
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__pit_ladder
 msgid ""
 "The bands used to estimate what an employee takes home. It never changes the"
 " cost to the business."
@@ -3266,14 +4241,58 @@ msgstr "Công ty như hiện nay"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_id
-msgid "The company these assumptions describe. One row per company."
-msgstr "Công ty mà các giả định này mô tả. Mỗi công ty một dòng."
+msgid ""
+"The company these assumptions describe. For a group or a country this is the"
+" first company in it, and the scope below is what the row is really about."
+msgstr ""
+"Công ty mà các giả định này mô tả. Với tập đoàn hoặc một quốc gia, đây là "
+"công ty đầu tiên trong đó, và phạm vi bên dưới mới là điều dòng này thật sự "
+"nói tới."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__country_code
+msgid ""
+"The country these rules describe. A company picks up the rules for its own "
+"country automatically."
+msgstr ""
+"Quốc gia mà các quy định này mô tả. Mỗi công ty tự nhận quy định của quốc "
+"gia mình."
 
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The difference in %s"
 msgstr "Chênh lệch của %s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The exact cost could not be worked out. Try again."
+msgstr "Chưa tính được chi phí chính xác. Hãy thử lại."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The exact cost is taking longer than expected. It will appear on the plan "
+"when it finishes."
+msgstr ""
+"Việc tính chi phí chính xác lâu hơn dự kiến. Kết quả sẽ hiện trên kế hoạch "
+"khi xong."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"The exact cost is worked out from the payroll scheme that pays each person. "
+"Nobody here has a scheme that says what each of its parts does, so there is "
+"nothing to run. Open Mapping → Who is paid by what, then re-classify the "
+"scheme's components, and try again."
+msgstr ""
+"Chi phí chính xác được tính từ phương án lương trả cho từng người. Ở đây "
+"chưa ai có phương án nói rõ từng thành phần làm gì, nên chưa có gì để chạy. "
+"Hãy mở Ánh xạ → Ai được trả theo phương án nào, phân loại lại các thành phần"
+" của phương án, rồi thử lại."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__goals
@@ -3291,6 +4310,52 @@ msgstr "Mức tăng bắt đầu từ"
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__state
 msgid "The levers"
 msgstr "Các thanh điều chỉnh"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid ""
+"The levers, the goals, the headline numbers, the scope and the rules the "
+"numbers were built on, exactly as they were."
+msgstr ""
+"Các thanh điều chỉnh, mục tiêu, con số chính, phạm vi và quy định phía sau "
+"các con số, đúng như lúc đó."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__currency_id
+msgid ""
+"The money the amounts on this row are written in. For a scope that spans two"
+" currencies it is the group's own money."
+msgstr ""
+"Loại tiền của các khoản trên dòng này. Với phạm vi trải trên hai loại tiền "
+"thì đây là tiền của tập đoàn."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_label
+msgid "The name a reader sees on the chip at the top of the room."
+msgstr "Tên mà người đọc nhìn thấy trên thẻ ở đầu phòng."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "The pay engine stopped part way through: %s"
+msgstr "Bộ tính lương đã dừng giữa chừng: %s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"The pay runs for this year cannot be added up in this money yet, because a "
+"rate is missing."
+msgstr ""
+"Chưa cộng được các đợt lương năm nay theo loại tiền này, vì thiếu tỷ giá."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The plan goes back to its author as a draft, with whatever you write below."
+msgstr ""
+"Kế hoạch quay về người lập ở dạng nháp, kèm nội dung bạn viết bên dưới."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3329,6 +4394,18 @@ msgstr ""
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "The search could not finish. %s"
 msgstr "Cuộc tìm kiếm không hoàn tất được. %s"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "The sentence that came with the decision."
+msgstr "Câu nói đi kèm quyết định."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+msgid ""
+"The set of country rules this scope follows when the switch above is on."
+msgstr ""
+"Bộ quy định quốc gia mà phạm vi này theo khi công tắc ở trên được bật."
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3441,10 +4518,37 @@ msgid "The yearly bonus, paid in its month"
 msgstr "Thưởng hằng năm, trả trong tháng của nó"
 
 #. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_assumptions_scope_uniq
+msgid "There is already a set of Decision Room assumptions for this."
+msgstr "Đã có một bộ giả định của Phòng Quyết Định cho mục này."
+
+#. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_ruleset_country_uniq
+msgid "There is already a set of rules for this country."
+msgstr "Đã có một bộ quy định cho quốc gia này."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "There is no group on this database yet, so this is one company."
+msgstr "Cơ sở dữ liệu này chưa có tập đoàn nào, nên đây là một công ty."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "There is nobody on this scope's roster to price."
+msgstr "Danh sách nhân sự của phạm vi này không có ai để tính."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "These apply to every plan at"
 msgstr "Những giá trị này áp dụng cho mọi kế hoạch tại"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid "These numbers are for"
+msgstr "Các con số này dành cho"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3455,6 +4559,22 @@ msgid ""
 msgstr ""
 "Những con số này do phụ trách nhân sự hoặc tài chính của bạn quản lý. Hãy "
 "hỏi họ nếu thấy con số nào chưa đúng."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "These numbers are now this scope's own."
+msgstr "Các con số này giờ là của riêng phạm vi này."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"These numbers were typed here and are not touched by an upgrade. Put them "
+"back on the country's rules below if you would rather follow those."
+msgstr ""
+"Các con số này được nhập tại đây và không bị bản nâng cấp đụng tới. Nếu muốn"
+" theo quy định quốc gia, hãy đưa chúng trở lại bằng nút bên dưới."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ramp_first_month_pct
@@ -3480,9 +4600,10 @@ msgstr ""
 "tổng và chiều cao của chúng không theo đúng tỷ lệ."
 
 #. module: pb_decision_room
-#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_assumptions_company_uniq
-msgid "This company already has a set of Decision Room assumptions."
-msgstr "Công ty này đã có một bộ giả định của Phòng Quyết định."
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "This company"
+msgstr "Công ty này"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3495,6 +4616,22 @@ msgstr "Công ty này chưa có ai trong hồ sơ."
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "This is %s. Nothing has changed yet."
 msgstr "Đây là %s. Chưa có gì thay đổi."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_kind
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "This is a plan for"
+msgstr "Đây là kế hoạch cho"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"This is taking longer than ten minutes, so it stopped. Try a smaller scope —"
+" one company or one scheme."
+msgstr ""
+"Việc này chạy quá mười phút nên đã dừng. Hãy thử phạm vi nhỏ hơn — một công "
+"ty hoặc một phương án lương."
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
@@ -3534,6 +4671,21 @@ msgid ""
 msgstr ""
 "Phần này chỉ ở trên màn hình của bạn. Nó không được lưu vào hồ sơ của bất kỳ"
 " ai và không thay đổi điều gì."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid ""
+"Three letters, for example SGD. A contribution ceiling is a sentence about "
+"one country's money; it is only applied to a company that keeps its books in"
+" it."
+msgstr ""
+"Ba chữ cái, ví dụ SGD. Trần đóng góp là con số của một loại tiền cụ thể; nó "
+"chỉ áp cho công ty ghi sổ bằng đúng loại tiền đó."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
+msgid "Times the normal hourly rate."
+msgstr "Số lần đơn giá giờ thường."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ot_multiplier
@@ -3621,6 +4773,17 @@ msgstr ""
 "sẽ hiện ra ngay khi có nó."
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Type our own numbers"
+msgstr "Nhập số của riêng chúng tôi"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Typical mix"
@@ -3682,8 +4845,50 @@ msgstr "Dùng lệnh In của trình duyệt để lưu trang này thành PDF."
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__work_days
 msgid "Used to turn a monthly salary into an hourly rate."
 msgstr "Dùng để quy lương tháng thành đơn giá giờ."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__number
+msgid "Version"
+msgstr "Bản lưu"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Version %(n)s · %(label)s"
+msgstr "Bản lưu %(n)s · %(label)s"
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Version %(n)s · %(plan)s"
+msgstr "Bản lưu %(n)s · %(plan)s"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_ids
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Versions"
+msgstr "Các bản lưu"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_count
+msgid "Versions kept"
+msgstr "Số bản lưu đã giữ"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Versions of this plan."
+msgstr "Các bản lưu của kế hoạch này."
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__vn
+msgid "Vietnam"
+msgstr "Việt Nam"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3696,6 +4901,24 @@ msgstr "CHI PHÍ NHÂN SỰ CẢ NĂM"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "WORKFORCE COST · %s"
 msgstr "CHI PHÍ NHÂN SỰ · %s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__proposed
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__queued
+msgid "Waiting to start"
+msgstr "Đang chờ bắt đầu"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Waiting to start…"
+msgstr "Đang chờ bắt đầu…"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3716,14 +4939,27 @@ msgstr "Trước là"
 #. module: pb_decision_room
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__website_message_ids
 #: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__website_message_ids
 msgid "Website Messages"
 msgstr "Tin nhắn trên trang web"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__website_message_ids
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__website_message_ids
 msgid "Website communication history"
 msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__note
+msgid "What a reader should know before trusting these numbers."
+msgstr "Điều người đọc nên biết trước khi tin vào các con số này."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What actually happened"
+msgstr "Thực tế đã xảy ra"
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
@@ -3737,10 +4973,21 @@ msgid "What do you plan to earn this year?"
 msgstr "Năm nay bạn dự kiến thu về bao nhiêu?"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__message
+msgid "What happened"
+msgstr "Chuyện gì đã xảy ra"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "What if we…"
 msgstr "Nếu chúng ta…"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What is this a plan for?"
+msgstr "Đây là kế hoạch cho phạm vi nào?"
 
 #. module: pb_decision_room
 #: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__productivity_cost_per_point
@@ -3809,6 +5056,25 @@ msgid "What the team could deliver"
 msgstr "Khối lượng đội ngũ có thể làm"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid ""
+"What these assumptions describe: the whole group, one country, one company, "
+"one division, or the people one payroll scheme pays."
+msgstr ""
+"Các giả định này mô tả: cả tập đoàn, một quốc gia, một công ty, một khối, "
+"hay những người do một phương án lương chi trả."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__name
+msgid "What these rules are called on screen."
+msgstr "Tên hiển thị của bộ quy định này trên màn hình."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "What they said"
+msgstr "Họ đã nói gì"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "What this leaves out"
@@ -3820,10 +5086,30 @@ msgid "What this picture believed"
 msgstr "Bức tranh này đã tin vào điều gì"
 
 #. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__exact_result
+msgid ""
+"What this plan's people cost when each one is run through their own payroll "
+"scheme's formulas, rather than through company averages."
+msgstr ""
+"Chi phí của nhân sự trong kế hoạch này khi từng người được chạy qua công "
+"thức của chính phương án lương của họ, thay vì qua số bình quân của công ty."
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "What this room believes."
 msgstr "Căn phòng này tin vào điều gì."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__note
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "What this simplifies"
+msgstr "Điều này đã đơn giản hóa gì"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__label
+msgid "What this version was"
+msgstr "Bản lưu này là gì"
 
 #. module: pb_decision_room
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
@@ -3859,7 +5145,12 @@ msgid "Where a year of pay goes"
 msgstr "Một năm tiền lương đi về đâu"
 
 #. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__state
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__status
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
 msgid "Where it stands"
 msgstr "Tình trạng hiện tại"
 
@@ -3868,6 +5159,17 @@ msgstr "Tình trạng hiện tại"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "Where the comparison sits"
 msgstr "Vị trí của mốc so sánh"
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_ref
+msgid "Which group, country, company, division or scheme."
+msgstr "Tập đoàn, quốc gia, công ty, khối hay phương án nào."
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_ref
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_ref
+msgid "Which one"
+msgstr "Cụ thể là mục nào"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3892,6 +5194,16 @@ msgstr "Ai có mặt trong đội ngũ vào tháng 12"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "Who this is about"
 msgstr "Bức tranh này nói về ai"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__group
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__group
+msgid "Whole group"
+msgstr "Cả tập đoàn"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -3981,6 +5293,23 @@ msgid "Workforce cost is unchanged."
 msgstr "Chi phí nhân sự không đổi."
 
 #. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__running
+msgid "Working it out"
+msgstr "Đang tính"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out…"
+msgstr "Đang tính…"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out… %s%%"
+msgstr "Đang tính… %s%%"
+
+#. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "YOUR DEFINITION OF A GOOD YEAR"
@@ -4021,10 +5350,10 @@ msgstr "Bạn có thể thay đổi những con số này."
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid ""
-"You can change these numbers. Everyone planning at %s will see the change."
+"You can change these numbers. Everyone planning %s will see the change."
 msgstr ""
-"Bạn có thể thay đổi những con số này. Mọi người đang lập kế hoạch tại %s sẽ "
-"thấy thay đổi đó."
+"Bạn có thể đổi các con số này. Mọi người lập kế hoạch cho %s đều sẽ thấy "
+"thay đổi."
 
 #. module: pb_decision_room
 #. odoo-python
@@ -4065,6 +5394,12 @@ msgstr "Dự báo của bạn"
 #: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
 msgid "Your goals"
 msgstr "Các mục tiêu của bạn"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your own numbers%s"
+msgstr "Số của riêng bạn%s"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4142,6 +5477,12 @@ msgstr "đơn giá cơ bản"
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "capacity"
 msgstr "năng lực"
 
@@ -4150,6 +5491,12 @@ msgstr "năng lực"
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "change in what you can serve"
 msgstr "thay đổi trong khối lượng bạn đáp ứng được"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "cost"
+msgstr "chi phí"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4214,6 +5561,12 @@ msgstr "chi phí vào làm và nghỉ việc rơi cùng vào tháng này"
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "kept"
+msgstr "giữ"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "lowest-profit"
 msgstr "lợi nhuận thấp nhất"
 
@@ -4246,6 +5599,12 @@ msgstr "không ai nghỉ việc"
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "none"
 msgstr "không có"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "not converted"
+msgstr "chưa quy đổi"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4285,8 +5644,20 @@ msgstr "lợi nhuận hoạt động · đây chính là kế hoạch bạn đan
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "over plan"
+msgstr "cao hơn kế hoạch"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
 msgid "overtime from %s"
 msgstr "làm thêm giờ từ %s"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "pay per person was the difference"
+msgstr "chênh lệch nằm ở mức lương bình quân mỗi người"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4328,6 +5699,12 @@ msgid ""
 "plans ·\n"
 "                  nothing here changes payroll."
 msgstr "kế hoạch · không có gì ở đây thay đổi bảng lương."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "profit"
+msgstr "lợi nhuận"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4387,15 +5764,39 @@ msgstr ""
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s fewer people on the payroll than planned"
+msgstr "trên bảng lương ít hơn kế hoạch %s người"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s more people on the payroll than planned"
+msgstr "trên bảng lương nhiều hơn kế hoạch %s người"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "today"
 msgstr "hôm nay"
 
 #. module: pb_decision_room
 #. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "under plan"
+msgstr "thấp hơn kế hoạch"
+
+#. module: pb_decision_room
+#. odoo-javascript
 #: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
 msgid "value"
 msgstr "giá trị"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "versions"
+msgstr "bản lưu"
 
 #. module: pb_decision_room
 #. odoo-javascript
@@ -4485,6 +5886,18 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is a fresh draft that starts where the approved plan ends."
+msgstr "“%s” là bản nháp mới, bắt đầu từ chỗ kế hoạch đã duyệt kết thúc."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is approved."
+msgstr "“%s” đã được phê duyệt."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "“%s” is on the canvas."
 msgstr "“%s” đang ở trên khung làm việc."
 
@@ -4499,8 +5912,20 @@ msgstr ""
 #. module: pb_decision_room
 #. odoo-javascript
 #: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is with your approver. They will find it on their home page."
+msgstr "“%s” đã chuyển tới người phê duyệt. Họ sẽ thấy nó trên trang chủ."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
 msgid "“%s” removed."
 msgstr "Đã xoá “%s”."
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” went back to %s."
+msgstr "“%s” đã được trả về cho %s."
 
 #. module: pb_decision_room
 #. odoo-javascript
