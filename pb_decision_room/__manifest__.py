@@ -62,13 +62,42 @@ WHAT PHASE 3 ADDED
   840 trieu. And it has a second door: a "Decision Room" lens on the
   Home hub, governed by the same feature switch as the Plan lens.
 
+WHAT PHASE 4 ADDED (planning with scope)
+
+  A chip at the top of the stage that says what this plan is a plan FOR:
+  the whole group, one country, one company, one division, or the people
+  one payroll scheme pays. Pick one and the roster, the rules, the money
+  and every number on the stage change together.
+
+  Rules stopped being one country's. Eight sets of country rules ship as
+  records — contribution rates, the ceiling and the money it is written
+  in, allowances, working days, the bonus — a company follows the ones
+  for its own country, and a scheme or a company can override them and
+  put them back in one press.
+
+  A group draws one line per company in its own money under a total in
+  the group's money, converted when a reader looks at it and never
+  stored, with a plain sentence wherever a rate is missing.
+
+  A month whose pay run has been done is drawn as a solid line over the
+  dashed plan, with one sentence saying which way it went and why.
+
+  A plan can be proposed and approved. Proposing keeps a version — the
+  levers, the goals, the numbers, the scope and the rules behind them —
+  so what a board agreed to survives every edit made afterwards, and the
+  approver finds it waiting on their home page.
+
+  And a plan can be priced EXACTLY: a background job runs its people
+  through their own payroll scheme's formulas instead of company
+  averages and reports the difference.
+
 WHAT IT NEVER DOES
 
   It never writes to an employee, a contract, a payslip or a pay run. It
   reads the roster and it saves plans. That promise is on the screen, in
   those words, and the facade has no write path to any `hr.*` model.
 """,
-    'version': '19.0.3.0.0',
+    'version': '19.0.4.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -81,10 +110,14 @@ WHAT IT NEVER DOES
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_people_hub',        # the hub whose Plan lens this becomes
         'pb_home_hub',          # and the home page, where the owner starts
+        'pb_group',             # the group, its divisions and pb.fx
     ],
     'data': [
         'security/pb_decision_room_security.xml',
         'security/ir.model.access.csv',
+        'data/pb_decision_ruleset.xml',
+        'data/pb_decision_cron.xml',
+        'views/pb_decision_ruleset_views.xml',
         'views/pb_decision_plan_views.xml',
         'views/pb_decision_assumptions_views.xml',
         'views/pb_decision_brief.xml',

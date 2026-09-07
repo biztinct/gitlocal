@@ -142,14 +142,27 @@ class TestDecisionRoomFacade(TransactionCase):
     # -------------------------------------------------------------- T4
     def test_t4_assumptions_are_created_once_per_company(self):
         """T4. First read creates the row; the second gets the same one; a
-        duplicate is refused by the database, not by hope."""
+        duplicate is refused by the database, not by hope.
+
+        GROUP P4 moved the key: a row is unique per SCOPE — what it is about
+        and which one — because a company, a division inside it and a payroll
+        scheme inside that are three different sets of assumptions about three
+        different things. A second COMPANY row for the same company is still
+        refused, which is what this always meant.
+        """
         first = self.Assumptions.get_for_company(self.company)
         second = self.Assumptions.get_for_company(self.company)
         self.assertTrue(first.id)
         self.assertEqual(first.id, second.id)
+        self.assertEqual(first.scope_kind, 'company')
+        self.assertEqual(first.scope_ref, str(self.company.id))
         with self.assertRaises(Exception), mute_logger('odoo.sql_db'):
             with self.env.cr.savepoint():
-                self.Assumptions.create({'company_id': self.company.id})
+                self.Assumptions.create({
+                    'company_id': self.company.id,
+                    'scope_kind': 'company',
+                    'scope_ref': str(self.company.id),
+                })
 
     # -------------------------------------------------------------- T5
     def test_t5_saving_a_plan_creates_replaces_and_refuses(self):
@@ -461,7 +474,15 @@ class TestDecisionRoomFacade(TransactionCase):
         import os
         room = self._room(self.user_plan, refresh=True)
         baseline = room['baseline']
-        blob = json.dumps(baseline)
+        # The check is that no PERSON crosses the wire. GROUP P4 hangs the
+        # effective rules off each block, and one of those thirteen numbers is
+        # called "employee contributions" — a rate, not a person — so the
+        # rules are lifted out before the grep rather than the grep being made
+        # vaguer.
+        naked = dict(baseline)
+        naked['blocks'] = [{k: v for k, v in block.items() if k != 'rules'}
+                           for block in baseline.get('blocks', [])]
+        blob = json.dumps(naked)
         self.assertNotIn('employee', blob.lower())
         for team in baseline['teams']:
             self.assertEqual(set(team) - {
