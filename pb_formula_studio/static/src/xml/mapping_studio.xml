@@ -465,6 +465,14 @@
                                        onLoaded="(n) => this.state.treatmentCount = n"/>
             </div>
 
+            <!-- GROUP P2 — "Who is paid by what". The board is registered by
+                 `pb_scheme_map` into a soft registry; where that module is
+                 absent this branch is never taken and the generic two-column
+                 canvas below answers exactly as it always did. -->
+            <div t-elif="isSchemeBoard" class="pbms-canvas">
+              <t t-component="schemeBoard" t-props="schemeBoardProps"/>
+            </div>
+
             <div t-elif="isTransform" class="pbms-canvas">
               <TransformFlowBoard data="state.data"
                                   configName="configName"
