@@ -343,7 +343,8 @@ export class PbDecisionRoom extends Component {
         });
 
         // Not reactive on purpose (see the file header).
-        this.baseline = { asof: "", headcount: 0, teams: [], source: "" };
+        this.baseline = { asof: "", headcount: 0, full_time: 0,
+                          split_people: 0, teams: [], source: "" };
         this.assumptions = {};
         this.planState = {};
         this.goals = {};
@@ -495,7 +496,8 @@ export class PbDecisionRoom extends Component {
             this.state.limits = data.limits || { max_plans: 20 };
             this.state.error = "";
             this.baseline = data.baseline
-                || { asof: "", headcount: 0, teams: [], blocks: [],
+                || { asof: "", headcount: 0, full_time: 0, split_people: 0,
+                     teams: [], blocks: [],
                      source: "" };
             this.blocks = this.baseline.blocks || [];
             this.assumptions = data.assumptions || {};
@@ -3465,6 +3467,31 @@ export class PbDecisionRoom extends Component {
         const hh = String(when.getHours()).padStart(2, "0");
         const mm = String(when.getMinutes()).padStart(2, "0");
         return `${hh}:${mm}`;
+    }
+
+    /**
+     * GROUP P5 — the full-time figure, said ONLY when it differs.
+     *
+     * On a company where every person works a whole month at one employment
+     * the two numbers are the same, and printing "4,533 people · 4,533.0
+     * full-time" would be noise dressed as precision. It appears the moment
+     * somebody's month is split, which is exactly when it means something.
+     */
+    get fullTimeText() {
+        const heads = Number(this.baseline.headcount || 0);
+        const full = Number(this.baseline.full_time || 0);
+        if (!full || Math.abs(full - heads) < 0.05) { return ""; }
+        return _t("%(figure)s full-time", { figure: full.toLocaleString() });
+    }
+
+    /** "Two people are paid in two places this month." Said only when true. */
+    get splitNote() {
+        const n = Number(this.baseline.split_people || 0);
+        if (!n) { return ""; }
+        return n === 1
+            ? _t("1 person is paid in two places this month.")
+            : _t("%(count)s people are paid in two places this month.",
+                 { count: n });
     }
 
     /** Read the roster again, and keep the plan exactly where it is. */

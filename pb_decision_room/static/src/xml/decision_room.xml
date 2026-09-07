@@ -1264,9 +1264,13 @@
 
             <div class="dr-asof">
               <span>
-                <t t-esc="fmt.int(baseline.headcount)"/> people ·
+                <t t-esc="fmt.int(baseline.headcount)"/> people<t t-if="fullTimeText"> · <t t-esc="fullTimeText"/></t> ·
                 roster read at <t t-esc="asofText"/>
               </span>
+              <!-- GROUP P5 — said only when it is true, and said in days
+                   rather than in a ratio: "two people are paid in two places
+                   this month" is a thing somebody can go and look at. -->
+              <span class="dr-splitnote" t-if="splitNote" t-esc="splitNote"/>
               <button class="dr-link" t-att-disabled="state.refreshing"
                       title="Read the roster again. Your plan stays exactly as it is."
                       t-on-click="() => this.refreshRoster()">

@@ -516,6 +516,10 @@ class PbDecisionRoom(models.AbstractModel):
                 'country': (company.sudo().country_id.code or '').upper(),
                 'currency': self._currency_dict(company.currency_id),
                 'headcount': block_baseline.get('headcount', 0),
+                # GROUP P5 — the days behind the head count, per company.
+                'full_time': block_baseline.get(
+                    'full_time', block_baseline.get('headcount', 0)),
+                'split_people': block_baseline.get('split_people', 0),
                 'teams': block_baseline.get('teams') or [],
                 'rules': self._safe(
                     lambda c=company: Assumptions.effective(row, c, config),
@@ -537,6 +541,14 @@ class PbDecisionRoom(models.AbstractModel):
             'asof': str(date.today()),
             'asof_at': asof_at,
             'headcount': sum(b['headcount'] for b in blocks),
+            # GROUP P5 — a scope may span several companies, so the full-time
+            # figure and the "paid in two places" count are summed over the
+            # blocks exactly as the head count is. On a company with no
+            # stretches of days the two figures are equal, and the screen
+            # says nothing extra.
+            'full_time': round(sum(b.get('full_time', b['headcount'])
+                                   for b in blocks), 1),
+            'split_people': sum(b.get('split_people', 0) for b in blocks),
             'teams': teams,
             'blocks': blocks,
             'single': single,
@@ -656,6 +668,10 @@ class PbDecisionRoom(models.AbstractModel):
                 paid_sum += wage
                 paid_n += 1
 
+        full_time, split_people = self._safe(
+            lambda: self._full_time(company, [r[0] for r in roster]),
+            default=(float(headcount), 0))
+
         company_avg = (paid_sum / paid_n) if paid_n else 0.0
         if not company_avg:
             company_avg = self._safe(
@@ -752,9 +768,56 @@ class PbDecisionRoom(models.AbstractModel):
             # morning; the dialog says the time and offers to read it again.
             'asof_at': fields.Datetime.to_string(fields.Datetime.now()),
             'headcount': headcount,
+            # GROUP P5 — head count counts PEOPLE; the full-time figure counts
+            # their days. Identical to the head count on every company that
+            # has never written a stretch of days, which is what keeps the P4
+            # identity test true.
+            'full_time': full_time,
+            'split_people': split_people,
             'teams': out_teams,
             'source': source,
         }
+
+    @api.model
+    def _full_time(self, company, employee_ids):
+        """`(full-time equivalents, people paid in two places)`.
+
+        Soft on the registry: a database without `pb_workseg` gets the head
+        count back unchanged, which is the honest answer there — one
+        employment, one whole month, each.
+        """
+        total = float(len(employee_ids))
+        if 'pb.work.segment' not in self.env or not employee_ids:
+            return total, 0
+        today = fields.Date.context_today(self)
+        month = today.replace(day=1)
+        rows = self.env['pb.work.segment'].sudo().search_read(
+            [('state', '=', 'confirmed'), ('month', '=', month),
+             '|', ('home_employee_id', 'in', employee_ids),
+                  ('host_employee_id', 'in', employee_ids)],
+            ['home_employee_id', 'host_employee_id', 'fte', 'share',
+             'home_company_id', 'host_company_id', 'kind'])
+        if not rows:
+            return total, 0
+        known = set(employee_ids)
+        adjust, people = 0.0, set()
+        for row in rows:
+            fte = row['fte'] or row['share'] or 0.0
+            home = (row['home_employee_id'] or [0])[0]
+            host = (row['host_employee_id'] or [0])[0]
+            crossed = ((row['home_company_id'] or [0])[0]
+                       != (row['host_company_id'] or [0])[0])
+            if home in known and (crossed or row['kind'] in ('joiner',
+                                                             'leaver')):
+                adjust -= fte
+                if crossed:
+                    people.add(home)
+            if host in known and crossed:
+                # The host employment was counted as a whole person by the
+                # roster query; it is worth only the days it hosted.
+                adjust -= (1.0 - fte)
+                people.add(host)
+        return round(max(0.0, total + adjust), 1), len(people)
 
     @api.model
     def _cap_roles(self, roles, other_label):
