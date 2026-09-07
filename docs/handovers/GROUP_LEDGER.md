@@ -302,6 +302,59 @@ and tree-hash verification, never `pkill -f odoo-bin`).
 - GR12 (P1): a refusal about something the reader is LOOKING AT belongs beside it. The
   detach dialog shows its sentence inline (`state.dialogError`); a toast over an open
   dialog is a sentence about a control the reader can no longer see.
+- GR13 (P2): **`env.invalidate_all()` FLUSHES before it invalidates**
+  (`invalidate_all(flush=True)` is the default), so a raw `UPDATE` followed by
+  `invalidate_all()` has its work silently undone by whatever the ORM was still
+  holding. `_pb_mark_paid_by_stale` wrote `pb_paid_by_stale = TRUE` in one
+  statement and then invalidated; the pending `False` from the recompute a few
+  lines earlier was flushed on top of it and the flag read back False every
+  time — with no error anywhere. The order that works is
+  `env.flush_all()` → raw statement → `env.invalidate_all(flush=False)`.
+  Any raw-SQL write to a field the ORM also writes needs this shape.
+- GR14 (P2): a `ir.cron` row lands in the database the moment its module
+  installs, and **a worker process that is already running does not have the
+  code yet**. On p9clone (where the live service stays up during a rehearsal
+  install) the nightly job fired against a stale registry and logged
+  `AttributeError: 'hr.employee' object has no attribute
+  '_pb_cron_recompute_paid_by'`. Harmless — the next registry load fixes it —
+  but it is an ERROR in the log nobody can act on. Guard the cron's code on the
+  REGISTRY (`… if 'pb.scheme.map' in env else None`), not on the method.
+- GR15 (P2): a sentence that names a record has to be handed the NAME of that
+  record, and the record it names is very often not the one the query was
+  about. `resolve_many` read department names for the people's OWN teams, but
+  the scheme is normally attached to the team ABOVE them, so every explanation
+  read "from this team's team map" instead of "from Bread's team map" — a
+  sentence that is technically true and completely useless. Resolve names for
+  everything a sentence can point at (here: the roster's teams AND every team
+  on the map), not for the rows you started from.
+- GR16 (P2): the pay-run population was scoped by the RECORD RULE, which
+  follows the company switcher — so an administrator with three companies
+  switched on produced one run holding three companies' people, and nothing
+  said so. A pay run happens inside one legal entity: scope the contract
+  search to `self.env.company` explicitly. (Same family as GR3: a screen with
+  no company domain looks right until there are two companies.)
+- GR17 (P2): **the platform's own RPC error object says "Odoo Server Error" in
+  its `message`**, and the server's real sentence is at `error.data.message`.
+  The `(e.message.data.message) || e.message || fallback` ladder several
+  cockpits carry therefore does two wrong things at once: it never finds the
+  sentence (the shape is `error.data`, not `error.message.data` on this
+  platform), and it falls back to the one word this product may never say —
+  printed in a red box on the screen the reader is looking at. Seen live in the
+  P2 browser walk, where a perfectly good refusal about a duplicate scheme line
+  rendered as "Odoo Server Error". The ladder is `error.data.message` →
+  `error.message.data.message` → OUR OWN sentence, and `error.message` is not a
+  rung. Fixed in `pb_scheme_map` and `pb_employee_vault`; **`pb_group`'s
+  `_msg()` still carries the old shape** (owner debt, one line).
+- GR18 (P2): a map made entirely of SPECIFIC kinds of run read as no map at
+  all. `_pick` answered "any kind of run" with `bucket.get('any')`, and the
+  drafted map writes only `end_cycle` and `mid_cycle` lines — so the board
+  reported 0 of 4,533 people covered over a map it had itself just written.
+  Asked about no particular kind, the fallback runs a ladder of what "the
+  scheme that pays you" normally means: `any` → `end_cycle` → `regular` →
+  `full_final` → `mid_cycle`, with the advance LAST, because an advance is
+  never the answer to "who pays this person" unless somebody asked for it.
+  The same shape bit the counts a second time: a scheme's coverage must be read
+  for the scheme's OWN kind of run, or every mid-month card says "nobody yet".
 
 ## Phase log
 - P1 — "The group" — designed and BUILT 2026-09-07 (`GROUP_P1_THE_GROUP.md`).
@@ -331,7 +384,50 @@ and tree-hash verification, never `pkill -f odoo-bin`).
   Owner debts: company 6 was ARCHIVED and is now active on payobook; the two "RIZE …
   (test)" top-level departments were left out of the divisions on purpose; the
   Settings hub's own breadcrumb still reads "Unnamed" (platform-wide, GR8).
-- P2 — "Who is paid by what". Not yet designed.
+- P2 — "Who is paid by what" — designed and BUILT 2026-09-07
+  (`GROUP_P2_WHO_IS_PAID_BY_WHAT.md`). Status: **COMPLETE**.
+  `pb_scheme_map` 19.0.1.0.0 live on p9clone, payobook, abm and
+  payobook_template; `pb_hr_payroll_formula` 19.0.1.122.0 (the ladder consults
+  the map, the run's own scheme beats everything, the sibling rung demoted),
+  `pb_payrun_wizard` 19.0.1.19.0 (the scheme picker, one-company scoping, the
+  scheme stamped on the run and on every payslip), `pb_formula_studio`
+  19.0.1.179.0 (scheme mode company-scoped — GR3 closed — advances no longer
+  filtered out, attaching replaces only the same kind of run, the board slot),
+  `pb_employee_vault` 19.0.1.1.0 (the Employee 360 chip registry),
+  `pb_import_kit` 19.0.1.14.0 (`unlink`, `userX`, `arrowRight`), `pb_demo`
+  19.0.1.10.0 (its division run and the scheme picker reconciled).
+  Shipped: `hr.formula.scheme.assignment` grown a KIND OF RUN, a division, a
+  company and a provenance; `pb.scheme.map` (the six-rung resolver,
+  `resolve_many`, `coverage`, `draft`, `accept_draft`, `get_exceptions`);
+  `hr.employee.pb_paid_by_id` / `pb_paid_by_advance_id` / `pb_paid_by_rung` /
+  `pb_paid_by_stale` with SQL-marked staleness, a bulk recompute and a nightly
+  job; `hr.payslip.run.pb_formula_config_id`; `pb.scheme.board` and the
+  "Who is paid by what" board inside the Mapping screen (drafted map, coverage
+  rings, wires with cycle badges, the exceptions queue, bulk attach); the pay
+  run's scheme cards; ⌘K rows 3330/3340. No rail item, no Settings category.
+  27 `pb_scheme_map` test methods green on p9clone, and the neighbouring suites
+  (`pb_formula_studio` 410, `pb_payrun_wizard` 40, `pb_group` 34, `pb_budget`
+  21, `pb_hub` 34, `pb_people_hub` 37, `pb_decision_room` 44,
+  `pb_employee_vault` 14) show the SAME 2 failures + 12 errors as a pristine
+  HEAD checkout on the same database — zero regressions; those 14 are p9clone
+  data drift and predate this phase.
+  Timings on company 5 (4,533 people): `resolve_many` **57 ms**, `coverage`
+  **75 ms**, `draft` **108 ms** over 30,500 payslips.
+  The drafted map on Payobook Vietnam JSC: **12 lines**, six end-of-month and
+  six mid-month, every one at 0.997–1.000 agreement; accepted whole; coverage
+  4,503 of 4,533, the 30 uncovered being the RIZE test departments and the
+  people with no team.
+  T10 parity, rehearsed on p9clone and rolled back: re-running Retail
+  End-Month for June 2026 into a scratch run produced **902 payslips and a net
+  of ₫4,878,568,644 — identical to the digit** to the existing run.
+  Rule 8 proven live on abm: 152 people with no scheme named and 152 with the
+  scheme named, the same people.
+  B1–B6 walked on payobook and abm at 1440 and 390.
+  Screenshots: `docs/handovers/group_p2_shots/`.
+  Owner debts: the demo map on payobook company 5 is now WRITTEN (12 accepted
+  lines) — that is real configuration, not a test fixture; `pb_group`'s
+  `_msg()` still carries the "Odoo Server Error" fallback (GR17, one line);
+  the abm validator (id 246) was reactivated for the walk and archived again.
 - P3 — "Numbers that remember". Not yet designed.
 - P4 — "Planning with scope". Not yet designed.
 - P5 — "People in two places". Not yet designed.
