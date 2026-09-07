@@ -55,6 +55,9 @@ MAX_NAMED = 200
 
 class PbSchemeBoard(models.AbstractModel):
     _name = 'pb.scheme.board'
+    # GROUP P7 — every read on this screen goes through `who sees what`.
+    # A reader with no visibility row is narrowed by nothing at all.
+    _inherit = ['pb.group.scoped']
     _description = 'Who is paid by what — screen data'
 
     # ================================================================== gates
@@ -99,7 +102,10 @@ class PbSchemeBoard(models.AbstractModel):
     @api.model
     def _pick_company(self, company_id=None):
         """The company this board is about — always exactly one."""
-        allowed = self.env.companies.ids or [self.env.company.id]
+        allowed = self._visible_companies(
+            self.env.companies.ids or [self.env.company.id])
+        if not allowed:
+            return 0
         wanted = int(company_id or 0)
         if wanted and wanted in allowed:
             return wanted
@@ -109,7 +115,9 @@ class PbSchemeBoard(models.AbstractModel):
     @api.model
     def _companies(self):
         rows = self.env['res.company'].sudo().browse(
-            (self.env.companies.ids or [self.env.company.id])[:MAX_COMPANIES])
+            self._visible_companies(
+                self.env.companies.ids
+                or [self.env.company.id])[:MAX_COMPANIES])
         return [{'id': c.id, 'name': c.name} for c in rows.exists()]
 
     # ================================================================== read
@@ -187,6 +195,10 @@ class PbSchemeBoard(models.AbstractModel):
             'covered': cover.get('covered', 0),
             'people': cover.get('people', 0),
             'stale': stale,
+            # GROUP P7 — one sentence when this reader is held to part of the
+            # group, and '' for everybody else so the strip is not drawn.
+            'scope_note': self._safe(lambda: self._visibility_note(),
+                                     default=''),
             'studio_action': 'pb_formula_studio.action_pb_formula_studio',
             'ms': int((time.time() - started) * 1000),
         }
@@ -277,10 +289,19 @@ class PbSchemeBoard(models.AbstractModel):
             for candidate in (chains.get(dept_id) or [dept_id]):
                 unmapped[candidate] = unmapped.get(candidate, 0) + count
 
+        # GROUP P7 — a division head is offered THEIR division and the teams
+        # inside it, and nothing else. Both lists come back empty for anybody
+        # who has not been limited, and the column is then untouched.
+        only_divisions = set(self._visible_divisions())
+        only_departments = set(self._visible_departments())
+
         out = []
         if 'pb.division' in self.env:
             links = self.env['pb.division.link'].sudo().search(
                 [('company_id', '=', company_id), ('active', '=', True)])
+            if only_divisions:
+                links = links.filtered(
+                    lambda l: l.division_id.id in only_divisions)
             for division in links.mapped('division_id'):
                 mine = [link.department_id.id for link in links
                         if link.division_id == division]
@@ -298,6 +319,17 @@ class PbSchemeBoard(models.AbstractModel):
         tops = Department.search(
             [('company_id', '=', company_id), ('parent_id', '=', False)],
             limit=MAX_SEGMENTS)
+        if only_departments:
+            # The top of a branch a division head cannot see is not their row,
+            # but a team INSIDE their division is — so the column falls back to
+            # the attached teams themselves rather than to nothing.
+            inside = Department.browse(sorted(only_departments)).exists(
+            ).filtered(lambda d: d.company_id.id == company_id)
+            # The TOPS of what they can see: a team whose own parent is also
+            # theirs is a child row, not a column row.
+            tops = inside.filtered(
+                lambda d: not d.parent_id or d.parent_id.id
+                not in only_departments)
         for dept in tops:
             children = Department.search(
                 [('id', 'child_of', dept.id), ('id', '!=', dept.id)],

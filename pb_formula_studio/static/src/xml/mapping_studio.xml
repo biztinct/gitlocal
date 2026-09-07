@@ -408,6 +408,18 @@
         <div class="pbms-board">
           <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
+          <!-- GROUP P7 — the scheme board answers BEFORE the generic empty
+               state, because it has an empty state of its own and a much
+               better one: coverage rings, a map drafted from what was
+               actually paid, and the people nobody pays. This tab's own data
+               call is about the OLD two-column canvas, and on a database that
+               call has nothing to say the reader was shown "there is nothing
+               to map on this board" over a board with four and a half
+               thousand people on it. -->
+          <div t-elif="isSchemeBoard" class="pbms-canvas">
+            <t t-component="schemeBoard" t-props="schemeBoardProps"/>
+          </div>
+
           <div t-elif="state.data and !state.data.ok" class="pbms-empty">
             <span class="pbms-empty__ic" t-out="ic(state.data.reason === 'no_rules' ? 'sigma' : 'gitMerge', 44)"/>
             <b t-if="state.data.reason === 'no_rules'">No transformations yet</b>
@@ -463,14 +475,6 @@
             <div t-elif="isTreatment" class="pbms-canvas">
               <ComponentTreatmentBoard configId="state.configId"
                                        onLoaded="(n) => this.state.treatmentCount = n"/>
-            </div>
-
-            <!-- GROUP P2 — "Who is paid by what". The board is registered by
-                 `pb_scheme_map` into a soft registry; where that module is
-                 absent this branch is never taken and the generic two-column
-                 canvas below answers exactly as it always did. -->
-            <div t-elif="isSchemeBoard" class="pbms-canvas">
-              <t t-component="schemeBoard" t-props="schemeBoardProps"/>
             </div>
 
             <div t-elif="isTransform" class="pbms-canvas">

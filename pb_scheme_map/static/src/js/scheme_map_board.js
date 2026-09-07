@@ -104,6 +104,14 @@ export class SchemeMapBoard extends Component {
             dialogError: "",     // a refusal about the thing in front of you
 
             paths: [],           // the drawn wires, measured from the DOM
+
+            // GROUP P7 — the wires as a GESTURE (polish item P2).
+            // `dragging` is what is currently in the reader's hand: a team on
+            // its way to a scheme, or a wire on its way off the board.
+            dragging: null,      // { kind, keys, label, wire }
+            dropOn: 0,           // the scheme the pointer is over
+            overTrash: false,    // the pointer is over the take-it-off bar
+            traced: 0,           // the wire being followed with the pointer
         });
 
         this._escape = (ev) => this.onEscape(ev);
@@ -268,8 +276,12 @@ export class SchemeMapBoard extends Component {
             paths.push({
                 id: wire.id,
                 d: `M ${x1} ${y1} C ${x1 + mid} ${y1}, ${x2 - mid} ${y2}, ${x2} ${y2}`,
+                // GROUP P7 — a traced wire lights the same way a hovered end
+                // does, so following a line and hovering a row are one idea.
                 lit: this.state.hover === wire.segment
-                     || this.state.hover === `scheme-${wire.config_id}`,
+                     || this.state.hover === `scheme-${wire.config_id}`
+                     || this.state.traced === wire.id,
+                dim: !!this.state.traced && this.state.traced !== wire.id,
                 drafted: wire.source !== "manual",
             });
         }
@@ -278,6 +290,151 @@ export class SchemeMapBoard extends Component {
 
     setHover(key) { this.state.hover = key; }
     clearHover() { this.state.hover = ""; }
+
+    // ========================== GROUP P7 · the wires as a gesture (item P2)
+    //
+    // Three gestures, and each one has a keyboard equivalent beside it,
+    // because a board whose only verb is a drag is a board half the people
+    // who need it cannot use.
+    //
+    //   * DRAG A TEAM ONTO A SCHEME   — Enter on the team, or the + button.
+    //   * HOVER A WIRE TO TRACE IT    — Tab to the wire chip; it lights both
+    //                                   ends and dims everything else.
+    //   * PULL A WIRE OFF THE BOARD   — Delete or Backspace on the chip, or
+    //                                   the chip's own unlink button.
+    //
+    // The drop lands on the SAME call the side panel makes — one door, one
+    // set of refusals — so a scheme attached by dragging and a scheme
+    // attached by pressing are the same record with the same history.
+
+    /** Is this segment part of what is being dragged right now? */
+    isDragging(key) {
+        const held = this.state.dragging;
+        return !!held && held.kind === "segment" && held.keys.includes(key);
+    }
+
+    /** The teams a drag carries: the ticked ones if this is one of them. */
+    _dragKeys(key) {
+        return this.state.picked.includes(key) ? [...this.state.picked] : [key];
+    }
+
+    onSegmentDragStart(ev, segment) {
+        if (!this.canEdit) { return; }
+        const keys = this._dragKeys(segment.key);
+        this.state.dragging = {
+            kind: "segment", keys, label: segment.label, wire: null,
+        };
+        this.state.traced = 0;
+        if (ev.dataTransfer) {
+            ev.dataTransfer.effectAllowed = "link";
+            // A payload is required for the drag to start at all in some
+            // browsers; nothing ever reads it back.
+            ev.dataTransfer.setData("text/plain", keys.join(","));
+        }
+    }
+
+    onDragEnd() {
+        this.state.dragging = null;
+        this.state.dropOn = 0;
+        this.state.overTrash = false;
+    }
+
+    onSchemeDragOver(ev, scheme) {
+        const held = this.state.dragging;
+        if (!held || held.kind !== "segment") { return; }
+        ev.preventDefault();
+        if (ev.dataTransfer) { ev.dataTransfer.dropEffect = "link"; }
+        this.state.dropOn = scheme.id;
+    }
+
+    onSchemeDragLeave(scheme) {
+        if (this.state.dropOn === scheme.id) { this.state.dropOn = 0; }
+    }
+
+    async onSchemeDrop(ev, scheme) {
+        const held = this.state.dragging;
+        this.onDragEnd();
+        if (!held || held.kind !== "segment") { return; }
+        ev.preventDefault();
+        // The SAME door the panel uses, with the panel's own default kind of
+        // run, so a drop and a press produce the identical line.
+        this.state.attaching = { segments: held.keys, cycle: "any" };
+        this.state.dialogError = "";
+        await this.attachTo(scheme.id);
+    }
+
+    // -------------------------------------------------- pulling a wire off
+    onWireDragStart(ev, wire) {
+        if (!this.canEdit) { return; }
+        this.state.dragging = {
+            kind: "wire", keys: [], label: wire.config, wire,
+        };
+        this.state.traced = wire.id;
+        if (ev.dataTransfer) {
+            ev.dataTransfer.effectAllowed = "move";
+            ev.dataTransfer.setData("text/plain", String(wire.id));
+        }
+    }
+
+    onTrashDragOver(ev) {
+        const held = this.state.dragging;
+        if (!held || held.kind !== "wire") { return; }
+        ev.preventDefault();
+        if (ev.dataTransfer) { ev.dataTransfer.dropEffect = "move"; }
+        this.state.overTrash = true;
+    }
+
+    onTrashDragLeave() { this.state.overTrash = false; }
+
+    async onTrashDrop(ev) {
+        const held = this.state.dragging;
+        this.onDragEnd();
+        if (!held || held.kind !== "wire" || !held.wire) { return; }
+        ev.preventDefault();
+        await this.detach(held.wire);
+    }
+
+    /** The sentence on the bar that appears while a wire is in your hand. */
+    get trashLabel() {
+        const held = this.state.dragging;
+        if (!held || held.kind !== "wire" || !held.wire) { return ""; }
+        return _t("Drop here to take %(scheme)s off %(segment)s",
+                  { scheme: held.wire.config,
+                    segment: held.wire.segment_label });
+    }
+
+    get draggingWire() {
+        const held = this.state.dragging;
+        return !!held && held.kind === "wire";
+    }
+
+    // ------------------------------------------------------- tracing a wire
+    traceWire(wireId) { this.state.traced = wireId; }
+    clearTrace() { if (!this.state.dragging) { this.state.traced = 0; } }
+
+    /** A row is dimmed while a wire is being traced and is not on it. */
+    isTraced(kind, key) {
+        const id = this.state.traced;
+        if (!id) { return false; }
+        const wire = this.wires.find((w) => w.id === id);
+        if (!wire) { return false; }
+        return kind === "segment"
+            ? wire.segment === key
+            : wire.config_id === key;
+    }
+
+    /** Delete or Backspace on a wire chip takes it off — the drag, typed. */
+    onWireKey(ev, wire) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.traceWire(wire.id);
+            return;
+        }
+        if (ev.key === "Delete" || ev.key === "Backspace") {
+            ev.preventDefault();
+            this.detach(wire);
+        }
+    }
 
     // ================================================================ company
     async pickCompany(ev) {
