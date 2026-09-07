@@ -1,0 +1,92 @@
+#
+# A hand-written stub, not a full catalogue: the Vietnamese pass for this
+# programme is Phase 7. Every entry carries `#. module: pb_scheme_map` on
+# purpose — a `.po` entry with no module comment takes the WHOLE DATABASE DOWN
+# on install (ledger gotcha GR5): the platform's own loader matches that
+# comment with no guard, so a missing one is an AttributeError during the
+# translation load and the registry never finishes.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-07 00:00+0000\n"
+"Last-Translator: Payobook\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+msgid "Who is paid by what"
+msgstr "Ai được trả lương theo phương án nào"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+msgid "People not covered"
+msgstr "Những người chưa có phương án trả lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+msgid "Payroll"
+msgstr "Tiền lương"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Any kind of run"
+msgstr "Mọi kỳ trả lương"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Regular payroll"
+msgstr "Kỳ lương thường"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "End of month"
+msgstr "Cuối tháng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Final settlement"
+msgstr "Thanh toán nghỉ việc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "No scheme covers this person yet."
+msgstr "Chưa có phương án trả lương nào áp dụng cho người này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "the only scheme in this company"
+msgstr "phương án duy nhất của công ty này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Paid by"
+msgstr "Trả lương theo"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Not covered by any scheme"
+msgstr "Chưa có phương án trả lương"
