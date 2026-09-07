@@ -141,7 +141,19 @@ export class PayrunWizard extends Component {
         this.dialog = useService("dialog");
         this.state = useState({
             step: 1, loading: false, busyMsg: "",
-            defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null, division: null },
+            defaults: null,
+            form: {
+                name: "", date_start: "", date_end: "", struct_id: null,
+                division: null,
+                // GROUP P2 — which scheme this run is for. 0 until the reader
+                // picks one; pre-filled when the company runs exactly one, in
+                // which case nothing is asked and the step reads as it always
+                // did.
+                formula_config_id: 0,
+            },
+            // What picking a scheme showed: how many people it covers and who
+            // it leaves out, both known BEFORE anything is created.
+            scheme: { preview: null, loading: false, open: false },
             summary: null,
             progress: null,   // { done, total } during chunked compute → determinate bar
             // NETROLE P3 — the month's spreadsheet.
@@ -184,6 +196,12 @@ export class PayrunWizard extends Component {
             this.state.form.date_start = d.date_start;
             this.state.form.date_end = d.date_end;
             this.state.form.division = d.division || null;
+            // One scheme, nothing to ask: it is chosen for you and the card
+            // says so. More than one, and step one becomes the question.
+            if (d.formula_config_id) {
+                this.state.form.formula_config_id = d.formula_config_id;
+                this.refreshScheme();
+            }
             // Demo batch name carries the selected configuration so runs for
             // different divisions are distinguishable (e.g. "…June 2026 — Retail").
             if (d.is_demo) this.state.form.name = this._demoName();
@@ -203,6 +221,8 @@ export class PayrunWizard extends Component {
 
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     vnd(n) { n = n || 0; if (n >= 1e9) return "₫" + (n / 1e9).toFixed(1) + "B"; if (n >= 1e6) return "₫" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "₫" + (n / 1e3).toFixed(0) + "K"; return "₫" + Math.round(n); }
+    /** A count with the reader's own thousands separator — "1,002", not "1002". */
+    num(n) { return Number(n || 0).toLocaleString(); }
     get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }
     // SC-4 — the scheme's source lanes, from the gate payload. Everything
     // defaults ON so an old server changes nothing about this screen.
@@ -281,6 +301,8 @@ export class PayrunWizard extends Component {
     }
     _demoName() {
         const base = (this.state.defaults && this.state.defaults.name) || "Demo Payroll June 2026";
+        const scheme = this.chosenScheme;
+        if (scheme) { return `${base} — ${scheme.name}`; }
         const di = this.divInfo;
         return di ? `${base} — ${di.name}` : base;
     }
@@ -294,6 +316,107 @@ export class PayrunWizard extends Component {
         const ds = (this.state.defaults && this.state.defaults.divisions) || [];
         return ds.find(x => x.key === this.state.form.division) || null;
     }
+    // -------------------------------------------------- GROUP P2: the scheme
+    /**
+     * The schemes this company runs, grouped by kind of run.
+     *
+     * Grouped rather than listed flat because "End of month" and "Mid-month
+     * advance" are two different runs of the same business, and a flat list of
+     * thirteen cards makes them look like thirteen alternatives.
+     */
+    get schemeCards() { return this.state.defaults?.schemes || []; }
+    get hasSchemePicker() { return this.schemeCards.length > 0; }
+    get manySchemes() { return this.schemeCards.length > 1; }
+
+    get schemeGroups() {
+        const order = ["end_cycle", "regular", "mid_cycle", "full_final"];
+        const seen = new Map();
+        for (const card of this.schemeCards) {
+            const key = card.cycle || "regular";
+            if (!seen.has(key)) {
+                seen.set(key, { key, label: card.cycle_label, items: [] });
+            }
+            seen.get(key).items.push(card);
+        }
+        const out = [];
+        for (const key of order) {
+            if (seen.has(key)) { out.push(seen.get(key)); seen.delete(key); }
+        }
+        for (const group of seen.values()) { out.push(group); }
+        return out;
+    }
+
+    get chosenScheme() {
+        const id = this.state.form.formula_config_id;
+        return this.schemeCards.find((s) => s.id === id) || null;
+    }
+
+    isChosenScheme(id) { return this.state.form.formula_config_id === id; }
+
+    pickScheme(card) {
+        this.state.form.formula_config_id = card.id;
+        // The demo build drives its own run from the part of the business a
+        // scheme belongs to. Keeping that in step means picking a scheme keeps
+        // pointing the demo path at the same place instead of two controls
+        // disagreeing about one run.
+        if (card.division) { this.state.form.division = card.division; }
+        if (this.state.defaults && this.state.defaults.is_demo) {
+            this.state.form.name = this._demoName();
+        } else {
+            // "<Scheme> · <Month>" — the scheme already says it is payroll, so
+            // "Payroll <scheme name> <month>" says it twice.
+            this.state.form.name = `${card.name} · ${this._periodLabel()}`;
+        }
+        this.state.scheme.open = false;
+        this.refreshScheme();
+    }
+
+    /** How many people this scheme covers, and who it leaves out. */
+    async refreshScheme() {
+        if (!this.state.form.formula_config_id) { return; }
+        this.state.scheme.loading = true;
+        try {
+            this.state.scheme.preview = await this.orm.silent.call(
+                "pb.payrun.wizard", "scheme_preview",
+                [{
+                    formula_config_id: this.state.form.formula_config_id,
+                    statuses: this.hasStatusFilter ? this.chosenStatuses : null,
+                }]);
+        } catch (e) {
+            console.warn("pb_payrun_wizard: could not preview the scheme", e);
+            this.state.scheme.preview = null;
+        } finally {
+            this.state.scheme.loading = false;
+        }
+    }
+
+    get notCoveredPeople() {
+        return (this.state.scheme.preview && this.state.scheme.preview.people)
+            || [];
+    }
+
+    toggleNotCovered() { this.state.scheme.open = !this.state.scheme.open; }
+
+    /**
+     * The way OUT of the dead end: the screen where the map is drawn.
+     *
+     * Probed through the actions registry, because the Mapping screen is not a
+     * dependency of this module and an offer that fails when it is taken is
+     * worse than an offer that was never made.
+     */
+    get hasSchemeMap() {
+        return registry.category("actions").contains("pb_mapping_studio");
+    }
+
+    openSchemeMap() {
+        this.action.doAction("pb_formula_studio.action_pb_mapping_studio", {
+            additionalContext: { pb_mode: "scheme" },
+            clearBreadcrumbs: false,
+        }).catch(() => this.notif.add(
+            _t("The Mapping screen is not installed on this database."),
+            { type: "warning" }));
+    }
+
     // ------------------------------------------------- VALUEKIND P4: who
     get statusOptions() { return this.state.defaults?.statuses || []; }
     get hasStatusFilter() { return this.statusOptions.length > 0; }
@@ -337,9 +460,18 @@ export class PayrunWizard extends Component {
             this.state.who.preview = null;
         }
         this.state.who.loading = false;
+        // The scheme count is a function of the status ticks too, so the two
+        // numbers on this step can never disagree about one run.
+        if (this.state.form.formula_config_id) { this.refreshScheme(); }
     }
 
     get eligibleCount() {
+        // GROUP P2 — once a scheme is chosen, the honest count is the one the
+        // MAP gives, because that is who the run will actually cover.
+        if (this.state.scheme.preview) {
+            return this.state.who.picked.length
+                || this.state.scheme.preview.covered;
+        }
         if (this.hasStatusFilter && this.state.who.preview) {
             return this.state.who.picked.length || this.state.who.preview.total;
         }
@@ -502,6 +634,15 @@ export class PayrunWizard extends Component {
     // Step 1's primary action: the pay-data step when a scheme wants a file,
     // the compute it always was when none does.
     async advanceFromPeriod() {
+        // GROUP P2 — the refusal is here, in front of the cards, and not on
+        // the step after: a run created for the wrong scheme looks completely
+        // normal until somebody reads a payslip.
+        if (this.manySchemes && !this.state.form.formula_config_id) {
+            this.notif.add(
+                _t("Pick the payroll scheme this run is for. The people it covers appear as soon as you do."),
+                { type: "warning" });
+            return;
+        }
         if (this.wantsSheet) { return this.gotoKey("data"); }
         return this.toCompute();
     }

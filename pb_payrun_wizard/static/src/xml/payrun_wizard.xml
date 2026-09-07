@@ -52,10 +52,70 @@
 
                 <!-- Step 1 -->
                 <t t-elif="stepKey === 'period'">
+
+                    <!-- GROUP P2 — the first question, asked first.
+                         Which scheme is this run for? The cards carry the kind
+                         of run, how many people the scheme covers and when it
+                         last ran, so the choice is made looking at the facts
+                         rather than at a list of names. One scheme: the card is
+                         pre-selected and there is nothing to learn. -->
+                    <div t-if="hasSchemePicker" class="pw-sec pw-schemes"
+                         data-coach="pw-scheme">
+                        <h4>Pay run for</h4>
+                        <div t-foreach="schemeGroups" t-as="g" t-key="g.key"
+                             class="pw-schemegroup">
+                            <div class="pw-schemegroup__label" t-esc="g.label"/>
+                            <div class="pw-schemecards">
+                                <button t-foreach="g.items" t-as="sc" t-key="sc.id"
+                                        t-attf-class="pw-schemecard {{ isChosenScheme(sc.id) ? 'on' : '' }}"
+                                        t-att-aria-pressed="isChosenScheme(sc.id) ? 'true' : 'false'"
+                                        t-on-click="() => this.pickScheme(sc)">
+                                    <span class="pw-schemecard__name" t-esc="sc.name"/>
+                                    <span class="pw-schemecard__meta">
+                                        <t t-esc="num(sc.covered)"/> people covered
+                                        <t t-if="sc.last_run.name">
+                                            · last run <t t-esc="sc.last_run.name"/>
+                                        </t>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div t-if="state.scheme.preview" class="pw-schemesum">
+                            <b t-esc="num(state.scheme.preview.covered)"/>
+                            <span> people</span>
+                            <t t-if="state.scheme.preview.not_covered">
+                                <span class="pw-schemesum__sep">·</span>
+                                <button class="pw-linkb" t-on-click="toggleNotCovered">
+                                    <t t-esc="num(state.scheme.preview.not_covered)"/> not covered — see who
+                                </button>
+                            </t>
+                        </div>
+
+                        <div t-if="state.scheme.open" class="pw-notcovered">
+                            <p class="pw-muted">
+                                No scheme covers these people, so this run will
+                                leave them out. Attaching their team to a scheme
+                                fixes everybody in it at once.
+                            </p>
+                            <div class="pw-plist">
+                                <div t-foreach="notCoveredPeople" t-as="p"
+                                     t-key="p.employee_id" class="pw-prow">
+                                    <span class="pw-pname" t-esc="p.emp"/>
+                                    <span class="pw-pmeta" t-esc="p.why"/>
+                                </div>
+                            </div>
+                            <button t-if="hasSchemeMap" class="pw-btn ghost pw-btn--sm"
+                                    t-on-click="openSchemeMap">
+                                Open the map
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="pw-grid2" data-coach="pw-scope">
                         <div class="pw-sec">
                             <h4>Period</h4>
-                            <t t-if="(state.defaults.divisions || []).length">
+                            <t t-if="!hasSchemePicker and (state.defaults.divisions || []).length">
                                 <label>Configuration</label>
                                 <select class="pw-in" data-coach="pw-division" t-on-change="(ev)=>this.onDivision(ev)">
                                     <t t-foreach="state.defaults.divisions" t-as="d" t-key="d.key">
@@ -74,7 +134,8 @@
                             <h4>Scope</h4>
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
                             <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
-                            <div class="pw-kv" t-if="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
+                            <div class="pw-kv" t-if="chosenScheme"><span>Payroll scheme</span><b t-esc="chosenScheme.name"/></div>
+                            <div class="pw-kv" t-elif="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
                             <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>
 
                             <!-- VALUEKIND P4 — who this run covers. Shown only
@@ -132,7 +193,10 @@
                               </div>
                             </t>
 
-                            <div class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
+                            <!-- GROUP P2 — the run is scoped by the SCHEME now,
+                                 not by a division, so the sentence says so. -->
+                            <div t-if="chosenScheme" class="pw-note">A draft run will be created and computed — fully reversible. Only the people this scheme pays are affected.</div>
+                            <div t-else="" class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
                         </div>
                     </div>
                 </t>
