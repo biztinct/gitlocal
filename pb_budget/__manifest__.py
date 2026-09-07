@@ -47,7 +47,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -60,6 +60,7 @@ one accent. No emoji.
         'pb_import_kit',              # pbim tokens/primitives + the shared ic() set
         'pb_hub',                     # the global command palette registry
         'pb_insights_hub',            # the hub the Budget lens bolts onto
+        'pb_group',                   # `pb.fx`, the one conversion service
     ],
     'data': [
         'security/pb_budget_security.xml',
