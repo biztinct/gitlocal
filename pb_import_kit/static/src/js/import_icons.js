@@ -224,6 +224,14 @@ export const IC = {
     // (W2), Lucide paths only — no emoji, no flag characters.
     globe:        '<circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20Z"/><path d="M2 12h20"/>',
     coins:        '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/>',
+    // GROUP P2 — who is paid by what. `unlink` is the verb on a wire that is
+    // being taken off a scheme (`link` already meant the opposite and rotating
+    // one in CSS would leave both wires reading the same to a screen reader);
+    // `userX` is a person no scheme pays, which is the one exception queue this
+    // phase adds. `users`, `layers`, `sparkles` and `alert` were already here.
+    arrowRight:   '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    unlink:       '<path d="m18.84 12.25 1.72-1.71a5.004 5.004 0 0 0-7.07-7.08l-1.71 1.71"/><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 7.07 7.08l1.71-1.71"/><line x1="8" x2="8" y1="2" y2="5"/><line x1="2" x2="5" y1="8" y2="8"/><line x1="16" x2="16" y1="19" y2="22"/><line x1="19" x2="22" y1="16" y2="16"/>',
+    userX:        '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/>',
 };
 
 /**
