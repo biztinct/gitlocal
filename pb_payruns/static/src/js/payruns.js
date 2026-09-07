@@ -65,6 +65,9 @@ export class PbPayruns extends Component {
             sendingBack: 0,         // run id whose Send back is open for a reason
             sendBackNote: "",
             currency: "",
+            currencyName: "",
+            manyCurrencies: false,
+            currencies: [],
             columns: [],
             batches: [],
             kpis: {},
@@ -99,6 +102,11 @@ export class PbPayruns extends Component {
             currency: d.currency, columns: d.columns, batches: d.batches,
             kpis: d.kpis, rejectedCount: d.rejected_count,
             divisions: d.divisions || [], loaded: true,
+            // GROUP P3 — each run is priced in its own company's money, and
+            // a board holding two currencies says so instead of pretending.
+            currencyName: d.currency_name || "",
+            manyCurrencies: !!d.many_currencies,
+            currencies: d.currencies || [],
         });
     }
 
@@ -131,9 +139,12 @@ export class PbPayruns extends Component {
 
     nextLabel(a) { return NEXT_LABEL[a] || _t("Open"); }
 
-    money(n) {
+    /** One run's money, in the money that run was actually paid in. */
+    runMoney(b) { return this.money(b.net, b.currency); }
+
+    money(n, symbol) {
         if (n === null || n === undefined) return "—";
-        const cur = this.state.currency || "₫";
+        const cur = symbol || this.state.currency || "₫";
         const a = Math.abs(n);
         if (a >= 1e9) return cur + (n / 1e9).toFixed(2) + "B";
         if (a >= 1e6) return cur + (n / 1e6).toFixed(1) + "M";

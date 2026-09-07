@@ -29,7 +29,25 @@
             <span class="v" t-esc="state.kpis.my_pending"/><span class="l">Awaiting your approval</span>
           </div>
           <div class="pbr-kpi"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div>
-          <div class="pbr-kpi"><span class="v" t-esc="money(state.kpis.period_net)"/><span class="l">Net paid (done)</span></div>
+          <div class="pbr-kpi">
+            <span class="v" t-esc="money(state.kpis.period_net)"/>
+            <span class="l">
+              Net paid (done)<t t-if="state.currencyName">, in <t t-esc="state.currencyName"/></t>
+            </span>
+          </div>
+        </div>
+
+        <!-- GROUP P3 — two currencies never add up. The total above counts
+             this company's own runs; the board still shows the others, each
+             priced in its own money. -->
+        <div t-if="state.manyCurrencies" class="pbr-note">
+          <t t-out="ic('alert', 14)"/>
+          <span>
+            This board covers more than one currency
+            (<t t-esc="state.currencies.join(', ')"/>). Each run is shown in
+            the money it was paid in, and the total above adds up
+            <t t-esc="state.currencyName"/> only.
+          </span>
         </div>
 
         <!-- ===== division chips =====
@@ -62,7 +80,7 @@
                   <div class="pbr-card-stats">
                     <span class="st"><span class="k">Employees</span><span class="vv" t-esc="b.employees"/></span>
                     <span class="st"><span class="k">Gross</span><span class="vv" t-esc="money(b.gross)"/></span>
-                    <span class="st"><span class="k">Net</span><span class="vv" t-esc="money(b.net)"/></span>
+                    <span class="st"><span class="k">Net</span><span class="vv" t-esc="runMoney(b)"/></span>
                   </div>
                   <!-- t-if on the ROW, not only on its children: an empty flex
                        box still costs its margin, so a card with neither a
