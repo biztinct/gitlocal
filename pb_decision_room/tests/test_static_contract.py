@@ -225,6 +225,64 @@ class TestDecisionRoomStaticContract(TransactionCase):
         ]
         self.assertEqual(list(declared), expected)
 
+    # ------------------------------------------------------------- T10 (P4)
+    def test_p4_the_two_new_doors_are_in_the_group_block_and_gated(self):
+        """GROUP P4 T10. Rows 3360 and 3370, in the block the group
+        programme owns, and the approvals row is offered only to somebody who
+        could actually approve something."""
+        js = _code(_read(HERE, 'static', 'src', 'js', 'decision_palette.js'))
+        self.assertIn('sequence: 3360', js)
+        self.assertIn('sequence: 3370', js)
+        self.assertIn('"decision_room_group"', js)
+        # The icons the P4 screens name INDIRECTLY — through a getter or a
+        # ternary on a property — which T11's literal scan cannot see.
+        kit = _read(KIT, 'static', 'src', 'js', 'import_icons.js')
+        for name in ('globe', 'mapPin', 'building', 'layers', 'route',
+                     'chevron', 'chevronDown', 'landmark', 'history',
+                     'checkCircle'):
+            self.assertRegex(kit, r"\b%s:\s*'" % name,
+                             'the shared registry has no %s icon' % name)
+        self.assertIn('"decision_room_approvals"', js)
+        block = js[js.index('decision_room_approvals'):]
+        self.assertIn('group_decision_manager', block.split('sequence')[0],
+                      'the approvals row is offered to people who cannot '
+                      'approve')
+        self.assertNotIn('pb_hub_palette_yield', js)
+
+    def test_p4_the_room_still_adds_no_rail_item(self):
+        """GROUP P4. `pb_sidebar/tests/test_ia_c5.py` asserts the rail
+        exactly; a new item there would fail a test in another module, hours
+        later, for a reason nobody would connect to this one."""
+        for path in _walk(HERE, ('.xml', '.csv')):
+            body = _read(path)
+            self.assertNotIn('pb.sidebar.item', body,
+                             '%s creates a rail item' % path)
+
+    def test_p4_the_country_rules_ship_as_data_and_never_move_by_themselves(self):
+        """GROUP P4 T2. `noupdate="1"` is the whole promise: a planning lead
+        corrects a rate against their own adviser, and an upgrade must not put
+        it back without a word."""
+        data = _read(HERE, 'data', 'pb_decision_ruleset.xml')
+        self.assertIn('noupdate="1"', data)
+        for code in ('VN', 'SG', 'ID', 'IN', 'MY', 'TH', 'KH', 'PH'):
+            self.assertIn('<field name="country_code">%s</field>' % code, data)
+        manifest = ast.literal_eval(_read(HERE, '__manifest__.py'))
+        self.assertIn('data/pb_decision_ruleset.xml', manifest['data'])
+        self.assertIn('data/pb_decision_cron.xml', manifest['data'])
+        self.assertEqual(manifest['version'], '19.0.4.0.0')
+        self.assertIn('pb_group', manifest['depends'])
+
+    def test_p4_the_upgrade_leaves_every_existing_row_where_it_was(self):
+        """GROUP P4 T1. The migration is the reason the identity test can
+        pass on a live database: it turns the country switch OFF for rows that
+        already existed, so nobody's picture moves on the morning of an
+        upgrade."""
+        script = _read(HERE, 'migrations', '19.0.4.0.0',
+                       'post-migration.py')
+        self.assertIn('use_country_rules = FALSE', script)
+        self.assertIn("scope_kind = 'company'", script)
+        self.assertIn('def migrate(cr, version):', script)
+
     def test_the_engine_imports_nothing_so_node_can_check_it(self):
         """The twenty numbered engine facts are checked by
         `node tools/decision_engine_check.mjs`, which can only load a module
