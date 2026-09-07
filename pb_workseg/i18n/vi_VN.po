@@ -1,0 +1,155 @@
+#
+# A hand-written catalogue of the sentences this module puts on a screen, not
+# a full export: the Vietnamese pass for this programme is Phase 7. Every
+# entry carries `#. module: pb_workseg` on purpose — a `.po` entry with no
+# module comment takes the WHOLE DATABASE DOWN on install (ledger gotcha GR5):
+# the platform's own loader matches that comment with no guard, so a missing
+# one is an AttributeError during the translation load and the registry never
+# finishes.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-07 00:00+0000\n"
+"Last-Translator: Payobook\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
+msgid "Where people work"
+msgstr "Nơi mọi người làm việc"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
+msgid "Same person?"
+msgstr "Cùng một người?"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid "Each entity pays its own days"
+msgstr "Mỗi pháp nhân trả cho số ngày của mình"
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid "Home pays, the other entity is charged"
+msgstr "Nơi chính trả lương, pháp nhân kia được ghi nhận chi phí"
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid ""
+"The home entity's payslip is reduced to the days that stayed at home, and "
+"the host entity runs its own payslip for its own days, in its own money."
+msgstr ""
+"Phiếu lương ở nơi chính chỉ còn số ngày làm việc tại đó, còn pháp nhân tiếp "
+"nhận tự chạy phiếu lương cho số ngày của mình, bằng đồng tiền của mình."
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid ""
+"The home entity pays the whole month and the host entity is charged its "
+"share. One payslip, one internal cost line."
+msgstr ""
+"Nơi chính trả lương cả tháng và pháp nhân tiếp nhận được ghi nhận phần chi "
+"phí của mình. Một phiếu lương, một dòng chi phí nội bộ."
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_work_segment.py:0
+msgid "A stretch of days belongs to one month. Split it into one for each month and each pay run will find its own."
+msgstr "Một khoảng ngày chỉ thuộc về một tháng. Hãy tách thành mỗi tháng một khoảng, khi đó mỗi kỳ lương sẽ tự tìm được phần của mình."
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_work_segment.py:0
+msgid "The first day has to come before the last one."
+msgstr "Ngày đầu tiên phải trước ngày cuối cùng."
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid "That entity is not in the group, so it has no payroll of its own to run these days through. Add it to the group first."
+msgstr "Pháp nhân đó không thuộc tập đoàn nên không có bảng lương riêng để tính số ngày này. Hãy thêm vào tập đoàn trước."
+
+#. module: pb_workseg
+#. odoo-python
+#: code:addons/pb_workseg/models/pb_assignments.py:0
+msgid "You can look at where people work, but changing it is for a payroll manager. Ask one of them to make the change."
+msgstr "Bạn có thể xem nơi mọi người làm việc, nhưng chỉ quản lý tiền lương mới thay đổi được. Hãy nhờ họ thực hiện."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Days in another entity"
+msgstr "Số ngày ở pháp nhân khác"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Moved to another entity"
+msgstr "Chuyển sang pháp nhân khác"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Part-time arrangement"
+msgstr "Thỏa thuận làm bán thời gian"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Joined. They are one person from now on."
+msgstr "Đã gộp. Từ nay đây là một người."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Those days are back to a normal month."
+msgstr "Những ngày đó đã trở lại thành một tháng bình thường."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Those payslips could not be worked out."
+msgstr "Không tính được hai phiếu lương này."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "That change could not be saved."
+msgstr "Không lưu được thay đổi này."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+msgid "Where people work could not be read."
+msgstr "Không đọc được nơi mọi người làm việc."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_chip.js:0
+msgid "Part of this month was worked somewhere else."
+msgstr "Một phần tháng này được làm việc ở nơi khác."
