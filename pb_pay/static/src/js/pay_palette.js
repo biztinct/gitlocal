@@ -16,9 +16,11 @@
  *      access dialog — so the gate here only decides whether the lens is
  *      offered at all.
  *
- *   2. **THREE ⌘K ROWS, IN THE 3400 BLOCK.** The group took 3300-3320, the
+ *   2. **SIX ⌘K ROWS, IN THE 3400 BLOCK.** The group took 3300-3320, the
  *      scheme map 3330-3340, the Explorer 3350, the Decision Room 3360-3370
- *      and "Where people work" 3380-3390, so this phase starts at 3400.
+ *      and "Where people work" 3380-3390, so Pay starts at 3400: bands,
+ *      fairness and place-a-hire in the first phase, and the review, a new
+ *      pay change and "waiting for my approval" in the second.
  *
  * NO NEW RAIL ITEM. `pb_sidebar`'s own test asserts the rail exactly, and the
  * IA programme cut it from thirty-eight items to eight.
@@ -84,6 +86,36 @@ palette.add("pay_place_hire", {
     requires: "pb_pay",
     action: { xmlid: "pb_pay.action_pb_pay_place" },
 }, { sequence: 3420 });
+
+palette.add("pay_review", {
+    id: "pay_review",
+    label: _t("Pay review"),
+    sublabel: _t("Pay"),
+    icon: "checkCircle",
+    groups: PAY_GATE,
+    requires: "pb_pay",
+    action: { xmlid: "pb_pay.action_pb_pay_review" },
+}, { sequence: 3430 });
+
+palette.add("pay_new_change", {
+    id: "pay_new_change",
+    label: _t("New pay change"),
+    sublabel: _t("Pay"),
+    icon: "pencil",
+    groups: PAY_GATE,
+    requires: "pb_pay",
+    action: { xmlid: "pb_pay.action_pb_pay_change" },
+}, { sequence: 3440 });
+
+palette.add("pay_awaiting", {
+    id: "pay_awaiting",
+    label: _t("Waiting for my approval"),
+    sublabel: _t("Pay"),
+    icon: "inbox",
+    groups: PAY_GATE,
+    requires: "pb_pay",
+    action: { xmlid: "pb_pay.action_pb_pay_awaiting" },
+}, { sequence: 3450 });
 
 // Imported so this file's own bundle order is meaningful — the screen is
 // registered in its own file, and this one only names doors to it.

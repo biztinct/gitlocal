@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       Review and Changes.
+       Section rules use `=` and never a doubled hyphen: a doubled hyphen
+       inside an XML comment is a parse error that takes every t-name in the
+       file down with it (WFPLAN WF17).
+       ================================================================== -->
+
+  <t t-name="pb_pay.PbPayReview">
+    <div class="pay-rev">
+
+      <div class="pbim-note" t-if="state.failed"><t t-esc="state.failed"/></div>
+      <div class="pbim-busy" t-if="!state.loaded">Opening the pay reviews…</div>
+
+      <!-- =========================================== the list of reviews -->
+      <t t-if="state.loaded and state.view === 'list'">
+        <t t-if="state.board and !state.board.allowed">
+          <div class="pay-card pay-empty">
+            <t t-out="ic('lock', 28)"/>
+            <p class="pay-empty-t" t-esc="state.board.empty_title"/>
+            <p class="pay-empty-s" t-esc="state.board.empty_note"/>
+          </div>
+        </t>
+
+        <t t-if="state.board and state.board.allowed">
+          <div class="pay-card pay-await" t-if="awaiting.count">
+            <t t-out="ic('inbox', 18)"/>
+            <span t-esc="awaiting.sentence"/>
+            <button class="pbim-btn ghost sm"
+                    t-foreach="awaiting.rows" t-as="row" t-key="row.id + row.kind"
+                    t-on-click="() => this.openReview(row.id)"
+                    t-if="row.kind === 'review'">
+              <span t-esc="row.name"/>
+            </button>
+          </div>
+
+          <div class="pay-card">
+            <div class="pay-card-h">
+              <div>
+                <p class="pay-h">Pay reviews</p>
+                <p class="pay-sub">
+                  A review opens with a suggested rise on every row, the budget
+                  already counting and the fairness check already run.
+                </p>
+              </div>
+              <div class="pay-card-actions">
+                <button class="pbim-btn ghost sm"
+                        t-if="state.board.can_write"
+                        t-on-click="() => this.makeGuidance()"
+                        t-att-disabled="state.busy">
+                  <t t-out="ic('sparkles', 15)"/>
+                  <span>Set up guidance</span>
+                </button>
+                <button class="pbim-btn primary"
+                        t-if="state.board.can_write"
+                        t-on-click="() => this.openDraft()">
+                  <t t-out="ic('plus', 15)"/>
+                  <span>New review</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="pay-revgrid" t-if="reviews.length">
+              <div t-foreach="reviews" t-as="rev" t-key="rev.id"
+                   class="pay-revcard"
+                   t-on-click="() => this.openReview(rev.id)">
+                <div class="pay-revcard-top">
+                  <span class="pay-revcard-n" t-esc="rev.name"/>
+                  <span class="pay-chip" t-esc="rev.state_label"/>
+                </div>
+                <p class="pay-revcard-s">
+                  <t t-esc="rev.scope_label"/> · <t t-esc="rev.people"/> people
+                </p>
+                <div class="pay-meter">
+                  <span class="pay-meter-fill"
+                        t-attf-style="width:#{rev.pct > 100 ? 100 : rev.pct}%"/>
+                </div>
+                <p class="pay-revcard-m" t-esc="rev.meter"/>
+                <p class="pay-revcard-x" t-esc="rev.next_step"/>
+                <p class="pay-revcard-b" t-if="rev.blocked">
+                  <t t-out="ic('alert', 14)"/>
+                  <t t-esc="rev.blocked"/> rows stop approval
+                </p>
+              </div>
+            </div>
+
+            <div class="pay-empty" t-if="!reviews.length">
+              <t t-out="ic('scale', 26)"/>
+              <p class="pay-empty-t" t-esc="state.board.empty_title"/>
+              <p class="pay-empty-s" t-esc="state.board.empty_note"/>
+            </div>
+          </div>
+        </t>
+      </t>
+
+      <!-- ============================================== one open review -->
+      <t t-if="state.view === 'review' and card">
+        <div class="pay-card pay-revhead">
+          <div class="pay-card-h">
+            <div>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.backToList()">
+                <t t-out="ic('back', 15)"/>
+                <span>All reviews</span>
+              </button>
+              <p class="pay-h" t-esc="card.name"/>
+              <p class="pay-sub">
+                <t t-esc="card.scope_label"/> · <t t-esc="card.people"/> people ·
+                new pay from <t t-esc="card.effective_date"/>
+              </p>
+              <p class="pay-scopenote" t-if="card.scope_note">
+                <t t-out="ic('info', 14)"/>
+                <span t-esc="card.scope_note"/>
+              </p>
+            </div>
+            <div class="pay-card-actions">
+              <span class="pay-chip" t-esc="card.state_label"/>
+            </div>
+          </div>
+
+          <div class="pay-revmeters">
+            <div class="pay-revmeter">
+              <span class="pay-revmeter-l">Budget</span>
+              <span class="pay-revmeter-v" t-esc="card.meter"/>
+              <div class="pay-meter">
+                <span t-attf-class="pay-meter-fill #{card.over ? 'is-over' : ''}"
+                      t-attf-style="width:#{card.pct > 100 ? 100 : card.pct}%"/>
+              </div>
+            </div>
+            <div class="pay-revmeter">
+              <span class="pay-revmeter-l">Fairness</span>
+              <span class="pay-revmeter-s" t-esc="state.open.fairness_line"/>
+            </div>
+            <div class="pay-revmeter" t-if="state.open.unrated">
+              <span class="pay-revmeter-l">Scores</span>
+              <span class="pay-revmeter-s">
+                <t t-esc="state.open.unrated"/> people have not been scored, so
+                the guidance used the middle for them.
+              </span>
+            </div>
+          </div>
+
+          <div class="pay-steps">
+            <span t-foreach="state.open.steps" t-as="step" t-key="step.state"
+                  t-attf-class="pay-step #{card.state === step.state ? 'is-on' : ''}">
+              <span class="pay-step-d"/>
+              <span class="pay-step-l" t-esc="step.label"/>
+            </span>
+          </div>
+
+          <div class="pay-revbar">
+            <button class="pbim-btn primary sm" t-if="actions.submit"
+                    t-on-click="() => this.act('submit')"
+                    t-att-disabled="state.busy">Send for approval</button>
+            <button class="pbim-btn primary sm" t-if="actions.hr"
+                    t-on-click="() => this.act('hr')"
+                    t-att-disabled="state.busy">Approve for HR</button>
+            <button class="pbim-btn primary sm" t-if="actions.finance"
+                    t-on-click="() => this.act('finance')"
+                    t-att-disabled="state.busy">Approve for finance</button>
+            <button class="pbim-btn primary sm" t-if="actions.ceo"
+                    t-on-click="() => this.act('ceo')"
+                    t-att-disabled="state.busy">Approve it</button>
+            <button class="pbim-btn primary sm" t-if="actions.apply"
+                    t-on-click="() => this.openPreview()"
+                    t-att-disabled="state.busy">Apply</button>
+            <button class="pbim-btn outline sm" t-if="actions.undo"
+                    t-on-click="() => this.undoApply()"
+                    t-att-disabled="state.busy">
+              <t t-out="ic('undo', 15)"/>
+              <span>Take it back</span>
+            </button>
+            <button class="pbim-btn outline sm" t-if="actions.send_back"
+                    t-on-click="() => this.openSendBack()">Send back</button>
+            <button class="pbim-btn ghost sm" t-if="actions.close"
+                    t-on-click="() => this.act('close')">Close the review</button>
+            <button class="pbim-btn ghost sm" t-if="actions.drop"
+                    t-on-click="() => this.openDrop()">Drop it</button>
+            <span class="pay-revnote" t-if="actions.undo_note"
+                  t-esc="actions.undo_note"/>
+          </div>
+        </div>
+
+        <!-- what stops approval -->
+        <div class="pay-card pay-block" t-if="state.open.blockers.length">
+          <p class="pay-h">What stops approval</p>
+          <div t-foreach="state.open.blockers" t-as="stop" t-key="stop.key"
+               class="pay-blockrow">
+            <t t-out="ic('alert', 15)"/>
+            <span class="pay-blockrow-l" t-esc="stop.label"/>
+            <span class="pay-blockrow-t" t-esc="stop.text"/>
+          </div>
+        </div>
+
+        <!-- the worksheet -->
+        <div class="pay-card">
+          <div class="pay-tools">
+            <div class="pay-tools-l">
+              <button t-foreach="filterDefs" t-as="f" t-key="f.key"
+                      t-attf-class="pay-filter #{state.filters.which === f.key ? 'is-on' : ''}"
+                      t-on-click="() => this.setFilter(f.key)">
+                <span t-esc="f.label"/>
+              </button>
+              <input class="pbim-input pay-search" type="search"
+                     placeholder="Find a person, a job or a team"
+                     t-on-change="(ev) => this.setSearch(ev.target.value)"/>
+            </div>
+            <div class="pay-tools-r" t-if="canWrite">
+              <span class="pay-selcount" t-esc="selectionLabel"/>
+              <input class="pbim-input pay-step-in" type="number" step="0.5"
+                     t-att-value="state.nudge"
+                     t-on-change="(ev) => this.state.nudge = ev.target.value"/>
+              <button t-foreach="bulkDefs" t-as="b" t-key="b.key"
+                      class="pbim-btn ghost sm"
+                      t-on-click="() => this.bulk(b.key)"
+                      t-att-disabled="state.busy">
+                <t t-out="ic(b.icon, 15)"/>
+                <span t-esc="b.label"/>
+              </button>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.openPaste()">
+                <t t-out="ic('copy', 15)"/>
+                <span>Paste scores</span>
+              </button>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.syncRatings()"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('refresh', 15)"/>
+                <span>Read scores in</span>
+              </button>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.openGuidance()">
+                <t t-out="ic('sparkles', 15)"/>
+                <span>Guidance</span>
+              </button>
+              <button class="pbim-btn outline sm"
+                      t-on-click="() => this.openCalibration()"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('target', 15)"/>
+                <span>Calibration</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="pay-wswrap">
+            <table class="pay-ws">
+              <thead>
+                <tr>
+                  <th>Person</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                  <th>In the band</th>
+                  <th class="num">Paid now</th>
+                  <th class="num">Guidance</th>
+                  <th class="num">Rise</th>
+                  <th class="num">New pay</th>
+                  <th class="num">A year</th>
+                  <th>What to know</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="rows" t-as="row" t-key="row.id"
+                    t-att-class="rowClass(row, row_index)"
+                    t-on-click="(ev) => this.pick(row, row_index, ev)"
+                    t-on-dblclick="() => this.startEdit(row, row_index)">
+                  <td>
+                    <span class="pay-wsname" t-esc="row.name"/>
+                    <span class="pay-wsjob" t-esc="row.job"/>
+                  </td>
+                  <td t-esc="row.team"/>
+                  <td>
+                    <span class="pay-score" t-if="row.rating" t-esc="row.rating"/>
+                    <span class="pay-score is-none" t-if="!row.rating">not scored</span>
+                  </td>
+                  <td t-esc="row.position_label"/>
+                  <td class="num" t-esc="row.current_label"/>
+                  <td class="num"><t t-esc="row.guidance_pct"/>%</td>
+                  <td class="num">
+                    <input class="pbim-input pay-pct" type="number" step="0.1"
+                           t-if="state.editing === row.id"
+                           t-att-value="state.editValue"
+                           t-on-input="(ev) => this.onEditInput(ev.target.value)"
+                           t-on-blur="() => this.commitEdit(row)"
+                           t-on-keydown="(ev) => ev.key === 'Enter' and this.commitEdit(row)"/>
+                    <span t-if="state.editing !== row.id">
+                      <t t-esc="row.proposal_pct"/>%
+                    </span>
+                  </td>
+                  <td class="num" t-esc="row.new_label"/>
+                  <td class="num" t-esc="row.annual_label"/>
+                  <td class="pay-wschips">
+                    <span class="pay-chips">
+                      <span t-foreach="row.chips" t-as="chip" t-key="chip.key"
+                            t-attf-class="pay-chip pay-chip--#{chip.tone}"
+                            t-att-title="chip.text"
+                            t-esc="chip.text"/>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pay-empty" t-if="!rows.length">
+            <t t-out="ic('users', 26)"/>
+            <p class="pay-empty-t">Nobody matches that</p>
+            <p class="pay-empty-s">
+              Change the filter above, or clear the search, and the people come
+              back.
+            </p>
+          </div>
+
+          <div class="pay-pager" t-if="state.open.pages > 1">
+            <button class="pbim-btn ghost sm"
+                    t-att-disabled="state.open.page === 0"
+                    t-on-click="() => this.reopen(state.open.page - 1)">
+              <t t-out="ic('chevronLeft', 15)"/>
+              <span>Back</span>
+            </button>
+            <span class="pay-pager-l">
+              <t t-esc="state.open.total_rows"/> people
+            </span>
+            <button class="pbim-btn ghost sm"
+                    t-att-disabled="state.open.page + 1 >= state.open.pages"
+                    t-on-click="() => this.reopen(state.open.page + 1)">
+              <span>More</span>
+              <t t-out="ic('chevron', 15)"/>
+            </button>
+          </div>
+        </div>
+      </t>
+
+      <!-- ================================================= calibration -->
+      <t t-if="state.view === 'calibration' and state.calib">
+        <div class="pay-card">
+          <div class="pay-card-h">
+            <div>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.backToWorksheet()">
+                <t t-out="ic('back', 15)"/>
+                <span>The worksheet</span>
+              </button>
+              <p class="pay-h">Calibration</p>
+              <p class="pay-sub">
+                Every person is a dot: how well they did across, the rise they
+                are getting up. Drag one and its row follows.
+              </p>
+            </div>
+            <div class="pay-card-actions">
+              <span class="pay-chip" t-esc="state.calib.card.meter"/>
+            </div>
+          </div>
+
+          <div class="pay-scatter">
+            <span t-foreach="scatterTicks" t-as="tick" t-key="tick.pct"
+                  class="pay-tick" t-att-style="tick.style">
+              <span class="pay-tick-l"><t t-esc="tick.pct"/>%</span>
+            </span>
+            <span t-foreach="state.calib.dots" t-as="dot" t-key="dot.line_id"
+                  t-att-class="dotClass(dot)"
+                  t-att-style="dotStyle(dot)"
+                  t-att-title="dot.name"
+                  t-on-mousedown="(ev) => this.startDrag(dot, ev)"/>
+          </div>
+          <div class="pay-scataxis">
+            <span t-foreach="state.calib.words" t-as="word" t-key="word_index"
+                  class="pay-scataxis-l" t-esc="word"/>
+          </div>
+          <p class="pay-sub" t-if="state.calib.flat_note"
+             t-esc="state.calib.flat_note"/>
+          <p class="pay-sub" t-if="state.calib.capped_note"
+             t-esc="state.calib.capped_note"/>
+
+          <div class="pay-outliers" t-if="state.calib.outliers.length">
+            <p class="pay-h">Worth a second look</p>
+            <div t-foreach="state.calib.outliers" t-as="one"
+                 t-key="one.line_id" class="pay-outrow">
+              <span class="pay-outrow-n" t-esc="one.name"/>
+              <span class="pay-outrow-p"><t t-esc="one.pct"/>%</span>
+              <span class="pay-outrow-w" t-esc="one.why"/>
+            </div>
+          </div>
+        </div>
+        <div class="pay-dragbar" t-if="state.drag">
+          <t t-esc="dragLabel"/>
+        </div>
+      </t>
+
+      <!-- ==================================================== drawers -->
+      <div class="pay-scrim" t-if="anyDrawer"
+           t-on-click="() => this.closeDrawers()"/>
+
+      <!-- a new review -->
+      <div class="pay-drawer" t-if="state.drafting">
+        <div class="pay-drawer-h">
+          <p class="pay-h">New review</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <label class="pay-field">
+            <span>Who it covers</span>
+            <select class="pbim-input"
+                    t-on-change="(ev) => this.setDraft('scope', ev.target.value)">
+              <option t-foreach="state.board.scopes" t-as="sc"
+                      t-key="sc.kind + sc.ref"
+                      t-att-value="scopeValue(sc)"
+                      t-esc="sc.label"/>
+            </select>
+          </label>
+          <label class="pay-field">
+            <span>Call it</span>
+            <input class="pbim-input" type="text"
+                   placeholder="Left empty, it names itself"
+                   t-on-change="(ev) => this.setDraft('name', ev.target.value)"/>
+          </label>
+          <label class="pay-field">
+            <span>Budget for the year</span>
+            <input class="pbim-input" type="number"
+                   t-on-change="(ev) => this.setDraft('budget', ev.target.value)"/>
+          </label>
+          <label class="pay-field">
+            <span>New pay starts on</span>
+            <input class="pbim-input" type="date"
+                   t-att-value="state.drafting.effective_date"
+                   t-on-change="(ev) => this.setDraft('effective_date', ev.target.value)"/>
+          </label>
+          <label class="pay-field" t-if="state.board.guidance.length">
+            <span>Guidance</span>
+            <select class="pbim-input"
+                    t-on-change="(ev) => this.setDraft('guidance_id', ev.target.value)">
+              <option t-foreach="state.board.guidance" t-as="g" t-key="g.id"
+                      t-att-value="g.id" t-esc="g.name"/>
+            </select>
+          </label>
+          <p class="pay-sub" t-if="!state.board.guidance.length">
+            There is no guidance yet, so every row would start at nothing.
+            Close this and press “Set up guidance” first — it takes one click
+            and you can change any square afterwards.
+          </p>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary"
+                  t-on-click="() => this.createReview()"
+                  t-att-disabled="state.busy">Start the review</button>
+        </div>
+      </div>
+
+      <!-- paste scores -->
+      <div class="pay-drawer" t-if="state.pasting">
+        <div class="pay-drawer-h">
+          <p class="pay-h">Paste scores</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-sub">
+            One person a line: their name, a comma, and the score. Paste
+            straight out of a spreadsheet. Nothing is saved until you have read
+            what it found.
+          </p>
+          <textarea class="pbim-input pay-paste" rows="10"
+                    placeholder="Nguyen Van A, 4"
+                    t-on-change="(ev) => this.setPaste(ev.target.value)"/>
+          <button class="pbim-btn outline sm"
+                  t-on-click="() => this.checkPaste()">Check it</button>
+          <t t-if="state.pasting.answer">
+            <p class="pay-lead" t-esc="state.pasting.answer.sentence"/>
+            <div t-foreach="state.pasting.answer.rows" t-as="bad"
+                 t-key="bad.row" class="pay-badrow">
+              <span class="pay-badrow-n" t-esc="bad.row"/>
+              <span class="pay-badrow-t" t-esc="bad.text"/>
+              <span class="pay-badrow-w" t-esc="bad.why"/>
+            </div>
+          </t>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary"
+                  t-if="state.pasting.answer and state.pasting.answer.good"
+                  t-on-click="() => this.commitPaste()"
+                  t-att-disabled="state.busy"
+                  t-esc="pasteLabel"/>
+        </div>
+      </div>
+
+      <!-- the guidance grid -->
+      <div class="pay-drawer pay-drawer--wide" t-if="state.guidance">
+        <div class="pay-drawer-h">
+          <p class="pay-h">Guidance</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-sub">
+            How well somebody did, down the side. Where their pay already sits,
+            across the top. The number in each square is what this company
+            means to give.
+          </p>
+          <table class="pay-grid">
+            <thead>
+              <tr>
+                <th/>
+                <th t-foreach="state.guidance.columns" t-as="col"
+                    t-key="col.key" t-esc="col.label"/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="state.guidance.rows" t-as="grow"
+                  t-key="grow.rating">
+                <th t-esc="grow.label"/>
+                <td t-foreach="grow.cells" t-as="cell" t-key="cell.band">
+                  <input class="pbim-input pay-cell" type="number" step="0.5"
+                         t-att-value="cell.pct"
+                         t-att-style="cellStyle(cell)"
+                         t-on-change="(ev) => this.saveCell(cell, ev.target.value)"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary" t-if="card"
+                  t-on-click="() => this.bulk('guidance')"
+                  t-att-disabled="state.busy">Use it on every row</button>
+          <p class="pay-sub" t-else="">
+            Every review started from here will use these numbers. Open a
+            review to put them onto its rows.
+          </p>
+        </div>
+      </div>
+
+      <!-- the apply preview -->
+      <div class="pay-drawer pay-drawer--wide" t-if="state.preview">
+        <div class="pay-drawer-h">
+          <p class="pay-h">What Apply would change</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-lead" t-esc="state.preview.sentence"/>
+          <p class="pay-sub" t-if="state.preview.open_run"
+             t-esc="state.preview.open_run"/>
+          <div class="pay-wswrap">
+            <table class="pay-ws">
+              <thead>
+                <tr>
+                  <th>Person</th>
+                  <th class="num">Was</th>
+                  <th class="num">Becomes</th>
+                  <th class="num">Rise</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.preview.rows" t-as="pr"
+                    t-key="pr.line_id">
+                  <td t-esc="pr.name"/>
+                  <td class="num" t-esc="pr.old_label"/>
+                  <td class="num" t-esc="pr.new_label"/>
+                  <td class="num"><t t-esc="pr.pct"/>%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pay-skipped" t-if="state.preview.skipped.length">
+            <p class="pay-h">Left out</p>
+            <div t-foreach="state.preview.skipped" t-as="sk"
+                 t-key="sk.name" class="pay-badrow">
+              <span class="pay-badrow-n" t-esc="sk.name"/>
+              <span class="pay-badrow-w" t-esc="sk.why"/>
+            </div>
+          </div>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <p class="pay-sub">
+            You can take the whole thing back for a day afterwards, on one
+            button.
+          </p>
+          <button class="pbim-btn primary"
+                  t-on-click="() => this.confirmApply()"
+                  t-att-disabled="state.busy">Apply the new pay</button>
+        </div>
+      </div>
+
+      <!-- send back -->
+      <div class="pay-drawer" t-if="state.sendBack">
+        <div class="pay-drawer-h">
+          <p class="pay-h" t-esc="sendBackTitle"/>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-sub" t-esc="sendBackNote"/>
+          <textarea class="pbim-input" rows="5"
+                    t-on-change="(ev) => this.setSendBack(ev.target.value)"/>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary"
+                  t-on-click="() => this.commitSendBack()"
+                  t-att-disabled="state.busy" t-esc="sendBackTitle"/>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ================================================= Pay changes -->
+  <t t-name="pb_pay.PbPayChanges">
+    <div class="pay-rev">
+      <div class="pbim-note" t-if="state.failed"><t t-esc="state.failed"/></div>
+      <div class="pbim-busy" t-if="!state.loaded">Opening the pay changes…</div>
+
+      <t t-if="state.loaded">
+        <div class="pay-card">
+          <div class="pay-card-h">
+            <div>
+              <p class="pay-h">Pay changes</p>
+              <p class="pay-sub">
+                A promotion, a correction or a counter-offer between reviews —
+                with the same guidance, the same limits and the same approvals.
+              </p>
+            </div>
+            <div class="pay-card-actions">
+              <button class="pbim-btn primary" t-if="state.canWrite"
+                      t-on-click="() => this.openDraft()">
+                <t t-out="ic('plus', 15)"/>
+                <span>New pay change</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="pay-wswrap" t-if="state.changes.length">
+            <table class="pay-ws">
+              <thead>
+                <tr>
+                  <th>Person</th>
+                  <th>Why</th>
+                  <th class="num">Was</th>
+                  <th class="num">Becomes</th>
+                  <th class="num">Rise</th>
+                  <th>From</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.changes" t-as="ch" t-key="ch.id"
+                    class="pay-wsrow"
+                    t-on-click="() => this.openChange(ch)">
+                  <td t-esc="ch.employee"/>
+                  <td t-esc="ch.kind_label"/>
+                  <td class="num" t-esc="ch.current_label"/>
+                  <td class="num" t-esc="ch.new_label"/>
+                  <td class="num"><t t-esc="ch.pct"/>%</td>
+                  <td t-esc="ch.effective_date"/>
+                  <td><span class="pay-chip" t-esc="ch.state_label"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pay-empty" t-if="!state.changes.length">
+            <t t-out="ic('pencil', 26)"/>
+            <p class="pay-empty-t">No pay change yet</p>
+            <p class="pay-empty-s">
+              When somebody is promoted, or a figure has to be put right, start
+              it here rather than editing the contract by hand — it keeps the
+              reason, the approvals and the letter together.
+            </p>
+          </div>
+        </div>
+      </t>
+
+      <div class="pay-scrim" t-if="state.drafting or state.open"
+           t-on-click="() => this.closeDrawers()"/>
+
+      <!-- a new pay change -->
+      <div class="pay-drawer" t-if="state.drafting">
+        <div class="pay-drawer-h">
+          <p class="pay-h">New pay change</p>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <label class="pay-field">
+            <span>Who</span>
+            <input class="pbim-input" type="search"
+                   placeholder="Start typing a name"
+                   t-on-input="(ev) => this.searchPeople(ev.target.value)"/>
+          </label>
+          <div class="pay-people" t-if="!state.drafting.employee_id">
+            <button t-foreach="state.people" t-as="p" t-key="p.id"
+                    class="pay-person"
+                    t-on-click="() => this.choosePerson(p)">
+              <span class="pay-person-n" t-esc="p.name"/>
+              <span class="pay-person-j" t-esc="p.job"/>
+            </button>
+          </div>
+
+          <t t-if="state.drafting.ready">
+            <p class="pay-lead">
+              <t t-esc="state.drafting.employee"/> is paid
+              <t t-esc="state.drafting.ready.current_label"/> a month.
+            </p>
+            <p class="pay-sub" t-if="state.drafting.ready.band">
+              <t t-esc="state.drafting.ready.band"/> ·
+              <t t-esc="state.drafting.ready.position_before"/>% of the way
+              through it. The guidance for this person is
+              <t t-esc="state.drafting.ready.guidance_pct"/>%.
+            </p>
+            <label class="pay-field">
+              <span>Why</span>
+              <select class="pbim-input"
+                      t-on-change="(ev) => this.setDraft('kind', ev.target.value)">
+                <option value="promotion">Promotion</option>
+                <option value="correction">Putting a mistake right</option>
+                <option value="market">Keeping up with the market</option>
+                <option value="other">Something else</option>
+              </select>
+            </label>
+            <label class="pay-field">
+              <span>New pay a month</span>
+              <input class="pbim-input" type="number"
+                     t-att-value="state.drafting.new_wage"
+                     t-on-input="(ev) => this.setDraft('new_wage', ev.target.value)"/>
+            </label>
+            <p class="pay-sub">That is a rise of <t t-esc="draftPct"/>%.</p>
+            <label class="pay-field">
+              <span>New pay starts on</span>
+              <input class="pbim-input" type="date"
+                     t-on-change="(ev) => this.setDraft('effective_date', ev.target.value)"/>
+            </label>
+            <label class="pay-field">
+              <span>The case for it</span>
+              <textarea class="pbim-input" rows="4"
+                        t-on-change="(ev) => this.setDraft('reason', ev.target.value)"/>
+            </label>
+          </t>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary"
+                  t-if="state.drafting.employee_id"
+                  t-on-click="() => this.createChange()"
+                  t-att-disabled="state.busy">Write it</button>
+        </div>
+      </div>
+
+      <!-- one pay change -->
+      <div class="pay-drawer" t-if="state.open">
+        <div class="pay-drawer-h">
+          <p class="pay-h" t-esc="state.open.name"/>
+          <button class="pbim-btn ghost sm"
+                  t-on-click="() => this.closeDrawers()">
+            <t t-out="ic('x', 15)"/>
+          </button>
+        </div>
+        <div class="pay-drawer-b">
+          <p class="pay-lead">
+            <t t-esc="state.open.current_label"/> becomes
+            <t t-esc="state.open.new_label"/> a month, a rise of
+            <t t-esc="state.open.pct"/>%, from
+            <t t-esc="state.open.effective_date"/>.
+          </p>
+          <p class="pay-sub" t-if="state.open.reason" t-esc="state.open.reason"/>
+          <div class="pay-steps">
+            <span t-foreach="state.open.steps" t-as="step" t-key="step.state"
+                  t-attf-class="pay-step #{state.open.state === step.state ? 'is-on' : ''}">
+              <span class="pay-step-d"/>
+              <span class="pay-step-l" t-esc="step.label"/>
+            </span>
+          </div>
+          <div class="pay-chips">
+            <span t-foreach="state.open.chips" t-as="chip" t-key="chip.key"
+                  t-attf-class="pay-chip pay-chip--#{chip.tone}"
+                  t-esc="chip.text"/>
+          </div>
+          <p class="pbim-note" t-if="state.dialogError"
+             t-esc="state.dialogError"/>
+        </div>
+        <div class="pay-drawer-f">
+          <button class="pbim-btn primary sm"
+                  t-if="state.open.state === 'draft'"
+                  t-on-click="() => this.act('submit')">Send for approval</button>
+          <button class="pbim-btn primary sm"
+                  t-if="state.open.state === 'proposed'"
+                  t-on-click="() => this.act('hr')">Approve for HR</button>
+          <button class="pbim-btn primary sm"
+                  t-if="state.open.state === 'hr_review'"
+                  t-on-click="() => this.act('next')">Approve for finance</button>
+          <button class="pbim-btn primary sm"
+                  t-if="state.open.state === 'finance'"
+                  t-on-click="() => this.act('ceo')">Approve it</button>
+          <button class="pbim-btn primary sm"
+                  t-if="state.open.state === 'approved' and state.canApply"
+                  t-on-click="() => this.act('apply')">Apply</button>
+          <button class="pbim-btn outline sm"
+                  t-if="state.open.state === 'applied' and state.open.undo_until"
+                  t-on-click="() => this.act('undo')">
+            <t t-out="ic('undo', 15)"/>
+            <span>Take it back</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

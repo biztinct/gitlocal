@@ -20,15 +20,27 @@
                     <HubBackChip t-if="back" back="back" tone="'light'"/>
                     <p class="pbim-eyebrow">Pay</p>
                     <h1 class="pay-h" t-if="state.tab === 'bands'">Pay bands</h1>
-                    <h1 class="pay-h" t-else="">Fairness</h1>
+                    <h1 class="pay-h" t-elif="state.tab === 'fairness'">Fairness</h1>
+                    <h1 class="pay-h" t-elif="state.tab === 'review'">Pay review</h1>
+                    <h1 class="pay-h" t-else="">Pay changes</h1>
                     <p class="pay-s" t-if="state.tab === 'bands'">
                         What this company means to pay for each kind of work,
                         and where everybody actually sits. Nothing here changes
                         anybody's pay.
                     </p>
-                    <p class="pay-s" t-else="">
+                    <p class="pay-s" t-elif="state.tab === 'fairness'">
                         Worked out from the pay this company actually paid,
                         every time you open it. Nothing is stored.
+                    </p>
+                    <p class="pay-s" t-elif="state.tab === 'review'">
+                        A whole year's pay decided in one screen: a suggested
+                        rise on every row, a budget that counts as you work,
+                        four approvals, and a day to take it back.
+                    </p>
+                    <p class="pay-s" t-else="">
+                        A promotion, a correction or a counter-offer between
+                        reviews, through the same guidance and the same
+                        approvals.
                     </p>
                 </div>
                 <div class="pay-head-actions" t-if="state.tab === 'bands'">
@@ -46,12 +58,13 @@
                         <t t-out="ic('userPlus', 14)"/> Place a new hire
                     </button>
                 </div>
-                <div class="pay-head-actions" t-else="">
+                <div class="pay-head-actions" t-elif="state.tab === 'fairness'">
                     <button class="pbim-btn outline sm"
                             t-on-click="() => this.printStatement()">
                         <t t-out="ic('printer', 14)"/> Print the statement
                     </button>
                 </div>
+                <div class="pay-head-actions" t-else=""/>
             </div>
 
             <!-- ============================================== the tabs -->
@@ -59,11 +72,9 @@
                 <button t-foreach="tabs" t-as="tab" t-key="tab.key"
                         t-attf-class="pay-tab {{ state.tab === tab.key ? 'is-on' : '' }}"
                         t-att-disabled="tab.ready ? false : true"
-                        t-att-title="tab.ready ? '' : 'Coming in the next release'"
                         t-on-click="() => this.setTab(tab.key)">
                     <t t-out="ic(tab.icon, 15)"/>
                     <span t-esc="tab.label"/>
-                    <span class="pay-tab-soon" t-if="!tab.ready">soon</span>
                 </button>
             </div>
 
@@ -514,6 +525,16 @@
                         </p>
                     </div>
                 </t>
+            </t>
+
+            <!-- =========================================== REVIEW -->
+            <t t-if="state.tab === 'review'">
+                <PbPayReview t-props="reviewProps"/>
+            </t>
+
+            <!-- =========================================== CHANGES -->
+            <t t-if="state.tab === 'changes'">
+                <PbPayChanges t-props="reviewProps"/>
             </t>
 
             <!-- ========================================== the drawers -->

@@ -294,6 +294,252 @@
     }
     .pay-empty-a { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
+    // ============================================ REVIEW AND CHANGES
+    //
+    //  The worksheet is a TABLE and not a grid of divs, because a person
+    //  reading nine hundred rows uses the browser's own column alignment,
+    //  its own find-on-page and its own copy — and every one of those is
+    //  lost the moment a table is rebuilt out of flexbox.
+    .pay-rev { display: block; }
+
+    .pay-await {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        border-left: 3px solid var(--pbim-primary);
+        font-size: 13px; font-weight: 600; color: var(--pbim-ink);
+    }
+
+    .pay-revgrid {
+        display: grid; gap: 12px; padding: 4px 0 2px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    .pay-revcard {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r);
+        padding: 14px; cursor: pointer; background: var(--pbim-surface);
+        &:hover { border-color: var(--pbim-primary); box-shadow: var(--pbim-sh); }
+    }
+    .pay-revcard-top {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 8px;
+    }
+    .pay-revcard-n { font-size: 14px; font-weight: 750; color: var(--pbim-ink); }
+    .pay-revcard-s { margin: 4px 0 10px; font-size: 12px; color: var(--pbim-muted); }
+    .pay-revcard-m { margin: 6px 0 0; font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+    .pay-revcard-x { margin: 2px 0 0; font-size: 12px; color: var(--pbim-muted); }
+    .pay-revcard-b {
+        margin: 8px 0 0; font-size: 12px; font-weight: 650;
+        color: var(--pbim-rose); display: flex; align-items: center; gap: 6px;
+    }
+
+    .pay-meter {
+        height: 7px; border-radius: var(--pbim-pill);
+        background: var(--pbim-line-2); overflow: hidden;
+    }
+    .pay-meter-fill {
+        display: block; height: 100%; background: var(--pbim-primary);
+        &.is-over { background: var(--pbim-rose); }
+    }
+
+    .pay-revhead { position: sticky; top: 0; z-index: 6; }
+    .pay-scopenote {
+        display: flex; gap: 7px; align-items: flex-start; margin: 6px 0 0;
+        font-size: 12.5px; color: var(--pbim-muted); max-width: 720px;
+        line-height: 1.6;
+    }
+
+    .pay-revmeters {
+        display: grid; gap: 14px; margin: 12px 0 4px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .pay-revmeter { min-width: 0; }
+    .pay-revmeter-l {
+        display: block; font-size: 11px; font-weight: 700; letter-spacing: .4px;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pay-revmeter-v { display: block; font-size: 18px; font-weight: 800; color: var(--pbim-ink); margin: 2px 0 6px; }
+    .pay-revmeter-s { display: block; font-size: 12.5px; color: var(--pbim-ink); line-height: 1.6; }
+
+    .pay-steps { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 4px; }
+    .pay-step {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 12px; color: var(--pbim-muted);
+        padding: 4px 10px; border-radius: var(--pbim-pill);
+        background: var(--pbim-line-2);
+        &.is-on { background: var(--pbim-soft); color: var(--pbim-primary); font-weight: 700; }
+    }
+    .pay-step-d {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: currentColor;
+    }
+
+    .pay-revbar {
+        display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+        margin-top: 12px; padding-top: 12px;
+        border-top: 1px solid var(--pbim-line);
+    }
+    .pay-revnote { font-size: 12px; color: var(--pbim-muted); }
+
+    .pay-block { border-left: 3px solid var(--pbim-rose); }
+    .pay-blockrow {
+        display: flex; gap: 10px; align-items: flex-start;
+        padding: 8px 0; border-top: 1px solid var(--pbim-line);
+        font-size: 13px; color: var(--pbim-ink);
+    }
+    .pay-blockrow-l { font-weight: 750; white-space: nowrap; }
+    .pay-blockrow-t { color: var(--pbim-muted); }
+
+    .pay-tools {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        justify-content: space-between; align-items: center;
+        padding-bottom: 10px; border-bottom: 1px solid var(--pbim-line);
+    }
+    .pay-tools-l, .pay-tools-r {
+        display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    }
+    .pay-filter {
+        appearance: none; border: 1px solid var(--pbim-line); cursor: pointer;
+        background: var(--pbim-surface); border-radius: var(--pbim-pill);
+        padding: 5px 12px; font-size: 12px; font-weight: 650;
+        color: var(--pbim-muted);
+        &:hover { color: var(--pbim-ink); }
+        &.is-on {
+            background: var(--pbim-soft); color: var(--pbim-primary);
+            border-color: var(--pbim-primary);
+        }
+    }
+    .pay-search { width: 240px; max-width: 100%; }
+    .pay-step-in { width: 70px; }
+    .pay-selcount { font-size: 12px; font-weight: 700; color: var(--pbim-primary); }
+
+    .pay-wswrap { overflow-x: auto; margin-top: 10px; }
+    .pay-ws {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+        th {
+            text-align: left; font-size: 11px; font-weight: 700;
+            letter-spacing: .4px; text-transform: uppercase;
+            color: var(--pbim-muted); padding: 8px 10px;
+            border-bottom: 1px solid var(--pbim-line); white-space: nowrap;
+        }
+        td {
+            padding: 8px 10px; border-bottom: 1px solid var(--pbim-line-2);
+            color: var(--pbim-ink); vertical-align: top;
+        }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+    }
+    .pay-wsrow {
+        cursor: pointer;
+        &:hover { background: var(--pbim-line-2); }
+        &.is-picked { background: var(--pbim-soft); }
+        &.is-here td:first-child { box-shadow: inset 3px 0 0 var(--pbim-primary); }
+        &.is-stopped td:last-child { color: var(--pbim-rose); }
+    }
+    .pay-wsname { display: block; font-weight: 700; }
+    .pay-wsjob { display: block; font-size: 11.5px; color: var(--pbim-muted); }
+    .pay-pct { width: 76px; text-align: right; }
+    .pay-score {
+        display: inline-block; min-width: 22px; text-align: center;
+        font-weight: 750; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft); color: var(--pbim-primary);
+        padding: 1px 6px;
+        &.is-none {
+            background: var(--pbim-line-2); color: var(--pbim-muted);
+            font-weight: 600; font-size: 11px;
+        }
+    }
+    .pay-chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 0; }
+    .pay-wschips { max-width: 320px; }
+    .pay-chip--bad { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pay-chip--warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pay-chip--info { background: var(--pbim-line-2); color: var(--pbim-muted); }
+
+    .pay-pager {
+        display: flex; gap: 12px; align-items: center; justify-content: center;
+        padding-top: 12px;
+    }
+    .pay-pager-l { font-size: 12px; color: var(--pbim-muted); }
+
+    // ------------------------------------------------------- calibration
+    .pay-scatter {
+        position: relative; height: 380px; margin: 14px 0 0 48px;
+        border-left: 1px solid var(--pbim-line);
+        border-bottom: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    // The band picture places a dot by its TOP; the scatter places it by its
+    // bottom, so the shared dot has to let go of `top` inside this plot or a
+    // dot with both `top` and `bottom` set is stretched into a bar.
+    .pay-scatter .pay-dot { top: auto; margin: 0 0 -4px -4px; }
+    .pay-scatter .pay-dot.is-out { margin: 0 0 -6px -6px; }
+
+    .pay-tick {
+        position: absolute; left: 0; right: 0; height: 0;
+        border-top: 1px dashed var(--pbim-line);
+    }
+    .pay-tick-l {
+        position: absolute; left: -46px; top: -8px; width: 42px;
+        text-align: right; font-size: 10.5px; color: var(--pbim-muted);
+    }
+    .pay-scataxis {
+        display: flex; justify-content: space-around; padding: 6px 0 0;
+        font-size: 11px; color: var(--pbim-muted);
+    }
+    .pay-scataxis-l { text-align: center; }
+    .pay-dragbar {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+        z-index: 20; background: var(--pbim-ink); color: var(--pbim-surface);
+        border-radius: var(--pbim-pill); padding: 8px 18px;
+        font-size: 13px; font-weight: 700; box-shadow: var(--pbim-sh-lg);
+    }
+    .pay-outliers { margin-top: 18px; }
+    .pay-outrow {
+        display: flex; gap: 12px; align-items: baseline;
+        padding: 7px 0; border-top: 1px solid var(--pbim-line-2);
+        font-size: 13px;
+    }
+    .pay-outrow-n { font-weight: 700; color: var(--pbim-ink); min-width: 160px; }
+    .pay-outrow-p { font-weight: 750; color: var(--pbim-primary); }
+    .pay-outrow-w { color: var(--pbim-muted); }
+
+    // ------------------------------------------------------- the drawers
+    .pay-drawer--wide { width: 780px; max-width: 100%; }
+    .pay-field {
+        display: block; margin-bottom: 12px;
+        span { display: block; font-size: 12px; font-weight: 700;
+               color: var(--pbim-muted); margin-bottom: 4px; }
+    }
+    .pay-paste { width: 100%; font-family: monospace; font-size: 12px; }
+    .pay-badrow {
+        display: flex; gap: 10px; padding: 6px 0; font-size: 12.5px;
+        border-top: 1px solid var(--pbim-line-2);
+    }
+    .pay-badrow-n { font-weight: 700; color: var(--pbim-muted); min-width: 28px; }
+    .pay-badrow-t { color: var(--pbim-ink); }
+    .pay-badrow-w { color: var(--pbim-rose); }
+    .pay-skipped { margin-top: 16px; }
+
+    .pay-grid {
+        width: 100%; border-collapse: collapse; margin: 12px 0;
+        th {
+            font-size: 11px; font-weight: 700; color: var(--pbim-muted);
+            padding: 6px; text-align: center;
+        }
+        th:first-child { text-align: left; }
+        td { padding: 4px; text-align: center; }
+    }
+    .pay-cell {
+        width: 72px; text-align: center; font-weight: 700;
+        background: var(--pbim-soft); border-color: var(--pbim-soft2);
+    }
+
+    .pay-people { display: grid; gap: 6px; margin-bottom: 12px; }
+    .pay-person {
+        appearance: none; text-align: left; cursor: pointer;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); padding: 8px 10px;
+        &:hover { border-color: var(--pbim-primary); }
+    }
+    .pay-person-n { display: block; font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+    .pay-person-j { display: block; font-size: 11.5px; color: var(--pbim-muted); }
+
     // --------------------------------------------------------- the phone
     @media (max-width: 720px) {
         .pay-axis { margin-left: 0; }
@@ -303,6 +549,13 @@
         .pay-head-actions { width: 100%; }
         .pay-headline { font-size: 18px; }
         .pay-fc-n { font-size: 26px; }
+        .pay-revhead { position: static; }
+        .pay-tools { flex-direction: column; align-items: stretch; }
+        .pay-search { width: 100%; }
+        .pay-scatter { height: 300px; }
+        .pay-drawer--wide { width: 100%; }
+        .pay-outrow { flex-wrap: wrap; }
+        .pay-outrow-n { min-width: 0; }
     }
 
     // ------------------------------------------------------------ motion
@@ -311,5 +564,7 @@
                                width .12s ease, height .12s ease; }
         .pay-range { transition: left .08s linear, right .08s linear; }
         .pay-hc { transition: border-color .14s ease, box-shadow .14s ease; }
+        .pay-meter-fill { transition: width .2s ease; }
+        .pay-revcard { transition: border-color .14s ease, box-shadow .14s ease; }
     }
 }
