@@ -53,7 +53,7 @@ const GROUP_ICON = { money: "banknote", dates: "calendar", place: "mapPin", rule
 // dot-free label; nothing is invented per module (W2).
 const FIELD_ICON = {
     wage: "banknote", struct_id: "layers", type_id: "users", schedule_pay: "clock",
-    grade_id: "award", compa_ratio: "percent", journal_id: "bookOpen",
+    pb_band_id: "sliders", pb_position_pct: "percent", journal_id: "bookOpen",
     date_start: "calendar", date_end: "calendar", trial_date_end: "clock",
     resource_calendar_id: "clock",
     department_id: "building", job_id: "briefcase", location: "mapPin",
