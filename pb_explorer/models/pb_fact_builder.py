@@ -730,22 +730,46 @@ class PbFactBuilder(models.AbstractModel):
                     " WHERE pb_person_id IS NOT NULL")
                 for person, company, employee in self.env.cr.fetchall():
                     employment_in.setdefault((person, company), employee)
+            skipped = 0
             for row in self.env['pb.cost.transfer'].sudo().search_read(
                     [('month', 'in', sorted(months))],
                     ['home_employee_id', 'month', 'amount', 'to_company_id',
-                     'person_id']):
+                     'from_company_id', 'person_id']):
                 amount = row['amount'] or 0.0
                 payer = (row['home_employee_id'] or [0])[0]
                 if payer:
                     key = (payer, row['month'])
                     to_others, from_others = charges.get(key, (0.0, 0.0))
                     charges[key] = (to_others + amount, from_others)
+                to_company = (row['to_company_id'] or [0])[0]
+                from_company = (row['from_company_id'] or [0])[0]
                 other = employment_in.get(((row['person_id'] or [0])[0],
-                                           (row['to_company_id'] or [0])[0]))
-                if other:
+                                           to_company))
+                # RULE 7, AND WHY THE OTHER SIDE IS SOMETIMES BLANK.
+                #
+                # A charge is stored in the money the PAYER paid it in. A fact
+                # row carries ONE currency, its own company's, and every money
+                # measure on this table is read in that currency. So the other
+                # side may only ride on the receiving entity's rows when the
+                # two entities keep their books in the same money — otherwise
+                # the number would be a dong printed as a Singapore dollar,
+                # which is a lie no rate badge can repair. Where they differ
+                # the charge is still there in full, in its own money, on the
+                # "Charged between entities" list; only this one column stays
+                # empty, and it is counted rather than silently dropped.
+                if other and to_company and currency.get(to_company) \
+                        and currency.get(to_company) == currency.get(from_company):
                     key = (other, row['month'])
                     to_others, from_others = charges.get(key, (0.0, 0.0))
                     charges[key] = (to_others, from_others + amount)
+                elif other:
+                    skipped += 1
+            if skipped:
+                _logger.info(
+                    'pb_explorer: %s charge(s) between entities that keep '
+                    'their books in different money are shown on the paying '
+                    'entity only; the full amount is on the charges list.',
+                    skipped)
 
         return {'ends': ends, 'currency': currency,
                 'division_for': division_for, 'config_meta': config_meta,
