@@ -249,6 +249,10 @@ export class PbGroupRoom extends Component {
     get suggestions() { return this.room.suggestions || []; }
     get departments() { return this.room.departments || []; }
     get policies() { return this.room.policies || []; }
+    /** GROUP P5 — the two ways a split month can be paid (ruling G8). */
+    get splitPolicies() { return this.room.split_policies || []; }
+    /** Drawn only where something acts on it. */
+    get hasWorkseg() { return !!this.room.has_workseg; }
     get currencies() { return this.room.currencies || []; }
     get coverage() { return this.room.coverage || { pairs: [] }; }
     get months() { return monthShort(); }
@@ -390,6 +394,41 @@ export class PbGroupRoom extends Component {
     }
 
     setPolicy(key) { this.state.draft.fx_policy = key; }
+
+    /**
+     * GROUP P5 — how a split month is paid, saved the moment it is picked.
+     *
+     * Not inside the group drawer with the currency and the year, on purpose:
+     * this is a choice somebody comes here to change, alone, having read the
+     * two sentences beside it — not one field of a form about the group's
+     * name. One press, one write, one sentence back.
+     */
+    async setSplitPolicy(key) {
+        if (!this.group || this.group.split_pay_policy === key) { return; }
+        const found = this.splitPolicies.find((p) => p.key === key);
+        await this._write("set_split_policy", [this.group.id, key],
+                          found
+                              ? _t("Split months: %(pattern)s.",
+                                   { pattern: found.label })
+                              : _t("Saved."));
+    }
+
+    /**
+     * Day-based pay for people who join or leave part-way through a month.
+     *
+     * The sentence names the company AND says when it starts, because the
+     * thing a person needs to know here is not that a tick moved — it is that
+     * somebody's payslip will be a different number next month.
+     */
+    async toggleProrate(company) {
+        const on = !company.prorate;
+        await this._write("set_prorate_joiners", [company.id, on],
+                          on
+                              ? _t("%(company)s will pay joiners and leavers for the days they work, from the next pay run.",
+                                   { company: company.name })
+                              : _t("%(company)s pays joiners and leavers a full month, as before.",
+                                   { company: company.name }));
+    }
 
     async saveGroup() {
         const draft = this.state.draft;

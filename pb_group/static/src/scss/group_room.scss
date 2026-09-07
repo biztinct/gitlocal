@@ -65,6 +65,57 @@
     .grp-card-s { margin: 3px 0 0; font-size: 12.5px; color: var(--pbim-muted); max-width: 620px; }
     .grp-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+    // ------------------------------------ GROUP P5 · how split months are paid
+    //
+    // The two patterns are drawn as two panels rather than a dropdown,
+    // because the sentence under each one IS the choice: a select box hides
+    // the half of the decision that matters until after it has been made.
+    .grp-split-grid {
+        display: grid; gap: 12px;
+        // NEVER `minmax(min(100%, 280px), 1fr)`: Sass dies on `min()` with
+        // mixed units and takes the WHOLE asset bundle with it, silently.
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .grp-split-opt {
+        display: flex; align-items: flex-start; gap: 10px; text-align: left;
+        padding: 14px 16px; cursor: pointer;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r);
+        background: var(--pbim-surface); color: var(--pbim-text);
+        &:disabled { cursor: default; opacity: .75; }
+        b { display: block; font-size: 13.5px; color: var(--pbim-ink); }
+        span { display: block; font-size: 12.5px; color: var(--pbim-muted); }
+        &.is-on {
+            border-color: var(--pbim-primary);
+            background: var(--pbim-soft);
+            box-shadow: 0 0 0 1px var(--pbim-primary) inset;
+        }
+    }
+    .grp-split-tick { flex: none; color: var(--pbim-primary); line-height: 0; padding-top: 2px; }
+    .grp-split-body { min-width: 0; }
+
+    .grp-split-sub {
+        margin-top: 18px; padding-top: 16px;
+        border-top: 1px solid var(--pbim-line);
+        h4 { margin: 0; font-size: 13px; font-weight: 800; color: var(--pbim-ink); }
+        p  { margin: 4px 0 12px; font-size: 12.5px; color: var(--pbim-muted); max-width: 620px; }
+    }
+    .grp-split-rows { display: grid; gap: 8px; }
+    .grp-split-row {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; padding: 10px 12px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg);
+    }
+    .grp-split-co {
+        display: flex; flex-direction: column; min-width: 0;
+        b    { font-size: 13px; color: var(--pbim-ink); }
+        span { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .grp-split-ghost { font-size: 12.5px; color: var(--pbim-muted); }
+    .grp-switch.is-on { color: var(--pbim-green); border-color: var(--pbim-green); }
+
     .grp-note { margin-top: 10px; }
     .grp-empty { text-align: center; padding: 30px 16px; }
     .grp-empty-ic { color: var(--pbim-primary); margin-bottom: 8px; }

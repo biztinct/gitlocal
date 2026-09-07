@@ -94,6 +94,7 @@ class PbGroupRoom(models.AbstractModel):
                 'allowed': False, 'can_edit': False, 'group': None,
                 'groups': [], 'companies': [], 'currencies': [],
                 'policies': self._policies(), 'coverage': {'pairs': []},
+                'split_policies': [], 'has_workseg': False,
                 'divisions': [], 'suggestions': [], 'unassigned': 0,
                 'year': fields.Date.context_today(self).year,
                 'rate_action': 'pb_group.action_pb_exchange_rates',
@@ -143,6 +144,11 @@ class PbGroupRoom(models.AbstractModel):
             'people_total': total,
             'year': fields.Date.context_today(self).year,
             'rate_action': 'pb_group.action_pb_exchange_rates',
+            # GROUP P5 — the two split-month patterns, and whether the module
+            # that acts on them is even here. The card is drawn only when it
+            # is, so a database without it sees a screen unchanged.
+            'split_policies': self._split_policies(),
+            'has_workseg': 'pb.work.segment' in self.env,
         }
         payload['ms'] = int((time.time() - started) * 1000)
         # `rolled` is the department roll-up the pickers use so a person can
@@ -174,6 +180,7 @@ class PbGroupRoom(models.AbstractModel):
             'currency': currency.name if currency else '',
             'currency_symbol': currency.symbol if currency else '',
             'fx_policy': group.fx_policy,
+            'split_pay_policy': group.split_pay_policy or 'each_pays',
             'fiscal_start_month': group.fiscal_start_month or 1,
             'note': group.note or '',
             'company_ids': group.company_ids.ids,
@@ -211,6 +218,11 @@ class PbGroupRoom(models.AbstractModel):
                 'group_id': other.id if other else 0,
                 'group_name': other.name if other else '',
                 'active': bool(company.active),
+                # GROUP P5 — day-based pay for mid-month joiners and leavers.
+                # Absent on a database without `pb_workseg`, in which case the
+                # card that shows it is not drawn at all.
+                'prorate': bool(getattr(company, 'prorate_joiners_leavers',
+                                        False)),
             })
         return out
 
@@ -259,6 +271,57 @@ class PbGroupRoom(models.AbstractModel):
         }
         return [{'key': key, 'label': labels.get(key, key),
                  'help': helps.get(key, '')} for key in labels]
+
+    @api.model
+    def _split_policies(self):
+        """The two ways a split month can be paid, in words (ruling G8)."""
+        described = self.env['pb.group'].fields_get(['split_pay_policy'])
+        labels = dict(described['split_pay_policy']['selection'])
+        helps = {
+            'each_pays': _("The home entity's payslip is reduced to the days "
+                           "that stayed at home, and the other entity runs "
+                           "its own payslip for its own days, in its own "
+                           "money."),
+            'home_pays': _("The home entity pays the whole month and the "
+                           "other entity is charged its share as an internal "
+                           "cost line. One payslip."),
+        }
+        return [{'key': key, 'label': labels.get(key, key),
+                 'help': helps.get(key, '')} for key in labels]
+
+    @api.model
+    def set_split_policy(self, group_id, policy):
+        """Which pattern this group uses when a month is split."""
+        self._require_write()
+        Group = self.env['pb.group'].sudo()
+        group = Group.browse(int(group_id or 0)).exists()
+        if not group:
+            raise UserError(_("That group is no longer here."))
+        if policy not in dict(Group._fields['split_pay_policy'].selection):
+            raise UserError(_("Pick one of the two patterns."))
+        group.write({'split_pay_policy': policy})
+        return self.get_room()
+
+    @api.model
+    def set_prorate_joiners(self, company_id, enabled):
+        """Turn day-based pay for mid-month joiners and leavers on or off.
+
+        Refuses in words rather than silently doing nothing on a database
+        without the module that acts on it — a switch that does not switch
+        anything is a dead end with a tick in it.
+        """
+        self._require_write()
+        Company = self.env['res.company'].sudo().with_context(
+            active_test=False)
+        company = Company.browse(int(company_id or 0)).exists()
+        if not company:
+            raise UserError(_("That company is no longer here."))
+        if 'prorate_joiners_leavers' not in company._fields:
+            raise UserError(_(
+                "Day-based pay for people who join or leave part-way through "
+                "a month is not switched on for this database yet."))
+        company.write({'prorate_joiners_leavers': bool(enabled)})
+        return self.get_room()
 
     @api.model
     def _coverage(self, group):
@@ -383,6 +446,9 @@ class PbGroupRoom(models.AbstractModel):
             'fiscal_start_month': month,
             'note': (vals.get('note') or '').strip() or False,
         }
+        split = vals.get('split_pay_policy')
+        if split in dict(Group._fields['split_pay_policy'].selection):
+            payload['split_pay_policy'] = split
         group_id = int(vals.get('id') or 0)
         if group_id:
             group = Group.browse(group_id).exists()
