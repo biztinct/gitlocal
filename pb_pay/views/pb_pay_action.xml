@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Declared as RECORDS rather than reached by a bare tag: a bare tag is
+         synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed" (ledger GR8).
+
+         The RETURN DOOR is on the action itself, so every way in — a ⌘K row,
+         a bookmark, the People hub — arrives with the same way out.
+
+         Test URL: /odoo/action-pb_pay -->
+
+    <record id="action_pb_pay" model="ir.actions.client">
+        <field name="name">Pay bands</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <record id="action_pb_pay_fairness" model="ir.actions.client">
+        <field name="name">Fairness</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'fairness', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <record id="action_pb_pay_place" model="ir.actions.client">
+        <field name="name">Place a new hire</field>
+        <field name="tag">pb_pay</field>
+        <field name="context">{'pb_tab': 'bands', 'pb_focus': 'place', 'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <record id="action_pb_pay_band" model="ir.actions.act_window">
+        <field name="name">Pay bands</field>
+        <field name="res_model">pb.pay.band</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">No pay bands yet</p>
+            <p>A band is the lowest, middle and highest monthly pay for one level of one job family. The Pay screen can suggest a full set from what you already pay.</p>
+        </field>
+    </record>
+
+</odoo>

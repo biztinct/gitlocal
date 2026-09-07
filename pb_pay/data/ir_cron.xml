@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bands do not move often; wages do. One nightly pass keeps the
+         position on every contract honest without anybody pressing anything.
+
+         THE MODEL IS `res.company` AND NOT `pb.pay.position` ON PURPOSE
+         (ledger GR25). The platform builds a server action's eval context with
+         `self.env[model_name]` BEFORE a line of the action's code runs, so a
+         cron pointing at a table THIS upgrade created is a KeyError on the
+         first pass after install — an ERROR in the log nobody can act on. It
+         names a model every worker has always had, and the code itself probes
+         the registry.
+
+         Deliberately NOT inside `noupdate="1"`: a cron is plumbing, and a fix
+         to it has to reach a database that already carries yesterday's. -->
+
+    <record id="cron_pay_positions" model="ir.cron">
+        <field name="name">Payobook: work out where everybody sits in their pay band</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.pay.position']._cron_recompute() if 'pb.pay.position' in env else None</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>
