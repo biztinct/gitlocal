@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P9.
     'name': 'Payobook Budgets',
     'summary': 'What each function was given for the year, what it has actually '
                'spent, and who is burning it faster than the calendar',
     'description': """
-RIZE phase P9 — budgets on the engine that is already here.
+Budgets, built on the engine that is already here.
 
 WHAT THIS MODULE IS
 
@@ -48,7 +51,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

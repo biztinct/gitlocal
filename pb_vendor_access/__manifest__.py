@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P11 + ACCESS P6.
     'name': 'Payobook Vendors & Access',
     'summary': 'The suppliers HR deals with and when their agreements run out '
                '— and the Payobook role catalogue the Access home reads',
     'description': """
-RIZE phase P11, and the Payobook half of ACCESS P6.
+The suppliers HR deals with, and the role catalogue the Access home reads.
 
 WHAT THIS MODULE IS
 
@@ -53,7 +56,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.7.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

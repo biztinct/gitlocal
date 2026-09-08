@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P7.
     'name': 'Payobook Pay Packages & Awards',
     'summary': 'What somebody is paid, written down — plus awards, the payroll '
                'calendar, benefits, and the pack finance is handed on approval',
     'description': """
-RIZE phase P7 — the four money gaps, and none of them touch the payroll engine.
+The four money gaps, and none of them touch the payroll engine.
 
 WHAT THIS MODULE IS
 
@@ -45,7 +48,7 @@ behind payroll groups a pay-package reader need not hold.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

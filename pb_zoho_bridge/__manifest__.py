@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P1.
     'name': 'Payobook Zoho Bridge',
     'summary': 'The receiving door: joiners and leavers arrive from the '
                'connected system and start their journey by themselves',
     'description': """
-RIZE phase P1 — the inbound door from Zoho People.
+The inbound door from the connected system.
 
 WHAT THIS MODULE IS
 
@@ -40,7 +43,7 @@ it is NOT sent then. `send_credentials()` is a separate act, which the joining-d
 step of their journey performs. An account that exists in silence is useful; an
 account announced three weeks early is a support ticket.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

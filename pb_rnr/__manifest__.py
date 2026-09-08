@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P8.
     'name': 'Payobook Recognition',
     'summary': 'Company values, praise that two people have to agree with, '
                'quarterly winners, the wall everybody sees, and birthdays and '
                'work anniversaries nobody has to remember',
     'description': """
-RIZE phase P8 — recognition that is worth having, and that can pay.
+Recognition that is worth having, and that can pay.
 
 WHAT THIS MODULE IS
 
@@ -49,7 +52,7 @@ else gets it.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji anywhere — including in the emails.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

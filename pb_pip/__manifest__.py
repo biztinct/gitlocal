@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P6.
     'name': 'Payobook Improvement Plans',
     'summary': 'Coaching first, then a written plan with dates on it — and a '
                'decision somebody actually makes',
     'description': """
-RIZE phase P6 — what happens when somebody's work is not where it needs to be.
+What happens when somebody's work is not where it needs to be.
 
 WHAT THIS MODULE IS
 
@@ -33,7 +36,7 @@ VERDICT FAIL NEVER AUTO-OPENS AN EXIT, and neither does anything else here. A
 resignation that is approved CLOSES a running plan (P4's extension point), which
 is the opposite direction and the only automatic ending there is.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

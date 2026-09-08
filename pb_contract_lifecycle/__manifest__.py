@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P10.
     'name': 'Payobook Contract Lifecycle',
     'summary': 'Contracts and interns decided two months early — let it end, '
                'extend it, or make it permanent',
     'description': """
-RIZE phase P10 — the date on a fixed-term contract, made somebody's job before
+The date on a fixed-term contract, made somebody's job before
 it arrives.
 
 THE PROBLEM. A fixed-term contract ends on a day somebody typed into a form a
@@ -47,7 +50,7 @@ existing contract's end date or rewrites its wage. The old contract ends on its
 own date and the platform's nightly job closes it; the new one starts the day
 after, as a draft, so a person reads it before it starts.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P0.
     'name': 'Payobook Lifecycle',
     'summary': 'The journey engine — every step a joiner, a leaver or a '
                'probation goes through, who owns it, and when it is due',
     'description': """
-RIZE phase P0 — the journey engine and the Lifecycle mission.
+The journey engine, and the Lifecycle mission it draws.
 
-Everything the later RIZE phases hang off lives here, and nothing that belongs
+Everything the later journeys hang off lives here, and nothing that belongs
 to one of them does.
 
 WHAT THIS MODULE IS
@@ -52,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.3.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
