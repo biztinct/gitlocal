@@ -351,10 +351,19 @@ class PbPayBands(models.AbstractModel):
                           'last': step == 4})
         note = ''
         if beyond:
+            # The WHOLE sentence branches, not just the count: the platform's
+            # `_()` has no plural form (GR42) and a phrase dropped into one
+            # frame cannot fix the verb beside it (RIZE R117). On AB Mauri
+            # most lanes hold exactly one person out here, and "1 people are
+            # paid" is the first thing a reader sees.
+            edge = self._short(high, currency)
             note = _(
+                '1 person is paid more than %(edge)s and sits on the '
+                'right-hand edge. Their own pay is on their label.',
+                edge=edge) if beyond == 1 else _(
                 '%(count)s people are paid more than %(edge)s and sit on the '
                 'right-hand edge. Their own pay is on their label.',
-                count=beyond, edge=self._short(high, currency))
+                count=beyond, edge=edge)
         return {'min': 0.0, 'max': high, 'ticks': ticks, 'beyond': beyond,
                 'note': note}
 
