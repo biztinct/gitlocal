@@ -13,9 +13,12 @@ WHAT THIS MODULE ADDS
 
   * PAY BANDS. A salary range per job family, per level, per country and
     currency, with a from-date so a band that moves does not rewrite last
-    year. Every band is drawn as a range with every person in it as a dot.
-    Drag an edge and the people who fall outside light up, with what it would
-    cost to bring them back in. Nothing is saved until you let go.
+    year. Every band is drawn as a range with EVERY person in it on the
+    picture — a named dot each in a small band, and a skyline of people
+    columns in a big one, so nobody is ever left out. Drag an edge and the
+    people who fall outside light up as you move, with what it would cost to
+    bring them back in. Press any column to see who is standing in it.
+    Nothing is saved until you let go.
   * A BAND AND A POSITION ON EVERY CONTRACT, kept current. "62% of the way
     through the band" in plain words, on the contract screen, with no figure
     anybody has to maintain by hand.
@@ -57,7 +60,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.3.0.0',
+    'version': '19.0.3.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -90,7 +93,9 @@ WHAT IT DOES NOT CHANGE
     'assets': {
         'web.assets_backend': [
             'pb_pay/static/src/scss/pay.scss',
-            # the screens first, then the rows that name doors to them
+            # the picture's arithmetic first (it imports nothing), then the
+            # screens, then the rows that name doors to them
+            'pb_pay/static/src/js/band_picture.js',
             'pb_pay/static/src/js/pay_review.js',
             'pb_pay/static/src/js/pay_hub.js',
             'pb_pay/static/src/js/pay_palette.js',

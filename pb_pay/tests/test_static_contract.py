@@ -187,6 +187,7 @@ class TestPayStaticContract(TransactionCase):
         self.assertEqual(set(backend) | set(frontend), on_disk)
         self.assertEqual(list(backend), [
             'pb_pay/static/src/scss/pay.scss',
+            'pb_pay/static/src/js/band_picture.js',
             'pb_pay/static/src/js/pay_review.js',
             'pb_pay/static/src/js/pay_hub.js',
             'pb_pay/static/src/js/pay_palette.js',

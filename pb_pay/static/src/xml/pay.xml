@@ -163,12 +163,10 @@
                         <div class="pay-card-h">
                             <div>
                                 <p class="pay-card-t">The band picture</p>
-                                <p class="pay-card-s">
-                                    Every person is a dot placed by their pay.
-                                    Drag a band's edge and the people who fall
-                                    outside light up, with what it would cost to
-                                    bring them back in.
-                                </p>
+                                <!-- One line, because the whole sentence is one
+                                     msgid and an indented block becomes a msgid
+                                     full of newlines nobody can translate. -->
+                                <p class="pay-card-s">Everybody is on here, placed by their pay — named dots in a small band, and one mark per person stacked up in a big one. Press any mark to see who is standing there. Drag a band's edge and the people who fall outside light up, with what it would cost to bring them back in.</p>
                             </div>
                             <button t-attf-class="pbim-btn ghost sm {{ state.dense ? 'is-on' : '' }}"
                                     t-att-aria-pressed="state.dense"
@@ -178,7 +176,8 @@
                             </button>
                         </div>
 
-                        <div t-attf-class="pay-scroll {{ state.dense ? 'is-dense' : '' }}">
+                        <div t-attf-class="pay-scroll {{ state.dense ? 'is-dense' : '' }}"
+                             t-ref="bandsRoot">
                         <div class="pay-lane" t-foreach="lanes" t-as="lane"
                              t-key="lane.currency_code">
                             <div class="pay-lane-h" t-esc="lane.title"/>
@@ -228,26 +227,71 @@
                                     <div class="pay-band-n" t-esc="band.name"/>
                                     <div class="pay-band-sub" t-esc="band.sub_label"/>
                                     <div class="pay-chips">
-                                        <span class="pbim-chip" t-if="band.below"
-                                              t-esc="band.below_label"/>
-                                        <span class="pbim-chip" t-if="band.above"
-                                              t-esc="band.above_label"/>
-                                        <span class="pbim-chip" t-if="band.more"
-                                              t-esc="band.more_label"/>
+                                        <span class="pbim-chip"
+                                              t-if="liveOut(band, 'below')"
+                                              t-esc="liveChip(band, 'below')"/>
+                                        <span class="pbim-chip"
+                                              t-if="liveOut(band, 'above')"
+                                              t-esc="liveChip(band, 'above')"/>
                                     </div>
                                 </div>
                                 <div class="pay-track"
                                      t-att-data-band="band.id"
+                                     t-att-data-band-key="bandKey(band)"
                                      t-on-mousedown="(ev) => this.setTrack(band, ev.currentTarget)">
                                     <div t-attf-class="pay-range {{ band.suggested ? 'is-suggested' : '' }}"
                                          t-att-style="rangeStyle(group, band)"/>
                                     <div class="pay-mid" t-att-style="midStyle(group, band)"/>
-                                    <button t-foreach="band.dots" t-as="dot"
-                                            t-key="dot.id"
-                                            t-att-class="dotClass(band, dot)"
-                                            t-att-style="dotStyle(group, dot)"
-                                            t-att-title="dotTitle(dot)"
-                                            t-att-aria-label="dotTitle(dot)"/>
+
+                                    <!-- EVERY PERSON, in whichever shape draws
+                                         them all: a named dot each while the
+                                         band is small, pips and columns once
+                                         it is not. Nobody is ever left out
+                                         (TIDY ledger rule 12). -->
+                                    <t t-set="shot" t-value="picture(group, band)"/>
+                                    <t t-if="shot.kind === 'dots'">
+                                        <button t-foreach="shot.dots" t-as="dot"
+                                                t-key="dot.id"
+                                                t-att-class="dotClass(band, dot)"
+                                                t-att-style="dotStyle(dot)"
+                                                t-att-title="dotTitle(band, dot)"
+                                                t-att-aria-label="dotTitle(band, dot)"
+                                                t-on-click.stop="() => this.openDot(band, dot)"/>
+                                    </t>
+                                    <t t-if="shot.kind === 'bins'">
+                                        <button t-foreach="shot.parts" t-as="part"
+                                                t-key="part.key"
+                                                t-att-class="partClass(part)"
+                                                t-att-style="partStyle(part)"
+                                                t-att-title="partTitle(band, part)"
+                                                t-att-aria-label="partTitle(band, part)"
+                                                t-on-click.stop="() => this.openPart(band, part)">
+                                            <span class="pay-col-n" t-if="part.label"
+                                                  t-esc="part.label"/>
+                                            <span class="pay-pips" t-if="part.pips">
+                                                <span class="pay-pip"
+                                                      t-foreach="part.pips" t-as="pip"
+                                                      t-key="pip"
+                                                      t-att-style="pipStyle(part)"/>
+                                            </span>
+                                            <span class="pay-col" t-else=""
+                                                  t-att-style="colStyle(part)"/>
+                                        </button>
+                                    </t>
+
+                                    <!-- the middle of what this band's people
+                                         are actually paid, which is a
+                                         different question from the middle of
+                                         the band -->
+                                    <t t-if="band.median">
+                                        <div class="pay-median"
+                                             t-att-style="medianStyle(group, band)"
+                                             t-att-title="band.median_note"/>
+                                        <span class="pay-median-lab"
+                                              t-if="medianRoomy(group, band)"
+                                              t-att-style="medianStyle(group, band)"
+                                              t-esc="band.median_note"/>
+                                    </t>
                                     <button class="pay-grip" t-if="band.id"
                                             aria-label="Move the lowest edge of this band"
                                             t-att-style="gripStyle(group, band, 'min')"
@@ -258,16 +302,59 @@
                                             t-att-style="gripStyle(group, band, 'max')"
                                             t-on-mousedown="(ev) => this.startDrag(group, band, 'max', ev)"
                                             t-on-keydown="(ev) => this.onGripKey(group, band, 'max', ev)"/>
-                                    <span class="pay-edge-lab"
-                                          t-att-style="gripStyle(group, band, 'min')"
-                                          t-esc="band.min_short"/>
-                                    <span class="pay-edge-lab"
-                                          t-att-style="gripStyle(group, band, 'max')"
-                                          t-esc="band.max_short"/>
+                                    <t t-if="edgesRoomy(group, band)">
+                                        <span class="pay-edge-lab"
+                                              t-att-style="gripStyle(group, band, 'min')"
+                                              t-esc="band.min_short"/>
+                                        <span class="pay-edge-lab"
+                                              t-att-style="gripStyle(group, band, 'max')"
+                                              t-esc="band.max_short"/>
+                                    </t>
                                 </div>
                             </div>
                             </t>
                         </div>
+                        </div>
+
+                        <!-- WHO is standing in that column. A picture that can
+                             only say "how many" is half an answer, so every
+                             mark is a button and this is what it opens. -->
+                        <div class="pay-popwrap" t-if="state.pop">
+                            <div class="pay-popveil"
+                                 t-on-click="() => this.closePop()"/>
+                            <div class="pay-pop" role="dialog" aria-modal="true"
+                                 aria-label="The people standing here">
+                                <div class="pay-pop-h">
+                                    <div class="pay-pop-t" t-esc="state.pop.title"/>
+                                    <button class="pay-x" aria-label="Close"
+                                            t-on-click="() => this.closePop()">
+                                        <t t-out="ic('x', 15)"/>
+                                    </button>
+                                </div>
+                                <p class="pay-pop-s" t-if="state.pop.busy">
+                                    Reading the names…
+                                </p>
+                                <p class="pay-pop-s" t-if="state.pop.failed"
+                                   t-esc="state.pop.failed"/>
+                                <ul class="pay-poplist" t-if="!state.pop.busy">
+                                    <li t-foreach="state.pop.rows" t-as="row"
+                                        t-key="row.id">
+                                        <span class="pay-poprow-n" t-esc="row.name"/>
+                                        <span class="pay-poprow-j" t-esc="row.job"/>
+                                        <span class="pay-poprow-w"
+                                              t-esc="row.wage_label"/>
+                                        <span class="pay-poprow-s"
+                                              t-esc="popStateWord(row.state)"/>
+                                        <span t-attf-class="pay-popdot is-{{ row.state === 'in' ? 'inside' : row.state }}"
+                                              t-att-title="popStateWord(row.state)"/>
+                                    </li>
+                                </ul>
+                                <p class="pay-pop-s"
+                                   t-if="!state.pop.busy and state.pop.more"
+                                   t-esc="state.pop.more_label"/>
+                                <p class="pay-pop-s"
+                                   t-if="!state.pop.busy and !state.pop.rows.length and !state.pop.failed">Nobody is standing here any more. Close this and look at the picture again.</p>
+                            </div>
                         </div>
 
                         <!-- what the drag costs, while it is still happening -->
