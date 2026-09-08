@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P5.
     'name': 'Payobook Probation',
     'summary': 'The trial period — when it ends, who is asked, what was '
                'decided, and the letter that says so',
     'description': """
-RIZE phase P5 — everything between somebody's first day and the day their
+Everything between somebody's first day and the day their
 employment is confirmed.
 
 WHAT THIS MODULE IS
@@ -43,7 +46,7 @@ letter, and puts a button in front of a human. That button reuses P4's own
 `setup_offboarding()` rather than growing a second way to open a leaving
 checklist.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

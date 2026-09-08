@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P3.
     'name': 'Payobook Onboarding',
     'summary': 'The new-joiner experience — buddies, HR partners, the welcome '
                'card, the day-one invitation, and the first weeks seen from '
                'both sides',
     'description': """
-RIZE phase P3 — everything that happens around somebody's first day.
+Everything that happens around somebody's first day.
 
 WHAT THIS MODULE IS
 
@@ -58,7 +61,7 @@ additive `_inherit` extensions declared inside this module, and the lens
 arrives through P0's soft registry, which is what lets the dependency run one
 way only.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

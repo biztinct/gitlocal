@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P4.
     'name': 'Payobook Offboarding',
     'summary': 'Resignation to final settlement — notice, approval, handover, '
                'clearances and the gate that stops the last payment while '
                'something is still outstanding',
     'description': """
-RIZE phase P4 — everything between "I am leaving" and the last payment.
+Everything between "I am leaving" and the last payment.
 
 WHAT THIS MODULE IS
 
@@ -56,7 +59,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 `pb_onboarding` or `pb_hr_fullandfinal` beyond additive `_inherit` extensions
 declared inside this module, so a plain install is the whole deployment.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

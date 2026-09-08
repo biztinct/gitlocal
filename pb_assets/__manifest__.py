@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 {
+# The opening line of this description is what the Apps list prints,
+# so it is a USER-VISIBLE string and carries no programme code
+# (ledger GR7, TIDY T10). Built as RIZE phase P2.
     'name': 'Payobook Assets',
     'summary': 'The asset register — every laptop, phone, card and account the '
                'company lends out, who has it, and what came back',
     'description': """
-RIZE phase P2 — the asset register.
+The asset register.
 
 WHAT THIS MODULE IS
 
@@ -43,7 +46,7 @@ THE TWO SEAMS INTO THE PHASES AROUND IT.
 Nothing here modifies `pb_people` or `pb_people_hub`: the lens arrives through
 their soft registry, which is what lets the dependency run one way only.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
