@@ -20,6 +20,18 @@
  * cut into bins a few pixels wide, and each bin says how many people stand in
  * it and how they are placed against the band's two edges (`binPeople`).
  *
+ * ONE BINNER, TWO PICTURES
+ * ------------------------
+ * LOOK P2 gave the calibration picture the same problem the band picture had:
+ * four and a half thousand people to draw and no room to draw them one at a
+ * time. It is the SAME arithmetic over a different axis (a rise in per cent
+ * rather than money) with a different three-way split, so `binValues` is the
+ * general form and `binPeople` is a thin wrapper over it with the
+ * below/inside/above classifier written in. Two pictures, one set of promises:
+ * the counts always add back up, the bins are ordered and inside the track,
+ * and somebody beyond either end of the axis is placed ON that end and is
+ * still counted.
+ *
  * Both are measured against the SCOPE's axis — the shared money axis of a
  * currency lane, a job family's own when a reader has asked to fit to it, or
  * ONE BAND'S OWN when a reader has opened that band out. The axis is the only
@@ -72,6 +84,81 @@ function atRank(sorted, share) {
 }
 
 /**
+ * ANYTHING, gathered into bins a few pixels wide, and sorted into states.
+ *
+ * The general form of `binPeople`. It knows nothing about pay bands, money or
+ * calibration: it takes values on an axis, a bin width in pixels and a
+ * function that says what STATE each item is in, and hands back one entry per
+ * non-empty bin.
+ *
+ * THE PROMISES, all four checked under node:
+ *  1. Nobody is lost. Every item lands in exactly one bin, and the per-state
+ *     counts always add back up to `count`, which adds back up to the number
+ *     of items handed in.
+ *  2. An item beyond either end of the axis is placed ON that end and counted
+ *     there, rather than dropped (LOOK rule 16).
+ *  3. The bins come back left to right, never overlapping, always inside the
+ *     track.
+ *  4. A classifier that answers something unexpected — nothing, a number, a
+ *     name nobody was expecting — still keeps its item: the state is filed
+ *     under `other` and the count is unchanged. A picture may not lose a
+ *     person because a classifier had a bad day.
+ *
+ * @param {object[]} values  `[{ value, …anything else }]`. Order does not
+ *                           matter to the binning; each bin keeps its items in
+ *                           the order they arrived, so the drawing is
+ *                           deterministic.
+ * @param {object} axis      `{ min, max }` — what the two ends are worth.
+ * @param {number} trackPx   how long the axis is on screen, in pixels.
+ * @param {number} binPx     how long one bin is, in pixels.
+ * @param {function} classify  `(item) => state`, a string.
+ * @returns {object[]} one entry per NON-EMPTY bin, in order:
+ *   `index`         which bin it is, counted from the low end;
+ *   `x0`, `x1`      its two ends in pixels along the track;
+ *   `low`, `high`   what those two ends are worth on the axis;
+ *   `states`        `{ <state>: count }`, only the states that are there;
+ *   `items`         the items themselves, so a picture can draw a thin bin
+ *                   one mark at a time and name who is in a busy one;
+ *   `count`         how many items are in the bin altogether.
+ */
+export function binValues(values, axis, trackPx, binPx, classify) {
+    const list = Array.isArray(values) ? values : [];
+    const floor = axisLow(axis);
+    const span = axisSpan(axis);
+    const width = Number(trackPx) > 0 ? Number(trackPx) : 1;
+    const step = Number(binPx) > 0 ? Number(binPx) : 8;
+    const bins = Math.max(1, Math.ceil(width / step));
+    const found = new Map();
+
+    for (const item of list) {
+        const value = Number(item && item.value) || 0;
+        // Beyond either end sits ON that end and is counted there (rule 16).
+        const x = clamp(((value - floor) / span) * width, 0, width);
+        const index = clamp(Math.floor(x / step), 0, bins - 1);
+        let bin = found.get(index);
+        if (!bin) {
+            const x0 = index * step;
+            const x1 = Math.min(x0 + step, width);
+            bin = {
+                index, x0, x1,
+                low: floor + ((x0 / width) * span),
+                high: floor + ((x1 / width) * span),
+                states: {}, items: [], count: 0,
+            };
+            found.set(index, bin);
+        }
+        const answered = typeof classify === "function" ? classify(item) : null;
+        const state = typeof answered === "string" && answered
+            ? answered : "other";
+        bin.states[state] = (bin.states[state] || 0) + 1;
+        bin.items.push(item);
+        bin.count += 1;
+    }
+
+    return Array.from(found.values()).sort((a, b) => a.index - b.index);
+}
+
+/**
  * Every person on a band, gathered into bins a few pixels wide.
  *
  * @param {number[]} wages  every person's pay, in whole units of the band's
@@ -96,47 +183,31 @@ function atRank(sorted, share) {
  *   `count`         the three added together.
  */
 export function binPeople(wages, axis, trackPx, binPx, edges) {
-    const list = Array.isArray(wages) ? wages : [];
-    const floor = axisLow(axis);
-    const span = axisSpan(axis);
-    const width = Number(trackPx) > 0 ? Number(trackPx) : 1;
-    const step = Number(binPx) > 0 ? Number(binPx) : 8;
     const low = Number((edges && edges.min) || 0);
     const high = Number((edges && edges.max) || 0);
-    const bins = Math.max(1, Math.ceil(width / step));
-    const found = new Map();
-
-    for (const raw of list) {
-        const wage = Number(raw) || 0;
-        // A person paid beyond either end of the axis sits ON that end and is
-        // counted there (ledger GR43, LOOK rule 16): the axis is honest about
-        // its tails in its own note, and this picture may not lose the person.
-        // A zoomed axis has a LEFT tail as well as a right one.
-        const x = clamp(((wage - floor) / span) * width, 0, width);
-        const index = clamp(Math.floor(x / step), 0, bins - 1);
-        let bin = found.get(index);
-        if (!bin) {
-            const x0 = index * step;
-            const x1 = Math.min(x0 + step, width);
-            bin = {
-                index, x0, x1,
-                low: floor + ((x0 / width) * span),
-                high: floor + ((x1 / width) * span),
-                below: 0, inside: 0, above: 0, count: 0,
-            };
-            found.set(index, bin);
-        }
-        if (wage < low) {
-            bin.below += 1;
-        } else if (wage > high) {
-            bin.above += 1;
-        } else {
-            bin.inside += 1;
-        }
-        bin.count += 1;
-    }
-
-    return Array.from(found.values()).sort((a, b) => a.index - b.index);
+    // A person paid beyond either end of the axis sits ON that end and is
+    // counted there (ledger GR43, LOOK rule 16): the axis is honest about its
+    // tails in its own note, and this picture may not lose the person. A
+    // zoomed axis has a LEFT tail as well as a right one. All of that lives in
+    // `binValues` now, so the band picture and the calibration picture cannot
+    // drift apart about it.
+    const bins = binValues(
+        (Array.isArray(wages) ? wages : []).map(
+            (raw) => ({ value: Number(raw) || 0 })),
+        axis, trackPx, binPx,
+        (item) => {
+            if (item.value < low) { return "below"; }
+            if (item.value > high) { return "above"; }
+            return "inside";
+        });
+    return bins.map((bin) => ({
+        index: bin.index, x0: bin.x0, x1: bin.x1,
+        low: bin.low, high: bin.high,
+        below: bin.states.below || 0,
+        inside: bin.states.inside || 0,
+        above: bin.states.above || 0,
+        count: bin.count,
+    }));
 }
 
 /**

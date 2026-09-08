@@ -22,7 +22,9 @@ import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SOURCE = resolve(HERE, "..", "static", "src", "js", "band_picture.js");
-const { axisSpan, bandAxis, binPeople, busiestBin, dodgeDots } = await import(
+const {
+    axisSpan, bandAxis, binPeople, binValues, busiestBin, dodgeDots,
+} = await import(
     "data:text/javascript;base64,"
     + Buffer.from(readFileSync(SOURCE, "utf8"), "utf8").toString("base64"));
 
@@ -376,6 +378,142 @@ console.log("band picture — bandAxis");
           `${shown.min}-${shown.max} vs ${held.min}-${held.max}`);
     check("T3o and the headroom axis still contains the band",
           held.min <= band.min && held.max >= band.max);
+}
+
+console.log("band picture — binValues");
+
+// T3p — the counts always add back up, whatever the classifier says.
+{
+    const random = makeRandom(20260909);
+    let worst = null;
+    const words = ["normal", "outlier", "blocked"];
+    for (let round = 0; round < 400 && worst === null; round += 1) {
+        const people = Math.floor(random() * 4500) + 1;
+        const top = (random() * 40) + 1;
+        const track = Math.floor(random() * 500) + 40;
+        const bin = Math.floor(random() * 10) + 2;
+        const items = [];
+        for (let i = 0; i < people; i += 1) {
+            // Deliberately includes values beyond BOTH ends of the axis.
+            items.push({ id: i, value: (random() * top * 1.4) - (top * 0.2) });
+        }
+        const bins = binValues(items, axis(0, top), track, bin,
+                               (item) => words[item.id % 3]);
+        const total = bins.reduce((sum, b) => sum + b.count, 0);
+        const byState = bins.reduce(
+            (sum, b) => sum + Object.values(b.states)
+                .reduce((n, v) => n + v, 0), 0);
+        const held = bins.reduce((sum, b) => sum + b.items.length, 0);
+        if (total !== items.length || byState !== items.length
+                || held !== items.length) {
+            worst = `round ${round}: ${total}/${byState}/${held} of `
+                + `${items.length}`;
+        }
+    }
+    check("T3p every value lands in one bin and every state adds back up, "
+          + "400 random boards", worst === null, worst);
+}
+
+// T3q — ordered, non-overlapping, inside the track.
+{
+    const random = makeRandom(515);
+    const items = [];
+    for (let i = 0; i < 3000; i += 1) {
+        items.push({ id: i, value: random() * 25 });
+    }
+    const bins = binValues(items, axis(0, 25), 371, 6, () => "normal");
+    let ok = true;
+    for (let i = 0; i < bins.length; i += 1) {
+        if (bins[i].x0 < 0 || bins[i].x1 > 371 || bins[i].x1 <= bins[i].x0) {
+            ok = false;
+        }
+        if (i && (bins[i].x0 < bins[i - 1].x1
+                  || bins[i].index <= bins[i - 1].index)) {
+            ok = false;
+        }
+    }
+    check("T3q bins are ordered, non-overlapping and inside the track", ok);
+}
+
+// T3r — a value beyond either end is clamped ON and still counted.
+{
+    const items = [
+        { id: 1, value: -40 }, { id: 2, value: 5 }, { id: 3, value: 400 },
+    ];
+    const bins = binValues(items, axis(0, 10), 100, 10, () => "normal");
+    const total = bins.reduce((sum, b) => sum + b.count, 0);
+    const first = bins[0];
+    const last = bins[bins.length - 1];
+    check("T3r a value beyond either end is clamped on and still counted",
+          total === 3 && first.index === 0 && last.index === 9,
+          `${total} counted, bins ${first.index}…${last.index}`);
+}
+
+// T3s — nothing in, nothing out, and never a throw.
+{
+    check("T3s an empty input answers with no bins at all",
+          binValues([], axis(0, 10), 100, 8, () => "normal").length === 0);
+    check("T3s and so does a missing one",
+          binValues(undefined, axis(0, 10), 100, 8, () => "normal").length === 0
+          && binValues(null, undefined, 0, 0, null).length === 0);
+}
+
+// T3t — a classifier that answers something unexpected loses nobody.
+{
+    const items = [
+        { id: 1, value: 1 }, { id: 2, value: 1 }, { id: 3, value: 1 },
+        { id: 4, value: 1 }, { id: 5, value: 1 },
+    ];
+    const bins = binValues(items, axis(0, 10), 100, 100, (item) => {
+        if (item.id === 1) { return undefined; }
+        if (item.id === 2) { return 7; }
+        if (item.id === 3) { return ""; }
+        if (item.id === 4) { return "wildcard"; }
+        return "normal";
+    });
+    const bin = bins[0];
+    const summed = Object.values(bin.states).reduce((n, v) => n + v, 0);
+    check("T3t an unexpected state does not lose the person",
+          bins.length === 1 && bin.count === 5 && summed === 5
+          && bin.states.other === 3 && bin.states.wildcard === 1
+          && bin.states.normal === 1,
+          bins.length === 1 ? JSON.stringify(bin.states) : `${bins.length} bins`);
+    check("T3t and no classifier at all is still five people in a bin",
+          binValues(items, axis(0, 10), 100, 100)[0].count === 5);
+}
+
+// T3u — the same items in, the same bins out, in the order they arrived.
+{
+    const items = [
+        { id: 9, value: 2 }, { id: 4, value: 2 }, { id: 7, value: 8 },
+    ];
+    const first = binValues(items, axis(0, 10), 100, 50, () => "normal");
+    const again = binValues(items, axis(0, 10), 100, 50, () => "normal");
+    check("T3u a bin keeps its items in the order they arrived",
+          first[0].items.map((i) => i.id).join(",") === "9,4"
+          && again[0].items.map((i) => i.id).join(",") === "9,4",
+          first[0].items.map((i) => i.id).join(","));
+}
+
+// T3v — binPeople is binValues, and its own answers did not move.
+{
+    const wages = [400, 401, 402, 403, 404, 405, 406, 407];
+    const bins = binPeople(wages, axis(0, 1000), 1000, 8,
+                           { min: 404, max: 900 });
+    const general = binValues(
+        wages.map((w) => ({ value: w })), axis(0, 1000), 1000, 8,
+        (item) => (item.value < 404 ? "below"
+            : (item.value > 900 ? "above" : "inside")));
+    check("T3v the wrapper's bins are the general form's bins",
+          bins.length === general.length
+          && bins[0].x0 === general[0].x0 && bins[0].x1 === general[0].x1
+          && bins[0].below === (general[0].states.below || 0)
+          && bins[0].inside === (general[0].states.inside || 0)
+          && bins[0].above === (general[0].states.above || 0)
+          && bins[0].count === general[0].count);
+    check("T3v and it still answers with the three keys the band picture reads",
+          "below" in bins[0] && "inside" in bins[0] && "above" in bins[0]
+          && "low" in bins[0] && "high" in bins[0] && "index" in bins[0]);
 }
 
 console.log("");
