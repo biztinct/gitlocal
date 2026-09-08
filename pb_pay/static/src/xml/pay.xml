@@ -221,8 +221,16 @@
                                    t-esc="group.axis.note"/>
                             </t>
 
-                            <div class="pay-band" t-foreach="group.bands" t-as="band"
+                            <div t-attf-class="pay-band {{ isOpen(band) ? 'is-open' : '' }}"
+                                 t-foreach="group.bands" t-as="band"
                                  t-key="band.id or band.name">
+                                <!-- The ruler THIS row is drawn on: the band's
+                                     own when it is open, the family's when
+                                     that family is fitted, the lane's
+                                     otherwise. Worked out once, here, so no
+                                     mark below can measure itself against a
+                                     different one. -->
+                                <t t-set="scope" t-value="rowScope(group, band)"/>
                                 <div class="pay-band-id">
                                     <div class="pay-band-n" t-esc="band.name"/>
                                     <div class="pay-band-sub" t-esc="band.sub_label"/>
@@ -234,21 +242,38 @@
                                               t-if="liveOut(band, 'above')"
                                               t-esc="liveChip(band, 'above')"/>
                                     </div>
+                                    <button t-attf-class="pay-openbtn {{ isOpen(band) ? 'is-on' : '' }}"
+                                            t-att-aria-expanded="isOpen(band) ? 'true' : 'false'"
+                                            t-att-aria-controls="zoomNoteId(band)"
+                                            t-att-title="openHint"
+                                            t-on-click="() => this.toggleBand(band)">
+                                        <t t-if="isOpen(band)">
+                                            <t t-out="ic('chevronUp', 13)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="ic('arrowLeftRight', 13)"/>
+                                        </t>
+                                        <span t-esc="openLabel(band)"/>
+                                    </button>
                                 </div>
-                                <div class="pay-track"
+                                <div class="pay-bandcol">
+                                <div t-attf-class="pay-track {{ state.zooming === bandKey(band) ? 'is-zooming' : '' }}"
                                      t-att-data-band="band.id"
                                      t-att-data-band-key="bandKey(band)"
+                                     t-att-aria-describedby="isOpen(band) ? zoomNoteId(band) : false"
+                                     t-on-mouseenter="() => this.onTrackEnter(band)"
+                                     t-on-mouseleave="() => this.onTrackLeave()"
                                      t-on-mousedown="(ev) => this.setTrack(band, ev.currentTarget)">
                                     <div t-attf-class="pay-range {{ band.suggested ? 'is-suggested' : '' }}"
-                                         t-att-style="rangeStyle(group, band)"/>
-                                    <div class="pay-mid" t-att-style="midStyle(group, band)"/>
+                                         t-att-style="rangeStyle(scope, band)"/>
+                                    <div class="pay-mid" t-att-style="midStyle(scope, band)"/>
 
                                     <!-- EVERY PERSON, in whichever shape draws
                                          them all: a named dot each while the
                                          band is small, pips and columns once
                                          it is not. Nobody is ever left out
                                          (TIDY ledger rule 12). -->
-                                    <t t-set="shot" t-value="picture(group, band)"/>
+                                    <t t-set="shot" t-value="picture(scope, band)"/>
                                     <t t-if="shot.kind === 'dots'">
                                         <button t-foreach="shot.dots" t-as="dot"
                                                 t-key="dot.id"
@@ -285,31 +310,66 @@
                                          the band -->
                                     <t t-if="band.median">
                                         <div class="pay-median"
-                                             t-att-style="medianStyle(group, band)"
+                                             t-att-style="medianStyle(scope, band)"
                                              t-att-title="band.median_note"/>
                                         <span class="pay-median-lab"
-                                              t-if="medianRoomy(group, band)"
-                                              t-att-style="medianStyle(group, band)"
+                                              t-if="medianRoomy(scope, band)"
+                                              t-att-style="medianStyle(scope, band)"
                                               t-esc="band.median_note"/>
                                     </t>
                                     <button class="pay-grip" t-if="band.id"
                                             aria-label="Move the lowest edge of this band"
-                                            t-att-style="gripStyle(group, band, 'min')"
-                                            t-on-mousedown="(ev) => this.startDrag(group, band, 'min', ev)"
-                                            t-on-keydown="(ev) => this.onGripKey(group, band, 'min', ev)"/>
+                                            t-att-style="gripStyle(scope, band, 'min')"
+                                            t-on-mousedown="(ev) => this.startDrag(scope, band, 'min', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(scope, band, 'min', ev)"/>
                                     <button class="pay-grip" t-if="band.id"
                                             aria-label="Move the highest edge of this band"
-                                            t-att-style="gripStyle(group, band, 'max')"
-                                            t-on-mousedown="(ev) => this.startDrag(group, band, 'max', ev)"
-                                            t-on-keydown="(ev) => this.onGripKey(group, band, 'max', ev)"/>
-                                    <t t-if="edgesRoomy(group, band)">
+                                            t-att-style="gripStyle(scope, band, 'max')"
+                                            t-on-mousedown="(ev) => this.startDrag(scope, band, 'max', ev)"
+                                            t-on-keydown="(ev) => this.onGripKey(scope, band, 'max', ev)"/>
+                                    <t t-if="edgesRoomy(scope, band)">
                                         <span class="pay-edge-lab"
-                                              t-att-style="gripStyle(group, band, 'min')"
+                                              t-att-style="gripStyle(scope, band, 'min')"
                                               t-esc="band.min_short"/>
                                         <span class="pay-edge-lab"
-                                              t-att-style="gripStyle(group, band, 'max')"
+                                              t-att-style="gripStyle(scope, band, 'max')"
                                               t-esc="band.max_short"/>
                                     </t>
+
+                                    <!-- The hairline above the track: the WHOLE
+                                         shared money scale, with the slice
+                                         this zoom covers filled in, so nobody
+                                         loses their bearings. -->
+                                    <div class="pay-locate" t-if="isOpen(band)"
+                                         t-att-title="locatorTitle(group)"
+                                         aria-hidden="true">
+                                        <span class="pay-locate-in"
+                                              t-att-style="locatorStyle(group, band)"/>
+                                    </div>
+                                </div>
+
+                                <!-- OPENED OUT, below the track and IN FLOW, so
+                                     the row grows by exactly what it has to say
+                                     and a long sentence on a narrow screen can
+                                     never print over the next band. -->
+                                <div class="pay-tray" t-if="isOpen(band)">
+                                    <div class="pay-ruler" aria-hidden="true">
+                                        <span t-foreach="rulerTicks(scope, band)"
+                                              t-as="tick" t-key="tick_index"
+                                              t-attf-class="pay-ruler-t {{ tick.last ? 'pay-ruler-end' : '' }} {{ tick.first ? 'pay-ruler-start' : '' }}"
+                                              t-attf-style="left:{{ tick.pct }}%">
+                                            <t t-esc="tick.label"/>
+                                        </span>
+                                    </div>
+                                    <p class="pay-zoomnote"
+                                       t-att-id="zoomNoteId(band)">
+                                        <span class="pay-zoomnote-w"
+                                              t-esc="zoomSentence(group)"/>
+                                        <span class="pay-zoomnote-x"
+                                              t-if="zoomExtra(band)"
+                                              t-esc="zoomExtra(band)"/>
+                                    </p>
+                                </div>
                                 </div>
                             </div>
                             </t>
