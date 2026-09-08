@@ -194,7 +194,165 @@ tree-hash verification, never `pkill -f odoo-bin`).
   per module and belongs to a commit of its own; recorded here as an owner
   debt rather than done inside this phase's scope.
 
+- T11 (P2): **purging `/web/assets/%` is NOT enough for a pure JavaScript
+  change on this box, and a change to the manifest's asset LIST is invisible
+  without a restart whatever you purge.** WFPLAN's WF18 says in brackets that
+  deleting alone is enough for a `.js` change; it is not — a new file added to
+  `web.assets_backend` never appeared in the bundle at all (the browser
+  reported "modules needed by other modules but have not been defined" and the
+  screen died on `Cannot find key "pb_pay" in the "actions" registry"), and two
+  later JavaScript-only edits rebuilt the bundle under the SAME hash from the
+  old contents. The running workers hold the manifest they were started with.
+  `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` **and**
+  `sudo service odoo-server restart`, every time, or half an hour goes on
+  reading the right file on disk and the wrong one in the browser.
+- T12 (P2): **an existing term that gains a JAVASCRIPT caller keeps printing in
+  English until the `.pot` is exported again.** "%(count)s below" had lived in
+  the catalogue since P6a with one occurrence — the Python facade. Moving the
+  chip into the browser so it could answer during a drag left the msgid
+  unchanged and the sentence untranslated: `_t()` in the browser reads
+  `get_web_translations`, which only carries entries whose occurrences are
+  marked `odoo-javascript`. The screen printed "57 below" beside a fully
+  Vietnamese picture. GR58's trap, entered from the other side: moving a string
+  between the server and the browser is a CATALOGUE change even when not one
+  character of the string moves.
+- T13 (P2): **`import … from "./thing.js"` under node reads a CommonJS module
+  and finds no named exports.** A `.js` file with no `package.json` saying
+  `"type": "module"` beside it is CommonJS to node, whatever `export function`
+  is written inside it, and the error names the file rather than the reason.
+  The repository's own precedent already had the answer — `tools/
+  decision_engine_check.mjs` reads the source off disk and hands it to the
+  runtime as a `data:text/javascript;base64,…` URL, which also guarantees the
+  check runs against the file EXACTLY as it ships.
+- T14 (P2): **a bin is eight pixels wide and a three-digit number is twenty.**
+  Printing the count over every column ≥ 10 people produced a run of numbers
+  printed on top of one another — "1 480" where the truth was "148" and "0" —
+  and the first build of the picture shipped it. Counts are now laid out left
+  to right and one is drawn only when it clears the last one by 30 px; every
+  column still carries its exact figure on its own label and in the list it
+  opens. Same family: the median's own writing, and the two figures at the ends
+  of a band, are dropped when the band is drawn narrower than the words.
+- T15 (P2): **a bottom sheet pinned to the viewport's left edge is painted over
+  by the application's own icon rail.** `.pb-sidebar` is `position: absolute` at
+  **z-index 25** and this module's ceiling is 20 (`pb_hub/tests/test_static.py`),
+  so a full-bleed phone sheet lost its first sixty pixels — every name started
+  mid-word and the screenshot was the only way to see it, because the DOM
+  geometry was perfectly correct (`left: 0, width: 390`). Phone sheets start at
+  `left: 60px`; never fight the rail with a z-index this module may not have.
+- T16 (P2): **key a redrawn mark by WHERE it is, never by what colour it is.**
+  The bins were keyed `band:bin:state`, so every recolour during a drag
+  destroyed the element and built a new one — which replayed the fade-in, under
+  the hand that was dragging. Keyed by position instead, the same element
+  changes class and the only thing that moves is the colour, which is what the
+  gesture is for.
+- T17 (P2): **the chips came from the server and the marks recoloured in the
+  browser, so one row carried two answers to the same question.** Mid-drag the
+  picture showed 432 people below the edge and the chip beside it still read
+  "57 below" — both correct about different moments, which on screen is simply
+  wrong. Anything that answers WHILE a gesture is happening has to be computed
+  from the same numbers the gesture is redrawing (here the complete `wages`
+  list), not read from the payload that arrived before it started.
+- T18 (P2): **there are TWELVE manifests that open "RIZE phase Pn", not
+  thirteen** (T10 counted from a stale grep), and the search for them cannot be
+  case-insensitive: `Categorized`, `authorized` and `Authorized` are the false
+  positives T5 warned about, in manifest prose this time. While counting them,
+  a wider sweep found **thirteen OTHER `pb_*` manifests whose `name`, `summary`
+  or `description` still says "Odoo"** — `pb_explorer`, `pb_hub`, `pb_mission`,
+  `pb_sidebar`, `pb_wf_kit`, `pb_login_language`, `pb_hr_payroll_demand` and six
+  per-country payroll modules. GR7 makes every one of those a user-visible
+  string in the Apps list. Recorded here as an owner debt, not fixed in P2.
+
 ## Phase log
+- P2 — "The band picture" — designed and BUILT 2026-09-08
+  (`TIDY_P2_THE_BAND_PICTURE.md`). Status: **COMPLETE**.
+  `pb_pay` 19.0.3.1.0 live on p9clone, payobook, abm and payobook_template,
+  together with the twelve manifests of deliverable 1d (`pb_assets` 19.0.1.0.1,
+  `pb_budget` 19.0.2.0.1, `pb_comp_ben` 19.0.1.0.1, `pb_contract_lifecycle`
+  19.0.1.0.1, `pb_lifecycle` 19.0.1.3.1, `pb_offboarding` 19.0.1.0.1,
+  `pb_onboarding` 19.0.1.0.1, `pb_pip` 19.0.1.1.1, `pb_probation` 19.0.1.1.1,
+  `pb_rnr` 19.0.1.0.1, `pb_zoho_bridge` 19.0.1.0.1, `pb_vendor_access`
+  19.0.1.7.1). All thirteen module trees verified byte-identical to the
+  repository on the server and every manifest version verified against
+  `ir_module_module.latest_version` on all four databases.
+
+  **The picture changes shape rather than dropping anybody (rule 12).**
+  The server sends `wages` — every person's pay, sorted, as whole units of the
+  band's own currency — for every band, however many people are in it, and
+  sends the named `dots` only while a band holds 24 people or fewer. `MAX_DOTS`,
+  `more` and `more_label` are gone from the band payload and the words "not
+  drawn" appear in no Python file, no template, no catalogue and nowhere on any
+  screen. Up to 24 people the picture is a NAMED DOT each, dodged: sorted by
+  pay, placed on the axis, and stepped onto one of five rows around the track's
+  midline whenever a dot would land within 10 px of another on the same row —
+  a beeswarm, so twenty-two people paid almost the same amount form a tidy
+  block instead of a smear. Above 24 the track is cut into bins of 8 px (6 px in
+  dense mode and on a phone) and each bin is drawn as PIPS — one 5 × 5 px square
+  per person, up to six, so six people read as six — or as a COLUMN whose
+  height is `24 px + 14 px × √((count − 6) / (busiest − 6))`, capped 4 px short
+  of the track. A bin that straddles a band edge is split by wage into stacks
+  side by side, so the colour boundary is exact to the person.
+
+  **`pb_pay/static/src/js/band_picture.js`** is a pure module — no OWL, no
+  `@web`, nothing but numbers in and objects out — holding `binPeople` and
+  `dodgeDots`, and **`pb_pay/tools/band_picture_check.mjs`** runs 13 checks
+  over it under node in under a second (T3a: over 400 random boards every
+  person lands in exactly one bin; T3e: over 400 random boards no two dots on a
+  row are ever closer than the gap, including boards where everybody is paid
+  the same). The check is wired into the Python suite too, so it cannot rot.
+
+  **A column can be asked WHO.** `pb.pay.bands.people_between(scope, low, high,
+  limit=20)` is behind `READ_GROUPS` and scoped exactly as `get_board` is; every
+  band carries a `people_scope` so a saved band is found by its id and a
+  suggested one by its bucket and its proposed edges. Every mark is a button:
+  hover or focus says "54 people · 8.6M ₫ to 8.9M ₫ · in the band", Enter or a
+  click lists up to twenty of them by name, job, pay and standing with "and 34
+  more.", a close button, a click on the veil and Escape (capture, WF4).
+
+  **The whole row answers while the edge is moving.** The marks recolour from
+  `live(band)` on every frame, and the chips are now computed in the browser
+  from the same complete list of wages (T17), so mid-drag the picture, the chip
+  and the server's own sentence agree: 432 rose marks, "432 below", "14B ₫ a
+  year to bring 432 people back in". A thin tick marks the middle of what the
+  band's people are actually PAID, written "median 8.5M ₫" above the track when
+  the band is wide enough to hold the words.
+
+  **Tests.** 111 `pb_pay` tests on p9clone, **0 failed and 0 errors**,
+  including the three new ones (T1 every person in the payload and no band
+  counting people it did not draw; T2 `people_between` names exactly the people
+  in that slice, caps at twenty, tells the truth about the total, never crosses
+  a company and refuses a reader with no role; T3 the node check). The wider
+  run over 262 tests (`pb_pay` 111, `pb_group` 54, `pb_contracts` 48,
+  `pb_hub` 34, `pb_people_hub` 33, `pb_budget` 26) reports the SAME 3 failures
+  the ledger has recorded as p9clone data drift since GROUP P6a
+  (`pb_contracts` ×2, `pb_group` `test_t9`) and nothing else: zero regressions.
+
+  **Vietnamese** is complete: 770 exported terms, 0 English survivors, 0 lost
+  placeholders, 0 fuzzy entries and the word "Odoo" in no translation — and the
+  `.pot`'s own header no longer carries it either.
+
+  **Browser.** B1–B8 walked on p9clone, payobook and abm at 1440 and 390, in
+  English and Vietnamese. Screenshots: `docs/handovers/tidy_p2_shots/`.
+  On the demo company (4,500 people over 21 suggested bands) **every band's
+  drawn count equals its people count and no two marks' bounding boxes
+  intersect anywhere on the screen** — measured in the browser, on p9clone,
+  payobook and abm. On abm, 28 of 29 bands draw named dots and one draws
+  columns; nothing overlaps there either.
+
+  The p9clone rehearsal (21 accepted bands, 10 families, 30 job links, one
+  dragged and undone edge) was DELETED afterwards and verified gone; payobook,
+  abm and payobook_template carry **0 bands, 0 families and 0 job links** — the
+  demo company still opens on the suggestion, so nothing was written to
+  production beyond the module upgrades.
+
+  Owner debts: the payobook administrator password in the GROUP ledger is still
+  wrong (GR24) and so is abm's (WF15) — P2 used one temporary
+  `tidy.p2@payobook.com` on each of p9clone (4312), payobook (4424) and abm
+  (259), all archived again at the end of the phase; thirteen OTHER `pb_*`
+  manifests still say "Odoo" in the Apps list (T18); the calibration scatter in
+  Pay Review still caps at 900 dots and is the one picture in this module that
+  can still drop a person (Phase 4 candidate); the `pbim` kit still has no dark
+  palette (GR38).
+
 - P1 — "Find it & clean it" — designed 2026-09-08, BUILT the same day
   (`TIDY_P1_FIND_IT_AND_CLEAN_IT.md`, amended mid-phase by the owner: the
   RIZE data is RENAMED, not deleted). Status: **COMPLETE**.
