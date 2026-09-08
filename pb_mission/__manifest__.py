@@ -44,8 +44,9 @@ P3b adds the ambient layer on top of that shell:
   * the **shell person surface** — one shared `<WfPersonWeek/>` drawer for the
     four lenses that do not own one, so a person pinned from anywhere opens
     somewhere.
-  * the **⌘K palette** — lenses, people and actions, rendered through the Odoo
-    overlay service so the shell's z-discipline (W37) is untouched, and the
+  * the **⌘K palette** — lenses, people and actions, rendered through the
+    platform's overlay service so the shell's z-discipline (W37) is untouched,
+    and the
     `pb_cmd` protocol that carries a palette action into a lens.
 
 P4 turns the engine on inside the same shell:
@@ -74,7 +75,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # 19.0.1.6.0 — IA Cycle 6: the workspace accepts `pb_cmd` on ARRIVAL, so a
     # foreign cockpit can deep link to a lens's own sub-view (Insights' bonus
     # tile → the Overtime desk's bonus review) instead of only to the lens.
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.8.1',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

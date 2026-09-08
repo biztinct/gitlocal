@@ -2,7 +2,18 @@
 {
     "name": "Payobook Zoho SSO",
     "summary": "Secure Zoho Accounts single sign-on for Payobook",
-    "version": "19.0.1.0.0",
+    "description": """
+Sign in to Payobook with a Zoho account.
+
+Authorization Code with PKCE, and the sign-in flow never reuses or stores the
+access tokens the payroll import holds. An administrator switches it on in
+General Settings, registers the callback this system shows them in the Zoho
+API Console, and chooses whether a verified Zoho email may link itself to an
+existing Payobook user or must wait for approval.
+
+The engineering README beside this file has the full set-up walkthrough.
+""",
+    "version": "19.0.1.0.1",
     "category": "Administration/Authentication",
     "license": "LGPL-3",
     "author": "Payobook",

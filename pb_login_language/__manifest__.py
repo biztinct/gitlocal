@@ -1,10 +1,10 @@
 {
     'name': 'Login Language Selector',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Tools',
     'summary': 'Choose language at login screen',
     'description': """
-        Adds a language dropdown to the Odoo login page.
+        Adds a language dropdown to the Payobook login page.
         Users can select their preferred language (e.g. English, Vietnamese)
         before logging in. On successful login, the user's language preference
         is automatically updated.

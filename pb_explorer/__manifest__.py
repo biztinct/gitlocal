@@ -25,11 +25,11 @@ be non-zero) with ONE workbench backed by a derived fact table.
 
 Doctrine: ``pb.explorer`` is a read-only facade (gate on the real user, then
 sudo the reads); ``pb.fact.builder`` is the only writer. All assets are local —
-Chart.js comes from Odoo's own lazy ``web.chartjs_lib`` bundle, never a CDN.
+Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a CDN.
 """,
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
-    'version': '19.0.2.2.0',
+    'version': '19.0.2.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

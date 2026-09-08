@@ -28,7 +28,8 @@ their own pickers (W4).
     correction WRITES and writes belong to event handlers (W21).
   * `<WfRibbon/>`  — the exception ribbon (amber / rose / green).
   * `<WfCommandPalette/>` — P3b's Command-K: lenses, people and actions in one
-    input. The host mounts it through the Odoo OVERLAY service, so it lives in
+    input. The host mounts it through the platform's OVERLAY service, so it
+    lives in
     `.o-overlay-container` and paints above a lens's modals without the shell
     stacking any chrome of its own (W37). The people group runs the same
     debounced `hr.employee.name_search` as the context bar — one person-search
@@ -40,7 +41,7 @@ their own pickers (W4).
 
 pbim-tokenized throughout, Lucide icons via pb_import_kit's shared ic() registry.
 """,
-    'version': '19.0.1.5.1',
+    'version': '19.0.1.5.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
