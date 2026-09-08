@@ -50,10 +50,17 @@ READ_GROUPS = (
     'hr.group_hr_manager',
 )
 
-#: A band with four thousand people in it cannot draw four thousand dots and
-#: does not need to: the picture is about the SHAPE. The overflow is surfaced
-#: ("and 3,600 more"), never silent.
-MAX_DOTS = 400
+#: EVERY PERSON IS DRAWN (TIDY ledger rule 12). A band picture may never say
+#: "and N more not drawn" — if there are too many people for named marks the
+#: picture CHANGES SHAPE, it never drops anybody. So the server sends two
+#: things: `wages`, one integer per person, always complete, which the browser
+#: bins into pips and columns; and `dots`, the named, hoverable form, only
+#: while a band is small enough for every dot to carry a name without
+#: overlapping. Above that line the names are read back on demand through
+#: `people_between`, one bin at a time.
+DOT_LIMIT = 24
+#: A person can be asked for by name one bin at a time; this caps one answer.
+PEOPLE_BETWEEN_LIMIT = 20
 MAX_ROWS = 60           # rows inside a health drawer
 MAX_IMPORT = 500        # rows accepted from one spreadsheet
 
@@ -442,7 +449,20 @@ class PbPayBands(models.AbstractModel):
 
     @api.model
     def _fill_band(self, entry, rows, currency):
-        """Put the people on a band and count how they stand."""
+        """Put the people on a band and count how they stand.
+
+        `wages` is EVERY person's pay, sorted, as whole units of the currency —
+        the complete list, however many there are, because the picture is
+        binned in the browser and rule 12 says nobody is dropped. Rounding to
+        whole units is not a loss: the picture is drawn at eight pixels to a
+        bin, which on any real money axis is millions of dong wide.
+
+        `dots` — the named form — is sent only while the band is small enough
+        to draw one mark per person with a name on it. Above that, names are
+        fetched a bin at a time by `people_between`, so the payload of a
+        four-thousand-person board stays small and no name is ever shipped
+        that nobody asked for.
+        """
         entry = dict(entry)
         inside = [r for r in rows if r['band_id'] == entry['id']]
         inside.sort(key=lambda r: r['wage'])
@@ -450,12 +470,21 @@ class PbPayBands(models.AbstractModel):
         entry['below'] = sum(1 for r in inside if r['state'] == 'below')
         entry['above'] = sum(1 for r in inside if r['state'] == 'above')
         entry['in_band'] = entry['people'] - entry['below'] - entry['above']
-        shown = inside[:MAX_DOTS]
-        entry['dots'] = [self._dot(r, entry, currency) for r in shown]
-        entry['more'] = max(0, len(inside) - len(shown))
+        entry['wages'] = [int(round(r['wage'] or 0)) for r in inside]
+        # The browser writes the money on a bin's own label, so it needs the
+        # symbol and which side of the number it goes (WF22: written once).
+        entry['symbol'] = currency.symbol if currency else ''
+        entry['symbol_before'] = bool(currency
+                                      and currency.position == 'before')
+        entry['dots'] = ([self._dot(r, entry, currency) for r in inside]
+                         if len(inside) <= DOT_LIMIT else [])
+        entry['people_scope'] = {'band_id': entry['id']}
         wages = [r['wage'] for r in inside if r['wage']]
         entry['median'] = self._median(wages)
         entry['median_label'] = self._money(entry['median'], currency) \
+            if wages else ''
+        entry['median_note'] = _('median %(amount)s',
+                                 amount=self._short(entry['median'], currency)) \
             if wages else ''
         entry.update(self._band_labels(entry, currency))
         return entry
@@ -477,8 +506,6 @@ class PbPayBands(models.AbstractModel):
                 high=entry.get('max_short', '')),
             'below_label': _('%(count)s below', count=entry.get('below', 0)),
             'above_label': _('%(count)s above', count=entry.get('above', 0)),
-            'more_label': _('and %(count)s more not drawn',
-                            count=entry.get('more', 0)),
         }
 
     @api.model
@@ -541,6 +568,113 @@ class PbPayBands(models.AbstractModel):
                 'title': _('Not in a band yet — %(people)s',
                            people=self._people_phrase(len(loose))),
                 'more': max(0, len(jobs) - MAX_ROWS)}
+
+    # ==================================================== who is in that bin
+    @api.model
+    def people_between(self, scope, low, high, limit=PEOPLE_BETWEEN_LIMIT):
+        """The people standing in one slice of a band, by name.
+
+        This is the half of rule 12 the picture cannot draw. Above two dozen
+        people a band is drawn as columns, which say HOW MANY and never WHO —
+        so a column is a button, and pressing it asks this. The answer is
+        scoped exactly as the board is (the reader's own companies, narrowed
+        again by what they are allowed to see), capped, and it says how many
+        there are in total so "and N more" is a fact about the LIST rather
+        than about the picture.
+        """
+        blank = {'total': 0, 'rows': [], 'allowed': False, 'more': 0,
+                 'more_label': '', 'title': ''}
+        if not self._can_read():
+            return blank
+        scope = dict(scope or {})
+        limit = int(limit or PEOPLE_BETWEEN_LIMIT)
+        limit = max(1, min(limit, PEOPLE_BETWEEN_LIMIT))
+        low, high = float(low or 0.0), float(high or 0.0)
+        if high < low:
+            low, high = high, low
+        companies = self._companies()
+        if not companies:
+            return blank
+
+        band_id = int(scope.get('band_id') or 0)
+        if band_id:
+            band = self.env['pb.pay.band'].sudo().browse(band_id).exists()
+            if not band:
+                return blank
+            currency = band.currency_id
+            edges = (band.min_amount, band.max_amount)
+            found = self.env['pb.pay.position'].sudo().search_read(
+                [('band_id', '=', band_id),
+                 ('company_id', 'in', companies.ids),
+                 ('wage', '>=', low), ('wage', '<=', high)],
+                ['employee_id', 'job_id', 'wage'], order='wage asc')
+            people = [{'employee_id': (r['employee_id'] or [0])[0],
+                       'name': (r['employee_id'] or [0, ''])[1],
+                       'job': (r['job_id'] or [0, ''])[1],
+                       'wage': r['wage']} for r in found]
+        else:
+            # A suggested band: the same buckets `suggest_bands` built, read
+            # again rather than remembered, so nothing the browser sends can
+            # widen what comes back.
+            family = scope.get('family') or ''
+            level = int(scope.get('level') or 0)
+            company_id = int(scope.get('company_id') or 0)
+            edges = (float(scope.get('min') or 0.0),
+                     float(scope.get('max') or 0.0))
+            wanted = companies.filtered(lambda c: c.id == company_id) \
+                if company_id else companies
+            if not wanted:
+                return blank
+            currency = wanted[:1].currency_id or self.env.company.currency_id
+            rows = self._tenure_rows(wanted)
+            names = {job.id: job.display_name
+                     for job in self.env['hr.job'].sudo().browse(
+                         list({r['job_id'] for r in rows if r['job_id']}))}
+            people = []
+            for row in rows:
+                title = names.get(row['job_id'])
+                if not title or not row['wage']:
+                    continue
+                if self._family_for(title) != family:
+                    continue
+                if self._level_for(title) != level:
+                    continue
+                if row['wage'] < low or row['wage'] > high:
+                    continue
+                people.append({'employee_id': row['employee_id'],
+                               'name': row['name'], 'job': title,
+                               'wage': row['wage']})
+            people.sort(key=lambda p: p['wage'])
+
+        listed = people[:limit]
+        rows = []
+        for person in listed:
+            wage = person['wage']
+            state = 'in'
+            if wage < edges[0]:
+                state = 'below'
+            elif wage > edges[1]:
+                state = 'above'
+            rows.append({
+                'id': person['employee_id'],
+                'name': person['name'] or _('Somebody with no name on record'),
+                'job': person['job'] or _('No job on record'),
+                'wage': wage,
+                'wage_label': self._money(wage, currency),
+                'state': state,
+            })
+        more = max(0, len(people) - len(listed))
+        return {
+            'allowed': True,
+            'total': len(people),
+            'rows': rows,
+            'more': more,
+            'more_label': _('and %(count)s more.', count=more) if more else '',
+            'title': _('%(people)s · %(low)s to %(high)s',
+                       people=self._people_phrase(len(people)),
+                       low=self._short(low, currency),
+                       high=self._short(high, currency)),
+        }
 
     @api.model
     def _median(self, values):
@@ -1143,16 +1277,19 @@ class PbPayBands(models.AbstractModel):
             span = (proposal['max'] - proposal['min']) or 1.0
             key = (proposal['family'], proposal['level'],
                    proposal['company_id'])
-            dots, below, above = [], 0, 0
-            for person in sorted(buckets[key], key=lambda p: p['wage']):
-                currency = self.env['res.currency'].browse(
-                    proposal['currency_id'])
+            currency = self.env['res.currency'].browse(
+                proposal['currency_id'])
+            dots, wages, below, above = [], [], 0, 0
+            people = sorted(buckets[key], key=lambda p: p['wage'])
+            small = len(people) <= DOT_LIMIT
+            for person in people:
                 state = 'in'
                 if person['wage'] < proposal['min']:
                     state, below = 'below', below + 1
                 elif person['wage'] > proposal['max']:
                     state, above = 'above', above + 1
-                if len(dots) < MAX_DOTS:
+                wages.append(int(round(person['wage'] or 0)))
+                if small:
                     dots.append({
                         'id': person['employee_id'], 'name': person['name'],
                         'job': names.get(person['job_id'], ''),
@@ -1162,11 +1299,30 @@ class PbPayBands(models.AbstractModel):
                                       / span) * 100.0, 1),
                         'state': state,
                     })
+            median = self._median([p['wage'] for p in buckets[key]])
             proposal.update({
-                'dots': dots, 'below': below, 'above': above,
+                'dots': dots, 'wages': wages, 'below': below, 'above': above,
+                'symbol': currency.symbol if currency else '',
+                'symbol_before': bool(currency
+                                      and currency.position == 'before'),
                 'in_band': proposal['people'] - below - above,
-                'more': max(0, proposal['people'] - len(dots)),
-                'median': self._median([p['wage'] for p in buckets[key]]),
+                'median': median,
+                'median_label': self._money(median, currency),
+                'median_note': _('median %(amount)s',
+                                 amount=self._short(median, currency))
+                if wages else '',
+                # A proposal has no row to look up, so it carries everything
+                # the server needs to find exactly these people again — the
+                # bucket it came from, and the edges it is drawn with.
+                'people_scope': {
+                    'band_id': 0,
+                    'family': proposal['family'],
+                    'level': proposal['level'],
+                    'company_id': proposal['company_id'],
+                    'country': proposal['country_code'],
+                    'min': proposal['min'],
+                    'max': proposal['max'],
+                },
             })
             # A suggested band draws EXACTLY like a saved one, sentences and
             # all: an empty state that looks half-built is a page nobody
@@ -1187,14 +1343,17 @@ class PbPayBands(models.AbstractModel):
                 'symbol': currency.symbol,
                 'title': _('%(code)s · %(count)s bands',
                            code=code, count=len(members)),
+                # Measured on EVERY wage, not on the dots: a band over the dot
+                # limit sends no dots at all, and an axis drawn from a subset
+                # is an axis that moves when the picture changes shape.
                 'axis': self._lane_axis(
                     members,
-                    [{'wage': dot['wage']} for band in members
-                     for dot in band['dots']], currency),
+                    [{'wage': wage} for band in members
+                     for wage in band['wages']], currency),
                 'families': self._family_axes(
                     members,
-                    lambda group: [dot['wage'] for band in group
-                                   for dot in band['dots']],
+                    lambda group: [wage for band in group
+                                   for wage in band['wages']],
                     currency),
                 'bands': members,
             })

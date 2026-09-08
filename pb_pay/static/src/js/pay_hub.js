@@ -34,7 +34,8 @@
  *   * Everything the template reads lives in `useState` (ledger GR26).
  */
 import {
-    Component, onWillStart, useExternalListener, useState,
+    Component, onMounted, onPatched, onWillStart, onWillUnmount,
+    useExternalListener, useRef, useState,
 } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -42,12 +43,41 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { PbPayReview, PbPayChanges } from "@pb_pay/js/pay_review";
+import { binPeople, busiestBin, dodgeDots } from "@pb_pay/js/band_picture";
 
 const BANDS = "pb.pay.bands";
 const FAIRNESS = "pb.pay.fairness";
 
 /** How long a drag waits before asking the server for the exact cost. */
 const DRAG_SETTLE = 160;
+
+/**
+ * How the picture is drawn, in pixels. Two sets of numbers, because dense
+ * mode is not a smaller version of the same drawing — it is the same drawing
+ * with the secondary lines dropped and the track halved, and a pip that
+ * cannot fit six of itself into the track has stopped saying "six people".
+ */
+const SHAPE = {
+    normal: { bin: 8, pip: 5, pipGap: 1, base: 24, lift: 14, cap: 42,
+              dot: 9, gap: 10, labels: true },
+    dense: { bin: 6, pip: 3, pipGap: 0, base: 12, lift: 8, cap: 20,
+             dot: 7, gap: 8, labels: false },
+};
+
+/** Below this many people in one bin the picture draws each of them. */
+const PIP_LIMIT = 6;
+/** A column says how many only when the figure is worth reading. */
+const COUNT_LABEL_FROM = 10;
+/** …and only when it clears the last figure printed, or a wall of numbers
+ *  eight pixels apart says less than no numbers at all. */
+const LABEL_GAP_PX = 30;
+/** A band narrower than this cannot hold "median 8.5M ₫" without writing it
+ *  over its own people, so it keeps the tick and drops the words. */
+const MEDIAN_LABEL_ROOM = 120;
+/** …and the two edge figures need this much between them to be two figures. */
+const EDGE_LABEL_ROOM = 96;
+/** Phones get the dense bins whatever the reader chose on their desktop. */
+const PHONE_PX = 480;
 
 /**
  * Two per-reader conveniences, remembered in this browser and nowhere else.
@@ -111,6 +141,10 @@ export class PbPayScreen extends Component {
         this.back = hubBack(this.props);
         this.trackRefs = {};
         this._settle = null;
+        // The picture is measured, never assumed: bins are pixels, and the
+        // lens sits inside a hub whose rail can be collapsed (WFPLAN W20).
+        this.bandsRef = useRef("bandsRoot");
+        this._resize = null;
 
         const context = (this.props.action && this.props.action.context) || {};
         this.state = useState({
@@ -137,6 +171,13 @@ export class PbPayScreen extends Component {
             // how this reader likes the picture drawn (their browser only)
             fit: remembered(FIT_KEY, {}) || {},
             dense: Boolean(remembered(DENSE_KEY, false)),
+
+            // how wide each band's track actually is, measured on paint and
+            // on every resize. In `useState` because the template reads it
+            // (ledger GR26) and the whole picture moves when it changes.
+            widths: {},
+            // the people behind one column, read back by name on demand
+            pop: null,
 
             // one drawer at a time, each one plain state
             health: null,
@@ -166,6 +207,21 @@ export class PbPayScreen extends Component {
             }
             await this.load();
             if (context.pb_focus === "place") { await this.openPlace(); }
+        });
+
+        onMounted(() => {
+            this._measureTracks();
+            if (window.ResizeObserver && this.bandsRef.el) {
+                this._resize = new ResizeObserver(() => this._measureTracks());
+                this._resize.observe(this.bandsRef.el);
+            }
+        });
+        // A repaint can change how many bands are on screen, so the widths
+        // are taken again — but ONLY written when one of them really moved,
+        // or the write patches, the patch measures, and the screen spins.
+        onPatched(() => this._measureTracks());
+        onWillUnmount(() => {
+            if (this._resize) { this._resize.disconnect(); }
         });
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev),
@@ -393,25 +449,335 @@ export class PbPayScreen extends Component {
             + "%";
     }
 
-    dotStyle(scope, dot) {
-        return "left:" + this.axisPct(scope, dot.wage) + "%";
+    /** The tick at the middle of what this band's people are actually paid. */
+    medianStyle(scope, band) {
+        return "left:" + this.axisPct(scope, band.median || 0) + "%";
     }
 
-    /** A dot's standing against the edges being held RIGHT NOW, so the picture
-     *  answers while the mouse is still down. */
-    dotClass(band, dot) {
+    // ------------------------------------------------------- the two shapes
+    /**
+     * A band's own name for itself, stable across repaints.
+     *
+     * A saved band has an id. A SUGGESTED one has nothing but the bucket it
+     * came from, and two suggestions can share a family and a level in two
+     * companies — so the key is the bucket, and the widths, the tracks and the
+     * open popover all agree about which band they are talking about.
+     */
+    bandKey(band) {
+        if (band.id) { return "b" + band.id; }
+        return ["s", band.family, band.level, band.company_id || 0].join("|");
+    }
+
+    /** Which set of pixel sizes this picture is being drawn with. */
+    get shape() {
+        const narrow = window.innerWidth && window.innerWidth <= PHONE_PX;
+        return (this.state.dense || narrow) ? SHAPE.dense : SHAPE.normal;
+    }
+
+    /**
+     * How wide every track on screen is, in pixels.
+     *
+     * Written back into state only when a number actually changed: `onPatched`
+     * runs after every render, and a state write that always happens is a
+     * render that always happens again.
+     */
+    _measureTracks() {
+        const root = this.bandsRef.el;
+        if (!root) { return; }
+        // A drag repaints on every mouse move and cannot change how wide a
+        // track is, so measuring thirty of them per frame is pure cost.
+        if (this.state.drag) { return; }
+        const found = {};
+        root.querySelectorAll(".pay-track[data-band-key]").forEach((el) => {
+            const key = el.dataset.bandKey;
+            const width = Math.round(el.getBoundingClientRect().width);
+            if (key && width) {
+                found[key] = width;
+                this.trackRefs[key] = el;
+            }
+        });
+        const now = this.state.widths;
+        const keys = Object.keys(found);
+        let changed = keys.length !== Object.keys(now).length;
+        if (!changed) {
+            changed = keys.some((key) => now[key] !== found[key]);
+        }
+        if (changed) { this.state.widths = found; }
+    }
+
+    /**
+     * THE PICTURE. Everybody on this band, in whichever shape draws them all.
+     *
+     * Up to two dozen people get a dot each with their name on it, dodged so
+     * that no two ever touch. Above that the track is cut into bins a few
+     * pixels wide and each bin is drawn as pips — one small square per person,
+     * so six people READ as six — or, once a bin holds more than a handful, as
+     * a solid column with its count printed above it. Nobody is ever dropped
+     * (TIDY ledger rule 12): the picture changes shape instead.
+     *
+     * Every part is classed against the edges as they are being HELD, so the
+     * colours sweep across the picture while the mouse is still down.
+     */
+    picture(scope, band) {
+        const key = this.bandKey(band);
+        const width = this.state.widths[key] || 0;
+        const shape = this.shape;
+        const top = (scope && scope.axis && scope.axis.max) || 1;
         const now = this.live(band);
-        if (dot.wage < now.min) { return "pay-dot is-out"; }
-        if (dot.wage > now.max) { return "pay-dot is-over"; }
-        return "pay-dot";
+        if (!width) { return { kind: "waiting", key, parts: [], dots: [] }; }
+        const dots = band.dots || [];
+        if (dots.length && dots.length <= 24) {
+            return {
+                kind: "dots", key, parts: [],
+                dots: dodgeDots(dots, top, width, shape.gap),
+            };
+        }
+        const bins = binPeople(band.wages || [], top, width, shape.bin, now);
+        const busiest = Math.max(busiestBin(bins), PIP_LIMIT + 1);
+        const parts = [];
+        bins.forEach((bin) => {
+            const pieces = [
+                { state: "below", n: bin.below },
+                { state: "inside", n: bin.inside },
+                { state: "above", n: bin.above },
+            ].filter((piece) => piece.n > 0);
+            const each = (bin.x1 - bin.x0) / pieces.length;
+            pieces.forEach((piece, index) => {
+                parts.push({
+                    // Keyed by WHERE it is, never by what colour it is: a
+                    // key that carries the state makes every recolour a new
+                    // element, and a new element plays the fade-in again —
+                    // the picture would flicker under the dragging hand.
+                    key: key + ":" + bin.index + ":" + index,
+                    bin,
+                    state: piece.state,
+                    count: piece.n,
+                    x: bin.x0 + (index * each),
+                    width: each,
+                    pips: piece.n <= PIP_LIMIT
+                        ? Array.from({ length: piece.n }, (_v, i) => i)
+                        : null,
+                    height: this._columnHeight(piece.n, busiest, shape),
+                    label: "",
+                });
+            });
+        });
+        this._labelColumns(parts, shape);
+        return { kind: "bins", key, parts, dots: [] };
     }
 
-    dotTitle(dot) {
-        return [dot.name, dot.job, dot.wage_label].filter(Boolean).join(" · ");
+    /**
+     * The counts printed over the columns, spaced so they can be read.
+     *
+     * A bin is eight pixels wide and a three-digit figure is twenty, so
+     * labelling every column produces a run of overlapping numbers that says
+     * nothing at all — which is what the first build of this screen did. The
+     * figure is printed left to right and only when it clears the last one
+     * printed; every column still carries its exact count on its own label
+     * and in the list it opens, so nothing is lost, only decluttered.
+     */
+    _labelColumns(parts, shape) {
+        if (!shape.labels) { return; }
+        let last = -1e9;
+        parts.forEach((part) => {
+            if (part.pips || part.count < COUNT_LABEL_FROM) { return; }
+            const middle = part.x + (part.width / 2);
+            if (middle - last < LABEL_GAP_PX) { return; }
+            part.label = String(part.count);
+            last = middle;
+        });
     }
+
+    /**
+     * Is there room to write the median beside its tick?
+     *
+     * A band drawn forty pixels wide on a shared money axis cannot carry a
+     * sixty-pixel label without printing it over the people. The tick is
+     * always there and always carries the words on hover; the writing appears
+     * once the band is wide enough to hold it.
+     */
+    medianRoomy(scope, band) {
+        return this._bandPx(scope, band) >= MEDIAN_LABEL_ROOM;
+    }
+
+    /** The two figures at the ends of a band print each other over when the
+     *  band is a sliver on a shared axis. Both are on the band's own line
+     *  above ("6.6M ₫ to 11M ₫"), so the picture drops them rather than
+     *  drawing two numbers on top of one another. */
+    edgesRoomy(scope, band) {
+        return this._bandPx(scope, band) >= EDGE_LABEL_ROOM;
+    }
+
+    _bandPx(scope, band) {
+        const width = this.state.widths[this.bandKey(band)] || 0;
+        const now = this.live(band);
+        const span = this.axisPct(scope, now.max) - this.axisPct(scope, now.min);
+        return (span / 100) * width;
+    }
+
+    /** A column's height: flat below the pip limit, then a square root of how
+     *  busy it is against the busiest bin, capped short of the track. */
+    _columnHeight(count, busiest, shape) {
+        if (count <= PIP_LIMIT) {
+            return (count * (shape.pip + shape.pipGap)) - shape.pipGap;
+        }
+        const span = Math.max(1, busiest - PIP_LIMIT);
+        const share = Math.sqrt((count - PIP_LIMIT) / span);
+        return Math.min(shape.cap, shape.base + (shape.lift * share));
+    }
+
+    partStyle(part) {
+        return "left:" + part.x + "px;width:" + part.width + "px";
+    }
+
+    colStyle(part) {
+        return "height:" + part.height + "px";
+    }
+
+    /** A pip is a person, and it never grows wider than the slice of the bin
+     *  its own colour owns — a bin split three ways is only a few pixels. */
+    pipStyle(part) {
+        const shape = this.shape;
+        const wide = Math.max(2, Math.min(shape.pip, part.width - 1));
+        return "width:" + wide + "px;height:" + shape.pip
+            + "px;margin-top:" + shape.pipGap + "px";
+    }
+
+    partClass(part) {
+        return "pay-mark is-" + part.state;
+    }
+
+    /** "12 people · 6.6M ₫ to 6.9M ₫ · below the band" — the word is always
+     *  there, because colour on its own is never the message. */
+    partTitle(band, part) {
+        return [
+            part.count === 1 ? _t("1 person")
+                : _t("%(count)s people", { count: part.count }),
+            _t("%(low)s to %(high)s", {
+                low: this.shortMoney(part.bin.low, band),
+                high: this.shortMoney(part.bin.high, band),
+            }),
+            this.stateWord(part.state),
+        ].join(" · ");
+    }
+
+    /** A bin edge is a pixel wide, not a payslip: it is written short, and
+     *  in the money its own band is written in. */
+    shortMoney(value, band) {
+        const number = Number(value) || 0;
+        let body = String(Math.round(number));
+        if (number >= 1e9) { body = (number / 1e9).toFixed(1) + _t("B"); }
+        else if (number >= 1e6) { body = (number / 1e6).toFixed(1) + _t("M"); }
+        else if (number >= 1e3) { body = Math.round(number / 1e3) + _t("K"); }
+        const symbol = (band && band.symbol) || "";
+        if (!symbol) { return body; }
+        return band.symbol_before ? symbol + body : body + " " + symbol;
+    }
+
+    stateWord(state) {
+        if (state === "below") { return _t("below the band"); }
+        if (state === "above") { return _t("above the band"); }
+        return _t("in the band");
+    }
+
+    /**
+     * "57 below" and "82 above", counted against the edges being HELD.
+     *
+     * The marks recolour under the hand, so a chip that still reports the
+     * saved figure puts two different answers to the same question on one
+     * row. Both are read from the same complete list of wages the picture is
+     * drawn from, so they cannot disagree with it.
+     */
+    liveChip(band, side) {
+        const now = this.live(band);
+        const wages = band.wages || [];
+        let count = 0;
+        for (const wage of wages) {
+            if (side === "below" ? wage < now.min : wage > now.max) {
+                count += 1;
+            }
+        }
+        return side === "below"
+            ? _t("%(count)s below", { count })
+            : _t("%(count)s above", { count });
+    }
+
+    liveOut(band, side) {
+        const now = this.live(band);
+        return (band.wages || []).some(
+            (wage) => (side === "below" ? wage < now.min : wage > now.max));
+    }
+
+    /** Where a person stands against the edges being held RIGHT NOW. */
+    dotState(band, dot) {
+        const now = this.live(band);
+        if (dot.wage < now.min) { return "below"; }
+        if (dot.wage > now.max) { return "above"; }
+        return "inside";
+    }
+
+    dotStyle(dot) {
+        const shape = this.shape;
+        return "left:" + dot.x + "px;top:calc(50% + " + (dot.row * shape.dot)
+            + "px)";
+    }
+
+    dotClass(band, dot) {
+        return "pay-dot is-" + this.dotState(band, dot);
+    }
+
+    dotTitle(band, dot) {
+        return [dot.name, dot.job, dot.wage_label,
+                this.stateWord(this.dotState(band, dot))]
+            .filter(Boolean).join(" · ");
+    }
+
+    // ------------------------------------------------------- who is in there
+    /** One person, straight from the dot that was pressed. */
+    openDot(band, dot) {
+        this.state.pop = {
+            key: this.bandKey(band),
+            title: this.dotTitle(band, dot),
+            busy: false,
+            total: 1,
+            more: 0,
+            more_label: "",
+            rows: [{ id: dot.id, name: dot.name, job: dot.job,
+                     wage_label: dot.wage_label,
+                     state: this.dotState(band, dot) }],
+        };
+    }
+
+    /** The people standing in one column, by name, read back on demand. */
+    async openPart(band, part) {
+        this.state.pop = {
+            key: this.bandKey(band), title: this.partTitle(band, part),
+            busy: true, rows: [], total: part.count, more: 0, more_label: "",
+        };
+        try {
+            const answer = await this.orm.call(BANDS, "people_between", [
+                band.people_scope || {}, part.bin.low, part.bin.high,
+            ]);
+            const open = this.state.pop;
+            if (!open) { return; }
+            this.state.pop = { ...open, ...answer, busy: false,
+                               title: this.partTitle(band, part) };
+        } catch (error) {
+            this.state.pop = {
+                ...this.state.pop, busy: false,
+                failed: this._msg(error, _t(
+                    "Those people could not be read just now. Close this and "
+                    + "try again.")),
+            };
+        }
+    }
+
+    closePop() { this.state.pop = null; }
+
+    popStateWord(state) { return this.stateWord(state); }
 
     setTrack(band, element) {
-        if (element) { this.trackRefs[band.id] = element; }
+        if (element) { this.trackRefs[this.bandKey(band)] = element; }
     }
 
     // --------------------------------------------------------------- the drag
@@ -424,8 +790,9 @@ export class PbPayScreen extends Component {
             return;
         }
         ev.preventDefault();
+        this.state.pop = null;
         this.state.drag = {
-            bandId: band.id, side,
+            bandId: band.id, key: this.bandKey(band), side,
             laneMax: (scope && scope.axis && scope.axis.max) || 1,
             min: band.min, mid: band.mid, max: band.max,
             before: { min: band.min, mid: band.mid, max: band.max },
@@ -436,7 +803,7 @@ export class PbPayScreen extends Component {
     onDrag(ev) {
         const drag = this.state.drag;
         if (!drag || !drag.bandId) { return; }
-        const track = this.trackRefs[drag.bandId];
+        const track = this.trackRefs[drag.key];
         if (!track) { return; }
         const box = track.getBoundingClientRect();
         if (!box.width) { return; }
@@ -541,7 +908,7 @@ export class PbPayScreen extends Component {
         let drag = this.state.drag;
         if (!drag || drag.bandId !== band.id) {
             drag = {
-                bandId: band.id, side, laneMax: top,
+                bandId: band.id, key: this.bandKey(band), side, laneMax: top,
                 min: band.min, mid: band.mid, max: band.max,
                 before: { min: band.min, mid: band.mid, max: band.max },
             };
@@ -589,6 +956,7 @@ export class PbPayScreen extends Component {
         this.state.health = null;
         this.state.place = null;
         this.state.importing = null;
+        this.state.pop = null;
         this.state.dialogError = "";
     }
 
@@ -783,6 +1151,13 @@ export class PbPayScreen extends Component {
     // ============================================================== keyboard
     onKey(ev) {
         if (ev.key !== "Escape") { return; }
+        // The popover is the innermost thing on the screen, so it closes
+        // first: Escape means "the last thing I opened", never "everything".
+        if (this.state.pop) {
+            this.closePop();
+            ev.stopPropagation();
+            return;
+        }
         if (this.state.health || this.state.place || this.state.importing) {
             this.closeDrawers();
             ev.stopPropagation();

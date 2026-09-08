@@ -7,12 +7,16 @@
 //  a second palette.
 //
 //  THE ONE THING THIS FILE OWNS THAT THE KIT DOES NOT IS THE BAND PICTURE.
-//  A band is a rounded rectangle laid on a shared money axis; every person
-//  in it is a dot placed by their pay; the two edges are grab handles. The
-//  three states a dot can be in — inside, under, over — are told apart by
-//  FILL, RING and SIZE together, never by colour alone, because a picture
-//  whose whole meaning is a hue is unreadable to a good number of readers
-//  and unprintable in black and white.
+//  A band is a rounded rectangle laid on a shared money axis and its two
+//  edges are grab handles. EVERY person in it is drawn, in whichever of two
+//  shapes can draw them all (TIDY ledger rule 12): a named dot each while
+//  the band is small, stepped onto another row rather than allowed to
+//  touch; pips and columns once it is not, one pip per person up to a
+//  handful and then a column with its count above it. The three states —
+//  inside, under, over — are told apart by FILL, RING and POSITION, and the
+//  WORD is always on the label as well, because a picture whose whole
+//  meaning is a hue is unreadable to a good number of readers and
+//  unprintable in black and white.
 //
 //  Every animation lives inside a `prefers-reduced-motion: no-preference`
 //  block, so a machine asked for calm gets the finished screen on the
@@ -130,7 +134,7 @@
     }
     .pay-band {
         display: grid; grid-template-columns: 206px minmax(0, 1fr);
-        gap: 8px; align-items: center; padding: 7px 0;
+        gap: 8px; align-items: center; padding: 16px 0 7px;
         border-bottom: 1px solid var(--pbim-line-2);
     }
     .pay-band-id { min-width: 0; }
@@ -153,22 +157,73 @@
         position: absolute; top: 5px; bottom: 5px; width: 2px;
         background: var(--pbim-primary-light);
     }
+    // --------------------------------------------------- every person drawn
+    //
+    // A small band draws one NAMED dot per person, stepped onto another row
+    // rather than allowed to touch. A big one is cut into bins a few pixels
+    // wide and each bin is drawn as pips — one square per person — or, once
+    // it holds more than a handful, as a column with its count above it.
+    // Nobody is ever left out: the picture changes shape instead (TIDY
+    // ledger rule 12).
     .pay-dot {
-        position: absolute; top: 50%; width: 9px; height: 9px;
-        margin: -4px 0 0 -4px; border-radius: 50%;
+        position: absolute; width: 9px; height: 9px;
+        transform: translate(-50%, -50%); border-radius: 50%;
         background: var(--pbim-primary); border: 1px solid var(--pbim-surface);
         cursor: pointer; padding: 0;
     }
-    .pay-dot.is-out {
-        width: 13px; height: 13px; margin: -6px 0 0 -6px;
+    .pay-dot.is-below {
         background: var(--pbim-rose);
-        box-shadow: 0 0 0 3px var(--pbim-rose-soft);
+        box-shadow: 0 0 0 2px var(--pbim-rose-soft);
     }
-    .pay-dot.is-over {
+    .pay-dot.is-above {
         background: var(--pbim-amber);
-        box-shadow: 0 0 0 3px var(--pbim-amber-soft);
+        box-shadow: 0 0 0 2px var(--pbim-amber-soft);
     }
+    .pay-dot:hover { box-shadow: 0 0 0 3px var(--pbim-soft); }
     .pay-dot:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+
+    .pay-mark {
+        position: absolute; bottom: 3px; padding: 0; border: 0;
+        background: none; cursor: pointer; display: flex;
+        flex-direction: column; align-items: center; justify-content: flex-end;
+    }
+    .pay-mark:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+    .pay-pips { display: flex; flex-direction: column-reverse; align-items: center; }
+    .pay-pip { display: block; border-radius: 1px; background: var(--pbim-primary); }
+    .pay-col {
+        display: block; width: 100%; min-width: 2px;
+        border-radius: 2px 2px 0 0; background: var(--pbim-primary);
+    }
+    .pay-col-n {
+        font-size: 9px; line-height: 1; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums; margin-bottom: 1px;
+    }
+    .pay-mark.is-below {
+        .pay-pip, .pay-col { background: var(--pbim-rose); }
+        .pay-col-n { color: var(--pbim-rose); }
+    }
+    .pay-mark.is-above {
+        .pay-pip, .pay-col { background: var(--pbim-amber); }
+        .pay-col-n { color: var(--pbim-amber); }
+    }
+    .pay-mark:hover {
+        .pay-pip, .pay-col { filter: brightness(.88); }
+    }
+
+    // The middle of what these people are actually PAID, which is a different
+    // question from the middle of the band.
+    .pay-median {
+        position: absolute; top: 2px; bottom: 2px; width: 1px; z-index: 1;
+        background: var(--pbim-ink); opacity: .45;
+    }
+    // Written ABOVE the track, not on it: a pill floating over the people
+    // is a label competing with the picture it is labelling.
+    .pay-median-lab {
+        position: absolute; top: -12px; z-index: 2; font-size: 9px;
+        line-height: 11px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+        transform: translateX(-50%); pointer-events: none;
+    }
     .pay-grip {
         position: absolute; top: 2px; bottom: 2px; width: 12px;
         margin-left: -6px; border: 0; padding: 0; cursor: ew-resize;
@@ -217,13 +272,66 @@
     .pay-scroll.is-dense {
         .pay-band { padding: 2px 0; }
         .pay-band-n { font-size: 12px; }
-        .pay-band-sub, .pay-chips, .pay-edge-lab { display: none; }
+        .pay-band-sub, .pay-chips, .pay-edge-lab,
+        .pay-median-lab { display: none; }
         .pay-track { height: 24px; }
         .pay-range { top: 4px; bottom: 4px; }
         .pay-mid { top: 3px; bottom: 3px; }
         .pay-grip::before { height: 16px; }
         .pay-fam { margin-top: 10px; }
         .pay-lane { margin-bottom: 16px; }
+        .pay-dot { width: 7px; height: 7px; }
+        .pay-mark { bottom: 2px; }
+    }
+
+    // ------------------------------------------- who is standing in there
+    //
+    // A column says HOW MANY and never WHO, so every mark is a button and
+    // this is what it opens. It has a close button and answers Escape, so
+    // there is no way in that is not also a way out (§8).
+    .pay-popwrap { position: fixed; inset: 0; z-index: 19; }
+    .pay-popveil { position: absolute; inset: 0; background: rgba(27, 23, 51, .38); }
+    .pay-pop {
+        position: absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 460px; max-width: 92vw; max-height: 76vh; overflow: auto;
+        padding: 16px 18px; border-radius: var(--pbim-r);
+        background: var(--pbim-surface); box-shadow: var(--pbim-sh-lg);
+    }
+    .pay-pop-h { display: flex; align-items: flex-start; gap: 10px; }
+    .pay-pop-t {
+        font-size: 14px; font-weight: 700; color: var(--pbim-ink);
+        flex: 1 1 auto; min-width: 0;
+    }
+    .pay-pop-s { font-size: 12px; color: var(--pbim-muted); margin: 8px 0 0; }
+    .pay-poplist { list-style: none; margin: 10px 0 0; padding: 0; }
+    .pay-poplist li {
+        display: grid; align-items: center; gap: 4px 10px;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto auto 8px;
+        padding: 6px 0; border-top: 1px solid var(--pbim-line-2);
+    }
+    .pay-poprow-n {
+        font-size: 13px; font-weight: 600; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pay-poprow-j {
+        font-size: 12px; color: var(--pbim-muted);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pay-poprow-w {
+        font-size: 12px; color: var(--pbim-ink);
+        font-variant-numeric: tabular-nums; text-align: right;
+    }
+    .pay-popdot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--pbim-primary);
+    }
+    .pay-popdot.is-below { background: var(--pbim-rose); }
+    .pay-popdot.is-above { background: var(--pbim-amber); }
+    // The WORD beside the colour, because a coloured dot on its own is not
+    // a message anybody is obliged to be able to read.
+    .pay-poprow-s {
+        font-size: 11px; color: var(--pbim-muted); white-space: nowrap;
     }
 
     // ------------------------------------------------------ health cards
@@ -638,12 +746,36 @@
         .pay-drawer--wide { width: 100%; }
         .pay-outrow { flex-wrap: wrap; }
         .pay-outrow-n { min-width: 0; }
+        // On a phone the list of people is a sheet from the bottom, which is
+        // where a hand is: the Decision Room's precedent.
+        // A sheet from the bottom, where a hand is — but it starts AFTER
+        // the app's icon rail. The rail is `position: absolute` at z-index
+        // 25 and this module's ceiling is 20, so a full-bleed sheet has its
+        // first sixty pixels painted over and every name loses its start.
+        .pay-pop {
+            left: 60px; right: 0; top: auto; bottom: 0; transform: none;
+            width: auto; max-width: none; max-height: 80vh;
+            border-radius: var(--pbim-r-lg) var(--pbim-r-lg) 0 0;
+        }
+        .pay-poplist li {
+            grid-template-columns: minmax(0, 1fr) auto 8px;
+        }
+        // The job on its own line; the standing and its colour together on
+        // the next one, so a row is three lines and not four.
+        .pay-poprow-j { grid-column: 1 / -1; }
     }
 
     // ------------------------------------------------------------ motion
     @media (prefers-reduced-motion: no-preference) {
-        .pay-dot { transition: background-color .12s ease, box-shadow .12s ease,
-                               width .12s ease, height .12s ease; }
+        .pay-dot { transition: background-color .12s ease, box-shadow .12s ease; }
+        // Colour only. A pip that slides or grows while an edge is being
+        // dragged is a picture arguing with the hand that is moving it.
+        .pay-pip, .pay-col { transition: background-color .12s ease; }
+        .pay-mark { animation: pay-mark-in .18s ease both; }
+        @keyframes pay-mark-in {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: none; }
+        }
         .pay-range { transition: left .08s linear, right .08s linear; }
         .pay-hc { transition: border-color .14s ease, box-shadow .14s ease; }
         .pay-meter-fill { transition: width .2s ease; }

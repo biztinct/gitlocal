@@ -576,6 +576,127 @@ class TestPayBands(TransactionCase):
         families = self.Bands.suggest_families([self.company.id])
         self.assertTrue(families)
 
+    # ====================================== TIDY P2 — every person is drawn
+    def test_tidy_t1_every_person_is_in_the_payload_and_nobody_is_dropped(self):
+        """TIDY rule 12, at the seam where it can be proven.
+
+        The picture is drawn from `wages`, and `wages` is EVERY person on the
+        band — so the count and the list agree, always. `dots` is the named
+        form and is sent only while a band is small enough to draw one mark
+        per name; above that the browser draws columns and asks for names one
+        bin at a time. And the words "not drawn" appear nowhere at all, in any
+        band, any label or any chip.
+        """
+        for index in range(30):
+            self._person('Tidy Crowd %s' % index, 1500.0 + (index * 25))
+        self.Position.recompute_all([self.company.id])
+        board = self.Bands.get_board([self.company.id])
+        bands = [b for lane in board['lanes'] for b in lane['bands']]
+        self.assertTrue(bands)
+        big = next(b for b in bands if b['id'] == self.band.id)
+        self.assertGreaterEqual(big['people'], 30)
+
+        for band in bands:
+            self.assertEqual(
+                len(band['wages']), band['people'],
+                'a band drew %s of %s people' % (len(band['wages']),
+                                                 band['people']))
+            self.assertEqual(band['wages'], sorted(band['wages']),
+                             'the wages are handed over out of order')
+            self.assertTrue(all(isinstance(w, int) for w in band['wages']),
+                            'a wage came over as something other than a whole '
+                            'number')
+            self.assertNotIn('more', band,
+                             'a band still counts people it did not draw')
+            self.assertNotIn('more_label', band)
+            self.assertTrue(band['people_scope'],
+                            'a band cannot find its own people again')
+            if band['people'] <= 24:
+                self.assertEqual(len(band['dots']), band['people'])
+            else:
+                self.assertEqual(band['dots'], [],
+                                 'a big band still ships every name')
+
+        self.assertNotIn('not drawn', str(board).lower())
+        proposal = self.Bands.suggest_bands([self.company.id])
+        for band in [b for lane in proposal['lanes'] for b in lane['bands']]:
+            self.assertEqual(len(band['wages']), band['people'])
+            self.assertNotIn('more', band)
+            self.assertTrue(band['people_scope'])
+        self.assertNotIn('not drawn', str(proposal).lower())
+
+    def test_tidy_t2_people_between_names_exactly_the_people_in_that_slice(self):
+        """The other half of rule 12: a column that says how many can be
+        asked who, and it answers about those people and nobody else."""
+        # 800 is under the band's floor of 1,000 and 3,600 is over its
+        # ceiling of 3,000, so all three standings are on the fixture.
+        wages = [800.0, 1600.0, 1650.0, 1700.0, 2500.0, 3600.0]
+        for index, wage in enumerate(wages):
+            self._person('Tidy Slice %s' % index, wage)
+        self.Position.recompute_all([self.company.id])
+        scope = {'band_id': self.band.id}
+
+        answer = self.Bands.people_between(scope, 1600.0, 1700.0)
+        self.assertTrue(answer['allowed'])
+        self.assertEqual(answer['total'], 3)
+        self.assertEqual(len(answer['rows']), 3)
+        self.assertEqual([r['wage'] for r in answer['rows']],
+                         [1600.0, 1650.0, 1700.0])
+        self.assertTrue(all(r['state'] == 'in' for r in answer['rows']))
+        self.assertTrue(answer['title'])
+
+        low = self.Bands.people_between(scope, 0.0, 900.0)
+        self.assertEqual([r['state'] for r in low.get('rows', [])
+                          if r['name'].startswith('Tidy Slice')], ['below'])
+        high = self.Bands.people_between(scope, 3000.0, 4000.0)
+        self.assertEqual([r['state'] for r in high.get('rows', [])
+                          if r['name'].startswith('Tidy Slice')], ['above'])
+
+        # The cap is the cap, and the total still tells the truth.
+        for index in range(25):
+            self._person('Tidy Cap %s' % index, 1660.0)
+        self.Position.recompute_all([self.company.id])
+        capped = self.Bands.people_between(scope, 1600.0, 1700.0, limit=200)
+        self.assertGreaterEqual(capped['total'], 28)
+        self.assertLessEqual(len(capped['rows']), 20)
+        self.assertEqual(capped['more'], capped['total'] - len(capped['rows']))
+        self.assertIn(str(capped['more']), capped['more_label'])
+
+        # Somebody else's company is never in the answer, and a reader with
+        # no role is told nothing at all.
+        other = self.env['res.company'].create({
+            'name': 'Tidy Other Co', 'currency_id': self.currency.id})
+        outsider = self._person('Tidy Outsider', 1660.0, company=other)
+        self.Position.recompute_all([self.company.id, other.id])
+        again = self.Bands.people_between(scope, 1600.0, 1700.0, limit=20)
+        self.assertNotIn(outsider.name, [r['name'] for r in again['rows']])
+
+        nobody = self.env['res.users'].create({
+            'name': 'Tidy Nobody', 'login': 'tidy.nobody.test',
+            'company_id': self.company.id,
+            'company_ids': [(6, 0, [self.company.id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])],
+        })
+        refused = self.Bands.with_user(nobody).people_between(
+            scope, 0.0, 9999999.0)
+        self.assertFalse(refused['allowed'])
+        self.assertEqual(refused['rows'], [])
+        self.assertEqual(refused['total'], 0)
+
+    def test_tidy_t3_the_picture_arithmetic_passes_its_own_check(self):
+        """`binPeople` and `dodgeDots` decide where every person is drawn, so
+        they are checked under node with no browser anywhere near them."""
+        script = os.path.join(HERE, 'tools', 'band_picture_check.mjs')
+        self.assertTrue(os.path.exists(script))
+        try:
+            done = subprocess.run(['node', script], capture_output=True,
+                                  text=True, timeout=120)
+        except (OSError, subprocess.SubprocessError):
+            self.skipTest('node is not available on this machine')
+        self.assertEqual(done.returncode, 0,
+                         'the band picture check failed:\n%s%s'
+                         % (done.stdout, done.stderr))
+
     def test_a_reader_with_no_role_gets_an_explained_empty_board(self):
         nobody = self.env['res.users'].create({
             'name': 'Pay Nobody', 'login': 'pay.nobody.test',
