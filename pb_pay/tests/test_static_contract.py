@@ -440,6 +440,20 @@ class TestPayStaticContract(TransactionCase):
         self.assertIn('error.data', js)
         self.assertNotIn('|| e.message ||', js)
 
+    def test_a_refused_band_move_never_raises_the_undo_bar(self):
+        """LOOK L8, the browser half. `move_edge` answers a refusal rather
+        than raising it, so `endDrag` has to READ the answer: writing
+        `state.undo` from it unconditionally puts "Band moved." above a
+        sentence saying it was not, and offers to take back a write that
+        never happened."""
+        js = _code(_read(HERE, 'static', 'src', 'js', 'pay_hub.js'))
+        tail = js.split('async endDrag()')[-1].split('async undoEdge()')[0]
+        self.assertIn('answer.ok === false', tail,
+                      'endDrag does not read the refusal')
+        self.assertLess(tail.index('answer.ok === false'),
+                        tail.index('this.state.undo = {'),
+                        'the refusal is read AFTER the undo bar is raised')
+
     def test_the_vietnamese_catalogue_carries_its_module_comment(self):
         """Ledger GR5: an entry with no `#. module:` line takes the WHOLE
         DATABASE down on install — `translate.py` matches the comment with no
