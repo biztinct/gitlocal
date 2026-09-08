@@ -587,7 +587,7 @@ class PbPayBands(models.AbstractModel):
         people a band is drawn as columns, which say HOW MANY and never WHO —
         so a column is a button, and pressing it asks this. The answer is
         scoped exactly as the board is (the reader's own companies, narrowed
-        again by what they are allowed to see), capped, and it says how many
+        again by what they are allowed to see), cut to a page, and it says how many
         there are in total so "and N more" is a fact about the LIST rather
         than about the picture.
         """

@@ -331,6 +331,7 @@
 
       <!-- ================================================= calibration -->
       <t t-if="state.view === 'calibration' and state.calib">
+        <t t-set="pic" t-value="plot"/>
         <div class="pay-card">
           <div class="pay-card-h">
             <div>
@@ -340,35 +341,119 @@
                 <span>The worksheet</span>
               </button>
               <p class="pay-h">Calibration</p>
-              <p class="pay-sub">
-                Every person is a dot: how well they did across, the rise they
-                are getting up. Drag one and its row follows.
-              </p>
+              <p class="pay-sub" t-esc="calibPromise"/>
             </div>
             <div class="pay-card-actions">
               <span class="pay-chip" t-esc="state.calib.card.meter"/>
             </div>
           </div>
 
-          <div class="pay-scatter">
-            <span t-foreach="scatterTicks" t-as="tick" t-key="tick.pct"
-                  class="pay-tick" t-att-style="tick.style">
-              <span class="pay-tick-l"><t t-esc="tick.pct"/>%</span>
-            </span>
-            <span t-foreach="state.calib.dots" t-as="dot" t-key="dot.line_id"
-                  t-att-class="dotClass(dot)"
-                  t-att-style="dotStyle(dot)"
-                  t-att-title="dot.name"
-                  t-on-mousedown="(ev) => this.startDrag(dot, ev)"/>
+          <!-- nobody in the review at all -->
+          <div class="pay-empty" t-if="!state.calib.total">
+            <t t-out="ic('users', 26)"/>
+            <p class="pay-empty-t" t-esc="state.calib.empty_title"/>
+            <p class="pay-empty-s" t-esc="state.calib.empty_note"/>
+            <div class="pay-empty-a">
+              <button class="pbim-btn primary sm"
+                      t-on-click="() => this.backToWorksheet()">
+                <t t-out="ic('back', 15)"/>
+                <span>Back to the worksheet</span>
+              </button>
+            </div>
           </div>
-          <div class="pay-scataxis">
-            <span t-foreach="state.calib.words" t-as="word" t-key="word_index"
-                  class="pay-scataxis-l" t-esc="word"/>
-          </div>
-          <p class="pay-sub" t-if="state.calib.flat_note"
-             t-esc="state.calib.flat_note"/>
-          <p class="pay-sub" t-if="state.calib.capped_note"
-             t-esc="state.calib.capped_note"/>
+
+          <t t-if="state.calib.total">
+            <div class="pay-scatter" t-ref="scatter">
+              <!-- the numbers up the side -->
+              <span t-foreach="scatterTicks" t-as="tick" t-key="tick_index"
+                    class="pay-tick" t-att-style="tick.style">
+                <span class="pay-tick-l"><t t-esc="tick.pct"/>%</span>
+              </span>
+
+              <!-- the picture is measured before it is drawn -->
+              <p class="pay-cwait" t-if="!pic.ready">Working out the shape…</p>
+
+              <t t-if="pic.ready">
+                <!-- one column per score -->
+                <t t-foreach="pic.columns" t-as="col" t-key="col.key">
+                  <span t-attf-class="pay-ccol {{ col_index % 2 === 1 ? 'is-alt' : '' }}"
+                        t-att-style="col.style"/>
+                  <span class="pay-ccentre" t-att-style="col.centreStyle"/>
+                </t>
+
+                <!-- the shape of each score's rises -->
+                <t t-foreach="pic.columns" t-as="col" t-key="col.key">
+                  <button t-foreach="col.bars" t-as="bar" t-key="bar.key"
+                          t-attf-class="pay-cbar {{ bar.stands ? 'is-mixed' : '' }}"
+                          t-att-style="bar.style"
+                          t-att-data-people="bar.people"
+                          t-att-title="bar.title"
+                          t-att-aria-label="bar.title"
+                          t-on-click="() => this.openBin(bar)"/>
+                  <span t-if="col.hasMedian" class="pay-cmed"
+                        t-att-style="col.medianStyle"/>
+                  <span t-if="col.hasMedian and col.roomy" class="pay-cmed-l"
+                        t-att-style="col.medianStyle"
+                        t-esc="col.medianLabel"/>
+                  <button t-foreach="col.marks" t-as="mark" t-key="mark.key"
+                          t-att-class="markClass(mark)"
+                          t-att-style="mark.style"
+                          t-att-data-people="mark.people"
+                          t-att-title="markTitle(mark)"
+                          t-att-aria-label="markTitle(mark)"
+                          t-att-aria-pressed="isHeld(mark) ? 'true' : 'false'"
+                          t-on-mousedown="(ev) => this.startDrag(mark, ev)"
+                          t-on-mouseenter="() => this.hoverMark(mark)"
+                          t-on-mouseleave="() => this.leaveMark()"
+                          t-on-focus="() => this.nameMark(mark)"
+                          t-on-keydown="(ev) => this.onMarkKey(mark, ev)"/>
+                </t>
+
+                <!-- every limit that can be drawn, with its own sentence -->
+                <div t-foreach="pic.limits" t-as="limit" t-key="limit.id"
+                     t-attf-class="pay-climit {{ limit.blocks ? 'is-hard' : 'is-soft' }}"
+                     t-att-style="limit.style"
+                     t-att-title="limit.sentence">
+                  <span class="pay-climit-l" t-esc="limit.label"/>
+                </div>
+              </t>
+            </div>
+
+            <!-- the score, the count and the middle, under each column -->
+            <div class="pay-scataxis">
+              <t t-if="pic.ready">
+                <div t-foreach="pic.columns" t-as="col" t-key="col.key"
+                     class="pay-scataxis-c" t-att-style="col.style">
+                  <span class="pay-scataxis-l" t-esc="col.word"/>
+                  <span class="pay-scataxis-n" t-esc="columnCount(col)"/>
+                  <span class="pay-scataxis-m" t-if="col.hasMedian"
+                        t-esc="col.medianLabel"/>
+                </div>
+              </t>
+            </div>
+
+            <!-- what each dashed line across the picture means -->
+            <div class="pay-clegend"
+                 t-if="pic.limits.length or pic.standsOut or pic.blocked">
+              <span t-foreach="pic.limits" t-as="limit" t-key="limit.id"
+                    t-attf-class="pay-clegend-i {{ limit.blocks ? 'is-hard' : 'is-soft' }}">
+                <span class="pay-clegend-d"/>
+                <span t-esc="limit.sentence"/>
+              </span>
+              <span class="pay-clegend-i" t-if="pic.standsOut">
+                <span class="pay-clegend-o"/>
+                <span t-esc="standsOutLabel"/>
+              </span>
+              <span class="pay-clegend-i" t-if="pic.blocked">
+                <span class="pay-clegend-b"/>
+                <span t-esc="blockedLabel"/>
+              </span>
+            </div>
+
+            <p class="pay-cnote" t-esc="drawnSentence"/>
+            <p class="pay-sub" t-if="state.calib.flat_note"
+               t-esc="state.calib.flat_note"/>
+          </t>
 
           <div class="pay-outliers" t-if="state.calib.outliers.length">
             <p class="pay-h">Worth a second look</p>
@@ -376,12 +461,56 @@
                  t-key="one.line_id" class="pay-outrow">
               <span class="pay-outrow-n" t-esc="one.name"/>
               <span class="pay-outrow-p"><t t-esc="one.pct"/>%</span>
+              <span t-attf-class="pay-outrow-s is-{{ one.state }}"
+                    t-esc="one.state_word"/>
               <span class="pay-outrow-w" t-esc="one.why"/>
+              <span class="pay-outrow-c" t-esc="one.cost_label"/>
             </div>
+            <p class="pay-sub" t-if="state.calib.outliers_more"
+               t-esc="state.calib.outliers_note"/>
           </div>
         </div>
+
+        <!-- who is standing in this bin -->
+        <div class="pay-popwrap" t-if="state.pop">
+          <div class="pay-popveil" t-on-click="() => this.closeBin()"/>
+          <div class="pay-pop pay-pop--cal" role="dialog" aria-modal="true"
+               aria-label="The people standing here">
+            <div class="pay-pop-h">
+              <div class="pay-pop-t" t-esc="state.pop.title"/>
+              <button class="pay-x" aria-label="Close"
+                      t-on-click="() => this.closeBin()">
+                <t t-out="ic('x', 15)"/>
+              </button>
+            </div>
+            <p class="pay-pop-s" t-if="state.pop.busy">Reading the names…</p>
+            <p class="pay-pop-s" t-if="state.pop.failed"
+               t-esc="state.pop.failed"/>
+            <ul class="pay-poplist" t-if="!state.pop.busy">
+              <li t-foreach="state.pop.rows" t-as="row" t-key="row.id">
+                <span class="pay-poprow-n" t-esc="row.name"/>
+                <span class="pay-poprow-j" t-esc="row.job"/>
+                <input class="pbim-in pay-cin" t-if="canWrite"
+                       t-att-value="row.pct"
+                       t-att-aria-label="row.name"
+                       t-on-change="(ev) => this.setFromBin(row, ev.target.value)"/>
+                <span class="pay-poprow-w" t-if="!canWrite"
+                      t-esc="row.pct_label"/>
+                <span t-if="row.state !== 'normal'"
+                      t-attf-class="pay-outrow-s is-{{ row.state }}"
+                      t-esc="row.state_word"/>
+              </li>
+            </ul>
+            <p class="pay-pop-s" t-if="!state.pop.busy and state.pop.more"
+               t-esc="state.pop.more_label"/>
+            <p class="pay-pop-s"
+               t-if="!state.pop.busy and !state.pop.rows.length and !state.pop.failed">Nobody is standing here any more. Close this and look at the picture again.</p>
+          </div>
+        </div>
+
         <div class="pay-dragbar" t-if="state.drag">
-          <t t-esc="dragLabel"/>
+          <div class="pay-dragbar-t" t-esc="dragLabel"/>
+          <div class="pay-dragbar-s" t-esc="dragNote"/>
         </div>
       </t>
 

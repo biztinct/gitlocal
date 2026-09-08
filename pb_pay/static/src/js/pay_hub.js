@@ -1071,7 +1071,7 @@ export class PbPayScreen extends Component {
     }
 
     /** A column's height: flat below the pip limit, then a square root of how
-     *  busy it is against the busiest bin, capped short of the track. */
+     *  busy it is against the busiest bin, held short of the track. */
     _columnHeight(count, busiest, shape) {
         if (count <= PIP_LIMIT) {
             return (count * (shape.pip + shape.pipGap)) - shape.pipGap;
