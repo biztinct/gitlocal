@@ -76,6 +76,49 @@ message: every mark's label and every list row says the word.
 
 ---
 
+## 1b. What P1 already shipped, and the eight things it learned
+
+**Verified in the tree, do not re-derive.** `pb_pay` is at **19.0.3.2.0** on all four
+databases. `band_picture.js` now exports `axisSpan(axis)`,
+`binPeople(wages, axis, trackPx, binPx, edges)`, `busiestBin(bins)`,
+`dodgeDots(dots, axis, trackPx, minGapPx)` and `bandAxis(band, opts)`. The node check
+runs **34** assertions (T3a–T3o) and must stay green untouched.
+
+Five of P1's gotchas (**L1–L8** in the ledger — read them all) land directly on this
+phase's work:
+
+- **L1 — a boolean ARIA attribute must be written `cond ? 'true' : 'false'`.** OWL drops
+  an attribute whose value is boolean `false`, so a closed disclosure carries no
+  `aria-expanded` at all. Every ARIA boolean you add here follows the ternary form.
+- **L2 — anything whose height depends on a translated sentence goes in NORMAL FLOW.**
+  A fixed pixel growth is right in English at 1440 px and prints over the next element
+  at 390 px. If a panel or a note has to animate in, animate the CONTENT arriving
+  (opacity + a few pixels of travel), never a container height nobody can predict.
+- **L4 — a picture that stops its ruler lying has to stop its MARKS lying too.** P1's
+  ruler picks its decimals from the span; its bin labels did not, and read
+  "12 people · 9.0M ₫ to 9.0M ₫" for a bin fifty thousand dong wide. **This applies
+  directly to you**: your bins are a few pixels of a percentage axis, so a bin from
+  7.02% to 7.14% must not print "7% to 7%". Both ends of any range printed on this
+  picture take their figures from THAT range's own width.
+- **L5 — a capture-phase Escape handler outranks every element's own.** The cockpit
+  registers `keydown` on `window` with `{ capture: true }` (WF4). **A gesture in flight
+  must be the FIRST rung of the ladder**, whatever the visual nesting says — so a drag
+  in progress cancels before the bin panel closes, and the bin panel before the view
+  leaves calibration.
+- **L6 — `var(--pbim-pill)` is not defined anywhere** and neither is `--pbim-canvas`;
+  an undefined custom property invalidates the whole declaration, so those radii resolve
+  to 0 product-wide. Read `pb_import_kit/static/src/scss/import_tokens.scss` before
+  borrowing a token name from a neighbouring rule.
+
+Two of P1's findings are **owner debts on the server side of this very file's
+neighbourhood**, and you may fix them in this phase because you are already in the
+server: **L7** — `_lane_axis` in `pb_pay/models/pb_pay_bands.py` builds one sentence for
+every count and says "1 people" (GR42's trap in the one place GR42 did not sweep);
+**L8** — `endDrag` in `pay_hub.js` writes `state.undo` from whatever `move_edge`
+answered, including a refusal, so the foot bar reads "Band moved." above a sentence
+saying it was not. Both are small, both are in `pb_pay`, and both are exactly the kind
+of thing this programme exists to stop. Fix them, in their own commits, and say so.
+
 ## 2. Deliverables
 
 ### 2a. The shared arithmetic learns a second use (`band_picture.js`)
@@ -232,9 +275,13 @@ the outliers are reachable and adjustable by keyboard. Lucide via `ic()`, no emo
 10. **Every state in §2c**, each screenshotted.
 11. **Speed.** Time `calibration()` at 12, 902 and 4,500 lines. The P6b baseline was
     162 ms for 902. Report all three; a regression at 902 is a failure.
-12. **Nothing regressed.** The full `pb_pay` suite green, including the P1 tests;
-    neighbouring suites at the same pre-existing baseline — name the baseline rather
-    than claiming zero.
+12. **Nothing regressed.** The full `pb_pay` suite green — **P1's baseline was 111 tests,
+    0 failed, 0 errors** — and P1's 34 node assertions untouched and green.
+    Neighbouring suites at the same pre-existing baseline: **P1 measured 248 tests with
+    3 failures, all p9clone drift (`pb_contracts` ×2, `pb_group` `test_t9`)**. Report
+    against those two numbers rather than claiming zero.
+15. **L7 and L8 fixed**, each proven: a band holding a single outlier says "1 person" in
+    English, and a refused band move no longer raises an undo bar saying "Band moved."
 13. **Vietnamese.** Walk the picture in VI: the new sentences, the column words, the
     limit sentence, the bin panel and the empty states are all translated.
 14. **Reduced motion**, and **keyboard only** end to end.
