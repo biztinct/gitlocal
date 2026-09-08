@@ -140,7 +140,9 @@ class TestOneMappingHome(TransactionCase):
                       'Spreadsheet columns → Scheme',
                       # J3 S1 / J-D4 — the ⇆ is the label now.
                       'Employee & contract \u21c6',
-                      'Scheme assignment',
+                      # TIDY P1 — the tab now says what every other door to
+                      # this board says: "Who is paid by what".
+                      'Who is paid by what',
                       'Mid ↔ End cycle',
                       # J4 — the sixth tab. A plain noun rather than an
                       # "X → Y" sentence because this board has THREE lanes:
@@ -168,6 +170,49 @@ class TestOneMappingHome(TransactionCase):
         # …and nothing a user reads on this surface says "Studio"
         for label in re.findall(r'label: _t\("([^"]+)"\)', modes):
             self.assertNotIn('Studio', label)
+
+    def test_t1_one_board_has_one_name_across_the_whole_product(self):
+        """TIDY P1.
+
+        The scheme board is reached from a tab, from two ⌘K rows and from the
+        Employee 360. The tab said "Scheme assignment" and everything else said
+        "Who is paid by what", so a reader who had been told one name could not
+        find the other — which is exactly how the owner came to report that the
+        screen did not exist. The old words survive nowhere.
+        """
+        root = os.path.dirname(get_module_path('pb_formula_studio'))
+        mine = os.path.abspath(__file__)
+        offenders = []
+        for module in sorted(os.listdir(root)):
+            if not module.startswith('pb_'):
+                continue
+            for base, dirs, files in os.walk(os.path.join(root, module)):
+                dirs[:] = [d for d in dirs
+                           if d not in ('__pycache__', '.git', 'node_modules')]
+                for name in files:
+                    if not name.endswith(('.js', '.xml', '.py', '.po',
+                                          '.pot')):
+                        continue
+                    path = os.path.join(base, name)
+                    if os.path.abspath(path) == mine:
+                        continue
+                    src = _read(path)
+                    # A comment is not a user-visible string, and the record
+                    # of what a label USED to say belongs in one.
+                    if name.endswith('.js'):
+                        src = _strip_js_comments(src)
+                    elif name.endswith('.xml'):
+                        src = _strip_xml_comments(src)
+                    elif name.endswith('.py'):
+                        src = re.sub(r'^\s*#.*$', '', src, flags=re.M)
+                    else:
+                        src = '\n'.join(ln for ln in src.splitlines()
+                                        if not ln.startswith('#'))
+                    if 'Scheme assignment' in src:
+                        offenders.append(os.path.relpath(path, root))
+        self.assertFalse(sorted(offenders),
+                         'the old name for the scheme board survives in: %s'
+                         % sorted(offenders))
 
     def test_the_employee_toolkit_is_scoped_to_the_employee_board(self):
         """Four boards must not grow a fifth board's furniture.
