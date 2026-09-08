@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <!-- ====================================================================
-       Where people work.
+       Where they work.
 
        Comments are ruled with `=`, never a doubled hyphen: two hyphens
        inside an XML comment is a PARSE ERROR that takes the whole file down
@@ -54,19 +54,29 @@
         <div class="wsg-head">
           <div class="wsg-head-id">
             <HubBackChip t-if="back" back="back" tone="'light'"/>
-            <h2 class="wsg-h">Where people work</h2>
+            <h2 class="wsg-h">Where they work</h2>
             <p class="wsg-s">A month is thirty days. Draw the ones somebody spent somewhere else and see both payslips before anything is saved.</p>
           </div>
-          <div class="wsg-head-actions">
-            <button t-attf-class="pbim-btn ghost {{ state.focus === 'days' ? 'is-on' : '' }}"
+          <!-- ==================================================
+               ONE control, three segments, in the words a person
+               would use for them. The third is a list rather than a
+               view of this screen, so it opens in the breadcrumb and
+               is never drawn as the segment you are standing on.
+               ================================================== -->
+          <div class="wsg-head-actions pbim-seg" role="tablist"
+               aria-label="What to look at">
+            <button t-attf-class="pbim-segbtn wsg-lenstab {{ state.focus === 'days' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.focus === 'days'"
                     t-on-click="() => this.setFocus('days')">
-              <t t-out="ic('calendar',15)"/> The month
+              <t t-out="ic('calendar',15)"/> The month strip
             </button>
-            <button t-attf-class="pbim-btn ghost {{ state.focus === 'merge' ? 'is-on' : '' }}"
+            <button t-attf-class="pbim-segbtn wsg-lenstab {{ state.focus === 'merge' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.focus === 'merge'"
                     t-on-click="() => this.setFocus('merge')">
               <t t-out="ic('userCheck',15)"/> Same person?
             </button>
-            <button class="pbim-btn ghost" t-on-click="openTransfers">
+            <button class="pbim-segbtn wsg-lenstab" role="tab" aria-selected="false"
+                    t-on-click="openTransfers">
               <t t-out="ic('arrowLeftRight',15)"/> Charged between entities
             </button>
           </div>

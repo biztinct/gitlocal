@@ -870,8 +870,8 @@ msgstr "Thiết lập tập đoàn"
 
 #. module: pb_workseg
 #: model:res.groups,name:pb_workseg.group_workseg_manager
-msgid "Set where people work"
-msgstr "Đặt nơi mọi người làm việc"
+msgid "Set where they work"
+msgstr "Đặt nơi họ làm việc"
 
 #. module: pb_workseg
 #: model:ir.model.fields,field_description:pb_workseg.field_pb_cost_transfer__share
@@ -1073,8 +1073,8 @@ msgstr ""
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/xml/workseg.xml:0
-msgid "The month"
-msgstr "Tháng này"
+msgid "The month strip"
+msgstr "Dải ngày trong tháng"
 
 #. module: pb_workseg
 #: model:ir.model.fields,help:pb_workseg.field_pb_work_segment__division_id
@@ -1275,6 +1275,12 @@ msgstr "Lịch sử trao đổi trên trang web"
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/xml/workseg.xml:0
+msgid "What to look at"
+msgstr "Xem phần nào"
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
 msgid "What this is"
 msgstr "Đây là gì"
 
@@ -1321,20 +1327,8 @@ msgstr ""
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/js/assignments.js:0
-#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
-#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
-#: model:ir.actions.client,name:pb_workseg.action_pb_assignments
-#: model:ir.module.category,name:pb_workseg.module_category_workseg
-#: model:res.groups.privilege,name:pb_workseg.res_groups_privilege_workseg
-#: model_terms:ir.ui.view,arch_db:pb_workseg.view_pb_work_segment_list
-msgid "Where people work"
-msgstr "Nơi mọi người làm việc"
-
-#. module: pb_workseg
-#. odoo-javascript
-#: code:addons/pb_workseg/static/src/js/assignments.js:0
-msgid "Where people work could not be read."
-msgstr "Không đọc được nơi mọi người làm việc."
+msgid "Where they work could not be read."
+msgstr "Không đọc được nơi họ làm việc."
 
 #. module: pb_workseg
 #: model_terms:ir.ui.view,arch_db:pb_workseg.view_pb_work_segment_form
@@ -1357,7 +1351,16 @@ msgstr ""
 "giữa tháng thì đây chính là pháp nhân chính."
 
 #. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+#: code:addons/pb_workseg/static/src/js/workseg_lens.js:0
+#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
+#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
+#: model:ir.actions.client,name:pb_workseg.action_pb_assignments
 #: model:ir.model,name:pb_workseg.model_pb_assignments
+#: model:ir.module.category,name:pb_workseg.module_category_workseg
+#: model:res.groups.privilege,name:pb_workseg.res_groups_privilege_workseg
+#: model_terms:ir.ui.view,arch_db:pb_workseg.view_pb_work_segment_list
 msgid "Where they work"
 msgstr "Nơi họ làm việc"
 

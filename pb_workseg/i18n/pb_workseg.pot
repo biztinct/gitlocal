@@ -892,7 +892,7 @@ msgstr ""
 
 #. module: pb_workseg
 #: model:res.groups,name:pb_workseg.group_workseg_manager
-msgid "Set where people work"
+msgid "Set where they work"
 msgstr ""
 
 #. module: pb_workseg
@@ -1074,7 +1074,7 @@ msgstr ""
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/xml/workseg.xml:0
-msgid "The month"
+msgid "The month strip"
 msgstr ""
 
 #. module: pb_workseg
@@ -1276,6 +1276,12 @@ msgstr ""
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/xml/workseg.xml:0
+msgid "What to look at"
+msgstr ""
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
 msgid "What this is"
 msgstr ""
 
@@ -1316,19 +1322,7 @@ msgstr ""
 #. module: pb_workseg
 #. odoo-javascript
 #: code:addons/pb_workseg/static/src/js/assignments.js:0
-#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
-#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
-#: model:ir.actions.client,name:pb_workseg.action_pb_assignments
-#: model:ir.module.category,name:pb_workseg.module_category_workseg
-#: model:res.groups.privilege,name:pb_workseg.res_groups_privilege_workseg
-#: model_terms:ir.ui.view,arch_db:pb_workseg.view_pb_work_segment_list
-msgid "Where people work"
-msgstr ""
-
-#. module: pb_workseg
-#. odoo-javascript
-#: code:addons/pb_workseg/static/src/js/assignments.js:0
-msgid "Where people work could not be read."
+msgid "Where they work could not be read."
 msgstr ""
 
 #. module: pb_workseg
@@ -1350,7 +1344,16 @@ msgid ""
 msgstr ""
 
 #. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/assignments.js:0
+#: code:addons/pb_workseg/static/src/js/workseg_lens.js:0
+#: code:addons/pb_workseg/static/src/js/workseg_palette.js:0
+#: code:addons/pb_workseg/static/src/xml/workseg.xml:0
+#: model:ir.actions.client,name:pb_workseg.action_pb_assignments
 #: model:ir.model,name:pb_workseg.model_pb_assignments
+#: model:ir.module.category,name:pb_workseg.module_category_workseg
+#: model:res.groups.privilege,name:pb_workseg.res_groups_privilege_workseg
+#: model_terms:ir.ui.view,arch_db:pb_workseg.view_pb_work_segment_list
 msgid "Where they work"
 msgstr ""
 

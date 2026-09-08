@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   amounts, to the digit. Nothing here posts to accounting: a charge between
   entities is a report line and an export.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -48,6 +48,11 @@ WHAT IT DOES NOT CHANGE
         'pb_hub',                  # the global palette + the shared back chip
         'pb_import_kit',           # pbim tokens/primitives + the shared ic() set
         'pb_employee_vault',       # the chip registry on the person's card
+        # TIDY P1 — the screen is a LENS on the People hub, so this module is
+        # mounted inside it. The direction is one way: `pb_people_hub` depends
+        # on pb_hub, pb_settings, pb_people and pb_contracts and reaches this
+        # module through none of them, so there is no cycle to fail an install.
+        'pb_people_hub',
     ],
     'data': [
         'security/pb_workseg_security.xml',
@@ -59,8 +64,10 @@ WHAT IT DOES NOT CHANGE
     'assets': {
         'web.assets_backend': [
             'pb_workseg/static/src/scss/workseg.scss',
-            # the screen first, then the chip, then the rows that name them
+            # the screen first, then the lens and the chip that mount it,
+            # then the rows that name them
             'pb_workseg/static/src/js/assignments.js',
+            'pb_workseg/static/src/js/workseg_lens.js',
             'pb_workseg/static/src/js/workseg_chip.js',
             'pb_workseg/static/src/js/workseg_palette.js',
             'pb_workseg/static/src/xml/workseg.xml',

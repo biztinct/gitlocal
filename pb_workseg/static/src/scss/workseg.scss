@@ -1,5 +1,5 @@
 // =====================================================================
-//  Where people work — .wsg-*
+//  Where they work — .wsg-*
 //
 //  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
 //  class "pbim pbim-page wsg". Nothing here declares a colour of its own,
@@ -30,7 +30,19 @@
     .wsg-head-id { min-width: 0; }
     .wsg-h { margin: 6px 0 0; font-size: 20px; font-weight: 800; color: var(--pbim-ink); }
     .wsg-s { margin: 4px 0 0; font-size: 13px; color: var(--pbim-muted); max-width: 640px; }
-    .wsg-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wsg-head-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    // The three segments of the control at the top. NOT `.wsg-seg`: this
+    // module has meant "a stretch of days" by that name since it was
+    // written, and its rule (four classes deep) quietly beat the kit's
+    // three, so the segment you were standing on rendered white on white.
+    // A kit class and a module class on one element must not share a name.
+    .wsg-lenstab { background: var(--pbim-surface); }
+    .wsg-lenstab svg { opacity: .78; }
+    .wsg-lenstab.on {
+        background: var(--pbim-primary); border-color: var(--pbim-primary);
+        color: #fff;
+    }
+    .wsg-lenstab.on svg { opacity: 1; }
 
     // --------------------------------------------------------- the cards
     .wsg-card {

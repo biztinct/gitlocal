@@ -182,6 +182,9 @@ class TestWorkSegStaticContract(TransactionCase):
         self.assertEqual(list(declared), [
             'pb_workseg/static/src/scss/workseg.scss',
             'pb_workseg/static/src/js/assignments.js',
+            # TIDY P1 — the People hub lens, mounted between the screen and
+            # the rows that name doors to it.
+            'pb_workseg/static/src/js/workseg_lens.js',
             'pb_workseg/static/src/js/workseg_chip.js',
             'pb_workseg/static/src/js/workseg_palette.js',
             'pb_workseg/static/src/xml/workseg.xml',
@@ -422,3 +425,158 @@ class TestWorkSegStaticContract(TransactionCase):
         self.assertNotIn('preventDefault', js.split('onKey(ev)')[-1][:400],
                          'Escape must not be swallowed — the platform still '
                          'gets its turn')
+
+
+@tagged('post_install', '-at_install')
+class TestWhereTheyWorkIsADoor(TransactionCase):
+    """TIDY P1 — T2 and T3.
+
+    The screen had no door a person could see. It had a ⌘K row, a chip on
+    somebody's card and a bookmark, and a person looking for it opened People,
+    read the lenses, and concluded the product did not have it. TIDY rule 11:
+    a ⌘K row alone is not a door.
+
+    What is asserted here is the SHAPE of the door — the lens is registered on
+    the People hub, at the sequence the design put it, behind the same gate as
+    the ⌘K rows — and that both roads in carry the same vocabulary, so a
+    reader who arrives by either lands on the same screen with the same way
+    back.
+    """
+
+    LENS = os.path.join('static', 'src', 'js', 'workseg_lens.js')
+
+    def _lens(self):
+        return _code(_read(HERE, self.LENS))
+
+    # ------------------------------------------------------------------ T2
+    def test_t2_the_lens_is_on_the_people_hub_at_forty_eight(self):
+        lens = self._lens()
+        found = re.search(
+            r'registry\.category\(PEOPLE_LENSES\)\.add\("where",.*?'
+            r'\{ sequence: (\d+) \}\);', lens, re.S)
+        self.assertTrue(found, 'the "Where they work" lens is gone')
+        self.assertEqual(int(found.group(1)), 48,
+                         'after Pay (45), before Plan (last)')
+        self.assertIn('label: _t("Where they work")', lens)
+        self.assertIn('icon: "mapPin"', lens)
+        self.assertIn('Component: PbAssignmentsScreen', lens)
+        self.assertIn('wantsArrival: true', lens,
+                      'the lens has to be handed the deep link, or "Same '
+                      'person?" arrives on the strip')
+
+    def test_t2_the_lens_and_the_rows_share_one_gate(self):
+        """One gate, declared once. A role that may open the ⌘K row is exactly
+        the role that is offered the lens — otherwise a reader sees a row,
+        presses it, and is refused by the screen behind it (W95)."""
+        lens = self._lens()
+        self.assertIn('groups: WORKSEG_GATE', lens)
+        self.assertIn('from "@pb_workseg/js/workseg_palette"', lens)
+
+        palette = _code(_read(HERE, 'static', 'src', 'js',
+                              'workseg_palette.js'))
+        gate = re.search(r'export const WORKSEG_GATE = \[(.*?)\];',
+                         palette, re.S)
+        self.assertTrue(gate, 'the gate is gone')
+        xmlids = re.findall(r'"([\w.]+)"', gate.group(1))
+        self.assertTrue(xmlids)
+        for xmlid in xmlids:
+            self.assertTrue(self.env.ref(xmlid, raise_if_not_found=False),
+                            'the gate names a group that is not there: %s'
+                            % xmlid)
+
+    def test_t2_somebody_with_none_of_those_groups_is_not_offered_it(self):
+        """The shell offers a lens only to a reader who holds one of its
+        groups, so the test that means what it says is that an ordinary
+        employee holds none of them."""
+        palette = _code(_read(HERE, 'static', 'src', 'js',
+                              'workseg_palette.js'))
+        gate = re.search(r'export const WORKSEG_GATE = \[(.*?)\];',
+                         palette, re.S)
+        xmlids = re.findall(r'"([\w.]+)"', gate.group(1))
+        plain = self.env['res.users'].create({
+            'name': 'TIDY P1 plain reader',
+            'login': 'tidy.p1.plain.reader@example.test',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])],
+        })
+        held = [x for x in xmlids if plain.has_group(x)]
+        self.assertFalse(held, 'an ordinary employee is offered the lens '
+                               'through %s' % held)
+
+    def test_t2_the_module_may_be_mounted_inside_the_hub(self):
+        """A lens lives inside its host, so the dependency points that way —
+        and the host must not point back, or the install fails on a cycle."""
+        manifest = ast.literal_eval(_read(HERE, '__manifest__.py'))
+        self.assertIn('pb_people_hub', manifest['depends'])
+        hub = ast.literal_eval(_read(ROOT, 'pb_people_hub', '__manifest__.py'))
+        self.assertNotIn('pb_workseg', hub['depends'])
+
+    # ------------------------------------------------------------------ T3
+    def test_t3_both_roads_carry_the_same_focus(self):
+        """The hub hands a lens `props.arrival`; a screen of its own reads its
+        own action context. Whichever road, "merge" means the review."""
+        js = _code(_read(HERE, 'static', 'src', 'js', 'assignments.js'))
+        self.assertIn('this.props.arrival', js)
+        self.assertIn('arrival.focus', js)
+        self.assertIn('context.pb_focus', js)
+        self.assertIn('asked === "merge" ? "merge" : "days"', js,
+                      'no focus at all opens the strip')
+
+    def test_t3_the_command_rows_land_on_the_lens(self):
+        """Two roads, one place. Both ⌘K rows open the People hub on the
+        `where` lens, so the breadcrumb back to People is the same one the
+        lens has."""
+        palette = _code(_read(HERE, 'static', 'src', 'js',
+                              'workseg_palette.js'))
+        for row in ('workseg_days', 'workseg_same_person'):
+            block = re.search(
+                r'palette\.add\("%s",(.*?)\{ sequence: \d+ \}\);' % row,
+                palette, re.S)
+            self.assertTrue(block, 'the %s row is gone' % row)
+            body = block.group(1)
+            self.assertIn('pb_people_hub.action_pb_people_hub', body)
+            self.assertIn('lens: "where"', body)
+        merge = re.search(
+            r'palette\.add\("workseg_same_person",(.*?)\{ sequence: \d+ \}\);',
+            palette, re.S).group(1)
+        self.assertIn('focus: "merge"', merge)
+
+    def test_t3_the_screen_does_not_draw_a_second_way_back(self):
+        """The hub owns the way back. A back chip beside it is two doors to
+        one room, so the chip is absent when the screen is embedded."""
+        js = _code(_read(HERE, 'static', 'src', 'js', 'assignments.js'))
+        self.assertIn('this.embedded = Boolean(this.props.embedded)', js)
+        self.assertIn('this.back = this.embedded ? null : hubBack(this.props)',
+                      js)
+        self.assertNotIn('hubBack(this.env', js,
+                         'hubBack takes the props and only the props')
+
+    def test_t3_the_segments_say_what_the_owner_says(self):
+        """Plain English, and one control rather than three loose buttons."""
+        markup = _read(HERE, 'static', 'src', 'xml', 'workseg.xml')
+        for words in ('The month strip', 'Same person?',
+                      'Charged between entities'):
+            self.assertIn(words, markup)
+        self.assertIn('pbim-seg', markup)
+        self.assertNotIn('Where people work', markup)
+
+    def test_t3_the_charged_list_carries_a_way_back(self):
+        """A list opened from a screen is a dead end unless it says how to get
+        out. It opens in the breadcrumb AND with `pb_back` written on it."""
+        js = _code(_read(HERE, 'static', 'src', 'js', 'assignments.js'))
+        opener = js.split('openTransfers()')[-1][:700]
+        self.assertIn('clearBreadcrumbs: false', opener)
+        self.assertIn('pb_back', opener)
+        self.assertIn('pb_people_hub.action_pb_people_hub', opener)
+        self.assertIn('lens: "where"', opener)
+
+    def test_t3_one_screen_has_one_name(self):
+        """"Where people work" and "Where they work" were the same screen with
+        two names, and neither was findable from the other."""
+        offenders = []
+        for path in _walk(HERE, ('.js', '.xml', '.scss', '.py', '.csv',
+                                 '.po', '.pot')):
+            if 'Where people work' in _read(path):
+                offenders.append(os.path.relpath(path, HERE))
+        self.assertFalse(sorted(set(offenders)),
+                         'the old name survives in: %s'
+                         % sorted(set(offenders)))
