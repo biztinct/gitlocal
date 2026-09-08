@@ -43,13 +43,38 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { PbPayReview, PbPayChanges } from "@pb_pay/js/pay_review";
-import { binPeople, busiestBin, dodgeDots } from "@pb_pay/js/band_picture";
+import {
+    axisSpan, bandAxis, binPeople, busiestBin, dodgeDots,
+} from "@pb_pay/js/band_picture";
 
 const BANDS = "pb.pay.bands";
 const FAIRNESS = "pb.pay.fairness";
 
 /** How long a drag waits before asking the server for the exact cost. */
 const DRAG_SETTLE = 160;
+
+/**
+ * OPENING A BAND OUT, in milliseconds and fractions.
+ *
+ * The two hover delays are what stop the picture flickering as a reader
+ * sweeps down a list of thirty bands: nothing opens until the cursor has
+ * settled, and nothing closes the instant it leaves. `ZOOM_SETTLE` is how
+ * long the row wears `.is-zooming` — a little longer than the 260 ms unroll
+ * in the stylesheet, so the class outlives the transition it is guarding.
+ */
+const HOVER_IN = 180;
+const HOVER_OUT = 140;
+const ZOOM_SETTLE = 320;
+/** How much further than the picture shows a drag may travel. Without it an
+ *  edge dragged to the end of its own zoom hits an invisible wall, which is a
+ *  dead end and the design bar forbids those. */
+const DRAG_HEADROOM = 0.3;
+/** A zoom narrower than about 1.5% of the shared axis would draw a locator
+ *  segment nobody can see, so it never draws thinner than this. */
+const LOCATOR_MIN_PX = 2;
+/** Rounded money can only carry so many figures before it stops meaning
+ *  anything; past this the ruler stops rounding instead of repeating itself. */
+const RULER_MAX_DECIMALS = 4;
 
 /**
  * How the picture is drawn, in pixels. Two sets of numbers, because dense
@@ -59,9 +84,9 @@ const DRAG_SETTLE = 160;
  */
 const SHAPE = {
     normal: { bin: 8, pip: 5, pipGap: 1, base: 24, lift: 14, cap: 42,
-              dot: 9, gap: 10, labels: true },
+              dot: 9, gap: 10, labels: true, ruler: 5 },
     dense: { bin: 6, pip: 3, pipGap: 0, base: 12, lift: 8, cap: 20,
-             dot: 7, gap: 8, labels: false },
+             dot: 7, gap: 8, labels: false, ruler: 3 },
 };
 
 /** Below this many people in one bin the picture draws each of them. */
@@ -141,6 +166,15 @@ export class PbPayScreen extends Component {
         this.back = hubBack(this.props);
         this.trackRefs = {};
         this._settle = null;
+        // Opening a band out on hover is a POINTING DEVICE'S gesture. A touch
+        // screen has no hover to speak of — a tap would fire it and then fire
+        // the tap as well — so the button is the only door there (ruling R2).
+        this.canHover = Boolean(
+            window.matchMedia
+            && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+        this._hoverIn = null;
+        this._hoverOut = null;
+        this._unroll = null;
         // The picture is measured, never assumed: bins are pixels, and the
         // lens sits inside a hub whose rail can be collapsed (WFPLAN W20).
         this.bandsRef = useRef("bandsRoot");
@@ -171,6 +205,16 @@ export class PbPayScreen extends Component {
             // how this reader likes the picture drawn (their browser only)
             fit: remembered(FIT_KEY, {}) || {},
             dense: Boolean(remembered(DENSE_KEY, false)),
+
+            // ONE band drawn on its own money scale, and only ever one.
+            // Deliberately NOT remembered between visits (ruling R3): fitting
+            // a family is a preference, opening a band is a moment, and
+            // re-opening a band somebody has long forgotten is a surprise
+            // rather than a convenience.
+            open: "",        // the key of the band that is open
+            pinned: false,   // pressed open, so leaving with the mouse keeps it
+            zoom: null,      // { key, axis, below, above }
+            zooming: "",     // the key that is mid-unroll, for one motion
 
             // how wide each band's track actually is, measured on paint and
             // on every resize. In `useState` because the template reads it
@@ -222,6 +266,9 @@ export class PbPayScreen extends Component {
         onPatched(() => this._measureTracks());
         onWillUnmount(() => {
             if (this._resize) { this._resize.disconnect(); }
+            this._clearHoverTimers();
+            if (this._unroll) { clearTimeout(this._unroll); this._unroll = null; }
+            if (this._settle) { clearTimeout(this._settle); this._settle = null; }
         });
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev),
@@ -271,6 +318,11 @@ export class PbPayScreen extends Component {
                 + "moment."));
         }
         if (this.state.tab === "fairness") { await this.loadFairness(); }
+        // The board is a new set of objects, so an opened band's own ruler is
+        // worked out again from the numbers that have just arrived — and a
+        // band that is no longer on the board closes rather than leaving a
+        // zoom pointing at nothing.
+        this._refreshZoom();
         this.state.loaded = true;
     }
 
@@ -387,6 +439,10 @@ export class PbPayScreen extends Component {
                     fitted: fitted && Boolean(family.axis),
                     own: family.axis || lane.axis,
                     axis: fitted && family.axis ? family.axis : lane.axis,
+                    // The SHARED axis, carried down whatever this family is
+                    // set to, because the locator over an opened band has to
+                    // say where the zoom sits on the ruler everybody shares.
+                    laneAxis: lane.axis,
                     bands: [],
                 });
             }
@@ -414,12 +470,408 @@ export class PbPayScreen extends Component {
         remember(DENSE_KEY, this.state.dense);
     }
 
-    /** Where a value sits on an axis, as a percentage of its width. Handed a
-     *  lane or a family group — both carry the `axis` this measures against. */
+    /**
+     * Where a value sits on an axis, as a percentage of its width.
+     *
+     * Handed a lane, a family group or an OPENED BAND — all three carry the
+     * `axis` this measures against, and a band's own axis is the only one of
+     * the three that does not start at zero. Every position on a band row
+     * goes through this one function (the range, the middle mark, the two
+     * grips, the median tick, the ruler and the locator), so an axis with a
+     * left-hand end is honoured everywhere or nowhere.
+     */
     axisPct(scope, value) {
-        const top = (scope && scope.axis && scope.axis.max) || 1;
-        const pct = (Number(value || 0) / top) * 100;
+        const axis = (scope && scope.axis) || {};
+        const low = Number(axis.min) || 0;
+        const pct = ((Number(value || 0) - low) / axisSpan(axis)) * 100;
         return Math.max(0, Math.min(100, pct));
+    }
+
+    // ------------------------------------------------- open this band out
+    /**
+     * ONE BAND, ON ITS OWN MONEY SCALE.
+     *
+     * "Construction · level 2 · Vietnam" runs 6.6M to 11M ₫ on an axis that
+     * reaches 136M ₫, so five hundred and forty-four people are drawn inside
+     * about forty pixels. Every count is right, every colour is right, and
+     * nobody can read any of it. Opening the band out unrolls that sliver
+     * across the whole track: the marks spread into people you can tell apart
+     * and press, a second ruler underneath says what the new width is worth,
+     * and a hairline above shows which slice of the shared axis you are now
+     * looking at, so nobody loses their bearings.
+     *
+     * IT IS A WAY OF LOOKING, NEVER A WAY OF EDITING (ledger rule 17). No
+     * stored number changes, nothing is saved, and while it is open the row
+     * says out loud that its width no longer compares with its neighbours.
+     */
+    isOpen(band) {
+        return Boolean(this.state.open)
+            && this.state.open === this.bandKey(band);
+    }
+
+    /**
+     * The ruler a row is ACTUALLY drawn on — the one thing every drawing
+     * function on the row asks, so none of them can work it out differently.
+     *
+     * Three rulers, narrowest first: this band's own when it is open, then
+     * the family's when that family is fitted, then the lane's. Closing an
+     * opened band therefore returns it to whatever the family was set to,
+     * rather than always to the shared axis (ruling R5).
+     */
+    rowScope(group, band) {
+        const zoom = this.state.zoom;
+        if (zoom && zoom.key === this.bandKey(band)) {
+            return {
+                key: group.key, name: group.name, fitted: group.fitted,
+                laneAxis: group.laneAxis, axis: zoom.axis, zoomed: true,
+            };
+        }
+        return group;
+    }
+
+    /** Find a band on the board by the name the picture calls it. */
+    _bandByKey(key) {
+        for (const lane of this.lanes) {
+            for (const band of (lane.bands || [])) {
+                if (this.bandKey(band) === key) { return band; }
+            }
+        }
+        return null;
+    }
+
+    /** Work out one band's own axis from numbers the browser already holds —
+     *  no server call, because every band payload carries its complete list
+     *  of wages already. */
+    _setZoom(band, headroom) {
+        const axis = bandAxis(
+            { min: band.min, max: band.max, wages: band.wages || [] },
+            { headroom: headroom || 0 });
+        this.state.zoom = {
+            key: this.bandKey(band), axis,
+            below: axis.below, above: axis.above,
+            people: (band.wages || []).length,
+        };
+    }
+
+    /** The board has just been read again, so the open band is a NEW object:
+     *  its ruler is worked out afresh, or the band has gone and so does the
+     *  zoom. Never while a gesture is in flight — that axis is frozen. */
+    _refreshZoom() {
+        const key = this.state.open;
+        if (!key || this.state.drag) { return; }
+        const band = this._bandByKey(key);
+        if (!band) { this.closeBand(); return; }
+        this._setZoom(band, 0);
+        this._markUnrolling(key);
+    }
+
+    /**
+     * A zoom changes where every mark belongs, so OWL rebuilds them and would
+     * replay their fade-in as a shimmer underneath the unroll. This class
+     * says "one motion is happening here" for as long as it lasts, and the
+     * stylesheet uses it to travel the marks and silence their entry.
+     */
+    _markUnrolling(key) {
+        this.state.zooming = key;
+        if (this._unroll) { clearTimeout(this._unroll); }
+        this._unroll = setTimeout(() => {
+            this._unroll = null;
+            if (this.state.zooming === key) { this.state.zooming = ""; }
+        }, ZOOM_SETTLE);
+    }
+
+    _clearHoverTimers() {
+        if (this._hoverIn) { clearTimeout(this._hoverIn); this._hoverIn = null; }
+        if (this._hoverOut) {
+            clearTimeout(this._hoverOut);
+            this._hoverOut = null;
+        }
+    }
+
+    openBand(band, pinned) {
+        this._clearHoverTimers();
+        const key = this.bandKey(band);
+        if (this.state.open !== key) { this.state.pop = null; }
+        this.state.open = key;
+        this.state.pinned = Boolean(pinned);
+        this._setZoom(band, 0);
+        this._markUnrolling(key);
+    }
+
+    /**
+     * THE RULER A GESTURE IS MEASURED ON, worked out once at the press and
+     * then frozen — with room to spare at both ends, and ANCHORED so the grip
+     * that was grabbed does not move at the moment of grabbing it.
+     *
+     * Two things have to be true at once and neither is optional. An axis
+     * recomputed under the moving hand makes the grip run away from the
+     * cursor; an axis frozen with no room to spare means an edge dragged to
+     * the end of its own picture hits a wall nobody can see. So the gesture
+     * gets a WIDER ruler (30% at each end) whose position is chosen to keep
+     * the held edge at exactly the fraction of the track it was already at —
+     * the picture makes room around the hand rather than sliding under it.
+     */
+    _openForDrag(band, scope, side) {
+        this._clearHoverTimers();
+        const key = this.bandKey(band);
+        if (this.state.open !== key) { this.state.pop = null; }
+        this.state.open = key;
+        this.state.pinned = true;
+
+        const wide = bandAxis(
+            { min: band.min, max: band.max, wages: band.wages || [] },
+            { headroom: DRAG_HEADROOM });
+        const span = (wide.max - wide.min) || 1;
+        const drawn = (scope && scope.axis) || {};
+        const drawnLow = Number(drawn.min) || 0;
+        const held = Number(side === "min" ? band.min : band.max) || 0;
+        // Where the held edge sits on the ruler it is drawn on RIGHT NOW,
+        // kept off the very ends so the anchoring cannot divide by nothing.
+        const share = Math.max(0.02, Math.min(
+            0.98, (held - drawnLow) / axisSpan(drawn)));
+        let low = held - (share * span);
+        if (low < 0) { low = 0; }
+        const axis = { min: low, max: low + span };
+        let below = 0;
+        let above = 0;
+        for (const wage of (band.wages || [])) {
+            if (wage < axis.min) { below += 1; }
+            else if (wage > axis.max) { above += 1; }
+        }
+        this.state.zoom = { key, axis, below, above,
+                            people: (band.wages || []).length };
+        // Deliberately NO unrolling class: for the length of a gesture the
+        // picture has to answer the hand on the same frame, and a 260 ms
+        // travel on the grip is a grip lagging behind the mouse.
+        this.state.zooming = "";
+        return axis;
+    }
+
+    closeBand() {
+        if (!this.state.open) { return; }
+        const key = this.state.open;
+        this._clearHoverTimers();
+        this.state.open = "";
+        this.state.pinned = false;
+        this.state.zoom = null;
+        this._markUnrolling(key);
+    }
+
+    /** The button: press to pin it open, press again to put it back. */
+    toggleBand(band) {
+        if (this.isOpen(band) && this.state.pinned) {
+            this.closeBand();
+            return;
+        }
+        this.openBand(band, true);
+    }
+
+    /** One whole sentence per state, never a label glued out of template
+     *  nodes (ledger GR22). */
+    openLabel(band) {
+        return this.isOpen(band)
+            ? _t("Back to the shared scale") : _t("Open out");
+    }
+
+    get openHint() {
+        return _t(
+            "Draw this band on its own money scale, so the people in it can "
+            + "be told apart. Nothing anybody is paid changes.");
+    }
+
+    /** The id the sentence carries and the track points at, so a screen
+     *  reader is told the ruler under this band has changed. */
+    zoomNoteId(band) {
+        return "pay-zoom-" + this.bandKey(band).replace(/[^A-Za-z0-9]+/g, "-");
+    }
+
+    // ----------------------------------------------------- hover and touch
+    onTrackEnter(band) {
+        if (!this.canHover || this.state.drag) { return; }
+        // A band somebody has PINNED is theirs until they say otherwise; a
+        // cursor crossing another row does not take it away from them.
+        if (this.state.pinned) { return; }
+        if (this._hoverOut) {
+            clearTimeout(this._hoverOut);
+            this._hoverOut = null;
+        }
+        if (this.isOpen(band)) { return; }
+        if (this._hoverIn) { clearTimeout(this._hoverIn); }
+        this._hoverIn = setTimeout(() => {
+            this._hoverIn = null;
+            if (this.state.drag || this.state.pinned) { return; }
+            this.openBand(band, false);
+        }, HOVER_IN);
+    }
+
+    onTrackLeave() {
+        if (!this.canHover) { return; }
+        if (this._hoverIn) { clearTimeout(this._hoverIn); this._hoverIn = null; }
+        if (!this.state.open || this.state.pinned || this.state.drag) { return; }
+        if (this._hoverOut) { clearTimeout(this._hoverOut); }
+        this._hoverOut = setTimeout(() => {
+            this._hoverOut = null;
+            if (this.state.pinned || this.state.drag) { return; }
+            this.closeBand();
+        }, HOVER_OUT);
+    }
+
+    // ------------------------------------------- the ruler and the locator
+    /** B, M or K — whichever unit the top of this ruler is written in. */
+    _rulerUnit(value) {
+        const size = Math.abs(Number(value) || 0);
+        if (size >= 1e9) { return { div: 1e9, suffix: _t("B") }; }
+        if (size >= 1e6) { return { div: 1e6, suffix: _t("M") }; }
+        if (size >= 1e3) { return { div: 1e3, suffix: _t("K") }; }
+        return { div: 1, suffix: "" };
+    }
+
+    _unitMoney(value, band, unit, decimals) {
+        const body = (Number(value) / unit.div).toFixed(decimals) + unit.suffix;
+        const symbol = (band && band.symbol) || "";
+        if (!symbol) { return body; }
+        return band.symbol_before ? symbol + body : body + " " + symbol;
+    }
+
+    _rulerSet(scope, band, count, plain) {
+        const axis = (scope && scope.axis) || {};
+        const low = Number(axis.min) || 0;
+        const span = axisSpan(axis);
+        const step = span / (count - 1);
+        const unit = plain ? { div: 1, suffix: "" }
+            : this._rulerUnit(low + span);
+        // The number of figures comes from the SPAN, not from the magnitude:
+        // a ruler over 6.60M to 6.68M has to print five different labels, and
+        // one decimal at millions would print "6.6M" five times.
+        const decimals = plain ? 0 : Math.max(0, Math.min(
+            RULER_MAX_DECIMALS,
+            Math.ceil(-Math.log10(step / unit.div)) + 1));
+        const ticks = [];
+        for (let i = 0; i < count; i += 1) {
+            const value = low + (step * i);
+            ticks.push({
+                value,
+                pct: (i / (count - 1)) * 100,
+                label: this._unitMoney(value, band, unit, decimals),
+                first: i === 0,
+                last: i === count - 1,
+            });
+        }
+        return ticks;
+    }
+
+    /**
+     * The ruler under an opened band, in the band's own money.
+     *
+     * IT MAY NOT PRINT THE SAME LABEL TWICE. Five ticks are tried first (three
+     * in dense rows), and if two of them would read the same the ruler drops
+     * to fewer ticks rather than tell the reader that two different amounts
+     * are the same amount. If even two ends cannot be told apart in rounded
+     * money, it stops rounding and prints them in full.
+     */
+    rulerTicks(scope, band) {
+        const wanted = this.shape.ruler;
+        for (const count of [wanted, 3, 2]) {
+            if (count > wanted) { continue; }
+            const ticks = this._rulerSet(scope, band, count, false);
+            if (new Set(ticks.map((t) => t.label)).size === ticks.length) {
+                return ticks;
+            }
+        }
+        return this._rulerSet(scope, band, 2, true);
+    }
+
+    /**
+     * The hairline above an opened band: the whole shared axis, with the
+     * slice this zoom covers filled in.
+     *
+     * This is the cheapest thing on the screen and it is what makes the zoom
+     * feel honest — a reader can always see how much of the company's pay
+     * they are looking at. A very narrow zoom would draw a segment nobody can
+     * see, so it never draws thinner than two pixels.
+     */
+    locatorStyle(group, band) {
+        const zoom = this.state.zoom;
+        const lane = (group && group.laneAxis) || (group && group.axis);
+        if (!zoom || !lane) { return "left:0%;width:100%"; }
+        const shared = { axis: lane };
+        const left = this.axisPct(shared, zoom.axis.min);
+        const right = this.axisPct(shared, zoom.axis.max);
+        const width = this.state.widths[this.bandKey(band)] || 0;
+        const least = width ? (LOCATOR_MIN_PX / width) * 100 : 0.4;
+        return "left:" + left + "%;width:"
+            + Math.min(100 - left, Math.max(least, right - left)) + "%";
+    }
+
+    locatorTitle(group) {
+        const lane = (group && group.laneAxis) || (group && group.axis) || {};
+        return _t(
+            "Where this band sits on the shared money scale, which runs to "
+            + "%(top)s.", { top: (lane.ticks && lane.ticks.length
+                ? lane.ticks[lane.ticks.length - 1].label : "") });
+    }
+
+    // ------------------------------------------------------ what it all says
+    /** Said out loud while the ruler is this band's own, in the same voice
+     *  the family warning already uses. */
+    zoomSentence(group) {
+        if (group && group.fitted) {
+            return _t(
+                "This band is drawn on its own money scale, narrower than "
+                + "this family's, so its width no longer compares with the "
+                + "other bands.");
+        }
+        return _t(
+            "This band is drawn on its own money scale, so its width no "
+            + "longer compares with the others.");
+    }
+
+    /**
+     * The tails, in the voice of the lane's own axis note.
+     *
+     * A zoom has a LEFT-hand tail as well as a right-hand one, which the
+     * shared axis never does, and a picture that stands somebody on an edge
+     * has to say how many it put there.
+     */
+    zoomTails(band) {
+        const zoom = this.state.zoom;
+        if (!zoom) { return ""; }
+        const said = [];
+        if (zoom.below) {
+            const edge = this.shortMoney(zoom.axis.min, band);
+            said.push(zoom.below === 1
+                ? _t("1 person is paid less than %(edge)s and sits on the "
+                     + "left-hand edge. Their own pay is on their label.",
+                     { edge })
+                : _t("%(count)s people are paid less than %(edge)s and sit "
+                     + "on the left-hand edge. Their own pay is on their "
+                     + "label.", { count: zoom.below, edge }));
+        }
+        if (zoom.above) {
+            const edge = this.shortMoney(zoom.axis.max, band);
+            said.push(zoom.above === 1
+                ? _t("1 person is paid more than %(edge)s and sits on the "
+                     + "right-hand edge. Their own pay is on their label.",
+                     { edge })
+                : _t("%(count)s people are paid more than %(edge)s and sit "
+                     + "on the right-hand edge. Their own pay is on their "
+                     + "label.", { count: zoom.above, edge }));
+        }
+        return said.join(" ");
+    }
+
+    /** A band with nobody on it still opens, still draws its range on its own
+     *  scale, and says which of the two empty things it is. */
+    zoomEmpty(band) {
+        return (band.wages || []).length ? "" : _t("Nobody is on this band yet.");
+    }
+
+    /** Everything the opened row says AFTER the warning, as ONE string.
+     *  Two adjacent template nodes are read out as one run-on word by a
+     *  screen reader even when the eye sees a gap (ledger GR22). */
+    zoomExtra(band) {
+        return [this.zoomEmpty(band), this.zoomTails(band)]
+            .filter(Boolean).join(" ");
     }
 
     /** The three numbers a band is drawn with right now: the saved ones, or
@@ -522,17 +974,20 @@ export class PbPayScreen extends Component {
         const key = this.bandKey(band);
         const width = this.state.widths[key] || 0;
         const shape = this.shape;
-        const top = (scope && scope.axis && scope.axis.max) || 1;
+        // The axis OBJECT, not just its top: an opened band's ruler does not
+        // start at zero, and a mark measured from zero on it lands nowhere
+        // near the person it is drawing.
+        const axis = (scope && scope.axis) || {};
         const now = this.live(band);
         if (!width) { return { kind: "waiting", key, parts: [], dots: [] }; }
         const dots = band.dots || [];
         if (dots.length && dots.length <= 24) {
             return {
                 kind: "dots", key, parts: [],
-                dots: dodgeDots(dots, top, width, shape.gap),
+                dots: dodgeDots(dots, axis, width, shape.gap),
             };
         }
-        const bins = binPeople(band.wages || [], top, width, shape.bin, now);
+        const bins = binPeople(band.wages || [], axis, width, shape.bin, now);
         const busiest = Math.max(busiestBin(bins), PIP_LIMIT + 1);
         const parts = [];
         bins.forEach((bin) => {
@@ -650,15 +1105,33 @@ export class PbPayScreen extends Component {
     /** "12 people · 6.6M ₫ to 6.9M ₫ · below the band" — the word is always
      *  there, because colour on its own is never the message. */
     partTitle(band, part) {
+        // The two figures come from the BIN's own width, not from the size of
+        // the money. On a lane axis a bin is a million dong wide and "9.0M ₫"
+        // is exactly right; on an opened band it is fifty thousand, and
+        // "9.0M ₫ to 9.0M ₫" is a picture telling a reader that two different
+        // amounts are the same amount.
+        const spread = part.bin.high - part.bin.low;
         return [
             part.count === 1 ? _t("1 person")
                 : _t("%(count)s people", { count: part.count }),
             _t("%(low)s to %(high)s", {
-                low: this.shortMoney(part.bin.low, band),
-                high: this.shortMoney(part.bin.high, band),
+                low: this.fineMoney(part.bin.low, band, spread),
+                high: this.fineMoney(part.bin.high, band, spread),
             }),
             this.stateWord(part.state),
         ].join(" · ");
+    }
+
+    /** Short money with enough figures to tell two amounts `spread` apart. */
+    fineMoney(value, band, spread) {
+        const unit = this._rulerUnit(value);
+        if (unit.div === 1) { return this.shortMoney(value, band); }
+        const step = Math.abs(Number(spread) || 0);
+        const decimals = step > 0
+            ? Math.max(1, Math.min(RULER_MAX_DECIMALS,
+                                   Math.ceil(-Math.log10(step / unit.div)) + 1))
+            : 1;
+        return this._unitMoney(value, band, unit, decimals);
     }
 
     /** A bin edge is a pixel wide, not a payslip: it is written short, and
@@ -791,9 +1264,31 @@ export class PbPayScreen extends Component {
         }
         ev.preventDefault();
         this.state.pop = null;
+        // Dragging an edge inside a forty-pixel sliver is the exact thing
+        // this phase exists to stop, so a drag OPENS the row and pins it —
+        // and the ruler it opens on carries headroom at both ends, because an
+        // edge that cannot be dragged past the end of its own picture is a
+        // wall the reader cannot see (ruling R2, deliverable 2e).
+        const before = this.state.zoom;
+        const axis = this._openForDrag(band, scope, side);
+        const low = Number(axis.min) || 0;
+        const high = Number(axis.max);
+        const track = this.trackRefs[this.bandKey(band)];
+        const box = track ? track.getBoundingClientRect() : null;
+        const held = side === "min" ? band.min : band.max;
+        let grab = 0;
+        if (box && box.width && high > low) {
+            // How far the cursor is from the grip ON THE NEW RULER. The
+            // gesture then moves the edge by how far the HAND moves, never to
+            // wherever the cursor happens to sit — so re-scaling the row at
+            // the moment of the press cannot change anybody's band before a
+            // person has dragged anything at all.
+            const at = box.left + (((held - low) / (high - low)) * box.width);
+            grab = ev.clientX - at;
+        }
         this.state.drag = {
             bandId: band.id, key: this.bandKey(band), side,
-            laneMax: (scope && scope.axis && scope.axis.max) || 1,
+            lo: low, hi: high, grab, zoomBefore: before,
             min: band.min, mid: band.mid, max: band.max,
             before: { min: band.min, mid: band.mid, max: band.max },
         };
@@ -807,9 +1302,28 @@ export class PbPayScreen extends Component {
         if (!track) { return; }
         const box = track.getBoundingClientRect();
         if (!box.width) { return; }
-        const ratio = Math.max(0, Math.min(1, (ev.clientX - box.left)
-                                              / box.width));
-        this._applyEdge(drag, ratio * drag.laneMax);
+        const at = (ev.clientX - (drag.grab || 0)) - box.left;
+        const ratio = Math.max(0, Math.min(1, at / box.width));
+        // The axis was worked out ONCE, at the press, and is frozen for the
+        // gesture: an axis recomputed under the moving hand makes the grip
+        // run away from the cursor.
+        this._applyEdge(drag, drag.lo + (ratio * ((drag.hi - drag.lo) || 1)));
+    }
+
+    /** Escape during a gesture puts the numbers back and returns the row to
+     *  the ruler it was on before the press. */
+    _cancelDrag() {
+        const drag = this.state.drag;
+        if (!drag) { return; }
+        this.state.drag = null;
+        this.state.preview = null;
+        if (drag.zoomBefore) {
+            this.state.zoom = drag.zoomBefore;
+            this.state.open = drag.zoomBefore.key;
+            this._markUnrolling(drag.key);
+        } else {
+            this.closeBand();
+        }
     }
 
     _applyEdge(drag, value) {
@@ -851,7 +1365,13 @@ export class PbPayScreen extends Component {
         this.state.drag = null;
         const moved = drag.side === "min"
             ? drag.min !== drag.before.min : drag.max !== drag.before.max;
-        if (!moved) { this.state.preview = null; return; }
+        if (!moved) {
+            this.state.preview = null;
+            // Nothing moved, so nothing is read again — but the ruler this row
+            // is drawn on still has to lose the gesture's headroom.
+            this._refreshZoom();
+            return;
+        }
         this.state.busy = true;
         try {
             const answer = await this.orm.call(BANDS, "move_edge", [
@@ -890,29 +1410,35 @@ export class PbPayScreen extends Component {
 
     dismissUndo() { this.state.undo = null; }
 
-    /** Arrows nudge an edge by a hundredth of the axis; Shift by a twentieth.
-     *  Enter saves, Escape puts it back — the keyboard reaches the hero. */
+    /** Arrows nudge an edge by a hundredth of the ruler the band is DRAWN on;
+     *  Shift by a twentieth. On an opened band that is a far finer nudge than
+     *  on the shared axis, which is exactly what somebody who has zoomed in
+     *  is asking for. Enter saves, Escape puts it back — the keyboard reaches
+     *  the hero and reaches it at the same resolution as the mouse. */
     onGripKey(scope, band, side, ev) {
-        const top = scope && scope.axis && scope.axis.max ? scope.axis.max : 1;
-        const step = top * (ev.shiftKey ? 0.05 : 0.01);
         if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight"
                 && ev.key !== "Enter" && ev.key !== "Escape") {
             return;
         }
         if (ev.key === "Escape") {
-            if (this.state.drag) { this.state.drag = null; ev.stopPropagation(); }
+            if (this.state.drag) { this._cancelDrag(); ev.stopPropagation(); }
             return;
         }
         if (ev.key === "Enter") { this.endDrag(); return; }
         ev.preventDefault();
         let drag = this.state.drag;
         if (!drag || drag.bandId !== band.id) {
+            const before = this.state.zoom;
+            const axis = this._openForDrag(band, scope, side);
             drag = {
-                bandId: band.id, key: this.bandKey(band), side, laneMax: top,
+                bandId: band.id, key: this.bandKey(band), side, grab: 0,
+                lo: Number(axis.min) || 0, hi: Number(axis.max),
+                zoomBefore: before,
                 min: band.min, mid: band.mid, max: band.max,
                 before: { min: band.min, mid: band.mid, max: band.max },
             };
         }
+        const step = ((drag.hi - drag.lo) || 1) * (ev.shiftKey ? 0.05 : 0.01);
         const current = side === "min" ? drag.min : drag.max;
         this._applyEdge(drag, current + (ev.key === "ArrowLeft" ? -step : step));
     }
@@ -1151,6 +1677,15 @@ export class PbPayScreen extends Component {
     // ============================================================== keyboard
     onKey(ev) {
         if (ev.key !== "Escape") { return; }
+        // This listener is registered in the CAPTURE phase (WFPLAN WF4), so
+        // it runs BEFORE the grip's own handler — which means a gesture in
+        // flight has to be the first rung, or a grip could never be let go
+        // of with the keyboard once a band was open underneath it.
+        if (this.state.drag) {
+            this._cancelDrag();
+            ev.stopPropagation();
+            return;
+        }
         // The popover is the innermost thing on the screen, so it closes
         // first: Escape means "the last thing I opened", never "everything".
         if (this.state.pop) {
@@ -1163,7 +1698,15 @@ export class PbPayScreen extends Component {
             ev.stopPropagation();
             return;
         }
-        if (this.state.undo) { this.state.undo = null; ev.stopPropagation(); }
+        if (this.state.undo) {
+            this.state.undo = null;
+            ev.stopPropagation();
+            return;
+        }
+        // The opened band is the OUTERMOST thing this ladder closes: it is
+        // the widest change to the screen and the last one a reader wants
+        // taken away from them.
+        if (this.state.open) { this.closeBand(); ev.stopPropagation(); }
     }
 }
 

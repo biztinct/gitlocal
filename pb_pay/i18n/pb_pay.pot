@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 04:28+0000\n"
-"PO-Revision-Date: 2026-09-08 04:28+0000\n"
+"POT-Creation-Date: 2026-09-08 22:23+0000\n"
+"PO-Revision-Date: 2026-09-08 22:23+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -138,8 +138,18 @@ msgid "%(count)s people"
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"%(count)s people are paid less than %(edge)s and sit on the left-hand edge. "
+"Their own pay is on their label."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid ""
 "%(count)s people are paid more than %(edge)s and sit on the right-hand edge."
 " Their own pay is on their label."
@@ -506,6 +516,22 @@ msgstr ""
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid "1 person"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"1 person is paid less than %(edge)s and sits on the left-hand edge. Their "
+"own pay is on their label."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"1 person is paid more than %(edge)s and sits on the right-hand edge. Their "
+"own pay is on their label."
 msgstr ""
 
 #. module: pb_pay
@@ -1021,6 +1047,12 @@ msgid "Back"
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Back to the shared scale"
+msgstr ""
+
+#. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__name
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__band_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__band_id
@@ -1390,6 +1422,14 @@ msgstr ""
 #. module: pb_pay
 #: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
 msgid "Download the letter"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"Draw this band on its own money scale, so the people in it can be told "
+"apart. Nothing anybody is paid changes."
 msgstr ""
 
 #. module: pb_pay
@@ -2444,6 +2484,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Nobody is on this band yet."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid ""
 "Nobody is standing here any more. Close this and look at the picture again."
@@ -2695,6 +2741,12 @@ msgid ""
 "Open contracts only, and only where both people are paid by the same company"
 " — two entities keep their books in two currencies and there is no honest "
 "comparison without a rate."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Open out"
 msgstr ""
 
 #. module: pb_pay
@@ -4232,6 +4284,22 @@ msgid "This band"
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"This band is drawn on its own money scale, narrower than this family's, so "
+"its width no longer compares with the other bands."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"This band is drawn on its own money scale, so its width no longer compares "
+"with the others."
+msgstr ""
+
+#. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_retire.py:0
 msgid "This check could not be run: %(why)s"
@@ -4661,6 +4729,12 @@ msgstr ""
 #. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__position_band
 msgid "Where their pay sits"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Where this band sits on the shared money scale, which runs to %(top)s."
 msgstr ""
 
 #. module: pb_pay

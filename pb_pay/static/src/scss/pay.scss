@@ -136,7 +136,23 @@
         display: grid; grid-template-columns: 206px minmax(0, 1fr);
         gap: 8px; align-items: center; padding: 16px 0 7px;
         border-bottom: 1px solid var(--pbim-line-2);
+        position: relative;
     }
+    // OPENED OUT: the row GROWS, downward for the ruler and its sentence and
+    // a little upward for the locator. It does not float, overlay or open a
+    // panel — the whole idea is that the band itself unrolls in place, and
+    // the cursor is on the track at the top of what grows, so it never lands
+    // on anything that moves (ruling R4).
+    .pay-band.is-open {
+        padding: 32px 0 12px;
+        background: var(--pbim-bg);
+        border-radius: var(--pbim-r);
+    }
+    // The track and everything the open row says under it, in ONE column, so
+    // the row grows by exactly what it has to say. A fixed height here is a
+    // sentence printed over the next band the first time somebody opens a
+    // wordy row on a narrow screen.
+    .pay-bandcol { min-width: 0; }
     .pay-band-id { min-width: 0; }
     .pay-band-n {
         font-size: 13px; font-weight: 700; color: var(--pbim-ink);
@@ -243,6 +259,61 @@
     }
     .pay-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
 
+    // ============================================== open this band out
+    //
+    // A band that is forty pixels wide on a shared money axis is a smear.
+    // These four rules are the whole of the way in and the whole of the way
+    // back: a button that says which state the row is in, a hairline showing
+    // which slice of the shared scale this zoom covers, a ruler saying what
+    // the new width is worth, and one sentence saying out loud that this
+    // row's width no longer compares with its neighbours.
+    .pay-openbtn {
+        appearance: none; cursor: pointer; display: inline-flex;
+        align-items: center; gap: 5px; margin-top: 6px; padding: 3px 10px;
+        font: inherit; font-size: 11px; font-weight: 700;
+        color: var(--pbim-muted); background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
+        &:hover { color: var(--pbim-ink); border-color: var(--pbim-primary-light); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &.is-on {
+            background: var(--pbim-soft); color: var(--pbim-primary);
+            border-color: var(--pbim-primary);
+        }
+    }
+    // The whole shared scale as a hairline, with this zoom filled in. It is
+    // the cheapest thing on the screen and the one that keeps the zoom
+    // honest: a reader can always see how much of the company's pay they are
+    // looking at.
+    .pay-locate {
+        position: absolute; left: 0; right: 0; bottom: calc(100% + 12px);
+        height: 4px; border-radius: 2px;
+        background: var(--pbim-line); opacity: .75;
+    }
+    .pay-locate-in {
+        position: absolute; top: 0; bottom: 0; min-width: 2px;
+        border-radius: 2px; background: var(--pbim-primary);
+    }
+    // The ruler this band is now measured against, in its own money.
+    .pay-tray { margin-top: 8px; }
+    .pay-ruler {
+        position: relative; height: 16px;
+        border-top: 1px solid var(--pbim-line);
+    }
+    .pay-ruler-t {
+        position: absolute; top: 3px; transform: translateX(-50%);
+        font-size: 10px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    // A tick sitting ON an end and centred on itself hangs half off the
+    // picture, exactly as the lane axis's own two ends do.
+    .pay-ruler-end { transform: translateX(-100%); }
+    .pay-ruler-start { transform: translateX(0); }
+    .pay-zoomnote {
+        margin: 6px 0 0; font-size: 11px; line-height: 15px;
+    }
+    .pay-zoomnote-w { display: block; font-weight: 650; color: var(--pbim-amber); }
+    .pay-zoomnote-x { display: block; color: var(--pbim-muted); }
+
     // The sentence that follows a drag.
     //
     // FIXED, not sticky. The band picture is far taller than a screen, so a
@@ -282,6 +353,13 @@
         .pay-lane { margin-bottom: 16px; }
         .pay-dot { width: 7px; height: 7px; }
         .pay-mark { bottom: 2px; }
+        // An opened band in a dense list keeps everything it says and says it
+        // in less room: three ticks rather than five (the browser decides
+        // that), and the furniture pulled in around a half-height track.
+        .pay-band.is-open { padding: 22px 0 8px; }
+        .pay-openbtn { margin-top: 3px; }
+        .pay-locate { bottom: calc(100% + 8px); height: 3px; }
+        .pay-tray { margin-top: 5px; }
     }
 
     // ------------------------------------------- who is standing in there
@@ -777,6 +855,35 @@
             to { opacity: 1; transform: none; }
         }
         .pay-range { transition: left .08s linear, right .08s linear; }
+
+        // THE UNROLL. A band opening out is ONE motion, not thirty separate
+        // ones: while `.is-zooming` is on the track every mark, both grips,
+        // the range, the middle mark and the median tick travel to their new
+        // places on the same curve, and the marks' own entry animation is
+        // silenced — a zoom changes the bin boundaries, so OWL rebuilds the
+        // marks and would otherwise replay their fade-in as a shimmer
+        // underneath the unroll.
+        .pay-band { transition: padding .26s cubic-bezier(.2, .8, .2, 1); }
+        // The ruler and its sentence arrive on the same curve as the unroll,
+        // so the whole thing reads as ONE motion rather than as a picture
+        // that moves and a caption that blinks.
+        .pay-tray { animation: pay-tray-in .26s cubic-bezier(.2, .8, .2, 1) both; }
+        @keyframes pay-tray-in {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: none; }
+        }
+        .pay-track.is-zooming {
+            .pay-range, .pay-mid, .pay-grip, .pay-median, .pay-median-lab,
+            .pay-edge-lab, .pay-mark, .pay-dot {
+                transition: left .26s cubic-bezier(.2, .8, .2, 1),
+                            width .26s cubic-bezier(.2, .8, .2, 1),
+                            top .26s cubic-bezier(.2, .8, .2, 1);
+            }
+            .pay-mark { animation: none; }
+        }
+        .pay-locate-in { transition: left .26s cubic-bezier(.2, .8, .2, 1),
+                                     width .26s cubic-bezier(.2, .8, .2, 1); }
+
         .pay-hc { transition: border-color .14s ease, box-shadow .14s ease; }
         .pay-meter-fill { transition: width .2s ease; }
         .pay-revcard { transition: border-color .14s ease, box-shadow .14s ease; }

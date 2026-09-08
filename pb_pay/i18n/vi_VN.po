@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 04:28+0000\n"
+"POT-Creation-Date: 2026-09-08 22:23+0000\n"
 "PO-Revision-Date: 2026-09-08 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: Vietnamese\n"
@@ -147,8 +147,20 @@ msgid "%(count)s people"
 msgstr "%(count)s người"
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"%(count)s people are paid less than %(edge)s and sit on the left-hand edge. "
+"Their own pay is on their label."
+msgstr ""
+"%(count)s người được trả thấp hơn %(edge)s và nằm ở mép bên trái. Mức lương "
+"của từng người được ghi trên nhãn của họ."
+
+#. module: pb_pay
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid ""
 "%(count)s people are paid more than %(edge)s and sit on the right-hand edge."
 " Their own pay is on their label."
@@ -550,6 +562,26 @@ msgstr "1 quyết định lương đang chờ bạn."
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid "1 person"
 msgstr "1 người"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"1 person is paid less than %(edge)s and sits on the left-hand edge. Their "
+"own pay is on their label."
+msgstr ""
+"1 người được trả thấp hơn %(edge)s và nằm ở mép bên trái. Mức lương của "
+"người đó được ghi trên nhãn của họ."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"1 person is paid more than %(edge)s and sits on the right-hand edge. Their "
+"own pay is on their label."
+msgstr ""
+"1 người được trả cao hơn %(edge)s và nằm ở mép bên phải. Mức lương của người"
+" đó được ghi trên nhãn của họ."
 
 #. module: pb_pay
 #. odoo-javascript
@@ -1113,6 +1145,12 @@ msgid "Back"
 msgstr "Quay lại"
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Back to the shared scale"
+msgstr "Trở lại thang đo chung"
+
+#. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__name
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__band_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__band_id
@@ -1490,6 +1528,16 @@ msgstr "Xong."
 #: model_terms:ir.ui.view,arch_db:pb_pay.portal_my_pay
 msgid "Download the letter"
 msgstr "Tải thư về"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"Draw this band on its own money scale, so the people in it can be told "
+"apart. Nothing anybody is paid changes."
+msgstr ""
+"Vẽ khoảng lương này trên thang tiền của riêng nó, để phân biệt được từng "
+"người đứng trong đó. Không có mức lương nào thay đổi."
 
 #. module: pb_pay
 #. odoo-javascript
@@ -2592,6 +2640,12 @@ msgstr "Không ai trong đợt xét lương này có tên đó."
 
 #. module: pb_pay
 #. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Nobody is on this band yet."
+msgstr "Chưa có ai trong khoảng lương này."
+
+#. module: pb_pay
+#. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid ""
 "Nobody is standing here any more. Close this and look at the picture again."
@@ -2860,6 +2914,12 @@ msgstr ""
 "Chỉ xét hợp đồng đang hiệu lực, và chỉ khi cả hai người được cùng một công "
 "ty trả lương — hai pháp nhân ghi sổ bằng hai loại tiền thì không thể so sánh"
 " trung thực nếu không có tỷ giá."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Open out"
+msgstr "Mở rộng ra"
 
 #. module: pb_pay
 #. odoo-javascript
@@ -4482,6 +4542,27 @@ msgid "This band"
 msgstr "Khoảng lương này"
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"This band is drawn on its own money scale, narrower than this family's, so "
+"its width no longer compares with the other bands."
+msgstr ""
+"Khoảng lương này được vẽ trên thang tiền của riêng nó, hẹp hơn thang của "
+"nhóm công việc này, nên độ rộng của nó không còn so sánh được với các khoảng"
+" lương khác."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid ""
+"This band is drawn on its own money scale, so its width no longer compares "
+"with the others."
+msgstr ""
+"Khoảng lương này được vẽ trên thang tiền của riêng nó, nên độ rộng của nó "
+"không còn so sánh được với các khoảng lương khác."
+
+#. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_retire.py:0
 msgid "This check could not be run: %(why)s"
@@ -4947,6 +5028,13 @@ msgstr "Mọi người đang nằm ở đâu"
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_guidance_cell__position_band
 msgid "Where their pay sits"
 msgstr "Mức lương của họ nằm ở đâu"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_hub.js:0
+msgid "Where this band sits on the shared money scale, which runs to %(top)s."
+msgstr ""
+"Vị trí của khoảng lương này trên thang tiền dùng chung, chạy đến %(top)s."
 
 #. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__scope_ref
