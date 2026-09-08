@@ -83,16 +83,30 @@ export class PbAssignmentsScreen extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
-        this.back = hubBack(this.env, this.props);
+        // TIDY P1 — `hubBack` takes the PROPS, and only the props. It was
+        // being called with the environment first, so the chip resolved to
+        // null on every road in and the way back was a breadcrumb or nothing.
+        // Mounted as a lens there is no `action` prop at all, which is how the
+        // chip stays absent inside the hub: the hub owns the way back, and a
+        // second one beside it is two doors to the same room.
+        this.embedded = Boolean(this.props.embedded);
+        this.back = this.embedded ? null : hubBack(this.props);
 
         const context = (this.props.action && this.props.action.context) || {};
+        // The arrival payload wins when the hub handed one over: the lens is
+        // opened with `pb_lens` + `pb_focus` on the HUB's action, so the
+        // screen's own action context is empty on that road (GR8's shape —
+        // one door, one vocabulary, whichever road you came in on).
+        const arrival = this.props.arrival || null;
+        const asked = arrival && arrival.focus
+            ? arrival.focus : context.pb_focus;
         this.state = useState({
             loaded: false,
             busy: false,
             failed: "",
             room: null,
             // "days" is the strip; "merge" is the Same person? review.
-            focus: context.pb_focus === "merge" ? "merge" : "days",
+            focus: asked === "merge" ? "merge" : "days",
             month: "",
             // The selection being drawn on the strip, and the popover over it.
             anchor: "",
@@ -110,9 +124,7 @@ export class PbAssignmentsScreen extends Component {
         });
 
         onWillStart(async () => {
-            this.env.config.setDisplayName(
-                this.state.focus === "merge"
-                    ? _t("Same person?") : _t("Where people work"));
+            this._name(this.state.focus);
             await this.load();
             if (this.state.focus === "merge") { await this.loadReview(); }
         });
@@ -123,6 +135,20 @@ export class PbAssignmentsScreen extends Component {
     }
 
     ic(name, size = 16) { return ic(name, size); }
+
+    /**
+     * What the breadcrumb calls this screen.
+     *
+     * Only when it is a screen of its own. Mounted as a lens the crumb belongs
+     * to the People hub, and renaming it would leave "Where they work" written
+     * over the hub after the reader had moved on to Employees — and would take
+     * the way back out of the only place a reader looks for one.
+     */
+    _name(focus) {
+        if (this.embedded) { return; }
+        this.env.config.setDisplayName(
+            focus === "merge" ? _t("Same person?") : _t("Where they work"));
+    }
 
     // ================================================================ reading
     async load(personId = 0, month = "") {
@@ -136,7 +162,7 @@ export class PbAssignmentsScreen extends Component {
         } catch (e) {
             this.state.room = null;
             this.state.failed = this._msg(
-                e, _t("Where people work could not be read."));
+                e, _t("Where they work could not be read."));
         } finally {
             this.state.loaded = true;
         }
@@ -682,8 +708,7 @@ export class PbAssignmentsScreen extends Component {
     // ================================================== "Same person?"
     setFocus(focus) {
         this.state.focus = focus;
-        this.env.config.setDisplayName(
-            focus === "merge" ? _t("Same person?") : _t("Where people work"));
+        this._name(focus);
         if (focus === "merge" && !this.state.review) { this.loadReview(); }
     }
 
@@ -759,9 +784,25 @@ export class PbAssignmentsScreen extends Component {
                 { type: "warning" }));
     }
 
+    /**
+     * The third segment: what one entity carried for another.
+     *
+     * It is a LIST, not a lens, so it opens in the breadcrumb — and it opens
+     * with a way back written on it, so the trail is never the only exit.
+     * `clearBreadcrumbs: false` keeps the crumb that sent it there (People, or
+     * this screen when it is standing on its own).
+     */
     openTransfers() {
-        this.action.doAction("pb_workseg.action_pb_cost_transfers",
-                             { clearBreadcrumbs: false });
+        this.action.doAction("pb_workseg.action_pb_cost_transfers", {
+            clearBreadcrumbs: false,
+            additionalContext: {
+                pb_back: {
+                    label: _t("People"), tag: "",
+                    xmlid: "pb_people_hub.action_pb_people_hub",
+                    lens: "where", lensKey: "pb_lens", context: {},
+                },
+            },
+        });
     }
 
     // ------------------------------------------------------------- format

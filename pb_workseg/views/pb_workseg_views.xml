@@ -59,7 +59,7 @@
         <field name="name">pb.work.segment.list</field>
         <field name="model">pb.work.segment</field>
         <field name="arch" type="xml">
-            <list string="Where people work">
+            <list string="Where they work">
                 <field name="person_id"/>
                 <field name="home_company_id"/>
                 <field name="host_company_id"/>
