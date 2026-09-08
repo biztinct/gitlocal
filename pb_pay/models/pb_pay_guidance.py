@@ -59,13 +59,12 @@ MIDDLE_BAND = 'mid'
 
 SCALES = [('3', '3 levels'), ('4', '4 levels'), ('5', '5 levels')]
 
-#: What each rating is CALLED. A number on its own tells a manager nothing and
-#: means something different in every company, so every scale ships words.
-SCALE_WORDS = {
-    '3': ['Needs support', 'Doing well', 'Outstanding'],
-    '4': ['Needs support', 'Doing well', 'Very strong', 'Outstanding'],
-    '5': ['Needs support', 'Nearly there', 'Doing well', 'Very strong',
-          'Outstanding'],
+#: Which words a scale uses, in order. The words THEMSELVES are written
+#: inside `scale_words` below, where `_()` can find them — see the note there.
+SCALE_LADDERS = {
+    '3': ['support', 'well', 'outstanding'],
+    '4': ['support', 'well', 'strong', 'outstanding'],
+    '5': ['support', 'nearly', 'well', 'strong', 'outstanding'],
 }
 
 #: A grid nobody has filled in still has to answer, and answering ZERO for
@@ -82,8 +81,30 @@ SEED = {
 
 
 def scale_words(scale):
-    """The words for a scale, always as many as the scale has levels."""
-    return SCALE_WORDS.get(str(scale) or '4', SCALE_WORDS['4'])
+    """What each rating is CALLED, always as many words as the scale has.
+
+    A number on its own tells a manager nothing and means something different
+    in every company, so every scale ships words — and those words are read
+    aloud in a calibration meeting, so they have to be in the reader's own
+    language.
+
+    THE WORDS ARE WRITTEN HERE, INSIDE THE `_()` CALLS. A literal that lives
+    in a module-level list is invisible to the string extractor as a Python
+    term (ledger T24), so these five printed in English under every column of
+    a fully Vietnamese picture. They are a DICT keyed by the value and the
+    order is derived from it, because the extractor also collects the first
+    string of a tuple that contains a `_()` call and would otherwise put the
+    bare key into the catalogue as a term somebody has to translate (GR59).
+    """
+    words = {
+        'support': _("Needs support"),
+        'nearly': _("Nearly there"),
+        'well': _("Doing well"),
+        'strong': _("Very strong"),
+        'outstanding': _("Outstanding"),
+    }
+    ladder = SCALE_LADDERS.get(str(scale) or '4', SCALE_LADDERS['4'])
+    return [words[key] for key in ladder]
 
 
 def band_for(position_pct, has_band):
