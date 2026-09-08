@@ -104,11 +104,23 @@ def type_label(key, env=None):
     Module-level `_()` has no language to work in and logs "no translation
     language detected" on every call, so the environment is passed rather than
     assumed — `env._()` is Odoo 19's own form for exactly this.
+
+    THE LITERAL IS WRITTEN HERE, IN A `_()` CALL, and not read out of
+    `BUDGET_TYPES` (GR58). A term whose only occurrences are
+    `model:ir.model.fields.selection` is imported into the database column and
+    is invisible to `code_translations`, which is what `_()` reads — so the
+    three chips at the top of the board came back in English on a screen where
+    every other server-built word was Vietnamese. A label a person reads is a
+    string this module owns. The dict is keyed by the value (GR59: a bare
+    string in a tuple beside a `_()` call is collected as a msgid of its own).
     """
-    for k, lbl in BUDGET_TYPES:
-        if k == key:
-            return env._(lbl) if env is not None else lbl
-    return key or ''
+    if env is None:
+        return dict(BUDGET_TYPES).get(key, key or '')
+    return {
+        'manpower': env._("People"),
+        'hr_ops': env._("HR operations"),
+        'admin': env._("Admin"),
+    }.get(key, key or '')
 
 
 def safe(fn, default=None, what='a piece of the budget board'):

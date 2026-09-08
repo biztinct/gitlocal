@@ -34,12 +34,18 @@
 // so the board reads identically without any colour at all.
 // ===========================================================================
 
+// A MONTH ADDS ONE WORD AND THEREFORE ONE TONE. The other five keys mean the
+// same colour in both scopes — over is over, close to budget is the same green
+// as on pace — so the board a person learns in the year view reads identically
+// the moment they click a month. `notyet` is a month that has not happened, and
+// it is deliberately the quietest thing on the screen.
 $bdg-tones: (
     over:   (#BE123C, #FCEDF1),
     watch:  (#B45309, #FDF3E3),
     onpace: (#15803D, #E9F7EE),
     calm:   (#0E7490, #E6F6FA),
     none:   (#475569, #EEF1F5),
+    notyet: (#94A3B8, #F5F7FA),
 );
 
 // The stagger. Top level, or Sass nests it and nothing plays it.
@@ -223,6 +229,154 @@ $bdg-tones: (
         @media (max-width: 700px) { grid-template-columns: 1fr; }
     }
 
+    // ========================================================= THE MONTH STRIP
+    // Thirteen chips, and the twelve months share the row equally so the
+    // year reads left to right as a shape rather than as a list. Under
+    // 900px they wrap into three rows of four, which is still a calendar.
+    .bdg-strip {
+        display: grid;
+        grid-template-columns: 132px repeat(12, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 14px;
+
+        @media (max-width: 1180px) {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+
+        @media (max-width: 700px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .bdg-mchip {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+        text-align: left;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 8px 9px 7px;
+        cursor: pointer;
+        font-family: inherit;
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+
+        &:focus-visible {
+            outline: none;
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 2px var(--pbim-ring, rgba(99, 85, 199, .18));
+            background: var(--pbim-soft, #F1EFFC);
+        }
+
+        // A month that has not happened is quiet, not disabled: it is still a
+        // scope a person may want to stand in to see what was budgeted.
+        &.is-future { opacity: .62; }
+
+        &.is-now { border-color: var(--pbim-ink, #1B1733); }
+
+        &[disabled] { cursor: progress; }
+
+        &--all {
+            justify-content: center;
+            background: var(--pbim-line-2, #F1F5F9);
+
+            &.is-on { background: var(--pbim-soft, #F1EFFC); }
+        }
+    }
+
+    .bdg-mchip-l {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        line-height: 1.2;
+    }
+
+    // The micro bar: the track IS the budget, the fill is what was spent.
+    .bdg-mchip-bar {
+        display: block;
+        height: 5px;
+        border-radius: 3px;
+        background: var(--pbim-line, #E2E1EF);
+        overflow: hidden;
+    }
+
+    .bdg-mchip-fill {
+        display: block;
+        height: 5px;
+        border-radius: 3px;
+        background: var(--pbim-muted, #64748B);
+    }
+
+    .bdg-mchip-v {
+        font-size: 10.5px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-muted, #64748B);
+
+        &--quiet { font-weight: 600; }
+    }
+
+    .bdg-mchip-now {
+        position: absolute;
+        top: -7px;
+        right: 6px;
+        border-radius: var(--pbim-pill, 999px);
+        padding: 1px 7px;
+        font-size: 9.5px;
+        font-weight: 800;
+        text-transform: none;
+        background: var(--pbim-ink, #1B1733);
+        color: #FFFFFF;
+    }
+
+    @each $tone, $pair in $bdg-tones {
+        .bdg-mchip--#{$tone} {
+            .bdg-mchip-fill { background: nth($pair, 1); }
+            .bdg-mchip-v { color: nth($pair, 1); }
+        }
+    }
+
+    // The line that says where you are, and the way back out of it.
+    .bdg-scoped {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        margin-bottom: 14px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-soft, #F1EFFC);
+        color: var(--pbim-primary-strong, #493FA0);
+        font-size: 12.5px;
+
+        svg { flex: 0 0 auto; }
+    }
+
+    .bdg-back {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--pbim-primary, #6355C7);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-primary-strong, #493FA0);
+        border-radius: var(--pbim-pill, 999px);
+        padding: 4px 12px;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+
+        &:hover { background: var(--pbim-soft, #F1EFFC); }
+    }
+
     // ============================================================= THE HEAT
     .bdg-heat {
         display: grid;
@@ -380,6 +534,14 @@ $bdg-tones: (
         height: 100%;
         display: flex;
         align-items: flex-end;
+        border-radius: 2px;
+
+        // The month in scope is LIT on every tile at once, so a person can see
+        // where March sits inside the year they just stepped out of.
+        &.is-on {
+            background: var(--pbim-soft, #F1EFFC);
+            box-shadow: inset 0 -2px 0 var(--pbim-primary, #6355C7);
+        }
     }
 
     // A month with almost nothing in it still has to be VISIBLE as a month
@@ -413,6 +575,57 @@ $bdg-tones: (
         h3 { margin: 0; font-size: 16px; font-weight: 800; }
     }
 
+    .bdg-drill-scope {
+        border-radius: var(--pbim-pill, 999px);
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        background: var(--pbim-soft, #F1EFFC);
+        color: var(--pbim-primary-strong, #493FA0);
+    }
+
+    // ------------------------------------------------- how the month compares
+    .bdg-cmp {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+
+        @media (max-width: 700px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .bdg-cmp-c {
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 10px 12px;
+
+        &.is-on {
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-soft, #F1EFFC);
+        }
+    }
+
+    .bdg-cmp-l {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 4px;
+    }
+
+    .bdg-cmp-n {
+        font-size: 17px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+
+        &--quiet { color: var(--pbim-muted, #64748B); }
+    }
+
+    .bdg-cmp-s { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+
     .bdg-months {
         display: flex;
         align-items: flex-end;
@@ -428,6 +641,13 @@ $bdg-tones: (
         justify-content: flex-end;
         height: 100%;
         gap: 5px;
+        border-radius: 4px;
+
+        &.is-on {
+            background: var(--pbim-soft, #F1EFFC);
+
+            .bdg-mlabel { font-weight: 800; color: var(--pbim-primary-strong, #493FA0); }
+        }
     }
 
     .bdg-mbars {
@@ -550,6 +770,31 @@ $bdg-tones: (
         font-weight: 800;
         background: var(--pbim-line-2, #F1F5F9);
         color: var(--pbim-muted, #64748B);
+    }
+
+    // A variance cell carries its tone AND its sign, so it reads correctly to
+    // somebody who cannot tell the rose from the teal.
+    .bdg-var {
+        display: inline-block;
+        border-radius: var(--pbim-pill, 999px);
+        padding: 2px 8px;
+        font-size: 11.5px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+    }
+
+    @each $tone, $pair in $bdg-tones {
+        .bdg-var--#{$tone} {
+            background: nth($pair, 2);
+            color: nth($pair, 1);
+        }
+    }
+
+    .bdg-inner th.is-on {
+        color: var(--pbim-primary-strong, #493FA0);
+        background: var(--pbim-soft, #F1EFFC);
     }
 
     .bdg-flag {
@@ -695,5 +940,10 @@ $bdg-tones: (
 
         .bdg-fill { transition: width .5s cubic-bezier(.22, .68, .36, 1); }
         .bdg-tile { transition: box-shadow .16s; }
+        // Clicking a month re-scopes the board rather than replacing it: the
+        // tiles keep their places and their bars TRAVEL to the new figure,
+        // which is the whole of the motion this phase adds.
+        .bdg-mchip-fill { transition: width .4s cubic-bezier(.22, .68, .36, 1); }
+        .bdg-mchip { transition: border-color .14s, background .14s; }
     }
 }
