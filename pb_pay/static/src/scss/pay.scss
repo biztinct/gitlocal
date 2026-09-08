@@ -725,17 +725,127 @@
     .pay-pager-l { font-size: 12px; color: var(--pbim-muted); }
 
     // ------------------------------------------------------- calibration
+    //
+    //  ONE COLUMN PER SCORE, AND THE SHAPE OF ITS RISES INSIDE IT. The rise
+    //  axis runs up the picture and is cut into bins a few pixels tall; a bin
+    //  with a handful of people draws one mark each, and a busier one draws a
+    //  bar either side of the column's centre line whose length says how
+    //  many. So a column reads as the spread of that score — which is the
+    //  thing a calibration meeting is actually looking at — and nobody is
+    //  ever left out of it whatever the size of the review.
+    //
+    //  The three states are told apart by FILL, RING and the WORD on the
+    //  label, never by hue alone.
     .pay-scatter {
         position: relative; height: 380px; margin: 14px 0 0 48px;
         border-left: 1px solid var(--pbim-line);
         border-bottom: 1px solid var(--pbim-line);
         background: var(--pbim-surface);
     }
-    // The band picture places a dot by its TOP; the scatter places it by its
-    // bottom, so the shared dot has to let go of `top` inside this plot or a
-    // dot with both `top` and `bottom` set is stretched into a bar.
-    .pay-scatter .pay-dot { top: auto; margin: 0 0 -4px -4px; }
-    .pay-scatter .pay-dot.is-out { margin: 0 0 -6px -6px; }
+    .pay-cwait {
+        position: absolute; left: 0; right: 0; top: 46%; margin: 0;
+        text-align: center; font-size: 12px; color: var(--pbim-muted);
+    }
+    // The column's own ground, so a reader can see where one score ends and
+    // the next begins without a line being drawn between them.
+    .pay-ccol {
+        position: absolute; top: 0; bottom: 0; background: none;
+        &.is-alt { background: var(--pbim-bg); }
+    }
+    .pay-ccentre {
+        position: absolute; top: 0; bottom: 0; width: 1px;
+        background: var(--pbim-line); opacity: .8;
+    }
+    // A bar IS the people in one bin: its length says how many, measured
+    // against the busiest bin anywhere on the picture, so two columns can be
+    // compared with each other.
+    .pay-cbar {
+        position: absolute; appearance: none; border: 0; padding: 0;
+        cursor: pointer; border-radius: 2px;
+        background: var(--pbim-primary-light);
+        &:hover { background: var(--pbim-primary); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary); outline-offset: 1px;
+        }
+        // A bin that also holds a rise worth arguing about carries a hairline
+        // of its own, so the ring drawn on top of it is not the only clue.
+        &.is-mixed { box-shadow: inset 0 0 0 1px var(--pbim-primary-dark); }
+    }
+    // One person, drawn on their own: everybody in a thin bin, and every rise
+    // that stands out or breaks a limit wherever it is.
+    .pay-cdot {
+        position: absolute; width: 9px; height: 9px; padding: 0;
+        transform: translate(-50%, 50%); border-radius: 50%;
+        background: var(--pbim-primary); border: 1px solid var(--pbim-surface);
+        cursor: pointer;
+        &.is-outlier {
+            background: var(--pbim-amber);
+            box-shadow: 0 0 0 2px var(--pbim-amber-soft);
+        }
+        &.is-blocked {
+            background: var(--pbim-rose);
+            box-shadow: 0 0 0 2px var(--pbim-rose-soft);
+        }
+        &.is-held { box-shadow: 0 0 0 4px var(--pbim-soft); cursor: grabbing; }
+        &:hover { box-shadow: 0 0 0 3px var(--pbim-soft); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary); outline-offset: 2px;
+        }
+    }
+    // The middle of this score's rises — the single most useful number on the
+    // picture, and the one it did not carry before.
+    .pay-cmed {
+        position: absolute; height: 0; border-top: 2px solid var(--pbim-ink);
+        opacity: .5; pointer-events: none;
+    }
+    .pay-cmed-l {
+        position: absolute; margin-bottom: 4px; text-align: center;
+        font-size: 10px; line-height: 12px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums; pointer-events: none;
+    }
+    // A limit, drawn across the WHOLE picture with its own sentence beside
+    // it: everything above a blocking one is already coloured, and this is
+    // what says why.
+    .pay-climit {
+        position: absolute; left: 0; right: 0; height: 0;
+        pointer-events: none;
+        &.is-hard { border-top: 2px dashed var(--pbim-rose); }
+        &.is-soft { border-top: 2px dashed var(--pbim-amber); }
+    }
+    // On the line itself, only the figure — a whole sentence floating over
+    // the picture competes with the picture it is explaining. The sentence
+    // is in the legend underneath, where it can be read as a sentence.
+    .pay-climit-l {
+        position: absolute; right: 6px; bottom: 3px; font-size: 10.5px;
+        font-weight: 700; padding: 1px 7px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+    .pay-climit.is-hard .pay-climit-l { color: var(--pbim-rose); }
+    .pay-climit.is-soft .pay-climit-l { color: var(--pbim-amber); }
+    .pay-clegend {
+        display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 0 48px;
+        font-size: 12px; color: var(--pbim-muted);
+    }
+    .pay-clegend-i { display: inline-flex; align-items: center; gap: 7px; }
+    .pay-clegend-d {
+        display: inline-block; width: 22px; height: 0;
+        border-top: 2px dashed var(--pbim-line);
+    }
+    .pay-clegend-i.is-hard .pay-clegend-d { border-top-color: var(--pbim-rose); }
+    .pay-clegend-i.is-soft .pay-clegend-d { border-top-color: var(--pbim-amber); }
+    // A ringed mark's meaning is on its own label and in the list below, and
+    // it is here too: colour is never the only thing that carries a message.
+    .pay-clegend-o {
+        display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+        background: var(--pbim-amber);
+        box-shadow: 0 0 0 2px var(--pbim-amber-soft);
+    }
+    .pay-clegend-b {
+        display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+        background: var(--pbim-rose);
+        box-shadow: 0 0 0 2px var(--pbim-rose-soft);
+    }
 
     .pay-tick {
         position: absolute; left: 0; right: 0; height: 0;
@@ -745,16 +855,50 @@
         position: absolute; left: -46px; top: -8px; width: 42px;
         text-align: right; font-size: 10.5px; color: var(--pbim-muted);
     }
+    // The word, the count and the middle under each column, positioned to the
+    // exact pixel the column above them occupies.
+    // Tall enough for a count that WRAPS: "2,068 people, 10 not scored" is
+    // one line in English and three in Vietnamese, and the children are
+    // positioned absolutely so the container cannot learn its own height.
     .pay-scataxis {
-        display: flex; justify-content: space-around; padding: 6px 0 0;
+        position: relative; height: 66px; margin: 6px 0 0 48px;
         font-size: 11px; color: var(--pbim-muted);
     }
-    .pay-scataxis-l { text-align: center; }
+    .pay-scataxis-c { position: absolute; top: 0; text-align: center; }
+    .pay-scataxis-l {
+        display: block; font-size: 12px; font-weight: 750;
+        color: var(--pbim-ink);
+    }
+    .pay-scataxis-n { display: block; margin-top: 1px; }
+    // The middle of a score is written beside its own tick inside the plot.
+    // It appears UNDER the column only on a phone, where the tick's own
+    // label has no room — one figure, one place, at every width.
+    .pay-scataxis-m {
+        display: none; margin-top: 1px; color: var(--pbim-primary);
+        font-weight: 650; font-variant-numeric: tabular-nums;
+    }
+    .pay-cnote {
+        margin: 4px 0 0; font-size: 12px; font-weight: 650;
+        color: var(--pbim-ink);
+    }
+    // The percentage box inside the people panel: one rise, changed where it
+    // is being read rather than back on the worksheet.
+    .pay-cin { width: 74px; text-align: right; }
+    // The calibration panel carries a NAME, a job, a box to type in and a
+    // word — four things, not the band popover's five, and the name is the
+    // one a reader came for, so it gets the room.
+    .pay-pop--cal {
+        width: 560px;
+        .pay-poplist li {
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto auto;
+        }
+    }
+
     .pay-dragbar {
         position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
         z-index: 20; background: var(--pbim-ink); color: var(--pbim-surface);
-        border-radius: var(--pbim-pill); padding: 8px 18px;
-        font-size: 13px; font-weight: 700; box-shadow: var(--pbim-sh-lg);
+        border-radius: var(--pbim-r); padding: 10px 18px;
+        box-shadow: var(--pbim-sh-lg); text-align: center;
     }
     .pay-outliers { margin-top: 18px; }
     .pay-outrow {
@@ -765,6 +909,24 @@
     .pay-outrow-n { font-weight: 700; color: var(--pbim-ink); min-width: 160px; }
     .pay-outrow-p { font-weight: 750; color: var(--pbim-primary); }
     .pay-outrow-w { color: var(--pbim-muted); }
+    .pay-outrow-c {
+        margin-left: auto; color: var(--pbim-ink); font-weight: 650;
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    // The WORD for a state, as a chip. Its own class rather than the band
+    // popover's `.pay-poprow-s`, which means the same thing about a different
+    // set of states on a different screen — one rule, one screen (T2).
+    .pay-outrow-s {
+        font-size: 11px; font-weight: 650; white-space: nowrap;
+        padding: 1px 7px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-line-2); color: var(--pbim-muted);
+        &.is-outlier {
+            background: var(--pbim-amber-soft); color: var(--pbim-amber);
+        }
+        &.is-blocked {
+            background: var(--pbim-rose-soft); color: var(--pbim-rose);
+        }
+    }
 
     // ------------------------------------------------------- the drawers
     .pay-drawer--wide { width: 780px; max-width: 100%; }
@@ -820,10 +982,17 @@
         .pay-revhead { position: static; }
         .pay-tools { flex-direction: column; align-items: stretch; }
         .pay-search { width: 100%; }
-        .pay-scatter { height: 300px; }
+        .pay-scatter { height: 300px; margin-left: 40px; }
+        .pay-scataxis { margin-left: 40px; height: 62px; }
+        .pay-scataxis-l { font-size: 11px; }
+        .pay-tick-l { left: -38px; width: 34px; font-size: 10px; }
+        .pay-cmed-l { display: none; }
+        .pay-scataxis-m { display: block; }
+        .pay-clegend { margin-left: 40px; gap: 4px 16px; }
         .pay-drawer--wide { width: 100%; }
         .pay-outrow { flex-wrap: wrap; }
         .pay-outrow-n { min-width: 0; }
+        .pay-outrow-c { margin-left: 0; }
         // On a phone the list of people is a sheet from the bottom, which is
         // where a hand is: the Decision Room's precedent.
         // A sheet from the bottom, where a hand is — but it starts AFTER
@@ -883,6 +1052,29 @@
         }
         .pay-locate-in { transition: left .26s cubic-bezier(.2, .8, .2, 1),
                                      width .26s cubic-bezier(.2, .8, .2, 1); }
+
+        // THE CALIBRATION PICTURE. A bar's LENGTH travels when a rise moves
+        // between bins, so the shape re-forms rather than jumping; a mark
+        // moves only in colour and ring, because a mark that slides while the
+        // hand is dragging it is a picture arguing with the hand. The bars
+        // arrive once, on the first frame the shape is drawn.
+        .pay-cbar {
+            transition: left .18s cubic-bezier(.2, .8, .2, 1),
+                        width .18s cubic-bezier(.2, .8, .2, 1),
+                        background-color .12s ease;
+            animation: pay-cbar-in .22s cubic-bezier(.2, .8, .2, 1) both;
+        }
+        @keyframes pay-cbar-in {
+            from { opacity: 0; transform: scaleX(.35); }
+            to { opacity: 1; transform: none; }
+        }
+        .pay-cdot {
+            transition: background-color .12s ease, box-shadow .12s ease;
+        }
+        .pay-cmed, .pay-cmed-l {
+            transition: bottom .22s cubic-bezier(.2, .8, .2, 1);
+        }
+        .pay-climit { transition: bottom .22s cubic-bezier(.2, .8, .2, 1); }
 
         .pay-hc { transition: border-color .14s ease, box-shadow .14s ease; }
         .pay-meter-fill { transition: width .2s ease; }

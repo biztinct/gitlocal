@@ -14,10 +14,14 @@
  * review is bulk work and a screen that makes you edit nine hundred boxes one
  * at a time is a screen nobody finishes.
  *
- * THE THIRD IS CALIBRATION. Every person is a dot — how well they did across,
- * the rise they are getting up. Drag a dot and its row follows. The dots that
- * are much higher than everybody who scored the same are ringed, because that
- * is the only question a calibration meeting is really asking.
+ * THE THIRD IS CALIBRATION, AND EVERYBODY IS ON IT. Each score is a column and
+ * each column is the shape of its own rises: bins a few pixels tall, drawn one
+ * mark per person where there are a handful and as a bar that says how many
+ * where there are hundreds. The middle of each score is marked, every limit is
+ * a line across the whole picture, and the handful of rises worth arguing
+ * about are ringed on top and can be dragged. Nothing is ever left out and
+ * nothing hides behind anything else: at four and a half thousand people the
+ * picture changes shape rather than dropping anybody (LOOK rule 16).
  *
  * THE RULES THIS FILE KEEPS (the same five `pay_hub.js` keeps)
  *   * every icon from the shared `ic()` set — no emoji, no glyph arrows;
@@ -30,13 +34,60 @@
  *   * everything the template reads lives in `useState` (ledger GR26).
  */
 import {
-    Component, onWillStart, useExternalListener, useState,
+    Component, onMounted, onPatched, onWillStart, onWillUnmount,
+    useExternalListener, useRef, useState,
 } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { binValues } from "@pb_pay/js/band_picture";
 
 const REVIEWS = "pb.pay.reviews";
+
+/**
+ * THE CALIBRATION PICTURE, in pixels. Two sets, because a phone is not a
+ * smaller desktop: the bins are shorter, the marks are smaller and fewer of
+ * them fit side by side before a bin becomes a bar.
+ *
+ *   bin   how tall one bin of the rise axis is
+ *   few   up to this many people in a bin, every one of them is drawn
+ *   dot   how big one person's mark is
+ *   gap   how far apart two marks in the same bin are placed
+ *   base  the shortest a bar is drawn, in pixels either side of the centre
+ *   lift  how much longer the busiest bin's bar is than the shortest
+ *   room  how much of half a column a bar may fill
+ */
+const CAL = {
+    normal: { bin: 7, few: 4, dot: 9, gap: 12, base: 7, lift: 40, room: 0.86 },
+    phone: { bin: 6, few: 3, dot: 7, gap: 9, base: 5, lift: 22, room: 0.86 },
+};
+
+/** The plot leaves this much of its own height above the highest rise, so a
+ *  mark at the top of the axis is not drawn half outside the picture. The
+ *  ticks up the side use the same figure, or the numbers and the marks would
+ *  disagree about what a height means. */
+const PLOT_HEAD = 0.92;
+/** How much of the axis a drag may travel INTO that headroom, so a rise can
+ *  always be pushed past the top of the picture rather than hitting a wall
+ *  nobody can see. The axis is worked out again on release. */
+const DRAG_ROOM = 1 / PLOT_HEAD;
+/** A column narrower than this cannot hold "middle of this score 5%" without
+ *  writing it over its own people, so it keeps the tick and drops the words. */
+const MEDIAN_LABEL_ROOM = 130;
+/** Phones get the smaller picture whatever the screen is called. */
+const PHONE_PX = 480;
+/** Arrow keys move a rise by this much, and by five times as much with Shift. */
+const KEY_STEP = 0.1;
+
+/** Enough decimals to tell two percentages `spread` apart — a bin here is
+ *  about a tenth of a point wide, and one decimal prints "7.0% to 7.0%" for
+ *  two figures that are not the same figure (LOOK L4). */
+function finePct(value, spread) {
+    const step = Math.abs(Number(spread) || 0);
+    const decimals = step > 0
+        ? Math.max(0, Math.min(3, Math.ceil(-Math.log10(step)) + 1)) : 1;
+    return (Number(value) || 0).toFixed(decimals);
+}
 
 /** The filters over the worksheet, in the order they are offered. */
 export function filterDefs() {
@@ -68,6 +119,20 @@ export class PbPayReview extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this._settle = null;
+        // The picture is MEASURED, never assumed: this screen sits inside a
+        // hub whose rail can be collapsed, and the plot's height changes with
+        // the viewport (WFPLAN W20).
+        this.scatterRef = useRef("scatter");
+        this._resize = null;
+        // The shape, worked out once per set of numbers rather than on every
+        // repaint: at four and a half thousand people a drag repaints on
+        // every mouse move, and binning them thirty times a second for a
+        // picture that has not changed is pure cost.
+        this._plot = null;
+        this._plotSig = "";
+        // Which bins have already been asked who is standing in them, so a
+        // cursor sweeping the picture asks once and not once a frame.
+        this._asked = {};
 
         this.state = useState({
             loaded: false,
@@ -96,13 +161,47 @@ export class PbPayReview extends Component {
             nudge: "1",
             filters: { which: "all", text: "" },
 
+            // ---- the calibration picture
             calib: null,
+            // bumped whenever the picture's numbers are replaced, so the
+            // shape is rebuilt then and not on every repaint
+            calibRev: 0,
+            calibBusy: false,
+            // how big the plot really is, measured on paint and on resize
+            plotW: 0,
+            plotH: 0,
+            // line_id → name, filled in for one bin at a time on demand: the
+            // payload that draws the shape carries no names at all (R4)
+            names: {},
+            // the people standing in one bin, by name
+            pop: null,
             drag: null,
         });
 
         onWillStart(async () => {
             await this.load();
             if (this.props.focus === "awaiting") { this.state.view = "list"; }
+        });
+
+        onMounted(() => {
+            this._measurePlot();
+            if (window.ResizeObserver) {
+                this._resize = new ResizeObserver(() => this._measurePlot());
+                if (this.scatterRef.el) { this._resize.observe(this.scatterRef.el); }
+            }
+            this._watchWindow = () => this._measurePlot();
+            window.addEventListener("resize", this._watchWindow);
+        });
+        // A repaint can put the plot on screen for the first time, so it is
+        // measured again — but only WRITTEN when a number really moved, or
+        // the write patches, the patch measures, and the screen spins.
+        onPatched(() => this._measurePlot());
+        onWillUnmount(() => {
+            if (this._hover) { clearTimeout(this._hover); this._hover = null; }
+            if (this._resize) { this._resize.disconnect(); this._resize = null; }
+            if (this._watchWindow) {
+                window.removeEventListener("resize", this._watchWindow);
+            }
         });
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev),
@@ -505,8 +604,8 @@ export class PbPayReview extends Component {
     async openCalibration() {
         this.state.busy = true;
         try {
-            this.state.calib = await this.orm.call(
-                REVIEWS, "calibration", [this.card.id]);
+            this._setCalib(await this.orm.call(
+                REVIEWS, "calibration", [this.card.id]));
             this.state.view = "calibration";
         } catch (error) {
             this._fail(error, _t("The picture could not be drawn."));
@@ -514,88 +613,570 @@ export class PbPayReview extends Component {
         this.state.busy = false;
     }
 
+    /** New numbers for the picture. The shape is rebuilt from them once,
+     *  the names read back so far are kept (they cannot go stale — a name is
+     *  not a figure), and the bins that were asked are asked again. */
+    _setCalib(payload) {
+        this.state.calib = payload;
+        this.state.calibRev += 1;
+        this._asked = {};
+    }
+
     backToWorksheet() {
         this.state.view = "review";
         this.state.calib = null;
+        this.state.pop = null;
+        this.state.drag = null;
         this.reopen();
     }
 
-    /** Where one dot sits: its rating across, its rise up, spread sideways.
-     *
-     *  The sideways spread is the whole reason this picture is readable. A
-     *  thousand people on four ratings land on four coordinates and the
-     *  screen shows four dots; the jitter the server hands over — a number
-     *  derived from the row's own id, so it never moves between reads — turns
-     *  each stack back into the cloud a calibration meeting is looking at.
-     */
-    dotStyle(dot) {
-        const calib = this.state.calib || {};
-        const levels = calib.levels || 4;
-        const top = calib.max_pct || 1;
-        const drag = this.state.drag;
-        const pct = drag && drag.lineId === dot.line_id ? drag.pct : dot.pct;
-        const band = 88 / levels;
-        const column = (dot.column || 1) - 1;
-        const across = 6 + column * band + (dot.jitter || 0.5) * band * 0.86;
-        const up = Math.max(0, Math.min(96, (pct / top) * 92));
-        return "left:" + across.toFixed(2) + "%;bottom:" + up.toFixed(2) + "%";
+    /** Which set of pixel sizes the picture is being drawn with. */
+    get shape() {
+        const narrow = window.innerWidth && window.innerWidth <= PHONE_PX;
+        return narrow ? CAL.phone : CAL.normal;
     }
 
-    /** The four numbers up the side, so a height means something. */
+    /**
+     * How big the plot really is.
+     *
+     * Written back into state only when a number actually changed:
+     * `onPatched` runs after every render, and a state write that always
+     * happens is a render that always happens again.
+     */
+    _measurePlot() {
+        const el = this.scatterRef.el;
+        if (!el) { return; }
+        if (this.state.drag) { return; }
+        const box = el.getBoundingClientRect();
+        const width = Math.round(box.width);
+        const height = Math.round(box.height);
+        if (!width || !height) { return; }
+        if (this.state.plotW !== width || this.state.plotH !== height) {
+            this.state.plotW = width;
+            this.state.plotH = height;
+        }
+        if (this._resize && this._resize.observe) {
+            // The plot only exists while the picture is on screen, so the
+            // observer is pointed at it the first time it appears.
+            this._resize.observe(el);
+        }
+    }
+
+    /**
+     * THE SHAPE. Every person in the review, in whichever form draws them all.
+     *
+     * Per score column, the rise axis is cut into bins a few pixels tall by
+     * the same arithmetic the band picture uses (`binValues`). A bin holding a
+     * handful of people draws one mark each; a busier one draws a bar out
+     * either side of the column's centre line whose length says how many, and
+     * pressing it names the people standing in it. Every rise that stands out
+     * or breaks a limit is ringed on top and can be dragged.
+     *
+     * NOBODY IS DROPPED, and the picture says so in a way a test can check:
+     * every drawn element carries how many people it accounts for, a bar its
+     * whole bin and a mark either one person or — when the same person is
+     * also inside a bar — none. Those figures always add up to the number of
+     * people in the review.
+     */
+    get plot() {
+        const signature = [
+            this.state.calibRev, this.state.plotW, this.state.plotH,
+            window.innerWidth <= PHONE_PX ? "p" : "n",
+            this.state.drag ? this.state.drag.lineId : 0,
+            this.state.drag ? this.state.drag.pct : 0,
+        ].join("|");
+        if (this._plotSig !== signature || !this._plot) {
+            this._plot = this._buildPlot();
+            this._plotSig = signature;
+        }
+        return this._plot;
+    }
+
+    _buildPlot() {
+        const calib = this.state.calib;
+        const blank = { ready: false, columns: [], limits: [], drawn: 0,
+                        total: 0, busiest: 0 };
+        if (!calib) { return blank; }
+        const width = this.state.plotW;
+        const height = this.state.plotH;
+        const people = calib.people || [];
+        if (!width || !height) {
+            return { ...blank, total: people.length };
+        }
+        const shape = this.shape;
+        const levels = calib.levels || 4;
+        const top = calib.max_pct || 1;
+        const track = height * PLOT_HEAD;
+        const bandPct = 88 / levels;
+        const drag = this.state.drag;
+
+        // One pass to split the people by column, with the person under the
+        // hand carrying the figure the hand is holding rather than the one
+        // that is saved.
+        const byColumn = new Map();
+        for (const person of people) {
+            const column = Math.min(Math.max(person.column || 1, 1), levels);
+            if (!byColumn.has(column)) { byColumn.set(column, []); }
+            const pct = drag && drag.lineId === person.line_id
+                ? drag.pct : person.pct;
+            byColumn.get(column).push({ ...person, value: pct, pct });
+        }
+
+        const binned = new Map();
+        let busiest = 0;
+        for (const [column, list] of byColumn) {
+            const bins = binValues(list, { min: 0, max: top }, track,
+                                   shape.bin, (item) => item.state);
+            binned.set(column, bins);
+            for (const bin of bins) { busiest = Math.max(busiest, bin.count); }
+        }
+
+        const halfMax = (((bandPct / 100) * width) / 2) * shape.room;
+        const span = Math.max(1, busiest - shape.few);
+        const columns = [];
+        let drawn = 0;
+        for (let index = 1; index <= levels; index += 1) {
+            const meta = (calib.columns || []).find(
+                (one) => one.column === index) || {};
+            const centre = 6 + ((index - 0.5) * bandPct);
+            const bins = binned.get(index) || [];
+            const bars = [];
+            const marks = [];
+            for (const bin of bins) {
+                const spread = bin.high - bin.low;
+                const exact = (person) => (drag && drag.lineId
+                    === person.line_id ? (person.pct / top) * track : null);
+                if (bin.count <= shape.few) {
+                    bin.items.forEach((person, at) => marks.push(this._mark(
+                        person, bin, index, centre, at, bin.items.length,
+                        shape, width, 1, spread, exact(person))));
+                    drawn += bin.count;
+                    continue;
+                }
+                const half = Math.min(halfMax, shape.base + (shape.lift
+                    * Math.sqrt((bin.count - shape.few) / span)));
+                const halfPct = (half / width) * 100;
+                const stands = bin.items.filter(
+                    (person) => person.state !== "normal");
+                bars.push({
+                    // Keyed by WHERE it is, never by what it holds: a key
+                    // that carries the count makes every change a new
+                    // element, and a new element replays its own arrival —
+                    // the picture would flicker under the dragging hand.
+                    key: "b" + index + ":" + bin.index,
+                    column: index, count: bin.count,
+                    // A STRING, deliberately. OWL drops an attribute whose
+                    // value is boolean false (L1) and a number is one
+                    // careless truthiness test away from the same fate — and
+                    // this attribute is how "nobody was left out" is proved.
+                    people: "" + bin.count,
+                    low: bin.low, high: bin.high,
+                    stands: stands.length,
+                    style: "left:" + (centre - halfPct).toFixed(3)
+                        + "%;width:" + (halfPct * 2).toFixed(3)
+                        + "%;bottom:" + bin.x0.toFixed(1) + "px;height:"
+                        + Math.max(2, bin.x1 - bin.x0).toFixed(1) + "px",
+                    title: this._barTitle(bin, index, spread),
+                });
+                drawn += bin.count;
+                // The rises worth arguing about are ringed on top of the bar
+                // they are already counted in, so they carry no count of
+                // their own and the arithmetic still adds up. A bin seven
+                // pixels tall can only hold a few rings before they draw over
+                // each other, so it rings the first few.
+                const pins = stands.slice(0, shape.few);
+                // THE ONE UNDER THE HAND IS ALWAYS DRAWN, wherever the
+                // gesture has taken it. Without this, dragging a mark into a
+                // busy bin that already has its few rings takes the mark out
+                // of the picture mid-gesture — the hand is still moving
+                // something and there is nothing on the screen to see.
+                if (drag) {
+                    const held = bin.items.find(
+                        (person) => person.line_id === drag.lineId);
+                    if (held && !pins.includes(held)) { pins.unshift(held); }
+                }
+                pins.forEach((person, at) => marks.push(
+                    this._mark(person, bin, index, centre, at, pins.length,
+                               shape, width, 0, spread, exact(person))));
+            }
+            const medianTop = ((meta.median || 0) / top) * track;
+            columns.push({
+                index,
+                key: "c" + index,
+                word: meta.word || String(index),
+                scored: meta.scored || 0,
+                drawn: (byColumn.get(index) || []).length,
+                unscored: meta.unscored || 0,
+                hasMedian: Boolean(meta.has_median),
+                medianLabel: meta.median_label || "",
+                medianStyle: "left:" + (centre - (bandPct / 2)).toFixed(3)
+                    + "%;width:" + bandPct.toFixed(3) + "%;bottom:"
+                    + medianTop.toFixed(1) + "px",
+                roomy: ((bandPct / 100) * width) >= MEDIAN_LABEL_ROOM,
+                style: "left:" + (6 + ((index - 1) * bandPct)).toFixed(3)
+                    + "%;width:" + bandPct.toFixed(3) + "%",
+                centreStyle: "left:" + centre.toFixed(3) + "%",
+                bars, marks,
+            });
+        }
+
+        const limits = (calib.limits || []).map((one) => ({
+            ...one,
+            style: "bottom:" + (((one.value || 0) / top) * track).toFixed(1)
+                + "px",
+        }));
+        let standsOut = 0;
+        let blocked = 0;
+        for (const person of people) {
+            if (person.state === "outlier") { standsOut += 1; }
+            if (person.state === "blocked") { blocked += 1; }
+        }
+        return { ready: true, columns, limits, drawn, busiest, standsOut,
+                 blocked, total: people.length, track };
+    }
+
+    /** One person, drawn as their own mark. `counted` is 1 when this mark is
+     *  the only thing on the picture standing for them, and 0 when they are
+     *  also inside the bar underneath it. */
+    _mark(person, bin, column, centre, at, of, shape, width, counted, spread,
+          exact) {
+        const step = (shape.gap / width) * 100;
+        const offset = (at - ((of - 1) / 2)) * step;
+        // A mark sits at the middle of its own bin — except the one under the
+        // hand, which sits at the exact figure the hand is holding. A bin is
+        // seven pixels tall, and a gesture that answers in seven-pixel steps
+        // reads as a mark that will not follow.
+        const up = exact === null || exact === undefined
+            ? bin.x0 + ((bin.x1 - bin.x0) / 2) : exact;
+        return {
+            key: "m" + person.line_id,
+            lineId: person.line_id,
+            column, counted,
+            people: counted ? "1" : "0",
+            state: person.state,
+            pct: person.pct,
+            low: bin.low, high: bin.high, binIndex: bin.index,
+            style: "left:" + (centre + offset).toFixed(3) + "%;bottom:"
+                + up.toFixed(1) + "px",
+            spread,
+        };
+    }
+
+    _barTitle(bin, column, spread) {
+        const word = this.columnWord(column);
+        // WF24: the platform's own sprintf escapes `%%` for a POSITIONAL
+        // substitution and NOT for a keyed one, so a sentence handed a
+        // dictionary writes ONE per cent sign. Written with two it renders
+        // "0.00%% to 0.30%%" on the screen, and nothing warns.
+        return _t("%(count)s people scored %(word)s, rising %(low)s% to "
+                  + "%(high)s% · press to see who", {
+            count: bin.count, word,
+            low: finePct(bin.low, spread), high: finePct(bin.high, spread),
+        });
+    }
+
+    /** WHAT THIS PICTURE PROMISES, and it has to be true at every size. The
+     *  old sentence — "every person is a dot, drag one and its row follows" —
+     *  stopped being true the moment there were more people than dots. */
+    get calibPromise() {
+        if (!this.canWrite) {
+            return _t(
+                "Every person in this review is on the picture. Each score is "
+                + "a column and the shape is how its rises are spread; press "
+                + "a bar to see who is standing there.");
+        }
+        return _t(
+            "Every person in this review is on the picture. Each score is a "
+            + "column and the shape is how its rises are spread. Press a bar "
+            + "to see who is standing there, and drag a ringed mark to change "
+            + "that rise.");
+    }
+
+    /** Said out loud under the picture, because "nobody was left out" is the
+     *  whole point and a reader should not have to take it on trust. */
+    get drawnSentence() {
+        const pic = this.plot;
+        if (!pic.ready) { return ""; }
+        if (pic.total === 1) {
+            return _t("The one person in this review is on the picture.");
+        }
+        return _t("All %(count)s people in this review are on the picture.",
+                  { count: pic.total });
+    }
+
+    /** The legend beside the picture, in words and with the count, because a
+     *  ring on its own is not a message anybody is obliged to be able to
+     *  read. */
+    get standsOutLabel() {
+        const count = this.plot.standsOut;
+        return count === 1
+            ? _t("1 rise stands out from the others who scored the same")
+            : _t("%(count)s rises stand out from the others who scored the "
+                 + "same", { count });
+    }
+
+    get blockedLabel() {
+        const count = this.plot.blocked;
+        return count === 1
+            ? _t("1 rise breaks a limit")
+            : _t("%(count)s rises break a limit", { count });
+    }
+
+    isHeld(mark) {
+        const drag = this.state.drag;
+        return Boolean(drag && drag.lineId === mark.lineId);
+    }
+
+    columnWord(column) {
+        const words = (this.state.calib || {}).words || [];
+        return words[column - 1] || String(column);
+    }
+
+    stateWord(state) {
+        if (state === "blocked") { return _t("breaks a limit"); }
+        if (state === "outlier") { return _t("stands out"); }
+        return _t("in line with the others");
+    }
+
+    markClass(mark) {
+        const known = this.state.drag && this.state.drag.lineId === mark.lineId;
+        return "pay-cdot is-" + mark.state + (known ? " is-held" : "");
+    }
+
+    markTitle(mark) {
+        const name = this.state.names[mark.lineId];
+        return [name || _t("Reading who this is…"),
+                _t("%(pct)s% rise", { pct: mark.pct }),
+                this.stateWord(mark.state)].join(" · ");
+    }
+
+    /** A cursor sweeping the picture crosses dozens of marks; only the one it
+     *  SETTLES on is worth a round trip. Same reasoning, and the same
+     *  settling time, as opening a band out on hover. */
+    hoverMark(mark) {
+        if (this._hover) { clearTimeout(this._hover); }
+        this._hover = setTimeout(() => {
+            this._hover = null;
+            this.nameMark(mark);
+        }, 220);
+    }
+
+    leaveMark() {
+        if (this._hover) { clearTimeout(this._hover); this._hover = null; }
+    }
+
+    /** A mark under the cursor or the keyboard says who it is. The shape
+     *  itself carries no names at all, so the bin it belongs to is asked
+     *  once — and only once, however long the cursor rests on it. */
+    async nameMark(mark) {
+        const key = mark.column + ":" + mark.binIndex;
+        if (this._asked[key] || this.state.names[mark.lineId]) { return; }
+        this._asked[key] = true;
+        try {
+            const answer = await this.orm.call(REVIEWS, "calibration_people", [
+                this.card.id, mark.column, mark.low, mark.high]);
+            const found = { ...this.state.names };
+            (answer.rows || []).forEach((row) => { found[row.id] = row.name; });
+            this.state.names = found;
+        } catch (error) {
+            // The mark keeps its figure and its state word; it simply does
+            // not learn a name. Nothing on the picture is lost.
+            this._asked[key] = false;
+        }
+    }
+
+    /** The numbers up the side, so a height means something. */
     get scatterTicks() {
         const top = (this.state.calib || {}).max_pct || 1;
+        const step = top / 4;
         return [1, 0.75, 0.5, 0.25, 0].map((share) => ({
-            pct: (top * share).toFixed(1),
-            style: "bottom:" + (share * 92).toFixed(2) + "%",
+            pct: finePct(top * share, step),
+            style: "bottom:" + (share * PLOT_HEAD * 100).toFixed(2) + "%",
         }));
     }
 
-    dotClass(dot) {
-        return dot.outlier ? "pay-dot is-out" : "pay-dot";
+    /** The count under each column, in words rather than a bare figure. */
+    columnCount(column) {
+        if (!column.drawn) { return _t("nobody scored this"); }
+        if (column.unscored) {
+            return column.drawn === 1
+                ? _t("1 person, nobody scored them")
+                : _t("%(count)s people, %(unscored)s not scored", {
+                    count: column.drawn, unscored: column.unscored });
+        }
+        return column.drawn === 1
+            ? _t("1 person") : _t("%(count)s people", { count: column.drawn });
     }
 
-    startDrag(dot, ev) {
+    // -------------------------------------------------- who is standing here
+    async openBin(bar) {
+        this.state.pop = { busy: true, rows: [], total: bar.count, more: 0,
+                           more_label: "", failed: "",
+                           title: this._barTitle(
+                               { count: bar.count, low: bar.low,
+                                 high: bar.high },
+                               bar.column, bar.high - bar.low),
+                           column: bar.column, low: bar.low, high: bar.high };
+        try {
+            const answer = await this.orm.call(REVIEWS, "calibration_people", [
+                this.card.id, bar.column, bar.low, bar.high]);
+            const found = { ...this.state.names };
+            (answer.rows || []).forEach((row) => { found[row.id] = row.name; });
+            this.state.names = found;
+            if (!this.state.pop) { return; }
+            this.state.pop = { ...this.state.pop, ...answer, busy: false };
+        } catch (error) {
+            if (!this.state.pop) { return; }
+            this.state.pop = {
+                ...this.state.pop, busy: false,
+                failed: this._msg(error, _t(
+                    "Those people could not be read just now. Close this and "
+                    + "press the bar again.")),
+            };
+        }
+    }
+
+    closeBin() { this.state.pop = null; }
+
+    /** One row of the panel, adjusted in place. The picture and the meters
+     *  both follow, because they are read again from the same write. */
+    async setFromBin(row, value) {
+        const pct = parseFloat(value);
+        if (Number.isNaN(pct) || pct === row.pct) { return; }
+        await this._saveRise(row.id, pct);
+        const open = this.state.pop;
+        if (open) { await this.openBin(open); }
+    }
+
+    // ---------------------------------------------------------- the gesture
+    startDrag(mark, ev) {
         if (!this.canWrite) { return; }
-        ev.preventDefault();
-        this.state.drag = { lineId: dot.line_id, pct: dot.pct,
-                            name: dot.name };
+        if (ev) { ev.preventDefault(); }
+        // The bar at the foot has to say WHO is being moved, so a mark that
+        // has not been asked its name yet is asked now.
+        this.nameMark(mark);
+        this.state.drag = { lineId: mark.lineId, pct: mark.pct,
+                            was: mark.pct, keys: false };
     }
 
     onDrag(ev) {
         const drag = this.state.drag;
-        if (!drag) { return; }
-        const plot = document.querySelector(".pay-scatter");
-        if (!plot) { return; }
-        const box = plot.getBoundingClientRect();
+        if (!drag || drag.keys) { return; }
+        const el = this.scatterRef.el;
+        if (!el) { return; }
+        const box = el.getBoundingClientRect();
         if (!box.height) { return; }
-        const calib = this.state.calib || {};
-        const ratio = Math.max(0, Math.min(
-            1, (box.bottom - ev.clientY) / box.height));
-        this.state.drag = { ...drag,
-                            pct: Math.round(ratio * (calib.max_pct || 1)
-                                            * 100) / 100 };
+        const top = (this.state.calib || {}).max_pct || 1;
+        // The marks are drawn inside 92% of the plot, so a hand that has
+        // moved a tenth of the picture has to move the rise by a tenth of the
+        // axis — and it may travel INTO the headroom above the highest rise,
+        // because a picture with a wall in it is a dead end (P1's R5).
+        const ratio = (box.bottom - ev.clientY) / box.height / PLOT_HEAD;
+        const pct = Math.max(0, Math.min(DRAG_ROOM, ratio)) * top;
+        this.state.drag = { ...drag, pct: Math.round(pct * 100) / 100 };
     }
 
     async endDrag() {
         const drag = this.state.drag;
-        if (!drag) { return; }
+        if (!drag || drag.keys) { return; }
         this.state.drag = null;
+        if (drag.pct === drag.was) { return; }
+        await this._saveRise(drag.lineId, drag.pct);
+    }
+
+    /**
+     * ONE WRITE, AND THE PICTURE FOLLOWS IT.
+     *
+     * The changed figure is put into the loaded payload first so the mark
+     * does not jump back to where it was while the round trip happens, and
+     * the whole picture is then read again — the medians, the limits and what
+     * counts as standing out all move when one rise does, and a picture that
+     * showed the new mark against the old middle would be lying about the
+     * only comparison it exists to make.
+     */
+    async _saveRise(lineId, pct) {
+        this._patchPerson(lineId, pct);
+        this.state.calibBusy = true;
         try {
             const answer = await this.orm.call(REVIEWS, "set_proposals", [
-                this.card.id, [{ line_id: drag.lineId, pct: drag.pct }]]);
+                this.card.id, [{ line_id: lineId, pct }]]);
             this._merge(answer);
-            this.state.calib = await this.orm.call(
-                REVIEWS, "calibration", [this.card.id]);
+            this._setCalib(await this.orm.call(
+                REVIEWS, "calibration", [this.card.id]));
         } catch (error) {
             this._fail(error, _t("That change could not be saved."));
+            try {
+                this._setCalib(await this.orm.call(
+                    REVIEWS, "calibration", [this.card.id]));
+            } catch (again) {
+                // The picture keeps what it had; the sentence above already
+                // said what went wrong and the worksheet is one press away.
+            }
         }
+        this.state.calibBusy = false;
+    }
+
+    _patchPerson(lineId, pct) {
+        const calib = this.state.calib;
+        if (!calib) { return; }
+        this.state.calib = {
+            ...calib,
+            people: (calib.people || []).map((person) => person.line_id
+                === lineId ? { ...person, pct } : person),
+        };
+        this.state.calibRev += 1;
+    }
+
+    /** The keyboard reaches the picture at the same resolution as the mouse:
+     *  arrows move a rise by a tenth of a point, Shift by half a point, Enter
+     *  saves it and Escape puts it back. */
+    onMarkKey(mark, ev) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            if (this.state.drag && this.state.drag.lineId === mark.lineId) {
+                ev.preventDefault();
+                const held = this.state.drag;
+                this.state.drag = null;
+                if (held.pct !== held.was) {
+                    this._saveRise(held.lineId, held.pct);
+                }
+                return;
+            }
+            return;
+        }
+        if (ev.key === "Escape") {
+            if (this.state.drag) {
+                this.state.drag = null;
+                ev.stopPropagation();
+            }
+            return;
+        }
+        if (ev.key !== "ArrowUp" && ev.key !== "ArrowDown") { return; }
+        if (!this.canWrite) { return; }
+        ev.preventDefault();
+        const step = (ev.shiftKey ? KEY_STEP * 5 : KEY_STEP)
+            * (ev.key === "ArrowUp" ? 1 : -1);
+        const drag = this.state.drag && this.state.drag.lineId === mark.lineId
+            ? this.state.drag
+            : { lineId: mark.lineId, pct: mark.pct, was: mark.pct,
+                keys: true };
+        this.state.drag = { ...drag, keys: true,
+                            pct: Math.max(0, Math.round(
+                                (drag.pct + step) * 100) / 100) };
     }
 
     get dragLabel() {
         const drag = this.state.drag;
         if (!drag) { return ""; }
-        return _t("%(who)s · %(pct)s%%",
-                  { who: drag.name, pct: drag.pct });
+        const name = this.state.names[drag.lineId];
+        return name
+            ? _t("%(who)s · %(pct)s%", { who: name, pct: drag.pct })
+            : _t("This rise · %(pct)s%", { pct: drag.pct });
+    }
+
+    get dragNote() {
+        return this.state.drag && this.state.drag.keys
+            ? _t("Enter to save it, Escape to put it back.")
+            : _t("Let go to save it. Nothing has changed yet.");
     }
 
     // ============================================================= the chain
@@ -732,8 +1313,26 @@ export class PbPayReview extends Component {
     // ============================================================== keyboard
     onKey(ev) {
         if (ev.key === "Escape") {
-            if (this.anyDrawer) { this.closeDrawers(); ev.stopPropagation(); }
-            else if (this.state.editing) { this.cancelEdit(); }
+            // THE LADDER, innermost first. This listener is registered in the
+            // CAPTURE phase (WFPLAN WF4), so it runs BEFORE the focused
+            // element's own handler — which means a gesture in flight has to
+            // be the first rung, or a mark being moved with the keyboard
+            // could never be let go of (LOOK L5).
+            if (this.state.drag) {
+                this.state.drag = null;
+                ev.stopPropagation();
+            } else if (this.state.pop) {
+                this.closeBin();
+                ev.stopPropagation();
+            } else if (this.anyDrawer) {
+                this.closeDrawers();
+                ev.stopPropagation();
+            } else if (this.state.editing) {
+                this.cancelEdit();
+            } else if (this.state.view === "calibration") {
+                this.backToWorksheet();
+                ev.stopPropagation();
+            }
             return;
         }
         if (this.state.view !== "review" || this.state.editing) { return; }

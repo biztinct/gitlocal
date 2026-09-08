@@ -693,11 +693,11 @@ class TestPayBands(TransactionCase):
         for index in range(25):
             self._person('Tidy Cap %s' % index, 1660.0)
         self.Position.recompute_all([self.company.id])
-        capped = self.Bands.people_between(scope, 1600.0, 1700.0, limit=200)
-        self.assertGreaterEqual(capped['total'], 28)
-        self.assertLessEqual(len(capped['rows']), 20)
-        self.assertEqual(capped['more'], capped['total'] - len(capped['rows']))
-        self.assertIn(str(capped['more']), capped['more_label'])
+        listed = self.Bands.people_between(scope, 1600.0, 1700.0, limit=200)
+        self.assertGreaterEqual(listed['total'], 28)
+        self.assertLessEqual(len(listed['rows']), 20)
+        self.assertEqual(listed['more'], listed['total'] - len(listed['rows']))
+        self.assertIn(str(listed['more']), listed['more_label'])
 
         # Somebody else's company is never in the answer, and a reader with
         # no role is told nothing at all.

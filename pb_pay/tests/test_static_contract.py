@@ -440,6 +440,33 @@ class TestPayStaticContract(TransactionCase):
         self.assertIn('error.data', js)
         self.assertNotIn('|| e.message ||', js)
 
+    def test_no_picture_in_this_module_draws_only_the_first_n_people(self):
+        """LOOK rule 16. A cap is not raised, it is deleted — a bigger one is
+        the same bug with a later onset — and the sentence it carried may not
+        survive anywhere a reader could meet it, catalogues included."""
+        bad = []
+        for path in _walk(HERE, ('.py', '.js', '.xml', '.scss', '.po',
+                                 '.pot')):
+            rel = os.path.relpath(path, ROOT)
+            body = _read(path)
+            if 'MAX_DOTS' in body:
+                bad.append('%s: MAX_DOTS' % rel)
+            # R118: the rule binds user-visible STRINGS, and an engineering
+            # comment must be able to name the thing it stopped us doing.
+            if path.endswith('.js'):
+                body = _code(body)
+            elif path.endswith('.py'):
+                body = re.sub(r'#[^\n]*', '', body)
+            elif path.endswith('.xml'):
+                body = re.sub(r'<!--.*?-->', '', body, flags=re.S)
+            elif path.endswith(('.po', '.pot')):
+                body = '\n'.join(line for line in body.splitlines()
+                                 if not line.startswith('#'))
+            for phrase in ('the first %(count)s people', 'not drawn'):
+                if phrase in body:
+                    bad.append('%s: %s' % (rel, phrase))
+        self.assertFalse(bad, 'a picture that drops people: %s' % bad)
+
     def test_a_refused_band_move_never_raises_the_undo_bar(self):
         """LOOK L8, the browser half. `move_edge` answers a refusal rather
         than raising it, so `endDrag` has to READ the answer: writing

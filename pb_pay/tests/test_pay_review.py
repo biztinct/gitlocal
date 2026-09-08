@@ -359,22 +359,199 @@ class TestPayReview(TransactionCase):
         self.assertTrue(answer['sentence'])
 
     # ================================================================== T5
-    def test_t05_the_calibration_payload_has_a_dot_for_everybody(self):
+    def test_t05_the_calibration_payload_holds_everybody(self):
         review = self._review()
         answer = self.Reviews.calibration(review.id)
-        self.assertEqual(len(answer['dots']), len(review.line_ids))
+        self.assertEqual(len(answer['people']), len(review.line_ids))
+        self.assertEqual(answer['total'], len(review.line_ids))
         self.assertIn('max_pct', answer)
         self.assertEqual(len(answer['words']),
                          int(review.rating_scale or '4'))
+        self.assertEqual(len(answer['columns']),
+                         int(review.rating_scale or '4'))
 
-    def test_t05_a_far_bigger_rise_than_the_others_is_ringed(self):
+    def test_t05_the_picture_carries_no_cap_and_no_names(self):
+        """LOOK rule 16 on the one screen that could still drop somebody.
+
+        And R4: the set that DRAWS the picture carries nothing but what is
+        needed to place a mark — at four and a half thousand people, sending
+        everybody's name to draw a shape is both a payload and a permission
+        problem.
+        """
+        review = self._review()
+        answer = self.Reviews.calibration(review.id)
+        self.assertNotIn('capped', answer)
+        self.assertNotIn('capped_note', answer)
+        self.assertNotIn('dots', answer)
+        for person in answer['people']:
+            self.assertEqual(sorted(person), ['column', 'line_id', 'pct',
+                                              'state'])
+        names = {line.employee_id.name for line in review.line_ids}
+        listed = {row['name'] for row in answer['outliers']}
+        self.assertFalse(listed - names - {''},
+                         'the outlier list invented a name')
+
+    def test_t05_a_far_bigger_rise_than_the_others_stands_out(self):
         review = self._review()
         for line in review.line_ids:
             line.set_proposal(pct=3.0)
         self._line(review, self.alice).set_proposal(pct=40.0)
         answer = self.Reviews.calibration(review.id)
-        ringed = [dot for dot in answer['dots'] if dot['outlier']]
-        self.assertTrue(ringed, 'nothing was ringed on an obvious outlier')
+        ringed = [one for one in answer['people'] if one['state'] != 'normal']
+        self.assertTrue(ringed, 'nothing stood out on an obvious outlier')
+        self.assertTrue(answer['outliers'])
+        self.assertEqual(answer['outliers_total'], len(ringed))
+        self.assertTrue(answer['outliers'][0]['why'])
+        self.assertTrue(answer['outliers'][0]['state_word'])
+
+    def test_t05_a_rise_that_breaks_a_limit_says_so_by_name(self):
+        """R6: the three states are normal, outlier and blocked, and a limit
+        saying no is the more urgent fact about a row."""
+        review = self._review()
+        self.Limit.create({'review_id': review.id, 'kind': 'max_raise_pct',
+                           'value': 5.0, 'enforcement': 'block'})
+        for line in review.line_ids:
+            line.set_proposal(pct=2.0)
+        self._line(review, self.bob).set_proposal(pct=9.0)
+        review.recompute_chips()
+        answer = self.Reviews.calibration(review.id)
+        states = {one['line_id']: one['state'] for one in answer['people']}
+        self.assertEqual(states[self._line(review, self.bob).id], 'blocked')
+        self.assertEqual(states[self._line(review, self.alice).id], 'normal')
+        limits = answer['limits']
+        self.assertEqual(len(limits), 1)
+        self.assertEqual(limits[0]['value'], 5.0)
+        self.assertTrue(limits[0]['blocks'])
+        self.assertIn('5', limits[0]['sentence'])
+
+    def test_t05_each_column_carries_the_middle_of_its_own_score(self):
+        review = self._review()
+        for line in review.line_ids:
+            line.rating = 3
+            line.set_proposal(pct=0.0)
+        rises = [2.0, 6.0, 10.0]
+        for line, pct in zip(review.line_ids, rises):
+            line.set_proposal(pct=pct)
+        answer = self.Reviews.calibration(review.id)
+        third = next(one for one in answer['columns'] if one['column'] == 3)
+        self.assertTrue(third['has_median'])
+        self.assertAlmostEqual(third['median'], 6.0, places=2)
+        self.assertEqual(third['scored'], len(review.line_ids))
+        self.assertEqual(third['drawn'], len(review.line_ids))
+        self.assertIn('6', third['median_label'])
+
+    def test_t05_a_score_nobody_used_is_still_a_column(self):
+        review = self._review()
+        for line in review.line_ids:
+            line.rating = 2
+        answer = self.Reviews.calibration(review.id)
+        empty = next(one for one in answer['columns'] if one['column'] == 4)
+        self.assertEqual(empty['scored'], 0)
+        self.assertEqual(empty['drawn'], 0)
+        self.assertFalse(empty['has_median'])
+        self.assertTrue(empty['word'])
+
+    def test_t05_a_person_nobody_scored_is_drawn_in_the_middle(self):
+        review = self._review()
+        for line in review.line_ids:
+            line.rating = 0
+        answer = self.Reviews.calibration(review.id)
+        levels = int(review.rating_scale or '4')
+        middle = max(1, (levels + 1) // 2)
+        self.assertTrue(all(one['column'] == middle
+                            for one in answer['people']))
+        column = next(one for one in answer['columns']
+                      if one['column'] == middle)
+        self.assertEqual(column['scored'], 0)
+        self.assertEqual(column['drawn'], len(review.line_ids))
+        self.assertEqual(column['unscored'], len(review.line_ids))
+
+    def test_t05_the_axis_reaches_past_the_limit_it_draws(self):
+        """A limit drawn off the top of the picture explains nothing."""
+        review = self._review()
+        self.Limit.create({'review_id': review.id, 'kind': 'max_raise_pct',
+                           'value': 15.0, 'enforcement': 'warn'})
+        for line in review.line_ids:
+            line.set_proposal(pct=8.0)
+        review.recompute_chips()
+        answer = self.Reviews.calibration(review.id)
+        self.assertGreater(answer['max_pct'], 15.0)
+
+    def test_t05_the_people_in_one_bin_are_named_on_demand(self):
+        review = self._review()
+        for line in review.line_ids:
+            line.rating = 3
+            line.set_proposal(pct=4.0)
+        answer = self.Reviews.calibration_people(review.id, 3, 3.0, 5.0)
+        self.assertTrue(answer['allowed'])
+        self.assertEqual(answer['total'], len(review.line_ids))
+        names = {row['name'] for row in answer['rows']}
+        self.assertIn('Review Alice', names)
+        self.assertTrue(answer['title'])
+        self.assertTrue(all(row['state_word'] for row in answer['rows']))
+        # A bin nobody is standing in says so rather than answering nothing.
+        nobody = self.Reviews.calibration_people(review.id, 3, 90.0, 95.0)
+        self.assertTrue(nobody['allowed'])
+        self.assertEqual(nobody['rows'], [])
+        self.assertTrue(nobody['title'])
+
+    def test_t05_a_bin_is_half_open_so_nobody_is_listed_twice(self):
+        """A person standing exactly on a boundary belongs to ONE bar.
+
+        The two ENDS of the axis are the exception and have to be: somebody
+        beyond either end is drawn ON that end, so the first and the last bin
+        are closed or the picture would count them and the list would not.
+        """
+        review = self._review()
+        for line in review.line_ids:
+            line.rating = 3
+            line.set_proposal(pct=5.0)
+        # One much bigger rise, so 5% is nowhere near the top of the axis.
+        self._line(review, self.alice).set_proposal(pct=20.0)
+        lower = self.Reviews.calibration_people(review.id, 3, 4.0, 5.0)
+        upper = self.Reviews.calibration_people(review.id, 3, 5.0, 6.0)
+        self.assertEqual(lower['total'], 0)
+        self.assertEqual(upper['total'], len(review.line_ids) - 1)
+        # The topmost bin is closed, so the biggest rise is in it.
+        picture = self.Reviews.calibration(review.id)
+        top = picture['max_pct']
+        highest = self.Reviews.calibration_people(review.id, 3, top - 1.0, top)
+        self.assertEqual(highest['total'], 1)
+
+    def test_t05_a_reader_with_no_name_role_gets_no_names_at_all(self):
+        """A team manager reads their own team's rows and NO names.
+
+        `group_pay_viewer` is the role that reads a review without running
+        one: the rows are their own team's (`rule_review_line_own_team`) and
+        the names are not theirs to see. The picture still draws.
+        """
+        review = self._review()
+        for line in review.line_ids:
+            line.set_proposal(pct=3.0)
+        self._line(review, self.alice).set_proposal(pct=40.0)
+        viewer = self._staff('p2.viewer@example.com',
+                             ['base.group_user', 'pb_pay.group_pay_viewer'])
+        self.boss.sudo().user_id = viewer.id
+        picture = self.Reviews.with_user(viewer).calibration(review.id)
+        self.assertFalse(picture['can_names'])
+        self.assertTrue(picture['people'], 'the picture drew nothing at all')
+        real = {line.employee_id.name for line in review.line_ids}
+        for row in picture['outliers']:
+            self.assertNotIn(row['name'], real)
+        bin_rows = self.Reviews.with_user(viewer).calibration_people(
+            review.id, picture['people'][0]['column'], 0.0, 100.0)
+        self.assertTrue(bin_rows['rows'])
+        for row in bin_rows['rows']:
+            self.assertNotIn(row['name'], real)
+        self.boss.sudo().user_id = False
+
+    def test_t05_two_ends_of_a_narrow_range_are_told_apart(self):
+        """LOOK L4: a bin a tenth of a point wide may not print its two ends
+        as the same figure."""
+        low, high = self.Reviews._pct_pair(7.02, 7.14)
+        self.assertNotEqual(low, high)
+        wide_low, wide_high = self.Reviews._pct_pair(0.0, 30.0)
+        self.assertEqual((wide_low, wide_high), ('0', '30'))
 
     def test_t05_a_block_of_rows_moves_in_one_pass(self):
         review = self._review()

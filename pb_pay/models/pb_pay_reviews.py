@@ -16,6 +16,7 @@ about to change somebody's pay.
 """
 
 import logging
+import math
 import time
 from collections import defaultdict
 
@@ -28,10 +29,17 @@ from .pb_pay_review import GROUP_CEO, GROUP_FINANCE, GROUP_MANAGER
 _logger = logging.getLogger(__name__)
 
 #: How many worksheet rows one payload carries. Beyond this the screen pages.
+#: A worksheet is a LIST somebody pages through, which is a different thing
+#: from a picture: a picture may never leave anybody out (LOOK rule 16).
 PAGE = 120
 
-#: How many dots the calibration picture draws.
-MAX_DOTS = 900
+#: How many people the "who is standing here" panel names at once. A LIST cap,
+#: exactly like `pb.pay.bands.people_between`'s, and it says so on the panel.
+PEOPLE_IN_BIN = 40
+
+#: How many rows the "worth a second look" list carries. Also a LIST cap: the
+#: picture draws every one of them, and the list says how many it did not name.
+OUTLIER_ROWS = 60
 
 READ_GROUPS = (
     'pb_pay.group_pay_viewer', 'pb_pay.group_pay_manager',
@@ -617,21 +625,30 @@ class PbPayReviews(models.AbstractModel):
 
     # ========================================================== calibration
     @api.model
-    def calibration(self, review_id):
-        """Every person as a dot: how well they did across, the rise up.
+    def _pct_pair(self, low, high):
+        """Two ends of a range of PER CENT, told apart from each other.
 
-        The outliers are not a matter of taste. A dot is ringed when its rise
-        is more than two standard deviations above the average rise of the
-        people who scored the SAME — which is the question a calibration
-        meeting is actually asking — or when it already breaks a limit.
+        A bin on this picture is a few pixels of a percentage axis, so on a
+        review whose rises run from 0 to 30% one bin is about a tenth of a
+        point wide — and one decimal prints "7.0% to 7.0%" for two figures
+        that are not the same figure (LOOK L4, the ruler's rule applied to the
+        marks). The number of decimals comes from the range's OWN width.
         """
-        self._require_read()
-        review = self._review(review_id)
-        can_names = self._has(GROUP_MANAGER, GROUP_FINANCE, GROUP_CEO,
-                              'hr.group_hr_manager', 'base.group_system')
+        low, high = float(low or 0.0), float(high or 0.0)
+        spread = abs(high - low)
+        if spread <= 0:
+            decimals = 1
+        else:
+            decimals = max(0, min(3, int(math.ceil(-math.log10(spread))) + 1))
+        return ('%.*f' % (decimals, low), '%.*f' % (decimals, high))
+
+    @api.model
+    def _stats_by_rating(self, rows):
+        """Mean, standard deviation and median of the rise, per score."""
         by_rating = defaultdict(list)
-        for line in review.line_ids:
-            by_rating[line.rating or 0].append(float(line.proposal_pct or 0.0))
+        for row in rows:
+            by_rating[int(row['rating'] or 0)].append(
+                float(row['proposal_pct'] or 0.0))
         stats = {}
         for rating, values in by_rating.items():
             mean = sum(values) / len(values) if values else 0.0
@@ -639,78 +656,351 @@ class PbPayReviews(models.AbstractModel):
                 if values else 0.0
             stats[rating] = (mean, variance ** 0.5,
                              self.env['pb.pay.bands']._median(values))
+        return by_rating, stats
 
-        dots, outliers = [], []
-        for line in review.line_ids[:MAX_DOTS]:
-            mean, deviation, middle = stats.get(line.rating or 0,
-                                                (0.0, 0.0, 0.0))
-            pct = float(line.proposal_pct or 0.0)
-            # TWO tests, because one of them is useless on a small team. Two
-            # standard deviations is the right question over a few hundred
-            # people; over four, the one big number IS most of the deviation
-            # and nothing is ever ringed. So a rise of more than twice the
-            # middle of its own group, and at least two points above it, is
-            # an outlier as well — which is what a person means when they say
-            # "that one is much bigger than the others".
-            far = (deviation > 0 and pct > mean + 2 * deviation) \
-                or (middle > 0 and pct > 2 * middle and pct - middle >= 2.0)
-            blocked = any(c.get('blocks') for c in (line.chips or []))
-            # A rating the grid does not have — an old score of 5 on a
-            # four-level scale — is drawn at the top rather than off the
-            # right-hand edge, and a person nobody has scored is drawn in the
-            # middle with the chip on their row saying so. A dot outside the
-            # picture is a person the meeting cannot see.
-            levels = int(review.rating_scale or '4')
-            column = int(line.rating or 0)
-            if column < 1:
-                column = max(1, (levels + 1) // 2)
-            column = min(column, levels)
-            dot = {
-                'line_id': line.id,
-                'name': line.employee_id.name if can_names
-                else _('Person %(number)s', number=line.id),
+    @api.model
+    def _calib_state(self, row, stats):
+        """`normal`, `outlier` or `blocked` — the three words on this picture.
+
+        The outliers are not a matter of taste. A rise stands out when it is
+        more than two standard deviations above the average rise of the people
+        who scored the SAME — which is the question a calibration meeting is
+        actually asking — or when it is more than twice the middle of its own
+        group and at least two points above it. The second test exists because
+        the first is useless on a small team: over four people the one big
+        number IS most of the deviation and nothing is ever ringed.
+
+        A rise that breaks a limit is `blocked` whether or not it stands out:
+        a limit saying no is the more urgent fact about that row.
+        """
+        chips = row.get('chips') or []
+        if any(chip.get('blocks') for chip in chips
+               if isinstance(chip, dict)):
+            return 'blocked'
+        mean, deviation, middle = stats.get(int(row['rating'] or 0),
+                                            (0.0, 0.0, 0.0))
+        pct = float(row['proposal_pct'] or 0.0)
+        far = (deviation > 0 and pct > mean + 2 * deviation) \
+            or (middle > 0 and pct > 2 * middle and pct - middle >= 2.0)
+        return 'outlier' if far else 'normal'
+
+    @api.model
+    def _calib_column(self, rating, levels):
+        """Which column a person is drawn in.
+
+        A score the grid does not have — an old five on a four-level scale —
+        is drawn at the top rather than off the right-hand edge, and a person
+        nobody has scored is drawn in the MIDDLE with the chip on their row
+        saying so. A mark outside the picture is a person the meeting cannot
+        see.
+        """
+        column = int(rating or 0)
+        if column < 1:
+            column = max(1, (levels + 1) // 2)
+        return min(max(column, 1), levels)
+
+    @api.model
+    def calibration(self, review_id):
+        """The whole review as a shape: the score across, the rise up.
+
+        EVERYBODY IS ON IT, AT ANY SIZE. This used to slice the first nine
+        hundred people and say so on the screen, which is the one sentence
+        LOOK rule 16 forbids on the one screen where it matters most — a
+        calibration meeting is a meeting about the people at the edges, and a
+        cap silently removes an arbitrary set of them. The picture now changes
+        SHAPE instead, exactly as the band picture does: along each score's
+        column the rise axis is cut into bins a few pixels tall, a bin holding
+        a handful of people draws each of them, and a busier one draws a bar
+        that says how many.
+
+        WHAT COMES BACK IS WHAT THE PICTURE DRAWS WITH, AND NOTHING ELSE.
+        `people` carries four things per row and no name: names and details
+        are read back for ONE bin on demand (`calibration_people`) and for the
+        handful of rises worth arguing about (`outliers`). That is both a
+        payload and a permission decision — at four and a half thousand
+        people, sending everybody's name to draw a shape is neither.
+        """
+        started = time.time()
+        self._require_read()
+        review = self._review(review_id)
+        can_names = self._has(GROUP_MANAGER, GROUP_FINANCE, GROUP_CEO,
+                              'hr.group_hr_manager', 'base.group_system')
+        levels = int(review.rating_scale or '4')
+        words = scale_words(review.rating_scale)
+        money = self.env['pb.pay.bands']
+
+        # ONE search_read of the four columns the shape is drawn from. Reading
+        # `review.line_ids` and touching `employee_id.name` on every row is
+        # what made somebody reach for a cap in the first place; there is no
+        # many2one in this field list on purpose, because the platform
+        # resolves one into `(id, display_name)` and that is a name lookup per
+        # person. `chips` is a stored Json column and costs nothing.
+        rows = self._wide().env['pb.pay.review.line'].search_read(
+            [('review_id', '=', review.id)],
+            ['rating', 'proposal_pct', 'chips'], order='id')
+
+        by_rating, stats = self._stats_by_rating(rows)
+        people, standouts = [], []
+        drawn_in_column = defaultdict(int)
+        for row in rows:
+            pct = round(float(row['proposal_pct'] or 0.0), 2)
+            column = self._calib_column(row['rating'], levels)
+            state = self._calib_state(row, stats)
+            drawn_in_column[column] += 1
+            people.append({'line_id': row['id'], 'column': column,
+                           'pct': pct, 'state': state})
+            if state != 'normal':
+                standouts.append((pct, row['id'], state))
+
+        # ------------------------------------------------ one row per score
+        columns = []
+        for index in range(1, levels + 1):
+            values = by_rating.get(index) or []
+            middle = money._median(values) if values else 0.0
+            columns.append({
+                'column': index,
+                'rating': index,
+                'word': words[index - 1] if index - 1 < len(words)
+                else str(index),
+                # HOW MANY HOLD THIS SCORE, and how many marks the column
+                # draws. They differ by exactly the people nobody has scored,
+                # who are drawn in the middle column — so both figures are
+                # here rather than one of them silently standing for the
+                # other.
+                'scored': len(values),
+                'drawn': drawn_in_column.get(index, 0),
+                'unscored': max(0, drawn_in_column.get(index, 0)
+                                - len(values)),
+                'has_median': bool(values),
+                'median': round(middle, 2),
+                'median_label': _("middle of this score %(pct)s%%",
+                                  pct=('%g' % round(middle, 2)))
+                if values else '',
+            })
+
+        # ----------------------------------------- the limits that can be drawn
+        limits = []
+        for limit in review.limit_ids:
+            if limit.kind != 'max_raise_pct':
+                continue
+            summary = limit.summary()
+            summary['value'] = float(summary.get('value') or 0.0)
+            summary['label'] = '%g%%' % summary['value']
+            limits.append(summary)
+        limits.sort(key=lambda one: one['value'])
+
+        # A limit drawn off the top of the picture explains nothing, so the
+        # axis reaches past the highest one with room for its own line.
+        highest = max([person['pct'] for person in people] or [0.0])
+        ceiling = max([one['value'] for one in limits] or [0.0])
+        top = max(highest, 1.0)
+        if ceiling >= top:
+            top = ceiling * 1.08
+
+        # ------------------------------------------ worth a second look (LIST)
+        standouts.sort(key=lambda one: (-one[0], one[1]))
+        listed = standouts[:OUTLIER_ROWS]
+        found = {line.id: line for line in
+                 self._wide().env['pb.pay.review.line'].browse(
+                     [one[1] for one in listed])}
+        outliers = []
+        for pct, line_id, state in listed:
+            line = found.get(line_id)
+            if not line:
+                continue
+            outliers.append({
+                'line_id': line_id,
+                'name': self._safe(
+                    lambda one=line: one.employee_id.name or '', default='')
+                if can_names else _('Person %(number)s', number=line_id),
+                # Reading one field of a person reads forty on this build, a
+                # good many of them behind payroll roles (RIZE R56), so every
+                # extra on this row answers for itself: a row that loses its
+                # team is still a row a meeting can act on.
+                'team': self._safe(
+                    lambda one=line: one.department_id.display_name or '',
+                    default='') or '',
                 'rating': int(line.rating or 0),
-                'column': column,
-                # A deterministic spread inside the column. Nine hundred
-                # people on four ratings land on four points and the picture
-                # reads as four dots; nudging each one sideways by a number
-                # derived from its own id turns a stack back into a cloud, and
-                # the same person lands in the same place every time.
-                'jitter': ((line.id * 37) % 100) / 100.0,
-                'pct': round(float(line.proposal_pct or 0.0), 2),
-                'position_pct': round(float(line.position_pct or 0.0), 1),
-                'cost': float(line.annual_cost_delta or 0.0),
-                'team': line.department_id.display_name or '',
-                'outlier': bool(far or blocked),
-            }
-            dots.append(dot)
-            if far or blocked:
-                outliers.append(dict(dot, why=_(
-                    "This rise breaks a limit.") if blocked else _(
-                    "Much bigger than the others who scored the same.")))
-        highest = max([d['pct'] for d in dots] or [0.0])
-        # A picture of a review nobody has touched is five straight lines,
+                'column': self._calib_column(line.rating, levels),
+                'pct': pct,
+                'state': state,
+                'state_word': self._state_word(state),
+                'cost_label': self._safe(
+                    lambda one=line: money._short(
+                        one.annual_cost_delta,
+                        one.currency_id or review.currency_id),
+                    default='') or '',
+                # The row's OWN sentence about the limit it breaks
+                # ("14.7% is above the 12% this review allows"), not a second
+                # sentence repeating the chip printed beside it.
+                'why': self._blocked_why(line) if state == 'blocked'
+                else _("Much bigger than the others who scored the same."),
+            })
+        more = max(0, len(standouts) - len(listed))
+
+        # A picture of a review nobody has touched is one line per score,
         # because every row still holds exactly what the guidance suggested.
         # That is TRUE and it looks broken, so the screen says which it is.
-        spread = {round(dot['pct'], 2) for dot in dots}
-        flat = len(spread) <= max(1, len(by_rating))
+        spread = {person['pct'] for person in people}
+        flat = bool(people) and len(spread) <= max(1, len(by_rating))
         return {
-            'dots': dots,
-            'flat': bool(flat),
+            'people': people,
+            'total': len(people),
+            'columns': columns,
+            'limits': limits,
+            'outliers': outliers,
+            'outliers_total': len(standouts),
+            'outliers_more': more,
+            'outliers_note': _(
+                "%(count)s more rises stand out. Every one of them is on the "
+                "picture; the biggest %(shown)s are named here.",
+                count=more, shown=len(listed)) if more else '',
+            'flat': flat,
             'flat_note': _(
                 "Everybody is still on the guidance, so each score sits on "
-                "one line. Move a dot, or change a row in the worksheet, and "
+                "one line. Move a mark, or change a row in the worksheet, and "
                 "the picture spreads out.") if flat else '',
-            'outliers': outliers[:60],
-            'levels': int(review.rating_scale or '4'),
-            'words': scale_words(review.rating_scale),
-            'max_pct': max(highest, 1.0),
+            'levels': levels,
+            'words': words,
+            'max_pct': top,
+            'can_names': can_names,
             'card': self._card(review),
-            'capped': len(review.line_ids) > MAX_DOTS,
-            'capped_note': _(
-                "The picture draws the first %(count)s people. The budget and "
-                "the limits are worked out over all of them.", count=MAX_DOTS)
-            if len(review.line_ids) > MAX_DOTS else '',
+            'empty_title': _("Nobody is in this review yet.")
+            if not people else '',
+            'empty_note': _(
+                "A review draws the people it covers as soon as it has any. "
+                "Go back to the worksheet and check who this one is for.")
+            if not people else '',
+            'ms': int((time.time() - started) * 1000),
+        }
+
+    @api.model
+    def _blocked_why(self, line):
+        for chip in (line.chips or []):
+            if isinstance(chip, dict) and chip.get('blocks') \
+                    and chip.get('text'):
+                return chip['text']
+        return _("This rise breaks a limit.")
+
+    @api.model
+    def _state_word(self, state):
+        """The WORD beside the colour, always. A picture whose whole meaning
+        is a hue is unreadable to a good number of readers."""
+        if state == 'blocked':
+            return _("breaks a limit")
+        if state == 'outlier':
+            return _("stands out")
+        return _("in line with the others")
+
+    @api.model
+    def calibration_people(self, review_id, rating, low, high,
+                           limit=PEOPLE_IN_BIN):
+        """The named people standing in ONE bin of one score's column.
+
+        The half of the picture a shape cannot draw. A bar says HOW MANY and
+        never WHO, so a bar is a button and pressing it asks this — the same
+        gesture, the same shape of answer and the same list cap as the band
+        picture's `pb.pay.bands.people_between`.
+
+        `rating` is the COLUMN that was pressed, which is a score on the
+        scale; a person nobody has scored is drawn in the middle column and is
+        found there, exactly as the picture draws them.
+        """
+        blank = {'allowed': False, 'total': 0, 'rows': [], 'more': 0,
+                 'more_label': '', 'title': '', 'can_names': False}
+        self._require_read()
+        review = self._review(review_id)
+        can_names = self._has(GROUP_MANAGER, GROUP_FINANCE, GROUP_CEO,
+                              'hr.group_hr_manager', 'base.group_system')
+        levels = int(review.rating_scale or '4')
+        column = min(max(int(rating or 0), 1), levels)
+        low, high = float(low or 0.0), float(high or 0.0)
+        if high < low:
+            low, high = high, low
+
+        rows = self._wide().env['pb.pay.review.line'].search_read(
+            [('review_id', '=', review.id)],
+            ['rating', 'proposal_pct', 'chips'], order='id')
+        _by_rating, stats = self._stats_by_rating(rows)
+        top = max([round(float(row['proposal_pct'] or 0.0), 2)
+                   for row in rows] or [0.0])
+        for one in review.limit_ids:
+            if one.kind == 'max_raise_pct':
+                top = max(top, float(one.value or 0.0) * 1.08)
+        top = max(top, 1.0)
+        # A bin is HALF-OPEN, exactly as the picture's own binning is, or a
+        # person standing on a boundary is listed under two bars. The two ends
+        # of the axis are the exception: somebody paid beyond either end is
+        # drawn ON that end, so the first and last bins are closed.
+        lowest = low <= 1e-9
+        highest = high >= top - 1e-9
+
+        wanted = []
+        for row in rows:
+            if self._calib_column(row['rating'], levels) != column:
+                continue
+            pct = round(float(row['proposal_pct'] or 0.0), 2)
+            if not lowest and pct < low:
+                continue
+            if not highest and pct >= high:
+                continue
+            wanted.append((pct, row))
+        if not wanted:
+            return dict(blank, allowed=True, title=_("Nobody is standing here"))
+
+        wanted.sort(key=lambda one: (-one[0], one[1]['id']))
+        limit = max(1, min(int(limit or PEOPLE_IN_BIN), PEOPLE_IN_BIN))
+        listed = wanted[:limit]
+        found = {line.id: line for line in
+                 self._wide().env['pb.pay.review.line'].browse(
+                     [row['id'] for _pct, row in listed])}
+        money = self.env['pb.pay.bands']
+        out = []
+        for pct, row in listed:
+            line = found.get(row['id'])
+            if not line:
+                continue
+            state = self._calib_state(row, stats)
+            out.append({
+                'id': line.id,
+                'name': self._safe(
+                    lambda one=line: one.employee_id.name or '', default='')
+                if can_names else _('Person %(number)s', number=line.id),
+                'job': self._safe(
+                    lambda one=line: one.job_id.display_name or '',
+                    default='') or '',
+                'team': self._safe(
+                    lambda one=line: one.department_id.display_name or '',
+                    default='') or '',
+                'pct': pct,
+                'pct_label': '%g%%' % pct,
+                'state': state,
+                'state_word': self._state_word(state),
+                'new_label': self._safe(
+                    lambda one=line: money._money(
+                        one.new_wage,
+                        one.currency_id or review.currency_id),
+                    default='') or '',
+            })
+        more = max(0, len(wanted) - len(listed))
+        edges = self._pct_pair(low, high)
+        word = scale_words(review.rating_scale)
+        return {
+            'allowed': True,
+            'can_names': can_names,
+            'column': column,
+            'low': low, 'high': high,
+            'total': len(wanted),
+            'rows': out,
+            'more': more,
+            'more_label': _("and %(count)s more standing here.", count=more)
+            if more else '',
+            'title': _("%(people)s scored %(word)s, rising %(low)s%% to "
+                       "%(high)s%%",
+                       people=money._people_phrase(len(wanted)),
+                       word=word[column - 1] if column - 1 < len(word)
+                       else str(column),
+                       low=edges[0], high=edges[1]),
         }
 
     # ============================================================= the chain

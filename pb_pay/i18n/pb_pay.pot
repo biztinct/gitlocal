@@ -1,4 +1,4 @@
-# Translation of Payobook.
+# Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* pb_pay
 #
@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 22:23+0000\n"
-"PO-Revision-Date: 2026-09-08 22:23+0000\n"
+"POT-Creation-Date: 2026-09-08 23:25+0000\n"
+"PO-Revision-Date: 2026-09-08 23:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -125,6 +125,14 @@ msgstr ""
 #. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
+"%(count)s more rises stand out. Every one of them is on the picture; the "
+"biggest %(shown)s are named here."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid "%(count)s pay decisions are waiting for you."
 msgstr ""
 
@@ -134,6 +142,7 @@ msgstr ""
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: code:addons/pb_pay/models/pb_pay_fairness.py:0
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "%(count)s people"
 msgstr ""
 
@@ -167,6 +176,32 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_fairness.py:0
 msgid "%(count)s people measured."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"%(count)s people scored %(word)s, rising %(low)s% to %(high)s% · press to "
+"see who"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%(count)s people, %(unscored)s not scored"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%(count)s rises break a limit"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%(count)s rises stand out from the others who scored the same"
 msgstr ""
 
 #. module: pb_pay
@@ -350,6 +385,12 @@ msgid "%(pay)s is above the top of %(band)s."
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "%(pct)s% rise"
+msgstr ""
+
+#. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_change.py:0
 msgid ""
@@ -375,6 +416,12 @@ msgstr ""
 msgid ""
 "%(people)s already doing this job are paid from %(low)s to %(high)s, with "
 "%(mid)s in the middle."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "%(people)s scored %(word)s, rising %(low)s%% to %(high)s%%"
 msgstr ""
 
 #. module: pb_pay
@@ -452,7 +499,7 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
-msgid "%(who)s · %(pct)s%%"
+msgid "%(who)s · %(pct)s%"
 msgstr ""
 
 #. module: pb_pay
@@ -515,6 +562,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "1 person"
 msgstr ""
 
@@ -528,6 +576,8 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid ""
 "1 person is paid more than %(edge)s and sits on the right-hand edge. Their "
@@ -538,6 +588,24 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "1 person selected"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "1 person, nobody scored them"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "1 rise breaks a limit"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "1 rise stands out from the others who scored the same"
 msgstr ""
 
 #. module: pb_pay
@@ -725,6 +793,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid ""
+"A review draws the people it covers as soon as it has any. Go back to the "
+"worksheet and check who this one is for."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid ""
 "A review opens with a suggested rise already filled in for everybody it "
 "covers, the budget already counting and the fairness check already run. "
 "Start one and look before you change anything."
@@ -866,6 +942,12 @@ msgstr ""
 #. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__compa
 msgid "Against the middle"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "All %(count)s people in this review are on the picture."
 msgstr ""
 
 #. module: pb_pay
@@ -1053,6 +1135,12 @@ msgid "Back to the shared scale"
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Back to the worksheet"
+msgstr ""
+
+#. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band__name
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__band_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__band_id
@@ -1225,6 +1313,7 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "Close"
 msgstr ""
 
@@ -1415,6 +1504,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Doing well"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
 #: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid "Done."
 msgstr ""
@@ -1473,6 +1568,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Enter to save it, Escape to put it back."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid "Every company you can see"
 msgstr ""
@@ -1518,10 +1619,20 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
-#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid ""
-"Every person is a dot: how well they did across, the rise they\n"
-"                are getting up. Drag one and its row follows."
+"Every person in this review is on the picture. Each score is a column and "
+"the shape is how its rises are spread. Press a bar to see who is standing "
+"there, and drag a ringed mark to change that rise."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"Every person in this review is on the picture. Each score is a column and "
+"the shape is how its rises are spread; press a bar to see who is standing "
+"there."
 msgstr ""
 
 #. module: pb_pay
@@ -1559,7 +1670,7 @@ msgstr ""
 #: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid ""
 "Everybody is still on the guidance, so each score sits on one line. Move a "
-"dot, or change a row in the worksheet, and the picture spreads out."
+"mark, or change a row in the worksheet, and the picture spreads out."
 msgstr ""
 
 #. module: pb_pay
@@ -2073,6 +2184,7 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid "Let go to save it. Nothing has changed yet."
 msgstr ""
@@ -2260,6 +2372,18 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "My team"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Nearly there"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Needs support"
 msgstr ""
 
 #. module: pb_pay
@@ -2483,14 +2607,27 @@ msgid "Nobody in this review is called that."
 msgstr ""
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Nobody is in this review yet."
+msgstr ""
+
+#. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid "Nobody is on this band yet."
 msgstr ""
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "Nobody is standing here"
+msgstr ""
+
+#. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid ""
 "Nobody is standing here any more. Close this and look at the picture again."
 msgstr ""
@@ -2759,6 +2896,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "Opening the pay reviews…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Outstanding"
 msgstr ""
 
 #. module: pb_pay
@@ -3175,6 +3318,7 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "Reading the names…"
 msgstr ""
 
@@ -3182,6 +3326,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid "Reading the pay bands…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Reading who this is…"
 msgstr ""
 
 #. module: pb_pay
@@ -3991,6 +4141,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The one person in this review is on the picture."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid "The pass could not be run just now."
 msgstr ""
@@ -4021,6 +4177,7 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "The people standing here"
 msgstr ""
 
@@ -4028,14 +4185,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "The picture could not be drawn."
-msgstr ""
-
-#. module: pb_pay
-#. odoo-python
-#: code:addons/pb_pay/models/pb_pay_reviews.py:0
-msgid ""
-"The picture draws the first %(count)s people. The budget and the limits are "
-"worked out over all of them."
 msgstr ""
 
 #. module: pb_pay
@@ -4461,6 +4610,12 @@ msgid "This rise breaks a limit."
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "This rise · %(pct)s%"
+msgstr ""
+
+#. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_rating.py:0
 msgid "This row has no score on it."
@@ -4470,6 +4625,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 msgid "Those bands could not be saved."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"Those people could not be read just now. Close this and press the bar again."
 msgstr ""
 
 #. module: pb_pay
@@ -4539,6 +4701,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay.xml:0
 msgid "Use these"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
+msgid "Very strong"
 msgstr ""
 
 #. module: pb_pay
@@ -4861,6 +5029,12 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Working out the shape…"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "Worth a second look"
 msgstr ""
 
@@ -4993,6 +5167,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "and %(count)s more standing here."
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "and %(count)s more."
 msgstr ""
@@ -5016,6 +5196,14 @@ msgid "below the band"
 msgstr ""
 
 #. module: pb_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "breaks a limit"
+msgstr ""
+
+#. module: pb_pay
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_review.py:0
 msgid "each division"
@@ -5025,6 +5213,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_guidance.py:0
 msgid "guidance"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "in line with the others"
 msgstr ""
 
 #. module: pb_pay
@@ -5083,6 +5279,12 @@ msgstr ""
 
 #. module: pb_pay
 #. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+msgid "middle of this score %(pct)s%%"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-python
 #: code:addons/pb_pay/models/pb_pay_review.py:0
 msgid "narrows"
 msgstr ""
@@ -5091,6 +5293,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "no job family"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "nobody scored this"
 msgstr ""
 
 #. module: pb_pay
@@ -5137,6 +5345,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_pay/models/pb_pay_change.py:0
 msgid "somebody"
+msgstr ""
+
+#. module: pb_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "stands out"
 msgstr ""
 
 #. module: pb_pay

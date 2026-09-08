@@ -39,7 +39,14 @@ WHAT THIS MODULE ADDS
     somebody did across, where their pay already sits down. The budget meter
     is already counting, the fairness check has already run, and the rows that
     break a limit are already marked and say why. Adjust in the worksheet or
-    by dragging dots in the calibration picture; everything moves together.
+    by dragging a mark in the calibration picture; everything moves together.
+  * CALIBRATION WITH EVERYBODY ON IT. Each score is a column and the shape of
+    that column is how its rises are spread, so you can see at a glance
+    whether one score's spread overlaps the one below it. The middle of each
+    score is marked, every limit is a line across the picture, and the
+    handful of rises worth arguing about are ringed on top and can be
+    dragged. Press anywhere on the shape to see who is standing there.
+    Nobody is ever left out, at any size.
   * FOUR SIGNATURES AND ONE WRITE. A review goes manager, HR, finance, chief
     executive, with a real task raised for each of them. Apply shows every
     contract that will change before it changes any of them, writes the new
@@ -60,7 +67,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.3.2.0',
+    'version': '19.0.3.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
