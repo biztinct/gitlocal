@@ -175,12 +175,11 @@ over the phase, once per deploy.
 | `2be2f3e2` | `feat(pb_pay): an axis has two ends, and a band can be given its own` — `static/src/js/band_picture.js`, `tools/band_picture_check.mjs` |
 | `10746b8f` | `feat(pb_pay): open a band out onto its own money scale` — `static/src/js/pay_hub.js`, `static/src/xml/pay.xml`, `static/src/scss/pay.scss`, `__manifest__.py`, `i18n/pb_pay.pot`, `i18n/vi_VN.po` |
 
-Explicit `git add` of named files both times. **Not pushed** — there are now ~106
-unpushed commits on `19.1` and pushing is the owner's decision.
+Explicit `git add` of named files both times. **Not pushed** — there are now **111** unpushed commits on `19.1` and pushing is the owner's decision.
 
 ## 8. What the owner has to decide
 
-1. **Push, or keep holding.** ~106 commits sit unpushed on `19.1`.
+1. **Push, or keep holding.** **111** commits sit unpushed on `19.1`.
 2. **The `payobook` administrator password in the ledger is still wrong (GR24), and so is
    `abm`'s (WF15).** This phase used one temporary `look.p1@payobook.com` on p9clone
    (id 4338), payobook (id 4427) and abm (id 262), **all three archived again at the end
