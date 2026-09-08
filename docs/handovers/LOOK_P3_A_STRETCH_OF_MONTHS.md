@@ -74,6 +74,38 @@ exactly.
 
 ---
 
+## 1b. What P1 and P2 learned that lands on you
+
+`pb_pay` is at **19.0.3.3.0** on all four databases; P2 passed 15/15 and removed the last
+cap in the product. **Read L1–L16 in the ledger in full.** Six of them are traps this
+phase will walk into unless you look:
+
+- **L9 — a `_t()` handed a dictionary writes ONE per cent sign; two print literally.**
+  Python's `_()` interpolates with `%` and needs `%%` to emit one sign; the browser's
+  `_t()` with keyword arguments does not. This screen is *made of* percentages — every
+  chip's variance, every tone word, the headline — and P2 shipped "0.00%% to 0.30%%" to a
+  live screen with nothing warning it. The second half of the trap: the msgid then
+  contains `%%`, so fixing it is a catalogue change as well as a code change.
+- **L13 / T24 — a user-visible literal that lives in a module-level list or tuple is
+  invisible to the extractor.** T24 already caught `BUDGET_TYPES` on this very screen.
+  Your quarter labels, preset names and range words are exactly the same shape of thing:
+  write them **inside** the `_()` call, in a dict keyed by value, with the ordering in a
+  separate ladder (GR59). If you add a module-level list of words in this phase, you have
+  reintroduced T24.
+- **L15 — never edit a msgid in place.** A substring replacement across a `.po` misses
+  any msgid the exporter wrapped across lines: the short ones change, the wrapped one
+  does not, and a grep looks correct while the screen still prints English. Rebuild the
+  catalogue from a fresh `odoo-bin i18n export` and carry translations across by msgid.
+  You are renaming period sentences, so this WILL bite.
+- **L16 — prove a keyboard contract with the browser's own key press.** A synthetic
+  `KeyboardEvent` dispatched on `window` does not reach a capture-phase
+  `useExternalListener` the way a real press does; P2 chased a "broken" Escape that was
+  perfect under `press_key`. Your Shift-extend and Escape tests must use real presses.
+- **L2 — nothing sized by a translated sentence gets a fixed pixel height.** Your range
+  headline and the quarter brackets both hold translated text.
+- **L12 — `overflow: hidden` on a strip will clip whatever sits in its margin.** The
+  quarter brackets sit above the chips; if you clip the strip to scroll it, they go.
+
 ## 2. Deliverables
 
 ### 2a. The strip becomes a range selector
@@ -215,7 +247,12 @@ reason and its next step. Plain language everywhere. Full keyboard parity. Lucid
     export titles.
 13. **Reduced motion.**
 14. **Nothing regressed**: the full `pb_budget` suite green (including
-    `test_budget_month.py`), neighbours at the same pre-existing baseline — name it.
+    `test_budget_month.py`), neighbours at the same pre-existing baseline. **The
+    baseline as of P2: a wide run of 262 tests with 3 failures, all the recorded
+    p9clone drift (`pb_contracts` ×2, `pb_group` `test_t9`).** Report against that
+    number rather than claiming zero.
+15. **No literal per cent sign reaches a screen** (L9): grep the deployed bundle and the
+    rendered DOM for `%%`, on both the English and the Vietnamese walk.
 
 ---
 
