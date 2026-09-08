@@ -316,8 +316,144 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 
 ## Gotchas (append here, numbered L1, L2, …)
 
-_Nothing yet — P1 is the first phase._
+- L1 (P1): **`t-att-aria-expanded="isOpen(band)"` renders NOTHING when the value
+  is `false`.** OWL drops an attribute whose value is boolean `false`, so a
+  disclosure button that is closed carries no `aria-expanded` at all — the one
+  state in which a screen reader most needs it, and the one state a walk is
+  least likely to inspect. The DOM looks correct when the row is open, which is
+  how it survived the first build. Any boolean ARIA attribute is written
+  `cond ? 'true' : 'false'`, never handed the boolean.
+- L2 (P1): **a fixed `padding-bottom` cannot hold a sentence.** The opened band
+  grew by a fixed 84 px for its ruler and its two sentences, which is right at
+  1440 px in English and prints the tail sentence over the NEXT band's name at
+  390 px — where the same words wrap to six lines. Nothing errors and the
+  desktop screenshot is perfect. Anything whose height depends on a translated
+  sentence goes in NORMAL FLOW and the row grows by what it needs; if the growth
+  has to be animated, animate the CONTENT arriving (opacity + a few pixels of
+  travel) rather than a container height nobody can predict.
+- L3 (P1): **re-scaling a row at `mousedown` moves the grip out from under the
+  hand.** The drag axis is deliberately frozen with headroom at the press
+  (§2e) — and freezing a WIDER axis than the one the row was drawn on moved the
+  grabbed grip 149 px away from a cursor that had not moved, at 1440 px on a
+  1,053 px track. The value was safe (the gesture already carried a grab
+  offset), but the picture read as the grip running away. The fix is to ANCHOR
+  the new axis: keep the held edge at the fraction of the track it already had
+  (`lo = held − share × span`, floored at zero) and let the headroom fall either
+  side of it. Any control that changes its own scale during a gesture needs the
+  thing under the cursor pinned first and the scale chosen around it.
+- L4 (P1): **a picture that stops its RULER lying has to stop its MARKS lying
+  too.** The ruler picks its decimals from the span, so a zoom over 6.60M–6.68M
+  prints five distinct labels. The bin labels went on using `shortMoney`'s one
+  decimal at millions, and on the same zoomed band every mark read
+  "12 people · 9.0M ₫ to 9.0M ₫" — a bin fifty thousand dong wide described as
+  having the same two ends. Both ends of any money range printed on a zoomable
+  picture take their figures from THAT range's own width, not from the size of
+  the number.
+- L5 (P1): **a capture-phase Escape handler outranks every element's own.** The
+  cockpit registers `keydown` on `window` with `{ capture: true }` (WF4), so
+  adding "the open band" to that ladder meant Escape reached the ladder BEFORE
+  the focused grip's own handler and a keyboard drag could never be cancelled
+  once a band was open underneath it. A gesture in flight has to be the FIRST
+  rung of a capture-phase ladder, whatever the visual nesting says.
+- L6 (P1): **`--pbim-canvas` and `--pbim-pill` are not tokens.**
+  `pb_import_kit/static/src/scss/import_tokens.scss` defines `--pbim-bg` (the
+  page canvas) and no `--pbim-pill` at all — yet `var(--pbim-pill)` is used for
+  a border radius in the kit's own `.pbim-chip`, `.pbim-badge` and `.pbim-fchip`
+  and in this module's `.pay-fitbtn`. An undefined custom property makes the
+  whole declaration invalid, so those radii silently resolve to 0 across the
+  product. Pre-existing and product-wide; recorded here so the next phase reads
+  the token file before borrowing a name from a neighbouring rule.
+- L7 (P1): **the shared axis's own note says "1 people".** `_lane_axis`
+  (`pb_pay/models/pb_pay_bands.py`) builds one sentence for every count, which
+  is GR42's trap in the one place GR42 did not sweep, and it is visible on
+  p9clone the moment a band holds a single outlier. Vietnamese hides it (there
+  is no plural), so an English-only walk is the only thing that finds it. The
+  browser-side tail sentences added by this phase branch on `count === 1` and
+  say "1 person". Server-side, so out of scope for a browser-only phase, and
+  carried as an owner debt.
+- L8 (P1): **a refused `move_edge` still raises the undo bar.** `endDrag` writes
+  `state.undo` from whatever the server answered, and a refusal ("The lowest
+  amount has to stay under the highest one.") is an answer — so the foot bar
+  reads "Band moved." above a sentence saying it was not. Pre-existing, seen
+  live while proving the drag, untouched by this phase.
 
 ## Phase log
 
-_Appended by each phase report._
+- P1 — "Open this band out" — designed and BUILT 2026-09-09
+  (`LOOK_P1_OPEN_THIS_BAND_OUT.md`). Status: **COMPLETE**.
+  `pb_pay` 19.0.3.2.0 live on p9clone, payobook, abm and payobook_template; the
+  module tree verified byte-identical to the repository on the server
+  (`b5fab614…c7ab` both sides) and every manifest version verified against
+  `ir_module_module.latest_version` on all four. No other module touched: this
+  phase is browser-only inside `pb_pay`, with no model, schema, migration or
+  server method added.
+
+  **THE HERO: a band that was a smear unrolls under the cursor.** On the
+  owner's own "Construction · level 2 · Vietnam" — 544 people, 6.6M to 11M ₫ on
+  an axis reaching 136M ₫ — the band occupied **37 px of a 1,053 px track
+  (3.49%)** and drew its people as nine marks. Opened out it fills **70.83%**
+  of the track in **67** marks, with a ruler under it in its own money, a
+  hairline above it showing which 4.9% of the shared scale this is, and one
+  sentence saying out loud that its width no longer compares with its
+  neighbours. **544 people are drawn in both states and the chips read
+  "57 below" / "82 above" in both.**
+
+  Three ways in and one way out, all proven live: hover opens after 180 ms and
+  leaving closes after 140 ms (nothing at 120 ms, open by 320 ms, still open
+  80 ms after leaving, closed by 280 ms), all of it behind
+  `(hover: hover) and (pointer: fine)` so a touch screen gets the button and
+  nothing else; the button pins; a drag opens and pins. Escape closes it, as
+  the outermost rung of the existing ladder. **The pin is not remembered
+  between visits and no new localStorage key was added.**
+
+  `band_picture.js` learned that an axis has two ends: `binPeople` and
+  `dodgeDots` take the axis OBJECT, `axisSpan` is the one guarded definition of
+  its width, and the new `bandAxis` works out a band's own scale from the wages
+  the browser already holds — containing the band, not flattened by one
+  outlier, padded and floored at zero, never degenerate, both tails counted,
+  and deterministic. `band_picture_check.mjs` went from **13 checks to 34**.
+
+  The drag freezes its ruler at the press with 30% headroom AND anchors it so
+  the grabbed grip does not move (L3): measured, the grip stays under a
+  stationary cursor and travels 151 px for a 150 px hand. An edge dragged past
+  the end of the picture reached **13.4M ₫** where the picture ended at 12.7M,
+  and the axis recomputed on release. Arrows step by 1% of the DRAWN span
+  (10 px) and Shift by 5% (53 px) — thirteen times finer under zoom than on the
+  shared axis. Undo restored all three numbers exactly, twice.
+
+  The ruler may not print the same label twice: it takes its figures from the
+  span, drops to fewer ticks rather than repeat itself, and stops rounding
+  altogether if two ends still cannot be told apart. Proven on a constructed
+  6.60M–6.68M band (**6.595M · 6.618M · 6.640M · 6.662M · 6.685M ₫** where one
+  decimal would print "6.6M" five times) and on real abm data (a 14-person band
+  at 11.10M–13.90M ₫). The same rule now governs the mark labels (L4).
+
+  **Tests.** 111 `pb_pay` tests on p9clone, **0 failed and 0 errors**. The
+  wider run over **248 tests** (`pb_pay` 111, `pb_group` 54, `pb_contracts` 48,
+  `pb_budget` 39, `pb_hub` 34) reports **3 failures and 0 errors**, and all
+  three are the p9clone data drift the GROUP ledger has recorded since P6a
+  (`pb_contracts` ×2, `pb_group` `test_t9`): zero regressions.
+
+  **Vietnamese** is complete: 780 of 780 exported terms, 0 English survivors, 0
+  fuzzy entries, 0 lost placeholders, 0 entries missing their `#. module:`
+  comment (GR5), the word "Odoo" in no translation, and the freshly exported
+  `.pot` header rewritten off the platform's own name (WF27).
+
+  **Browser.** Walked on p9clone, payobook and abm at 1440 and 390, in English
+  and Vietnamese, over all fifteen numbered tests. Screenshots:
+  `docs/handovers/look_p1_shots/`. Report: `docs/handovers/LOOK_P1_REPORT.md`.
+
+  The p9clone rehearsal — 21 accepted bands, 11 families, 30 job links, two
+  constructed thin-data bands and one contract temporarily raised to ₫700M —
+  was undone and DELETED afterwards and verified gone; payobook, abm and
+  payobook_template carry **0 bands, 0 families and 0 job links** and still
+  open on the suggestion. Nothing was written to production beyond the module
+  upgrade.
+
+  Owner debts: the payobook administrator password in the GROUP ledger is still
+  wrong (GR24) and so is abm's (WF15) — P1 used one temporary
+  `look.p1@payobook.com` on p9clone (4338), payobook (4427) and abm (262), all
+  archived again at the end of the phase; the shared axis's own note still says
+  "1 people" (L7); a refused band move still raises an undo bar reading "Band
+  moved." (L8); the `pbim` kit still has no dark palette (GR38); 2 commits made
+  and NOT pushed (~106 now waiting on `19.1`).
