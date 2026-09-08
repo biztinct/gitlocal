@@ -24,7 +24,7 @@ so Cycle 2 onwards builds hubs instead of copying a shell.
     from Option B's rail tracker. C1 ships the component and its props; real
     period data arrives in Cycle 2.
   * `HubPalette` — ⌘K, mounted app-wide through the `pb_hub_palette` service and
-    the Odoo overlay container (W43). Entries come from the
+    the platform's overlay container (W43). Entries come from the
     `pb_hub_palette` registry, group-gated with the cached `user.hasGroup`.
     Mission Control and Formula Studio keep their OWN ⌘K: the global one yields
     to any surface that registers a root selector in `pb_hub_palette_yield`.
@@ -41,7 +41,7 @@ registry, flat fills (W1/W2/W3).
     # 19.0.1.2.0 — IA Cycle 6: restriction parity between the ⌘K palette and
     # the rail. A door the sidebar padlocks is padlocked here too, and answers
     # the same upsell instead of navigating.
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.8.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

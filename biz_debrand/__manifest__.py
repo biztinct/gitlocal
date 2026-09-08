@@ -2,7 +2,22 @@
 # License LGPL-3.
 {
     "name": "Business Debranding",
-    "version": "19.0.2.4.0",
+    "description": """
+One knob that puts your brand everywhere a person can see it.
+
+Set the brand name, website and colour in General Settings and this layer
+applies them across the backend, the login page, the browser tab and its icon,
+the assistant, the website and portal, emails, the notification banner, the
+copyright line and the database manager page. It carries no project-specific
+dependency and no name of its own: an unconfigured install says so out loud
+rather than pretending to be somebody.
+
+Seeding runs on install, on every upgrade and on every Save, and it is safe to
+repeat. Nothing in the platform's own source is edited. The engineering README
+beside this file explains how it is put together and what it deliberately
+leaves alone.
+""",
+    "version": "19.0.2.4.1",
     "category": "Debranding",
     "summary": "Portable white-label layer: replaces every user-visible vendor "
                "reference with a configurable brand. No project dependencies.",

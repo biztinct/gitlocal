@@ -6,12 +6,13 @@
 Payobook Sidebar
 ================
 A modern, role-aware left navigation that becomes the primary nav for the
-Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
+Payobook payroll suite. The platform's own top menu sections are hidden; the
+systray
 (notifications, user menu) is preserved.
 
 - Data-driven sections & items (pb.sidebar.section / pb.sidebar.item)
-- Items map to existing Odoo actions (action XML-IDs)
-- Role-aware via standard Odoo security groups (groups_id)
+- Items map to existing screens (action XML-IDs)
+- Role-aware via the standard security groups (groups_id)
 - Lucide SVG icons, Indigo solid theme (pairs with pb_theme)
 ''',
     # 19.0.3.0.0 — IA redesign Cycle 5: THE RAIL CUTOVER. Five sections, eight
@@ -21,7 +22,7 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
     # says this is not an increment: the rail a user opens tomorrow is not the
     # rail they closed today.
     # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes.
-    'version': '19.0.3.2.1',
+    'version': '19.0.3.2.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

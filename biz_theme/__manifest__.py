@@ -7,7 +7,7 @@
         =====================================
 
         Superset of the proven health19 + Payobook theme stacks, packaged for
-        reuse in any Odoo 19 CE application.
+        reuse in any application built on this platform.
 
         - Design tokens: SCSS !default palette + CSS custom properties (--vu-*)
         - Runtime theming: biz.theme model, preset gallery, Theme Studio client
@@ -26,7 +26,7 @@
         - Developer-mode rail: `?debug=` is honoured for system administrators
           only (kill-switch: biz_theme.debug_rail = off)
     ''',
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',

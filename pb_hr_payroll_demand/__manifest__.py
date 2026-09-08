@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workforce Demand Planning',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Capability mapping, role analysis, and workforce demand planning with interactive dashboards',
     'description': """
@@ -15,7 +15,7 @@
         * Interactive dashboard with heatmaps, cards, and drilldowns
         * Budget variance tracking and automation helpers
 
-        Inspired by the Workforce Planning Toolkit while adapted for Odoo 16 CE.
+        Inspired by the Workforce Planning Toolkit, adapted for this system.
     """,
     'depends': [
         'base',
