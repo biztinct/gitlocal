@@ -377,7 +377,150 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
   reads "Band moved." above a sentence saying it was not. Pre-existing, seen
   live while proving the drag, untouched by this phase.
 
+- L9 (P2): **a `_t()` handed a DICTIONARY writes ONE per cent sign; two of
+  them print literally.** WF24 is already in the ledger and this phase got it
+  wrong anyway, because the SAME sentence exists on both sides of this
+  feature: Python's `_()` interpolates with `%` and needs `%%` to emit one
+  sign, and the browser's `_t()` with keyword arguments does not. The bar
+  labels rendered "0.00%% to 0.30%%" on a live screen and nothing warned. The
+  trap has a second half: the msgid then CONTAINS `%%`, so fixing the sentence
+  is a catalogue change as well as a code change.
+- L10 (P2): **the mark under the hand is exempt from every drawing cap.** A
+  bin seven pixels tall can only hold a few rings before they draw over each
+  other, so a busy bin rings the first few of its standouts — and dragging a
+  ringed mark INTO such a bin took the mark off the picture in the middle of
+  the gesture. The hand was still moving something and there was nothing on
+  screen to see. Any picture that thins itself out has to make an exception
+  for whatever is currently being held.
+- L11 (P2): **a mark drawn at the middle of its own BIN cannot follow a
+  hand.** The bins are the shape and a gesture is not: drawn at its bin's
+  centre, the dragged mark answered a 120 px hand in seven-pixel steps. The
+  held mark is drawn at the exact figure the hand is holding and everything
+  else at its bin's centre — measured afterwards, 29/59/89/119 px for
+  30/60/90/120.
+- L12 (P2): **`overflow: hidden` on a plot deletes the numbers up its own
+  side.** The tick labels are positioned OUTSIDE the plot box (`left: -46px`,
+  in the margin the plot leaves for them), so the one property that stops a
+  mark escaping the picture also clips the ruler that gives the picture its
+  meaning — and the DOM still reports five tick elements, so only a screenshot
+  finds it.
+- L13 (P2): **the five words a rating is CALLED were module-level literals**
+  (`SCALE_WORDS` in `pb_pay_guidance.py`), which is T24's trap: the extractor
+  never sees such a string as a Python term, so "Needs support / Doing well /
+  Very strong / Outstanding" printed in English under every column of a fully
+  Vietnamese picture. They are now written inside `_()` in a dict keyed by
+  value, with the order in a separate ladder (GR59). Fixed in this phase.
+- L14 (P2): **a stored chip is frozen in the language of whoever last
+  recomputed it.** `recompute_chips` writes the sentence for each row into
+  `pb.pay.review.line.chips`, so a review recomputed by an English reader
+  shows an English reason to a Vietnamese one — on the worksheet, in "what
+  stops approval", and now in the calibration list. Pre-existing since P6b and
+  surfaced by this phase; the fix is to store the ingredients and build the
+  sentence at read time, which is a change to every chip. Owner debt.
+- L15 (P2): **a substring replacement across a `.po` misses any msgid the
+  exporter WRAPPED across lines.** Renaming a long term looked like it worked —
+  the short ones changed, the wrapped one did not, and the screen went on
+  printing English with the catalogue looking correct in a grep. Rebuild a
+  catalogue from a fresh `odoo-bin i18n export` and carry the translations
+  across by msgid; never edit msgids in place.
+- L16 (P2): **a synthetic `KeyboardEvent` dispatched on `window` from the
+  automation does not reach a capture-phase `useExternalListener` the way a
+  real key press does.** Escape looked broken during a scripted walk and was
+  perfect under `press_key`. Prove a keyboard contract with the browser's own
+  key press; a dispatched event is only good enough for handlers bound to the
+  element itself.
+
+
 ## Phase log
+
+- P2 — "Everybody on the calibration picture" — designed and BUILT 2026-09-09
+  (`LOOK_P2_EVERYBODY_ON_THE_PICTURE.md`). Status: **COMPLETE**.
+  `pb_pay` 19.0.3.3.0 live on p9clone, payobook, abm and payobook_template;
+  the module tree verified byte-identical to the repository on the server
+  (`fc1ec439…079a` both sides) and every manifest version verified against
+  `ir_module_module.latest_version` on all four. No other module touched.
+
+  **THE HERO: four and a half thousand people open as five honest
+  distributions, and nobody is hidden behind anybody.** The picture used to
+  slice `review.line_ids[:900]` and say "The picture draws the first 900
+  people." — the sentence rule 16 forbids, on the screen where it matters
+  most. It now changes SHAPE: along each score's column the rise axis is cut
+  into bins a few pixels tall by the same `binValues` the band picture uses;
+  a bin with a handful of people draws each of them, a busier one draws a bar
+  whose length says how many and which opens the named list of who is
+  standing there. On the rehearsal review of **4,510 people the picture draws
+  117 bars and 102 marks, and the sum of what every drawn element accounts
+  for is 4,510 exactly**, measured in the browser against a SQL count.
+  Proven again at **902** and at **12**.
+
+  **And it gained the three things a calibration meeting asks for**: the
+  shape of each score's spread; a tick at the MIDDLE of each score's rises
+  (0.12 · 2.99 · 4.46 · 5.92 · 7.94% on the rehearsal, and it was not there
+  at all before); and every drawable limit as a dashed line across the whole
+  picture with its own sentence in a legend underneath. A column carries how
+  many people HOLD that score and how many are DRAWN in it separately,
+  because they differ by exactly the people nobody has scored — ten of them
+  on the rehearsal, 152 of 152 on AB Mauri.
+
+  **`calibration()` is now one `search_read` of four columns and carries no
+  names at all** (R4/R5): 12 people **3–4 ms**, 902 people **20–34 ms**,
+  4,510 people **85–119 ms** — five times the people for less than the
+  162 ms the old 902 cost. The re-read after a drag is 87–124 ms, so no
+  partial merge was needed. `calibration_people(review_id, rating, low, high)`
+  is the new read-back, modelled on `people_between`, with a half-open bin so
+  nobody is listed under two bars and the two ends of the axis closed so
+  nobody clamped onto an end is lost.
+
+  **The gesture.** The mark under the hand is drawn at the exact figure the
+  hand is holding and is exempt from every thinning rule (L10, L11): measured,
+  29/59/89/119 px of mark for 30/60/90/120 px of hand, the person's name on
+  the foot bar, 6.94% and 8.75% read back from the database to the digit.
+  Arrows move a rise by a tenth of a point and Shift by half a point;
+  3.0 → 3.1 → 3.3 → 3.8 → 3.7, Enter, and the row reads back 3.7. Escape
+  cancels the gesture first, then the panel, then the drawers, then leaves
+  calibration.
+
+  **L7 and L8 are closed**, each in its own commit and each proven: the
+  shared money scale now reads "**1 person** is paid more than 136M ₫ and
+  sits on the right-hand edge" on the owner's own lane (constructed live on
+  p9clone and reverted), and a band move the server REFUSES shows the
+  server's own sentence and raises no undo bar.
+
+  **Tests.** 117 `pb_pay` tests on p9clone, **0 failed and 0 errors** (P1's
+  baseline was 111; this phase added six and rewrote five). The wider run
+  over **262 tests** (`pb_pay`, `pb_group` 54, `pb_contracts` 48, `pb_budget`
+  39, `pb_hub` 34) reports **3 failures and 0 errors**, all three the
+  p9clone data drift recorded since GROUP P6a: zero regressions.
+  `band_picture_check.mjs` went from **34 checks to 44**.
+
+  **Vietnamese** is complete: 812 terms, 0 empty, 0 fuzzy, 0 lost
+  placeholders, 0 entries missing their `#. module:` comment, the word
+  "Odoo" in no translation, and the `.pot` header rewritten off the
+  platform's own name. The five words a score is CALLED were module-level
+  literals and printed English under every column of an otherwise Vietnamese
+  picture (L13) — fixed in `scale_words`.
+
+  **Browser.** Walked on p9clone, payobook and abm at 1440 and 390, in
+  English and Vietnamese, over all fifteen numbered tests, with no console
+  errors. Screenshots: `docs/handovers/look_p2_shots/`. Report:
+  `docs/handovers/LOOK_P2_REPORT.md`.
+
+  Everything created to test with was undone and the removal verified: four
+  p9clone reviews (4,510 · 902 · 12 · 0), 18,000 copied scores, one guidance
+  grid, a spread written over 4,510 rows and one contract temporarily raised
+  to ₫900M are all gone and the contract is back at ₫129,800,000; the
+  eleven-minute 902-person review on payobook and the 152-person one on abm
+  are gone; payobook_template was never written to. All four databases carry
+  **0 reviews, 0 worksheet rows, 0 guidance grids and 0 bands**, and
+  payobook keeps only the two performance scores GROUP P6b kept.
+
+  Owner debts: the payobook administrator password in the GROUP ledger is
+  still wrong (GR24) and so is abm's (WF15) — P2 used one temporary
+  `look.p2@payobook.com` on p9clone (4388), payobook (4428) and abm (263),
+  all archived again at the end of the phase; a reason written on a review
+  row is frozen in the language it was written in (L14); nobody has scored
+  anybody on AB Mauri; the `pbim` kit still has no dark palette (GR38);
+  5 commits made and NOT pushed (116 now waiting on `19.1`).
 
 - P1 — "Open this band out" — designed and BUILT 2026-09-09
   (`LOOK_P1_OPEN_THIS_BAND_OUT.md`). Status: **COMPLETE**.
