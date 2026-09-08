@@ -130,7 +130,11 @@ export const MODES = [
     { id: "employee", icon: "users", label: _t("Employee & contract ⇆"),
       hint: _t("Copy what a scheme computes onto employee and contract records — "
                + "and read them back when a pay run finds nothing in the file or feed.") },
-    { id: "scheme", icon: "layers", label: _t("Scheme assignment"),
+    // TIDY P1 — the tab says what the owner (and every other door) calls it.
+    // ⌘K rows 3330/3340 and `pb_scheme_map`'s own board have always said
+    // "Who is paid by what"; the tab said "Scheme assignment", so the one
+    // screen had two names and neither of them was searchable from the other.
+    { id: "scheme", icon: "layers", label: _t("Who is paid by what"),
       hint: _t("Say which payroll scheme pays each part of the workforce.") },
     { id: "cycle", icon: "refresh", label: _t("Mid ↔ End cycle"),
       hint: _t("Carry a mid-cycle advance's components into the end-cycle run.") },

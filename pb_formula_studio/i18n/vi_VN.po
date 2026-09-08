@@ -7479,9 +7479,9 @@ msgstr "sơ đồ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
-#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:132
-msgid "Scheme assignment"
-msgstr "Phân công Đề án"
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:136
+msgid "Who is paid by what"
+msgstr "Ai được trả lương theo phương án nào"
 
 #. module: pb_formula_studio
 #. odoo-javascript
