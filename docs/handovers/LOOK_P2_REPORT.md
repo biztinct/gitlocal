@@ -255,13 +255,15 @@ payobook (id **4428**) and abm (id **263**).
 | `dc7b4dff` | `fix(pb_pay): a band move that was refused no longer says "Band moved."` (L8) | `static/src/js/pay_hub.js`, `tests/test_static_contract.py` |
 | `9121c7c3` | `fix(pb_pay): a score's word is a word, and a reader gets it in their language` | `models/pb_pay_guidance.py` |
 | `7f5611b3` | `feat(pb_pay): everybody on the calibration picture` | the server, the browser, the stylesheet, the template, the tests, both catalogues, the manifest |
+| `8f3ea035` | `docs(look): the P2 phase log, eight new gotchas and the browser evidence` | `LOOK_P2_REPORT.md`, `LOOK_LEDGER.md`, `look_p2_shots/` |
 
-Explicit `git add` of named files every time. **Not pushed** — there are now **116**
+Explicit `git add` of named files every time. **Not pushed** — there are now **120**
 commits waiting on `19.1` and pushing is the owner's decision.
 
 ## 11. What the owner has to decide
 
-1. **Push, or keep holding.** **116** commits sit unpushed on `19.1`.
+1. **Push, or keep holding.** **120** commits sit unpushed on `19.1`, six of them
+   this phase's.
 2. **The `payobook` administrator password in the ledger is still wrong (GR24), and so
    is `abm`'s (WF15).** This phase used one temporary `look.p2@payobook.com` on p9clone
    (4388), payobook (4428) and abm (263), **all three archived again at the end**.
