@@ -263,6 +263,96 @@ tree-hash verification, never `pkill -f odoo-bin`).
   string in the Apps list. Recorded here as an owner debt, not fixed in P2.
 
 ## Phase log
+- P3 — "Budget, month by month" — designed and BUILT 2026-09-08
+  (`TIDY_P3_BUDGET_MONTH_BY_MONTH.md`). Status: **COMPLETE**.
+  `pb_budget` 19.0.2.1.0 live on p9clone, payobook, abm and
+  payobook_template, together with the seventeen manifests of deliverable 1e
+  (`pb_explorer` 19.0.2.2.1, `pb_hub` 19.0.1.8.1, `pb_mission` 19.0.1.8.1,
+  `pb_sidebar` 19.0.3.2.2, `pb_wf_kit` 19.0.1.5.2, `pb_login_language`
+  19.0.1.0.1, `pb_hr_payroll_demand` 19.0.1.0.1, `biz_theme` 19.0.1.5.1, the
+  six per-country payroll modules at 16.0.1.0.1, and — found while checking the
+  work, T21 — `pb_zoho_sso` 19.0.1.0.1, `biz_debrand` 19.0.2.4.1 and
+  `biz_mail_debrand` 19.0.1.0.1). All eighteen module trees verified
+  byte-identical to the repository on the server, and every installed
+  manifest version verified against `ir_module_module.latest_version` on all
+  four databases.
+
+  **A MONTH IS A SCOPE, EQUAL TO THE YEAR (rule 13).** Under the numbers sits
+  a strip of thirteen chips — "Whole year" and the twelve months — and each
+  month already answers, before anything is clicked, how far its spend fell
+  either side of its budget: a two-tone micro bar (the track is the budget,
+  the fill is what was spent, coloured by that month's own word) and a signed
+  percentage. The month we are in is marked "now"; a month that has not
+  started with nothing on it says "not yet"; a month with no budget says "no
+  budget". Click one and the WHOLE board becomes that month — the KPIs and
+  their captions, the headline, every tile's numbers, words and colours, the
+  notch, the drill, the table and both exports — in one motion, because the
+  functions are sorted by the YEAR's spend whatever the scope and keyed by
+  their own id, so no tile moves and the bars travel to their new figures.
+  ← and → walk the strip, Escape and the "Whole year" chip always come back,
+  and `pb_focus: "month:2026-03"` (or `"month:current"`) opens the lens
+  already scoped, through a new ⌘K row **"Budget this month"** at 3005.
+
+  **The month has its own five words** — Over budget, Close to budget, Under
+  budget, No budget set, Not yet — decided against the budget itself with a
+  ±5% band rather than against a calendar there is none of inside a month, and
+  **its own five sentences**: "March: 4 of 9 functions went over budget;
+  Retail by the most (…)" / "March came in … under budget across 9 functions."
+  / "March has no budget set; … was spent." / "September so far: 0% of the
+  month's budget spent with 23% of the month gone." / "December has not
+  started." Every one was produced live on real data during the walk.
+
+  **The drill answers "compared with what".** `get_function(month=…)` adds a
+  row of four small figures — this month, the month before, the same month a
+  year ago and the monthly average — and the year-ago cell is BLANK with the
+  words "no data" rather than a zero that would read as a collapse. The
+  twelve-bar chart keeps the whole year with the chosen month lit; the
+  departments, the expenses and the rows underneath are that month's, with
+  Variance and Variance % columns toned by the same five tones.
+
+  **The spreadsheet and the PDF are the month too.** `build(month=…)` names
+  the sheet "Budget June 2026", drops the twenty-four month columns nobody
+  opened a month's file to read, and answers with Variance and Variance %
+  where the year's answers with Used and Year gone. Verified live on payobook:
+  `Budget June 2026 People.xlsx` and `Budget June 2026 People.pdf`.
+
+  **Vietnamese, from nothing.** `pb_budget` had NO catalogue at all before
+  this phase. It now ships `i18n/pb_budget.pot` and `i18n/vi_VN.po` with
+  **287 terms, 0 English survivors, 0 fuzzy entries, 0 lost placeholders, 0
+  entries missing their `#. module:` comment (GR5) and the word "Odoo" in no
+  translation** — and the month names come from babel in the reader's own
+  language ("Thg 1" … "Thg 12", "Tháng 6 2026"), not from `strftime` in the
+  server's locale.
+
+  **Deliverable 1e.** No `pb_*` or `biz_*` manifest `name`, `summary` or
+  `description` contains "Odoo" any more, proven by a repo-wide `ast` sweep —
+  and, going one level deeper than the spec asked, **no `pb_*`/`biz_*` row of
+  `ir_module_module` on any of the four databases** does either (T21: three
+  modules had no description key at all and the platform was printing their
+  README).
+
+  **Tests.** 39 `pb_budget` test methods on p9clone (29 post-install),
+  **0 failed and 0 errors**, including the eleven new ones covering T1–T6.
+  The wider run over 228 tests (`pb_budget` 39, `pb_explorer` 55, `pb_hub` 34,
+  `pb_insights_hub` 40, `pb_mission` 58, `pb_sidebar` 48) reports **3
+  failures, all three in `pb_sidebar` and all three pre-existing** — the
+  retired planning module's dead xmlids, recorded as T19 — and nothing else:
+  zero regressions.
+
+  **Browser.** B1–B9 walked on p9clone, payobook and abm at 1440 and 390, in
+  English and Vietnamese, with no console errors. Screenshots:
+  `docs/handovers/tidy_p3_shots/`.
+
+  Owner debts: the payobook administrator password in the GROUP ledger is
+  still wrong (GR24) and so is abm's (WF15) — P3 used one temporary
+  `tidy.p3@payobook.com` on each of p9clone (4327), payobook (4426) and abm
+  (261), all archived again at the end of the phase; the three `pb_sidebar`
+  test failures (T19) are a `pb_hr_workforce_planning` retirement debt and
+  belong to whoever finishes GR49's sweep; the six per-country payroll modules
+  were patch-bumped for tidiness but are `uninstallable` on all four databases
+  (16.0 manifests on a 19.0 server) and their summaries were never printed
+  anywhere; the `pbim` kit still has no dark palette (GR38).
+
 - P2 — "The band picture" — designed and BUILT 2026-09-08
   (`TIDY_P2_THE_BAND_PICTURE.md`). Status: **COMPLETE**.
   `pb_pay` 19.0.3.1.0 live on p9clone, payobook, abm and payobook_template,
@@ -507,3 +597,66 @@ Fixed-term contractor check**; contract names **"P10 fixed-term — X" →
 "Fixed-term — X"**; the connected system's identifiers `RIZE… → ZH…`; and the
 three alert addresses that belong to a mailbox rather than a person
 (`hr.alerts@`, `digest.check@`, `finance.team@example.com`).
+
+- T19 (P3): **three `pb_sidebar` tests have been failing since GROUP P6b
+  retired the legacy planning module, and nobody had run them.** P3 bumped
+  `pb_sidebar` for one line of manifest prose, which upgraded it on p9clone
+  for the first time since the retirement — and `test_ia_c5` immediately
+  reported seven RETIRED rail items pointing at
+  `pb_hr_workforce_planning.action_wfp_*` xmlids that no longer resolve, plus
+  two highlight-matrix rows naming `wfp_dashboard`. The failures are pure data
+  drift (`git diff pb_sidebar` in this phase is four lines of a manifest) and
+  they predate P3 — but they are the second half of GR49: uninstalling a module
+  leaves everything that POINTS at it behind, and a retired-item row is exactly
+  such a pointer. A retirement needs its sweep to include the rail's own
+  retired list and the tests that pin it. Recorded as an owner debt, not fixed
+  in this phase (the rail is an explicit non-goal here).
+- T20 (P3): **an upgrade fails outright if one of the module's own crons is
+  RUNNING.** `-u pb_budget` on p9clone died in `data/ir_cron.xml` with
+  "This cron task is currently being executed and may not be modified" —
+  Odoo 19's `ir.cron.write` refuses a row another worker holds, and the whole
+  registry load rolls back with a `ParseError` naming the XML rather than the
+  reason. On p9clone the live service stays up during a rehearsal (the ledger's
+  own ritual), so the nightly budget job had just fired. Nothing was applied
+  and a plain retry a minute later worked. Any module that ships an `ir.cron`
+  can lose an upgrade to a coin toss: read the failure for the phrase
+  "currently being executed" before believing the XML is broken.
+- T21 (P3): **a module with no `description` key in its manifest has its
+  README printed in the Apps list.** T18's sweep read the manifests and found
+  thirteen; the DATABASE had sixteen, because `pb_zoho_sso`, `biz_debrand` and
+  `biz_mail_debrand` declare no description at all and the platform falls back
+  to `README.md` — engineering prose that names the vendor in almost every
+  paragraph, and in two of the three the whole subject IS the vendor. A
+  repo-wide grep of manifest strings cannot see this; the query that can is
+  `SELECT … FROM ir_module_module WHERE description::text ILIKE '%odoo%'`,
+  run per database. Fixed by giving each of the three an explicit plain-English
+  `description` (which overrides the README for the Apps list and leaves the
+  README on disk for engineers).
+- T22 (P3): **`env.company` is not necessarily inside `env.companies`, and a
+  fixture built in the first is invisible to a facade that reads the second.**
+  On p9clone the superuser's `company_id` is 1 and its `company_ids` is `[5]`,
+  so three budget rows created in "the current company" were not found by
+  `get_board` — which scopes explicitly to `env.companies.ids` — and two brand
+  new tests failed with an empty board and nothing in the log. A test fixture
+  for any company-scoped facade builds in a company the FACADE can see
+  (`self.env.companies`), never in `self.env.company`.
+- T23 (P3): **setting `disabled` on the button the keyboard is standing on
+  blurs it, and the next arrow press goes nowhere.** The month strip disabled
+  every chip while the board re-scoped; after ← or → the focused chip was
+  disabled mid-flight, lost focus, and the following press was read against a
+  state that still said "the whole year", which sent it to January from
+  anywhere. Two lessons in one: a busy guard belongs in the HANDLER, not on the
+  control's `disabled` attribute; and where the keyboard is standing is the
+  element that has FOCUS (`ev.target.closest('[data-month]')`), never the
+  application state that a keypress is about to change.
+- T24 (P3): **`_()` in a Python facade cannot translate a literal that lives
+  in a list somewhere else.** `type_label` read its three words out of the
+  `BUDGET_TYPES` tuples and passed them to `env._()`. The extractor never sees
+  such a string as a Python term, so the catalogue carried it only as a
+  `model:ir.model.fields.selection` entry — which is imported into the database
+  column and is invisible to `code_translations`, the dictionary `_()` reads.
+  The three chips at the top of the Budget board therefore printed "People /
+  HR operations / Admin" on a screen where the headline, every tone word and
+  every KPI caption were already Vietnamese. GR58 from the server side: the
+  literal is written HERE, inside the `_()` call, in a dict keyed by the value
+  (GR59), and the `.pot` then carries a `code:…py` occurrence for it.
