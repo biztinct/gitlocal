@@ -265,12 +265,12 @@ payobook (id **4428**) and abm (id **263**).
 | `7f5611b3` | `feat(pb_pay): everybody on the calibration picture` | the server, the browser, the stylesheet, the template, the tests, both catalogues, the manifest |
 | `8f3ea035` | `docs(look): the P2 phase log, eight new gotchas and the browser evidence` | `LOOK_P2_REPORT.md`, `LOOK_LEDGER.md`, `look_p2_shots/` |
 
-Explicit `git add` of named files every time. **Not pushed** — there are now **120**
-commits waiting on `19.1` and pushing is the owner's decision.
+Explicit `git add` of named files every time. **Not pushed** — with this report's own commits the phase made **nine**, and **123**
+now wait on `19.1` and pushing is the owner's decision.
 
 ## 11. What the owner has to decide
 
-1. **Push, or keep holding.** **120** commits sit unpushed on `19.1`, six of them
+1. **Push, or keep holding.** **123** commits sit unpushed on `19.1`, nine of them
    this phase's.
 2. **The `payobook` administrator password in the ledger is still wrong (GR24), and so
    is `abm`'s (WF15).** This phase used one temporary `look.p2@payobook.com` on p9clone
