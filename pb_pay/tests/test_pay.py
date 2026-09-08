@@ -281,6 +281,43 @@ class TestPayBands(TransactionCase):
         self.assertFalse(answer['ok'])
         self.assertIn('under the highest', answer['sentence'])
 
+    def test_t04_a_refused_move_never_answers_as_though_it_had_moved(self):
+        """LOOK L8, the server half. A refusal carries no `saved` and no
+        `previous`, so the screen has nothing to build an undo bar out of and
+        nothing was written to put back."""
+        before = (self.band.min_amount, self.band.max_amount)
+        answer = self.Bands.move_edge(self.band.id, 'min', 99999.0, False)
+        self.assertFalse(answer['ok'])
+        self.assertNotIn('saved', answer)
+        self.assertNotIn('previous', answer)
+        self.assertEqual((self.band.min_amount, self.band.max_amount), before,
+                         'a refused move wrote to the band')
+
+    # ------------------------------------------------ LOOK L7: "1 people"
+    def test_look_l7_the_shared_axis_says_1_person_not_1_people(self):
+        """The lane's own tail note is built for every count from one frame,
+        which is GR42's trap in the one place GR42 did not sweep. Vietnamese
+        hides it (there is no plural), so only an English reading finds it."""
+        bands = [{'min': 1000.0, 'mid': 2000.0, 'max': 3000.0}]
+        wages = [{'wage': 1000.0 + (n * 10)} for n in range(100)]
+        one = self.Bands._lane_axis(
+            bands, wages + [{'wage': 90_000_000.0}], self.currency)
+        self.assertEqual(one['beyond'], 1)
+        self.assertIn('1 person is paid more', one['note'])
+        self.assertNotIn('1 people', one['note'])
+
+        many = self.Bands._lane_axis(
+            bands,
+            wages + [{'wage': 90_000_000.0}, {'wage': 91_000_000.0},
+                     {'wage': 92_000_000.0}],
+            self.currency)
+        self.assertEqual(many['beyond'], 3)
+        self.assertIn('3 people are paid more', many['note'])
+
+        none = self.Bands._lane_axis(bands, wages, self.currency)
+        self.assertEqual(none['beyond'], 0)
+        self.assertEqual(none['note'], '')
+
     # ================================================================== T5
     def test_t05_place_a_hire_lands_inside_the_band(self):
         self._person('Pay P1', 1800.0)
