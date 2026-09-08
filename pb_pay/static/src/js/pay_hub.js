@@ -1378,12 +1378,25 @@ export class PbPayScreen extends Component {
                 drag.bandId, drag.side,
                 drag.side === "min" ? drag.min : drag.max, false,
             ]);
+            this.state.preview = null;
+            // A REFUSAL IS AN ANSWER, and it is not a move. The server hands
+            // back `ok: false` with its own sentence — "The lowest amount has
+            // to stay under the highest one." — and writes nothing; raising
+            // the undo bar over that reads "Band moved." above a sentence
+            // saying it was not, and offers to take back something that never
+            // happened (LOOK ledger L8).
+            if (answer && answer.ok === false) {
+                this.notif.add(answer.sentence || _t(
+                    "That band could not be moved."), { type: "warning" });
+                await this.load();
+                this.state.busy = false;
+                return;
+            }
             this.state.undo = {
                 bandId: drag.bandId, before: drag.before,
                 sentence: answer.sentence, count: answer.count,
                 cost: answer.cost_label,
             };
-            this.state.preview = null;
             await this.load();
         } catch (error) {
             this._fail(error, _t("That band could not be moved."));
