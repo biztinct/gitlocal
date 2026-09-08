@@ -128,6 +128,14 @@ whatever came back. It now reads `answer.ok` first, shows the server's own sente
 warning, reads the board again so the picture returns to what is actually saved, and
 raises no undo bar. Two tests, one each side.
 
+**Said plainly: this one is proven by test, not by a live sighting, and here is why.**
+The picture itself cannot produce the refusal today — `_applyEdge` clamps the lowest
+edge to the highest one before anything is sent (`drag.min = Math.min(rounded,
+drag.max)`), so a drag can never ask the server to cross them. The refusal is reachable
+when the band moves underneath the hand: a second reader moving the OTHER edge in the
+same second, or a call from anywhere but this picture. That is exactly what made it a
+latent defect rather than a daily one — and it is now correct if it is ever reached.
+
 ## 6. Tests
 
 **`pb_pay` on p9clone: 117 tests, 0 failed, 0 errors** (P1's baseline was 111; this
