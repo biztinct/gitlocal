@@ -54,6 +54,11 @@ EDIT_GROUPS = (
 WATCH_AT = 5.0
 OVER_AT = 15.0
 CALM_AT = -10.0
+#: How far a MONTH may sit from its own budget before the board calls it over
+#: or under it. A month is not a year: there is no calendar to run ahead of
+#: inside one, so the comparison is simply the budget, and five points either
+#: way is the noise of which side of a month-end a pay run happened to land.
+MONTH_BAND = 5.0
 
 
 class PbBudget(models.AbstractModel):
@@ -140,16 +145,163 @@ class PbBudget(models.AbstractModel):
                    - first - relativedelta(months=elapsed)).days or 30
         return round(min(100.0, (elapsed + (today.day - 1) / days_in) / 12 * 100), 1)
 
+    # =============================================================== a month
+    # A MONTH IS A SCOPE, EQUAL TO THE YEAR (TIDY rule 13). Everything the year
+    # view has — the numbers, the words, the colours, the drill and the
+    # exports — the month view has too, and the seven helpers below are the
+    # whole of the difference. A month never becomes a filter on a year board:
+    # it replaces the year as the thing every figure is about.
+    @api.model
+    def _month_keys(self, fy):
+        return [m.strftime('%Y-%m') for m in self._fy_months(fy)]
+
+    @api.model
+    def _month_date(self, key):
+        """`'2026-03'` -> 1 March 2026, or None if it is not a month at all."""
+        try:
+            year, mon = str(key or '').split('-')
+            return date(int(year), int(mon), 1)
+        except (TypeError, ValueError):
+            return None
+
+    @api.model
+    def _month_bounds(self, key):
+        first = self._month_date(key)
+        return first, first + relativedelta(months=1) - relativedelta(days=1)
+
+    @api.model
+    def _month_in_fy(self, month, fy):
+        """The month asked for, only if it is one of THIS year's twelve.
+
+        A deep link that names a month outside the year on screen is not an
+        error and never an empty board: it falls back to the whole year, which
+        is what the reader would have got had they not been sent anywhere.
+        `'current'` is accepted so a saved link or a palette row can mean
+        "this month" for ever rather than rotting on a fixed date.
+        """
+        key = str(month or '').strip()
+        if key == 'current':
+            key = fields.Date.context_today(self).strftime('%Y-%m')
+        return key if key in self._month_keys(fy) else ''
+
+    @api.model
+    def _month_state(self, key, today=None):
+        today = today or fields.Date.context_today(self)
+        first, last = self._month_bounds(key)
+        if today < first:
+            return 'future'
+        if today > last:
+            return 'past'
+        return 'current'
+
+    @api.model
+    def _month_pace(self, key, today=None):
+        """How far through the MONTH the calendar is, 0–100.
+
+        A finished month is 100 and a month that has not started is 0, so the
+        notch on every tile means the same thing it means on the year board:
+        where the calendar is.
+        """
+        today = today or fields.Date.context_today(self)
+        first, last = self._month_bounds(key)
+        if today > last:
+            return 100.0
+        if today < first:
+            return 0.0
+        return round((today.day - 1) / last.day * 100, 1)
+
+    @api.model
+    def _month_words(self, day, full=False):
+        """The month's name in the reader's own language.
+
+        `strftime` answers in the SERVER's locale, which is C — so a Vietnamese
+        reader would be shown "Mar" on a screen where every other word is
+        Vietnamese. Babel ships with the platform and knows the reader's.
+        """
+        try:
+            from babel.dates import format_date
+            return format_date(
+                day, 'LLLL' if full else 'LLL',
+                locale=(self.env.context.get('lang') or 'en_US'))
+        except Exception:                          # noqa: BLE001
+            return day.strftime('%B' if full else '%b')
+
+    @api.model
+    def _month_title(self, day):
+        """"March 2026" — the month AND the year, because a budget figure with
+        no year on it is the one number nobody can check."""
+        try:
+            from babel.dates import format_date
+            return format_date(day, 'LLLL y',
+                               locale=(self.env.context.get('lang') or 'en_US'))
+        except Exception:                          # noqa: BLE001
+            return day.strftime('%B %Y')
+
+    @api.model
+    def _short(self, value):
+        """The same four characters the tiles print.
+
+        A sentence about a tile and the tile itself must never disagree, so the
+        server rounds money for a SENTENCE exactly as the browser rounds it for
+        a tile — 12.4bn in both places, never 12.4bn beside 12,431,004,522.
+        """
+        val = float(value or 0.0)
+        size = abs(val)
+        if size >= 1e12:
+            return '%.1ftn' % (val / 1e12)
+        if size >= 1e9:
+            return '%.1fbn' % (val / 1e9)
+        if size >= 1e6:
+            return '%.1fm' % (val / 1e6)
+        if size >= 1e3:
+            return '%.0fk' % (val / 1e3)
+        return '{:,.0f}'.format(val)
+
+    @api.model
+    def _scope(self, fy, month, today=None):
+        """What this whole board is ABOUT: a year, or one month of it."""
+        today = today or fields.Date.context_today(self)
+        if month:
+            first = self._month_date(month)
+            return {
+                'kind': 'month',
+                'key': month,
+                'label': self._month_title(first),
+                'name': self._month_words(first, full=True),
+                'short': self._month_words(first),
+                'state': self._month_state(month, today),
+            }
+        now = self._current_fy(today)
+        return {
+            'kind': 'year',
+            'key': str(fy),
+            'label': self._fy_label(fy),
+            'name': self._fy_label(fy),
+            'short': self._fy_label(fy),
+            'state': ('current' if fy == now
+                      else ('past' if fy < now else 'future')),
+        }
+
     # ================================================================ the board
     @api.model
     def get_board(self, fy=None, budget_type='manpower', currency='report',
-                  row_cap=None):
-        """Everything the lens draws, in one call."""
+                  row_cap=None, month=None):
+        """Everything the lens draws, in one call.
+
+        `month` is `'YYYY-MM'` inside the year, `'current'`, or nothing. When
+        it is set the whole payload is about that month — the totals, the
+        words, the colours and the pace — while every function keeps its twelve
+        `months[]` so the spark on its tile still draws the whole year with the
+        chosen one lit.
+        """
         self._require()
         fy = int(fy or self._current_fy())
         btype = budget_type if budget_type in TYPE_KEYS else 'manpower'
         months = self._fy_months(fy)
         cap = int(row_cap or BOARD_ROW_CAP)
+        mkey = self._month_in_fy(month, fy)
+        scope = self._scope(fy, mkey)
+        pace = self._month_pace(mkey) if mkey else self._pace(fy)
 
         # The company clause is EXPLICIT, not left to the record rule. The rule
         # is the boundary for every other route into the model; a facade that
@@ -178,7 +330,7 @@ class PbBudget(models.AbstractModel):
                 len(currencies), presentation.name if presentation else '')
 
         payload = self._matrix(rows, months, mode, presentation, one_currency,
-                               self._pace(fy))
+                               pace, mkey, scope['state'])
         payload.update({
             'ok': True,
             'fy': fy,
@@ -189,10 +341,14 @@ class PbBudget(models.AbstractModel):
             'type_options': [{'key': k, 'label': type_label(k, self.env)}
                              for k, _l in BUDGET_TYPES],
             'months': [{'key': m.strftime('%Y-%m'),
-                        'label': m.strftime('%b'),
+                        'label': self._month_words(m),
+                        'name': self._month_words(m, full=True),
+                        'title': self._month_title(m),
                         'year': m.year,
                         'date': str(m)} for m in months],
-            'pace': self._pace(fy),
+            'scope': scope,
+            'pace': pace,
+            'year_pace': self._pace(fy),
             'truncated': truncated,
             'can_edit': self.can_edit(),
             'last_sync': self.env['ir.config_parameter'].sudo().get_param(
@@ -200,7 +356,11 @@ class PbBudget(models.AbstractModel):
             'forced_currency_note': forced,
         })
         payload['kpis'] = self._kpis(payload)
-        payload['headline'] = self._headline(payload)
+        # The strip is sent WHATEVER the scope: its whole job is to show, before
+        # anybody clicks anything, which months ran hot.
+        payload['strip'] = self._strip(payload)
+        payload['headline'] = (self._headline_month(payload) if mkey
+                               else self._headline(payload))
         return payload
 
     @api.model
@@ -221,8 +381,17 @@ class PbBudget(models.AbstractModel):
 
     # --------------------------------------------------------------- the grid
     @api.model
-    def _matrix(self, rows, months, mode, presentation, one_currency, pace):
-        """Rows -> functions -> departments -> months, in ONE currency."""
+    def _matrix(self, rows, months, mode, presentation, one_currency, pace,
+                month='', state='current'):
+        """Rows -> functions -> departments -> months, in ONE currency.
+
+        WHEN A MONTH IS THE SCOPE the function and department totals count only
+        that month's rows, and the twelve `months[]` are still filled from every
+        row: the tile's numbers become March's, its spark stays the year's.
+        A function with nothing in the chosen month keeps its TILE — a board
+        whose tiles rearrange themselves on every click is a board nobody can
+        learn, and "this function spent nothing in March" is an answer.
+        """
         keys = [m.strftime('%Y-%m') for m in months]
         funcs, unknown, unbudgeted = {}, 0, 0
         cur = (one_currency if mode == 'local' and one_currency
@@ -233,24 +402,29 @@ class PbBudget(models.AbstractModel):
             if not known:
                 unknown += 1
                 continue
-            if rec.pb_unbudgeted:
-                unbudgeted += 1
             fid = rec.pb_function_id.id or (rec.department_id.id or 0)
             fname = (rec.pb_function_id.name or rec.department_id.name
                      or _('Whole company'))
             f = funcs.setdefault(fid, {
                 'id': fid, 'name': fname, 'budget': 0.0, 'spent': 0.0,
+                'year_budget': 0.0, 'year_spent': 0.0,
                 'months': {k: {'budget': 0.0, 'spent': 0.0} for k in keys},
                 'departments': {}, 'unbudgeted': False, 'rows': 0,
             })
+            mkey = rec.period_month.strftime('%Y-%m')
+            f['year_budget'] += budget
+            f['year_spent'] += spent
+            if mkey in f['months']:
+                f['months'][mkey]['budget'] += budget
+                f['months'][mkey]['spent'] += spent
+            if month and mkey != month:
+                continue
+            if rec.pb_unbudgeted:
+                unbudgeted += 1
             f['budget'] += budget
             f['spent'] += spent
             f['rows'] += 1
             f['unbudgeted'] = f['unbudgeted'] or rec.pb_unbudgeted
-            mkey = rec.period_month.strftime('%Y-%m')
-            if mkey in f['months']:
-                f['months'][mkey]['budget'] += budget
-                f['months'][mkey]['spent'] += spent
             did = rec.department_id.id or 0
             d = f['departments'].setdefault(did, {
                 'id': did,
@@ -266,16 +440,29 @@ class PbBudget(models.AbstractModel):
             f['months'] = [dict(f['months'][k], key=k) for k in keys]
             f['departments'] = sorted(
                 f['departments'].values(), key=lambda d: -abs(d['spent']))
+            for d in f['departments']:
+                d['variance'] = round(d['spent'] - d['budget'], 2)
+                d['variance_pct'] = (round(d['variance'] / d['budget'] * 100, 1)
+                                     if d['budget'] else 0.0)
             f['budget'] = round(f['budget'], 2)
             f['spent'] = round(f['spent'], 2)
+            f['year_budget'] = round(f['year_budget'], 2)
+            f['year_spent'] = round(f['year_spent'], 2)
             f['left'] = round(f['budget'] - f['spent'], 2)
+            f['variance'] = round(f['spent'] - f['budget'], 2)
+            f['variance_pct'] = (round(f['variance'] / f['budget'] * 100, 1)
+                                 if f['budget'] else 0.0)
             f['burn'] = round(f['spent'] / f['budget'] * 100, 1) if f['budget'] else 0.0
             f['pace'] = pace
             f['gap'] = round(f['burn'] - pace, 1) if f['budget'] else 0.0
-            f['tone'] = self._tone(f)
-            f['tone_label'] = self._tone_label(f)
+            f['tone'] = (self._tone_month(f, state) if month else self._tone(f))
+            f['tone_label'] = (self._tone_label_month(f) if month
+                               else self._tone_label(f))
             out.append(f)
-        out.sort(key=lambda f: (-abs(f['spent']), f['name']))
+        # SORTED BY THE YEAR, ALWAYS. In year scope that is what it always was;
+        # in month scope it is what keeps every tile where the reader left it
+        # when they clicked a month.
+        out.sort(key=lambda f: (-abs(f['year_spent']), f['name']))
 
         return {
             'functions': out,
@@ -334,6 +521,36 @@ class PbBudget(models.AbstractModel):
             'calm': _('Behind the year'),
         }.get(f['tone'], '')
 
+    @api.model
+    def _tone_month(self, f, state='past'):
+        """The five words a MONTH can be, and the number beside each of them.
+
+        A month has no calendar to run ahead of — the whole of it is either
+        spent or it is not — so the comparison is the budget itself, and the
+        answer is over it, close to it, or under it. A month that has not
+        happened yet says so instead of reading as a triumph of thrift.
+        """
+        if state == 'future' and not f['spent']:
+            return 'notyet'
+        if not f['budget']:
+            return 'none'
+        band = abs(f['budget']) * MONTH_BAND / 100.0
+        if f['spent'] > f['budget'] + band:
+            return 'over'
+        if abs(f['spent'] - f['budget']) <= band:
+            return 'onpace'
+        return 'calm'
+
+    @api.model
+    def _tone_label_month(self, f):
+        return {
+            'over': _('Over budget'),
+            'onpace': _('Close to budget'),
+            'calm': _('Under budget'),
+            'none': _('No budget set'),
+            'notyet': _('Not yet'),
+        }.get(f['tone'], '')
+
     # ---------------------------------------------------------------- the KPIs
     @api.model
     def _kpis(self, payload):
@@ -352,7 +569,60 @@ class PbBudget(models.AbstractModel):
             'hot': len([f for f in funcs if f['tone'] in ('over', 'watch')]),
             'unbudgeted': len([f for f in funcs if f['tone'] == 'none']),
             'functions': len(funcs),
+            # A month is answered by its variance, not by its pace: how far the
+            # spend fell either side of the budget, in money and in points.
+            'variance': round(spent - budget, 2),
+            'variance_pct': (round((spent - budget) / budget * 100, 1)
+                             if budget else 0.0),
+            'over': len([f for f in funcs if f['tone'] == 'over']),
         }
+
+    # ----------------------------------------------------------- the strip
+    @api.model
+    def _strip(self, payload, today=None):
+        """Twelve chips that answer before anybody clicks anything.
+
+        Built from the SAME functions the board underneath is drawing, so the
+        strip and the tiles can never disagree — and summed from every
+        function's twelve months, so it is the whole year whichever month is
+        in scope.
+        """
+        today = today or fields.Date.context_today(self)
+        totals = {m['key']: {'budget': 0.0, 'spent': 0.0}
+                  for m in payload['months']}
+        for f in payload['functions']:
+            for mo in f['months']:
+                if mo['key'] in totals:
+                    totals[mo['key']]['budget'] += mo['budget'] or 0.0
+                    totals[mo['key']]['spent'] += mo['spent'] or 0.0
+        out = []
+        for m in payload['months']:
+            cell = {'budget': round(totals[m['key']]['budget'], 2),
+                    'spent': round(totals[m['key']]['spent'], 2)}
+            state = self._month_state(m['key'], today)
+            cell['tone'] = self._tone_month(cell, state)
+            out.append({
+                'key': m['key'],
+                'label': m['label'],
+                'name': m['name'],
+                'title': m['title'],
+                'budget': cell['budget'],
+                'spent': cell['spent'],
+                'left': round(cell['budget'] - cell['spent'], 2),
+                'variance': round(cell['spent'] - cell['budget'], 2),
+                'variance_pct': (round((cell['spent'] - cell['budget'])
+                                       / cell['budget'] * 100, 1)
+                                 if cell['budget'] else 0.0),
+                # The micro bar's fill, capped so a month that spent three
+                # times its budget does not draw over the chip beside it.
+                'share': (round(min(100.0, cell['spent'] / cell['budget'] * 100), 1)
+                          if cell['budget'] else 0.0),
+                'has_budget': bool(cell['budget']),
+                'tone': cell['tone'],
+                'tone_label': self._tone_label_month(cell),
+                'state': state,
+            })
+        return out
 
     @api.model
     def _headline(self, payload):
@@ -386,33 +656,143 @@ class PbBudget(models.AbstractModel):
             burn='{:,.0f}'.format(k['burn']), year=payload['fy_label'],
             pace='{:,.0f}'.format(k['pace']))
 
+    @api.model
+    def _headline_month(self, payload):
+        """One sentence about ONE month, in ONE expression each (R34).
+
+        Five shapes, and which one a reader gets is the answer to a different
+        question every time: has it started, was anything budgeted, is it still
+        running, did anybody go over, and by how much did the rest come in.
+        """
+        k = payload['kpis']
+        scope = payload['scope']
+        cur = payload['currency']['code']
+        overs = [f for f in payload['functions'] if f['tone'] == 'over']
+        if scope['state'] == 'future' and not k['spent']:
+            return _("%s has not started.", scope['name'])
+        if not payload['functions']:
+            return _("Nothing has been budgeted for %s yet.", scope['label'])
+        if not k['budget']:
+            return _(
+                "%(month)s has no budget set; %(spent)s %(cur)s was spent.",
+                month=scope['name'], spent=self._short(k['spent']), cur=cur)
+        if scope['state'] == 'current':
+            return _(
+                "%(month)s so far: %(burn)s%% of the month's budget spent with "
+                "%(pace)s%% of the month gone.",
+                month=scope['name'], burn='{:,.0f}'.format(k['burn']),
+                pace='{:,.0f}'.format(k['pace']))
+        if overs:
+            worst = max(overs, key=lambda f: f['variance'])
+            return _(
+                "%(month)s: %(n)s of %(total)s functions went over budget; "
+                "%(name)s by the most (%(amount)s %(cur)s, %(pct)s%% over).",
+                month=scope['name'], n=len(overs), total=k['functions'],
+                name=worst['name'], amount=self._short(worst['variance']),
+                cur=cur, pct='{:,.0f}'.format(worst['variance_pct']))
+        if k['left'] >= 0:
+            return _(
+                "%(month)s came in %(amount)s %(cur)s under budget across "
+                "%(n)s.", month=scope['name'], amount=self._short(k['left']),
+                cur=cur, n=counted(k['functions'], _("1 function"),
+                                   _("%s functions")))
+        return _(
+            "%(month)s came in %(amount)s %(cur)s over budget across %(n)s.",
+            month=scope['name'], amount=self._short(-k['left']), cur=cur,
+            n=counted(k['functions'], _("1 function"), _("%s functions")))
+
     # =============================================================== the drill
     @api.model
     def get_function(self, function_id, fy=None, budget_type='manpower',
-                     currency='report'):
-        """One function, opened: its months, its departments, its expenses."""
+                     currency='report', month=None):
+        """One function, opened: its months, its departments, its expenses.
+
+        In a month scope everything below the twelve-bar chart is that month's
+        — the departments, the expenses, the rows — and the chart itself keeps
+        the whole year with the chosen month lit, because the question a person
+        opens a month to ask is almost always "compared with what".
+        """
         self._require()
         fy = int(fy or self._current_fy())
         btype = budget_type if budget_type in TYPE_KEYS else 'manpower'
         months = self._fy_months(fy)
-        board = self.get_board(fy, btype, currency)
+        board = self.get_board(fy, btype, currency, None, month)
+        scope = board['scope']
+        mkey = scope['key'] if scope['kind'] == 'month' else ''
         func = next((f for f in board['functions']
                      if f['id'] == int(function_id or 0)), None)
         if not func:
             return {'ok': False,
                     'message': _("That function has nothing budgeted for "
-                                 "%s.", self._fy_label(fy))}
-        return {
+                                 "%s.", scope['label'])}
+        out = {
             'ok': True,
             'function': func,
             'currency': board['currency'],
             'months': board['months'],
+            'scope': scope,
             'pace': board['pace'],
-            'expenses': self._expenses(function_id, months, btype),
+            'expenses': self._expenses(function_id, months, btype, mkey),
             'rows': self._rows(function_id, months, btype,
                                board['currency']['mode'],
-                               self._board_currency(board['currency'])),
+                               self._board_currency(board['currency']), mkey),
         }
+        if mkey:
+            out['compare'] = self._compare(function_id, mkey, btype, board,
+                                           func)
+        return out
+
+    # ---------------------------------------------------------- how it compares
+    @api.model
+    def _compare(self, function_id, key, btype, board, func):
+        """Four small figures beside the month: this one, the one before it,
+        the same one a year ago, and what a month of this year is worth on
+        average. The year-ago figure is left BLANK when there is no year ago —
+        an absent comparison is a fact, and inventing a zero for it would make
+        every first year of a budget look like a collapse.
+        """
+        mode = board['currency']['mode']
+        cur = self._board_currency(board['currency'])
+        first = self._month_date(key)
+        prev = first - relativedelta(months=1)
+        ago = first - relativedelta(years=1)
+        drawn = len([m for m in func['months']
+                     if m['budget'] or m['spent']]) or 12
+        return {
+            'this': {
+                'has': True, 'key': key,
+                'label': self._month_words(first, full=True),
+                'budget': func['budget'], 'spent': func['spent'],
+            },
+            'last': self._compare_cell(function_id, prev, btype, mode, cur),
+            'last_year': self._compare_cell(function_id, ago, btype, mode, cur),
+            'average': {
+                'has': True, 'key': '',
+                'label': _("Monthly average"),
+                'budget': round(func['year_budget'] / drawn, 2),
+                'spent': round(func['year_spent'] / drawn, 2),
+            },
+        }
+
+    @api.model
+    def _compare_cell(self, function_id, first, btype, mode, cur):
+        recs = self.env['pb.budget.line'].search([
+            ('pb_function_id', '=', int(function_id or 0)),
+            ('pb_budget_type', '=', btype),
+            ('period_month', '=', first),
+            ('company_id', 'in', self.env.companies.ids),
+        ], limit=BOARD_ROW_CAP)
+        cell = {'has': bool(recs), 'key': first.strftime('%Y-%m'),
+                'label': self._month_title(first), 'budget': 0.0, 'spent': 0.0}
+        for rec in recs:
+            budget, spent, known = self._amounts(rec, mode, cur)
+            if not known:
+                continue
+            cell['budget'] += budget
+            cell['spent'] += spent
+        cell['budget'] = round(cell['budget'], 2)
+        cell['spent'] = round(cell['spent'], 2)
+        return cell
 
     @api.model
     def _board_currency(self, block):
@@ -425,14 +805,16 @@ class PbBudget(models.AbstractModel):
             [('name', '=', block['code'])], limit=1)
 
     @api.model
-    def _expenses(self, function_id, months, btype):
+    def _expenses(self, function_id, months, btype, month=''):
         if btype == 'manpower':
             return []
+        first = self._month_date(month) if month else months[0]
+        last = first if month else months[-1]
         recs = self.env['pb.budget.expense'].search([
             ('function_id', '=', int(function_id or 0)),
             ('budget_type', '=', btype),
-            ('period_month', '>=', months[0]),
-            ('period_month', '<=', months[-1]),
+            ('period_month', '>=', first),
+            ('period_month', '<=', last),
             ('company_id', 'in', self.env.companies.ids),
         ], order='spend_date desc', limit=EXPENSE_ROW_CAP)
         return [{
@@ -446,12 +828,14 @@ class PbBudget(models.AbstractModel):
         } for r in recs]
 
     @api.model
-    def _rows(self, function_id, months, btype, mode, cur):
+    def _rows(self, function_id, months, btype, mode, cur, month=''):
+        first = self._month_date(month) if month else months[0]
+        last = first if month else months[-1]
         recs = self.env['pb.budget.line'].search([
             ('pb_function_id', '=', int(function_id or 0)),
             ('pb_budget_type', '=', btype),
-            ('period_month', '>=', months[0]),
-            ('period_month', '<=', months[-1]),
+            ('period_month', '>=', first),
+            ('period_month', '<=', last),
             ('company_id', 'in', self.env.companies.ids),
         ], order='period_month, department_id', limit=BOARD_ROW_CAP)
         out = []
@@ -460,7 +844,7 @@ class PbBudget(models.AbstractModel):
             out.append({
                 'id': rec.id,
                 'month': rec.period_month.strftime('%Y-%m'),
-                'month_label': rec.period_month.strftime('%b %Y'),
+                'month_label': self._month_title(rec.period_month),
                 'department': rec.department_id.name or _('Whole company'),
                 'budget': budget, 'spent': spent,
                 'left': round(budget - spent, 2),
@@ -561,8 +945,14 @@ class PbBudget(models.AbstractModel):
 
     @api.model
     def export_board(self, fy=None, budget_type='manpower', currency='report',
-                     kind='xlsx'):
-        """The matrix as a workbook, or the year as a page."""
+                     kind='xlsx', month=None):
+        """The matrix as a workbook, or the scope as a page.
+
+        A month on screen is a month in the file: what a person exports is what
+        they were looking at, or the export is a second answer to the question
+        they had already had answered.
+        """
         self._require()
         return self.env['pb.budget.export'].build(
-            fy=fy, budget_type=budget_type, currency=currency, kind=kind)
+            fy=fy, budget_type=budget_type, currency=currency, kind=kind,
+            month=month)

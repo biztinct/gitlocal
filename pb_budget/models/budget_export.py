@@ -34,16 +34,23 @@ class PbBudgetExport(models.TransientModel):
     fy = fields.Integer(string='Year')
     budget_type = fields.Char(string='Budget for')
     currency_mode = fields.Char(string='Reported in', default='report')
+    #: `'YYYY-MM'` when the reader was looking at one month, empty for the year.
+    #: It is a stored FIELD rather than a call argument because the PDF re-reads
+    #: the board while it renders, in another transaction, from this record.
+    month = fields.Char(string='Month')
 
     # ---------------------------------------------------------------- entry
     @api.model
     def build(self, fy=None, budget_type='manpower', currency='report',
-              kind='xlsx'):
-        board = self.env['pb.budget'].get_board(fy, budget_type, currency)
+              kind='xlsx', month=None):
+        board = self.env['pb.budget'].get_board(fy, budget_type, currency,
+                                                None, month)
+        scope = board['scope']
         rec = self.create({
             'fy': board['fy'],
             'budget_type': board['budget_type'],
             'currency_mode': board['currency']['mode'],
+            'month': scope['key'] if scope['kind'] == 'month' else '',
         })
         if kind == 'pdf':
             return rec._pdf(board)
@@ -55,7 +62,8 @@ class PbBudgetExport(models.TransientModel):
         whatever the screen looked like when the button was pressed."""
         self.ensure_one()
         return self.env['pb.budget'].get_board(
-            self.fy, self.budget_type, self.currency_mode)
+            self.fy, self.budget_type, self.currency_mode, None,
+            self.month or None)
 
     # ------------------------------------------------------------- the sheet
     def _xlsx(self, board):
@@ -69,9 +77,13 @@ class PbBudgetExport(models.TransientModel):
                 "This system cannot build spreadsheets at the moment. Use the "
                 "PDF, or ask an administrator to look at it."))
 
+        scope = board['scope']
+        by_month = scope['kind'] == 'month'
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = _('Budget %s') % board['fy_label']
+        # "Budget March 2026" — a sheet is named after what is ON it, so a
+        # month's file cannot be mistaken for the year's once it is open.
+        ws.title = (_('Budget %s') % scope['label'])[:31]
 
         head = Font(bold=True, color='FFFFFF')
         fill = PatternFill('solid', fgColor='6355C7')
@@ -80,15 +92,22 @@ class PbBudgetExport(models.TransientModel):
 
         cur = board['currency']['code']
         ws.cell(row=1, column=1,
-                value=_('%(type)s budget %(year)s — every figure in %(cur)s',
+                value=_('%(type)s budget %(scope)s — every figure in %(cur)s',
                         type=type_label(board['budget_type'], self.env),
-                        year=board['fy_label'], cur=cur)).font = bold
+                        scope=scope['label'], cur=cur)).font = bold
         ws.cell(row=2, column=1, value=board['headline'])
 
-        cols = [_('Function'), _('Department'), _('Budget'), _('Spent'),
-                _('Left'), _('Used %'), _('Year gone %'), _('Reading')]
-        cols += [m['label'] + ' ' + _('budget') for m in board['months']]
-        cols += [m['label'] + ' ' + _('spent') for m in board['months']]
+        # A month's sheet answers with the VARIANCE where the year's answers
+        # with the pace, and drops the twenty-four month columns that would all
+        # be about months this file is not for.
+        if by_month:
+            cols = [_('Function'), _('Department'), _('Budget'), _('Spent'),
+                    _('Variance'), _('Variance %'), _('Reading')]
+        else:
+            cols = [_('Function'), _('Department'), _('Budget'), _('Spent'),
+                    _('Left'), _('Used %'), _('Year gone %'), _('Reading')]
+            cols += [m['label'] + ' ' + _('budget') for m in board['months']]
+            cols += [m['label'] + ' ' + _('spent') for m in board['months']]
         for i, label in enumerate(cols, start=1):
             c = ws.cell(row=4, column=i, value=label)
             c.font = head
@@ -97,10 +116,14 @@ class PbBudgetExport(models.TransientModel):
 
         row = 5
         for f in board['functions']:
-            vals = [f['name'], _('All'), f['budget'], f['spent'], f['left'],
-                    f['burn'], f['pace'], f['tone_label']]
-            vals += [m['budget'] for m in f['months']]
-            vals += [m['spent'] for m in f['months']]
+            if by_month:
+                vals = [f['name'], _('All'), f['budget'], f['spent'],
+                        f['variance'], f['variance_pct'], f['tone_label']]
+            else:
+                vals = [f['name'], _('All'), f['budget'], f['spent'], f['left'],
+                        f['burn'], f['pace'], f['tone_label']]
+                vals += [m['budget'] for m in f['months']]
+                vals += [m['spent'] for m in f['months']]
             for i, v in enumerate(vals, start=1):
                 cell = ws.cell(row=row, column=i, value=v)
                 if i in (3, 4, 5) or i > 8:
@@ -109,9 +132,14 @@ class PbBudgetExport(models.TransientModel):
                     cell.font = bold
             row += 1
             for d in f['departments']:
-                vals = ['', d['name'], d['budget'], d['spent'],
-                        round(d['budget'] - d['spent'], 2), '', '',
-                        _('No budget set') if d['unbudgeted'] else '']
+                if by_month:
+                    vals = ['', d['name'], d['budget'], d['spent'],
+                            d['variance'], d['variance_pct'],
+                            _('No budget set') if d['unbudgeted'] else '']
+                else:
+                    vals = ['', d['name'], d['budget'], d['spent'],
+                            round(d['budget'] - d['spent'], 2), '', '',
+                            _('No budget set') if d['unbudgeted'] else '']
                 for i, v in enumerate(vals, start=1):
                     cell = ws.cell(row=row, column=i, value=v)
                     if i in (3, 4, 5):
@@ -121,8 +149,11 @@ class PbBudgetExport(models.TransientModel):
         k = board['kpis']
         row += 1
         ws.cell(row=row, column=1, value=_('Total')).font = bold
-        for i, v in ((3, k['budget']), (4, k['spent']), (5, k['left']),
-                     (6, k['burn']), (7, k['pace'])):
+        totals = (((3, k['budget']), (4, k['spent']), (5, k['variance']),
+                   (6, k['variance_pct'])) if by_month
+                  else ((3, k['budget']), (4, k['spent']), (5, k['left']),
+                        (6, k['burn']), (7, k['pace'])))
+        for i, v in totals:
             cell = ws.cell(row=row, column=i, value=v)
             cell.font = bold
             if i in (3, 4, 5):
@@ -140,8 +171,8 @@ class PbBudgetExport(models.TransientModel):
         return {
             'ok': True,
             'file_b64': base64.b64encode(out.read()).decode(),
-            'filename': _('Budget %(year)s %(type)s.xlsx',
-                          year=board['fy_label'],
+            'filename': _('Budget %(scope)s %(type)s.xlsx',
+                          scope=board['scope']['label'],
                           type=type_label(board['budget_type'], self.env)),
             'mimetype': ('application/vnd.openxmlformats-officedocument.'
                          'spreadsheetml.sheet'),
@@ -168,8 +199,8 @@ class PbBudgetExport(models.TransientModel):
         return {
             'ok': True,
             'file_b64': base64.b64encode(pdf).decode(),
-            'filename': _('Budget %(year)s %(type)s.pdf',
-                          year=board['fy_label'],
+            'filename': _('Budget %(scope)s %(type)s.pdf',
+                          scope=board['scope']['label'],
                           type=type_label(board['budget_type'], self.env)),
             'mimetype': 'application/pdf',
             'rows': len(board['functions']),
@@ -201,6 +232,8 @@ class PbBudgetExport(models.TransientModel):
         """
         self.ensure_one()
         board = board or self.board()
+        if board['scope']['kind'] == 'month':
+            return self._narrative_month(board)
         lines = []
         for f in board['functions']:
             if f['tone'] == 'none':
@@ -237,4 +270,44 @@ class PbBudgetExport(models.TransientModel):
                     "of the year.", name=f['name'],
                     burn='{:,.0f}'.format(f['burn']),
                     pace='{:,.0f}'.format(f['pace'])))
+        return lines
+
+    def _narrative_month(self, board):
+        """The same lines for ONE month, and the comparison is the budget.
+
+        A month has no calendar inside it to be ahead of, so every sentence
+        here says the same two things instead: what was spent against what was
+        set aside, and which side of it that landed.
+        """
+        self.ensure_one()
+        month = board['scope']['name']
+        lines = []
+        for f in board['functions']:
+            if f['tone'] == 'notyet':
+                continue
+            if f['tone'] == 'none':
+                lines.append(_(
+                    "%(name)s spent %(spent)s in %(month)s with no budget set "
+                    "against it.", name=f['name'],
+                    spent='{:,.0f}'.format(f['spent']), month=month))
+                continue
+            if f['tone'] == 'over':
+                lines.append(_(
+                    "%(name)s went %(amount)s over budget in %(month)s — "
+                    "%(pct)s%% more than was set aside.", name=f['name'],
+                    amount='{:,.0f}'.format(f['variance']), month=month,
+                    pct='{:,.0f}'.format(f['variance_pct'])))
+                continue
+            if f['tone'] == 'onpace':
+                lines.append(_(
+                    "%(name)s came in close to its %(month)s budget — "
+                    "%(spent)s against %(budget)s.", name=f['name'],
+                    month=month, spent='{:,.0f}'.format(f['spent']),
+                    budget='{:,.0f}'.format(f['budget'])))
+                continue
+            lines.append(_(
+                "%(name)s came in %(amount)s under its %(month)s budget — "
+                "%(pct)s%% less than was set aside.", name=f['name'],
+                amount='{:,.0f}'.format(abs(f['variance'])), month=month,
+                pct='{:,.0f}'.format(abs(f['variance_pct']))))
         return lines

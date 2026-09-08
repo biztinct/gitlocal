@@ -32,6 +32,12 @@ WHAT THIS MODULE IS
     a training course or a recruitment agency cost, so those are `pb.budget.expense`
     rows — a date, a department, an amount, a note, a file — and they roll into
     their month's actuals exactly as payroll does.
+  * **A month is a scope, equal to the year.** Under the numbers sits a strip
+    of thirteen chips — the whole year, then the twelve months — and each month
+    already shows, before anything is clicked, how far its spend fell either
+    side of its budget. Click one and the entire board becomes that month: the
+    numbers, the words, the colours, the drill, the table and both exports.
+    The arrow keys walk the strip and Escape comes back.
   * **The Budget lens, and the heat view.** On the Insights mission: every
     function as a tile, coloured by how fast it is burning AGAINST THE CALENDAR
     rather than against zero, with the year's own position marked on each bar.
@@ -51,7 +57,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.2.0.1',
+    'version': '19.0.2.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -22,11 +22,24 @@
  * person who has asked their machine for less movement gets the finished board
  * on the first frame with nothing to recover from. No JavaScript decides that.
  *
+ * A MONTH IS A SCOPE, NOT A BAR (TIDY rule 13, phase P3).
+ *
+ * The strip under the numbers is thirteen chips — "Whole year" and the twelve
+ * months — and each month chip already answers, before anything is clicked,
+ * whether that month ran over its budget: a two-tone micro bar and a signed
+ * percentage. Click one and the WHOLE board becomes that month in one motion.
+ * The tiles keep their places (they are sorted by the YEAR's spend on the
+ * server, whatever the scope, and keyed by function id, so OWL moves nothing);
+ * only the numbers, the words, the fills and the notch change, and the fill
+ * has a width transition, so the board visibly re-scopes rather than blinking.
+ * Escape and "Whole year" always come back; ← and → walk the strip.
+ *
  * R1 — no `t-as` variable is named lt / gt / lte / gte / and / or / not / in.
  * R2 — every sentence is ONE expression; JavaScript has no implicit string
  * concatenation and a Python habit here kills the entire asset bundle.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, useExternalListener,
+         useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -41,6 +54,8 @@ export class PbBudgetBoard extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
 
+        this.stripRef = useRef("strip");
+
         this.state = useState({
             loaded: false,
             failed: "",
@@ -49,6 +64,9 @@ export class PbBudgetBoard extends Component {
             fy: 0,
             type: "manpower",
             currency: "report",
+            month: "",                     // "" = the whole year, else YYYY-MM
+            scoping: false,                // a month is being switched to
+            stripFocus: "",                // the chip the keyboard is standing on
             open: 0,                       // the function whose drill is open
             drill: null,
             drillBusy: false,
@@ -65,6 +83,20 @@ export class PbBudgetBoard extends Component {
             busy: false,
         });
 
+        // THE DEEP LINK, READ ONCE. `pb_focus: "month:2026-03"` arrives on the
+        // hub's action and the shell hands it to this lens because the lens
+        // says `wantsArrival`. A month outside the year on screen is not an
+        // error: the server answers with the whole year and the strip clears
+        // itself, so a stale bookmark lands somewhere real.
+        const arrival = this.props.arrival || {};
+        const asked = String(arrival.focus || "");
+        if (asked.startsWith("month:")) {
+            this.state.month = asked.slice(6);
+        }
+
+        useExternalListener(window, "keydown", (ev) => this.onKey(ev),
+                            { capture: true });
+
         onWillStart(async () => { await this.load(); });
     }
 
@@ -75,11 +107,17 @@ export class PbBudgetBoard extends Component {
         try {
             const board = await this.orm.call("pb.budget", "get_board", [
                 this.state.fy || null, this.state.type, this.state.currency,
+                null, this.state.month || null,
             ]);
             this.state.board = board;
             this.state.fy = board.fy;
             this.state.type = board.budget_type;
             this.state.currency = board.currency.mode;
+            // The server is the authority on what scope this board IS: it
+            // resolves "current", and it refuses a month that is not one of
+            // this year's twelve.
+            this.state.month = board.scope.kind === "month"
+                ? board.scope.key : "";
             this.state.failed = "";
         } catch (e) {
             // Reported, never swallowed into a decoration: a board that could
@@ -107,6 +145,219 @@ export class PbBudgetBoard extends Component {
     }
     get cur() {
         return (this.state.board && this.state.board.currency) || {};
+    }
+
+    // ============================================================ the month
+    get scope() {
+        return (this.state.board && this.state.board.scope)
+            || { kind: "year", key: "", label: "", name: "", state: "current" };
+    }
+
+    get strip() { return (this.state.board && this.state.board.strip) || []; }
+
+    get isMonth() { return this.scope.kind === "month"; }
+
+    /**
+     * The notch is WHERE THE CALENDAR IS, and a month that has not started has
+     * no calendar inside it yet — so it carries no notch at all rather than one
+     * pinned at zero, which reads as "nothing spent" and is a different claim.
+     */
+    get showNotch() {
+        return !(this.isMonth && this.scope.state === "future");
+    }
+
+    /** Every caption on the board, in one place, so the year and the month
+     *  cannot drift apart. ONE expression each (R2). */
+    get caps() {
+        if (!this.isMonth) {
+            return {
+                budget: _t("budget for the year"),
+                spent: _t("spent so far"),
+                left: _t("left"),
+                ratio: _t("money gone, year gone"),
+                hot: _t("functions running warm or worse"),
+            };
+        }
+        const name = this.scope.name;
+        return {
+            budget: _t("budget for %s", name),
+            spent: _t("spent in %s", name),
+            left: _t("left in %s", name),
+            ratio: _t("compared with the budget"),
+            hot: _t("functions over budget in %s", name),
+        };
+    }
+
+    /** The fifth number: warm-or-worse over a year, over budget in a month. */
+    get hotCount() {
+        return this.isMonth ? (this.kpis.over || 0) : (this.kpis.hot || 0);
+    }
+
+    /** What the notch on a tile means, in this scope. ONE expression (R2). */
+    paceTitle(f) {
+        if (!this.isMonth) {
+            return _t("The year is %s gone", this.pct(f.pace));
+        }
+        if (this.scope.state === "past") {
+            return _t("%s is finished", this.scope.name);
+        }
+        return _t("%s of %s has gone", this.pct(f.pace), this.scope.name);
+    }
+
+    /** The one line that says where you are. ONE expression (R2). */
+    get scopeLine() {
+        return _t("Every figure on this board is %s. Press Escape to go back to the whole year.", this.scope.label);
+    }
+
+    /** "+12%" / "−4%" — the minus is a real minus sign, not a hyphen. */
+    signed(n) {
+        const v = Math.round(Number(n) || 0);
+        return v > 0 ? `+${v}%` : `${String(v).replace("-", "−")}%`;
+    }
+
+    /** "Left" is not good news when there is none of it. A green tick over a
+     *  negative figure is the one thing on this board that could be misread at
+     *  a glance, so the icon and its colour change with the sign. */
+    get overspent() { return (Number(this.kpis.left) || 0) < 0; }
+
+    /** The short form with its sign — the same true minus sign the percentage
+     *  beside it uses, so one row does not mix two kinds of dash. */
+    signedShort(n) {
+        const v = Number(n) || 0;
+        return v > 0 ? `+${this.short(v)}` : `${this.short(v)}`.replace("-", "−");
+    }
+
+    /** What goes in a "left" slot: the plain short form, and a TRUE minus sign
+     *  when there is none left — so the tiles and the number above them do not
+     *  print two different kinds of dash for the same fact. */
+    leftText(value) {
+        const v = Number(value) || 0;
+        return v < 0 ? this.signedShort(v) : this.short(v);
+    }
+
+    /** Money with its sign, for a variance cell. */
+    signedMoney(n) {
+        const v = Math.round(Number(n) || 0);
+        const body = `${Math.abs(v).toLocaleString()} ${this.cur.code || ""}`;
+        return v > 0 ? `+${body}`.trim() : `−${body}`.trim();
+    }
+
+    /** A month cell of the expanded table, in the shape `varianceTone` reads. */
+    cell(mo) {
+        return { budget: mo.budget || 0, variance: (mo.spent || 0) - (mo.budget || 0) };
+    }
+
+    cellPct(mo) {
+        return mo.budget ? ((mo.spent || 0) - mo.budget) / mo.budget * 100 : 0;
+    }
+
+    /** Over budget is rose, under is teal, close to it is green. */
+    varianceTone(row) {
+        if (!row.budget) { return "none"; }
+        const band = Math.abs(row.budget) * 0.05;
+        if (row.variance > band) { return "over"; }
+        if (Math.abs(row.variance) <= band) { return "onpace"; }
+        return "calm";
+    }
+
+    /** What one chip says when a person hovers or focuses it. ONE expression. */
+    chipTitle(mo) {
+        if (mo.state === "future" && !mo.spent) {
+            return _t("%s has not started.", mo.title);
+        }
+        if (!mo.has_budget) {
+            return _t("%(month)s — no budget set, %(spent)s spent.",
+                      { month: mo.title, spent: this.money(mo.spent) });
+        }
+        return _t("%(month)s — %(spent)s spent of %(budget)s (%(tone)s).",
+                  { month: mo.title, spent: this.money(mo.spent),
+                    budget: this.money(mo.budget), tone: mo.tone_label });
+    }
+
+    /**
+     * A month chip is never DISABLED while the board is re-scoping: setting
+     * `disabled` on the button the keyboard is standing on blurs it, and the
+     * next arrow press then goes nowhere. The guard is here instead.
+     */
+    async setMonth(key) {
+        if (this.state.month === key || this.state.scoping) { return; }
+        this.state.month = key;
+        this.state.stripFocus = key;
+        // The board is NOT unmounted: `loaded` stays true, the tiles keep their
+        // keys and their places, and the numbers change under them. That is the
+        // whole motion.
+        this.state.open = 0;
+        this.state.drill = null;
+        this.state.scoping = true;
+        try {
+            await this.load();
+        } finally {
+            this.state.scoping = false;
+        }
+    }
+
+    async clearMonth() {
+        if (!this.state.month) { return; }
+        this.state.month = "";
+        this.state.stripFocus = "";
+        this.state.open = 0;
+        this.state.drill = null;
+        this.state.scoping = true;
+        try {
+            await this.load();
+        } finally {
+            this.state.scoping = false;
+        }
+    }
+
+    /** ← and → walk the strip; Enter and Space are the button's own job. */
+    async onStripKey(ev) {
+        if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") { return; }
+        const keys = this.strip.map((m) => m.key);
+        if (!keys.length) { return; }
+        // WHERE THE KEYBOARD IS STANDING IS THE CHIP THAT HAS FOCUS, not the
+        // month in scope: tabbing to April and pressing → must go to May, and
+        // reading it off the state sent it to January instead, because the
+        // state still said "the whole year".
+        const chip = ev.target && ev.target.closest
+            ? ev.target.closest("[data-month]") : null;
+        const from = (chip && chip.dataset.month)
+            || this.state.month || this.state.stripFocus;
+        const here = keys.indexOf(from);
+        const step = ev.key === "ArrowRight" ? 1 : -1;
+        const next = here < 0
+            ? (step > 0 ? 0 : keys.length - 1)
+            : Math.min(keys.length - 1, Math.max(0, here + step));
+        ev.preventDefault();
+        await this.setMonth(keys[next]);
+        this.focusChip(keys[next]);
+    }
+
+    focusChip(key) {
+        const root = this.stripRef.el;
+        if (!root) { return; }
+        const el = root.querySelector(`[data-month="${key}"]`);
+        if (el) { el.focus(); }
+    }
+
+    /**
+     * Escape means "the last thing I opened", never "everything" — the two
+     * dialogs first, then the drill, then the month. Registered with
+     * `{ capture: true }` because the platform's own hotkey service eats
+     * Escape before a bubbling listener ever sees it (WF4).
+     */
+    onKey(ev) {
+        if (ev.key !== "Escape") { return; }
+        if (this.state.uploading || this.state.spending) { return; }
+        if (this.state.open) {
+            this.closeDrill();
+            ev.stopPropagation();
+            return;
+        }
+        if (this.state.month) {
+            this.clearMonth();
+            ev.stopPropagation();
+        }
     }
 
     // -------------------------------------------------------------- filters
@@ -169,6 +420,11 @@ export class PbBudgetBoard extends Component {
     /** The fill never runs off the end of its own bar. */
     barWidth(n) { return Math.max(0, Math.min(100, Number(n) || 0)); }
 
+    /** The spark bar and the drill column for the month in scope are LIT. */
+    isOnMonth(key) {
+        return Boolean(this.state.month) && this.state.month === key;
+    }
+
     /** A month's spend bar on a tile, as a share of the busiest month. */
     monthHeight(f, m) {
         const peak = Math.max(...f.months.map((x) => Math.abs(x.spent || 0)), 1);
@@ -212,6 +468,7 @@ export class PbBudgetBoard extends Component {
         try {
             this.state.drill = await this.orm.call("pb.budget", "get_function", [
                 f.id, this.state.fy, this.state.type, this.state.currency,
+                this.state.month || null,
             ]);
         } catch (e) {
             this.notif.add(this._msg(e, _t("That function could not be opened.")),
@@ -220,6 +477,30 @@ export class PbBudgetBoard extends Component {
         } finally {
             this.state.drillBusy = false;
         }
+    }
+
+    // ------------------------------------------------------ how it compares
+    get compareTitle() {
+        return _t("How %s compares", this.scope.name);
+    }
+
+    /**
+     * The four figures, in the order a person reads them: where they are, the
+     * month before, the same month a year ago, and what a month of this year
+     * is worth on average.
+     */
+    get compareCells() {
+        const cmp = (this.state.drill && this.state.drill.compare) || null;
+        if (!cmp) { return []; }
+        return ["this", "last", "last_year", "average"]
+            .filter((id) => cmp[id])
+            .map((id) => ({ id, ...cmp[id] }));
+    }
+
+    /** ONE expression (R2). */
+    compareLine(cc) {
+        if (!cc.budget) { return _t("no budget set"); }
+        return _t("of %s budget", this.short(cc.budget));
     }
 
     closeDrill() {
@@ -247,6 +528,7 @@ export class PbBudgetBoard extends Component {
         try {
             const res = await this.orm.call("pb.budget", "export_board", [
                 this.state.fy, this.state.type, this.state.currency, kind,
+                this.state.month || null,
             ]);
             this.download(res);
             this.notif.add(

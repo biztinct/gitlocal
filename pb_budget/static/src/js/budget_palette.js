@@ -59,6 +59,12 @@ registry.category(INSIGHTS_LENSES).add("budget", {
     label: _t("Budget"),
     Component: PbBudgetBoard,
     groups: BUDGET_GATE,
+    // A DEEP LINK CAN BE MORE SPECIFIC THAN THE LENS: `pb_focus:
+    // "month:2026-03"` opens the board already scoped to March, and
+    // `"month:current"` means this month for ever rather than rotting on a
+    // fixed date. The shell hands the arrival payload only to a lens that has
+    // said it reads one, so this flag is the whole of the wiring.
+    wantsArrival: true,
 }, { sequence: 20 });
 
 const palette = registry.category("pb_hub_palette");
@@ -74,6 +80,19 @@ palette.add("bdg_board", {
     requires: "pb_budget_board",
     action: { xmlid: "pb_insights_hub.action_pb_insights_hub", lens: "budget" },
 }, { sequence: 3000 });
+
+palette.add("bdg_month", {
+    id: "bdg_month",
+    label: _t("Budget this month"),
+    sublabel: _t("Insights"),
+    icon: "calendar",
+    groups: BUDGET_GATE,
+    requires: "pb_budget_board",
+    // `month:current` and not a date: a row that names a month would be wrong
+    // from the first of the next one.
+    action: { xmlid: "pb_insights_hub.action_pb_insights_hub", lens: "budget",
+              focus: "month:current" },
+}, { sequence: 3005 });
 
 palette.add("bdg_upload", {
     id: "bdg_upload",

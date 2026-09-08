@@ -32,7 +32,7 @@
                     <div class="page" style="font-family:Inter,Arial,sans-serif;">
 
                         <h2 style="margin:0 0 4px 0;">
-                            Budget <t t-esc="board['fy_label']"/>
+                            Budget <t t-esc="board['scope']['label']"/>
                         </h2>
                         <div style="color:#64748b;font-size:13px;margin-bottom:6px;">
                             <t t-esc="board['type_label']"/> — every figure in
@@ -65,9 +65,11 @@
                                         </div>
                                     </td>
                                     <td style="padding:10px 14px;border:1px solid #e2e8f0;width:25%;">
-                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Used / year gone</div>
+                                        <div t-if="board['scope']['kind'] == 'year'" style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Used / year gone</div>
+                                        <div t-else="" style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Spent vs budget</div>
                                         <div style="font-size:16px;font-weight:600;">
-                                            <t t-esc="'{:,.0f}'.format(k['burn'])"/>% / <t t-esc="'{:,.0f}'.format(k['pace'])"/>%
+                                            <t t-if="board['scope']['kind'] == 'year'"><t t-esc="'{:,.0f}'.format(k['burn'])"/>% / <t t-esc="'{:,.0f}'.format(k['pace'])"/>%</t>
+                                            <t t-else=""><t t-esc="'{:+,.0f}'.format(k['variance_pct'])"/>%</t>
                                         </div>
                                     </td>
                                 </tr>
@@ -81,8 +83,10 @@
                                     <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Function</th>
                                     <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Budget</th>
                                     <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Spent</th>
-                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Left</th>
-                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Used</th>
+                                    <th t-if="board['scope']['kind'] == 'year'" style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Left</th>
+                                    <th t-else="" style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Variance</th>
+                                    <th t-if="board['scope']['kind'] == 'year'" style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Used</th>
+                                    <th t-else="" style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Variance %</th>
                                     <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Reading</th>
                                 </tr>
                             </thead>
@@ -98,10 +102,12 @@
                                         <t t-esc="'{:,.0f}'.format(fn['spent'])"/>
                                     </td>
                                     <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
-                                        <t t-esc="'{:,.0f}'.format(fn['left'])"/>
+                                        <t t-if="board['scope']['kind'] == 'year'"><t t-esc="'{:,.0f}'.format(fn['left'])"/></t>
+                                        <t t-else=""><t t-esc="'{:+,.0f}'.format(fn['variance'])"/></t>
                                     </td>
                                     <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
-                                        <t t-esc="'{:,.0f}'.format(fn['burn'])"/>%
+                                        <t t-if="board['scope']['kind'] == 'year'"><t t-esc="'{:,.0f}'.format(fn['burn'])"/>%</t>
+                                        <t t-else=""><t t-esc="'{:+,.0f}'.format(fn['variance_pct'])"/>%</t>
                                     </td>
                                     <td t-attf-style="padding:7px 10px;border:1px solid #e2e8f0;#{fn['tone'] == 'over' and 'color:#BE123C;font-weight:600;' or ''}#{fn['tone'] == 'watch' and 'color:#B45309;' or ''}">
                                         <t t-esc="fn['tone_label']"/>
