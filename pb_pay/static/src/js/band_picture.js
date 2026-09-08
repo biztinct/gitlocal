@@ -21,15 +21,54 @@
  * it and how they are placed against the band's two edges (`binPeople`).
  *
  * Both are measured against the SCOPE's axis — the shared money axis of a
- * currency lane, or a job family's own when a reader has asked to fit to it.
- * The axis is the only ruler on this screen; a mark measured against anything
- * else lands in the wrong place the moment somebody presses "Fit to this
- * family".
+ * currency lane, a job family's own when a reader has asked to fit to it, or
+ * ONE BAND'S OWN when a reader has opened that band out. The axis is the only
+ * ruler on this screen; a mark measured against anything else lands in the
+ * wrong place the moment somebody presses "Fit to this family".
+ *
+ * AN AXIS HAS TWO ENDS
+ * --------------------
+ * Until LOOK P1 every function here took a single `axisMax` and assumed the
+ * ruler started at zero, which is true of a lane axis and false of a band's
+ * own. They now take the axis OBJECT — `{ min, max }` — and read both ends
+ * through `axisSpan`, so no two of them can disagree about how wide the ruler
+ * is. The change is deliberately a BREAK rather than a signature that accepts
+ * both shapes: there are two callers, and a check that fails loudly beats a
+ * call site that is quietly measured against the wrong ruler.
  */
 
 /** Keep a value inside a range without pretending it was never outside. */
 function clamp(value, low, high) {
     return Math.max(low, Math.min(high, value));
+}
+
+/** The low end of an axis, defaulting to zero — every lane axis starts there
+ *  and a payload that has never heard of `min` must keep working. */
+function axisLow(axis) {
+    const low = Number(axis && axis.min);
+    return Number.isFinite(low) ? low : 0;
+}
+
+/**
+ * How much money an axis covers, guarded.
+ *
+ * Never zero and never negative, whatever it is handed, because every other
+ * function here divides by it. One definition, so a mark, a bin edge and a
+ * grip cannot end up measured against three slightly different rulers.
+ */
+export function axisSpan(axis) {
+    const high = Number(axis && axis.max);
+    const span = (Number.isFinite(high) ? high : 0) - axisLow(axis);
+    return span > 0 ? span : 1;
+}
+
+/** The pay of the person at `share` of the way up a SORTED list, by rank —
+ *  the same arithmetic the server's own lane axis uses for its tail rule. */
+function atRank(sorted, share) {
+    if (!sorted.length) { return 0; }
+    const index = clamp(Math.floor(sorted.length * share), 0,
+                        sorted.length - 1);
+    return sorted[index];
 }
 
 /**
@@ -39,7 +78,9 @@ function clamp(value, low, high) {
  *                          currency. Order does not matter; nothing is
  *                          dropped, and the counts always add back up to
  *                          `wages.length`.
- * @param {number} axisMax  what the right-hand end of the track is worth.
+ * @param {object} axis     `{ min, max }` — what the two ends of the track are
+ *                          worth. A lane axis starts at zero; a band opened
+ *                          out on its own scale does not.
  * @param {number} trackPx  how wide the track is on screen, in pixels.
  * @param {number} binPx    how wide one bin is, in pixels.
  * @param {object} edges    `{ min, max }` — the band's two edges AS THEY ARE
@@ -54,9 +95,10 @@ function clamp(value, low, high) {
  *                   colour boundary is exact;
  *   `count`         the three added together.
  */
-export function binPeople(wages, axisMax, trackPx, binPx, edges) {
+export function binPeople(wages, axis, trackPx, binPx, edges) {
     const list = Array.isArray(wages) ? wages : [];
-    const top = Number(axisMax) > 0 ? Number(axisMax) : 1;
+    const floor = axisLow(axis);
+    const span = axisSpan(axis);
     const width = Number(trackPx) > 0 ? Number(trackPx) : 1;
     const step = Number(binPx) > 0 ? Number(binPx) : 8;
     const low = Number((edges && edges.min) || 0);
@@ -66,10 +108,11 @@ export function binPeople(wages, axisMax, trackPx, binPx, edges) {
 
     for (const raw of list) {
         const wage = Number(raw) || 0;
-        // A person paid beyond the end of the axis sits ON the end of it and
-        // is counted there (ledger GR43): the axis is honest about the tail
-        // in its own note, and this picture may not lose the person.
-        const x = clamp((wage / top) * width, 0, width);
+        // A person paid beyond either end of the axis sits ON that end and is
+        // counted there (ledger GR43, LOOK rule 16): the axis is honest about
+        // its tails in its own note, and this picture may not lose the person.
+        // A zoomed axis has a LEFT tail as well as a right one.
+        const x = clamp(((wage - floor) / span) * width, 0, width);
         const index = clamp(Math.floor(x / step), 0, bins - 1);
         let bin = found.get(index);
         if (!bin) {
@@ -77,8 +120,8 @@ export function binPeople(wages, axisMax, trackPx, binPx, edges) {
             const x1 = Math.min(x0 + step, width);
             bin = {
                 index, x0, x1,
-                low: (x0 / width) * top,
-                high: (x1 / width) * top,
+                low: floor + ((x0 / width) * span),
+                high: floor + ((x1 / width) * span),
                 below: 0, inside: 0, above: 0, count: 0,
             };
             found.set(index, bin);
@@ -120,9 +163,10 @@ export function busiestBin(bins) {
  * @returns {object[]} the dots, each with `row` (…,-1, 0, 1,…), `x` in pixels
  *                     and `pct` across the track.
  */
-export function dodgeDots(dots, axisMax, trackPx, minGapPx) {
+export function dodgeDots(dots, axis, trackPx, minGapPx) {
     const list = Array.isArray(dots) ? dots.slice() : [];
-    const top = Number(axisMax) > 0 ? Number(axisMax) : 1;
+    const floor = axisLow(axis);
+    const span = axisSpan(axis);
     const width = Number(trackPx) > 0 ? Number(trackPx) : 1;
     const gap = Number(minGapPx) > 0 ? Number(minGapPx) : 10;
     const rows = [0, -1, 1, -2, 2];
@@ -132,7 +176,7 @@ export function dodgeDots(dots, axisMax, trackPx, minGapPx) {
     const out = [];
     for (const dot of list) {
         const wage = Number(dot.wage) || 0;
-        const ideal = clamp((wage / top) * width, 0, width);
+        const ideal = clamp(((wage - floor) / span) * width, 0, width);
         let best = null;
         for (const row of rows) {
             const last = lastOnRow.has(row) ? lastOnRow.get(row) : null;
@@ -150,4 +194,97 @@ export function dodgeDots(dots, axisMax, trackPx, minGapPx) {
         });
     }
     return out;
+}
+
+/**
+ * ONE BAND'S OWN MONEY SCALE — the heart of "open this band out".
+ *
+ * A level 2 band that runs 6.6M to 11M ₫ on a lane axis reaching 136M ₫ is
+ * forty pixels of picture with five hundred people inside it. Everything in
+ * that picture is correct and none of it is readable. This works out the
+ * ruler that band would have if it had the track to itself, from numbers the
+ * browser already holds — no server call, no stored value, nothing anybody is
+ * paid changes (LOOK rule 17).
+ *
+ * THE RULES, in the order they are applied:
+ *
+ *  1. It CONTAINS THE BAND. The band's own two edges are always inside, so a
+ *     band with nobody on it still draws as a range rather than as nothing.
+ *  2. It is NOT FLATTENED BY ONE OUTLIER. The lane axis has a tail rule
+ *     (GR43) and a zoom needs the same one at band scale: the ends are the
+ *     5th and 95th person of the band's own wages, widened to the band's
+ *     edges. One person paid ten times the top of the band therefore sits ON
+ *     the right-hand edge and is counted, exactly as they do on the lane.
+ *  3. It is PADDED by 6% of the span at each end, and then the low end is
+ *     clamped at zero: money does not go negative, and a ruler whose left
+ *     edge is below zero is a lie about what the picture is measuring.
+ *  4. It is never DEGENERATE. A band where everybody is paid the same amount
+ *     has a span of nothing at all; it is widened to a tenth either side of
+ *     that amount, or to 0 … 1 when the amount is itself zero. `max` is
+ *     always greater than `min`, so nothing downstream ever divides by zero.
+ *  5. BOTH TAILS ARE COUNTED. Unlike a lane axis, a zoom has a left-hand tail
+ *     as well as a right-hand one, and a picture that clamps people onto an
+ *     edge has to say how many it put there.
+ *  6. It is DETERMINISTIC. Same band in, same axis out, every time — it reads
+ *     no clock, no window and no DOM, which is what lets it be checked under
+ *     node beside everything else in this file.
+ *
+ * @param {object} band  `{ min, max, wages }` — the band's two edges and
+ *                       every person on it, in whole currency units.
+ * @param {object} opts  `pad` (default 0.06) and `headroom` (default 0) —
+ *                       the second is the extra room a DRAG asks for, so an
+ *                       edge dragged to the end of the picture can keep going
+ *                       instead of hitting an invisible wall.
+ * @returns {object} `{ min, max, below, above }`.
+ */
+export function bandAxis(band, opts) {
+    const options = opts || {};
+    const padShare = Number.isFinite(Number(options.pad))
+        ? Math.max(0, Number(options.pad)) : 0.06;
+    const headShare = Number.isFinite(Number(options.headroom))
+        ? Math.max(0, Number(options.headroom)) : 0;
+
+    const wages = (Array.isArray(band && band.wages) ? band.wages : [])
+        .map((wage) => Number(wage) || 0)
+        .sort((a, b) => a - b);
+    const edgeA = Number(band && band.min) || 0;
+    const edgeB = Number(band && band.max) || 0;
+
+    // 1 + 2 — the band's edges, widened to the 5th and 95th person.
+    let low = Math.min(edgeA, edgeB);
+    let high = Math.max(edgeA, edgeB);
+    if (wages.length) {
+        low = Math.min(low, atRank(wages, 0.05));
+        high = Math.max(high, atRank(wages, 0.95));
+    }
+
+    // 3 — pad, then the drag's headroom, then the floor at zero.
+    const room = (high - low) * (padShare + headShare);
+    if (room > 0) {
+        low -= room;
+        high += room;
+    }
+    if (low < 0) { low = 0; }
+
+    // 4 — a span of nothing is widened rather than divided by.
+    if (!(high > low)) {
+        const value = Math.max(high, low, 0);
+        if (value > 0) {
+            const spread = value * (0.1 + headShare);
+            low = Math.max(0, value - spread);
+            high = value + spread;
+        } else {
+            low = 0;
+            high = 1;
+        }
+    }
+
+    // 5 — the two tails, counted against the ends as they finally are.
+    let below = 0;
+    let above = 0;
+    for (const wage of wages) {
+        if (wage < low) { below += 1; }
+        else if (wage > high) { above += 1; }
+    }
+    return { min: low, max: high, below, above };
 }
