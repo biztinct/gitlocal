@@ -229,23 +229,130 @@ $bdg-tones: (
         @media (max-width: 700px) { grid-template-columns: 1fr; }
     }
 
-    // ========================================================= THE MONTH STRIP
+    // ======================================================== THE PERIOD STRIP
     // Thirteen chips, and the twelve months share the row equally so the
     // year reads left to right as a shape rather than as a list. Under
-    // 900px they wrap into three rows of four, which is still a calendar.
-    .bdg-strip {
-        display: grid;
-        grid-template-columns: 132px repeat(12, minmax(0, 1fr));
+    // 1180px they wrap into rows of six, and under 700px into rows of three,
+    // which is still a calendar.
+    //
+    // THE TWELVE MONTHS TOUCH. Their gap is zero and their borders collapse
+    // (`margin-left: -1px`), so a chosen stretch reads as ONE BAND — rounded
+    // only at its two ends, square where the chips meet — rather than as a run
+    // of separate buttons that happen to be the same colour. That is the whole
+    // difference between a range control and thirteen buttons, and it is this
+    // one rule.
+    //
+    // NOTHING HERE CLIPS. The quarter brackets sit in the margin ABOVE the
+    // chips and the "now" flag hangs above its own chip, so an `overflow`
+    // anywhere on this row would silently delete both (L12).
+    .bdg-striprow {
+        display: flex;
+        align-items: stretch;
         gap: 6px;
-        margin-bottom: 14px;
+        margin-bottom: 6px;
+
+        @media (max-width: 1180px) { display: block; }
+    }
+
+    .bdg-months-strip {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+
+        // Pointer gestures across the chips are ours; the page still scrolls
+        // up and down under a finger.
+        touch-action: pan-y;
+
+        .bdg-mchip + .bdg-mchip { margin-left: -1px; }
 
         @media (max-width: 1180px) {
             grid-template-columns: repeat(6, minmax(0, 1fr));
+            margin-top: 6px;
+            .bdg-mchip:nth-child(6n + 1) { margin-left: 0; }
         }
 
         @media (max-width: 700px) {
             grid-template-columns: repeat(3, minmax(0, 1fr));
+            .bdg-mchip:nth-child(6n + 1) { margin-left: -1px; }
+            .bdg-mchip:nth-child(3n + 1) { margin-left: 0; }
         }
+    }
+
+    // ---------------------------------------------------- the quarter brackets
+    // Four brackets, each exactly over its own three chips: the strip's twelve
+    // columns are equal and its month gap is zero, so four equal columns beside
+    // the same 132px head land on the same pixels as the groups of three do.
+    .bdg-qrow {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 4px;
+
+        @media (max-width: 1180px) { .bdg-qspacer { display: none; } }
+    }
+
+    .bdg-qspacer { flex: 0 0 132px; }
+
+    .bdg-qbrackets {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .bdg-qbr {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-family: inherit;
+        padding: 3px 6px 4px;
+        border-radius: var(--pbim-r-sm, 8px);
+        color: var(--pbim-muted, #64748B);
+
+        // The bracket itself: a hairline under the label, tying it to the
+        // three chips below.
+        border-bottom: 2px solid var(--pbim-line, #E2E1EF);
+
+        &:hover {
+            color: var(--pbim-primary-strong, #493FA0);
+            border-bottom-color: var(--pbim-primary, #6355C7);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+
+        &.is-on {
+            color: var(--pbim-primary-strong, #493FA0);
+            background: var(--pbim-soft, #F1EFFC);
+            border-bottom-color: var(--pbim-primary, #6355C7);
+        }
+    }
+
+    .bdg-qbr-l { font-size: 11px; font-weight: 800; letter-spacing: .03em; }
+
+    // The three months a quarter means, said out loud — a company whose year
+    // opens in July is never guessing what "Q1" covers.
+    .bdg-qbr-s {
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+
+        @media (max-width: 900px) { display: none; }
+    }
+
+    .bdg-striphint {
+        font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+        margin: 0 0 14px 0;
     }
 
     .bdg-mchip {
@@ -270,6 +377,17 @@ $bdg-tones: (
             box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
         }
 
+        // A CHOSEN CHIP, and a run of them reads as ONE BAND. The two ends
+        // keep their corners and everything between them is square, so four
+        // months look like one stretch of four rather than four of anything.
+        &.is-in {
+            position: relative;
+            z-index: 2;                       // its border wins the collapse
+            border-color: var(--pbim-primary, #6355C7);
+            background: var(--pbim-soft, #F1EFFC);
+            opacity: 1;                       // a chosen future month is not dim
+        }
+
         &.is-on {
             border-color: var(--pbim-primary, #6355C7);
             box-shadow: 0 0 0 2px var(--pbim-ring, rgba(99, 85, 199, .18));
@@ -285,10 +403,46 @@ $bdg-tones: (
         &[disabled] { cursor: progress; }
 
         &--all {
+            flex: 0 0 132px;
             justify-content: center;
             background: var(--pbim-line-2, #F1F5F9);
 
             &.is-on { background: var(--pbim-soft, #F1EFFC); }
+
+            @media (max-width: 1180px) { width: 100%; }
+        }
+    }
+
+    // The band's own shape. Inside the twelve-month grid a chip is square by
+    // default and only the ENDS — of the strip, and of whatever is chosen —
+    // carry a radius.
+    .bdg-months-strip .bdg-mchip {
+        border-radius: 0;
+
+        &:first-child {
+            border-top-left-radius: var(--pbim-r-sm, 8px);
+            border-bottom-left-radius: var(--pbim-r-sm, 8px);
+        }
+
+        &:last-child {
+            border-top-right-radius: var(--pbim-r-sm, 8px);
+            border-bottom-right-radius: var(--pbim-r-sm, 8px);
+        }
+
+        &.is-in.is-first {
+            border-top-left-radius: var(--pbim-r-sm, 8px);
+            border-bottom-left-radius: var(--pbim-r-sm, 8px);
+        }
+
+        &.is-in.is-last {
+            border-top-right-radius: var(--pbim-r-sm, 8px);
+            border-bottom-right-radius: var(--pbim-r-sm, 8px);
+        }
+
+        // The two ends of the band are the only ones that carry the ring, so
+        // the whole stretch reads as one control with two handles.
+        &.is-in.is-first, &.is-in.is-last {
+            box-shadow: 0 0 0 2px var(--pbim-ring, rgba(99, 85, 199, .18));
         }
     }
 
@@ -944,6 +1098,15 @@ $bdg-tones: (
         // tiles keep their places and their bars TRAVEL to the new figure,
         // which is the whole of the motion this phase adds.
         .bdg-mchip-fill { transition: width .4s cubic-bezier(.22, .68, .36, 1); }
-        .bdg-mchip { transition: border-color .14s, background .14s; }
+        // The selection band grows and shrinks under the hand: the corners
+        // travel with it, so a sweep across four months reads as ONE shape
+        // being stretched rather than four buttons lighting up one after
+        // another. The colour and the ring go on the same short curve.
+        .bdg-mchip {
+            transition: border-color .14s, background .14s, box-shadow .14s,
+                        border-radius .18s cubic-bezier(.22, .68, .36, 1),
+                        opacity .14s;
+        }
+        .bdg-qbr { transition: color .14s, background .14s, border-color .14s; }
     }
 }

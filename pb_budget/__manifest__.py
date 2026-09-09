@@ -32,12 +32,17 @@ WHAT THIS MODULE IS
     a training course or a recruitment agency cost, so those are `pb.budget.expense`
     rows — a date, a department, an amount, a note, a file — and they roll into
     their month's actuals exactly as payroll does.
-  * **A month is a scope, equal to the year.** Under the numbers sits a strip
+  * **A period is a scope, equal to the year.** Under the numbers sits a strip
     of thirteen chips — the whole year, then the twelve months — and each month
-    already shows, before anything is clicked, how far its spend fell either
-    side of its budget. Click one and the entire board becomes that month: the
+    already shows, before anything is pressed, how far its spend fell either
+    side of its budget. Press one and the entire board becomes that month: the
     numbers, the words, the colours, the drill, the table and both exports.
-    The arrow keys walk the strip and Escape comes back.
+    Shift-press a second month, or drag across them, and it becomes that
+    STRETCH of months instead, previewed live under the hand; four quarter
+    brackets over the strip do the common case in one press, in the company's
+    own financial year rather than the calendar's. The arrow keys walk the
+    strip, Home and End jump to its ends, Shift with an arrow extends the
+    stretch, and Escape comes back.
   * **The Budget lens, and the heat view.** On the Insights mission: every
     function as a tile, coloured by how fast it is burning AGAINST THE CALENDAR
     rather than against zero, with the year's own position marked on each bar.
@@ -57,7 +62,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.2.1.0',
+    'version': '19.0.2.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

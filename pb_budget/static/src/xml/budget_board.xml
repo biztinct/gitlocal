@@ -155,7 +155,7 @@
           <div class="pbim-stat">
             <div class="pbim-stat-ic"><t t-out="ic('percent',18)"/></div>
             <div class="pbim-stat-tx">
-              <div t-if="isMonth" class="n" t-esc="signed(kpis.variance_pct)"/>
+              <div t-if="isScoped" class="n" t-esc="signed(kpis.variance_pct)"/>
               <div t-else="" class="n"
                    t-esc="pct(kpis.burn) + ' vs ' + pct(kpis.pace)"/>
               <div class="l" t-esc="caps.ratio"/>
@@ -172,44 +172,79 @@
           </div>
         </div>
 
-        <!-- ========================== THE MONTH STRIP ==========================
-             Thirteen chips that answer before anything is clicked. Each month
+        <!-- ========================= THE PERIOD STRIP =========================
+             Thirteen chips that answer before anything is pressed. Each month
              carries a two-tone micro bar (the track is the budget, the fill is
              what was spent, coloured by that month's own word) and a signed
              percentage; the month we are in is marked "now" and the ones that
-             have not happened are quiet. ← and → walk it; Escape and the first
-             chip always come back to the whole year. -->
-        <div class="bdg-strip" t-ref="strip" t-on-keydown="onStripKey"
-             role="group" aria-label="Pick a month, or the whole year">
-          <button t-attf-class="bdg-mchip bdg-mchip--all {{ state.month ? '' : 'is-on' }}"
-                  t-on-click="clearMonth" data-month=""
+             have not happened are quiet.
+
+             AND IT SELECTS A STRETCH. Shift-press a second month or sweep
+             across them and the chosen chips fuse into one band — rounded only
+             at its two ends, square where they meet — with the whole board
+             following. Four quarter brackets sit over it for the common case,
+             each naming the three FISCAL months it means.
+
+             The brackets are ABOVE the chips, in the strip's own margin: the
+             strip may never be given `overflow: hidden` or they go (L12).
+             Nothing here is `disabled` while the board re-scopes — the guard is
+             in the handler, or the chip the keyboard is standing on loses focus
+             mid-flight (T23). -->
+        <div class="bdg-qrow" role="group" aria-label="Pick a quarter">
+          <div class="bdg-qspacer"/>
+          <div class="bdg-qbrackets">
+            <button t-foreach="quarters" t-as="qt" t-key="qt.key"
+                    t-attf-class="bdg-qbr {{ isQuarterOn(qt) ? 'is-on' : '' }}"
+                    t-att-title="quarterTitle(qt)"
+                    t-att-aria-pressed="isQuarterOn(qt) ? 'true' : 'false'"
+                    t-on-click="() => this.pressQuarter(qt)">
+              <span class="bdg-qbr-l" t-esc="qt.label"/>
+              <span class="bdg-qbr-s" t-esc="qt.title"/>
+            </button>
+          </div>
+        </div>
+
+        <div class="bdg-striprow" t-ref="strip" t-on-keydown="onStripKey"
+             t-on-pointermove="onStripMove"
+             role="group" aria-label="Pick a month, a stretch of months, or the whole year">
+          <button t-attf-class="bdg-mchip bdg-mchip--all {{ state.period ? '' : 'is-on' }}"
+                  t-on-click="clearPeriod" data-month=""
+                  t-att-aria-pressed="state.period ? 'false' : 'true'"
                   title="Show the whole year again">
             <span class="bdg-mchip-l">Whole year</span>
             <span class="bdg-mchip-v" t-esc="board.fy_label"/>
           </button>
-          <button t-foreach="strip" t-as="mo" t-key="mo.key"
-                  t-attf-class="bdg-mchip bdg-mchip--{{mo.tone}} {{ state.month === mo.key ? 'is-on' : '' }} {{ mo.state === 'current' ? 'is-now' : '' }} {{ mo.state === 'future' ? 'is-future' : '' }}"
-                  t-att-data-month="mo.key"
-                  t-att-title="chipTitle(mo)"
-                  t-on-click="() => this.setMonth(mo.key)">
-            <span class="bdg-mchip-l" t-esc="mo.label"/>
-            <span class="bdg-mchip-bar">
-              <span class="bdg-mchip-fill"
-                    t-attf-style="width: {{barWidth(mo.share)}}%"/>
-            </span>
-            <span t-if="mo.state === 'future' and !mo.spent"
-                  class="bdg-mchip-v bdg-mchip-v--quiet">not yet</span>
-            <span t-elif="!mo.has_budget"
-                  class="bdg-mchip-v bdg-mchip-v--quiet">no budget</span>
-            <span t-else="" class="bdg-mchip-v" t-esc="signed(mo.variance_pct)"/>
-            <span t-if="mo.state === 'current'" class="bdg-mchip-now">now</span>
-          </button>
+          <div class="bdg-months-strip">
+            <button t-foreach="strip" t-as="mo" t-key="mo.key"
+                    t-attf-class="bdg-mchip bdg-mchip--{{mo.tone}} {{ chipMod(mo) }} {{ mo.state === 'current' ? 'is-now' : '' }} {{ mo.state === 'future' ? 'is-future' : '' }}"
+                    t-att-data-month="mo.key"
+                    t-att-title="chipTitle(mo)"
+                    t-att-aria-pressed="isLit(mo.key) ? 'true' : 'false'"
+                    t-on-pointerdown="(ev) => this.onChipDown(mo, ev)"
+                    t-on-click="(ev) => this.onChipClick(mo, ev)">
+              <span class="bdg-mchip-l" t-esc="mo.label"/>
+              <span class="bdg-mchip-bar">
+                <span class="bdg-mchip-fill"
+                      t-attf-style="width: {{barWidth(mo.share)}}%"/>
+              </span>
+              <span t-if="mo.state === 'future' and !mo.spent"
+                    class="bdg-mchip-v bdg-mchip-v--quiet">not yet</span>
+              <span t-elif="!mo.has_budget"
+                    class="bdg-mchip-v bdg-mchip-v--quiet">no budget</span>
+              <span t-else="" class="bdg-mchip-v" t-esc="signed(mo.variance_pct)"/>
+              <span t-if="mo.state === 'current'" class="bdg-mchip-now">now</span>
+            </button>
+          </div>
         </div>
 
-        <div t-if="isMonth" class="bdg-scoped">
+        <div class="bdg-striphint">
+          Press a month, shift-press another, or drag across them.
+        </div>
+
+        <div t-if="isScoped" class="bdg-scoped">
           <t t-out="ic('calendar',15)"/>
           <span t-esc="scopeLine"/>
-          <button class="bdg-back" t-on-click="clearMonth">
+          <button class="bdg-back" t-on-click="clearPeriod">
             <t t-out="ic('x',13)"/> Whole year
           </button>
         </div>
@@ -255,8 +290,7 @@
                 </div>
                 <div class="bdg-bar-l">
                   <span class="bdg-burn" t-esc="pct(fn.burn)"/>
-                  <span t-if="isMonth" class="bdg-of">spent of the month's budget</span>
-                  <span t-else="" class="bdg-of">spent of the budget</span>
+                  <span class="bdg-of" t-esc="spentOfLine"/>
                 </div>
               </div>
 
@@ -351,7 +385,7 @@
                   <tr>
                     <th>Department</th><th class="num">Budget</th>
                     <th class="num">Spent</th>
-                    <t t-if="isMonth">
+                    <t t-if="isScoped">
                       <th class="num">Variance</th>
                       <th class="num">Variance %</th>
                     </t>
@@ -367,7 +401,7 @@
                     </td>
                     <td class="num" t-esc="money(dp.budget)"/>
                     <td class="num" t-esc="money(dp.spent)"/>
-                    <t t-if="isMonth">
+                    <t t-if="isScoped">
                       <td class="num">
                         <span t-attf-class="bdg-var bdg-var--{{varianceTone(dp)}}"
                               t-esc="signedMoney(dp.variance)"/>
@@ -423,7 +457,7 @@
                 <th>Function</th>
                 <th class="num">Budget</th>
                 <th class="num">Spent</th>
-                <t t-if="isMonth">
+                <t t-if="isScoped">
                   <th class="num">Variance</th>
                   <th class="num">Variance %</th>
                 </t>
@@ -446,7 +480,7 @@
                   </td>
                   <td class="num" t-esc="money(fn.budget)"/>
                   <td class="num" t-esc="money(fn.spent)"/>
-                  <t t-if="isMonth">
+                  <t t-if="isScoped">
                     <td class="num">
                       <span t-attf-class="bdg-var bdg-var--{{varianceTone(fn)}}"
                             t-esc="signedMoney(fn.variance)"/>
@@ -466,7 +500,7 @@
                   </t>
                   <td t-esc="fn.tone_label"/>
                   <td class="num">
-                    <span t-if="isMonth" class="bdg-of" t-esc="scope.label"/>
+                    <span t-if="isScoped" class="bdg-of" t-esc="scope.label"/>
                     <span t-else="" class="bdg-of" t-esc="'year ' + pct(fn.pace)"/>
                   </td>
                 </tr>
@@ -524,7 +558,7 @@
                 <td>Everything</td>
                 <td class="num" t-esc="money(kpis.budget)"/>
                 <td class="num" t-esc="money(kpis.spent)"/>
-                <t t-if="isMonth">
+                <t t-if="isScoped">
                   <td class="num" t-esc="signedMoney(kpis.variance)"/>
                   <td class="num" t-esc="kpis.budget ? signed(kpis.variance_pct) : ''"/>
                 </t>
@@ -534,7 +568,7 @@
                 </t>
                 <td/>
                 <td class="num">
-                  <span t-if="isMonth" class="bdg-of" t-esc="scope.label"/>
+                  <span t-if="isScoped" class="bdg-of" t-esc="scope.label"/>
                   <span t-else="" class="bdg-of" t-esc="'year ' + pct(kpis.pace)"/>
                 </td>
               </tr>
