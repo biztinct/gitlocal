@@ -28,7 +28,9 @@ import logging
 import time
 from datetime import date
 
-from odoo import _, api, models
+from dateutil.relativedelta import relativedelta
+
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
@@ -176,6 +178,71 @@ _FILTERS = {
 }
 
 # Money shown in the group's currency, or each company's own.
+# --------------------------------------------------------------- the words
+# EVERY WORD THIS BOARD PRINTS IS WRITTEN INSIDE `_()`, HERE.
+#
+# The registries above carry each entry's label as a plain literal, and
+# `_(entry['label'])` cannot translate one: the string extractor never sees a
+# literal that lives in a module-level dict as a term at all (T24 / GR58), so
+# it is not in the catalogue and `_()` has nothing to look up. Every measure,
+# every dimension, every grain and every kind of run therefore printed in
+# ENGLISH on a fully Vietnamese screen — "Net pay bởi Division" — and the
+# LOOK P4 month strip, whose heading names the measure it is a shape of, is
+# what finally made it impossible to ignore.
+#
+# The shape is GR59's: a DICT keyed by the value, built inside a function so
+# the `_()` calls run in the reader's context rather than at import time, with
+# the ordering left to the registries above. Pre-existing since this board
+# shipped; closed in LOOK P4 because its own hero depends on it.
+
+def _measure_words():
+    return {
+        'net': _("Net pay"), 'gross': _("Gross pay"),
+        'basic': _("Basic salary"), 'allowances': _("Allowances"),
+        'deductions': _("Deductions"), 'tax': _("Tax withheld"),
+        'social': _("Social security"), 'employer_cost': _("Employer cost"),
+        'statutory': _("Statutory load"), 'total_cost': _("Total cost"),
+        'component': _("Component value"), 'headcount': _("People"),
+        'fte': _("Full-time equivalents"), 'cost_per_head': _("Cost per person"),
+        'charged_to': _("Charged to other entities"),
+        'charged_from': _("Charged from other entities"),
+    }
+
+
+def _dimension_words():
+    return {
+        'department_id': _("Department"), 'division_id': _("Division"),
+        'division': _("Division"), 'category_type': _("Component type"),
+        'code': _("Component"), 'kind': _("Kind of run"),
+        'scheme': _("Payroll scheme"), 'job_id': _("Job position"),
+        'company_id': _("Company"), 'country': _("Country"),
+        'group': _("Group"), 'run_id': _("Pay run"), 'none': _("Total"),
+    }
+
+
+def _grain_words():
+    return {'month': _("Month"), 'quarter': _("Quarter"), 'year': _("Year"),
+            'run': _("Pay run"), 'none': _("No split")}
+
+
+def _kind_words():
+    return {'regular': _("Regular"), 'mid_cycle': _("Mid-month advance"),
+            'end_cycle': _("End of month"), 'full_final': _("Final settlement"),
+            '': _("Not from a scheme")}
+
+
+def _measure_word(key):
+    return _measure_words().get(key) or _MEASURES.get(key, {}).get('label', key)
+
+
+def _dimension_word(key):
+    return _dimension_words().get(key) or _DIMENSIONS.get(key, {}).get('label', key)
+
+
+def _grain_word(key):
+    return _grain_words().get(key) or _GRAINS.get(key, {}).get('label', key)
+
+
 _CURRENCY_MODES = ('group', 'own')
 # Advance (mid-month) runs are OUT unless asked for: counting them adds the
 # same person and the same month's money twice.
@@ -428,13 +495,22 @@ class PbExplorer(models.AbstractModel):
 
     @staticmethod
     def _as_date(v):
-        if not isinstance(v, str):
-            return None
-        if not v:
+        """One end of a period, or nothing at all.
+
+        THE DATE HAS TO BE A REAL DATE, not merely ten characters long. This
+        used to return the first ten characters of whatever it was handed, so a
+        hand-edited link carrying `2026-13-45` reached the run domain and the
+        PLATFORM raised `ValueError: month must be in 1..12` — a five-hundred
+        error on a screen whose whole contract is that a saved link is never an
+        error (ledger rule 21). Found by LOOK P4's own hostile-period test;
+        pre-existing since the board shipped, and reachable the moment the two
+        dates started travelling in the link.
+        """
+        if not isinstance(v, str) or len(v) < 10:
             return None
         try:
-            return str(v)[:10] if len(str(v)) >= 10 else None
-        except Exception:
+            return date.fromisoformat(v[:10]).isoformat()
+        except (TypeError, ValueError):
             return None
 
     @api.model
@@ -478,7 +554,7 @@ class PbExplorer(models.AbstractModel):
                 "employee appears in many components, so combining them would "
                 "count people more than once. Pick a component measure, or "
                 "group by department or division instead.",
-                measure=_(meas['label']), dim=_(_DIMENSIONS[d]['label'])))
+                measure=_measure_word(m), dim=_dimension_word(d)))
         return 'emp' if needs_emp else 'line'
 
     # -------------------------------------------------------------- scope
@@ -543,6 +619,11 @@ class PbExplorer(models.AbstractModel):
         payload.update(self._labels(spec))
         payload['trail'] = self._trail(spec)
         payload['heads'] = self._heads(spec, run_ids)
+        # THE PERIOD, RESOLVED HERE (rule 18) — the browser adopts this rather
+        # than keeping the two dates it asked with — and the strip's weights
+        # for the measure this answer is about.
+        payload['period'] = self._resolve_period(spec)
+        payload['weights'] = self._period_weights(spec)
         return payload
 
     def _heads(self, spec, run_ids):
@@ -577,19 +658,29 @@ class PbExplorer(models.AbstractModel):
         out.update(self._labels(spec))
         out['trail'] = self._trail(spec)
         out['heads'] = {'people': 0, 'fte': 0.0}
+        # An empty answer still says WHEN it is empty about, and the strip
+        # still draws — the reader has to be able to move off a period that
+        # holds nothing, and a strip that vanished with the data would be a
+        # dead end (§3c).
+        out['period'] = self._resolve_period(spec)
+        out['weights'] = safe_weights = {}
+        try:
+            safe_weights.update(self._period_weights(spec))
+        except Exception:                            # noqa: BLE001
+            _logger.info('pb_explorer: no strip weights for an empty answer')
         return out
 
     def _labels(self, spec):
         m = _MEASURES[spec['measure']]
-        label = _(m['label'])
+        label = _measure_word(spec['measure'])
         if spec.get('per_head') and m.get('kind') == 'money' \
                 and not m.get('derived'):
             label = _('%s per person', label)
         return {
             'measure_label': label,
             'measure_kind': m.get('kind', 'money'),
-            'dimension_label': _(_DIMENSIONS[spec['dimension']]['label']),
-            'grain_label': _(_GRAINS[spec['grain']]['label']),
+            'dimension_label': _dimension_word(spec['dimension']),
+            'grain_label': _grain_word(spec['grain']),
         }
 
     # --------------------------------------------------------- breadcrumb
@@ -654,7 +745,7 @@ class PbExplorer(models.AbstractModel):
             'root': levels[0],
             'root_label': root_label,
             'next': nxt,
-            'next_label': _(_DIMENSIONS[nxt]['label']) if nxt else '',
+            'next_label': _dimension_word(nxt) if nxt else '',
         }
 
     def _where(self, spec, table, run_ids):
@@ -1165,6 +1256,320 @@ class PbExplorer(models.AbstractModel):
             return (run.name or str(tkey)) if run else str(tkey)
         return str(tkey)
 
+    # ============================================================== the WHEN
+    # A PERIOD IS A SCOPE, NOT A FILTER (LOOK rule 18). The spec has carried
+    # `date_from` / `date_to` since this board shipped and the server has always
+    # honoured them — there was simply no control anywhere that set either one,
+    # so the sentence the board reads as (*Show total cost By department Over
+    # month Where …*) was missing its only clause about time.
+    #
+    # THE VOCABULARY IS THE ONE LOOK P3 SHIPPED ON THE BUDGET BOARD, matched
+    # rather than imported: `pb_budget` depends on `pb_explorer`, never the
+    # other way round, so the presets, the plain-English naming ("March to June
+    # 2026", "Q2 2026 · April to June") and the collapse rules are written again
+    # here and nothing is reached for across the dependency.
+    #
+    # A QUARTER IS A QUARTER OF THE FISCAL YEAR. A company whose year opens in
+    # July has a Q1 of July, August and September, and every preset says which
+    # months it means out loud so nobody has to guess.
+
+    def _fy_start_month(self):
+        """Which month the financial year opens in, 1–12.
+
+        The group's own answer first — `pb_explorer` already depends on
+        `pb_group` — then the parameter the Budget board reads, then January.
+        The parameter is looked up by NAME, which is a string and not a
+        dependency: this module must go on working on a database that has no
+        Budget board at all.
+        """
+        month = 0
+        try:
+            if 'pb_group_id' in self.env['res.company']._fields:
+                groups = self.env.companies.sudo().mapped('pb_group_id')
+                if groups and 'fiscal_start_month' in groups._fields:
+                    month = int(groups[0].fiscal_start_month or 0)
+        except Exception:                            # noqa: BLE001
+            month = 0
+        if not 1 <= month <= 12:
+            try:
+                month = int(self.env['ir.config_parameter'].sudo()
+                            .get_param('pb_budget.fy_start_month', 1) or 1)
+            except Exception:                        # noqa: BLE001
+                month = 1
+        return month if 1 <= month <= 12 else 1
+
+    def _month_words(self, day, full=True):
+        """A month in the reader's own language.
+
+        `strftime` answers in the SERVER's locale, which is C, so a Vietnamese
+        reader would be shown "Mar" on a screen where every other word is
+        Vietnamese. Babel ships with the platform and knows theirs.
+        """
+        fmt = 'LLLL y' if full else 'LLL'
+        try:
+            from babel.dates import format_date
+            return format_date(
+                day, fmt, locale=(self.env.context.get('lang') or 'en_US'))
+        except Exception:                            # noqa: BLE001
+            return day.strftime('%B %Y' if full else '%b')
+
+    @staticmethod
+    def _month_end(day):
+        return date(day.year, day.month,
+                    calendar.monthrange(day.year, day.month)[1])
+
+    def _fy_bounds(self, today, back=0):
+        """The financial year `today` falls in, or `back` years before it."""
+        start_month = self._fy_start_month()
+        year = today.year if today.month >= start_month else today.year - 1
+        first = date(year - back, start_month, 1)
+        last = first + relativedelta(years=1) - relativedelta(days=1)
+        return first, last
+
+    def _fq_bounds(self, today, back=0):
+        """The fiscal QUARTER `today` falls in, or `back` quarters before it."""
+        fy_first, _fy_last = self._fy_bounds(today)
+        gone = (today.year - fy_first.year) * 12 + (today.month - fy_first.month)
+        first = fy_first + relativedelta(months=(gone // 3) * 3 - back * 3)
+        last = first + relativedelta(months=3) - relativedelta(days=1)
+        return first, last
+
+    def _fy_label(self, first):
+        """"2026", and "2026/27" where the year is not the calendar's."""
+        if self._fy_start_month() == 1:
+            return str(first.year)
+        return '%s/%s' % (first.year, str(first.year + 1)[-2:])
+
+    def _quarter_index(self, first):
+        """Which quarter of ITS OWN fiscal year a first-of-quarter day is."""
+        fy_first, _last = self._fy_bounds(first)
+        gone = (first.year - fy_first.year) * 12 + (first.month - fy_first.month)
+        return (gone // 3) + 1 if gone % 3 == 0 and 0 <= gone < 12 else 0
+
+    def _period_presets(self, today=None):
+        """The seven starting points, each NAMING the dates it actually means.
+
+        "This quarter" is a guess on a July financial year unless the chip says
+        which three months it is, so every one of them carries its own dates in
+        words. Written inside `_()` in a dict keyed by the value, with the order
+        in a separate ladder, because a user-visible literal that lives in a
+        module-level list is invisible to the string extractor (T24 / GR59) and
+        would print English under a Vietnamese picker.
+        """
+        today = today or fields.Date.context_today(self)
+        this_month = date(today.year, today.month, 1)
+        last_month = this_month - relativedelta(months=1)
+        tq_first, tq_last = self._fq_bounds(today)
+        lq_first, lq_last = self._fq_bounds(today, back=1)
+        ty_first, ty_last = self._fy_bounds(today)
+        ly_first, ly_last = self._fy_bounds(today, back=1)
+        labels = {
+            'this_month': _("This month"),
+            'last_month': _("Last month"),
+            'this_quarter': _("This quarter"),
+            'last_quarter': _("Last quarter"),
+            'this_year': _("This year"),
+            'last_year': _("Last year"),
+            'all': _("Everything"),
+        }
+        spans = {
+            'this_month': (this_month, self._month_end(this_month)),
+            'last_month': (last_month, self._month_end(last_month)),
+            'this_quarter': (tq_first, tq_last),
+            'last_quarter': (lq_first, lq_last),
+            'this_year': (ty_first, ty_last),
+            'last_year': (ly_first, ly_last),
+            'all': (None, None),
+        }
+        order = ('this_month', 'last_month', 'this_quarter', 'last_quarter',
+                 'this_year', 'last_year', 'all')
+        out = []
+        for key in order:
+            first, last = spans[key]
+            out.append({
+                'key': key,
+                'label': labels[key],
+                'sub': (_("every period on file") if not first
+                        else self._span_words(first, last)),
+                'date_from': str(first) if first else None,
+                'date_to': str(last) if last else None,
+            })
+        return out
+
+    def _span_words(self, first, last):
+        """What a stretch of whole months is CALLED, in words somebody would
+        say out loud. ONE format string each, never two glued fragments, or no
+        translator can put the words into their own order (GR22 / L17)."""
+        if first.year == last.year and first.month == last.month:
+            return self._month_words(first)
+        if first.year == last.year:
+            return _("%(first)s to %(last)s %(year)s",
+                     first=self._month_words(first, full=False),
+                     last=self._month_words(last, full=False),
+                     year=first.year)
+        return _("%(first)s to %(last)s",
+                 first=self._month_words(first), last=self._month_words(last))
+
+    def _resolve_period(self, spec):
+        """What the board is ABOUT, resolved HERE so the browser can adopt it.
+
+        The two dates in the spec are the truth; this only gives them words.
+        A stretch that happens to be exactly one month IS that month, exactly a
+        fiscal quarter IS that quarter and exactly a fiscal year IS that year,
+        so nothing on this screen ever has two names for one thing (P3's R1
+        collapse rules). A pair of dates that is none of those — an old link, a
+        hand-edited hash — still gets a sentence rather than an error.
+        """
+        raw_from, raw_to = spec.get('date_from'), spec.get('date_to')
+        if not raw_from and not raw_to:
+            return {'key': '', 'kind': 'all', 'label': _("Everything"),
+                    'date_from': None, 'date_to': None, 'preset': 'all',
+                    'state': 'current', 'partial': False}
+        try:
+            first = date.fromisoformat(raw_from) if raw_from else None
+            last = date.fromisoformat(raw_to) if raw_to else None
+        except (TypeError, ValueError):
+            return {'key': '', 'kind': 'all', 'label': _("Everything"),
+                    'date_from': None, 'date_to': None, 'preset': 'all',
+                    'state': 'current', 'partial': False}
+        today = fields.Date.context_today(self)
+        # One open end is a real answer, not a broken one: a link may say
+        # "everything since April" and mean it.
+        if not first or not last:
+            edge = first or last
+            label = (_("From %s onwards", self._month_words(edge)) if first
+                     else _("Up to %s", self._month_words(edge)))
+            return {'key': '%s..%s' % (raw_from or '', raw_to or ''),
+                    'kind': 'open', 'label': label,
+                    'date_from': raw_from, 'date_to': raw_to, 'preset': '',
+                    'state': 'past' if last and last < today else 'current',
+                    'partial': True}
+        if first > last:
+            first, last = last, first
+        whole = first.day == 1 and last == self._month_end(last)
+        kind, label = 'range', ''
+        if not whole:
+            kind = 'days'
+            label = _("%(first)s to %(last)s", first=str(first), last=str(last))
+        elif first.year == last.year and first.month == last.month:
+            kind, label = 'month', self._month_words(first)
+        else:
+            months = (last.year - first.year) * 12 + (last.month - first.month) + 1
+            quarter = self._quarter_index(first) if months == 3 else 0
+            fy_first, fy_last = self._fy_bounds(first)
+            if months == 12 and first == fy_first and last == fy_last:
+                kind = 'year'
+                label = self._fy_label(first)
+            elif quarter:
+                kind = 'quarter'
+                label = _("Q%(n)s %(year)s · %(months)s", n=quarter,
+                          year=self._fy_label(self._fy_bounds(first)[0]),
+                          months=self._span_words(first, last))
+            else:
+                label = self._span_words(first, last)
+        preset = ''
+        for entry in self._period_presets(today):
+            if entry['date_from'] == str(first) and entry['date_to'] == str(last):
+                preset = entry['key']
+                break
+        state = 'current'
+        if last < today:
+            state = 'past'
+        elif first > today:
+            state = 'future'
+        return {'key': '%s..%s' % (first, last), 'kind': kind, 'label': label,
+                'date_from': str(first), 'date_to': str(last),
+                'preset': preset, 'state': state, 'partial': False}
+
+    def _period_months(self):
+        """Every month the facts hold, oldest to newest.
+
+        ONE grouped statement over an INDEXED `fields.Date` column of a DERIVED
+        table — 719,487 payslip lines reduce to 6,158 fact rows — so this is a
+        grouped read and never a scan (R6). It is the list of months the reader
+        may CHOOSE from, so it is deliberately not narrowed by the period
+        already chosen: a strip that showed only the months already in scope
+        would be a control that could never be widened.
+        """
+        self.env.cr.execute("""
+            SELECT month, count(*) FROM pb_fact_line
+             WHERE company_id IN %s AND month IS NOT NULL
+             GROUP BY month ORDER BY month
+        """, (self._co_ids(),))
+        out = []
+        for day, rows in self.env.cr.fetchall():
+            out.append({
+                'key': str(day)[:7],
+                'label': self._month_words(day),
+                'short': self._month_words(day, full=False),
+                'date_from': str(date(day.year, day.month, 1)),
+                'date_to': str(self._month_end(day)),
+                'rows': int(rows or 0),
+            })
+        return out
+
+    def _period_weights(self, spec):
+        """How much of the CURRENT question sits in each month.
+
+        The strip is a sparkline of the very thing being asked, so it redraws
+        when the measure changes — and it is computed over the spec with its
+        DATES REMOVED, or choosing March would flatten every other month to
+        nothing and the control could never be widened again.
+
+        One grouped statement through the same `_raw` every figure on this
+        board comes from, so the strip and the chart can never disagree about
+        what a measure means.
+        """
+        sub = dict(spec, date_from=None, date_to=None, dimension='none',
+                   grain='month', per_head=False, limit=_MAX_SERIES)
+        measure = sub['measure']
+        derived = _MEASURES[measure].get('derived') or ()
+        if derived:
+            # A ratio has no weight of its own; its NUMERATOR is what there is
+            # more or less of in a month.
+            sub['measure'] = derived[0]
+            measure = derived[0]
+        table = _MEASURES[measure].get('table') or 'line'
+        run_ids = self._period_run_ids(sub)
+        if not run_ids:
+            return {}
+        rows, meas, _cap = self._raw(sub, table, run_ids, measure)
+        buckets, _money = self._buckets(sub, rows, run_ids, meas)
+        # More than one money and no rate: keep the biggest bucket rather than
+        # adding two currencies together for the sake of a bar (rule 7).
+        best = max(buckets, key=lambda b: sum(abs(v) for _d, _t, v in b['rows']),
+                   default=None) if buckets else None
+        weights = {}
+        for _dkey, tkey, val in (best or {}).get('rows', []):
+            if tkey is None:
+                continue
+            weights[str(tkey)[:7]] = weights.get(str(tkey)[:7], 0.0) \
+                + abs(float(val or 0.0))
+        return weights
+
+    def _period_run_ids(self, spec):
+        """Company-scoped run ids for a spec, WITHOUT freshening the facts.
+
+        `_scope_runs` also builds any facts that are missing, which is right
+        for the figures on screen and wrong for a strip: the strip reads what
+        has already been built, so opening the When picker can never trigger a
+        rebuild of a year of payroll.
+        """
+        Run = self.env['hr.payslip.run'].sudo()
+        dom = []
+        if spec['filters'].get('run_id'):
+            dom.append(('id', 'in', spec['filters']['run_id']))
+        runs = Run.search(dom + [('state', '!=', 'cancel')],
+                          order='date_end desc, id desc', limit=_RUN_SCAN)
+        if not runs:
+            return []
+        self.env.cr.execute(
+            "SELECT DISTINCT payslip_run_id FROM hr_payslip "
+            "WHERE payslip_run_id IN %s AND company_id IN %s AND state != 'cancel'",
+            (tuple(runs.ids), self._co_ids()))
+        allowed = {r[0] for r in self.env.cr.fetchall()}
+        return [r.id for r in runs if r.id in allowed]
+
     def _dim_labels(self, dimension, keys):
         """Display labels read through the ORM so translated names are correct."""
         meta = _DIMENSIONS[dimension]
@@ -1172,10 +1577,9 @@ class PbExplorer(models.AbstractModel):
             return {k: _('Total') for k in keys}
         # A fixed vocabulary that is TRANSLATED, not title-cased: nobody should
         # ever read "Mid Cycle" on a payroll screen.
-        fixed = meta.get('labels')
-        if fixed:
-            return {k: _(fixed.get(str(k or ''), str(k or '')))
-                    for k in keys}
+        if meta.get('labels'):
+            words = _kind_words()
+            return {k: words.get(str(k or ''), str(k or '')) for k in keys}
         model = meta.get('model')
         if not model:
             return {k: (str(k) if k else _('Unassigned')).replace('_', ' ').title()
@@ -1315,13 +1719,13 @@ class PbExplorer(models.AbstractModel):
                               .mapped('pb_group_id')]
 
         return {
-            'measures': [{'value': k, 'label': _(v['label']),
+            'measures': [{'value': k, 'label': _measure_word(k),
                           'kind': v.get('kind', 'money')}
                          for k, v in _MEASURES.items()],
-            'dimensions': [{'value': k, 'label': _(v['label'])}
+            'dimensions': [{'value': k, 'label': _dimension_word(k)}
                            for k, v in _DIMENSIONS.items()
                            if k not in hidden],
-            'grains': [{'value': k, 'label': _(v['label'])}
+            'grains': [{'value': k, 'label': _grain_word(k)}
                        for k, v in _GRAINS.items()],
             'charts': [c for c in _CHARTS if c != 'compare'],
             'options': {
@@ -1333,7 +1737,7 @@ class PbExplorer(models.AbstractModel):
                              for d in sorted(divisions)],
                 'division_id': division_opts,
                 'scheme': schemes,
-                'kind': [{'value': c, 'label': _(_KIND_LABELS.get(c, c))}
+                'kind': [{'value': c, 'label': _kind_words().get(c, c)}
                          for c in sorted(cycles)],
                 'country': countries,
                 'group': group_opts,
@@ -1353,6 +1757,12 @@ class PbExplorer(models.AbstractModel):
             },
             'bounds': {'date_from': str(dmin) if dmin else None,
                        'date_to': str(dmax) if dmax else None},
+            # The WHEN clause: the seven starting points and every month the
+            # facts hold. The chips come from here once; their WEIGHTS come
+            # back with every answer, because a weight is measure-aware and a
+            # schema is not.
+            'periods': {'presets': self._period_presets(),
+                        'months': self._period_months()},
             'build': {'built_runs': Fact.search_count([]),
                       'total_runs': total_runs},
             'money': self._money_schema(cur_ids),
@@ -1557,7 +1967,7 @@ class PbExplorer(models.AbstractModel):
         return {'ok': True, 'rows': rows, 'total': total, 'page': page,
                 'page_size': _DRILL_PAGE, 'cell': cell,
                 'has_more': (page + 1) * _DRILL_PAGE < total,
-                'measure_label': _(meas['label'])}
+                'measure_label': _measure_word(spec['measure'])}
 
     # ------------------------------------------------------------- export
     @api.model
@@ -1579,6 +1989,15 @@ class PbExplorer(models.AbstractModel):
         buf = io.StringIO()
         w = csv.writer(buf)
         written = 0
+        # THE PERIOD IS IN THE CONTENT, not only in the file name. A sheet that
+        # names its months only in a name somebody can rename is a sheet whose
+        # numbers stop being checkable the first time it is forwarded.
+        period = payload.get('period') or {}
+        w.writerow([_('Period'), period.get('label') or _('Everything')])
+        if period.get('date_from') or period.get('date_to'):
+            w.writerow([_('From'), period.get('date_from') or '',
+                        _('To'), period.get('date_to') or ''])
+        w.writerow([])
         parts = payload.get('parts') or [payload]
         for part in parts:
             currency = (part.get('currency') or {}).get('name') or ''
@@ -1610,7 +2029,8 @@ class PbExplorer(models.AbstractModel):
             'csv_b64': base64.b64encode(data).decode('ascii'),
             'filename': 'payobook_%s_by_%s_%s.csv' % (
                 payload['spec']['measure'], payload['spec']['dimension'],
-                date.today().isoformat()),
+                (payload.get('period') or {}).get('key')
+                or date.today().isoformat()),
             'rows': written,
             'truncated': max(0, sum(len(p['series']) for p in parts) - written)
                          + payload.get('truncated', 0),
@@ -1708,7 +2128,7 @@ class PbExplorer(models.AbstractModel):
         notes = []
         if measure_key in ('headcount', 'cost_per_head'):
             notes.append(_('“%s” is not a money total, so the movement below '
-                           'explains NET PAY.', _(_MEASURES[measure_key]['label'])))
+                           'explains NET PAY.', _measure_word(measure_key)))
             measure_key = 'net'
         meas = _MEASURES[measure_key]
         types = meas.get('types')
@@ -1778,7 +2198,7 @@ class PbExplorer(models.AbstractModel):
             'basis_note': '' if pair['b'].basis == 'approved' else
                           _('The current period is still provisional.'),
             'notes': notes,
-            'measure_label': _(meas['label']),
+            'measure_label': _measure_word(spec['measure']),
         }
 
     def _anomalies(self, spec, pair):
