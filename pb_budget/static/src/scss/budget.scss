@@ -160,7 +160,9 @@ $bdg-tones: (
         font-weight: 700;
         cursor: pointer;
         font-family: inherit;
-        transition: .14s;
+        // The one moving declaration this stylesheet used to leave outside the
+        // reduced-motion guard (L18). It lives in the block at the foot of the
+        // file with the other thirteen.
 
         &:hover { background: var(--pbim-line-2, #F1F5F9); }
 
@@ -1108,5 +1110,10 @@ $bdg-tones: (
                         opacity .14s;
         }
         .bdg-qbr { transition: color .14s, background .14s, border-color .14s; }
+        // The budget-TYPE chips at the top of the board. Their transition sat
+        // OUTSIDE this guard from the day TIDY P3 shipped the board until LOOK
+        // P4 moved it here (L18) — the only moving declaration in this module
+        // a reader who asked for calm was still being given.
+        .bdg-chip { transition: background .14s, border-color .14s, color .14s; }
     }
 }
