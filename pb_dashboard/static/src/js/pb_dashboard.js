@@ -1,10 +1,17 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart, markup } from "@odoo/owl";
+import { Component, useState, onWillStart, onMounted, onPatched,
+         onWillUnmount, markup, useRef, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 
+/* Lucide paths, inline and owned by this module.
+ *
+ * NOT `ic()` from the shared kit, and that is the point: importing it would
+ * pull `pb_import_kit` into the manifest of the leanest module in the product,
+ * and this dashboard is the first screen of every tenant (LOOK ledger rule 19,
+ * the module's own docstring rule 2). New icons are added HERE. Never emoji. */
 const ICONS = {
     users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     wallet:'<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M18 12a2 2 0 0 0 0 4h3v-4Z"/>',
@@ -19,6 +26,7 @@ const ICONS = {
     upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
     play:'<polygon points="6 3 20 12 6 21 6 3"/>',
     check:'<path d="M20 6 9 17l-5-5"/>',
+    calendar:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M16 2v4"/>',
 };
 
 /* =============================================================================
@@ -117,11 +125,73 @@ export class PbDashboard extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
-        this.state = useState({ d: null, loaded: false });
+        this.stripRef = useRef("strip");
+        this.state = useState({
+            d: null,
+            loaded: false,
+            // What was ASKED for. What was GOT is `state.d.period`, which the
+            // server resolved and which this component ADOPTS rather than
+            // keeping its own idea of (LOOK rule 18).
+            period: "",
+            scoping: false,      // a month is being switched to
+            stripFocus: "",      // the chip the keyboard is standing on
+        });
+
+        // THE DEEP LINK, READ ONCE, in the vocabulary the Budget board already
+        // uses: `pb_focus: "month:2026-06"`, `"month:current"` and
+        // `"month:2026-03..2026-06"`. Two roads in — the Home hub hands its
+        // arrival to a lens that says `wantsArrival`, and the standalone client
+        // action carries the same key on its own context. A month this database
+        // does not have is not an error: the server answers with the latest one
+        // and says it fell back (ledger rule 21).
+        const arrival = this.props.arrival || {};
+        const ctx = (this.props.action && this.props.action.context) || {};
+        const focus = String(arrival.focus || ctx.pb_focus || "");
+        if (focus.startsWith("month:")) {
+            this.state.period = focus.slice(6);
+        }
+
         onWillStart(async () => {
-            this.state.d = await this.orm.call("pb.dashboard", "get_dashboard_data", []);
+            await this.load();
             this.state.loaded = true;
         });
+        // BOTH hooks. The first read finishes before there is any DOM, so a
+        // scroll asked for inside it finds no strip at all — on a phone the
+        // board then opened on the oldest month with the newest one chosen
+        // and nothing on screen saying where it was.
+        onMounted(() => {
+            this.keepChosenInView();
+            // THE STRIP IS STILL SETTLING when the first frame is painted: at
+            // 390 px it was measured 290 px wide at mount and 230 px once the
+            // KPI grid above it had finished wrapping, so the correction was
+            // computed against a scroll range 60 px shorter than the real one
+            // and the newest month stayed half off the right-hand edge. A
+            // resize is the only event that says the geometry moved.
+            if (window.ResizeObserver && this.stripRef.el) {
+                this._ro = new ResizeObserver(() => this.keepChosenInView());
+                this._ro.observe(this.stripRef.el);
+            }
+        });
+        onPatched(() => this.keepChosenInView());
+        onWillUnmount(() => this._ro && this._ro.disconnect());
+
+        // Capture phase: the platform's own hotkey service listens on `window`
+        // and stops propagation for the keys it claims, Escape among them, so
+        // a bubble-phase listener in a cockpit never fires (WF4).
+        useExternalListener(window, "keydown", (ev) => this.onKey(ev),
+                            { capture: true });
+    }
+
+    /** The one data call. `period` travels; everything else follows it. */
+    async load() {
+        this.state.d = await this.orm.call(
+            "pb.dashboard", "get_dashboard_data", [this.state.period || null]);
+        // ADOPT what the server answered. A link naming a month this database
+        // has never had comes back as the latest one, and the strip then shows
+        // THAT chip lit rather than a chip that is not there.
+        const got = this.state.d && this.state.d.period;
+        this.state.period = got ? got.key : "";
+        if (got && !this.state.stripFocus) { this.state.stripFocus = got.key; }
     }
 
     icon(name, size = 18) {
@@ -188,6 +258,242 @@ export class PbDashboard extends Component {
     get isEmpty() {
         const d = this.state.d;
         return !!d && !d.kpis.contracts && !d.run.slips && !d.formula.count;
+    }
+
+    // ------------------------------------------------------- the pay month
+    /* WHAT THESE FIGURES ARE ABOUT.
+     *
+     * The headline numbers on this page have always been one payroll month's,
+     * and the page never said which — so ₫16.8M of a single November test
+     * payslip sat under a headcount of four and a half thousand people and
+     * nobody could tell. The month is named first (R4) and the strip is the
+     * upgrade. A chip's micro bar is HOW MANY PEOPLE were paid that month
+     * against the busiest month: this strip's own question is "was anybody
+     * paid, and how many" (ledger rule 19), and the money for the month on
+     * screen is the headline figure directly above it. */
+
+    /** The month this board is about, or null on a database with no payroll. */
+    get period() { return (this.state.d && this.state.d.period) || null; }
+
+    /** Every payroll month that exists, oldest first. */
+    get periods() { return (this.state.d && this.state.d.periods) || []; }
+
+    /** "Figures for November 2026" — the sentence R4 exists for. */
+    get periodLine() {
+        const p = this.period;
+        return p ? _t("Figures for %s", p.label)
+                 : _t("No payroll has been run yet");
+    }
+
+    /* The four sentences around the strip, each built as ONE string here and
+     * printed with a single `t-esc`. A sentence written either side of a
+     * `<t t-esc/>` comes out of the extractor as TWO msgids no translator can
+     * put into their own word order (L17), and the indentation of an XML file
+     * is baked into whatever it does collect. */
+
+    get fellBackLine() {
+        const p = this.period;
+        return _t("That month is not on this database, so these figures are for %s.",
+                  p ? p.label : "");
+    }
+
+    get stripHint() {
+        return _t("Press a month to read the figures above for it. Arrow keys walk the strip; Escape comes back to the latest month.");
+    }
+
+    get emptyStripLead() { return _t("No payroll months yet."); }
+
+    get emptyStripLine() {
+        return _t("Once a pay run is done, every month it covers appears here and the figures above can be read for any of them.");
+    }
+
+    /** What a chip says when a person hovers or focuses it. ONE expression. */
+    chipTitle(mo) {
+        if (mo.people === 1) {
+            return _t("%s — 1 person was paid.", mo.label);
+        }
+        if (mo.people) {
+            return _t("%(month)s — %(count)s people were paid.",
+                      { month: mo.label, count: mo.people.toLocaleString() });
+        }
+        if (mo.all_slips) {
+            return _t("%s — no end-of-month run.", mo.label);
+        }
+        return _t("%s — nobody was paid.", mo.label);
+    }
+
+    /** The line under a chip's bar. Written once, singular included, because
+     *  "1 people" is how a screen announces nobody read it (GR42). */
+    chipCount(mo) {
+        if (mo.people === 1) { return _t("1 person"); }
+        if (mo.people) { return _t("%s people", mo.people.toLocaleString()); }
+        if (mo.all_slips) { return _t("no end-of-month run"); }
+        return _t("nobody paid");
+    }
+
+    /** A bar nobody can see is a bar that says nothing.
+     *
+     *  The floor is on the PEOPLE, not on the share: one person out of four
+     *  and a half thousand rounds to nought per cent, and drawing nothing for
+     *  them would say "nobody was paid" about a month where somebody was. */
+    barWidth(mo) {
+        if (!mo || !mo.people) { return 0; }
+        return Math.max(4, Math.min(100, Number(mo.share) || 0));
+    }
+
+    isLit(key) { return !!this.period && this.period.key === key; }
+
+    /** The caption under a money figure, naming its month so the number can be
+     *  checked. Without a month it is the sentence it always was. */
+    moneyCaption(base) {
+        const p = this.period;
+        return p ? _t("%(what)s in %(month)s", { what: base, month: p.label })
+                 : base;
+    }
+
+    get payrollCaption() { return this.moneyCaption(_t("personnel cost")); }
+
+    /**
+     * Pick a month. The board is NOT unmounted: `loaded` stays true, the cards
+     * keep their places and the numbers change under them.
+     *
+     * The busy guard is HERE and never on a chip's `disabled` attribute (T23):
+     * disabling the button the keyboard is standing on blurs it, and the next
+     * arrow press is then read against a state it was about to change.
+     */
+    async setPeriod(key) {
+        if (this.state.scoping) { return; }
+        if (this.state.period === key) { return; }
+        this.state.period = key;
+        this.state.scoping = true;
+        try {
+            await this.load();
+        } catch (e) {
+            this.notification.add(
+                _t("That month could not be read. Try again in a moment."),
+                { type: "danger" });
+            console.warn("pb_dashboard: could not read the month", e);
+        } finally {
+            this.state.scoping = false;
+        }
+    }
+
+    /** Escape's way out: back to the latest payroll month, which is where
+     *  this board opens and what it reported before it could be moved. */
+    async toLatest() {
+        const all = this.periods;
+        if (!all.length) { return; }
+        this.state.stripFocus = all[all.length - 1].key;
+        await this.setPeriod(all[all.length - 1].key);
+        this.focusChip(this.state.stripFocus);
+    }
+
+    async pressChip(mo) {
+        this.state.stripFocus = mo.key;
+        await this.setPeriod(mo.key);
+    }
+
+    /**
+     * ← and → walk the strip and Home / End jump to its ends — the ledger's
+     * rule 20 contract, the same one the Budget strip answers.
+     */
+    async onStripKey(ev) {
+        const walk = { ArrowLeft: -1, ArrowRight: 1, Home: "first",
+                       End: "last" }[ev.key];
+        if (walk === undefined) { return; }
+        const keys = this.periods.map((m) => m.key);
+        if (!keys.length) { return; }
+        ev.preventDefault();
+        if (this.state.scoping) { return; }
+        // WHERE THE KEYBOARD IS STANDING IS THE CHIP THAT HAS FOCUS, never the
+        // month in scope: tabbing to April and pressing → must go to May, and
+        // reading it off the state would send it somewhere else entirely (T23).
+        const chip = ev.target && ev.target.closest
+            ? ev.target.closest("[data-month]") : null;
+        const from = (chip && chip.dataset.month) || this.state.stripFocus
+            || (this.period ? this.period.key : "");
+        const here = keys.indexOf(from);
+        let next;
+        if (walk === "first") {
+            next = 0;
+        } else if (walk === "last") {
+            next = keys.length - 1;
+        } else if (here < 0) {
+            next = walk > 0 ? 0 : keys.length - 1;
+        } else {
+            next = Math.min(keys.length - 1, Math.max(0, here + walk));
+        }
+        const key = keys[next];
+        this.state.stripFocus = key;
+        await this.setPeriod(key);
+        this.focusChip(key);
+    }
+
+    focusChip(key) {
+        const root = this.stripRef.el;
+        if (!root) { return; }
+        const el = root.querySelector(`[data-month="${key}"]`);
+        if (el) { el.focus(); }
+    }
+
+    /**
+     * Many months scroll, and the chosen one is never off the end of them.
+     *
+     * Called from `onMounted` and `onPatched`, not from `load()`: the first
+     * read finishes BEFORE there is any DOM, so a scroll asked for there finds
+     * no strip and a phone opens on April with November chosen and nothing on
+     * screen saying so. A patch only ever follows a change to the data, never a
+     * reader scrolling the strip by hand, so this never fights a scroll.
+     */
+    scrollChosenIntoView() {
+        const p = this.period;
+        const root = this.stripRef.el;
+        if (!p || !root) { return; }
+        const el = root.querySelector(`[data-month="${p.key}"]`);
+        if (!el) { return; }
+        // The arithmetic rather than `scrollIntoView`: `inline: "nearest"` left
+        // the last chip half off the right-hand edge at 390 px, and it is free
+        // to scroll ANCESTORS as well, which on a phone means the whole page
+        // jumps sideways for a chip. This moves one element and no other.
+        //
+        // MEASURED FROM THE RECTANGLES, not from `offsetLeft`: that is relative
+        // to the nearest POSITIONED ancestor, and this strip is not one — so
+        // the sum came out 475 px when the answer was 535 and the newest month
+        // stayed half off the edge with nothing saying so.
+        const sb = root.getBoundingClientRect();
+        const cb = el.getBoundingClientRect();
+        const pad = 10;
+        if (cb.left < sb.left) {
+            root.scrollLeft += cb.left - sb.left - pad;
+        } else if (cb.right > sb.right) {
+            root.scrollLeft += cb.right - sb.right + pad;
+        }
+    }
+
+    /** The same, once now and once after the browser has finished laying the
+     *  page out. At mount the KPI grid above has not settled, so the strip is
+     *  briefly WIDER than it ends up: measured then, the correction came out
+     *  60 px short and the newest month stayed half off the right-hand edge on
+     *  a phone. The second pass costs nothing and is the one that lands. */
+    keepChosenInView() {
+        this.scrollChosenIntoView();
+        if (typeof window.requestAnimationFrame === "function") {
+            window.requestAnimationFrame(() => this.scrollChosenIntoView());
+        }
+    }
+
+    /**
+     * Escape means "back to the month this board opens on", and it says so
+     * beside the strip. It is claimed ONLY when the reader has actually moved
+     * off that month, so every other Escape on the page — the hub's, the
+     * platform's — still gets its turn.
+     */
+    onKey(ev) {
+        if (ev.key !== "Escape") { return; }
+        const p = this.period;
+        if (!p || p.latest || this.state.scoping) { return; }
+        ev.stopPropagation();
+        this.toLatest();
     }
 
     // ------------------------------------------------- the activation checklist

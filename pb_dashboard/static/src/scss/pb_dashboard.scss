@@ -126,6 +126,126 @@
         .pbd-btn { width: 100%; }
     }
 
+    // ----------------------------------------------------- the pay month
+    // WHICH MONTH THE FIGURES BELOW ARE ABOUT. One line, before the numbers,
+    // because a reader who never touches the strip still has to know.
+    //
+    // NOTHING HERE HAS A FIXED HEIGHT (L2): every string in this block is
+    // translated and every one of them wraps on a phone, so the row grows by
+    // what it has to say instead of printing over the numbers under it.
+    .pbd-period {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .pbd-period-ic { display: inline-flex; color: var(--pbd-brand); }
+    .pbd-period-ic svg { vertical-align: -.18em; }
+    .pbd-period-t { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--pbd-ink); }
+    .pbd-period-tag {
+        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+        background: #EEF1F5; color: #64748B;
+        &.now { background: var(--pbd-ink); color: #FFFFFF; }
+    }
+    .pbd-period-busy { font-size: 12px; font-weight: 700; color: var(--pbd-brand); }
+    .pbd-period-back {
+        background: none; border: 1px solid var(--pbd-border); border-radius: 999px;
+        padding: 4px 12px; font-size: 12px; font-weight: 700; font-family: inherit;
+        color: var(--pbd-brand); cursor: pointer;
+        &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+    }
+    .pbd-period-note {
+        margin: -4px 0 12px; padding: 8px 13px; border-radius: 10px;
+        background: #FEF3E2; color: #8A5A12; font-size: 12.5px; font-weight: 600;
+    }
+
+    // THE STRIP. One chip per payroll month, oldest to newest. Many months
+    // SCROLL — a chip is never squeezed until it cannot be read, and no month
+    // is ever dropped. The bar is how many people were paid that month against
+    // the busiest month, which is this strip's own question.
+    // THE STRIP SCROLLS, AND IT SAYS SO. A platform's overlay scrollbar is
+    // invisible at rest, so a strip that runs off its own edge looks like a
+    // strip that simply starts in April. This one keeps a slim track that is
+    // always drawn — a real affordance rather than a gradient the design
+    // system does not allow, and it costs no motion at all.
+    .pbd-strip {
+        display: flex; gap: 0; align-items: stretch;
+        overflow-x: auto; overflow-y: hidden;
+        margin-bottom: 8px; padding: 2px 2px 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #C7CBF5 #EDECF6;
+
+        &::-webkit-scrollbar { height: 7px; }
+        &::-webkit-scrollbar-track {
+            background: #EDECF6; border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #C7CBF5; border-radius: 4px;
+            &:hover { background: var(--pbd-brand); }
+        }
+    }
+    .pbd-mchip {
+        position: relative; flex: 0 0 96px;
+        display: flex; flex-direction: column; align-items: stretch; gap: 5px;
+        text-align: left; font-family: inherit; cursor: pointer;
+        border: 1px solid var(--pbd-border); border-radius: 0;
+        background: var(--pbd-surface); padding: 9px 10px 8px;
+        margin-left: -1px;
+
+        &:first-child { margin-left: 0; border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        &:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+        &:hover { border-color: var(--pbd-brand); z-index: 2; }
+        &:focus-visible {
+            outline: none; z-index: 3;
+            border-color: var(--pbd-brand);
+            box-shadow: 0 0 0 3px rgba(79,70,229,.18);
+        }
+        // The chosen month. Its border wins the one-pixel collapse with its
+        // neighbours, so the chip reads as one lit thing rather than as a
+        // chip with a broken edge.
+        &.is-on {
+            z-index: 4;
+            border-color: var(--pbd-brand);
+            background: #EEF0FD;
+            border-radius: 10px;
+            box-shadow: 0 0 0 2px rgba(79,70,229,.18);
+        }
+        // A month nobody was paid in is quiet, not disabled: it is still a
+        // month a person may want to stand in to see that for themselves.
+        &.is-quiet { opacity: .66; }
+        &.is-now { border-color: var(--pbd-ink); }
+    }
+    // The month AND its year, on every chip: this strip runs over whatever
+    // months a database has, and two chips both reading "Oct" is the one thing
+    // a period control may never do.
+    .pbd-mchip-l {
+        display: flex; align-items: baseline; gap: 4px; line-height: 1.2;
+        b { font-size: 12px; font-weight: 800; color: var(--pbd-ink); }
+        i { font-style: normal; font-size: 10px; font-weight: 700;
+            color: var(--pbd-muted); font-variant-numeric: tabular-nums; }
+    }
+    // The micro bar: the track is the busiest month, the fill is this one.
+    .pbd-mchip-bar { display: block; height: 5px; border-radius: 3px; background: #EDECF6; overflow: hidden; }
+    .pbd-mchip-fill { display: block; height: 5px; border-radius: 3px; background: var(--pbd-brand); }
+    .pbd-mchip-v {
+        font-size: 10.5px; font-weight: 700; color: var(--pbd-muted);
+        font-variant-numeric: tabular-nums; line-height: 1.25;
+    }
+    .pbd-mchip-flag {
+        position: absolute; top: -7px; right: 6px;
+        border-radius: 999px; padding: 1px 7px;
+        font-size: 9.5px; font-weight: 800;
+        background: var(--pbd-brand); color: #FFFFFF;
+    }
+    .pbd-striphint { font-size: 12px; color: var(--pbd-muted); margin-bottom: 20px; }
+    .pbd-strip-empty {
+        display: flex; align-items: flex-start; gap: 10px;
+        margin-bottom: 20px; padding: 12px 15px;
+        border: 1px dashed var(--pbd-border); border-radius: 12px;
+        background: var(--pbd-surface); color: var(--pbd-muted); font-size: 12.5px;
+        b { color: var(--pbd-ink); }
+        svg { flex: 0 0 auto; margin-top: 1px; color: var(--pbd-brand); }
+    }
+
     // KPI strip
     .pbd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
     .pbd-kpi {
@@ -146,7 +266,9 @@
     .pbd-card {
         background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
         padding: 20px 22px; box-shadow: 0 6px 18px rgba(27,23,51,.08);
-        transition: transform .2s, box-shadow .2s;
+        // The lift on hover MOVES, so it lives in the reduced-motion block at
+        // the foot of this file with everything else that does (R85). It sat
+        // here, unguarded, from the day this cockpit shipped until LOOK P4.
         &:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(27,23,51,.14); }
     }
     .pbd-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -174,6 +296,26 @@
     }
     .pbd-link { margin-top: 16px; background: none; border: none; color: var(--pbd-brand); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0;
         &:hover { text-decoration: underline; } }
+
+    // ------------------------------------------------------------- motion
+    // EVERY MOVING DECLARATION IN THIS COCKPIT IS INSIDE THIS BLOCK (R85).
+    // Under a reduced-motion preference none of them is applied at all, so the
+    // page paints finished on the first frame with nothing to recover from —
+    // which is a better property than declaring an animation and cancelling
+    // it. The check's own `@keyframes` stays at the top level of the file,
+    // where a browser will play it, with its `reduce` branch beside it.
+    @media (prefers-reduced-motion: no-preference) {
+        .pbd-card { transition: transform .2s, box-shadow .2s; }
+        // Picking a month re-scopes the board rather than replacing it: the
+        // cards keep their places and the bars TRAVEL to their new heights.
+        .pbd-mchip-fill { transition: width .4s cubic-bezier(.22, .68, .36, 1); }
+        .pbd-mchip {
+            transition: border-color .14s, background .14s, box-shadow .14s,
+                        border-radius .18s cubic-bezier(.22, .68, .36, 1),
+                        opacity .14s;
+        }
+        .pbd-period-back { transition: background .14s, border-color .14s; }
+    }
 }
 
 // ------------------------------------------------------------------ embedded
