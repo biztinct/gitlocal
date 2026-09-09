@@ -138,9 +138,13 @@
                  into whatever the extractor collects. -->
             <div t-else="" class="pbd-strip-empty">
                 <t t-out="icon('calendar',16)"/>
+                <!-- The space between the two is an EXPLICIT non-breaking
+                     space, not the newline above it: whitespace between two
+                     adjacent nodes is whitespace the browser may collapse
+                     (GR22), and it read "months yet.Once a pay run" on the
+                     golden template. -->
                 <span>
-                  <b t-esc="emptyStripLead"/>
-                  <t t-esc="emptyStripLine"/>
+                  <b t-esc="emptyStripLead"/>&#160;<t t-esc="emptyStripLine"/>
                 </span>
             </div>
 
