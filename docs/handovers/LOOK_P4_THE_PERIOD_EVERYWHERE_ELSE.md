@@ -76,6 +76,47 @@ Match the vocabulary, not the code.
 
 ---
 
+## 1b. What the first three phases learned that lands on you
+
+P1, P2 and P3 are complete: `pb_pay` **19.0.3.3.0** and `pb_budget` **19.0.2.2.0** on all
+four databases, 45/45 numbered tests passed between them. **Read L1–L18 in the ledger in
+full.** These land on your work directly:
+
+- **L9 — a `_t()` handed a dictionary writes ONE per cent sign; Python's `_()` needs
+  two.** Both your screens print percentages. P2 shipped `0.00%%` to a live screen and
+  nothing warned it; P3 then had to grep the deployed bundle and the DOM to prove it had
+  not. Do the same grep.
+- **L13 / T24 — a user-visible literal in a module-level list or tuple is invisible to
+  the extractor.** Your preset names ("This month", "Last quarter", "Everything") are
+  exactly that shape. Write them inside the `_()` call, in a dict keyed by value, with
+  the ordering in a separate ladder (GR59).
+- **L15 — never edit a msgid in place**; rebuild the catalogue from a fresh
+  `odoo-bin i18n export` and carry translations across by msgid. P3 did this and reported
+  299 terms with zero survivors; match that standard.
+- **L16 — prove every keyboard contract with the browser's own key press**, never a
+  synthetic dispatched event.
+- **L17 — a sentence written either side of a `<t t-esc/>` in a QWeb REPORT template is
+  TWO msgids, and only a fresh `.pot` shows it.** Two further halves of the same trap,
+  both worth knowing: the exported `.pot` is built from the `ir.ui.view` rows in the
+  DATABASE, so a report template edited on disk and not yet upgraded exports the OLD
+  sentence and the diff lies; and a `--test-enable` upgrade can lose to a browser session
+  holding the same row — P3 lost a whole run to `could not serialize access due to
+  concurrent update` because its own validator was logged in. **Log your validator out
+  before an upgrade.**
+- **L18 — verify reduced-motion guarding by fetching the DEPLOYED bundle and testing each
+  moving declaration, not by reading the source.** That is the only way it shows up; P3
+  found two unguarded declarations in a stylesheet that had shipped a fortnight earlier.
+
+### Two defects P3 found on YOUR screens — fix both, in their own commits
+
+1. **Pulse prints "0 employee(s)".** GR42's plural trap, on the first screen every tenant
+   sees. P1 found the same shape of thing on the pay bands axis ("1 people") and P2 fixed
+   it. One line each; sweep `pb_dashboard` for every other `(s)` while you are there.
+2. **`.bdg-chip { transition: .14s; }` in `pb_budget` sits outside the reduced-motion
+   guard** and has since TIDY P3 (L18). It is one line in a module you are not otherwise
+   touching, and closing it is cheap: take it, note it in your report, and do not let the
+   scope creep further than that one rule.
+
 ## 2. Deliverables — Pulse (`pb_dashboard`)
 
 ### 2a. Server
@@ -214,16 +255,24 @@ add to it rather than importing one. No emoji anywhere.
     coverage sentences.
 16. **Reduced motion**, and **keyboard only** end to end on both screens.
 17. **Nothing regressed**: `pb_dashboard`, `pb_home_hub` and `pb_explorer` suites green
-    (P1 measured `pb_explorer` at 46 tests at GROUP P3; re-measure and report), and the
-    wider run at the same pre-existing baseline — **248 tests with 3 known p9clone drift
-    failures (`pb_contracts` ×2, `pb_group` `test_t9`)** as of P1. Name what you measure.
+    (`pb_explorer` was 46 tests at GROUP P3; re-measure and report), and the wider run at
+    the same pre-existing baseline — **P3 measured 274 tests with 3 failures, 0 errors,
+    all the recorded p9clone drift (`pb_contracts` ×2, `pb_group` `test_t9`)**. Report
+    against that number rather than claiming zero.
+18. **No literal `%%`** in the DOM, the deployed bundle or the translation payload, on
+    both screens, in both languages (L9).
+19. **Pulse's plurals**: "0 employee(s)" is gone and no other `(s)` remains in
+    `pb_dashboard`; the `.bdg-chip` transition is inside the reduced-motion guard, proven
+    against the DEPLOYED bundle (L18).
 
 ---
 
 ## 6. Deploy
 
-`pb_dashboard` and `pb_explorer`. Bump both manifests (`pb_dashboard` → **19.0.1.2.0**;
-`pb_explorer` one minor from whatever it is when you start — it was 19.0.2.2.1). Ledger
+`pb_dashboard` and `pb_explorer`, plus the one-line `pb_budget` fix from §1b (bump it to
+**19.0.2.2.1** and deploy it in the same pass). Verified as this brief was finalised:
+`pb_dashboard` is at **19.0.1.1.0** → bump to **19.0.1.2.0**; `pb_explorer` is at
+**19.0.2.2.1** → bump to **19.0.2.3.0**; `pb_budget` is at **19.0.2.2.0**. Ledger
 deploy ritual exactly, all four databases in order p9clone → payobook → abm →
 payobook_template, `pg_dump` before each.
 
