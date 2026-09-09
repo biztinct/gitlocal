@@ -88,7 +88,7 @@ msgstr "Tên hiển thị"
 #. odoo-javascript
 #: code:addons/pb_payrun_results/static/src/xml/payrun_results.xml:0
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_payrun_results
 #. odoo-javascript

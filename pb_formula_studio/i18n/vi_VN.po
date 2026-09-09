@@ -3104,7 +3104,7 @@ msgstr "Phân bổ sự thay đổi"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_formula_studio
 #. odoo-javascript

@@ -162,7 +162,7 @@ msgstr "Tên hiển thị"
 #. module: pb_payruns
 #: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_division
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_payruns
 #: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_division_label

@@ -525,6 +525,28 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
   the table it forbids and once in a source comment naming the plural it
   forbids. Any test that greps its own module for a forbidden shape must strip
   the docstring, and the comment beside it must not spell the shape out.)
+- L24 (owner follow-up, 2026-09-09): **a correct `.po` does not mean a correct
+  screen, because a module upgrade never overwrites a translation the database
+  already holds.** The closeout logged "six modules translate Division as the
+  arithmetic word Phép chia". Fixing the six `.po` files was the smaller half:
+  a sweep of the four databases found **nine** wrong rows in
+  `ir_model_fields.field_description`, and three of them belonged to
+  `pb_explorer` — whose `.po` had said "Khối" **since GROUP P7**. The field
+  labels were imported when the catalogue was still wrong, every later `-u` left
+  them alone (Odoo only replaces a non-empty translation with
+  `--i18n-overwrite`), and no amount of reading the `.po` files would ever have
+  shown it. **Any translation fix is therefore two fixes**: the catalogue on
+  disk, and the value already stored in every database. The sweep that finds the
+  second is a query per translatable JSONB column — `ir_model_fields`
+  (`field_description`, `help`), `ir_model.name`, `ir_ui_view.arch_db`,
+  `ir_model_fields_selection.name`, `ir_act_window.name`, `ir_ui_menu.name` —
+  run per database; here only the first held anything, but the others are where
+  it would hide next time. Two further halves: the code translations that JS
+  reads (`_t()`) come from the `.po` on disk through an in-memory cache, so they
+  need the file plus a **service restart**, not a module upgrade; and a bare
+  `call_kw` probe with no `context.lang` answers in ENGLISH regardless of the
+  user's language, which will convince you a correct translation is still broken
+  — pass `{context:{lang:'vi_VN'}}` or you are testing nothing.
 
 ## Phase log
 

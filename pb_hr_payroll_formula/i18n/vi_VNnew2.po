@@ -2566,7 +2566,7 @@ msgstr "Chia cho hệ số"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__division
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
