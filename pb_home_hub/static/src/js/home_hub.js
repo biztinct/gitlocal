@@ -110,8 +110,14 @@ export class PbHomeHub extends Component {
             tracker: this.tracker,
             cog: () => this.openSettings(),
             lenses: [
+                // `wantsArrival` so a link may name a payroll month
+                // (`pb_focus: "month:2026-06"`, `"month:current"`). The shell
+                // hands the whole arrival payload only to a lens that has
+                // said it reads one — an unknown prop is a hard validation
+                // error in dev mode — and this is the only thing about the
+                // Pulse lens that has changed since it shipped.
                 { key: "pulse", icon: "activity", label: _t("Pulse"),
-                  Component: PbDashboard },
+                  Component: PbDashboard, wantsArrival: true },
                 { key: "approvals", icon: "inbox", label: _t("Approvals"),
                   Component: PbApproval, groups: APPROVAL_GATE },
                 // Bolted-on lenses sit after the two this hub ships — what

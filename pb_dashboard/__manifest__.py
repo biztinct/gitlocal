@@ -2,11 +2,10 @@
 {
     'name': 'Payobook Dashboard',
     'summary': 'Smashing command-centre home dashboard for Payobook',
-    # LEARNOS Phase 6. The activation checklist's two learning rows now report
-    # a STATE rather than a boolean, so a half-taken walkthrough says so. A code
-    # change with no version bump is invisible to the deploy-time version-diff
-    # gate (ledger, Phase 2+3 deploy).
-    'version': '19.0.1.1.0',
+    # LOOK P4. The home page names the payroll month its figures are about and
+    # offers a strip to change it. Python and assets both change; a code change
+    # with no version bump is invisible to the deploy-time version-diff gate.
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

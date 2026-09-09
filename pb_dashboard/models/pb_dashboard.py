@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The home dashboard's one data call.
 
-TWO RULES GOVERN THIS FILE, and both of them are about honesty.
+THREE RULES GOVERN THIS FILE, and all of them are about honesty.
 
 1. NO FABRICATED NUMBER, EVER. A brand-new tenant sees zeros and a helpful
    empty state; it never sees a company that does not exist. The legacy
@@ -16,6 +16,14 @@ TWO RULES GOVERN THIS FILE, and both of them are about honesty.
    import of either module anywhere in here, and there must never be one:
    this dashboard is the first screen of every tenant, including the lean
    ones.
+
+3. EVERY FIGURE NAMES THE MONTH IT IS ABOUT (LOOK P4). The headline numbers
+   used to report whichever payroll month happened to be the most recent and
+   never say which one, which is the one thing that makes a number
+   uncheckable — on payobook they were reporting a single November test
+   payslip beside a headcount of four and a half thousand people. The month
+   is now resolved HERE, on the server (LOOK rule 18), named in the payload,
+   and the reader may choose another one.
 """
 from odoo import api, models
 
@@ -26,13 +34,188 @@ SCENARIO_PREFIX = 'scenario:'
 SC_WELCOME = 'sc_welcome'
 SC_PAYRUN = 'sc_payrun'
 
+# The one predicate the KPI block is restricted to, in one place because it now
+# appears in three statements. With a Mid+End cycle BOTH payslips carry the full
+# GROSS, so counting both doubles the payroll AND the headcount.
+_END_CYCLE = "(fc.cycle_type = 'end_cycle' OR fc.id IS NULL)"
+
 
 class PbDashboard(models.AbstractModel):
     _name = 'pb.dashboard'
     _description = 'Payobook Dashboard data provider'
 
+    # ===================================================== the payroll month
+    # A PERIOD IS A SCOPE, NOT A FILTER (LOOK rule 18). It resolves on the
+    # SERVER, the payload says which month every figure is about, and the
+    # browser adopts what came back rather than what it asked for.
+    #
+    # The vocabulary is the one LOOK P3 shipped on the Budget board, matched
+    # rather than imported — `pb_dashboard` may not depend on `pb_budget`, or
+    # on anything else (rule 2 above). Accepted: nothing (the latest month with
+    # payroll), `'current'`, `'YYYY-MM'` and `'YYYY-MM..YYYY-MM'`. A stretch
+    # collapses to the newest month inside it that has payroll, because this
+    # board's numbers are a MONTH's ("Monthly payroll", "Avg salary") and a
+    # figure summed over four months under that label would be a lie no chip
+    # could repair. Anything this cannot read — including P3's `'Q1'`, which
+    # needs a fiscal year this board has no notion of — falls back to the
+    # latest month, silently, exactly as ledger rule 21 requires: a saved link
+    # is never an error and never an empty screen.
+
     @api.model
-    def get_dashboard_data(self):
+    def _month_words(self, day, full=True):
+        """"November 2026", in the reader's own language.
+
+        `strftime` answers in the SERVER's locale, which is C, so a Vietnamese
+        reader would be shown "Nov" on a screen where every other word is
+        Vietnamese. Babel ships with the platform and knows theirs.
+        """
+        fmt = 'LLLL y' if full else 'LLL'
+        try:
+            from babel.dates import format_date
+            return format_date(
+                day, fmt, locale=(self.env.context.get('lang') or 'en_US'))
+        except Exception:                            # noqa: BLE001
+            return day.strftime('%B %Y' if full else '%b')
+
+    @api.model
+    def _month_state(self, day, today):
+        """past | current | future, for the month `day` falls in."""
+        if (day.year, day.month) == (today.year, today.month):
+            return 'current'
+        return 'past' if (day.year, day.month) < (today.year, today.month) \
+            else 'future'
+
+    @api.model
+    def _payroll_months(self, companies):
+        """Every payroll month that exists, oldest to newest, with its people.
+
+        ONE grouped statement over `hr_payslip` and NOTHING ELSE — never a
+        join to `hr_payslip_line`. That table is 1.7 GB on the master database
+        against 1.9 GB of memory on the box, so any statement the planner
+        answers by scanning it costs **12.5 seconds** whether it is warm or
+        cold. Measured, 2026-09-09, on payobook: this statement is **32 ms**
+        over 28,286 payslips and ten months.
+
+        That is also why a chip's micro bar is HOW MANY PEOPLE were paid
+        rather than how much they were paid: the money for the month on screen
+        is the headline figure directly above the strip, read once, and asking
+        the line table for ten months of it is the twelve-second statement.
+
+        `count(... ) FILTER` carries the same end-of-month restriction as the
+        KPI block, so the two never disagree; `all_slips` has no filter, so a
+        month that ran only a mid-month advance still appears and says so
+        rather than vanishing from the strip.
+        """
+        self.env.cr.execute("""
+            SELECT to_char(p.date_from, 'YYYY-MM') AS mkey,
+                   min(p.date_from) AS day,
+                   count(DISTINCT p.employee_id) FILTER (WHERE {end_cycle}) AS people,
+                   count(*) FILTER (WHERE {end_cycle}) AS slips,
+                   count(*) AS all_slips
+              FROM hr_payslip p
+              LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
+             WHERE p.company_id IN %s AND p.date_from IS NOT NULL
+             GROUP BY 1
+             ORDER BY 1
+        """.format(end_cycle=_END_CYCLE), (companies,))
+        return self.env.cr.fetchall()
+
+    @api.model
+    def _resolve_period(self, asked, months):
+        """Which of `months` this board is about. Never None while one exists.
+
+        `months` is `_payroll_months`' output, oldest first, so the default —
+        and every fallback — is simply the last of them: the latest month that
+        has payroll, which is exactly what this board reported before it could
+        name anything.
+        """
+        from datetime import date as _date
+        if not months:
+            return None
+        keys = [row[0] for row in months]
+        raw = str(asked or '').strip()
+        wanted = ''
+        if raw == 'current':
+            wanted = self._today().strftime('%Y-%m')
+        elif '..' in raw:
+            lo, _sep, hi = raw.partition('..')
+            lo = self._as_month_key(lo)
+            hi = self._as_month_key(hi)
+            if lo and hi:
+                if lo > hi:                  # dragged right to left; same span
+                    lo, hi = hi, lo
+                inside = [k for k in keys if lo <= k <= hi]
+                wanted = inside[-1] if inside else ''
+        elif raw:
+            wanted = self._as_month_key(raw)
+        key = wanted if wanted in keys else keys[-1]
+        row = months[keys.index(key)]
+        day = row[1] or _date.today()
+        return {
+            'key': key,
+            'label': self._month_words(day),
+            'short': self._month_words(day, full=False),
+            'state': self._month_state(day, self._today()),
+            'latest': key == keys[-1],
+            'asked': raw,
+            # The one thing a reader has to be told when a link did not land
+            # where it said it would: it fell back, and it is not an error.
+            'fell_back': bool(raw) and key != wanted,
+        }
+
+    @api.model
+    def _as_month_key(self, raw):
+        """`'2026-03'`, or `''` for anything that is not a month at all."""
+        key = str(raw or '').strip()
+        if key == 'current':
+            return self._today().strftime('%Y-%m')
+        if len(key) == 7 and key[4] == '-' \
+                and key[:4].isdigit() and key[5:].isdigit() \
+                and 1 <= int(key[5:]) <= 12:
+            return key
+        return ''
+
+    @api.model
+    def _today(self):
+        from odoo import fields
+        return fields.Date.context_today(self)
+
+    @api.model
+    def _period_kpis(self, companies, key):
+        """The money and the headcount for ONE payroll month.
+
+        `ANY(%s)` over the month's own payslip ids, and that is not a stylistic
+        choice: handed a bare `p.date_from = <day>` predicate the planner
+        sequentially scans all 719,487 payslip lines and the statement takes
+        **12.5 seconds** for a real month. Handed the ids it uses the
+        `slip_id` index. Measured on payobook for June 2026 (3,852
+        end-of-month payslips): **12.5 s -> 2.1 s**, and for a one-payslip
+        month **16 ms**, with every figure identical to the digit.
+        """
+        self.env.cr.execute("""
+            SELECT p.id FROM hr_payslip p
+              LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
+             WHERE p.company_id IN %s
+               AND to_char(p.date_from, 'YYYY-MM') = %s
+               AND {end_cycle}
+        """.format(end_cycle=_END_CYCLE), (companies, key))
+        slip_ids = [r[0] for r in self.env.cr.fetchall()]
+        if not slip_ids:
+            return 0, 0.0, 0.0
+        self.env.cr.execute("""
+            SELECT count(DISTINCT p.employee_id),
+                   coalesce(sum(CASE WHEN pl.code = 'GROSS' THEN pl.total ELSE 0 END), 0),
+                   coalesce(sum(CASE WHEN cat.code IN ('INSCO', 'COMP') THEN pl.total ELSE 0 END), 0)
+              FROM hr_payslip_line pl
+              JOIN hr_payslip p ON p.id = pl.slip_id
+              JOIN hr_salary_rule_category cat ON cat.id = pl.category_id
+             WHERE pl.slip_id = ANY(%s)
+        """, (slip_ids,))
+        head, payroll, contributions = self.env.cr.fetchone() or (0, 0.0, 0.0)
+        return int(head or 0), float(payroll or 0.0), float(contributions or 0.0)
+
+    @api.model
+    def get_dashboard_data(self, period=None):
         env = self.env
 
         def safe(fn, default=0):
@@ -96,40 +279,60 @@ class PbDashboard(models.AbstractModel):
         if not pending:
             pending = safe(lambda: env['hr.payslip'].search_count([('state', 'in', ['level1', 'level2'])]))
 
-        # ---- Company KPIs from the latest payroll month (real payslip data) ----
-        # Aggregate the most recent month's payslips directly (SQL, company-scoped)
-        # rather than trusting the legacy analytics snapshot, which can be stale.
+        # ---- Company KPIs, for the payroll month this board is ABOUT --------
+        # Real payslip data, company-scoped, aggregated in SQL rather than read
+        # from the legacy analytics snapshot, which can be stale.
+        #
+        # The month is resolved on the server (rule 3 at the top of this file)
+        # and travels back in the payload, so the figures below and the words
+        # over them can never disagree. Left alone, it is the latest payroll
+        # month — the same month, to the digit, this block reported before it
+        # could name one.
         companies = tuple(env.companies.ids) or (env.company.id,)
         payroll = contributions = avg = 0
         headcount = employees
-        cr = env.cr
-        try:
-            cr.execute("SELECT max(date_from) FROM hr_payslip WHERE company_id IN %s", (companies,))
-            ref = (cr.fetchone() or [None])[0]
-            if ref:
-                # Scope to END-cycle payslips: with a Mid+End cycle both carry the
-                # full GROSS, so counting both would double the payroll/headcount.
-                cr.execute("""
-                    SELECT count(DISTINCT p.employee_id),
-                           coalesce(sum(CASE WHEN pl.code='GROSS' THEN pl.total ELSE 0 END), 0),
-                           coalesce(sum(CASE WHEN cat.code IN ('INSCO', 'COMP') THEN pl.total ELSE 0 END), 0)
-                    FROM hr_payslip p
-                    JOIN hr_payslip_line pl ON pl.slip_id = p.id
-                    JOIN hr_salary_rule_category cat ON cat.id = pl.category_id
-                    LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
-                    WHERE p.company_id IN %s AND p.date_from = %s
-                      AND (fc.cycle_type = 'end_cycle' OR fc.id IS NULL)
-                """, (companies, ref))
-                hc, payroll, contributions = cr.fetchone() or (0, 0.0, 0.0)
-                hc = hc or 0
-                avg = round(payroll / hc) if hc else 0
-        except Exception:
-            payroll = contributions = avg = 0
+        # A SAVEPOINT, because a failed statement poisons the whole transaction
+        # on this platform: without one, a `safe()` that swallowed a SQL error
+        # here would leave every later read in this method failing too, and the
+        # home page would go blank rather than report honest zeros.
+        def sql_safe(fn, default):
+            try:
+                with env.cr.savepoint():
+                    return fn()
+            except Exception:                        # noqa: BLE001
+                return default
+
+        months = sql_safe(lambda: self._payroll_months(companies), [])
+        resolved = safe(lambda: self._resolve_period(period, months), None)
+        busiest = max([row[2] for row in months] or [0]) or 0
+        periods = [{
+            'key': row[0],
+            'label': self._month_words(row[1]),
+            'short': self._month_words(row[1], full=False),
+            # THE YEAR IS ON EVERY CHIP, not only where it changes. This strip
+            # runs over whatever months the database has — October 2025 and
+            # October 2026 sit eight chips apart on the demo data — and two
+            # chips reading "Oct" is the one thing a period control may not do.
+            'year': row[1].year,
+            'people': int(row[2] or 0),
+            'slips': int(row[3] or 0),
+            'all_slips': int(row[4] or 0),
+            'share': round((row[2] or 0) / busiest * 100, 1) if busiest else 0.0,
+            'state': self._month_state(row[1], self._today()),
+            'latest': index == len(months) - 1,
+        } for index, row in enumerate(months)]
+        if resolved:
+            hc, payroll, contributions = sql_safe(
+                lambda: self._period_kpis(companies, resolved['key']),
+                (0, 0.0, 0.0))
+            avg = round(payroll / hc) if hc else 0
         # NO FALLBACK. A database with no payslips reports zeros. The legacy
         # analytics-dashboard record used to fill these in, and its figures were
         # a hard-coded sample dict, so a brand-new tenant was shown a company
         # that does not exist (LEARNOS ledger rule 1 — honest zeros). This
         # module must not read that model at all; the phase greps for it.
+        # The same holds for the month: with no payslips there are no months,
+        # `period` is null, and the screen says so in its own words.
 
         # ---- Formula engine ----
         cfgs = safe(lambda: env['hr.formula.config'].search([]), None)
@@ -203,6 +406,9 @@ class PbDashboard(models.AbstractModel):
             'user': env.user.name or 'there',
             'company': env.company.name or 'Payobook',
             'currency': currency,
+            # WHAT THIS BOARD IS ABOUT, and everything it could be about.
+            'period': resolved,
+            'periods': periods,
             'activation': {'show': not runs, 'items': activation_items},
             'kpis': {
                 'headcount': headcount,

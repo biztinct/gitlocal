@@ -64,12 +64,84 @@
                 </ol>
             </div>
 
+            <!-- WHICH MONTH THESE FIGURES ARE ABOUT.
+                 The one line this page never had. It comes BEFORE the numbers
+                 because a reader who never touches the strip below still has
+                 to know what they are looking at (R4). -->
+            <div class="pbd-period" data-coach="dash-period">
+                <span class="pbd-period-ic"><t t-out="icon('calendar',15)"/></span>
+                <b class="pbd-period-t" t-esc="periodLine"/>
+                <span t-if="period and period.latest" class="pbd-period-tag">the latest payroll month</span>
+                <span t-if="period and period.state === 'current'" class="pbd-period-tag now">this month</span>
+                <span t-if="state.scoping" class="pbd-period-busy" role="status">Reading…</span>
+                <button t-if="period and !period.latest" class="pbd-period-back"
+                        t-on-click="() => this.toLatest()">
+                    Back to the latest month
+                </button>
+            </div>
+
+            <!-- A link that named a month this database does not have.
+                 Not an error, and never a blank screen: the server answered
+                 with the latest one and says so here (ledger rule 21). -->
+            <div t-if="period and period.fell_back" class="pbd-period-note"
+                 t-esc="fellBackLine"/>
+
             <!-- KPI strip -->
             <div class="pbd-kpis" data-coach="dash-kpis">
                 <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="activeContractsLabel()"/></div>
-                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks">personnel cost</div></div>
+                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks" t-esc="payrollCaption"/></div>
                 <div class="pbd-kpi k-amber"><div class="kl">Pending approval <t t-out="icon('clock',15)"/></div><div class="kv" t-esc="state.d.kpis.pending"/><div class="ks">awaiting sign-off</div></div>
                 <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="rulesLabel()"/></div>
+            </div>
+
+            <!-- THE STRIP. One chip per payroll month, oldest to newest, each
+                 carrying how many people were paid in it against the busiest
+                 month — so the shape of the year is readable before anything
+                 is pressed. Many months scroll; none is ever dropped.
+
+                 Nothing here is `disabled` while the board re-scopes: the
+                 guard is in the handler, or the chip the keyboard is standing
+                 on loses focus mid-flight and the next arrow press goes
+                 nowhere (T23). -->
+            <div t-if="periods.length" class="pbd-strip" t-ref="strip"
+                 t-on-keydown="onStripKey"
+                 role="group" aria-label="Pick a payroll month">
+                <button t-foreach="periods" t-as="mo" t-key="mo.key"
+                        class="pbd-mchip"
+                        t-att-class="{ 'is-on': isLit(mo.key),
+                                       'is-now': mo.state === 'current',
+                                       'is-quiet': !mo.people }"
+                        t-att-data-month="mo.key"
+                        t-att-title="chipTitle(mo)"
+                        t-att-aria-pressed="isLit(mo.key) ? 'true' : 'false'"
+                        t-on-click="() => this.pressChip(mo)">
+                    <span class="pbd-mchip-l">
+                        <b t-esc="mo.short"/><i t-esc="mo.year"/>
+                    </span>
+                    <span class="pbd-mchip-bar">
+                        <span class="pbd-mchip-fill"
+                              t-attf-style="width: {{barWidth(mo)}}%"/>
+                    </span>
+                    <span class="pbd-mchip-v" t-esc="chipCount(mo)"/>
+                    <span t-if="mo.latest" class="pbd-mchip-flag">latest</span>
+                </button>
+            </div>
+            <div t-if="periods.length" class="pbd-striphint" t-esc="stripHint"/>
+
+            <!-- Nobody has been paid on this database yet. Not a hole where a
+                 strip should be: a sentence, and the one thing to do next.
+
+                 Every sentence in this block is built as ONE string in JS and
+                 printed with a single `t-esc`: a sentence written either side
+                 of a `<t t-esc/>` is TWO msgids no translator can reorder
+                 (L17), and the whitespace an XML file indents with is baked
+                 into whatever the extractor collects. -->
+            <div t-else="" class="pbd-strip-empty">
+                <t t-out="icon('calendar',16)"/>
+                <span>
+                  <b t-esc="emptyStripLead"/>
+                  <t t-esc="emptyStripLine"/>
+                </span>
             </div>
 
             <!-- Cockpit cards -->
