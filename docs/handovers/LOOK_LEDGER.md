@@ -462,7 +462,173 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
   touch this stylesheet closes it.
 
 
+- L19 (P4): **a table can be too big to read even once.** `hr_payslip_line` on
+  the master database is 1.7 GB over 719,487 rows, and the box has 1.9 GB of
+  memory — so it can never be cached and ANY statement the planner answers by
+  scanning it costs **12.5 seconds, warm or cold**. That is not a slow query,
+  it is a design constraint: the home page's own KPI statement was one of
+  them, and it is fast today only because the newest month on this data has a
+  single payslip in it. Two consequences. A picture whose per-month figure
+  needs that table cannot be drawn at all on this box, whatever it is worth
+  (P4's Pulse strip carries PEOPLE for that reason, measured at 32 ms over
+  `hr_payslip` alone). And handing the planner the ROW IDS — `pl.slip_id =
+  ANY(%s)` over the month's own payslips rather than `p.date_from = <day>` —
+  makes it use the `slip_id` index instead of scanning: 12.5 s → 2.1 s for a
+  real month, every figure identical. Measure the table before designing
+  anything that reads it per period.
+- L20 (P4): **`el.offsetLeft` is relative to the nearest POSITIONED ancestor,
+  which is almost never the scroll container.** Scrolling a chosen chip into
+  view with `offsetLeft` arithmetic came out 60 px short at 390 px, because
+  the strip is not positioned and the offset was measured from the page. And
+  `scrollIntoView({inline: "nearest"})` is no better: it left the last chip
+  half off the right-hand edge, and it is free to scroll ANCESTORS too, which
+  on a phone jumps the whole page sideways for a chip. Measure from
+  `getBoundingClientRect()` on both the container and the child, and move only
+  `container.scrollLeft`. Then do it TWICE — the strip was 290 px wide at
+  mount and 230 px once the grid above it had finished wrapping, so a
+  correction computed on the first frame is computed against the wrong scroll
+  range. `onMounted` + `onPatched` + a `ResizeObserver` on the strip is what
+  finally lands, and none of the three can be dropped.
+- L21 (P4): **a strip inside a DROPDOWN must not close on its first press.**
+  Budget's month strip is always on screen, so pressing a chip and then
+  shift-pressing another is one gesture. Explorer's lives in a picker, and the
+  picker closed on every selection — so the second key press went to a chip
+  that no longer existed and the whole keyboard contract silently did nothing
+  after one arrow. A PRESET is a finished answer and closes; the strip is a
+  control you work and stays open. The cost is that the picker covers the
+  board it is changing, which is why the chip's own label has to update behind
+  it.
+- L22 (P4): **the Explorer's whole vocabulary was English on a Vietnamese
+  screen, and it had been since the board shipped.** Every measure, dimension,
+  grain and kind of run carried its label as a plain literal inside a
+  module-level dict, and `_(entry['label'])` cannot translate one of those —
+  T24's trap, on a registry rather than on a list. The headline read "Net pay
+  bởi Division" under a fully Vietnamese chip rail. Twenty-one terms, closed
+  in GR59's shape (a dict keyed by the value, built inside a FUNCTION so the
+  `_()` calls run in the reader's context rather than at import time). The
+  THIRTEEN lens names and their descriptions are the same trap one registry
+  further along and are still English — owner debt. Also found while fixing
+  it: six modules translate `Division` as "Phép chia", the arithmetic
+  operation, where the rest of the product says "Khối".
+- L23 (P4): **a test can pass alone and fail in a wide run, and only a wide
+  CONTROL run tells you whose fault it is.**
+  `pb_pay::test_tidy_t2_people_between…` failed in the eight-module run this
+  phase measured against and passed in every single-module run — with the
+  phase's code and without it. The answer took three runs: `pb_pay` alone with
+  the new code (117/0), `pb_pay` alone with all four modules reverted to the
+  pre-phase commit (117/0), and the WIDE run with all four reverted, which
+  reproduced the same four failures. Every earlier LOOK phase measured
+  `pb_pay` in a five-module run, which is why nobody had seen it. A phase that
+  widens the module set inherits the interactions, and the control run is the
+  only honest way to say so. (Second half, cheaper: this phase hit WF13 —
+  a grep defeated by its own prose — TWICE, once in a test docstring naming
+  the table it forbids and once in a source comment naming the plural it
+  forbids. Any test that greps its own module for a forbidden shape must strip
+  the docstring, and the comment beside it must not spell the shape out.)
+
 ## Phase log
+
+- P4 — "The period on Pulse and on Explorer" — designed and BUILT 2026-09-09
+  (`LOOK_P4_THE_PERIOD_EVERYWHERE_ELSE.md`). Status: **COMPLETE**, and the
+  programme is closed (`LOOK_CLOSEOUT.md`).
+  `pb_dashboard` 19.0.1.2.0, `pb_explorer` 19.0.2.3.0, `pb_home_hub`
+  19.0.1.1.0 and `pb_budget` 19.0.2.2.1 live on p9clone, payobook, abm and
+  payobook_template; all four module trees verified byte-identical to the
+  repository on the server and every manifest version verified against
+  `ir_module_module.latest_version` on all four. No schema change, no
+  migration, no new model.
+
+  **THE HERO, and it is the first screen of every tenant: the home page's
+  headline figures name their month.** On the master database it reported
+  **₫16.8M of monthly payroll under a headcount of 4,533 people** and never
+  said the ₫16.8M was one November test payslip. It now says "Figures for
+  November 2026 · the latest payroll month" ABOVE the numbers and again on the
+  money card's own caption, with a strip of every payroll month underneath —
+  Apr 4,402 · May 4,431 · Jun 3,852 · Jul 1,440 · Aug 902 · Sep 3 · Oct 1 ·
+  Nov 1. Press June and ₫16.8M becomes **₫117.3B**, read back against SQL to
+  the digit (117,294,938,600 and 15,069,400,000).
+
+  **And the Explorer's sentence completes**: *Show Net pay By Division Over
+  Month **When June 2026** Where …*, in its own chip group between "Over" and
+  "Where", over a strip that is a live sparkline of the question being asked.
+  By net pay July is the tallest month at 100% and April 57.9%; switch the
+  measure to People and May is tallest at 100% while July falls to 32.5% —
+  same eight months, a different shape, one measure apart.
+
+  **Measuring the strip found a twelve-second home page** (L19).
+  `hr_payslip_line` is 1.7 GB against 1.9 GB of memory, so the KPI's own
+  statement costs 12.5 s for any real payroll month; handed the month's
+  payslip ids it uses the `slip_id` index instead. June 2026, 3,852
+  end-of-month payslips: **12.5 s → 2.1 s**, every figure identical. The
+  default month is now **16 ms**.
+
+  **The rulings held.** `pb_dashboard` gained no dependency (manifest
+  unchanged but for its version; `test_04`'s syntax-tree walk green; one
+  Lucide path added to its own inline map). The Mid/End guard survives
+  verbatim and is now pinned by a test that PICKS the month which actually
+  double-counts — June 2026, 4,393 mid-month against 3,852 end-of-month — and
+  proves the payload is the end-of-month figure and that the both-kinds figure
+  is strictly larger. P3's vocabulary is matched and none of it imported.
+  ONE deviation, measured and defended: **Pulse's chips carry how many people
+  were paid, not how much**, because ten months of money is the twelve-second
+  statement and thirty-two milliseconds is what this screen may spend.
+
+  **Zero dead-ends, every state walked on the database that actually has it**:
+  no payroll at all (payobook_template — "No payroll has been run yet", honest
+  zeros, and a sentence saying what would put a month there), a month with
+  payslips but NO end-of-month run (abm — the chip says so and the ₫0 stops
+  being a mystery), a month with one person, a period wholly before the facts
+  (1990, named as a year, with the empty state pointing at the new control and
+  a "Look at every period" button), a fresh tenant with no facts to choose
+  from, a phone, and a keyboard with no mouse.
+
+  **Keyboard, with the browser's own presses (L16)**: arrows walk both strips,
+  Home/End jump, Shift extends from the anchor, focus is kept and
+  `[disabled]` counted **0** at every moment (T23 does not come back).
+  Explorer's Escape is a ladder — the first press closed the picker and left
+  the period alone, the second cleared it and the total went back to 116B ₫.
+  Deep links, all six shapes, none landing anywhere empty: `month:2026-06`,
+  `month:current`, `month:2026-04..2026-06`, and `month:2029-01` /
+  `month:rubbish` / `month:Q2` all falling back to the latest month WITH a
+  sentence saying so. A shared Explorer link round-trips in a fresh page
+  ("May to Jul 2026", 76.6B ₫); a malformed one opens on Everything — the case
+  that raised a five-hundred error before this phase's first commit.
+
+  **Tests.** 165 on p9clone across the four modules, **0 failed and 0 errors**
+  (`pb_explorer` 53 → 69, `pb_dashboard` +10). The wider run over **398 tests**
+  reports **4 failures and 0 errors**, and a CONTROL RUN with all four modules
+  reverted to the pre-phase commit reproduces exactly the same four: zero
+  regressions (L23).
+
+  **Vietnamese** is complete on both screens: `pb_explorer` **274 terms** and
+  `pb_dashboard` **88**, both with 0 untranslated, 0 fuzzy, 0 lost
+  placeholders, 0 entries missing their `#. module:` comment, the vendor's
+  name in no translation and in no header, and both `.pot` templates committed
+  beside their catalogues. Not one literal `%%` reaches a screen in either
+  language, proven in the rendered DOM and in the deployed 11.3 MB bundle
+  (its 15 occurrences are all positional and none is in these modules).
+  Reduced motion proven against the DEPLOYED 5.9 MB stylesheet: every
+  declaration this phase touched is inside the guard, **`.bdg-chip` included —
+  L18 is closed**.
+
+  **Browser.** Walked on p9clone, payobook, abm AND payobook_template at 1440
+  and 390, in English and Vietnamese, with **no console error anywhere**.
+  Screenshots: `docs/handovers/look_p4_shots/`. Report:
+  `docs/handovers/LOOK_P4_REPORT.md`.
+
+  Nothing was written to any business record on any database: payslips, pay
+  runs, budget rows and fact rows are exactly what they were before the phase
+  (28,286 · 28,286 · 36 · 0 payslips; 332 · 332 · 10 · 0 budget rows). One
+  temporary `look.p4@payobook.com` on p9clone (4451), payobook (4430), abm
+  (265) and payobook_template (647), **all four archived**; one config
+  parameter set and deleted by the test that needed it.
+
+  Owner debts: `pb_insights` is where "0 employee(s)" actually lives, not
+  `pb_dashboard`; thirteen Explorer starting-point names still print English
+  on a Vietnamese screen (L22); six modules translate "Division" as the
+  arithmetic operation; the payobook administrator password is still wrong
+  (GR24) and so is abm's (WF15); the `pbim` kit still has no dark palette
+  (GR38); 7 commits made and NOT pushed (135 now waiting on `19.1`).
 
 - P3 — "A stretch of months" — designed and BUILT 2026-09-09
   (`LOOK_P3_A_STRETCH_OF_MONTHS.md`). Status: **COMPLETE**.
