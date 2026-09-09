@@ -430,8 +430,140 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
   key press; a dispatched event is only good enough for handlers bound to the
   element itself.
 
+- L17 (P3): **a sentence written in a QWeb REPORT template either side of a
+  `<t t-esc/>` is TWO msgids, and only a fresh `.pot` shows it.** "The whole
+  year, with <name> in bold — this page is about those months." came out of
+  `odoo-bin i18n export` as `'The whole year, with'` and
+  `'in bold — this page is about those months.'` — two half-sentences no
+  translator can put into their own word order, and both of which look
+  perfectly translated once somebody fills them in. GR22 is the browser half
+  of this ("the whitespace between two adjacent `t-esc` nodes is whitespace the
+  browser may collapse"); this is the CATALOGUE half, on the other template
+  engine, and it is invisible in the rendered page. A sentence that must read
+  as a sentence is built as ONE `_()` string in Python and printed with a
+  single `t-esc` — here `pb.budget.export.period_page_line()`. Two further
+  halves of the same trap, both hit in the same hour: the exported `.pot` is
+  built from the `ir.ui.view` rows in the DATABASE, so a report template edited
+  on disk and not yet upgraded exports the OLD sentence and the diff lies; and
+  a `--test-enable` upgrade on the rehearsal clone can lose to a browser
+  session writing the same row (`res_groups.user_ids` names `base.user_admin`,
+  and the validator being logged in at the time cost one whole run to
+  `could not serialize access due to concurrent update` — T20's family, from a
+  browser instead of a cron).
+- L18 (P3): **`.bdg-chip { transition: .14s; }` sits outside the
+  reduced-motion guard** and has done since TIDY P3 shipped the Budget board.
+  R85's rule is that every MOVING declaration lives inside
+  `@media (prefers-reduced-motion: no-preference)`; fourteen declarations in
+  this module move and twelve do, the two exceptions being that one rule twice
+  (the budget-TYPE chips at the top of the board). Found by fetching the
+  deployed bundle and testing each moving declaration for guarding rather than
+  by trusting the source, which is the only way this shows up. Pre-existing,
+  one line, not fixed inside this phase's scope; recorded so the next phase to
+  touch this stylesheet closes it.
+
 
 ## Phase log
+
+- P3 — "A stretch of months" — designed and BUILT 2026-09-09
+  (`LOOK_P3_A_STRETCH_OF_MONTHS.md`). Status: **COMPLETE**.
+  `pb_budget` 19.0.2.2.0 live on p9clone, payobook, abm and
+  payobook_template; the module tree verified byte-identical to the
+  repository on the server (`32199e6c…4dad` both sides) and every manifest
+  version verified against `ir_module_module.latest_version` on all four.
+  No other module touched, no schema change, no migration.
+
+  **THE HERO: the reader sweeps four chips and the whole board — every
+  number, every word, every colour, the headline sentence, the drill, the
+  table and both exports — becomes about those four months under their
+  hand, with the chips beneath the cursor fusing into one band as they
+  go.** On the demo company's 2026 People budget the year reads "83% of the
+  2026 budget is spent and the year is 67% gone" over 2.0tn · 1.7tn ·
+  348.5bn; March to June reads "March to June: 5 of 7 functions went over
+  budget; Information Technology by the most (192.8bn VND, 122% over)" over
+  673.4bn · 1.5tn · −860.9bn · +128%, with the five captions rewritten
+  ("budget for March to June"), Retail's word moved from "Ahead of the
+  year" to "Over budget", and the same seven tiles in the same order. The
+  chosen chips carry `10px 0 0 10px` · `0` · `0` · `0 10px 10px 0`, which
+  is the whole difference between a range control and thirteen buttons.
+  **The sweep costs ONE server read**: the chips under the hand are painted
+  from the strip itself and the board is re-read once, on release.
+
+  **Four quarter brackets, on the pixel.** Measured `300–575 · 575–850 ·
+  850–1124 · 1124–1399` against month groups `300–575 · 574–850 ·
+  849–1124 · 1123–1399`. A quarter is a quarter of the FISCAL year: with
+  `pb_budget.fy_start_month = 7` the strip reads Jul…Jun, the year chip
+  reads **2026/27**, Q1 is **July to September** and the scope line reads
+  "Every figure on this board is Q1 2026/27 · July to September."
+
+  **R2's refactor is the phase.** The single month key that threaded
+  through `_matrix`, `_strip`, `_headline`, `_tone`, `_expenses`, `_rows`
+  and both exports is now `mkeys`, the ordered list of months the scope
+  covers, which for the year is all twelve — so `_matrix` has ONE
+  membership test and no month/year branch at all, and ledger rule 18 is a
+  property of the code rather than a promise about it. R1's collapse rules
+  are enforced in `_scope`: a stretch of one IS a month, a stretch of
+  twelve IS the year, proven byte-for-byte both in a shipped test and live
+  (`Shift+End` from January came back as the whole year).
+
+  **R3's parity proof, measured live and shipped as a test.** `get_board`
+  captured on p9clone for **3 fiscal years × 3 budget types × 13 scopes =
+  117 payloads** before the refactor and again after it, from the same
+  running database: **0 values changed, 0 keys missing**, and exactly three
+  additive keys (`scope.keys`, `scope.quarter`, `quarters`). 39 of the 117
+  carry real functions. Shipped as
+  `test_t1_the_refactor_moved_nothing`, which also asserts a stretch of one
+  byte-identical to that month, a stretch of twelve byte-identical to the
+  year, and a stretch dragged right to left identical to the same stretch
+  dragged left to right.
+
+  **Deep links, all seven forms, none landing anywhere empty**:
+  `month:2026-03`, `month:current`, `month:2026-03..2026-06`, `month:Q2`, a
+  stretch half outside the year (**clamped** to Jan–Mar), one wholly
+  outside (the whole year) and `month:rubbish` (the whole year) — seven
+  tiles on every one, and the existing ⌘K row "Budget this month" opened
+  September 2026 with its original sentence unchanged.
+
+  **Keyboard, with the browser's own presses (L16)**: arrows walk,
+  Home/End jump, Shift with either extends from the anchor, and Escape's
+  ladder gained a rung for a gesture in flight (the preview vanished and
+  the release afterwards did nothing). **T23 does not come back**: scope on
+  December, keyboard standing on April, `→` went to May, focus kept, and
+  `.bdg-mchip[disabled]` counted 0 throughout.
+
+  **Tests.** 53 `pb_budget` tests collected on p9clone (41 post-install),
+  **0 failed and 0 errors**, twelve of them new. The wider run over **274
+  tests** (`pb_pay` 125, `pb_group` 54, `pb_budget` 53, `pb_contracts` 48,
+  `pb_hub` 34) reports **3 failures and 0 errors**, all three the recorded
+  p9clone data drift: zero regressions against P2's 262/3 baseline.
+
+  **Vietnamese** is complete: the catalogue rebuilt from a fresh export
+  with every translation carried across BY MSGID (L15) — 299 terms, 0
+  untranslated, 0 fuzzy, 0 lost placeholders, 0 entries missing their
+  `#. module:` comment, the word "Odoo" in no translation and no `.pot`
+  header. Not one literal `%%` reaches a screen in either language (L9),
+  proven in the rendered DOM, in the 11.4 MB deployed bundle and in the
+  browser's translation payload.
+
+  **Browser.** Walked on p9clone, payobook and abm at 1440, 1000 and 390,
+  in English and Vietnamese, with **no console error anywhere**.
+  Screenshots: `docs/handovers/look_p3_shots/`. Report:
+  `docs/handovers/LOOK_P3_REPORT.md`.
+
+  Nothing was written to any budget on any database: the row counts are
+  exactly what they were before the phase (332 · 332 · 10 · 0 budget rows,
+  2 · 2 · 0 · 0 expenses). One temporary `look.p3@payobook.com` on p9clone
+  (4420), payobook (4429) and abm (264), all archived again; one p9clone
+  config parameter set for the fiscal-year test, reverted and its ROW
+  DELETED so p9clone matches the other three exactly.
+
+  Owner debts: the payobook administrator password is still wrong (GR24)
+  and so is abm's (WF15); a future period that HAS been spent on is judged
+  like a finished one, which is TIDY P3's own shipped rule for a month and
+  was deliberately left alone; `pb_dashboard` prints "0 employee(s)" on the
+  Pulse lens (GR42's trap, on the screen P4 is about, one line);
+  `.bdg-chip`'s transition is outside the reduced-motion guard (L18); the
+  `pbim` kit still has no dark palette (GR38); 3 commits made and NOT
+  pushed (127 now waiting on `19.1`).
 
 - P2 — "Everybody on the calibration picture" — designed and BUILT 2026-09-09
   (`LOOK_P2_EVERYBODY_ON_THE_PICTURE.md`). Status: **COMPLETE**.
