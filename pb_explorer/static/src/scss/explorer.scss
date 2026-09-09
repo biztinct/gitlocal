@@ -238,7 +238,10 @@
         padding: 8px 13px; border-radius: 999px;
         border: 1px solid var(--line); background: var(--surface);
         color: var(--ink); font-size: 13px; font-weight: 600;
-        cursor: pointer; transition: all .16s ease; white-space: nowrap;
+        cursor: pointer; white-space: nowrap;
+        // The hover MOVES colour, so its transition lives in the
+        // reduced-motion block at the foot of this file with everything else
+        // that does (R85). It sat here, unguarded, until LOOK P4.
 
         &:hover { border-color: var(--p-light); color: var(--p); }
         &.primary {
@@ -296,6 +299,110 @@
         text-transform: uppercase; letter-spacing: .05em; cursor: pointer;
         svg { transform: rotate(90deg); }
         &:hover { color: var(--p); }
+    }
+
+    // ------------------------------------------------------------ the WHEN
+    // The period picker: the seven starting points, then a strip of months
+    // that is a SPARKLINE OF THE QUESTION BEING ASKED — each bar is that
+    // month's weight for the measure on screen, so changing the measure
+    // redraws it. Press one, shift-press another, or sweep across them.
+    //
+    // NOTHING IN HERE HAS A FIXED HEIGHT (L2): every string is translated and
+    // the preset sub-lines wrap on a phone, so each row grows by what it has
+    // to say instead of printing over the one below it.
+    .pbex-menu.pbex-when { min-width: 392px; max-width: 440px; max-height: 440px; }
+
+    // TWO COLUMNS, so the seven starting points AND the month strip are both
+    // on screen at once. In one column the strip fell below the menu's own
+    // scroll line — a picker whose second half has to be found by scrolling is
+    // a picker most people never see the second half of.
+    .pbex-when-presets {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+        padding-bottom: 7px; margin-bottom: 7px;
+        border-bottom: 1px solid var(--line-2);
+
+        // "Everything" is the way out, so it sits under the six and spans them.
+        .pbex-menu-item:last-child { grid-column: 1 / -1; }
+
+        .pw-l { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+        .pw-l b { font-weight: 700; font-size: 13px; }
+        .pw-l i {
+            font-style: normal; font-size: 11.5px; color: var(--muted);
+            line-height: 1.3;
+        }
+    }
+
+    .pbex-when-head {
+        display: flex; align-items: baseline; gap: 6px;
+        padding: 2px 4px 6px;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--muted);
+        i { font-style: normal; font-weight: 600; opacity: .75; }
+    }
+
+    // The strip itself. Many months SCROLL — a chip is never squeezed until
+    // it cannot be read, and no month is ever dropped.
+    .pbex-when-strip {
+        display: flex; align-items: flex-end; gap: 0;
+        overflow-x: auto; overflow-y: hidden;
+        padding: 2px 2px 4px; scrollbar-width: thin;
+    }
+
+    .pbex-mchip {
+        position: relative; flex: 0 0 38px;
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        padding: 5px 3px 5px; cursor: pointer; font-family: inherit;
+        border: 1px solid transparent; border-radius: 0;
+        background: transparent; color: var(--muted);
+
+        &:hover { background: var(--line-2); color: var(--p); }
+        &:focus-visible {
+            outline: none; z-index: 3; position: relative;
+            box-shadow: 0 0 0 2px var(--p-light);
+        }
+
+        // A CHOSEN RUN OF CHIPS READS AS ONE BAND: the two ends keep their
+        // corners and everything between them is square, so four months look
+        // like one stretch of four rather than four of anything.
+        &.is-in {
+            background: var(--soft); color: var(--p-deep);
+            border-color: var(--p-light);
+            .pbex-mchip-fill { background: var(--p); }
+        }
+        &.is-in.is-first {
+            border-top-left-radius: 9px; border-bottom-left-radius: 9px;
+        }
+        &.is-in.is-last {
+            border-top-right-radius: 9px; border-bottom-right-radius: 9px;
+        }
+    }
+
+    // The bar is the month's weight for the measure on screen. It grows from
+    // the floor, so the strip reads left to right as a shape.
+    .pbex-mchip-bar {
+        display: flex; align-items: flex-end; justify-content: center;
+        width: 12px; height: 34px;
+        border-radius: 3px; background: var(--line-2);
+    }
+    .pbex-mchip-fill {
+        display: block; width: 12px; min-height: 2px;
+        border-radius: 3px; background: var(--p-light);
+    }
+    .pbex-mchip-l {
+        font-size: 9.5px; font-weight: 700; letter-spacing: .01em;
+        white-space: nowrap;
+    }
+
+    .pbex-when-hint {
+        padding: 6px 4px 2px; font-size: 11px; color: var(--muted);
+        line-height: 1.4;
+    }
+
+    .pbex-when-empty {
+        display: flex; align-items: flex-start; gap: 8px;
+        padding: 10px 6px 4px; font-size: 12px; color: var(--muted);
+        line-height: 1.45;
+        svg { flex: 0 0 auto; margin-top: 1px; color: var(--p); }
     }
 
     // --------------------------------------------------------------- card
@@ -782,6 +889,20 @@
             to   { opacity: 1; transform: none; }
         }
         .pbex-door { transition: box-shadow .16s ease, border-color .16s ease; }
+        .pbex-chip { transition: border-color .16s ease, color .16s ease,
+                                 background .16s ease; }
+        // Sweeping the month strip stretches ONE shape: the band's corners
+        // travel with it rather than four buttons lighting up in turn, and a
+        // bar travels to its new weight when the measure changes.
+        .pbex-mchip {
+            transition: background .14s ease, color .14s ease,
+                        border-color .14s ease,
+                        border-radius .18s cubic-bezier(.22, .68, .36, 1);
+        }
+        .pbex-mchip-fill {
+            transition: height .38s cubic-bezier(.22, .68, .36, 1),
+                        background .14s ease;
+        }
         .pbex-peek { animation: pbex-peek-in .16s ease-out both; }
         @keyframes pbex-peek-in {
             from { opacity: 0; transform: translateY(-4px); }
