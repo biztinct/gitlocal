@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 19:14+0000\n"
-"PO-Revision-Date: 2026-09-07 19:14+0000\n"
+"POT-Creation-Date: 2026-09-09 01:52+0000\n"
+"PO-Revision-Date: 2026-09-09 01:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,6 +22,38 @@ msgid "%(a)s to %(b)s."
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"%(count)s of %(total)s pay periods are still in progress — their figures are"
+" provisional and may change on approval."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"%(count)s of the %(total)s pay periods in %(period)s are still in progress —"
+" their figures are provisional and may change on approval."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"%(count)s pay periods are still being prepared and are not included in these"
+" figures: %(names)s. Refresh in a moment."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"%(count)s pay periods inside %(period)s are still being prepared and are not"
+" included in these figures: %(names)s. Refresh in a moment."
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "%(dept)s net pay %(dir)s %(pct)s%%"
@@ -30,7 +62,37 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(first)s to %(last)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(first)s to %(last)s %(year)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(month)s — %(measure)s %(value)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s by month"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "%s per person"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s — nothing to show for this question."
 msgstr ""
 
 #. module: pb_explorer
@@ -41,8 +103,34 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid ". Refresh in a moment."
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"1 of %(total)s pay periods is still in progress — its figures are "
+"provisional and may change on approval."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"1 of the %(total)s pay periods in %(period)s is still in progress — its "
+"figures are provisional and may change on approval."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"1 pay period inside %(period)s is still being prepared and is not included "
+"in these figures: %(names)s. Refresh in a moment."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"1 pay period is still being prepared and is not included in these figures: "
+"%s. Refresh in a moment."
 msgstr ""
 
 #. module: pb_explorer
@@ -87,6 +175,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "All periods"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Allowances"
 msgstr ""
 
 #. module: pb_explorer
@@ -157,6 +251,12 @@ msgid ""
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Basic salary"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__basis
@@ -199,11 +299,15 @@ msgid "Category Type"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__charged_from
 msgid "Charged from other entities"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__charged_to
 msgid "Charged to other entities"
 msgstr ""
@@ -235,6 +339,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__company_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__company_id
@@ -256,6 +362,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Component"
 msgstr ""
@@ -272,13 +380,27 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Component type"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Component value"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_emp__charged_from
 msgid "Cost another company in the group paid on this entity's behalf."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Cost per person"
 msgstr ""
 
 #. module: pb_explorer
@@ -288,6 +410,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Country"
 msgstr ""
@@ -340,7 +464,15 @@ msgid "Date Start"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__department_id
@@ -382,6 +514,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__division
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__division_id
@@ -426,6 +560,18 @@ msgid "Employee Count"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Employer cost"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "End of month"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Every figure in the money it was paid in."
@@ -433,6 +579,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Everything"
 msgstr ""
@@ -485,6 +633,12 @@ msgid "Fact Run"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Final settlement"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__month
 msgid "First day of the run month"
 msgstr ""
@@ -495,12 +649,38 @@ msgid "Formula config cycle_type: 'mid' / 'end' / ''"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "From"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "From %s onwards"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__fte
 msgid "Full-time equivalent"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Full-time equivalents"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Gross pay"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Group"
 msgstr ""
@@ -557,6 +737,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Job position"
 msgstr ""
@@ -569,6 +751,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Kind of run"
 msgstr ""
@@ -590,6 +774,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__write_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Last month"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Last quarter"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Last year"
 msgstr ""
 
 #. module: pb_explorer
@@ -621,6 +823,12 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Look at every period"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Look inside %s"
 msgstr ""
@@ -638,6 +846,14 @@ msgid "Measure"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Mid-month advance"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__month
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__month
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__month
@@ -661,6 +877,12 @@ msgid "Net Total"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Net pay"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Next"
@@ -679,9 +901,23 @@ msgid "No department"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"No pay periods have been built yet, so there are no months to choose from. "
+"The starting points above will start answering as soon as a pay run is done."
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "No scheme named"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "No split"
 msgstr ""
 
 #. module: pb_explorer
@@ -705,6 +941,12 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Not from a scheme"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Not in a division"
 msgstr ""
 
@@ -718,6 +960,22 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Nothing matched this combination."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Nothing was paid in %s that matches. Widen the When clause above, drop a "
+"filter, or include mid-month advances."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Nothing was paid in %s that matches. Widen the When clause above, or drop a "
+"filter."
 msgstr ""
 
 #. module: pb_explorer
@@ -753,6 +1011,12 @@ msgid "Pay changes (%s stayed)"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Pay run"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model,name:pb_explorer.model_pb_explorer
 msgid "Payobook Analytics Explorer — read-only query facade"
 msgstr ""
@@ -784,6 +1048,8 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__config_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__config_id
@@ -802,6 +1068,12 @@ msgid ""
 "Payslips whose employee had no hr.version dated on or before the period end,"
 " so the EARLIEST version was used to resolve the department instead. "
 "Surfaced on the board."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "People"
 msgstr ""
 
 #. module: pb_explorer
@@ -824,7 +1096,21 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Pick a month or a stretch of months"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Preparing the analytics workbench…"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Press a month, shift-press another, or drag across them. Arrow keys walk the"
+" strip; Escape goes back to Everything."
 msgstr ""
 
 #. module: pb_explorer
@@ -841,6 +1127,14 @@ msgid "Provisional"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Q%(n)s %(year)s · %(months)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__quarter
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__quarter
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__quarter
@@ -851,6 +1145,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Refresh"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Regular"
 msgstr ""
 
 #. module: pb_explorer
@@ -923,6 +1223,12 @@ msgid "Shown in %s."
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Social security"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Something went wrong."
@@ -961,9 +1267,21 @@ msgid "State"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Statutory load"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Table"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Tax withheld"
 msgstr ""
 
 #. module: pb_explorer
@@ -1027,8 +1345,32 @@ msgid ""
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This month"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_emp__is_split
 msgid "This person worked part of the month in another company in the group."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This quarter"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This year"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "To"
 msgstr ""
 
 #. module: pb_explorer
@@ -1045,6 +1387,12 @@ msgid "Total"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Total cost"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Trend"
@@ -1052,16 +1400,17 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid "Try widening the filters or picking another period."
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Try widening the filters, or picking a period in the When clause above."
 msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid ""
-"Try widening the filters, picking another period, or\n"
-"                  including mid-month advances."
+"Try widening the filters, picking a period in the When clause above, or "
+"including mid-month advances."
 msgstr ""
 
 #. module: pb_explorer
@@ -1090,9 +1439,21 @@ msgid "Untyped categories"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Up to %s"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "What changed, and why"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "When"
 msgstr ""
 
 #. module: pb_explorer
@@ -1144,6 +1505,8 @@ msgid "Worth a look"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__year
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__year
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__year
@@ -1193,12 +1556,6 @@ msgid "desc"
 msgstr ""
 
 #. module: pb_explorer
-#. odoo-python
-#: code:addons/pb_explorer/models/pb_explorer.py:0
-msgid "dimensionlabel"
-msgstr ""
-
-#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "divisions"
@@ -1224,6 +1581,12 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "every period on file"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "fell"
 msgstr ""
 
@@ -1231,12 +1594,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "full-time equivalents"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-python
-#: code:addons/pb_explorer/models/pb_explorer.py:0
-msgid "grainlabel"
 msgstr ""
 
 #. module: pb_explorer
@@ -1249,12 +1606,6 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid "in these figures:"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "job positions"
 msgstr ""
@@ -1263,12 +1614,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "joined"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-python
-#: code:addons/pb_explorer/models/pb_explorer.py:0
-msgid "label"
 msgstr ""
 
 #. module: pb_explorer
@@ -1312,27 +1657,7 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid "not included"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "nothing specific matched — showing the default view"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid "of"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid ""
-"pay period(s) are still being\n"
-"            prepared and are"
 msgstr ""
 
 #. module: pb_explorer
@@ -1352,14 +1677,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "people"
-msgstr ""
-
-#. module: pb_explorer
-#. odoo-javascript
-#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
-msgid ""
-"periods are still in progress —\n"
-"            their figures are provisional and may change on approval."
 msgstr ""
 
 #. module: pb_explorer
