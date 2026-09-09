@@ -1,5 +1,7 @@
 # Option 2 — Payroll Blueprint
 
+> Latest revision: see `IMPLEMENTATION_HANDOFF.md` for the approved six-step journey, optional Mapping/Approval/Payslip setup and the implementation plan. The earlier journey below records the original design rationale.
+
 This is a separate, interactive design proposal at `/option2` and a standalone HTML artifact at `public/option2.html`. Option 1 remains unchanged. It is a local browser prototype, not an Odoo deployment or a certified Vietnam legislative pack.
 
 ## Design recommendation

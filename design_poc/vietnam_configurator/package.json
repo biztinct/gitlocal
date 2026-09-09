@@ -10,7 +10,7 @@
     "build": "node scripts/build-prototype.mjs && vinext build",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "test": "node scripts/test-engine.mjs && node scripts/test-blueprint.mjs"
+    "test": "node scripts/test-engine.mjs && node scripts/test-blueprint.mjs && node scripts/test-journey.mjs"
   },
   "dependencies": {
     "next": "16.2.6",

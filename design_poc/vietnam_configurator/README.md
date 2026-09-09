@@ -1,3 +1,9 @@
+# Latest: Payroll Blueprint — Option 2
+
+Open `Payroll_Blueprint_Option2.html` in this project folder. Read `IMPLEMENTATION_HANDOFF.md` to continue implementation in another session. Hosted route: `/option2`. This version includes template/Excel/blank starts, optional schema-scoped source/approval/payslip setup, Settings management and a dedicated outputs review. See the handoff for the distinction between working POC interactions and proposed live integrations.
+
+The remaining notes describe the preserved original Option 1.
+
 # Vietnam configuration lab — design POC
 
 Interactive, self-contained deliverable: `public/prototype.html`. Open it directly in Chrome, or use the private Sites root URL in `.openai/hosting.json`'s project. The root route embeds that exact HTML.
