@@ -34,23 +34,27 @@ class PbBudgetExport(models.TransientModel):
     fy = fields.Integer(string='Year')
     budget_type = fields.Char(string='Budget for')
     currency_mode = fields.Char(string='Reported in', default='report')
-    #: `'YYYY-MM'` when the reader was looking at one month, empty for the year.
-    #: It is a stored FIELD rather than a call argument because the PDF re-reads
-    #: the board while it renders, in another transaction, from this record.
-    month = fields.Char(string='Month')
+    #: What the reader was looking at: `'YYYY-MM'` for one month,
+    #: `'YYYY-MM..YYYY-MM'` for a stretch, empty for the whole year. It is a
+    #: stored FIELD rather than a call argument because the PDF re-reads the
+    #: board while it renders, in another transaction, from this record. The
+    #: scope's own canonical key is stored, never the word the reader pressed
+    #: ("Q2", "current"), so a rendered file cannot mean a different stretch
+    #: tomorrow from the one it meant when it was asked for.
+    month = fields.Char(string='Period')
 
     # ---------------------------------------------------------------- entry
     @api.model
     def build(self, fy=None, budget_type='manpower', currency='report',
-              kind='xlsx', month=None):
+              kind='xlsx', period=None):
         board = self.env['pb.budget'].get_board(fy, budget_type, currency,
-                                                None, month)
+                                                None, period)
         scope = board['scope']
         rec = self.create({
             'fy': board['fy'],
             'budget_type': board['budget_type'],
             'currency_mode': board['currency']['mode'],
-            'month': scope['key'] if scope['kind'] == 'month' else '',
+            'month': scope['key'] if scope['kind'] != 'year' else '',
         })
         if kind == 'pdf':
             return rec._pdf(board)
@@ -78,11 +82,14 @@ class PbBudgetExport(models.TransientModel):
                 "PDF, or ask an administrator to look at it."))
 
         scope = board['scope']
-        by_month = scope['kind'] == 'month'
+        by_period = scope['kind'] != 'year'
         wb = openpyxl.Workbook()
         ws = wb.active
-        # "Budget March 2026" — a sheet is named after what is ON it, so a
-        # month's file cannot be mistaken for the year's once it is open.
+        # "Budget March 2026", "Budget Q2 2026 · April to June" — a sheet is
+        # named after what is ON it, so a period's file cannot be mistaken for
+        # the year's once it is open. A sheet name is 31 characters and the
+        # longest stretch does not fit; the title row inside and the file's own
+        # name both carry the period in full, so nothing is lost.
         ws.title = (_('Budget %s') % scope['label'])[:31]
 
         head = Font(bold=True, color='FFFFFF')
@@ -100,7 +107,7 @@ class PbBudgetExport(models.TransientModel):
         # A month's sheet answers with the VARIANCE where the year's answers
         # with the pace, and drops the twenty-four month columns that would all
         # be about months this file is not for.
-        if by_month:
+        if by_period:
             cols = [_('Function'), _('Department'), _('Budget'), _('Spent'),
                     _('Variance'), _('Variance %'), _('Reading')]
         else:
@@ -116,7 +123,7 @@ class PbBudgetExport(models.TransientModel):
 
         row = 5
         for f in board['functions']:
-            if by_month:
+            if by_period:
                 vals = [f['name'], _('All'), f['budget'], f['spent'],
                         f['variance'], f['variance_pct'], f['tone_label']]
             else:
@@ -132,7 +139,7 @@ class PbBudgetExport(models.TransientModel):
                     cell.font = bold
             row += 1
             for d in f['departments']:
-                if by_month:
+                if by_period:
                     vals = ['', d['name'], d['budget'], d['spent'],
                             d['variance'], d['variance_pct'],
                             _('No budget set') if d['unbudgeted'] else '']
@@ -150,7 +157,7 @@ class PbBudgetExport(models.TransientModel):
         row += 1
         ws.cell(row=row, column=1, value=_('Total')).font = bold
         totals = (((3, k['budget']), (4, k['spent']), (5, k['variance']),
-                   (6, k['variance_pct'])) if by_month
+                   (6, k['variance_pct'])) if by_period
                   else ((3, k['budget']), (4, k['spent']), (5, k['left']),
                         (6, k['burn']), (7, k['pace'])))
         for i, v in totals:
@@ -210,19 +217,41 @@ class PbBudgetExport(models.TransientModel):
     def month_bars(self, board):
         """Twelve rows: the month, what was spent in it, and that as a share of
         the biggest month — so a page with no chart engine still SHOWS the
-        shape of the year rather than listing it."""
+        shape of the year rather than listing it.
+
+        All twelve, in every scope, with the months the page is ABOUT marked:
+        a printed page is read away from the screen and "how does this stretch
+        compare with the rest of the year" is the first thing anybody asks of
+        it.
+        """
         self.ensure_one()
         totals = {}
         for f in board['functions']:
             for m in f['months']:
                 totals[m['key']] = totals.get(m['key'], 0.0) + (m['spent'] or 0.0)
         peak = max(totals.values()) if totals else 0.0
+        scope = board['scope']
+        lit = set() if scope['kind'] == 'year' else set(scope['keys'])
         return [{
             'key': m['key'],
             'label': '%s %s' % (m['label'], m['year']),
             'spent': round(totals.get(m['key'], 0.0), 2),
             'pct': round(totals.get(m['key'], 0.0) / peak * 100, 1) if peak else 0.0,
+            'in_scope': m['key'] in lit,
         } for m in board['months']]
+
+    def period_page_line(self, board):
+        """The line under "Month by month" when the page is about a period.
+
+        ONE sentence, built here and not in the template. A sentence assembled
+        from template text either side of a `t-esc` is TWO msgids in the
+        catalogue — "The whole year, with" and "in bold — this page is about
+        those months." — which no translator can put into their own language's
+        word order, and which the exporter will happily carry for ever (GR22).
+        """
+        self.ensure_one()
+        return _("The whole year, with %s in bold — this page is about those "
+                 "months.", board['scope']['name'])
 
     def narrative(self, board=None):
         """The variance lines, in the words a person would use.
@@ -232,7 +261,7 @@ class PbBudgetExport(models.TransientModel):
         """
         self.ensure_one()
         board = board or self.board()
-        if board['scope']['kind'] == 'month':
+        if board['scope']['kind'] != 'year':
             return self._narrative_month(board)
         lines = []
         for f in board['functions']:
@@ -273,11 +302,14 @@ class PbBudgetExport(models.TransientModel):
         return lines
 
     def _narrative_month(self, board):
-        """The same lines for ONE month, and the comparison is the budget.
+        """The same lines for a month or a stretch, and the comparison is the
+        budget.
 
-        A month has no calendar inside it to be ahead of, so every sentence
+        Neither has a whole calendar inside it to be ahead of, so every sentence
         here says the same two things instead: what was spent against what was
-        set aside, and which side of it that landed.
+        set aside, and which side of it that landed. The period's own NAME goes
+        into each one — "in March", "in Q2 2026", "in March to June" — so the
+        same sentence serves all three shapes.
         """
         self.ensure_one()
         month = board['scope']['name']

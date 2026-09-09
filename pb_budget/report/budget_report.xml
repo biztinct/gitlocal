@@ -117,15 +117,17 @@
                         </table>
 
                         <!-- ============== the months, as bars ============== -->
-                        <h4 style="margin:0 0 8px 0;font-size:13px;">Month by month</h4>
+                        <h4 style="margin:0 0 2px 0;font-size:13px;">Month by month</h4>
+                        <div t-if="board['scope']['kind'] != 'year'" style="font-size:11px;color:#64748b;margin:0 0 8px 0;"
+                             t-esc="doc.period_page_line(board)"/>
                         <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:24px;">
                             <tbody>
                                 <tr t-foreach="doc.month_bars(board)" t-as="bar">
-                                    <td style="padding:3px 8px;width:60px;color:#64748b;">
+                                    <td t-attf-style="padding:3px 8px;width:64px;color:#{bar['in_scope'] and '1B1733' or '64748b'};font-weight:#{bar['in_scope'] and '700' or '400'};">
                                         <t t-esc="bar['label']"/>
                                     </td>
                                     <td style="padding:3px 8px;">
-                                        <div style="background:#eef1f5;height:12px;width:100%;position:relative;">
+                                        <div t-attf-style="background:#eef1f5;height:12px;width:100%;position:relative;opacity:#{bar['in_scope'] and '1' or '.45'};">
                                             <div t-attf-style="background:#6355C7;height:12px;width:#{bar['pct']}%;"/>
                                         </div>
                                     </td>

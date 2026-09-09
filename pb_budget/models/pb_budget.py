@@ -145,12 +145,20 @@ class PbBudget(models.AbstractModel):
                    - first - relativedelta(months=elapsed)).days or 30
         return round(min(100.0, (elapsed + (today.day - 1) / days_in) / 12 * 100), 1)
 
-    # =============================================================== a month
-    # A MONTH IS A SCOPE, EQUAL TO THE YEAR (TIDY rule 13). Everything the year
-    # view has — the numbers, the words, the colours, the drill and the
-    # exports — the month view has too, and the seven helpers below are the
-    # whole of the difference. A month never becomes a filter on a year board:
-    # it replaces the year as the thing every figure is about.
+    # =============================================================== a period
+    # A PERIOD IS A SCOPE, EQUAL TO THE YEAR (TIDY rule 13, LOOK rule 18).
+    # Everything the year view has — the numbers, the words, the colours, the
+    # drill and the exports — a month has too, and so does a STRETCH of months.
+    # A period never becomes a filter on a year board: it replaces the year as
+    # the thing every figure is about.
+    #
+    # ONE VOCABULARY, THREE SHAPES (LOOK P3 R1/R2). Everything downstream is
+    # handed `mkeys` — the ordered list of month keys the scope covers, which
+    # for the whole year is all twelve. A month, a quarter, "March to June" and
+    # the year are then ONE code path with a different list, which is what makes
+    # rule 18 a property of the code rather than a promise about it. A stretch
+    # of exactly one month IS a month and a stretch of twelve IS the year, so
+    # nothing downstream ever has two ways to say the same thing.
     @api.model
     def _month_keys(self, fy):
         return [m.strftime('%Y-%m') for m in self._fy_months(fy)]
@@ -257,51 +265,241 @@ class PbBudget(models.AbstractModel):
             return '%.0fk' % (val / 1e3)
         return '{:,.0f}'.format(val)
 
+    # ----------------------------------------------------------- a stretch
     @api.model
-    def _scope(self, fy, month, today=None):
-        """What this whole board is ABOUT: a year, or one month of it."""
+    def _fy_quarters(self, fy):
+        """The four quarters of the FISCAL year, whatever month it starts in.
+
+        A company whose year opens in July has a Q1 of July, August and
+        September, and the chip's own words say so — a reader on a July start
+        is never left guessing which three months "Q1" means (R5).
+        """
+        keys = self._month_keys(fy)
+        out = []
+        for i in range(4):
+            span = keys[i * 3:(i + 1) * 3]
+            out.append({
+                'key': 'Q%s' % (i + 1),
+                'label': 'Q%s' % (i + 1),
+                'name': self._quarter_name(i + 1, fy),
+                'title': self._span_words(self._month_date(span[0]),
+                                          self._month_date(span[-1])),
+                'keys': span,
+            })
+        return out
+
+    @api.model
+    def _quarter_name(self, n, fy):
+        """"Q2 2026", and "Q1 2026/27" where the year is not the calendar's."""
+        return _("Q%(n)s %(year)s", n=n, year=self._fy_label(fy))
+
+    @api.model
+    def _quarter_of(self, mkeys, fy):
+        """The quarter these months ARE, or nothing. Never "roughly"."""
+        want = list(mkeys or [])
+        for q in self._fy_quarters(fy):
+            if q['keys'] == want:
+                return q['key']
+        return ''
+
+    @api.model
+    def _span_words(self, first, last):
+        """"April to June" — one format string, never two glued fragments, or
+        no translator can put the words in their own order."""
+        return _("%(first)s to %(last)s",
+                 first=self._month_words(first, full=True),
+                 last=self._month_words(last, full=True))
+
+    @api.model
+    def _period_in_fy(self, period, fy):
+        """The months a period covers, in order, always inside THIS year.
+
+        Accepts nothing (the whole year), `'YYYY-MM'`, `'current'`,
+        `'YYYY-MM..YYYY-MM'` and `'Q1'`…`'Q4'`. A stretch that hangs off the end
+        of the year is CLAMPED to it; one that lands entirely outside it, and
+        anything this cannot read at all, falls back to the whole year. A saved
+        link is never an error and never a blank board (ledger rule 21), and
+        `'current'` goes on meaning "now" for ever so a bookmark cannot rot.
+        """
+        keys = self._month_keys(fy)
+        raw = str(period or '').strip()
+        if not raw:
+            return list(keys)
+        if raw.upper() in ('Q1', 'Q2', 'Q3', 'Q4'):
+            n = int(raw[1])
+            return list(keys[(n - 1) * 3:n * 3])
+        if '..' in raw:
+            lo_raw, _sep, hi_raw = raw.partition('..')
+            lo = self._month_date(self._as_month_key(lo_raw))
+            hi = self._month_date(self._as_month_key(hi_raw))
+            if not lo or not hi:
+                return list(keys)
+            if lo > hi:                      # dragged right to left; same span
+                lo, hi = hi, lo
+            span = [k for k in keys if lo <= self._month_date(k) <= hi]
+            return span or list(keys)
+        one = self._month_in_fy(raw, fy)
+        return [one] if one else list(keys)
+
+    @api.model
+    def _as_month_key(self, raw):
+        """One end of a stretch, with `'current'` resolved to this month."""
+        key = str(raw or '').strip()
+        if key == 'current':
+            return fields.Date.context_today(self).strftime('%Y-%m')
+        return key
+
+    @api.model
+    def _period_pace(self, mkeys, today=None):
+        """How far the calendar is through the STRETCH, 0–100.
+
+        Wholly behind us is 100, wholly ahead is 0, and one we are standing
+        inside is the share of its days that have gone. It is `_month_pace`'s
+        own idea widened, not a second one: over a single month the two answer
+        the same number to the decimal, which is the point of T6.
+        """
+        keys = list(mkeys or [])
+        if not keys:
+            return 0.0
         today = today or fields.Date.context_today(self)
-        if month:
-            first = self._month_date(month)
+        first = self._month_date(keys[0])
+        last = self._month_bounds(keys[-1])[1]
+        if today > last:
+            return 100.0
+        if today < first:
+            return 0.0
+        total = (last - first).days + 1
+        return round(min(100.0, (today - first).days / total * 100), 1)
+
+    @api.model
+    def _period_state(self, mkeys, today=None):
+        today = today or fields.Date.context_today(self)
+        keys = list(mkeys or [])
+        if not keys:
+            return 'current'
+        first = self._month_date(keys[0])
+        last = self._month_bounds(keys[-1])[1]
+        if today < first:
+            return 'future'
+        if today > last:
+            return 'past'
+        return 'current'
+
+    @api.model
+    def _scope(self, fy, mkeys, today=None):
+        """What this whole board is ABOUT: a year, one month, or a stretch.
+
+        R1 — a stretch of ONE month reports itself as a month and a stretch of
+        TWELVE reports itself as the year, so a reader who drags across the
+        whole strip gets the year board they already know rather than a second,
+        subtly different one, and nothing downstream has two names for one
+        thing. `keys` is the ordered list of months in scope in every shape,
+        including the year's own twelve, so the strip has one thing to read.
+        """
+        today = today or fields.Date.context_today(self)
+        all_keys = self._month_keys(fy)
+        keys = [k for k in (mkeys or []) if k in all_keys]
+        if not keys or len(keys) == len(all_keys):
+            now = self._current_fy(today)
+            return {
+                'kind': 'year',
+                'key': str(fy),
+                'keys': list(all_keys),
+                'quarter': '',
+                'label': self._fy_label(fy),
+                'name': self._fy_label(fy),
+                'short': self._fy_label(fy),
+                'state': ('current' if fy == now
+                          else ('past' if fy < now else 'future')),
+            }
+        if len(keys) == 1:
+            first = self._month_date(keys[0])
             return {
                 'kind': 'month',
-                'key': month,
+                'key': keys[0],
+                'keys': keys,
+                'quarter': '',
                 'label': self._month_title(first),
                 'name': self._month_words(first, full=True),
                 'short': self._month_words(first),
-                'state': self._month_state(month, today),
+                'state': self._month_state(keys[0], today),
             }
-        now = self._current_fy(today)
+        first = self._month_date(keys[0])
+        last = self._month_date(keys[-1])
+        quarter = self._quarter_of(keys, fy)
         return {
-            'kind': 'year',
-            'key': str(fy),
-            'label': self._fy_label(fy),
-            'name': self._fy_label(fy),
-            'short': self._fy_label(fy),
-            'state': ('current' if fy == now
-                      else ('past' if fy < now else 'future')),
+            'kind': 'range',
+            'key': '%s..%s' % (keys[0], keys[-1]),
+            'keys': keys,
+            'quarter': quarter,
+            'label': self._span_label(first, last, fy, quarter),
+            'name': self._span_name(first, last, fy, quarter),
+            'short': self._span_short(first, last, quarter),
+            'state': self._period_state(keys, today),
         }
+
+    @api.model
+    def _span_label(self, first, last, fy, quarter=''):
+        """What a stretch is CALLED, in words somebody would say out loud.
+
+        A quarter names itself and then names its months, because "Q1" alone is
+        a guess on any year that does not start in January. A stretch inside one
+        calendar year carries the year once at the end; one that crosses the
+        turn of the year carries it on both months, or "December to February" is
+        a sentence with two possible meanings.
+        """
+        if quarter:
+            return _("%(quarter)s · %(months)s",
+                     quarter=self._quarter_name(int(quarter[1]), fy),
+                     months=self._span_words(first, last))
+        if first.year == last.year:
+            return _("%(first)s to %(last)s %(year)s",
+                     first=self._month_words(first, full=True),
+                     last=self._month_words(last, full=True),
+                     year=first.year)
+        return _("%(first)s to %(last)s",
+                 first=self._month_title(first), last=self._month_title(last))
+
+    @api.model
+    def _span_name(self, first, last, fy, quarter=''):
+        """The short way to say it inside a sentence — "Q2 2026", "March to
+        June", and the full both-years form when the stretch crosses a year."""
+        if quarter:
+            return self._quarter_name(int(quarter[1]), fy)
+        if first.year == last.year:
+            return self._span_words(first, last)
+        return _("%(first)s to %(last)s",
+                 first=self._month_title(first), last=self._month_title(last))
+
+    @api.model
+    def _span_short(self, first, last, quarter=''):
+        if quarter:
+            return quarter
+        return _("%(first)s–%(last)s",
+                 first=self._month_words(first), last=self._month_words(last))
 
     # ================================================================ the board
     @api.model
     def get_board(self, fy=None, budget_type='manpower', currency='report',
-                  row_cap=None, month=None):
+                  row_cap=None, period=None):
         """Everything the lens draws, in one call.
 
-        `month` is `'YYYY-MM'` inside the year, `'current'`, or nothing. When
-        it is set the whole payload is about that month — the totals, the
-        words, the colours and the pace — while every function keeps its twelve
-        `months[]` so the spark on its tile still draws the whole year with the
-        chosen one lit.
+        `period` is nothing (the whole year), `'YYYY-MM'` inside the year,
+        `'current'`, `'YYYY-MM..YYYY-MM'` or `'Q1'`…`'Q4'`. Whatever it names,
+        the whole payload is about those months — the totals, the words, the
+        colours and the pace — while every function keeps its twelve `months[]`
+        so the spark on its tile still draws the whole year with the chosen
+        ones lit.
         """
         self._require()
         fy = int(fy or self._current_fy())
         btype = budget_type if budget_type in TYPE_KEYS else 'manpower'
         months = self._fy_months(fy)
         cap = int(row_cap or BOARD_ROW_CAP)
-        mkey = self._month_in_fy(month, fy)
-        scope = self._scope(fy, mkey)
-        pace = self._month_pace(mkey) if mkey else self._pace(fy)
+        mkeys = self._period_in_fy(period, fy)
+        scope = self._scope(fy, mkeys)
+        pace = (self._pace(fy) if scope['kind'] == 'year'
+                else self._period_pace(scope['keys']))
 
         # The company clause is EXPLICIT, not left to the record rule. The rule
         # is the boundary for every other route into the model; a facade that
@@ -330,7 +528,7 @@ class PbBudget(models.AbstractModel):
                 len(currencies), presentation.name if presentation else '')
 
         payload = self._matrix(rows, months, mode, presentation, one_currency,
-                               pace, mkey, scope['state'])
+                               pace, scope)
         payload.update({
             'ok': True,
             'fy': fy,
@@ -347,6 +545,9 @@ class PbBudget(models.AbstractModel):
                         'year': m.year,
                         'date': str(m)} for m in months],
             'scope': scope,
+            # The four brackets over the strip: the common stretch, named in
+            # this company's own fiscal year rather than the calendar's (R5).
+            'quarters': self._fy_quarters(fy),
             'pace': pace,
             'year_pace': self._pace(fy),
             'truncated': truncated,
@@ -359,9 +560,15 @@ class PbBudget(models.AbstractModel):
         # The strip is sent WHATEVER the scope: its whole job is to show, before
         # anybody clicks anything, which months ran hot.
         payload['strip'] = self._strip(payload)
-        payload['headline'] = (self._headline_month(payload) if mkey
-                               else self._headline(payload))
+        payload['headline'] = self._headline_scope(payload)
         return payload
+
+    @api.model
+    def _headline_scope(self, payload):
+        """One sentence about whatever this board is about."""
+        if payload['scope']['kind'] == 'year':
+            return self._headline(payload)
+        return self._headline_month(payload)
 
     @api.model
     def _fy_options(self, fy):
@@ -382,20 +589,28 @@ class PbBudget(models.AbstractModel):
     # --------------------------------------------------------------- the grid
     @api.model
     def _matrix(self, rows, months, mode, presentation, one_currency, pace,
-                month='', state='current'):
+                scope):
         """Rows -> functions -> departments -> months, in ONE currency.
 
-        WHEN A MONTH IS THE SCOPE the function and department totals count only
-        that month's rows, and the twelve `months[]` are still filled from every
+        WHEN A PERIOD IS THE SCOPE the function and department totals count only
+        the rows of the months that period covers — one of them, three of them
+        or any stretch — and the twelve `months[]` are still filled from every
         row: the tile's numbers become March's, its spark stays the year's.
-        A function with nothing in the chosen month keeps its TILE — a board
-        whose tiles rearrange themselves on every click is a board nobody can
+        A function with nothing in the chosen months keeps its TILE — a board
+        whose tiles rearrange themselves on every press is a board nobody can
         learn, and "this function spent nothing in March" is an answer.
         """
         keys = [m.strftime('%Y-%m') for m in months]
         funcs, unknown, unbudgeted = {}, 0, 0
         cur = (one_currency if mode == 'local' and one_currency
                else presentation)
+        # THE ONE CODE PATH. In year scope this set holds all twelve, so the
+        # membership test below is true for every row and the year board is the
+        # board it always was; a month is a set of one and a stretch a set of
+        # however many. There is no second branch to keep in step.
+        by_year = scope['kind'] == 'year'
+        in_scope = set(scope['keys'])
+        state = scope['state']
 
         for rec in rows:
             budget, spent, known = self._amounts(rec, mode, cur)
@@ -417,7 +632,7 @@ class PbBudget(models.AbstractModel):
             if mkey in f['months']:
                 f['months'][mkey]['budget'] += budget
                 f['months'][mkey]['spent'] += spent
-            if month and mkey != month:
+            if mkey not in in_scope:
                 continue
             if rec.pb_unbudgeted:
                 unbudgeted += 1
@@ -455,9 +670,10 @@ class PbBudget(models.AbstractModel):
             f['burn'] = round(f['spent'] / f['budget'] * 100, 1) if f['budget'] else 0.0
             f['pace'] = pace
             f['gap'] = round(f['burn'] - pace, 1) if f['budget'] else 0.0
-            f['tone'] = (self._tone_month(f, state) if month else self._tone(f))
-            f['tone_label'] = (self._tone_label_month(f) if month
-                               else self._tone_label(f))
+            f['tone'] = (self._tone(f) if by_year
+                         else self._tone_month(f, state))
+            f['tone_label'] = (self._tone_label(f) if by_year
+                               else self._tone_label_month(f))
             out.append(f)
         # SORTED BY THE YEAR, ALWAYS. In year scope that is what it always was;
         # in month scope it is what keeps every tile where the reader left it
@@ -658,11 +874,19 @@ class PbBudget(models.AbstractModel):
 
     @api.model
     def _headline_month(self, payload):
-        """One sentence about ONE month, in ONE expression each (R34).
+        """One sentence about a period smaller than the year, in ONE expression
+        each (R34).
 
         Five shapes, and which one a reader gets is the answer to a different
         question every time: has it started, was anything budgeted, is it still
         running, did anybody go over, and by how much did the rest come in.
+
+        FOUR OF THE FIVE read correctly about a stretch as well as about a
+        month — "March to June has no budget set", "Q2 2026: 4 of 9 functions
+        went over budget" — so they are the same sentences and the same terms
+        in the catalogue rather than a second set that could drift. The one
+        that does not is the running one, which says "the month's budget" out
+        loud; a stretch gets its own.
         """
         k = payload['kpis']
         scope = payload['scope']
@@ -677,6 +901,12 @@ class PbBudget(models.AbstractModel):
                 "%(month)s has no budget set; %(spent)s %(cur)s was spent.",
                 month=scope['name'], spent=self._short(k['spent']), cur=cur)
         if scope['state'] == 'current':
+            if scope['kind'] == 'range':
+                return _(
+                    "%(period)s so far: %(burn)s%% of the budget for those "
+                    "months spent, with %(pace)s%% of them gone.",
+                    period=scope['name'], burn='{:,.0f}'.format(k['burn']),
+                    pace='{:,.0f}'.format(k['pace']))
             return _(
                 "%(month)s so far: %(burn)s%% of the month's budget spent with "
                 "%(pace)s%% of the month gone.",
@@ -704,21 +934,22 @@ class PbBudget(models.AbstractModel):
     # =============================================================== the drill
     @api.model
     def get_function(self, function_id, fy=None, budget_type='manpower',
-                     currency='report', month=None):
+                     currency='report', period=None):
         """One function, opened: its months, its departments, its expenses.
 
-        In a month scope everything below the twelve-bar chart is that month's
-        — the departments, the expenses, the rows — and the chart itself keeps
-        the whole year with the chosen month lit, because the question a person
-        opens a month to ask is almost always "compared with what".
+        In any scope narrower than the year everything below the twelve-bar
+        chart is that period's — the departments, the expenses, the rows — and
+        the chart itself keeps the whole year with the chosen months lit,
+        because the question a person opens a period to ask is almost always
+        "compared with what".
         """
         self._require()
         fy = int(fy or self._current_fy())
         btype = budget_type if budget_type in TYPE_KEYS else 'manpower'
         months = self._fy_months(fy)
-        board = self.get_board(fy, btype, currency, None, month)
+        board = self.get_board(fy, btype, currency, None, period)
         scope = board['scope']
-        mkey = scope['key'] if scope['kind'] == 'month' else ''
+        mkeys = [] if scope['kind'] == 'year' else list(scope['keys'])
         func = next((f for f in board['functions']
                      if f['id'] == int(function_id or 0)), None)
         if not func:
@@ -732,36 +963,38 @@ class PbBudget(models.AbstractModel):
             'months': board['months'],
             'scope': scope,
             'pace': board['pace'],
-            'expenses': self._expenses(function_id, months, btype, mkey),
+            'expenses': self._expenses(function_id, months, btype, mkeys),
             'rows': self._rows(function_id, months, btype,
                                board['currency']['mode'],
-                               self._board_currency(board['currency']), mkey),
+                               self._board_currency(board['currency']), mkeys),
         }
-        if mkey:
-            out['compare'] = self._compare(function_id, mkey, btype, board,
+        if mkeys:
+            out['compare'] = self._compare(function_id, mkeys, btype, board,
                                            func)
         return out
 
     # ---------------------------------------------------------- how it compares
     @api.model
-    def _compare(self, function_id, key, btype, board, func):
-        """Four small figures beside the month: this one, the one before it,
-        the same one a year ago, and what a month of this year is worth on
-        average. The year-ago figure is left BLANK when there is no year ago —
-        an absent comparison is a fact, and inventing a zero for it would make
-        every first year of a budget look like a collapse.
+    def _compare(self, function_id, mkeys, btype, board, func):
+        """Four small figures beside the period: this one, the stretch of the
+        same length immediately before it, the same stretch a year ago, and
+        what a month of this year is worth on average. The year-ago figure is
+        left BLANK when there is no year ago — an absent comparison is a fact,
+        and inventing a zero for it would make every first year of a budget
+        look like a collapse.
         """
         mode = board['currency']['mode']
         cur = self._board_currency(board['currency'])
-        first = self._month_date(key)
-        prev = first - relativedelta(months=1)
-        ago = first - relativedelta(years=1)
+        firsts = [self._month_date(k) for k in mkeys]
+        span = len(firsts)
+        prev = [d - relativedelta(months=span) for d in firsts]
+        ago = [d - relativedelta(years=1) for d in firsts]
         drawn = len([m for m in func['months']
                      if m['budget'] or m['spent']]) or 12
         return {
             'this': {
-                'has': True, 'key': key,
-                'label': self._month_words(first, full=True),
+                'has': True, 'key': board['scope']['key'],
+                'label': board['scope']['name'],
                 'budget': func['budget'], 'spent': func['spent'],
             },
             'last': self._compare_cell(function_id, prev, btype, mode, cur),
@@ -775,15 +1008,21 @@ class PbBudget(models.AbstractModel):
         }
 
     @api.model
-    def _compare_cell(self, function_id, first, btype, mode, cur):
+    def _compare_cell(self, function_id, firsts, btype, mode, cur):
+        """One comparison figure over however many months it is made of."""
         recs = self.env['pb.budget.line'].search([
             ('pb_function_id', '=', int(function_id or 0)),
             ('pb_budget_type', '=', btype),
-            ('period_month', '=', first),
+            ('period_month', 'in', firsts),
             ('company_id', 'in', self.env.companies.ids),
         ], limit=BOARD_ROW_CAP)
+        first, last = firsts[0], firsts[-1]
+        label = (self._month_title(first) if first == last
+                 else _("%(first)s to %(last)s",
+                        first=self._month_title(first),
+                        last=self._month_title(last)))
         cell = {'has': bool(recs), 'key': first.strftime('%Y-%m'),
-                'label': self._month_title(first), 'budget': 0.0, 'spent': 0.0}
+                'label': label, 'budget': 0.0, 'spent': 0.0}
         for rec in recs:
             budget, spent, known = self._amounts(rec, mode, cur)
             if not known:
@@ -805,11 +1044,11 @@ class PbBudget(models.AbstractModel):
             [('name', '=', block['code'])], limit=1)
 
     @api.model
-    def _expenses(self, function_id, months, btype, month=''):
+    def _expenses(self, function_id, months, btype, mkeys=()):
         if btype == 'manpower':
             return []
-        first = self._month_date(month) if month else months[0]
-        last = first if month else months[-1]
+        first = self._month_date(mkeys[0]) if mkeys else months[0]
+        last = self._month_date(mkeys[-1]) if mkeys else months[-1]
         recs = self.env['pb.budget.expense'].search([
             ('function_id', '=', int(function_id or 0)),
             ('budget_type', '=', btype),
@@ -828,9 +1067,9 @@ class PbBudget(models.AbstractModel):
         } for r in recs]
 
     @api.model
-    def _rows(self, function_id, months, btype, mode, cur, month=''):
-        first = self._month_date(month) if month else months[0]
-        last = first if month else months[-1]
+    def _rows(self, function_id, months, btype, mode, cur, mkeys=()):
+        first = self._month_date(mkeys[0]) if mkeys else months[0]
+        last = self._month_date(mkeys[-1]) if mkeys else months[-1]
         recs = self.env['pb.budget.line'].search([
             ('pb_function_id', '=', int(function_id or 0)),
             ('pb_budget_type', '=', btype),
@@ -945,14 +1184,16 @@ class PbBudget(models.AbstractModel):
 
     @api.model
     def export_board(self, fy=None, budget_type='manpower', currency='report',
-                     kind='xlsx', month=None):
+                     kind='xlsx', period=None):
         """The matrix as a workbook, or the scope as a page.
 
-        A month on screen is a month in the file: what a person exports is what
-        they were looking at, or the export is a second answer to the question
-        they had already had answered.
+        A period on screen is that period in the file, and the file SAYS which
+        one it is about in its own title: what a person exports is what they
+        were looking at, or the export is a second answer to the question they
+        had already had answered — and a document that does not name its period
+        is one that will be read next year and believed.
         """
         self._require()
         return self.env['pb.budget.export'].build(
             fy=fy, budget_type=budget_type, currency=currency, kind=kind,
-            month=month)
+            period=period)
