@@ -204,7 +204,7 @@ msgstr "Tên hiển thị"
 #. module: pb_demo
 #: model:ir.model.fields,field_description:pb_demo.field_hr_formula_config__pb_division
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_demo
 #: model:ir.model.fields.selection,name:pb_demo.selection__hr_loan__state__draft
