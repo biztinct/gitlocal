@@ -22,21 +22,40 @@
  * person who has asked their machine for less movement gets the finished board
  * on the first frame with nothing to recover from. No JavaScript decides that.
  *
- * A MONTH IS A SCOPE, NOT A BAR (TIDY rule 13, phase P3).
+ * A PERIOD IS A SCOPE, NOT A BAR (TIDY rule 13, LOOK rule 18).
  *
  * The strip under the numbers is thirteen chips — "Whole year" and the twelve
  * months — and each month chip already answers, before anything is clicked,
  * whether that month ran over its budget: a two-tone micro bar and a signed
- * percentage. Click one and the WHOLE board becomes that month in one motion.
+ * percentage. Press one and the WHOLE board becomes that month in one motion.
  * The tiles keep their places (they are sorted by the YEAR's spend on the
  * server, whatever the scope, and keyed by function id, so OWL moves nothing);
  * only the numbers, the words, the fills and the notch change, and the fill
  * has a width transition, so the board visibly re-scopes rather than blinking.
- * Escape and "Whole year" always come back; ← and → walk the strip.
+ *
+ * AND A STRETCH IS A SCOPE TOO (LOOK P3). Shift-press a second month, or drag
+ * across them, and the board becomes those months TOGETHER — previewed live
+ * under the hand and committed on release. Four quarter brackets sit over the
+ * strip for the common case, and because the fiscal year need not start in
+ * January, a quarter here is a quarter of the FISCAL year and its own words say
+ * which three months it means. The chosen chips fuse into one band, rounded
+ * only at its two ends.
+ *
+ * THE SERVER OWNS THE PERIOD (rule 18). The browser sends what the reader asked
+ * for — a month, `"current"`, `"2026-03..2026-06"`, `"Q2"` — and then takes
+ * `board.scope` as the truth about what it GOT: the server resolves the word,
+ * clamps a stretch that hangs off the end of the year, collapses a stretch of
+ * one to a month and a stretch of twelve to the year, and refuses nothing into
+ * a blank board. Nothing on this screen is drawn from what was asked.
+ *
+ * Escape and "Whole year" always come back; ← and → walk the strip, Home and
+ * End jump to its ends, and Shift with either arrow extends from the anchor.
  *
  * R1 — no `t-as` variable is named lt / gt / lte / gte / and / or / not / in.
  * R2 — every sentence is ONE expression; JavaScript has no implicit string
  * concatenation and a Python habit here kills the entire asset bundle.
+ * WF24/L9 — `_t()` with a DICTIONARY writes ONE per cent sign. Two of them
+ * print literally, on a screen made of percentages.
  */
 import { Component, useState, onWillStart, useExternalListener,
          useRef } from "@odoo/owl";
@@ -64,8 +83,15 @@ export class PbBudgetBoard extends Component {
             fy: 0,
             type: "manpower",
             currency: "report",
-            month: "",                     // "" = the whole year, else YYYY-MM
-            scoping: false,                // a month is being switched to
+            // What was ASKED for: "" (the whole year), "YYYY-MM", "current",
+            // "YYYY-MM..YYYY-MM" or "Q1".."Q4". What was GOT is `scope`.
+            period: "",
+            // The months the board is about, as the server resolved them.
+            keys: [],
+            // The stretch under the hand while a drag is in flight. Empty
+            // otherwise; it is a PREVIEW and no server call is made for it.
+            preview: [],
+            scoping: false,                // a period is being switched to
             stripFocus: "",                // the chip the keyboard is standing on
             open: 0,                       // the function whose drill is open
             drill: null,
@@ -85,17 +111,35 @@ export class PbBudgetBoard extends Component {
 
         // THE DEEP LINK, READ ONCE. `pb_focus: "month:2026-03"` arrives on the
         // hub's action and the shell hands it to this lens because the lens
-        // says `wantsArrival`. A month outside the year on screen is not an
-        // error: the server answers with the whole year and the strip clears
-        // itself, so a stale bookmark lands somewhere real.
+        // says `wantsArrival`. ONE PREFIX, not two: `month:current`,
+        // `month:2026-03`, `month:2026-03..2026-06` and `month:Q2` are all the
+        // same vocabulary, so the ⌘K row and every link already in the wild go
+        // on working exactly as they did. A period outside the year on screen
+        // is not an error: the server answers with the whole year and the strip
+        // clears itself, so a stale bookmark lands somewhere real.
         const arrival = this.props.arrival || {};
         const asked = String(arrival.focus || "");
         if (asked.startsWith("month:")) {
-            this.state.month = asked.slice(6);
+            this.state.period = asked.slice(6);
         }
+
+        // The anchor a Shift-press or a Shift-arrow extends FROM. It is a
+        // reader's own place on the strip, not part of the board, so it is
+        // never sent anywhere and never stored.
+        this.anchor = "";
+        // The gesture in flight: where it started, and whether the hand has
+        // actually moved off that chip yet (a press that never moves is a
+        // press, not a drag of one).
+        this.drag = null;
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev),
                             { capture: true });
+        // The release is caught on the WINDOW, not on a chip: a drag that ends
+        // off the strip — over the tiles, over the header, off the window — is
+        // an ordinary way to finish a gesture and must commit what is on
+        // screen rather than leave the board half-scoped for ever.
+        useExternalListener(window, "pointerup", () => this.endDrag());
+        useExternalListener(window, "pointercancel", () => this.endDrag());
 
         onWillStart(async () => { await this.load(); });
     }
@@ -107,17 +151,23 @@ export class PbBudgetBoard extends Component {
         try {
             const board = await this.orm.call("pb.budget", "get_board", [
                 this.state.fy || null, this.state.type, this.state.currency,
-                null, this.state.month || null,
+                null, this.state.period || null,
             ]);
             this.state.board = board;
             this.state.fy = board.fy;
             this.state.type = board.budget_type;
             this.state.currency = board.currency.mode;
-            // The server is the authority on what scope this board IS: it
-            // resolves "current", and it refuses a month that is not one of
-            // this year's twelve.
-            this.state.month = board.scope.kind === "month"
-                ? board.scope.key : "";
+            // THE BROWSER ADOPTS THE ANSWER (R7). The server is the authority
+            // on what scope this board IS: it resolves "current" and "Q2",
+            // clamps a stretch to the year, collapses a stretch of one to a
+            // month and a stretch of twelve to the year, and falls back to the
+            // whole year rather than answering a period it cannot. Whatever
+            // was asked for is thrown away here in favour of what came back.
+            this.state.period = board.scope.kind === "year"
+                ? "" : board.scope.key;
+            this.state.keys = board.scope.kind === "year"
+                ? [] : (board.scope.keys || []);
+            this.state.preview = [];
             this.state.failed = "";
         } catch (e) {
             // Reported, never swallowed into a decoration: a board that could
@@ -147,15 +197,60 @@ export class PbBudgetBoard extends Component {
         return (this.state.board && this.state.board.currency) || {};
     }
 
-    // ============================================================ the month
+    // =========================================================== the period
     get scope() {
         return (this.state.board && this.state.board.scope)
-            || { kind: "year", key: "", label: "", name: "", state: "current" };
+            || { kind: "year", key: "", keys: [], quarter: "", label: "",
+                 name: "", state: "current" };
     }
 
     get strip() { return (this.state.board && this.state.board.strip) || []; }
 
-    get isMonth() { return this.scope.kind === "month"; }
+    get quarters() {
+        return (this.state.board && this.state.board.quarters) || [];
+    }
+
+    /** Anything narrower than the whole year: a month, a quarter, a stretch.
+     *  Every "show the variance instead of the pace" branch reads this. */
+    get isScoped() { return this.scope.kind !== "year"; }
+
+    /** The months painted as chosen: what the hand is dragging over if a
+     *  gesture is in flight, and what the SERVER answered otherwise. The two
+     *  can never both be live, so one row of chips can never show two answers
+     *  to the same question. */
+    get chosen() {
+        return this.state.preview.length ? this.state.preview : this.state.keys;
+    }
+
+    isLit(key) { return this.chosen.indexOf(key) !== -1; }
+
+    /** A chosen run reads as ONE band: rounded at its two ends, square where
+     *  the chips meet. That is the whole difference between a range control
+     *  and thirteen buttons. */
+    chipMod(mo) {
+        if (!this.isLit(mo.key)) { return ""; }
+        const keys = this.chosen;
+        const first = mo.key === keys[0] ? " is-first" : "";
+        const last = mo.key === keys[keys.length - 1] ? " is-last" : "";
+        return `is-in${first}${last}`;
+    }
+
+    /** Whether a quarter bracket is the stretch on screen. The server names
+     *  the quarter it resolved, so this is its answer and not our guess. */
+    isQuarterOn(q) {
+        if (this.state.preview.length) {
+            return this.state.preview.length === q.keys.length
+                && this.state.preview[0] === q.keys[0]
+                && this.state.preview[2] === q.keys[2];
+        }
+        return this.scope.quarter === q.key;
+    }
+
+    /** ONE expression (R2). The bracket says which three months it means, so a
+     *  company whose year opens in July is never guessing what Q1 is. */
+    quarterTitle(q) {
+        return _t("%(name)s — %(months)s", { name: q.name, months: q.title });
+    }
 
     /**
      * The notch is WHERE THE CALENDAR IS, and a month that has not started has
@@ -163,13 +258,13 @@ export class PbBudgetBoard extends Component {
      * pinned at zero, which reads as "nothing spent" and is a different claim.
      */
     get showNotch() {
-        return !(this.isMonth && this.scope.state === "future");
+        return !(this.isScoped && this.scope.state === "future");
     }
 
-    /** Every caption on the board, in one place, so the year and the month
+    /** Every caption on the board, in one place, so the year and a period
      *  cannot drift apart. ONE expression each (R2). */
     get caps() {
-        if (!this.isMonth) {
+        if (!this.isScoped) {
             return {
                 budget: _t("budget for the year"),
                 spent: _t("spent so far"),
@@ -188,20 +283,29 @@ export class PbBudgetBoard extends Component {
         };
     }
 
-    /** The fifth number: warm-or-worse over a year, over budget in a month. */
+    /** The fifth number: warm-or-worse over a year, over budget in a period. */
     get hotCount() {
-        return this.isMonth ? (this.kpis.over || 0) : (this.kpis.hot || 0);
+        return this.isScoped ? (this.kpis.over || 0) : (this.kpis.hot || 0);
     }
 
     /** What the notch on a tile means, in this scope. ONE expression (R2). */
     paceTitle(f) {
-        if (!this.isMonth) {
+        if (!this.isScoped) {
             return _t("The year is %s gone", this.pct(f.pace));
         }
         if (this.scope.state === "past") {
             return _t("%s is finished", this.scope.name);
         }
         return _t("%s of %s has gone", this.pct(f.pace), this.scope.name);
+    }
+
+    /** What a tile's fill is a share OF, in this scope. ONE expression (R2). */
+    get spentOfLine() {
+        if (!this.isScoped) { return _t("spent of the budget"); }
+        if (this.scope.kind === "month") {
+            return _t("spent of the month's budget");
+        }
+        return _t("spent of the budget for these months");
     }
 
     /** The one line that says where you are. ONE expression (R2). */
@@ -274,15 +378,38 @@ export class PbBudgetBoard extends Component {
                     budget: this.money(mo.budget), tone: mo.tone_label });
     }
 
+    /** The twelve month keys, left to right, exactly as the strip draws them. */
+    get monthKeys() { return this.strip.map((m) => m.key); }
+
+    /** Every month between two chips, in strip order, in either direction. */
+    span(a, b) {
+        const keys = this.monthKeys;
+        const i = keys.indexOf(a);
+        const j = keys.indexOf(b);
+        if (i < 0 || j < 0) { return []; }
+        return keys.slice(Math.min(i, j), Math.max(i, j) + 1);
+    }
+
+    /** What a stretch is CALLED to the server. One month is one month — the
+     *  server collapses it anyway (R1), and sending the plain key keeps every
+     *  saved link that already exists meaning what it always meant. */
+    asPeriod(keys) {
+        if (!keys.length) { return ""; }
+        if (keys.length === 1) { return keys[0]; }
+        return `${keys[0]}..${keys[keys.length - 1]}`;
+    }
+
     /**
-     * A month chip is never DISABLED while the board is re-scoping: setting
+     * A chip is never DISABLED while the board is re-scoping: setting
      * `disabled` on the button the keyboard is standing on blurs it, and the
-     * next arrow press then goes nowhere. The guard is here instead.
+     * next arrow press then goes nowhere (T23). The guard is here instead.
      */
-    async setMonth(key) {
-        if (this.state.month === key || this.state.scoping) { return; }
-        this.state.month = key;
-        this.state.stripFocus = key;
+    async setPeriod(period) {
+        if (this.state.scoping) { return; }
+        if (this.state.period === period && !this.state.preview.length) {
+            return;
+        }
+        this.state.period = period;
         // The board is NOT unmounted: `loaded` stays true, the tiles keep their
         // keys and their places, and the numbers change under them. That is the
         // whole motion.
@@ -296,41 +423,155 @@ export class PbBudgetBoard extends Component {
         }
     }
 
-    async clearMonth() {
-        if (!this.state.month) { return; }
-        this.state.month = "";
-        this.state.stripFocus = "";
-        this.state.open = 0;
-        this.state.drill = null;
-        this.state.scoping = true;
-        try {
-            await this.load();
-        } finally {
-            this.state.scoping = false;
-        }
+    /** Whichever months a gesture landed on, as one scope. */
+    async setKeys(keys) {
+        this.state.preview = [];
+        if (!keys.length) { await this.clearPeriod(); return; }
+        this.state.stripFocus = keys[0];
+        await this.setPeriod(this.asPeriod(keys));
     }
 
-    /** ← and → walk the strip; Enter and Space are the button's own job. */
+    async clearPeriod() {
+        this.state.preview = [];
+        this.anchor = "";
+        if (!this.state.period) { return; }
+        this.state.stripFocus = "";
+        await this.setPeriod("");
+    }
+
+    /**
+     * ONE press of one chip, from a mouse, a finger or the keyboard.
+     *
+     * Shift extends from the anchor — and a Shift-press with NO anchor is
+     * treated as a plain press rather than doing nothing, because a control
+     * that ignores a deliberate action is a control a person stops trusting.
+     * Pressing the month that is already the whole of the scope goes back to
+     * the year, which is the way out a reader finds without being told.
+     */
+    async pressChip(key, shift) {
+        if (this.state.scoping) { return; }
+        if (shift && this.anchor) {
+            await this.setKeys(this.span(this.anchor, key));
+            return;
+        }
+        this.anchor = key;
+        if (this.state.keys.length === 1 && this.state.keys[0] === key) {
+            await this.clearPeriod();
+            return;
+        }
+        await this.setKeys([key]);
+    }
+
+    async pressQuarter(q) {
+        if (this.state.scoping) { return; }
+        if (this.isQuarterOn(q)) { await this.clearPeriod(); return; }
+        this.anchor = q.keys[0];
+        this.state.preview = [];
+        this.state.stripFocus = q.keys[0];
+        // The quarter's own word goes to the server, not the three months it
+        // works out to: the server is what decides which three a quarter of
+        // THIS fiscal year is, and asking it by name keeps that one place.
+        await this.setPeriod(q.key);
+    }
+
+    // ------------------------------------------------------------ the drag
+    /**
+     * Press, sweep, release. The preview is drawn from the chips under the
+     * hand and NO server call is made until the hand comes up, so a sweep
+     * across four months is one read and not four.
+     */
+    onChipDown(mo, ev) {
+        if (ev.button !== undefined && ev.button !== 0) { return; }
+        if (ev.shiftKey) { return; }              // a Shift-press is not a drag
+        this.drag = { from: mo.key, to: mo.key, moved: false };
+        this.state.preview = [mo.key];
+    }
+
+    /**
+     * The click that follows a mouse gesture is IGNORED — `endDrag` has
+     * already answered it, and one gesture read twice is one gesture that
+     * toggles itself back off. What still comes through here is the keyboard
+     * (`detail === 0`, from Enter or Space) and a Shift-press, which never
+     * starts a drag.
+     */
+    async onChipClick(mo, ev) {
+        if (ev.detail !== 0 && !ev.shiftKey) { return; }
+        await this.pressChip(mo.key, Boolean(ev.shiftKey));
+    }
+
+    onStripMove(ev) {
+        if (!this.drag) { return; }
+        // Read the chip from the POINT, not from `ev.target`: a touch pointer
+        // is captured by the element it started on, so following the finger
+        // needs the geometry rather than the event's own target.
+        const el = document.elementFromPoint(ev.clientX, ev.clientY);
+        const chip = el && el.closest ? el.closest("[data-month]") : null;
+        const key = chip && chip.dataset.month;
+        if (!key || key === this.drag.to) { return; }
+        this.drag.to = key;
+        this.drag.moved = this.drag.moved || key !== this.drag.from;
+        this.state.preview = this.span(this.drag.from, key);
+    }
+
+    async endDrag() {
+        const drag = this.drag;
+        this.drag = null;
+        if (!drag) { return; }
+        this.anchor = drag.from;
+        if (!drag.moved) {
+            // A press that never moved is a press. It is answered HERE and not
+            // by a click handler, so one gesture can never be read twice.
+            this.state.preview = [];
+            await this.pressChip(drag.from, false);
+            return;
+        }
+        await this.setKeys(this.span(drag.from, drag.to));
+    }
+
+    /**
+     * ← and → walk the strip, Home and End jump to its ends, and Shift with
+     * any of them EXTENDS from the anchor. Enter and Space are the button's
+     * own job.
+     */
     async onStripKey(ev) {
-        if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") { return; }
-        const keys = this.strip.map((m) => m.key);
+        const walk = { ArrowLeft: -1, ArrowRight: 1, Home: "first",
+                       End: "last" }[ev.key];
+        if (walk === undefined) { return; }
+        const keys = this.monthKeys;
         if (!keys.length) { return; }
+        ev.preventDefault();
+        // THE BUSY GUARD IS HERE, never on a chip's `disabled` attribute
+        // (T23): a chip disabled under the keyboard loses focus, and the next
+        // press is then read against a state it was about to change.
+        if (this.state.scoping) { return; }
         // WHERE THE KEYBOARD IS STANDING IS THE CHIP THAT HAS FOCUS, not the
-        // month in scope: tabbing to April and pressing → must go to May, and
+        // period in scope: tabbing to April and pressing → must go to May, and
         // reading it off the state sent it to January instead, because the
         // state still said "the whole year".
         const chip = ev.target && ev.target.closest
             ? ev.target.closest("[data-month]") : null;
         const from = (chip && chip.dataset.month)
-            || this.state.month || this.state.stripFocus;
+            || this.state.stripFocus || this.state.keys[0];
         const here = keys.indexOf(from);
-        const step = ev.key === "ArrowRight" ? 1 : -1;
-        const next = here < 0
-            ? (step > 0 ? 0 : keys.length - 1)
-            : Math.min(keys.length - 1, Math.max(0, here + step));
-        ev.preventDefault();
-        await this.setMonth(keys[next]);
-        this.focusChip(keys[next]);
+        let next;
+        if (walk === "first") {
+            next = 0;
+        } else if (walk === "last") {
+            next = keys.length - 1;
+        } else if (here < 0) {
+            next = walk > 0 ? 0 : keys.length - 1;
+        } else {
+            next = Math.min(keys.length - 1, Math.max(0, here + walk));
+        }
+        const key = keys[next];
+        this.state.stripFocus = key;
+        if (ev.shiftKey && this.anchor) {
+            await this.setKeys(this.span(this.anchor, key));
+        } else {
+            this.anchor = key;
+            await this.setKeys([key]);
+        }
+        this.focusChip(key);
     }
 
     focusChip(key) {
@@ -349,13 +590,21 @@ export class PbBudgetBoard extends Component {
     onKey(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.uploading || this.state.spending) { return; }
+        // A gesture in flight is the FIRST rung: a hand still on the strip is
+        // the most recent thing the reader opened (L5).
+        if (this.drag) {
+            this.drag = null;
+            this.state.preview = [];
+            ev.stopPropagation();
+            return;
+        }
         if (this.state.open) {
             this.closeDrill();
             ev.stopPropagation();
             return;
         }
-        if (this.state.month) {
-            this.clearMonth();
+        if (this.state.period) {
+            this.clearPeriod();
             ev.stopPropagation();
         }
     }
@@ -420,9 +669,10 @@ export class PbBudgetBoard extends Component {
     /** The fill never runs off the end of its own bar. */
     barWidth(n) { return Math.max(0, Math.min(100, Number(n) || 0)); }
 
-    /** The spark bar and the drill column for the month in scope are LIT. */
+    /** The spark bars and the drill columns for the months in scope are LIT —
+     *  membership now, not one key: a stretch lights all of its own. */
     isOnMonth(key) {
-        return Boolean(this.state.month) && this.state.month === key;
+        return this.state.keys.indexOf(key) !== -1;
     }
 
     /** A month's spend bar on a tile, as a share of the busiest month. */
@@ -468,7 +718,7 @@ export class PbBudgetBoard extends Component {
         try {
             this.state.drill = await this.orm.call("pb.budget", "get_function", [
                 f.id, this.state.fy, this.state.type, this.state.currency,
-                this.state.month || null,
+                this.state.period || null,
             ]);
         } catch (e) {
             this.notif.add(this._msg(e, _t("That function could not be opened.")),
@@ -528,7 +778,7 @@ export class PbBudgetBoard extends Component {
         try {
             const res = await this.orm.call("pb.budget", "export_board", [
                 this.state.fy, this.state.type, this.state.currency, kind,
-                this.state.month || null,
+                this.state.period || null,
             ]);
             this.download(res);
             this.notif.add(

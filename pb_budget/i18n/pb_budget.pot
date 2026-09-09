@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 12:37+0000\n"
-"PO-Revision-Date: 2026-09-08 12:37+0000\n"
+"POT-Creation-Date: 2026-09-09 00:06+0000\n"
+"PO-Revision-Date: 2026-09-09 00:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -43,6 +43,24 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(dept)s, %(month)s: “%(what)s” is not a number."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s %(year)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s–%(last)s"
 msgstr ""
 
 #. module: pb_budget
@@ -165,6 +183,12 @@ msgid ""
 msgstr ""
 
 #. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(name)s — %(months)s"
+msgstr ""
+
+#. module: pb_budget
 #. odoo-python
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(new)s added and %(upd)s updated."
@@ -174,6 +198,20 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(new)s would be added and %(upd)s updated."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(period)s so far: %(burn)s%% of the budget for those months spent, with "
+"%(pace)s%% of them gone."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(quarter)s · %(months)s"
 msgstr ""
 
 #. module: pb_budget
@@ -893,7 +931,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_budget/static/src/xml/budget_board.xml:0
 #: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__period_month
-#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
 #: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
 #: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
 msgid "Month"
@@ -1080,6 +1117,11 @@ msgid ""
 msgstr ""
 
 #. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
+msgid "Period"
+msgstr ""
+
+#. module: pb_budget
 #: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__period_month
 msgid "Period (1st of Month)"
 msgstr ""
@@ -1087,7 +1129,13 @@ msgstr ""
 #. module: pb_budget
 #. odoo-javascript
 #: code:addons/pb_budget/static/src/xml/budget_board.xml:0
-msgid "Pick a month, or the whole year"
+msgid "Pick a month, a stretch of months, or the whole year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a quarter"
 msgstr ""
 
 #. module: pb_budget
@@ -1098,10 +1146,22 @@ msgstr ""
 
 #. module: pb_budget
 #. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Press a month, shift-press another, or drag across them."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_budget/models/pb_budget.py:0
 #: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "Put in what it cost."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Q%(n)s %(year)s"
 msgstr ""
 
 #. module: pb_budget
@@ -1464,6 +1524,12 @@ msgstr ""
 #. module: pb_budget
 #: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_id
 msgid "The top-level department this row rolls up into."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The whole year, with %s in bold — this page is about those months."
 msgstr ""
 
 #. module: pb_budget
@@ -1853,13 +1919,19 @@ msgstr ""
 
 #. module: pb_budget
 #. odoo-javascript
-#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "spent of the budget"
 msgstr ""
 
 #. module: pb_budget
 #. odoo-javascript
-#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget for these months"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "spent of the month's budget"
 msgstr ""
 

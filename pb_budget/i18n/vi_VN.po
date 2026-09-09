@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 12:37+0000\n"
-"PO-Revision-Date: 2026-09-08 12:37+0000\n"
+"POT-Creation-Date: 2026-09-09 00:06+0000\n"
+"PO-Revision-Date: 2026-09-09 00:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -51,6 +51,24 @@ msgstr ""
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(dept)s, %(month)s: “%(what)s” is not a number."
 msgstr "%(dept)s, %(month)s: “%(what)s” không phải là một con số."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s"
+msgstr "%(first)s đến %(last)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s %(year)s"
+msgstr "%(first)s đến %(last)s %(year)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s–%(last)s"
+msgstr "%(first)s–%(last)s"
 
 #. module: pb_budget
 #. odoo-python
@@ -188,6 +206,12 @@ msgstr ""
 " khoản đã dành ra."
 
 #. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(name)s — %(months)s"
+msgstr "%(name)s — %(months)s"
+
+#. module: pb_budget
 #. odoo-python
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(new)s added and %(upd)s updated."
@@ -198,6 +222,22 @@ msgstr "Đã thêm %(new)s và cập nhật %(upd)s."
 #: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "%(new)s would be added and %(upd)s updated."
 msgstr "Sẽ thêm %(new)s và cập nhật %(upd)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(period)s so far: %(burn)s%% of the budget for those months spent, with "
+"%(pace)s%% of them gone."
+msgstr ""
+"%(period)s đến nay: đã chi %(burn)s%% ngân sách của những tháng đó, khi "
+"%(pace)s%% thời gian đã trôi qua."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(quarter)s · %(months)s"
+msgstr "%(quarter)s · %(months)s"
 
 #. module: pb_budget
 #. odoo-python
@@ -936,7 +976,6 @@ msgstr "Tiền đã được chi ở đây mà chưa từng có ngân sách nào
 #. odoo-javascript
 #: code:addons/pb_budget/static/src/xml/budget_board.xml:0
 #: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__period_month
-#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
 #: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
 #: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
 msgid "Month"
@@ -1135,6 +1174,11 @@ msgstr ""
 "tạo, phúc lợi. Hành chính — mọi thứ văn phòng chi."
 
 #. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: pb_budget
 #: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__period_month
 msgid "Period (1st of Month)"
 msgstr "Kỳ (ngày 1 của tháng)"
@@ -1142,8 +1186,14 @@ msgstr "Kỳ (ngày 1 của tháng)"
 #. module: pb_budget
 #. odoo-javascript
 #: code:addons/pb_budget/static/src/xml/budget_board.xml:0
-msgid "Pick a month, or the whole year"
-msgstr "Chọn một tháng, hoặc cả năm"
+msgid "Pick a month, a stretch of months, or the whole year"
+msgstr "Chọn một tháng, một khoảng tháng, hoặc cả năm"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a quarter"
+msgstr "Chọn một quý"
 
 #. module: pb_budget
 #. odoo-python
@@ -1153,11 +1203,23 @@ msgstr "Hãy chọn tệp đã điền trước."
 
 #. module: pb_budget
 #. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Press a month, shift-press another, or drag across them."
+msgstr "Bấm một tháng, giữ Shift và bấm tháng khác, hoặc kéo qua nhiều tháng."
+
+#. module: pb_budget
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_budget/models/pb_budget.py:0
 #: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "Put in what it cost."
 msgstr "Hãy nhập số tiền đã chi."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Q%(n)s %(year)s"
+msgstr "Q%(n)s %(year)s"
 
 #. module: pb_budget
 #: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_manual_rate
@@ -1544,6 +1606,12 @@ msgstr "Không dựng được mẫu."
 #: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_id
 msgid "The top-level department this row rolls up into."
 msgstr "Phòng ban cấp cao nhất mà dòng này cộng dồn vào."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The whole year, with %s in bold — this page is about those months."
+msgstr "Cả năm, với %s in đậm — trang này nói về những tháng đó."
 
 #. module: pb_budget
 #. odoo-javascript
@@ -1948,13 +2016,19 @@ msgstr "đã chi trong %s"
 
 #. module: pb_budget
 #. odoo-javascript
-#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "spent of the budget"
 msgstr "đã chi trên ngân sách"
 
 #. module: pb_budget
 #. odoo-javascript
-#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget for these months"
+msgstr "đã chi trên ngân sách của những tháng này"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "spent of the month's budget"
 msgstr "đã chi trên ngân sách của tháng"
 
