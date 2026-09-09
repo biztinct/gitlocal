@@ -9,7 +9,7 @@
  * `web.chartjs_lib` bundle; the donut and heatmap are bespoke SVG. No CDN.
  */
 import { Component, useState, useRef, onWillStart, onWillUnmount, onMounted,
-         onPatched } from "@odoo/owl";
+         onPatched, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -138,7 +138,19 @@ export class PbExplorer extends Component {
             doors: [],
             descent: null,
             arrived: false,
+            // LOOK P4 — the WHEN clause. `stripFocus` is the month chip the
+            // keyboard is standing on and `preview` is the stretch under the
+            // hand while a sweep is in flight; a preview costs no server call
+            // at all, so four months is ONE read and not four.
+            stripFocus: "",
+            preview: [],
         });
+
+        // The anchor a Shift-press or a sweep extends from. On the instance
+        // rather than in `useState`: nothing renders it, and a value the
+        // template never reads has no business making the board repaint.
+        this.anchor = "";
+        this.drag = null;
 
         this._chart = null;
         this._chartSig = "";
@@ -209,6 +221,11 @@ export class PbExplorer extends Component {
             }
         });
         onPatched(() => this.syncChart());
+        // A sweep across the month strip may end anywhere, including off the
+        // strip and off the window — releasing there still commits the
+        // stretch the hand drew rather than leaving a preview stranded.
+        useExternalListener(window, "pointerup", () => this.endMonthDrag());
+        useExternalListener(window, "pointercancel", () => this.endMonthDrag());
         onWillUnmount(() => {
             this.destroyChart();
             window.removeEventListener("keydown", this._onKey, { capture: true });
@@ -236,6 +253,15 @@ export class PbExplorer extends Component {
             this.state.data = await this.orm.call(MODEL, "query", [spec]);
             this.state.drill = null;
             this.state.part = 0;
+            // ADOPT WHAT THE SERVER ANSWERED, never what we asked with (rule
+            // 18). It is the server that decides what a pair of dates means
+            // and refuses one it cannot answer, so the chip, the strip and
+            // the link all read the resolved period and not the request.
+            const period = this.state.data && this.state.data.period;
+            if (period) {
+                this.state.spec.date_from = period.date_from || null;
+                this.state.spec.date_to = period.date_to || null;
+            }
             this.writeHash();
         } catch (e) {
             this.state.error = this._msg(e);
@@ -243,6 +269,283 @@ export class PbExplorer extends Component {
         } finally {
             this.state.busy = false;
         }
+    }
+
+    // ============================================================== the WHEN
+    /* THE CLAUSE THIS SENTENCE NEVER HAD.
+     *
+     * The board reads as a sentence — *Show total cost By department Over
+     * month Where …* — and the one thing every number on it depends on was
+     * missing from it: the spec has carried `date_from` and `date_to` since
+     * the board shipped and the server has always honoured them, but there was
+     * no control anywhere that set either one. They arrived only through a
+     * saved link, and the link did not even carry them.
+     *
+     * It is a CLAUSE, in its own chip group between "Over" and "Where", and
+     * not a filter in the "Where": a period among the filters would bury the
+     * one thing the whole answer is about. */
+
+    /** What the board is about, as the server resolved it. */
+    get periodMeta() {
+        return (this.state.data && this.state.data.period)
+            || { key: "", kind: "all", label: _t("Everything"),
+                 date_from: null, date_to: null, preset: "all" };
+    }
+
+    get hasPeriod() { return this.periodMeta.kind !== "all"; }
+
+    /** The seven starting points, each naming the dates it means. */
+    get periodPresets() {
+        return (this.state.schema && this.state.schema.periods
+                && this.state.schema.periods.presets) || [];
+    }
+
+    /** Every month the facts hold. Empty on a database with nothing built. */
+    get periodMonths() {
+        return (this.state.schema && this.state.schema.periods
+                && this.state.schema.periods.months) || [];
+    }
+
+    /** How much of the CURRENT measure sits in each month. */
+    get periodWeights() { return (this.state.data && this.state.data.weights) || {}; }
+
+    get heaviestMonth() {
+        const vals = Object.values(this.periodWeights).map((v) => Math.abs(Number(v) || 0));
+        return vals.length ? Math.max(...vals) : 0;
+    }
+
+    /** A month with something in it always draws a sliver, so "some" and
+     *  "none" can be told apart at a glance. */
+    monthShare(mo) {
+        const top = this.heaviestMonth;
+        const v = Math.abs(Number(this.periodWeights[mo.key]) || 0);
+        if (!top || !v) { return 0; }
+        return Math.max(4, Math.min(100, (v / top) * 100));
+    }
+
+    /** What one month chip says on hover or focus. ONE expression. */
+    monthTitle(mo) {
+        const v = Number(this.periodWeights[mo.key]) || 0;
+        const label = this.state.data ? this.state.data.measure_label : "";
+        if (!v) { return _t("%s — nothing to show for this question.", mo.label); }
+        return _t("%(month)s — %(measure)s %(value)s",
+                  { month: mo.label, measure: label,
+                    value: this.moneyWithSymbol(v) });
+    }
+
+    /** Is this month inside what is chosen — or inside the sweep under the
+     *  hand, which is painted from the strip itself and costs no read. */
+    isMonthLit(key) {
+        if (this.state.preview.length) { return this.state.preview.includes(key); }
+        const p = this.periodMeta;
+        if (!p.date_from || !p.date_to) { return false; }
+        return key >= p.date_from.slice(0, 7) && key <= p.date_to.slice(0, 7);
+    }
+
+    isMonthEdge(key, side) {
+        const keys = this.litMonths;
+        if (!keys.length) { return false; }
+        return side === "first" ? keys[0] === key : keys[keys.length - 1] === key;
+    }
+
+    get litMonths() {
+        if (this.state.preview.length) { return this.state.preview; }
+        return this.periodMonths.map((m) => m.key).filter((k) => this.isMonthLit(k));
+    }
+
+    /** Every month between two chips, in strip order, in either direction. */
+    monthSpan(a, b) {
+        const keys = this.periodMonths.map((m) => m.key);
+        const i = keys.indexOf(a);
+        const j = keys.indexOf(b);
+        if (i < 0 || j < 0) { return []; }
+        return keys.slice(Math.min(i, j), Math.max(i, j) + 1);
+    }
+
+    /**
+     * The two dates a run of month chips means.
+     *
+     * THE PICKER STAYS OPEN. A strip is a control you work — press June, then
+     * shift-press August, then walk it with the arrows — and a dropdown that
+     * shut on the first press made every one of those a single press: the
+     * second key went to a chip that no longer existed and nothing happened.
+     * A preset is a finished answer and closes; the strip is not.
+     */
+    async setMonths(keys) {
+        this.state.preview = [];
+        if (!keys.length) { await this.clearPeriod(); return; }
+        const months = this.periodMonths;
+        const first = months.find((m) => m.key === keys[0]);
+        const last = months.find((m) => m.key === keys[keys.length - 1]);
+        if (!first || !last) { return; }
+        this.state.stripFocus = keys[0];
+        await this.setPeriod(first.date_from, last.date_to, false);
+    }
+
+    /**
+     * Set the period. Everything on the board becomes about it: the numbers,
+     * the chart, the people count, the breadcrumb, the coverage sentences, the
+     * drill and the export, because they all read the same spec.
+     */
+    async setPeriod(from, to, close = true) {
+        if (this.state.busy) { return; }
+        const s = this.state.spec;
+        if ((s.date_from || null) === (from || null)
+            && (s.date_to || null) === (to || null)) {
+            if (close) { this.state.openPicker = ""; }
+            return;
+        }
+        s.date_from = from || null;
+        s.date_to = to || null;
+        if (close) { this.state.openPicker = ""; }
+        this.state.lensId = "";
+        this.destroyChart();
+        await this.run();
+    }
+
+    async clearPeriod(close = true) {
+        this.state.preview = [];
+        this.anchor = "";
+        this.state.stripFocus = "";
+        await this.setPeriod(null, null, close);
+    }
+
+    async pickPreset(preset) {
+        this.anchor = "";
+        this.state.preview = [];
+        this.state.stripFocus = "";
+        await this.setPeriod(preset.date_from, preset.date_to);
+    }
+
+    isPresetOn(preset) {
+        const s = this.state.spec;
+        return (s.date_from || null) === (preset.date_from || null)
+            && (s.date_to || null) === (preset.date_to || null);
+    }
+
+    /**
+     * ONE press of one month chip, from a mouse, a finger or the keyboard.
+     *
+     * Shift extends from the anchor — and a Shift-press with NO anchor is a
+     * plain press rather than nothing, because a control that ignores a
+     * deliberate action is a control a person stops trusting. Pressing the
+     * month that is already the whole of the period goes back to Everything,
+     * which is the way out a reader finds without being told.
+     */
+    async pressMonth(key, shift) {
+        if (this.state.busy) { return; }
+        if (shift && this.anchor) {
+            await this.setMonths(this.monthSpan(this.anchor, key));
+            return;
+        }
+        this.anchor = key;
+        const lit = this.litMonths;
+        if (lit.length === 1 && lit[0] === key) {
+            // Pressing the month that IS the whole period goes back to
+            // Everything — the way out a reader finds without being told. The
+            // strip stays open, because they are still working it.
+            await this.clearPeriod(false);
+            return;
+        }
+        await this.setMonths([key]);
+    }
+
+    // ---------------------------------------------------------- the sweep
+    onMonthDown(mo, ev) {
+        if (ev.button !== undefined && ev.button !== 0) { return; }
+        if (ev.shiftKey) { return; }             // a Shift-press is not a drag
+        this.drag = { from: mo.key, to: mo.key, moved: false };
+        this.state.preview = [mo.key];
+    }
+
+    /** The click after a mouse gesture is IGNORED — `endMonthDrag` has already
+     *  answered it, and one gesture read twice toggles itself back off. What
+     *  still comes through is the keyboard (`detail === 0`) and a Shift-press,
+     *  which never starts a drag. */
+    async onMonthClick(mo, ev) {
+        if (ev.detail !== 0 && !ev.shiftKey) { return; }
+        await this.pressMonth(mo.key, Boolean(ev.shiftKey));
+    }
+
+    onMonthStripMove(ev) {
+        if (!this.drag) { return; }
+        // Read the chip from the POINT, not from `ev.target`: a touch pointer
+        // is captured by the element it started on, so following a finger
+        // needs the geometry rather than the event's own target.
+        const el = document.elementFromPoint(ev.clientX, ev.clientY);
+        const chip = el && el.closest ? el.closest("[data-month]") : null;
+        const key = chip && chip.dataset.month;
+        if (!key || key === this.drag.to) { return; }
+        this.drag.to = key;
+        this.drag.moved = this.drag.moved || key !== this.drag.from;
+        this.state.preview = this.monthSpan(this.drag.from, key);
+    }
+
+    async endMonthDrag() {
+        const drag = this.drag;
+        this.drag = null;
+        if (!drag) { return; }
+        this.anchor = drag.from;
+        if (!drag.moved) {
+            // A press that never moved is a press. Answered HERE and not by a
+            // click handler, so one gesture can never be read twice.
+            this.state.preview = [];
+            await this.pressMonth(drag.from, false);
+            return;
+        }
+        await this.setMonths(this.monthSpan(drag.from, drag.to));
+    }
+
+    /**
+     * ← and → walk the strip, Home and End jump to its ends, Shift with any of
+     * them EXTENDS from the anchor. The ledger's rule 20 contract, the same
+     * one the Budget strip answers.
+     */
+    async onMonthStripKey(ev) {
+        const walk = { ArrowLeft: -1, ArrowRight: 1, Home: "first",
+                       End: "last" }[ev.key];
+        if (walk === undefined) { return; }
+        const keys = this.periodMonths.map((m) => m.key);
+        if (!keys.length) { return; }
+        ev.preventDefault();
+        ev.stopPropagation();
+        // THE BUSY GUARD IS HERE, never on a chip's `disabled` attribute
+        // (T23): a chip disabled under the keyboard loses focus, and the next
+        // press is then read against a state it was about to change.
+        if (this.state.busy) { return; }
+        // WHERE THE KEYBOARD IS STANDING IS THE CHIP THAT HAS FOCUS, never the
+        // period in scope.
+        const chip = ev.target && ev.target.closest
+            ? ev.target.closest("[data-month]") : null;
+        const from = (chip && chip.dataset.month) || this.state.stripFocus
+            || this.litMonths[0] || "";
+        const here = keys.indexOf(from);
+        let next;
+        if (walk === "first") {
+            next = 0;
+        } else if (walk === "last") {
+            next = keys.length - 1;
+        } else if (here < 0) {
+            next = walk > 0 ? 0 : keys.length - 1;
+        } else {
+            next = Math.min(keys.length - 1, Math.max(0, here + walk));
+        }
+        const key = keys[next];
+        this.state.stripFocus = key;
+        if (ev.shiftKey && this.anchor) {
+            await this.setMonths(this.monthSpan(this.anchor, key));
+        } else {
+            this.anchor = key;
+            await this.setMonths([key]);
+        }
+        this.focusMonth(key);
+    }
+
+    focusMonth(key) {
+        const root = document.querySelector(".pbex-when-strip");
+        if (!root) { return; }
+        const el = root.querySelector(`[data-month="${key}"]`);
+        if (el) { el.focus(); }
     }
 
     /**
@@ -269,6 +572,11 @@ export class PbExplorer extends Component {
                 m: s.measure, d: s.dimension, g: s.grain, c: s.chart,
                 f: s.filters, p: s.path, a: s.advances, u: s.currency,
                 t: s.target_currency || 0, h: s.per_head ? 1 : 0,
+                // THE PERIOD TRAVELS. Without these two the one thing every
+                // number on the screen depends on was lost the moment a link
+                // was shared, and the reader at the other end saw a different
+                // answer to the same question with no way to tell.
+                s: s.date_from || "", e: s.date_to || "",
             };
             const hash = `#${HASH_KEY}=${encodeURIComponent(JSON.stringify(compact))}`;
             if (window.location.hash !== hash) {
@@ -295,6 +603,11 @@ export class PbExplorer extends Component {
             if (c.u) { s.currency = c.u; }
             s.target_currency = Number(c.t) || 0;
             s.per_head = !!c.h;
+            // A hand-edited or half-copied period is not an error state: the
+            // server refuses anything it cannot read and answers "Everything",
+            // which is what the board would have shown anyway.
+            s.date_from = typeof c.s === "string" && c.s ? c.s : null;
+            s.date_to = typeof c.e === "string" && c.e ? c.e : null;
             return true;
         } catch {
             // A hash somebody edited by hand is not an error state — the
@@ -614,8 +927,45 @@ export class PbExplorer extends Component {
     }
 
     onKeydown(ev) {
+        // The month strip owns its own arrows and its own Escape while the
+        // keyboard is standing in it, so the ladder below never sees them.
+        const inStrip = ev.target?.closest
+            && ev.target.closest(".pbex-when-strip");
+        /**
+         * ESCAPE MEANS "THE LAST THING I OPENED", never "everything".
+         *
+         * A gesture in flight is the FIRST rung: a hand still on the strip is
+         * the most recent thing the reader started (L5). Then the open picker,
+         * then the drill, then the period itself — and only when one of those
+         * is actually there, so every other Escape on the page still gets its
+         * turn.
+         */
+        if (ev.key === "Escape") {
+            if (this.drag) {
+                this.drag = null;
+                this.state.preview = [];
+                ev.stopPropagation();
+                return;
+            }
+            if (this.state.openPicker) {
+                this.state.openPicker = "";
+                this.state.filterKey = "";
+                ev.stopPropagation();
+                return;
+            }
+            if (this.state.drill) {
+                this.closeDrill();
+                ev.stopPropagation();
+                return;
+            }
+            if (this.hasPeriod) {
+                ev.stopPropagation();
+                this.clearPeriod();
+            }
+            return;
+        }
         // ← walks back up the group, the way a file browser does.
-        if (ev.key === "ArrowLeft" && !ev.metaKey && !ev.ctrlKey
+        if (ev.key === "ArrowLeft" && !inStrip && !ev.metaKey && !ev.ctrlKey
             && !/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target?.tagName || "")) {
             const path = this.state.spec.path || [];
             if (path.length) {
@@ -623,6 +973,82 @@ export class PbExplorer extends Component {
                 this.goToCrumb(path.length - 2);
             }
         }
+    }
+
+    /* THE FOUR SENTENCES THIS CLAUSE OWNS, each built as ONE string here and
+     * printed with a single `t-esc`. A sentence written either side of a
+     * `<t t-esc/>` comes out of the extractor as TWO msgids no translator can
+     * put into their own word order (L17), and the whitespace an XML file
+     * indents with is baked into whatever it does collect. Every one of them
+     * also branches on the singular rather than bracketing the plural, which
+     * is how a screen announces it was written by a programme rather than by
+     * a person (R46). The forbidden shape is deliberately NOT spelled out
+     * here: the test that hunts for it reads this file, and a grep that fails
+     * for saying what it is looking for is WF13, hit for the second time in
+     * this phase. */
+
+    /** "3 pay periods are still being prepared" is a different sentence when
+     *  a period is on screen: those three are the three INSIDE it, because the
+     *  runs were scoped by the same two dates every other figure was. */
+    get pendingLine() {
+        const n = (this.state.data?.pending || []).length;
+        const names = this.pendingNames;
+        if (this.hasPeriod) {
+            return n === 1
+                ? _t("1 pay period inside %(period)s is still being prepared and is not included in these figures: %(names)s. Refresh in a moment.",
+                     { period: this.periodMeta.label, names })
+                : _t("%(count)s pay periods inside %(period)s are still being prepared and are not included in these figures: %(names)s. Refresh in a moment.",
+                     { count: n, period: this.periodMeta.label, names });
+        }
+        return n === 1
+            ? _t("1 pay period is still being prepared and is not included in these figures: %s. Refresh in a moment.", names)
+            : _t("%(count)s pay periods are still being prepared and are not included in these figures: %(names)s. Refresh in a moment.",
+                 { count: n, names });
+    }
+
+    /** "NET PAY BY MONTH" — the strip says which question it is a shape of. */
+    get stripHeading() {
+        return _t("%s by month",
+                  this.state.data ? this.state.data.measure_label : "");
+    }
+
+    get whenHint() {
+        return _t("Press a month, shift-press another, or drag across them. Arrow keys walk the strip; Escape goes back to Everything.");
+    }
+
+    get whenEmptyLine() {
+        return _t("No pay periods have been built yet, so there are no months to choose from. The starting points above will start answering as soon as a pay run is done.");
+    }
+
+    /** The same, for runs that are built but not yet approved. */
+    get provisionalLine() {
+        const c = this.state.data?.coverage || {};
+        const n = c.provisional_runs || 0;
+        if (this.hasPeriod) {
+            return n === 1
+                ? _t("1 of the %(total)s pay periods in %(period)s is still in progress — its figures are provisional and may change on approval.",
+                     { total: c.runs, period: this.periodMeta.label })
+                : _t("%(count)s of the %(total)s pay periods in %(period)s are still in progress — their figures are provisional and may change on approval.",
+                     { count: n, total: c.runs, period: this.periodMeta.label });
+        }
+        return n === 1
+            ? _t("1 of %(total)s pay periods is still in progress — its figures are provisional and may change on approval.",
+                 { total: c.runs })
+            : _t("%(count)s of %(total)s pay periods are still in progress — their figures are provisional and may change on approval.",
+                 { count: n, total: c.runs });
+    }
+
+    /** The empty state's next step. Now that there IS a period control, the
+     *  sentence points AT it rather than at a control that did not exist. */
+    get emptyHint() {
+        if (this.hasPeriod) {
+            return this.state.spec.advances === "main"
+                ? _t("Nothing was paid in %s that matches. Widen the When clause above, drop a filter, or include mid-month advances.", this.periodMeta.label)
+                : _t("Nothing was paid in %s that matches. Widen the When clause above, or drop a filter.", this.periodMeta.label);
+        }
+        return this.state.spec.advances === "main"
+            ? _t("Try widening the filters, picking a period in the When clause above, or including mid-month advances.")
+            : _t("Try widening the filters, or picking a period in the When clause above.");
     }
 
     // ------------------------------------------------------------- money

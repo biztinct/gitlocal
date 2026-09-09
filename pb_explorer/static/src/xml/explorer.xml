@@ -88,23 +88,22 @@
           <t t-out="ic('alert', 16)"/><span t-esc="state.error"/>
         </div>
 
+        <!-- The two honesty notices. Both are PERIOD-AWARE: the runs behind
+             them were scoped by the same two dates every figure on this screen
+             was, so a sentence that named a flat count would be about a
+             different question than the one on the chart. Built as ONE string
+             in JS and printed with a single `t-esc`, so the plural is a real
+             branch and not a bracketed "(s)", and so no translator is handed
+             half a sentence (GR22). -->
         <div t-if="hasPending" class="pbex-alert warn">
           <t t-out="ic('alert', 16)"/>
-          <span>
-            <b t-esc="state.data.pending.length"/> pay period(s) are still being
-            prepared and are <b>not included</b> in these figures:
-            <span t-esc="pendingNames"/>. Refresh in a moment.
-          </span>
+          <span t-esc="pendingLine"/>
         </div>
 
         <div t-if="state.data and state.data.coverage.provisional_runs"
              class="pbex-alert info">
           <t t-out="ic('alert', 16)"/>
-          <span>
-            <b t-esc="state.data.coverage.provisional_runs"/> of
-            <t t-esc="state.data.coverage.runs"/> periods are still in progress —
-            their figures are provisional and may change on approval.
-          </span>
+          <span t-esc="provisionalLine"/>
         </div>
 
         <!-- ============================ lenses ===========================
@@ -249,6 +248,90 @@
             </div>
           </div>
 
+          <!-- WHEN =========================================================
+               THE CLAUSE THIS SENTENCE NEVER HAD. Its own chip group, between
+               "Over" and "Where", in the same picker idiom as the three above
+               it — because a period among the FILTERS would bury the one thing
+               every number on this screen depends on. -->
+          <div class="pbex-chip-group" data-coach="ex-when">
+            <span class="grp-label"><t t-out="ic('calendar', 12)"/>When</span>
+            <div class="pbex-picker">
+              <button class="pbex-chip when" t-att-class="{ on: hasPeriod }"
+                      t-att-aria-expanded="state.openPicker === 'period' ? 'true' : 'false'"
+                      t-on-click="() => this.togglePicker('period')">
+                <span t-esc="periodMeta.label"/>
+                <t t-out="ic('chevronDown', 13)"/>
+              </button>
+
+              <div t-if="state.openPicker === 'period'" class="pbex-menu wide pbex-when">
+                <!-- 1. The starting points, each NAMING the dates it means, so
+                     nobody has to guess what "this quarter" is on a July
+                     financial year. -->
+                <div class="pbex-when-presets">
+                  <button t-foreach="periodPresets" t-as="pre" t-key="pre.key"
+                          class="pbex-menu-item"
+                          t-att-class="{ active: isPresetOn(pre) }"
+                          t-on-click="() => this.pickPreset(pre)">
+                    <span class="pw-l">
+                      <b t-esc="pre.label"/>
+                      <i t-esc="pre.sub"/>
+                    </span>
+                    <t t-if="isPresetOn(pre)" t-out="ic('check', 14)"/>
+                  </button>
+                </div>
+
+                <!-- 2. The month strip: one chip per month that has facts, each
+                     carrying its weight for the CURRENT measure — so the strip
+                     is a sparkline of the very question being asked and it
+                     redraws when the measure changes. Press one for a month;
+                     shift-press or sweep for a stretch.
+
+                     Nothing here is `disabled` while the board re-reads: the
+                     guard is in the handler, or the chip the keyboard is
+                     standing on loses focus mid-flight (T23). -->
+                <div t-if="periodMonths.length" class="pbex-when-months">
+                  <!-- Built as ONE string, printed with a single `t-esc`: a
+                       sentence written either side of a `<t t-esc/>` is TWO
+                       msgids no translator can reorder (L17), and the
+                       whitespace an XML file indents with is baked into
+                       whatever the extractor does collect. -->
+                  <div class="pbex-when-head" t-esc="stripHeading"/>
+                  <div class="pbex-when-strip"
+                       t-on-keydown="onMonthStripKey"
+                       t-on-pointermove="onMonthStripMove"
+                       role="group"
+                       aria-label="Pick a month or a stretch of months">
+                    <button t-foreach="periodMonths" t-as="mo" t-key="mo.key"
+                            class="pbex-mchip"
+                            t-att-class="{ 'is-in': isMonthLit(mo.key),
+                                           'is-first': isMonthEdge(mo.key, 'first'),
+                                           'is-last': isMonthEdge(mo.key, 'last') }"
+                            t-att-data-month="mo.key"
+                            t-att-title="monthTitle(mo)"
+                            t-att-aria-pressed="isMonthLit(mo.key) ? 'true' : 'false'"
+                            t-on-pointerdown="(ev) => this.onMonthDown(mo, ev)"
+                            t-on-click="(ev) => this.onMonthClick(mo, ev)">
+                      <span class="pbex-mchip-bar">
+                        <span class="pbex-mchip-fill"
+                              t-attf-style="height: {{monthShare(mo)}}%"/>
+                      </span>
+                      <span class="pbex-mchip-l" t-esc="mo.short"/>
+                    </button>
+                  </div>
+                  <div class="pbex-when-hint" t-esc="whenHint"/>
+                </div>
+
+                <!-- A brand-new tenant. Not a hole where a strip should be:
+                     a sentence, and no dead end — the starting points above
+                     still work the moment a pay run is built. -->
+                <div t-else="" class="pbex-when-empty">
+                  <t t-out="ic('calendar', 15)"/>
+                  <span t-esc="whenEmptyLine"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- WHERE -->
           <div class="pbex-chip-group grow" data-coach="ex-filters">
             <span class="grp-label"><t t-out="ic('filter', 12)"/>Where</span>
@@ -377,7 +460,7 @@
             </span>
             <span class="note">counted once across the group</span>
             <button class="pbex-btn ghost sm"
-                    t-on-click="() => this.openDrill('_all', '_all', state.data.dimension_label, 'All periods')">
+                    t-on-click="() => this.openDrill('_all', '_all', state.data.dimension_label, periodMeta.label)">
               <t t-out="ic('users', 13)"/>
               <span class="lbl">Who is in this number</span>
             </button>
@@ -465,16 +548,18 @@
               <span>The sentence above says why. Change a chip and try again.</span>
             </div>
 
+            <!-- Nothing matched. There IS a period control now, so the next
+                 step points at it by name instead of at a chip that used to
+                 exist nowhere on the screen. -->
             <div t-elif="activePart and !activePart.series.length" class="pbex-empty">
               <t t-out="ic('search', 26)"/>
               <p>Nothing matched this combination.</p>
-              <span>
-                <t t-if="state.spec.advances === 'main'">
-                  Try widening the filters, picking another period, or
-                  including mid-month advances.
-                </t>
-                <t t-else="">Try widening the filters or picking another period.</t>
-              </span>
+              <span t-esc="emptyHint"/>
+              <button t-if="hasPeriod" class="pbex-btn ghost sm"
+                      t-on-click="() => this.clearPeriod()">
+                <t t-out="ic('calendar', 13)"/>
+                <span class="lbl">Look at every period</span>
+              </button>
             </div>
 
             <!-- compare: months across, schemes down, a shape per row -->
