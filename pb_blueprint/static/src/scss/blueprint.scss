@@ -1026,6 +1026,13 @@ $bp-head-h: 64px;
     }
 
     // ---- the inputs dialog ------------------------------------------
+    // The kit's modal body carries no padding of its own — each surface says
+    // what its content needs — and this one had never said. Fourteen rows of
+    // number boxes ran into the card edge, and on a list this long the body
+    // scrolls, so the scrollbar sat ON the right-hand boxes and clipped the
+    // focus ring of whichever one you were typing in. The right side is wider
+    // than the left for exactly that reason: it has a scrollbar to clear.
+    .pbbp-inputs .pbim-modal__body { padding: 16px 26px 20px 22px; }
     .pbbp-inputs-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
     .pbbp-inputs-row {
         display: grid;
