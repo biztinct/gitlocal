@@ -7,7 +7,9 @@
 
   <t t-name="pb_blueprint.SentenceEditor">
     <div class="pbim-modal-scrim pbbp-se-scrim" t-on-click="tryClose">
-      <div class="pbim-modal pbbp-se" t-on-click.stop="">
+      <div class="pbim-modal pbbp-se" t-ref="root" tabindex="-1"
+           role="dialog" aria-modal="true"
+           t-on-click.stop="" t-on-keydown="onKeydown">
 
         <div class="pbbp-se-boot" t-if="state.loading">
           <div class="pbim-spin"/>
@@ -91,14 +93,14 @@
 
             <p t-attf-class="pbbp-se-sentence {{ showRestore ? 'is-faded' : '' }}">
               <span>For</span>
-              <select class="pbbp-pill" aria-label="Who this applies to"
+              <select class="pbbp-word" aria-label="Who this applies to"
                       t-on-change="(ev) => this.onPick('audience', ev)">
                 <option t-foreach="options.audiences or []" t-as="a" t-key="a.value"
                         t-att-value="a.value" t-att-selected="recipe.audience === a.value"
                         t-esc="a.label"/>
               </select>
               <span>, calculate</span>
-              <select class="pbbp-pill" aria-label="How the amount is worked out"
+              <select class="pbbp-word" aria-label="How the amount is worked out"
                       t-on-change="onKind">
                 <option t-foreach="options.kinds or []" t-as="k" t-key="k.value"
                         t-att-value="k.value" t-att-selected="amount.kind === k.value"
@@ -107,21 +109,21 @@
 
               <!-- amount detail -->
               <t t-if="needs('value')">
-                <input class="pbbp-pill is-num" type="number" aria-label="The amount"
+                <input class="pbbp-word is-num" type="number" aria-label="The amount"
                        t-att-value="amount.value or 0"
                        t-on-input="(ev) => this.onNumber('amount.value', ev)"/>
                 <span class="pbbp-se-cur" t-esc="props.currency"/>
               </t>
               <t t-if="needs('percent') and amount.kind !== 'percent_of'">
                 <span>at</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="The percentage"
+                <input class="pbbp-word is-num" type="number" aria-label="The percentage"
                        t-att-value="amount.percent or 0"
                        t-on-input="(ev) => this.onNumber('amount.percent', ev)"/>
                 <span>%</span>
               </t>
               <t t-if="needs('base')">
                 <span>of</span>
-                <select class="pbbp-pill" aria-label="Which component it is worked out from"
+                <select class="pbbp-word" aria-label="Which component it is worked out from"
                         t-on-change="(ev) => this.onPick('amount.base', ev)">
                   <option value="">choose one</option>
                   <option t-foreach="options.bases or []" t-as="b" t-key="b.code"
@@ -129,38 +131,48 @@
                           t-esc="b.name"/>
                 </select>
               </t>
-              <t t-if="amount.kind === 'percent_of'">
+              <t t-if="amount.kind === 'percent_of' and amount.rate_code">
+                <span>at the rate held in</span>
+                <select class="pbbp-word" aria-label="Which component holds the rate"
+                        t-on-change="onRate">
+                  <option t-foreach="options.bases or []" t-as="r" t-key="r.code"
+                          t-att-value="r.code" t-att-selected="amount.rate_code === r.code"
+                          t-esc="r.name"/>
+                  <option value="">a percentage I type in</option>
+                </select>
+              </t>
+              <t t-if="amount.kind === 'percent_of' and !amount.rate_code">
                 <span>at</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="The percentage"
+                <input class="pbbp-word is-num" type="number" aria-label="The percentage"
                        t-att-value="amount.percent or 0"
                        t-on-input="(ev) => this.onNumber('amount.percent', ev)"/>
                 <span>%</span>
               </t>
               <t t-if="needs('grades')">
                 <span>of</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="Grade 1 amount"
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 1 amount"
                        t-att-value="(amount.grades or [0,0,0])[0]"
                        t-on-input="(ev) => this.onGrade(0, ev)"/>
                 <span>/</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="Grade 2 amount"
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 2 amount"
                        t-att-value="(amount.grades or [0,0,0])[1]"
                        t-on-input="(ev) => this.onGrade(1, ev)"/>
                 <span>/</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="Grade 3 amount"
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 3 amount"
                        t-att-value="(amount.grades or [0,0,0])[2]"
                        t-on-input="(ev) => this.onGrade(2, ev)"/>
                 <span>by grade</span>
               </t>
               <t t-if="needs('rate_pct')">
                 <span>at</span>
-                <input class="pbbp-pill is-num" type="number" aria-label="Percentage of the hourly rate"
+                <input class="pbbp-word is-num" type="number" aria-label="Percentage of the hourly rate"
                        t-att-value="amount.rate_pct or 100"
                        t-on-input="(ev) => this.onNumber('amount.rate_pct', ev)"/>
                 <span>% of the hourly rate</span>
               </t>
               <t t-if="needs('link')">
                 <span>of</span>
-                <select class="pbbp-pill" aria-label="Which benefit it follows"
+                <select class="pbbp-word" aria-label="Which benefit it follows"
                         t-on-change="(ev) => this.onPick('amount.link', ev)">
                   <option value="">choose one</option>
                   <option t-foreach="options.links or []" t-as="l" t-key="l.code"
@@ -170,7 +182,7 @@
               </t>
               <t t-if="needs('table')">
                 <span>using</span>
-                <select class="pbbp-pill" aria-label="Which band table"
+                <select class="pbbp-word" aria-label="Which band table"
                         t-on-change="(ev) => this.onPick('amount.table', ev)">
                   <option t-foreach="options.tables or []" t-as="tb" t-key="tb.code"
                           t-att-value="tb.code" t-att-selected="amount.table === tb.code"
@@ -179,7 +191,7 @@
               </t>
               <t t-if="needs('cap')">
                 <span>capped at</span>
-                <select class="pbbp-pill" aria-label="Which cap applies"
+                <select class="pbbp-word" aria-label="Which cap applies"
                         t-on-change="(ev) => this.onPick('amount.cap', ev)">
                   <option value="">choose one</option>
                   <option t-foreach="options.bases or []" t-as="c" t-key="c.code"
@@ -189,7 +201,7 @@
               </t>
 
               <span>, prorated by</span>
-              <select class="pbbp-pill" aria-label="How it is prorated"
+              <select class="pbbp-word" aria-label="How it is prorated"
                       t-on-change="(ev) => this.onPick('proration', ev)">
                 <option t-foreach="options.proration or []" t-as="p" t-key="p.value"
                         t-att-value="p.value" t-att-selected="recipe.proration === p.value"
@@ -200,7 +212,7 @@
 
             <p class="pbbp-se-freq">
               <span>Paid</span>
-              <select class="pbbp-pill" aria-label="How often it is paid"
+              <select class="pbbp-word" aria-label="How often it is paid"
                       t-on-change="(ev) => this.onPick('frequency', ev)">
                 <option t-foreach="options.frequency or []" t-as="f" t-key="f.value"
                         t-att-value="f.value" t-att-selected="recipe.frequency === f.value"
@@ -208,7 +220,7 @@
               </select>
               <t t-if="recipe.frequency === 'annual' or needs('payout_month')">
                 <span>in</span>
-                <select class="pbbp-pill" aria-label="Which month it is paid in"
+                <select class="pbbp-word" aria-label="Which month it is paid in"
                         t-on-change="onMonth">
                   <option t-foreach="options.months or []" t-as="m" t-key="m.value"
                           t-att-value="m.value"

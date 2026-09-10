@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, onWillUpdateProps } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { _t } from "@web/core/l10n/translation";
@@ -31,6 +31,7 @@ export class ComponentsTab extends Component {
         sampleId: { type: [Number, Boolean], optional: true },
         sampleName: { type: String, optional: true },
         currency: { type: String, optional: true },
+        reloadKey: { type: Number, optional: true },
         onChanged: { type: Function },       // something was saved -> refresh the hero
         onRevision: { type: Function },
         onGrid: { type: Function },
@@ -65,6 +66,18 @@ export class ComponentsTab extends Component {
         onWillStart(async () => {
             await this.load();
             this.state.loading = false;
+        });
+
+        // The value beside each component is what it pays THIS sample
+        // employee, so it has to follow the sample. Without this, changing a
+        // sample input moved the take-home figure on the right while the row
+        // that caused the change still read 0 — a number that is quietly
+        // wrong is worse than no number.
+        onWillUpdateProps(async (next) => {
+            if (next.reloadKey !== this.props.reloadKey
+                    || next.sampleId !== this.props.sampleId) {
+                await this.load(next.sampleId);
+            }
         });
     }
 
@@ -160,8 +173,7 @@ export class ComponentsTab extends Component {
         if (this.searching) {
             return _t("Nothing matches “%s”.", this.state.query.trim());
         }
-        return _t("No components yet. Add your first one, or change the "
-                  "starting point on the Start step.");
+        return _t("No components yet. Add your first one, or change the starting point on the Start step.");
     }
 
     // ==================================================================
@@ -196,9 +208,21 @@ export class ComponentsTab extends Component {
 
     clearSelection() { this.state.selected = []; }
 
+    /**
+     * The list's own keys, and they stop here.
+     *
+     * `stopPropagation` is not tidiness: the journey shell listens for Enter on
+     * the whole page and treats it as "continue to the next step". Without this,
+     * pressing Enter on a component opened its editor AND walked the person off
+     * the Pay rules step — measured, and it looked like the page had jumped.
+     */
     onListKeydown(ev) {
         const rows = this.matching;
         if (!rows.length) return;
+        const mine = ["ArrowDown", "ArrowUp", "Enter", " ", "Spacebar", "Escape"];
+        if (mine.includes(ev.key)) {
+            ev.stopPropagation();
+        }
         if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
             ev.preventDefault();
             const step = ev.key === "ArrowDown" ? 1 : -1;

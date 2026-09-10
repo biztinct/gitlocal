@@ -1120,16 +1120,43 @@ $bp-head-h: 64px;
     .pbbp-se-freq { font-size: 13px; color: var(--bp-muted); }
     .pbbp-se-cur { font-size: 12px; font-weight: 700; color: var(--bp-muted); }
 
-    .pbbp-pill {
+    // The word you change inside the sentence.
+    //
+    // Named `pbbp-word`, NOT `pbbp-pill`: B1 already owns `.pbbp-pill` for the
+    // pay panel's status badge, which is `inline-flex` and UPPERCASE, and a
+    // reused class name is not a style clash you can win on specificity — it is
+    // two different things wearing one name. The sentence read as a stack of
+    // full-width boxes shouting in capitals until this was renamed (BP18).
+    //
+    // The backend theme also styles EVERY `select` as `display: block;
+    // width: 100%`, so the element is named in the selector to out-specify it
+    // without `!important`.
+    select.pbbp-word,
+    .pbbp-se-f select,
+    .pbbp-se-f input,
+    .pbbp-cmp-search input {
+        display: inline-block;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    select.pbbp-word, input.pbbp-word {
         font: inherit; font-size: 14px; font-weight: 700;
         color: var(--bp-i); background: var(--bp-soft);
         border: 1px solid transparent; border-radius: 9px;
-        padding: 5px 9px; cursor: pointer; max-width: 100%;
+        padding: 5px 9px; cursor: pointer;
+        width: auto; max-width: 100%; min-width: 0;
         transition: .14s;
         &:hover { background: var(--bp-soft2); }
         &:focus { outline: 0; border-color: var(--bp-i); box-shadow: 0 0 0 3px rgba(90, 75, 176, .14); }
         &.is-num { width: 116px; text-align: right; cursor: text; }
     }
+    .pbbp-se-f select, .pbbp-se-f input { width: 100%; }
+
+    // A badge in the kit is capitalised, which is right for a status word and
+    // wrong for a sentence fragment: "Tax Free", "Written As Excel".
+    .pbbp-se-chips .pbim-badge,
+    .pbbp-cmp-badge { text-transform: none; }
 
     .pbbp-se-disc {
         border: 1px solid var(--bp-line); border-radius: 12px; overflow: hidden;

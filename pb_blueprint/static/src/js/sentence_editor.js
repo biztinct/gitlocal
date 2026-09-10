@@ -45,6 +45,7 @@ export class SentenceEditor extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.rootRef = useRef("root");
         this.nameRef = useRef("name");
         this.excelRef = useRef("excel");
 
@@ -83,8 +84,13 @@ export class SentenceEditor extends Component {
             this.state.loading = false;
         });
         onMounted(() => {
+            // Focus lands INSIDE the dialog, always. Without this the caret
+            // stays on the row that opened it, Escape never reaches the editor,
+            // and a screen reader keeps reading the list behind the modal.
             if (this.isNew && this.nameRef.el) {
                 this.nameRef.el.focus();
+            } else if (this.rootRef.el) {
+                this.rootRef.el.focus();
             }
             this.syncExcel();
             this.refreshProof();
@@ -96,6 +102,30 @@ export class SentenceEditor extends Component {
     }
 
     ic(name, size = 16) { return ic(name, size); }
+
+    /**
+     * The dialog's own keys.
+     *
+     * Registered on the element as well as through the hotkey service, because
+     * this modal is hand-built markup rather than a framework Dialog: the
+     * service only routes a key to the surface holding focus, and "the surface
+     * holding focus" is exactly what a hand-built modal has to claim for
+     * itself. Both paths stop here so Escape cannot also reach the journey
+     * shell, where it means something else.
+     */
+    onKeydown(ev) {
+        if (ev.key === "Escape") {
+            ev.stopPropagation();
+            ev.preventDefault();
+            this.onEscape();
+            return;
+        }
+        if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            this.onSave();
+        }
+    }
 
     syncExcel() {
         const el = this.excelRef.el;
@@ -234,6 +264,26 @@ export class SentenceEditor extends Component {
         this.setRecipe("amount.payout_month", Number(ev.target.value) || 1);
     }
 
+    /**
+     * A rate a configuration STORES beats a percentage somebody types.
+     *
+     * The Vietnam pack keeps 8% in a component called SIRATE, so the rule reads
+     * "at the rate held in Social Insurance Rate" and changing that one number
+     * changes every rule that uses it. Choosing the empty option goes back to a
+     * plain percentage typed here.
+     */
+    onRate(ev) {
+        const code = ev.target.value;
+        if (code) {
+            this.state.recipe.amount.rate_code = code;
+            delete this.state.recipe.amount.percent;
+        } else {
+            delete this.state.recipe.amount.rate_code;
+            this.state.recipe.amount.percent = 0;
+        }
+        this.queueProof();
+    }
+
     onKind(ev) {
         const kind = ev.target.value;
         // Keep only what the new amount can use — a leftover percentage on a
@@ -353,8 +403,12 @@ export class SentenceEditor extends Component {
     get needsLine() {
         const needs = this.state.proof.needs || [];
         if (!needs.length) return "";
-        return _t("This adds %s to the numbers this payroll is given.",
-                  needs.join(", "));
+        // The server sends these as NAMES, not codes: "Paid working days" is
+        // something a payroll manager can look for on the Inputs tab, and
+        // "PAIDDAYS" is not.
+        return needs.length === 1
+            ? _t("This adds one number the payroll will be given: %s.", needs[0])
+            : _t("This adds numbers the payroll will be given: %s.", needs.join(", "));
     }
 
     // ==================================================================

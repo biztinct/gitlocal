@@ -117,6 +117,7 @@
                        sampleId="state.sampleId or false"
                        sampleName="sampleName"
                        currency="state.config and state.config.currency or ''"
+                       reloadKey="state.payTick"
                        templateName="state.blueprint and state.blueprint.template_name or ''"
                        tab="state.rulesTab"
                        onTab.bind="onRulesTab"

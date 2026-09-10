@@ -99,6 +99,9 @@ export class PbBlueprint extends Component {
             confirmDiscard: false,
             kebabOpen: false,
             rulesTab: "components",
+            // Bumped every time the pay panel gets a fresh answer, so the
+            // component list refreshes the value it shows for each row.
+            payTick: 0,
         });
 
         this.cycles = [
@@ -554,6 +557,7 @@ export class PbBlueprint extends Component {
         this.state.sampleId = res.sample_id;
         this.state.payStatus = "live";
         this.state.payReason = "";
+        this.state.payTick++;
     }
 
     async onPickSample(id) {
@@ -769,6 +773,10 @@ export class PbBlueprint extends Component {
             this.applyLoad(load);
             this.state.step = step;
             this.state.rulesTab = tab;
+            // `applyLoad` restores the whole draft but says nothing about the
+            // URL, and a refresh after an edit has to come back to the same
+            // draft rather than to an empty journey.
+            this._rememberInUrl(this.state.configId);
         }
         await this.refreshPreview();
     }

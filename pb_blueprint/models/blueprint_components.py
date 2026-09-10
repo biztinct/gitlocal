@@ -222,6 +222,49 @@ class PbBlueprintComponents(models.AbstractModel):
                           letter, text, flags=re.IGNORECASE)
         return text
 
+    def _plain_formula_error(self, message):
+        """The checker's refusal, in words a payroll manager can act on.
+
+        `FormulaValidator` was written for engineers reading a log: "Missing 1
+        closing parenthesis(es)", "Unknown column reference: QQ". Those reach a
+        person here, under the calculation they just typed, so the handful that
+        are actually reachable get plain wording. Anything unrecognised is
+        passed through unchanged rather than swallowed — a refusal nobody can
+        read still beats a refusal nobody can see.
+        """
+        text = (message or '').strip()
+        if not text:
+            return _("This calculation cannot be read.")
+        hit = re.search(r'Missing (\d+) closing parenthesis', text)
+        if hit:
+            count = int(hit.group(1))
+            return (_("A closing bracket is missing.") if count == 1
+                    else _("%s closing brackets are missing.") % count)
+        if 'Unexpected \')\'' in text:
+            return _("There is a closing bracket with nothing to close.")
+        hit = re.search(r'Unknown column reference: ([A-Za-z0-9]+)', text)
+        if hit:
+            return _("There is no component called %s in this configuration.",
+                     hit.group(1))
+        hit = re.search(r'Unsupported function: ([A-Za-z0-9_]+)', text)
+        if hit:
+            return _("%s is not a calculation this payroll can run.",
+                     hit.group(1))
+        if 'Consecutive operators' in text:
+            return _("Two operators are next to each other, so the "
+                     "calculation cannot be worked out.")
+        if 'ends with an operator' in text:
+            return _("The calculation stops after an operator.")
+        if 'must start with' in text:
+            return _("A calculation has to start with an equals sign.")
+        return text
+
+    def _check(self, config, formula, exclude_id=None):
+        """The engine's own checker, with its answer put into plain words."""
+        ok, message = self.env['pb.formula.studio']._check_formula(
+            config, formula, exclude_id=exclude_id)
+        return ok, ('' if ok else self._plain_formula_error(message))
+
     # ------------------------------------------------------------------
     def _sample_values(self, config, sample_id=None):
         """What each component pays the sample employee, by code."""
@@ -724,6 +767,8 @@ class PbBlueprintComponents(models.AbstractModel):
             # editor shows ("this adds an input called Hours this run").
             needs = self._needed_helpers(config, {self_code: clean})
             self._provision_helpers(config, {self_code: clean})
+            # Named in WORDS: "this adds Paid working days", never "PAIDDAYS".
+            needs = [self._helper_name(config, code) for code in needs]
             ctx = rc.build_ctx(config, self_code=self_code,
                                extra_recipes={self_code: clean})
             formula, _still = rc.compile_recipe(clean, ctx)
@@ -733,8 +778,7 @@ class PbBlueprintComponents(models.AbstractModel):
                         'value': self._value_of(config, self_code, sample_id),
                         'needs': needs}
 
-        ok, message = self.env['pb.formula.studio']._check_formula(
-            config, formula, exclude_id=rule.id)
+        ok, message = self._check(config, formula, exclude_id=rule.id)
         if not ok:
             return {'valid': False, 'message': message,
                     'excel_letters': formula,
@@ -845,8 +889,7 @@ class PbBlueprintComponents(models.AbstractModel):
             if not formula.startswith('='):
                 return {'ok': False, 'reason': _(
                     "A calculation has to start with an equals sign.")}
-            ok, message = self.env['pb.formula.studio']._check_formula(
-                config, formula, exclude_id=rule.id)
+            ok, message = self._check(config, formula, exclude_id=rule.id)
             if not ok:
                 return {'ok': False, 'reason': message}
             vals.update({'column_type': 'formula', 'excel_formula': formula,
@@ -877,8 +920,7 @@ class PbBlueprintComponents(models.AbstractModel):
             vals['bp_formula_source'] = 'manual'
             rule.write(vals)
         else:
-            ok, message = self.env['pb.formula.studio']._check_formula(
-                config, formula, exclude_id=rule.id)
+            ok, message = self._check(config, formula, exclude_id=rule.id)
             if not ok:
                 return {'ok': False, 'reason': message}
             vals.update({'column_type': 'formula', 'excel_formula': formula,
@@ -1091,8 +1133,7 @@ class PbBlueprintComponents(models.AbstractModel):
                 if formula is None or needs:
                     raise UserError(_(
                         "The guided version could not be worked out again."))
-                ok, message = self.env['pb.formula.studio']._check_formula(
-                    config, formula, exclude_id=rule.id)
+                ok, message = self._check(config, formula, exclude_id=rule.id)
                 if not ok:
                     raise UserError(message)
                 rule.write({'excel_formula': formula,

@@ -25,6 +25,7 @@ export class StepRules extends Component {
         sampleId: { type: [Number, Boolean], optional: true },
         sampleName: { type: String, optional: true },
         currency: { type: String, optional: true },
+        reloadKey: { type: Number, optional: true },
         templateName: { type: String, optional: true },
         tab: { type: String, optional: true },
         onTab: { type: Function },
@@ -57,19 +58,15 @@ export class StepRules extends Component {
 
     get panelLead() {
         return {
-            tax: _t("The income-tax bands, the reliefs and the insurance caps "
-                    "this configuration uses."),
-            calendar: _t("The day inputs close, the day people are paid, and "
-                         "how the money leaves the bank."),
+            tax: _t("The income-tax bands, the reliefs and the insurance caps this configuration uses."),
+            calendar: _t("The day inputs close, the day people are paid, and how the money leaves the bank."),
         }[this.state.tab] || "";
     }
 
     get panelNote() {
         return {
-            tax: _t("Arrives in the next release — the starter's tax values are "
-                    "already in place and you can see them in the grid."),
-            calendar: _t("Arrives in the next release — pay runs already follow "
-                         "the company's own calendar until then."),
+            tax: _t("Arrives in the next release — the starter's tax values are already in place and you can see them in the grid."),
+            calendar: _t("Arrives in the next release — pay runs already follow the company's own calendar until then."),
         }[this.state.tab] || "";
     }
 

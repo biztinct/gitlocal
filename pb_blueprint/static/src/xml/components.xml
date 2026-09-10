@@ -34,6 +34,7 @@
                      sampleId="props.sampleId or false"
                      sampleName="props.sampleName or ''"
                      currency="props.currency or ''"
+                     reloadKey="props.reloadKey or 0"
                      onChanged="props.onChanged"
                      onRevision="props.onRevision"
                      onGrid="props.onGrid"/>
@@ -156,7 +157,7 @@
                   t-out="ic('lock', 14)"/>
             <input t-else="" type="checkbox" class="pbbp-cmp-chk" checked="checked"
                    t-att-aria-label="'Remove ' + row.name"
-                   t-on-click.stop="() => this.onToggleInclude(row)"/>
+                   t-on-click.stop.prevent="() => this.onToggleInclude(row)"/>
 
             <div class="pbbp-cmp-main">
               <div class="pbbp-cmp-t">
