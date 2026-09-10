@@ -260,6 +260,15 @@ export const IC = {
     // before anybody touches it.
     eye:          '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
     grip:         '<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
+
+    // BLUEPRINT B1 — the guided setup's starting-point cards and its "who are
+    // you paying" tiles. `fileSpreadsheet` is the workbook you can import (the
+    // generic `file` says nothing about a spreadsheet, and `table` is already
+    // spoken for by the components grid); `wallet` is guaranteed take-home pay,
+    // which is about what somebody ends up holding rather than about money in
+    // general (`banknote`/`coins`).
+    fileSpreadsheet: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/>',
+    wallet:       '<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M18 12h.01"/>',
 };
 
 /**

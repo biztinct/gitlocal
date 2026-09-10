@@ -614,6 +614,14 @@ export class PbFormulaStudio extends Component {
                 // and when there are no configs yet (the build panel shows instead).
                 this.openConfigSwitcher();
             }
+            // BLUEPRINT B1 — `open_switcher` says "land on the Payroll
+            // configurations picker", and it has to work even when a config is
+            // already loaded: the guided setup's back chip returns HERE, and a
+            // chip labelled "Payroll configurations" that lands on a grid is a
+            // chip that lied. Read last so it wins over the branches above.
+            if ((a.params && a.params.open_switcher) || (a.context && a.context.open_switcher)) {
+                this.openConfigSwitcher();
+            }
         });
         onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
         // Clear every pending debounce/open timer on unmount so a fired callback
@@ -4097,6 +4105,29 @@ export class PbFormulaStudio extends Component {
     csRingStroke(score) { return (score >= 80) ? "#059669" : (score >= 50 ? "#D97706" : (score > 0 ? "#DC2626" : "#CBD5E1")); }
     // a card wants attention if it has hard errors or unreleased changes
     csAttention(c) { return ((c.problem_counts && c.problem_counts.error) || 0) > 0 ? "err" : (c.pending_changes ? "warn" : ""); }
+
+    // ---- BLUEPRINT B1: half-finished setups -------------------------------
+    // A configuration somebody is still setting up is NOT a configuration with
+    // a bad health score, and scoring it as one is how a half-built draft gets
+    // read as broken and deleted. The card swaps the health ring for a progress
+    // ring and offers the one action that makes sense: carry on where you were.
+    bpSetup(c) {
+        return (c && c.blueprint && registry.category("actions").contains("pb_blueprint"))
+            ? c.blueprint : null;
+    }
+    bpRing(c) {
+        const s = this.bpSetup(c);
+        const C = 2 * Math.PI * 19;
+        const done = s ? (s.step_no || 1) / (s.total || 6) : 0;
+        return { dash: C, offset: C * (1 - done) };
+    }
+    bpResume(c, ev) {
+        if (ev) ev.stopPropagation();
+        this.state.configSwitcherOpen = false;
+        this.action.doAction(
+            { type: "ir.actions.client", tag: "pb_blueprint", params: { config_id: c.id } },
+            { clearBreadcrumbs: false });
+    }
     _csFacet(key, labeler) {
         const m = {};
         for (const c of this.csCards) { const v = c[key] || ""; if (v) m[v] = (m[v] || 0) + 1; }
@@ -5757,6 +5788,16 @@ export class PbFormulaStudio extends Component {
         // the wizard only becomes visible once that one is dismissed.
         this.state.configPickerOpen = false;
         this.state.configSwitcherOpen = false;
+        // BLUEPRINT B1 — when the guided setup module is installed, "New
+        // configuration" is a full page rather than this pop-up. Probed through
+        // the ACTIONS REGISTRY, not through a hard dependency: `pb_blueprint`
+        // depends on the studio and not the other way round, so the studio must
+        // stay installable on its own with this modal as the fallback.
+        if (registry.category("actions").contains("pb_blueprint")) {
+            return this.action.doAction(
+                { type: "ir.actions.client", tag: "pb_blueprint", params: {} },
+                { clearBreadcrumbs: false });
+        }
         this.state.wizardStep = 1;
         this.state.wizardForm = { name: "", country_code: "VN", cycle_type: "regular", template: "vn_standard" };
         if (!this.state.wizardTemplates.length) {

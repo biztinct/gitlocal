@@ -185,3 +185,19 @@
     .pbfs-cfgsw .cs-filters { flex-wrap: wrap; }
     .pbfs-cfgsw .cs-grid { grid-template-columns: 1fr; }
 }
+
+/* ---- BLUEPRINT B1: a configuration somebody is still setting up ----
+   The health ring answers "is this configuration sound?", which is a
+   question a half-built draft has not been asked yet. On those cards the
+   same 52px ring shows HOW FAR THROUGH SETUP it is instead, in the brand
+   indigo rather than the red/amber/green of health, and the card offers
+   "Resume setup" ahead of "Open" — carrying on is the thing to do, and
+   the grid is still one click away. */
+.pbfs-cfgsw .cs-ring.setup .cs-ring-val { font-size: 12px; color: #5A4BB0; }
+.pbfs-cfgsw .cs-resume {
+    align-self: center;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: #5A4BB0; background: #EDEAF8;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.pbfs-cfgsw .cs-card-actions .cs-resume-b { font-weight: 800; }

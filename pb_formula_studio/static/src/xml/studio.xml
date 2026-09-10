@@ -3028,7 +3028,15 @@
                       <span class="cs-chip cyc" t-esc="csCycleLabel(c.cycle_type)"/>
                     </div>
                     <div class="cs-card-mid">
-                      <div class="cs-ring">
+                      <div class="cs-ring setup" t-if="bpSetup(c)">
+                        <svg width="52" height="52" viewBox="0 0 42 42">
+                          <circle cx="21" cy="21" r="19" fill="none" stroke="#EDEAF8" stroke-width="4"/>
+                          <circle cx="21" cy="21" r="19" fill="none" stroke="#5A4BB0" stroke-width="4" stroke-linecap="round"
+                                  t-att-stroke-dasharray="bpRing(c).dash" t-att-stroke-dashoffset="bpRing(c).offset" transform="rotate(-90 21 21)"/>
+                        </svg>
+                        <span class="cs-ring-val"><t t-esc="bpSetup(c).step_no"/>/<t t-esc="bpSetup(c).total"/></span>
+                      </div>
+                      <div class="cs-ring" t-else="">
                         <svg width="52" height="52" viewBox="0 0 42 42">
                           <circle cx="21" cy="21" r="19" fill="none" stroke="#EEF1F5" stroke-width="4"/>
                           <circle cx="21" cy="21" r="19" fill="none" t-att-stroke="csRingStroke(c.score)" stroke-width="4" stroke-linecap="round"
@@ -3039,6 +3047,7 @@
                       <div class="cs-metrics">
                         <div class="cs-metric"><span class="cs-m-val" t-esc="c.rule_count"/><span class="cs-m-lbl">components</span></div>
                         <div class="cs-metric"><span class="cs-m-val" t-esc="(c.employees || 0).toLocaleString('en-US')"/><span class="cs-m-lbl">employees</span></div>
+                        <div class="cs-resume" t-if="bpSetup(c)">Resume setup</div>
                       </div>
                     </div>
                     <div class="cs-flags">
@@ -3054,7 +3063,12 @@
                     </div>
                   </button>
                   <div class="cs-card-actions">
-                    <button class="pbfs-btn soft sm" t-on-click="() => this.chooseConfig(c.id)">Open</button>
+                    <button t-if="bpSetup(c)" class="pbfs-btn soft sm cs-resume-b"
+                            t-on-click="(ev) => this.bpResume(c, ev)"
+                            t-att-title="'Carry on setting up ' + c.name">
+                      Resume setup
+                    </button>
+                    <button t-attf-class="pbfs-btn {{ bpSetup(c) ? 'ghost' : 'soft' }} sm" t-on-click="() => this.chooseConfig(c.id)">Open</button>
                     <button t-if="csCanEdit" class="pbfs-btn ghost sm" t-att-disabled="state.csCloningId === c.id" t-on-click="(ev) => this.csClone(c, ev)">
                       <t t-if="state.csCloningId === c.id">Cloning…</t><t t-else="">Clone</t>
                     </button>
