@@ -1765,8 +1765,14 @@ class HrFormulaRule(models.Model):
         if not self.excel_formula.startswith('='):
             errors.append(_("Formula must start with '='"))
 
+        # BP-R12 — BRACKET(<table>, <value>) is the engine's own band primitive,
+        # not a column reference. Expand it first (same treatment as
+        # `hr.formula.config.action_validate_formulas` and
+        # `pb.formula.studio._check_formula`) or the table's name is reported as
+        # an invalid column and a perfectly good progressive-tax rule is flagged.
         # Check for valid column references - both column letters and codes
-        formula = self.excel_formula.upper()
+        formula = self.env['hr.formula.rate.table'].expand_brackets(
+            self.excel_formula, self.config_id).upper()
         formula_no_strings = self._strip_string_literals(formula)
 
         # Find references with row numbers (A1, AA1, etc.)

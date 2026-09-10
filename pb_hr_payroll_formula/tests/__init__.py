@@ -137,3 +137,7 @@ from . import test_sc5_status_words
 
 # Printed-payslip formatting: value_kind decides, not the legacy number_format.
 from . import test_payslip_token_format
+
+# BP-R12 — the static formula checker knows BRACKET(...), the engine's own
+# progressive-band primitive, so a healthy country pack stops reporting errors.
+from . import test_bracket_lint

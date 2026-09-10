@@ -1204,6 +1204,22 @@ class HrFormulaConfig(models.Model):
             }
         }
 
+    def _missing_rate_tables(self, formula):
+        """Band tables a formula calls that this configuration does not have.
+
+        BP-R12. `expand_brackets` deliberately replaces an unknown table with 0
+        so evaluation stays safe; the price is that a typo in a table name
+        becomes an invisible zero. The validator is the right place to say so,
+        by name, before the number reaches a payslip.
+        """
+        self.ensure_one()
+        if not formula or 'BRACKET' not in (formula or '').upper():
+            return []
+        known = {(t.code or '').upper() for t in self.rate_table_ids}
+        found = re.findall(r'\bBRACKET\s*\(\s*([A-Za-z][A-Za-z0-9]*)',
+                           formula, flags=re.IGNORECASE)
+        return sorted({f.upper() for f in found} - known)
+
     def action_validate_formulas(self):
         """Validate all formulas (syntax + evaluation) in this configuration"""
         self.ensure_one()
@@ -1219,10 +1235,26 @@ class HrFormulaConfig(models.Model):
         syntax_errors = []
         for rule in rules:
             if rule.column_type == 'formula' and rule.excel_formula:
-                is_valid, message = validator.validate_formula(
-                    rule.excel_formula,
-                    column_map
-                )
+                # BP-R12 — BRACKET(<table>, <value>) is the engine's own
+                # progressive-band primitive, not an Excel function, and the
+                # static checker has never heard of it. Expand it first, exactly
+                # as `pb.formula.studio._check_formula` already does, or every
+                # configuration built on a country rule pack reports an error
+                # for a formula that computes perfectly (measured on Vietnam:
+                # PIT 14,896,200 correct, flagged "Unsupported function:
+                # BRACKET"). An unknown table is still an error — expansion
+                # turns it into a harmless 0, so it is named here instead.
+                formula = rule.excel_formula
+                missing = self._missing_rate_tables(formula)
+                if missing:
+                    is_valid, message = False, _(
+                        "There is no band table called %s in this "
+                        "configuration.") % ', '.join(missing)
+                else:
+                    expanded = self.env['hr.formula.rate.table'].expand_brackets(
+                        formula, self)
+                    is_valid, message = validator.validate_formula(
+                        expanded, column_map)
                 rule.write({
                     'is_valid': is_valid,
                     'validation_message': message if not is_valid else ''
