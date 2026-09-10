@@ -431,3 +431,54 @@ never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
   and then removing it proves nothing — it was never part of what was agreed. The order is
   always: make the change, mark it done, THEN break it. Half an hour was spent reading a
   correct "Done" as a failure.
+- BP41 (B5, cost the whole Test step until it was found): **a child that sets state on
+  its parent from `onWillStart` is an infinite render loop, and Owl reports NOTHING.**
+  `StepTest` handed its answer to the shell so the pay panel could become the scoreboard;
+  the shell's state changed, which re-rendered the shell, which rebuilt the child, which
+  asked again. The symptom is not an error — it is a step that never appears: the rail
+  keeps its old highlight, the previous step stays painted, `state.step` IS the new step,
+  and the console is silent, because Owl cancels the render and reverts. It was diagnosed
+  by patching the component's `setup` and counting how many times it ran (30+ in 2.5 s).
+  **Rule: nothing may reach the parent before `onMounted`.** Guard with a `_live` flag set
+  there, and hand the first answer over from the same hook. A plain number is safe — Owl's
+  reactivity does not notify when a set does not change the value — which is why
+  `onRevision(res.revision)` has always been fine and a fresh object never is.
+- BP42 (B5, a real bug in front of a user, and older than this phase): **`action_run_tests`
+  starts by deleting the previous results, and no group could delete them.**
+  `access_test_result_manager` shipped `1,1,1,0`, so the FIRST run of the checks worked (an
+  empty set deletes fine) and every run after it failed with the framework's own refusal —
+  "You are not allowed to delete 'Formula Test Result' … No group currently allows this
+  operation" — for every user who is not a superuser. It affects the studio's own Test
+  workbench too, and it has been true since that model shipped. Fixed by giving the formula
+  manager `perm_unlink` in `pb_hr_payroll_formula/security/ir.model.access.csv`
+  (19.0.1.125.0). **An ACL row that permits create and write but not unlink is a bug
+  whenever the code's own first act is to clear what it wrote last time.**
+- BP43 (B5): **a screen may not be confident about something it has not checked.** Three
+  variants of the same mistake, all found in the browser: a scoreboard reading "5 / 5
+  passed" beside a chip saying "Not checked yet"; the same score still reading green after
+  a tax band moved; and a chip reporting the STORED counters from the last run while the
+  list beside it showed six scenarios added since. The rule that fixes all three: the
+  number and the words about the number must be computed from ONE answer, and where they
+  cannot be (a stored stamp versus a live list) the payload overrides the stored half
+  before it reaches the screen. Before a run there is no score at all — an em dash and
+  "not checked yet" — and while stale the word is "passed — before the change".
+- BP44 (B5): **the studio's step-by-step replay finds only SPREADSHEET references.**
+  `replay_trace` collects what a formula read with `([A-Za-z]+)\d+` — `A1`, `Y1` — and every
+  formula the guided setup writes is stored WITHOUT row numbers (`=A+H`, the shape
+  `_normalize_excel_formula` produces). So the replay returns the right ANSWER for a
+  generated rule and an empty list of reads, and the trace line read "→ 2,400,000" with
+  nothing before the arrow. Fall back to the dependency edges (the same list "Feeds from"
+  shows) when the replay's own list is empty; never "fix" it by writing row numbers back
+  into the stored formula.
+- BP45 (B5): **five columns whose minimum widths add up to more than the container is a
+  button nobody can press.** At 1440 the journey's content column is 735 px; the outputs
+  table's first draft asked for 878, and `overflow-x: hidden` on the body quietly clipped
+  the Inspect column off the right-hand edge. Measure the container (`clientWidth`) against
+  the row (`scrollWidth`) in the browser rather than trusting a `minmax()` that looks
+  reasonable in the file.
+- BP46 (B5): **a sentence built from a label is a sentence in the wrong grammar.**
+  "Nothing in this configuration is a %s yet" reads correctly for exactly none of the nine
+  filter chips ("is a edited by hand yet"). Quote the chip's own words instead — "Nothing
+  here matches “Edited by hand”" — and check the empty state of a configuration with
+  nothing in it separately, because "no component matches this filter" is the wrong answer
+  to somebody who has not added one yet.
