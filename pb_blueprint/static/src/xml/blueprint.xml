@@ -55,7 +55,7 @@
           <button class="pbbp-kebab-b" t-on-click="toggleKebab" title="More"
                   t-out="ic('moreVertical', 16)"/>
           <div class="pbbp-kebab-menu" t-if="state.kebabOpen">
-            <button t-on-click="() => this.state.confirmDiscard = true">
+            <button t-on-click="askDiscard">
               <t t-out="ic('trash', 14)"/> Discard this draft
             </button>
           </div>
@@ -80,7 +80,7 @@
             </span>
             <span class="pbbp-rail-t">
               <b t-esc="META[s].label"/>
-              <small t-esc="META[s].hint"/>
+              <small t-esc="railHint(s)"/>
             </span>
           </button>
           <div class="pbbp-rail-foot" t-if="companyName">
@@ -120,6 +120,8 @@
                        reloadKey="state.payTick"
                        templateName="state.blueprint and state.blueprint.template_name or ''"
                        tab="state.rulesTab"
+                       openRule="state.openRule"
+                       openTick="state.openTick"
                        onTab.bind="onRulesTab"
                        onChanged.bind="onRulesChanged"
                        onRevision.bind="onRulesRevision"
@@ -164,12 +166,16 @@
                       onInspect.bind="onInspectComponent"/>
 
             <StepFinish t-elif="state.step === 'finish' and created"
-                        config="state.config"
-                        blueprint="state.blueprint"
-                        counts="state.counts"
-                        busy="state.busy"
-                        error="false"
-                        onFinish.bind="finish"/>
+                        configId="state.configId or false"
+                        revision="state.blueprint and state.blueprint.revision or 0"
+                        reloadKey="state.payTick + state.finishTick"
+                        runSignal="state.finishSignal"
+                        onFinished.bind="onFinished"
+                        onGo.bind="goTo"
+                        onGrid.bind="openGrid"
+                        onDiscard.bind="askDiscard"
+                        onRevision.bind="onRulesRevision"
+                        onChanged.bind="onRulesChanged"/>
             <div class="pbbp-card" t-else="">
               <div class="pbim-empty">
                 <b>Create the configuration first</b>
@@ -261,10 +267,8 @@
             <div class="pbim-modal__sp"/>
           </div>
           <div class="pbim-modal__body">
-            <p>
-              The configuration <b t-esc="state.config and state.config.name"/> and everything
-              set up in it is deleted. This cannot be undone.
-            </p>
+            <p t-esc="discardText"/>
+            <p class="pbim-note">Nothing outside this draft changes, and no payslip is affected.</p>
           </div>
           <div class="pbim-modal__foot">
             <div class="pbim-modal__sp"/>

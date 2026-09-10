@@ -33,6 +33,11 @@ export class StepRules extends Component {
         reloadKey: { type: Number, optional: true },
         templateName: { type: String, optional: true },
         tab: { type: String, optional: true },
+        // A "Go" link on the Finish step asked for one component by id: the
+        // Components tab opens its editor on arrival and then says it has,
+        // so a second render does not reopen what somebody just closed.
+        openRule: { type: Number, optional: true },
+        openTick: { type: Number, optional: true },
         onTab: { type: Function },
         onChanged: { type: Function },
         onRevision: { type: Function },

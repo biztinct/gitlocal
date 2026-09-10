@@ -51,6 +51,8 @@
                      currency="props.currency or ''"
                      reloadKey="tick"
                      search="search"
+                     openRule="props.openRule or 0"
+                     openTick="props.openTick or 0"
                      onChanged="(res) => this.onSubChanged(res)"
                      onRevision="props.onRevision"
                      onGrid="props.onGrid"/>

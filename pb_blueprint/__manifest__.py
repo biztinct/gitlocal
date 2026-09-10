@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -61,8 +61,13 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/js/output_inspector.js',
             'pb_blueprint/static/src/js/step_outputs.js',
             'pb_blueprint/static/src/js/step_test.js',
+            'pb_blueprint/static/src/js/finish_text.js',
             'pb_blueprint/static/src/js/step_finish.js',
             'pb_blueprint/static/src/js/blueprint.js',
+            # Two doors into the journey that live in other people's screens:
+            # the command palette and the Settings hub. Loaded last, because
+            # both name the client action the file above registers.
+            'pb_blueprint/static/src/js/blueprint_doors.js',
             'pb_blueprint/static/src/xml/pay_preview.xml',
             'pb_blueprint/static/src/xml/steps.xml',
             'pb_blueprint/static/src/xml/sentence_editor.xml',

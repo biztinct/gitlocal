@@ -35,6 +35,15 @@ export class ComponentsTab extends Component {
         // Somebody arrived here from another tab asking to see a subset — the
         // Tax tab's "review the insurance components", for instance.
         search: { type: String, optional: true },
+        // One component, asked for by id from somewhere else in the journey —
+        // the Finish step's "Open this component" link. `openTick` is what
+        // makes it happen ONCE: the editor opens when the tick moves, so
+        // closing the sheet is final and asking for the same component twice
+        // still works. Deliberately no callback to the parent — a child that
+        // sets its parent's state from a render hook is an infinite render
+        // loop that Owl reports as silence (BP41).
+        openRule: { type: Number, optional: true },
+        openTick: { type: Number, optional: true },
         onChanged: { type: Function },       // something was saved -> refresh the hero
         onRevision: { type: Function },
         onGrid: { type: Function },
@@ -69,6 +78,7 @@ export class ComponentsTab extends Component {
         onWillStart(async () => {
             await this.load();
             this.state.loading = false;
+            this._askedFor(this.props.openRule);
         });
 
         // The value beside each component is what it pays THIS sample
@@ -84,10 +94,20 @@ export class ComponentsTab extends Component {
                     || next.sampleId !== this.props.sampleId) {
                 await this.load(next.sampleId);
             }
+            if ((next.openTick || 0) !== (this.props.openTick || 0)) {
+                this._askedFor(next.openRule);
+            }
         });
     }
 
     ic(name, size = 16) { return ic(name, size); }
+
+    /** Somebody elsewhere in the journey asked for this component by id. */
+    _askedFor(ruleId) {
+        const id = Number(ruleId || 0);
+        if (!id) { return; }
+        this.state.editor = { ruleId: id, group: this.state.group };
+    }
 
     get GROUPS() { return GROUP_TABS; }
 
@@ -339,10 +359,32 @@ export class ComponentsTab extends Component {
         this.notify(_t("%s is back.", code));
     }
 
+    /**
+     * The whole tray, in ONE call.
+     *
+     * It used to be one round trip per row, each of which re-seeded the samples
+     * and regenerated every formula in the configuration — a tray of twenty was
+     * twenty waits and twenty chances to half-finish. The server takes a list
+     * and does it inside one savepoint (B2's own "with one more hour").
+     */
     async onRestoreAll() {
-        for (const row of [...this.state.removed]) {
-            await this.onRestore(row.code);
+        const codes = this.state.removed.map((row) => row.code);
+        if (!codes.length) { return; }
+        this.state.busy = true;
+        const res = await this.rpc("bp_component_include",
+                                   [this.props.configId, codes, this.props.revision]);
+        this.state.busy = false;
+        if (!res || !res.ok) {
+            this.notif.add((res && res.reason)
+                || _t("Those components could not be restored."), { type: "warning" });
+            return;
         }
+        if (res.revision !== undefined) this.props.onRevision(res.revision);
+        await this.load();
+        this.props.onChanged(res);
+        this.notify(codes.length === 1
+            ? _t("%s is back.", codes[0])
+            : _t("%s components are back.", codes.length));
     }
 
     notify(message) {

@@ -13,6 +13,7 @@ import {
     STEPS, STEP_META, nextStep, prevStep, stepNumber, isDone, continueLabel,
     freshSituations, freshToken, firstOfNextMonth, savedAgo, toggle,
 } from "./blueprint_steps";
+import { discardText } from "./finish_text";
 import { PayPreview } from "./pay_preview";
 import { SampleInputsDialog } from "./sample_inputs_dialog";
 import { StepStart } from "./step_start";
@@ -124,6 +125,22 @@ export class PbBlueprint extends Component {
             // A component the coverage line asked to look at, opened on the
             // Outputs step the moment we land there.
             inspectRule: 0,
+            // --- step 6, Finish -----------------------------------------
+            // A component a "Go" link on the Finish step asked to open, on the
+            // Pay rules step, in its own editor. The tick is what opens it, so
+            // asking for the same component twice still works and closing the
+            // editor is final.
+            openRule: 0,
+            openTick: 0,
+            // The footer's primary button and the step's own button are the
+            // SAME action, so the footer asks the step to run it rather than
+            // keeping a second copy of the gate's refusals (the Test step's
+            // `runSignal` idiom).
+            finishSignal: 0,
+            finishTick: 0,
+            // What discarding would destroy, read from the server before the
+            // dialog opens so it names the configuration and counts what goes.
+            discard: null,
         });
 
         this.cycles = [
@@ -233,11 +250,17 @@ export class PbBlueprint extends Component {
             this.state.step = this.arrival.step;
             this.rememberStep();
         }
-        // A finished setup has nothing left to guide — go straight to the grid
-        // rather than showing six steps that are all already behind you.
+        // A finished setup opens on its LAST page, read only (B6).
+        //
+        // B1 sent it straight to the components grid, which was right while the
+        // Finish step was a placeholder and wrong the moment it became the page
+        // that says what was built: somebody who comes back to a completed setup
+        // is asking "what did we decide", and answering by silently opening a
+        // different screen loses both the answer and the way back into the
+        // steps. The page offers the two things left to do — open the
+        // configuration, or revisit the setup.
         if (res.blueprint.state === "finished") {
-            await this.openGrid(configId, { silent: true });
-            return;
+            this.state.step = "finish";
         }
         this._rememberInUrl(configId);
         await this.refreshPreview();
@@ -324,6 +347,35 @@ export class PbBlueprint extends Component {
     }
 
     railDisabled(step) { return !this.created && step !== "start"; }
+
+    /**
+     * The rail's second line — the step's promise, or what it now KNOWS.
+     *
+     * Once the checks have been run the Test row stops saying "try the days
+     * that aren't ordinary" and starts reporting the score, so the journey
+     * answers "how much of this is proven" from two steps away (B5's own "with
+     * one more hour"). Nothing new is fetched for it: the shell already holds
+     * the Test step's last answer, because the pay panel becomes the scoreboard
+     * from the same object.
+     */
+    railHint(step) {
+        if (step === "test" && this.state.tests) {
+            const tests = this.state.tests;
+            const tally = tests.tally || {};
+            const total = Number(tests.checks || 0);
+            const ever = tests.evidence && tests.evidence.ever_run;
+            if (ever && total) {
+                if (tally.attention) {
+                    return tally.attention === 1
+                        ? _t("1 check needs attention")
+                        : _t("%s checks need attention", tally.attention);
+                }
+                return _t("%(passed)s of %(total)s checks passed",
+                          { passed: Number(tally.passed || 0), total });
+            }
+        }
+        return STEP_META[step].hint;
+    }
 
     railTitle(step) {
         return this.railDisabled(step)
@@ -767,18 +819,75 @@ export class PbBlueprint extends Component {
     // ==================================================================
     // Finish and discard
     // ==================================================================
-    async finish() {
-        this.state.busy = true;
-        const res = await this.rpc("bp_finish", [this.state.configId]);
-        this.state.busy = false;
-        if (!res || !res.ok) {
-            this.state.saveError = "";
-            this.notif.add((res && res.reason) || _t("The setup could not be finished."),
-                           { type: "warning", sticky: true });
+    /**
+     * The footer's primary button on the Finish step.
+     *
+     * It does not call `bp_finish` itself: the step owns the call, because the
+     * step is where a refusal has to be READ — beside the button, in a list a
+     * person can act on, rather than in a toast that fades. One implementation,
+     * one set of words, two places to press it.
+     */
+    finish() {
+        if (this.state.step !== "finish") {
+            this.state.step = "finish";
+            this.rememberStep();
             return;
         }
+        this.state.finishSignal++;
+    }
+
+    /** The step finished successfully: say so once, and open the grid. */
+    async onFinished(configId) {
         this.notif.add(_t("Setup complete. Opening the configuration."), { type: "success" });
-        await this.openGrid(this.state.configId, { silent: true });
+        await this.openGrid(configId || this.state.configId, { silent: true });
+    }
+
+    /**
+     * A "Go" link on the Finish step: the step that settles this decision.
+     *
+     * The Finish page lists questions somebody else has to answer; a list of
+     * questions with no door beside each one is a list nobody acts on.
+     */
+    goTo(step, opts = {}) {
+        if (!STEPS.includes(step)) { return; }
+        if (opts.tab) { this.state.rulesTab = opts.tab; }
+        if (opts.ruleId) {
+            this.state.openRule = opts.ruleId;
+            this.state.openTick++;
+        }
+        this.state.connectTask = opts.task || "";
+        if (opts.task) { this.state.connectTick++; }
+        this.state.step = step;
+        this.rememberStep();
+    }
+
+    /**
+     * "Discard this draft" — ask the server what that would destroy first.
+     *
+     * The confirmation names the configuration and counts its components, and a
+     * draft that may not be discarded at all never opens the dialog: it says
+     * why instead.
+     */
+    async askDiscard() {
+        this.state.kebabOpen = false;
+        const res = await this.rpc("bp_discard_check", [this.state.configId]);
+        if (!res || !res.ok) {
+            this.notif.add((res && res.reason) || _t("This draft could not be read."),
+                           { type: "warning" });
+            return;
+        }
+        if (!res.allowed) {
+            this.notif.add(res.reason, { type: "warning", sticky: true });
+            return;
+        }
+        this.state.discard = res;
+        this.state.confirmDiscard = true;
+    }
+
+    get discardText() {
+        const d = this.state.discard || {};
+        return discardText(d.name || (this.state.config && this.state.config.name) || "",
+                           d.counts || this.state.counts || {});
     }
 
     async doDiscard() {

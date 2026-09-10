@@ -192,29 +192,52 @@
        STEP 6 — Finish.
        ========================================================== -->
   <t t-name="pb_blueprint.StepFinish">
-    <div class="pbbp-step">
+    <div class="pbbp-step pbbp-fin">
       <div class="pbbp-step-head">
         <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
         <h1 class="pbbp-h1" t-esc="meta.title"/>
         <p class="pbbp-lead" t-esc="meta.lead"/>
       </div>
 
-      <div class="pbbp-alert is-err" t-if="props.error">
+      <!-- Loading, a page that could not be read, and the page itself: one
+           unbroken chain. Nothing may sit between these siblings, not even a
+           comment — it breaks the chain at runtime (BP10). -->
+      <div class="pbbp-fin-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading what you built…</span>
+      </div>
+      <div class="pbbp-alert is-err" t-elif="state.error">
         <span class="i" t-out="ic('alert', 18)"/>
         <div>
-          <b>Not ready to finish yet</b>
-          <p t-esc="props.error"/>
+          <b>This page could not be read</b>
+          <p t-esc="state.error"/>
+        </div>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.load()">
+          <t t-out="ic('rotate', 14)"/> Try again
+        </button>
+      </div>
+      <t t-else="">
+
+      <!-- A setup that is already complete says so first, and offers the two
+           things left to do with it. -->
+      <div class="pbbp-fin-done" t-if="finished">
+        <span class="i" t-out="ic('checkCheck', 18)"/>
+        <div>
+          <b>Setup complete</b>
+          <p t-esc="finishedNote"/>
         </div>
       </div>
 
-      <div class="pbbp-tilerow">
-        <div class="pbbp-stat" t-foreach="tiles" t-as="t" t-key="t.key">
-          <span class="pbbp-stat-ic" t-out="ic(t.icon, 16)"/>
-          <b t-esc="t.value"/>
-          <span t-esc="t.label"/>
+      <div class="pbbp-tilerow" aria-live="polite">
+        <div class="pbbp-fintile" t-foreach="tiles" t-as="t" t-key="t.key">
+          <span class="pbbp-fintile-ic" t-out="ic(t.icon, 18)"/>
+          <b t-esc="t.shown"/>
+          <span class="pbbp-fintile-l" t-esc="t.label"/>
+          <small t-esc="t.hint"/>
         </div>
       </div>
 
+      <!-- ================ identity ================ -->
       <section class="pbbp-card">
         <header class="pbbp-card-head">
           <span class="pbbp-card-ic" t-out="ic('idCard', 18)"/>
@@ -225,7 +248,7 @@
         </header>
 
         <dl class="pbbp-sum">
-          <t t-foreach="rows" t-as="r" t-key="r.label">
+          <t t-foreach="rows" t-as="r" t-key="r.key">
             <dt t-esc="r.label"/>
             <dd t-attf-class="{{ r.mono ? 'is-mono' : '' }}" t-esc="r.value"/>
           </t>
@@ -237,21 +260,153 @@
             <span class="pbim-chip" t-foreach="chips" t-as="c" t-key="c" t-esc="c"/>
           </div>
         </div>
+
+        <div t-if="pack" t-attf-class="pbbp-fin-pack {{ pack.cls }}">
+          <span class="i" t-out="ic('landmark', 15)"/>
+          <b t-esc="pack.name"/>
+          <span class="pbbp-fin-pack-t" t-esc="pack.text"/>
+          <button class="pbbp-changelink" t-if="pack.cls !== 'is-good'"
+                  t-on-click="() => this.go({ step: 'rules', tab: 'tax' })">
+            Review the values
+          </button>
+        </div>
       </section>
 
-      <section class="pbbp-card is-cta">
-        <div>
-          <h2 t-if="finished">Setup is already complete</h2>
-          <h2 t-else="">Ready when you are</h2>
-          <p>Finishing marks the setup as complete. Activating the configuration for real pay
-             runs stays a separate, checked step.</p>
+      <!-- ================ decisions ================ -->
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('userCheck', 18)"/>
+          <div>
+            <h2>Decisions still need an owner</h2>
+            <p t-esc="decisionsNote"/>
+          </div>
+          <!-- Its own class, not the kit's badge: `.pbim-badge` is
+               `text-transform: capitalize`, which is right for a status word
+               and wrong for a count — it rendered "8 Open" (BP19, third
+               time). -->
+          <span class="pbbp-fin-open" t-if="decisionsTotal" t-esc="decisionChip"/>
+        </header>
+
+        <div class="pbim-empty is-slim" t-if="!decisions.length">
+          <span t-esc="decisionsEmpty"/>
         </div>
-        <button class="pbim-btn primary" t-att-disabled="props.busy"
-                t-on-click="() => this.props.onFinish()">
-          <t t-if="props.busy">Checking…</t>
-          <t t-else="">Finish &amp; open</t>
-        </button>
+        <t t-else="">
+          <ul class="pbbp-fin-dec">
+            <li t-foreach="decisions" t-as="d" t-key="d.key">
+              <span class="pbbp-fin-dec-dot"/>
+              <div class="pbbp-fin-dec-t">
+                <b>
+                  <t t-esc="d.title"/>
+                  <code t-if="d.code" t-esc="d.code"/>
+                </b>
+                <small t-esc="d.text"/>
+              </div>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.go(d)"
+                      t-att-aria-label="d.action">
+                <t t-esc="d.action"/> <t t-out="ic('arrow', 13)"/>
+              </button>
+            </li>
+          </ul>
+          <p class="pbim-note" t-if="decisionsMore" t-esc="decisionsMore"/>
+        </t>
       </section>
+
+      <!-- ================ checks ================ -->
+      <section class="pbbp-card pbbp-fin-checks">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('beaker', 18)"/>
+          <div>
+            <h2>What has been checked</h2>
+            <p>The evidence behind these numbers: which scenarios were run, and whether
+               anything has changed since.</p>
+          </div>
+        </header>
+
+        <div class="pbbp-fin-evi" aria-live="polite">
+          <span t-attf-class="pbbp-evi {{ checks.cls }}">
+            <span class="i" t-out="ic(checks.icon, 13)"/>
+            <span t-esc="checks.text"/>
+          </span>
+          <span class="pbbp-fin-evi-n" t-if="everRun" t-esc="checksFraction"/>
+          <span class="pbbp-fin-evi-w" t-if="checks.last" t-esc="checks.last"/>
+          <div class="pbbp-foot-sp"/>
+          <button class="pbim-btn ghost pbim-btn-sm"
+                  t-on-click="() => this.go({ step: 'test' })">
+            <t t-if="everRun">Run the checks again</t>
+            <t t-else="">Run the checks</t>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================ optional setup ================ -->
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('layoutList', 18)"/>
+          <div>
+            <h2>Optional setup</h2>
+            <p>None of these has to be finished before you carry on, and each one can be
+               changed later from the configuration's settings.</p>
+          </div>
+        </header>
+
+        <ul class="pbbp-fin-opt">
+          <li t-foreach="optional" t-as="o" t-key="o.task">
+            <b t-esc="o.label"/>
+            <span t-attf-class="pbbp-cn-pill {{ o.pill.cls }}" t-esc="o.pill.label"/>
+            <small t-esc="o.detail"/>
+            <button class="pbbp-changelink" t-if="o.task !== 'approvals'"
+                    t-on-click="() => this.go({ step: 'connect', task: o.task })">
+              Change
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ================ the button ================ -->
+      <section class="pbbp-card is-cta">
+        <div class="pbbp-fin-cta-t">
+          <h2 t-if="finished">This setup is complete</h2>
+          <h2 t-else="">Ready when you are</h2>
+          <p t-esc="note"/>
+          <p class="pbbp-err" t-if="state.refusal" t-esc="state.refusal"/>
+        </div>
+        <div class="pbbp-fin-cta-b">
+          <button class="pbim-btn primary" t-att-disabled="state.busy or !button.enabled"
+                  t-att-title="button.reason"
+                  t-on-click="onFinish">
+            <t t-if="state.busy">Checking…</t>
+            <t t-else=""><t t-esc="button.label"/></t>
+          </button>
+          <button class="pbbp-changelink" t-if="!finished"
+                  t-on-click="onDiscard">Discard this draft</button>
+          <button class="pbbp-changelink" t-if="finished and editable"
+                  t-on-click="onReopen">Revisit the setup</button>
+        </div>
+      </section>
+
+      <!-- What is left, in words, under the button that refused. Never a toast
+           on its own: a reason a person cannot re-read is a reason they lost. -->
+      <section class="pbbp-card is-block" t-if="!finished and !gate.ok">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('alert', 18)"/>
+          <div>
+            <h2 t-esc="blockedHeading"/>
+            <p>These are about the numbers themselves, so they are the ones that have to be
+               right before the setup can be finished.</p>
+          </div>
+        </header>
+        <ul class="pbbp-fin-block">
+          <li t-foreach="gate.reasons" t-as="r" t-key="r.code">
+            <span class="i" t-out="ic('alert', 14)"/>
+            <span t-esc="r.text"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-if="r.action"
+                    t-on-click="() => this.go(r)">
+              <t t-esc="r.action"/>
+            </button>
+          </li>
+        </ul>
+      </section>
+      </t>
     </div>
   </t>
 
