@@ -400,3 +400,34 @@ never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
   `beforeEach` inside every `describe`. The identical guard works for `recipe_text.test.js` and for
   B3's `tax_math.test.js` (16/16 green). Pre-existing since B1; diagnosed, not fixed. B4 should
   either mock the translation service or assert on the keys rather than the words.
+- BP37 (B4, closes BP36): **the four hoot failures were a stale bundle, not a broken
+  guard.** BP28's fix is correct and always was: `beforeEach` at a test file's top level
+  registers on hoot's GLOBAL callback registry (`web/static/lib/hoot/core/runner.js:725-734`
+  — no current suite means `this._callbacks`), so it runs before every test in the session,
+  and the runner's order is `fifo` by default (`hoot/core/config.js:171`), so a run is
+  deterministic rather than a lottery. All four are green on a freshly built
+  `web.assets_unit_tests`, twice, in two tabs. **A hoot result is only as fresh as the
+  bundle THAT TAB loaded** — reload with a new URL (and after an asset purge) before
+  believing a red, and never carry a red forward from a tab that has been open since
+  before the deploy. The way to make the whole class impossible: **build every `_t()`
+  inside a function.** A label created at module scope is a lazy `TranslatedString` whose
+  `valueOf()` can refuse; one created at call time, with the flag set, is an ordinary
+  string. `connect_text.js` is written that way throughout and nothing in its 22 tests
+  can ever hit the lazy path.
+- BP38 (B4, a real bug in front of a user): **`router.pushState` called from `onWillStart`
+  is overwritten a moment later, at mount, by the action manager's own route state.** It
+  survives only for a door that carries its payload in `action.params` — which the picker's
+  Resume button does and no *return* door does, because `openHub`/`pb_back` travel in the
+  CONTEXT. Symptom: come back from the Mapping Studio or the payslip designer, press
+  refresh, and land on an empty journey having lost the draft. Re-assert the URL in
+  `onMounted` as well; one call, and every door's refresh then behaves the same.
+- BP39 (B4): **a status hint must be a function of the same numbers the card shows, not of
+  the status alone.** "You opened it, and nothing is connected yet" sat directly under a
+  coverage line reading "1 of 52 inputs has a source" — at exactly the moment somebody is
+  looking for confirmation that their work landed. Two things derived from one server
+  answer must be derived from ALL of it.
+- BP40 (B4, a walkthrough method): **"needs another look" can only be proven by changing
+  something that was in the snapshot.** Placing a component AFTER pressing "Mark as done"
+  and then removing it proves nothing — it was never part of what was agreed. The order is
+  always: make the change, mark it done, THEN break it. Half an hour was spent reading a
+  correct "Done" as a failure.
