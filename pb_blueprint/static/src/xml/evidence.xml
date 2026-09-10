@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     The evidence chip, and the scoreboard the pay panel becomes
+     on the Test step. Both say the same thing at two sizes.
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.EvidenceChip">
+    <t t-if="visible">
+      <button t-if="props.onRun" t-attf-class="pbbp-evi {{ chip.cls }}"
+              t-att-disabled="props.busy"
+              t-att-title="lastRun"
+              t-on-click="onClick">
+        <span class="i" t-out="ic(chip.icon, 13)"/>
+        <span t-esc="chip.text"/>
+        <span class="pbbp-evi-go" t-esc="goLabel"/>
+      </button>
+      <span t-else="" t-attf-class="pbbp-evi {{ chip.cls }}" t-att-title="lastRun">
+        <span class="i" t-out="ic(chip.icon, 13)"/>
+        <span t-esc="chip.text"/>
+      </span>
+    </t>
+  </t>
+
+  <t t-name="pb_blueprint.Scoreboard">
+    <div t-attf-class="pbbp-pay pbbp-score {{ tone }} {{ state.open ? 'is-open' : '' }}">
+
+      <button class="pbbp-pay-bar" t-on-click="toggleOpen"
+              t-att-aria-expanded="state.open ? 'true' : 'false'">
+        <span class="pbbp-pay-bar-lbl">Checks passed</span>
+        <span class="pbbp-pay-bar-num" t-esc="score"/>
+        <span class="pbbp-pay-bar-x" t-out="ic(state.open ? 'chevronDown' : 'chevronUp', 16)"/>
+      </button>
+
+      <div class="pbbp-pay-body">
+        <div class="pbbp-pay-head">
+          <span class="pbbp-eyebrow">How much of this is proven</span>
+        </div>
+
+        <div class="pbbp-score-big">
+          <span class="n" t-esc="score"/>
+          <span class="w" t-esc="scoreWord"/>
+        </div>
+
+        <div class="pbbp-score-counts" t-if="scored">
+          <div class="pbbp-score-count is-good">
+            <b t-esc="passed"/>
+            <small>passed</small>
+          </div>
+          <div class="pbbp-score-count is-bad">
+            <b t-esc="attention"/>
+            <small>need attention</small>
+          </div>
+          <div class="pbbp-score-count is-wait">
+            <b t-esc="pending"/>
+            <small>waiting for you</small>
+          </div>
+        </div>
+
+        <div class="pbbp-score-evi">
+          <EvidenceChip evidence="evidence" showWhen="true"/>
+        </div>
+
+        <p class="pbbp-score-next" t-esc="nextStep"/>
+
+        <button class="pbim-btn primary pbim-btn-sm pbbp-score-run"
+                t-att-disabled="props.running"
+                t-on-click="() => this.props.onRun()">
+          <t t-if="props.running"><span class="pbbp-cta-spin"/> Running…</t>
+          <t t-else=""><t t-out="ic('play', 14)"/> Run the checks</t>
+        </button>
+
+        <p class="pbbp-pay-foot" t-if="lastRun" t-esc="lastRun"/>
+        <p class="pbbp-pay-foot" t-else="">
+          Checks run against this configuration only. Nobody's real pay is touched.
+        </p>
+      </div>
+    </div>
+  </t>
+
+</templates>
