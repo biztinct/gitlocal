@@ -26,14 +26,30 @@
     display: flex; align-items: center; gap: 18px; padding: 15px 22px;
     border-bottom: 1px solid var(--line, #E8E9F3); background: #fff;
 }
-.pbfs-cfgsw .cs-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* the title takes the slack, so the stats and the New-configuration button sit
+   hard right whether or not the stats are on screen (they hide when empty). */
+.pbfs-cfgsw .cs-title { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; }
 .pbfs-cfgsw .cs-title > svg { width: 24px; height: 24px; color: var(--i, #5A4BB0); flex: none; }
 .pbfs-cfgsw .cs-title b { font-size: 16px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
 .pbfs-cfgsw .cs-title small { font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-cfgsw .cs-summary { display: flex; gap: 20px; margin-left: auto; }
+.pbfs-cfgsw .cs-summary { display: flex; gap: 20px; }
 .pbfs-cfgsw .cs-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
 .pbfs-cfgsw .cs-stat b { font-size: 19px; font-weight: 800; color: var(--ink, #1E1B2E); font-variant-numeric: tabular-nums; }
 .pbfs-cfgsw .cs-stat span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #6B7280); margin-top: 2px; }
+/* The one primary button on this overlay. Solid indigo so it reads as the act
+   to take, and it keeps its colour on the white header band. */
+.pbfs .pbfs-cfgsw .cs-new,
+.pbfs-cfgsw .cs-new {
+    flex: none; cursor: pointer; white-space: nowrap;
+    background: var(--i, #5A4BB0); color: #fff; border-color: transparent;
+    box-shadow: 0 8px 20px rgba(90, 75, 176, .22);
+    transition: background .14s, box-shadow .14s, transform .14s;
+}
+.pbfs .pbfs-cfgsw .cs-new:hover,
+.pbfs-cfgsw .cs-new:hover { background: var(--i600, #4A3D96); box-shadow: 0 10px 24px rgba(90, 75, 176, .3); }
+.pbfs .pbfs-cfgsw .cs-new:active { transform: translateY(1px); }
+.pbfs-cfgsw .cs-new svg { width: 15px; height: 15px; }
+
 .pbfs-cfgsw .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
 .pbfs-cfgsw .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
 .pbfs-cfgsw .hs-x svg { width: 18px; height: 18px; }

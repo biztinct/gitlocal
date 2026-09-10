@@ -2961,6 +2961,14 @@
               <div t-attf-class="cs-stat {{ csSummary.unreleased ? 'warn' : '' }}"><b t-esc="csSummary.unreleased"/><span>unreleased</span></div>
               <div class="cs-stat"><b t-esc="csSummary.employees.toLocaleString('en-US')"/><span>employees</span></div>
             </div>
+            <!-- The primary act of this screen, at the top where a primary act
+                 belongs. It sat in the footer, below the fold of a scrolling
+                 gallery, which is where a new configuration went to hide. -->
+            <button class="pbfs-btn primary sm cs-new" t-on-click="openWizard"
+                    title="Start a new payroll configuration">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              New configuration
+            </button>
             <button class="hs-x" t-on-click="closeConfigSwitcher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
@@ -3092,10 +3100,6 @@
           </div>
 
           <div class="cs-foot">
-            <button class="pbfs-btn ghost sm" t-on-click="openWizard">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              New configuration
-            </button>
             <span class="cs-foot-hint"><t t-esc="csSummary.shown"/> of <t t-esc="csSummary.total"/> shown</span>
           </div>
         </div>
