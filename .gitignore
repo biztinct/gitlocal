@@ -14,3 +14,8 @@ __pycache__/
 .r4shots/
 .cd3shots/
 .bp_shots/
+
+# Run report from tools/refresh_pb_vi.py — it lists the strings one run could not
+# translate and the tool deletes it again on the next clean run. A snapshot of a
+# half-finished translation pass is never worth keeping in history.
+tools/vi_translation_unresolved.txt
