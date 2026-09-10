@@ -356,7 +356,10 @@
               <span class="pbbp-se-skel" t-if="state.proof.state === 'busy'"/>
               <span class="pbbp-se-proof-bad" t-elif="state.proof.state === 'bad'"
                     t-esc="state.proof.message"/>
-              <span class="pbbp-se-proof-num" t-else="" t-esc="proofText"/>
+              <t t-else="">
+                <span class="pbbp-se-proof-was" t-if="proofBefore" t-esc="proofBefore"/>
+                <span class="pbbp-se-proof-num" t-esc="proofText"/>
+              </t>
             </div>
           </div>
         </div>

@@ -100,6 +100,10 @@ export class TaxTab extends Component {
         this.state.bands = table
             ? table.brackets.map((b) => ({ lower: b.lower, rate: b.rate }))
             : [];
+        // The schedule as it is SAVED, so an unsaved edit can be shown against
+        // what it replaces. A plain array on `this`, never in state: nothing
+        // renders it, and it must not make the component re-render.
+        this._savedBands = this.state.bands.map((b) => ({ ...b }));
         this.state.bandsDirty = false;
         this.state.bandError = "";
         if (res.revision !== undefined) this.props.onRevision(res.revision);
@@ -122,6 +126,7 @@ export class TaxTab extends Component {
         if (!table) return;
         this.state.tableId = id;
         this.state.bands = table.brackets.map((b) => ({ lower: b.lower, rate: b.rate }));
+        this._savedBands = this.state.bands.map((b) => ({ ...b }));
         this.state.bandsDirty = false;
         this.state.bandError = "";
     }
@@ -219,6 +224,41 @@ export class TaxTab extends Component {
         this.markBands();
     }
 
+    /**
+     * ↑ and ↓ walk the band table; Enter on the last row adds one (B3's own
+     * "with one more hour").
+     *
+     * A schedule is a column of numbers somebody types straight down, and
+     * reaching for the mouse between every one of them is what makes editing
+     * seven bands feel like work. The keys move between the SAME column, which
+     * is what a person means by "down".
+     */
+    onBandKey(index, ev) {
+        const key = ev.key;
+        if (!["ArrowDown", "ArrowUp", "Enter"].includes(key)) { return; }
+        if (ev.metaKey || ev.ctrlKey || ev.altKey) { return; }
+        const cell = ev.target.closest("td");
+        const row = ev.target.closest("tr");
+        if (!cell || !row) { return; }
+        const column = [...row.children].indexOf(cell);
+        if (key === "Enter" && index === this.rows.length - 1) {
+            ev.preventDefault();
+            ev.stopPropagation();          // Enter on the step means "continue"
+            this.addBand();
+            return;
+        }
+        const sibling = key === "ArrowUp" ? row.previousElementSibling
+                                          : row.nextElementSibling;
+        if (!sibling) { return; }
+        const next = sibling.children[column]
+            && sibling.children[column].querySelector("input");
+        if (!next || next.disabled) { return; }
+        ev.preventDefault();
+        ev.stopPropagation();
+        next.focus();
+        next.select();
+    }
+
     /** Rows settle into order when the caret leaves, never while typing. */
     onBandBlur() {
         if (!this.state.bandsDirty) return;
@@ -270,6 +310,21 @@ export class TaxTab extends Component {
     // Try an income
     // ==================================================================
     get tryTax() { return taxFor(this.state.bands, this.state.tryIncome); }
+
+    /**
+     * What the SAVED schedule would take on the same income (B3's own "with
+     * one more hour").
+     *
+     * Shown only while the bands are dirty and only when the two answers
+     * differ, so the effect of an edit is visible without anybody having to
+     * remember the number they were looking at a moment ago.
+     */
+    get tryTaxBefore() {
+        if (!this.state.bandsDirty || !this._savedBands) { return ""; }
+        const before = taxFor(this._savedBands, this.state.tryIncome);
+        if (Math.round(before) === Math.round(this.tryTax)) { return ""; }
+        return this.group(before);
+    }
 
     get tryRate() {
         return Math.round(effectiveRate(this.state.bands, this.state.tryIncome) * 1000) / 10;

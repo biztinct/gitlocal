@@ -254,7 +254,20 @@ $bp-head-h: 64px;
             .pbbp-rail-t b { color: #fff; }
             .pbbp-rail-t small { color: rgba(255, 255, 255, .68); }
         }
-        &.is-done .pbbp-rail-n { background: var(--bp-good-b); color: #fff; }
+        // The ticks arrive in sequence rather than all at once: the rail is
+        // reporting progress, and progress reads as a sweep. Six short delays,
+        // one per row, so a person arriving on step 4 sees three ticks land in
+        // the order they were earned. Motion with a purpose and nothing else.
+        &.is-done .pbbp-rail-n {
+            background: var(--bp-good-b); color: #fff;
+            animation: pbbp-tick .34s ease-out both;
+        }
+        &:nth-child(2).is-done .pbbp-rail-n { animation-delay: .04s; }
+        &:nth-child(3).is-done .pbbp-rail-n { animation-delay: .10s; }
+        &:nth-child(4).is-done .pbbp-rail-n { animation-delay: .16s; }
+        &:nth-child(5).is-done .pbbp-rail-n { animation-delay: .22s; }
+        &:nth-child(6).is-done .pbbp-rail-n { animation-delay: .28s; }
+        &:nth-child(7).is-done .pbbp-rail-n { animation-delay: .34s; }
     }
     .pbbp-rail-foot {
         margin-top: auto;
@@ -302,6 +315,24 @@ $bp-head-h: 64px;
     .pbbp-lead {
         font-size: 14px; color: var(--bp-muted); margin: 0;
         line-height: 1.55; max-width: 660px;
+    }
+
+    // ---- the keyboard ------------------------------------------------
+    // One ring, everywhere. `:focus-visible` rather than `:focus`, so a mouse
+    // click never draws it and a Tab always does — a journey that cannot be
+    // walked on a keyboard is a journey somebody cannot check.
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: 2px solid var(--bp-i);
+        outline-offset: 2px;
+        border-radius: 8px;
+    }
+    .pbbp-rail button:focus-visible {
+        outline-color: #fff;
     }
 
     // ---- cards ------------------------------------------------------
@@ -659,6 +690,163 @@ $bp-head-h: 64px;
         margin-top: 18px; padding-top: 16px;
         border-top: 1px solid var(--bp-line);
         display: flex; flex-direction: column; gap: 8px;
+    }
+
+    // ---- finish, the real one (B6) -----------------------------------
+    .pbbp-fin-boot {
+        display: flex; align-items: center; gap: 12px;
+        padding: 26px; color: var(--bp-muted); font-size: 13px; font-weight: 700;
+    }
+    .pbbp-fin-done {
+        display: flex; align-items: center; gap: 14px;
+        background: #ECFDF5; border: 1px solid #A7F3D0;
+        border-radius: 15px; padding: 14px 18px;
+
+        .i { color: var(--bp-good-b); display: grid; place-items: center; }
+        b { font-size: 13.5px; font-weight: 800; color: #065F46; }
+        p { margin: 2px 0 0; font-size: 12.5px; color: #047857; line-height: 1.5; }
+        > div { flex: 1 1 auto; min-width: 0; }
+    }
+    .pbbp-fintile {
+        background: #fff; border: 1px solid var(--bp-line);
+        border-radius: 15px; padding: 16px 18px;
+        display: flex; flex-direction: column; gap: 1px;
+
+        .pbbp-fintile-ic {
+            width: 32px; height: 32px; border-radius: 10px;
+            display: grid; place-items: center;
+            background: var(--bp-soft); color: var(--bp-i);
+            margin-bottom: 8px;
+        }
+        b { font-size: 26px; font-weight: 800; letter-spacing: -.02em;
+            font-variant-numeric: tabular-nums; line-height: 1.1; }
+        .pbbp-fintile-l { font-size: 12px; color: var(--bp-ink); font-weight: 800; }
+        small { font-size: 11.5px; color: var(--bp-muted); line-height: 1.45; }
+    }
+    .pbbp-fin-pack {
+        margin-top: 18px; padding-top: 16px;
+        border-top: 1px solid var(--bp-line);
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        font-size: 12.5px;
+
+        .i { display: grid; place-items: center; color: var(--bp-muted); }
+        b { font-weight: 800; }
+        .pbbp-fin-pack-t {
+            font-weight: 700;
+            border-radius: 999px; padding: 3px 10px;
+            background: #F1F5F9; color: #475569;
+        }
+        &.is-good .pbbp-fin-pack-t { background: #ECFDF5; color: #047857; }
+        &.is-warn .pbbp-fin-pack-t { background: #FFFBEB; color: #B45309; }
+    }
+    .pbbp-fin-open {
+        margin-left: auto; flex: 0 0 auto;
+        border-radius: 999px; padding: 4px 11px;
+        background: #FEF3C7; color: #B45309;
+        font-size: 11.5px; font-weight: 800; white-space: nowrap;
+    }
+    .pbbp-fin-dec {
+        list-style: none; margin: 0; padding: 0;
+        display: flex; flex-direction: column;
+
+        li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 2px;
+            border-top: 1px solid var(--bp-line);
+            &:first-child { border-top: none; }
+        }
+        .pbbp-fin-dec-dot {
+            flex: 0 0 auto; width: 8px; height: 8px; margin-top: 6px;
+            border-radius: 50%; background: var(--bp-warn);
+        }
+        .pbbp-fin-dec-t {
+            flex: 1 1 auto; min-width: 0;
+            display: flex; flex-direction: column; gap: 3px;
+
+            b { font-size: 13px; font-weight: 800; display: flex;
+                align-items: center; gap: 8px; flex-wrap: wrap; }
+            code {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 10.5px; font-weight: 700; color: #64748B;
+                background: #F1F5F9; border-radius: 5px; padding: 1px 6px;
+            }
+            small { font-size: 12.5px; color: var(--bp-muted); line-height: 1.5; }
+        }
+    }
+    .pbbp-fin-evi {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+
+        .pbbp-fin-evi-n { font-size: 13px; font-weight: 800; }
+        .pbbp-fin-evi-w { font-size: 12px; color: var(--bp-muted); font-weight: 700; }
+    }
+    .pbbp-fin-opt {
+        list-style: none; margin: 0; padding: 0;
+        display: flex; flex-direction: column;
+
+        li {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            padding: 11px 2px;
+            border-top: 1px solid var(--bp-line);
+            &:first-child { border-top: none; }
+
+            b { font-size: 13px; font-weight: 800; min-width: 132px; }
+            small { font-size: 12.5px; color: var(--bp-muted); }
+        }
+    }
+    .pbbp-fin-cta-t { flex: 1 1 320px; }
+    .pbbp-fin-cta-b {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+
+        .pbbp-changelink { margin-left: 0; }
+    }
+    .pbbp-card.is-block {
+        border-color: #FCD9B6;
+        background: #FFFBF5;
+
+        .pbbp-card-ic { background: #FEF3C7; color: #B45309; }
+    }
+    .pbbp-fin-block {
+        list-style: none; margin: 0; padding: 0;
+        display: flex; flex-direction: column; gap: 10px;
+
+        li {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 12.5px; line-height: 1.55; color: #7C2D12;
+
+            .i { flex: 0 0 auto; color: var(--bp-warn); display: grid;
+                 place-items: center; margin-top: 1px; }
+            > span:nth-child(2) { flex: 1 1 auto; min-width: 0; }
+        }
+    }
+    .pbbp-scen-name {
+        border: none; background: none; padding: 0; font-family: inherit;
+        font-size: 13.5px; font-weight: 800; color: var(--bp-ink);
+        cursor: text; text-align: left;
+        border-bottom: 1px dashed transparent;
+
+        &:hover { border-bottom-color: var(--bp-line); }
+    }
+    .pbbp-scen-rename {
+        font-family: inherit; font-size: 13.5px; font-weight: 800;
+        padding: 2px 6px; border: 1px solid var(--bp-i); border-radius: 7px;
+        width: auto; min-width: 180px; display: inline-block;
+    }
+
+    .pbbp-tax-try-was {
+        font-size: 13px; font-weight: 700; color: var(--bp-muted);
+        text-decoration: line-through; margin-right: 6px;
+    }
+
+    .pbbp-se-proof-was {
+        font-size: 12px; font-weight: 700; color: var(--bp-muted);
+        text-decoration: line-through; margin-right: 4px;
+    }
+
+    .pbbp-scen-pill.is-moved { animation: pbbp-verdict .38s ease-out both; }
+
+    .pbim-empty.is-slim {
+        padding: 14px 2px; font-size: 12.5px; color: var(--bp-muted);
+        text-align: left; display: block;
     }
 
     // ---- footer ------------------------------------------------------
@@ -2082,9 +2270,18 @@ $bp-head-h: 64px;
     //  PHONE — the rail lies down across the top; nothing scrolls sideways.
     // =================================================================
     @media (max-width: 899px) {
-        .pbbp-top { padding: 10px 14px; row-gap: 8px; }
-        .pbbp-crumb b { max-width: 180px; }
-        .pbbp-saveclose { order: 9; }
+        // ONE row, at 390px as well as at 500 — the header wrapped to three
+        // and pushed the whole journey down the screen (B1's own list). The
+        // crumb gives up its width first, the two words that are not the
+        // subject of the page go, and the status pill keeps only its dot.
+        .pbbp-top {
+            padding: 9px 12px; row-gap: 0;
+            flex-wrap: nowrap; overflow: hidden;
+        }
+        .pbbp-crumb { flex: 1 1 auto; }
+        .pbbp-crumb b { max-width: none; font-size: 14px; }
+        .pbbp-top-sp { display: none; }
+        .pbbp-saveclose .pbim-btn-sm, .pbbp-saveclose { flex: 0 0 auto; }
 
         .pbbp-body { flex-direction: column; }
 
@@ -3285,4 +3482,17 @@ body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbbp {
 @keyframes pbbp-fade {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+@keyframes pbbp-tick {
+    from { transform: scale(.4); opacity: 0; }
+    60%  { transform: scale(1.12); opacity: 1; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+// A verdict that has just changed is the one moment on the Test step worth
+// pointing at (B5's own list). It runs once, on the pills a run just moved.
+@keyframes pbbp-verdict {
+    from { transform: translateY(-3px); opacity: .25; }
+    to   { transform: translateY(0); opacity: 1; }
 }

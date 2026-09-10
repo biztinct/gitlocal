@@ -9,13 +9,15 @@
     <t t-if="visible">
       <button t-if="props.onRun" t-attf-class="pbbp-evi {{ chip.cls }}"
               t-att-disabled="props.busy"
+              aria-live="polite"
               t-att-title="lastRun"
               t-on-click="onClick">
         <span class="i" t-out="ic(chip.icon, 13)"/>
         <span t-esc="chip.text"/>
         <span class="pbbp-evi-go" t-esc="goLabel"/>
       </button>
-      <span t-else="" t-attf-class="pbbp-evi {{ chip.cls }}" t-att-title="lastRun">
+      <span t-else="" t-attf-class="pbbp-evi {{ chip.cls }}" aria-live="polite"
+            t-att-title="lastRun">
         <span class="i" t-out="ic(chip.icon, 13)"/>
         <span t-esc="chip.text"/>
       </span>

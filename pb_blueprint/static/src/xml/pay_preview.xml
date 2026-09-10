@@ -92,7 +92,7 @@
 
           <div class="pbbp-pay-big">
             <span class="l">Estimated take-home pay</span>
-            <div class="pbbp-pay-num">
+            <div class="pbbp-pay-num" aria-live="polite">
               <span class="n" t-esc="headline"/>
               <span class="c" t-esc="currency"/>
               <span t-if="state.delta" t-attf-class="pbbp-delta {{ state.delta.up ? 'up' : 'down' }}"

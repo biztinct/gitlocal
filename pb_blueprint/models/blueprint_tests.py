@@ -753,6 +753,44 @@ class PbBlueprintTests(models.AbstractModel):
     # One scenario, opened
     # ==================================================================
     @api.model
+    def bp_rename_sample(self, config_id, sample_id, name, revision=None):
+        """Give a scenario a name a person would use for it.
+
+        The engine names a generated boundary case after the edge it pins —
+        "Edge BASIC=46799999 (−1)" — which is exactly right for the machine that
+        made it and no help at all to somebody reading a list of eleven checks.
+        Renaming changes nothing about what the scenario proves: the name is not
+        in the evidence key (B5 §2), so a rename can never make the checks look
+        stale.
+        """
+        config, blueprint, err = self._guard(config_id, require_blueprint=False)
+        if err:
+            return err
+        conflict = self._revision_guard(blueprint, revision)
+        if conflict:
+            return conflict
+        sample = config.sample_data_ids.filtered(
+            lambda s: s.id == int(sample_id or 0))[:1]
+        if not sample:
+            return {'ok': False, 'reason': _("That scenario no longer exists.")}
+        name = (name or '').strip()
+        if not name:
+            return {'ok': False, 'reason': _("A scenario needs a name.")}
+        if len(name) > 120:
+            name = name[:120]
+        if not self._can_run():
+            return {'ok': False, 'reason': _(
+                "Only somebody who can change payroll setup may rename a "
+                "scenario.")}
+        try:
+            sample.name = name
+        except AccessError:
+            raise
+        except Exception as exc:            # noqa: BLE001
+            return {'ok': False, 'reason': self._plain(exc)}
+        return self._tests_payload(config, blueprint, {'renamed': sample.id})
+
+    @api.model
     def bp_test_detail(self, config_id, sample_id):
         """The inputs this scenario uses and every value it produces."""
         config, blueprint, err = self._guard(config_id, require_blueprint=False)

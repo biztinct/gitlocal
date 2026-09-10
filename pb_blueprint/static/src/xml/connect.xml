@@ -119,6 +119,14 @@
                     t-on-click="() => this.setStatus(c.key, 'not_started')">
               <t t-out="ic('undo', 13)"/> Undo skip
             </button>
+            <!-- B6 — the one door on this step that used to be one-way. A task
+                 marked done could never be put back, which made "Mark as done"
+                 the only irreversible press in the whole journey. -->
+            <button class="pbbp-cn-link"
+                    t-if="editable and (c.status === 'configured' or c.status === 'needs_review')"
+                    t-on-click="() => this.setStatus(c.key, 'not_started')">
+              <t t-out="ic('undo', 13)"/> Not done after all
+            </button>
           </div>
           <div class="pbbp-cn-blocked" t-else="">
             <span class="i" t-out="ic('info', 14)"/>

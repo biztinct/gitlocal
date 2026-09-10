@@ -1119,48 +1119,68 @@ class PbBlueprintComponents(models.AbstractModel):
 
     @api.model
     def bp_component_include(self, config_id, code, revision=None):
+        """Bring one component — or a whole tray of them — back.
+
+        `code` may be a single code or a LIST of them, because "Restore all" on
+        a tray of twenty used to be twenty round trips, each one re-seeding
+        samples and regenerating every formula in the configuration (B2's own
+        "with one more hour"). One call now creates them all inside a single
+        savepoint and regenerates ONCE at the end: either the whole tray comes
+        back or nothing does, and a person waits for one answer instead of
+        twenty.
+        """
         config, blueprint, err = self._guard(config_id)
         if err:
             return err
         conflict = self._revision_guard(blueprint, revision)
         if conflict:
             return conflict
-        code = (code or '').strip().upper()
+        codes = [code] if isinstance(code, str) else list(code or [])
+        codes = [(c or '').strip().upper() for c in codes]
+        codes = [c for c in codes if c]
+        if not codes:
+            return {'ok': False, 'reason': _("Nothing was chosen to restore.")}
         key = blueprint.template_key if blueprint else ''
         template = self._template(key)
         if not template:
             return {'ok': False, 'reason': _(
                 "This configuration did not come from a starter, so there is "
                 "nothing to restore.")}
-        comp = next((c for c in template._components()
-                     if (c.get('code') or '').upper() == code), None)
-        if not comp:
-            return {'ok': False, 'reason': _(
-                "%s is no longer part of this starter, so it cannot be "
-                "brought back. Add it as a new component instead.", code)}
-        if config.rule_ids.filtered(lambda r: (r.code or '').upper() == code):
-            return {'ok': False, 'reason': _("%s is already here.", code)}
+        components = {(c.get('code') or '').upper(): c
+                      for c in template._components()}
+        here = {(r.code or '').upper() for r in config.rule_ids}
+        for one in codes:
+            if one in here:
+                return {'ok': False, 'reason': _("%s is already here.", one)}
+            if one not in components:
+                return {'ok': False, 'reason': _(
+                    "%s is no longer part of this starter, so it cannot be "
+                    "brought back. Add it as a new component instead.", one)}
 
         recipes = self._template_recipes(key, template)
+        rules = self.env['hr.formula.rule']
         try:
             with self.env.cr.savepoint():
-                rule = self.env['hr.formula.rule'].create({
-                    'config_id': config.id,
-                    'code': code,
-                    'name': comp.get('name') or code,
-                    'column_type': comp.get('type') or 'formula',
-                    'excel_formula': comp.get('excel_formula') or '',
-                    'constant_value': float(comp.get('constant_value') or 0.0),
-                    'default_value': float(comp.get('default_value') or 0.0),
-                    'number_format': comp.get('number_format') or 'currency',
-                    'appears_on_payslip': bool(comp.get('appears_on_payslip', True)),
-                    'sequence': (max(config.rule_ids.mapped('sequence') or [0]) + 10),
-                    'bp_template_key': key,
-                })
-                if code in recipes:
-                    self._apply_recipes(config, {code: recipes[code]}, key)
-                if rule.column_type == 'input':
-                    self._seed_samples_with(config, rule)
+                for one in codes:
+                    comp = components[one]
+                    rule = self.env['hr.formula.rule'].create({
+                        'config_id': config.id,
+                        'code': one,
+                        'name': comp.get('name') or one,
+                        'column_type': comp.get('type') or 'formula',
+                        'excel_formula': comp.get('excel_formula') or '',
+                        'constant_value': float(comp.get('constant_value') or 0.0),
+                        'default_value': float(comp.get('default_value') or 0.0),
+                        'number_format': comp.get('number_format') or 'currency',
+                        'appears_on_payslip': bool(comp.get('appears_on_payslip', True)),
+                        'sequence': (max(config.rule_ids.mapped('sequence') or [0]) + 10),
+                        'bp_template_key': key,
+                    })
+                    rules |= rule
+                    if one in recipes:
+                        self._apply_recipes(config, {one: recipes[one]}, key)
+                    if rule.column_type == 'input':
+                        self._seed_samples_with(config, rule)
                 report = rc.regenerate(self.env, config)
                 self._classify(config)
         except AccessError:
@@ -1168,7 +1188,8 @@ class PbBlueprintComponents(models.AbstractModel):
         except Exception as exc:
             return {'ok': False, 'reason': self._plain(exc)}
         blueprint.revision += 1
-        return {'ok': True, 'rule_id': rule.id, 'code': code,
+        return {'ok': True, 'rule_id': rules[:1].id, 'code': codes[0],
+                'codes': codes, 'count': len(codes),
                 'regenerated': report['changed'],
                 'revision': blueprint.revision}
 

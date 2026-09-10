@@ -97,13 +97,24 @@
              t-attf-class="pbbp-scen-row is-{{ s.verdict }}">
           <div class="pbbp-scen-main">
             <div class="pbbp-scen-t">
-              <b t-esc="s.name"/>
+              <input class="pbbp-scen-rename" t-if="state.renaming === s.id"
+                     t-att-value="state.renameValue"
+                     aria-label="Scenario name"
+                     t-on-input="(ev) => this.state.renameValue = ev.target.value"
+                     t-on-keydown="onRenameKey"
+                     t-on-blur="saveRename"/>
+              <button class="pbbp-scen-name" t-elif="canWrite"
+                      title="Rename this scenario"
+                      t-on-click="() => this.startRename(s)">
+                <t t-esc="s.name"/>
+              </button>
+              <b t-else="" t-esc="s.name"/>
               <span class="pbim-badge pbbp-scen-kind" t-esc="s.kind_label"/>
             </div>
             <div class="pbbp-scen-sub" t-esc="s.subtitle"/>
             <div class="pbbp-scen-why" t-esc="s.reason"/>
           </div>
-          <span t-attf-class="pbbp-scen-pill {{ pill(s.verdict).cls }}">
+          <span t-attf-class="pbbp-scen-pill {{ pill(s.verdict).cls }} {{ state.moved[s.id] ? 'is-moved' : '' }}">
             <span class="i" t-out="ic(pill(s.verdict).icon, 12)"/>
             <t t-esc="s.verdict_label"/>
           </span>

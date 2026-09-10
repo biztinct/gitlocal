@@ -92,6 +92,14 @@ export class PayPreview extends Component {
         }
         this._target = to;
         if (this._raf) cancelAnimationFrame(this._raf);
+        // Somebody who has asked their system to stop moving things gets the
+        // new number, not the journey to it. The stylesheet's blanket
+        // `prefers-reduced-motion` rule cannot reach a count driven by
+        // `requestAnimationFrame`, so it is asked here as well.
+        if (this.stillness) {
+            this.state.shown = to;
+            return;
+        }
         const start = performance.now();
         const span = 420;
         const tick = (now) => {
@@ -106,6 +114,16 @@ export class PayPreview extends Component {
             }
         };
         this._raf = requestAnimationFrame(tick);
+    }
+
+    /** True when this person has asked their system not to animate. */
+    get stillness() {
+        try {
+            return !!(window.matchMedia
+                && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        } catch (e) {
+            return false;
+        }
     }
 
     // ---- what the panel says ------------------------------------------

@@ -65,6 +65,11 @@ export class StepTest extends Component {
             picks: null,           // the boundary modal's payload
             picked: [],            // the keys ticked in it
             picksOpen: false,
+            // {sample_id: true} for the verdicts the last run CHANGED.
+            moved: {},
+            // The scenario whose name is being edited, and what has been typed.
+            renaming: 0,
+            renameValue: "",
             showOther: false,      // the boundary modal's second group
             realOpen: false,
             real: null,            // {runs, run_id, people, reason}
@@ -189,6 +194,92 @@ export class StepTest extends Component {
         return _t("There is nothing to check yet. Add the boundary cases this configuration branches on, or a sample employee of your own, and the checks have something to run against.");
     }
 
+    /**
+     * Remember which scenarios came back with a different verdict.
+     *
+     * Compared against what was on SCREEN a moment ago, so the movement says
+     * "this one changed" and not "this one exists". Cleared after a second, and
+     * never applied at all for somebody who has asked their system to stop
+     * animating.
+     */
+    _markMoved(res) {
+        const before = {};
+        for (const row of (this.state.data && this.state.data.samples) || []) {
+            before[row.id] = row.verdict;
+        }
+        const moved = {};
+        for (const row of (res && res.samples) || []) {
+            if (before[row.id] && before[row.id] !== row.verdict) {
+                moved[row.id] = true;
+            }
+        }
+        if (!Object.keys(moved).length || this.stillness) { return; }
+        this.state.moved = moved;
+        if (this._movedTimer) { clearTimeout(this._movedTimer); }
+        this._movedTimer = setTimeout(() => { this.state.moved = {}; }, 1200);
+    }
+
+    /** True when this person has asked their system not to animate. */
+    get stillness() {
+        try {
+            return !!(window.matchMedia
+                && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // ==================================================================
+    // Naming a scenario
+    // ==================================================================
+    /**
+     * "Edge BASIC=46799999 (−1)" is the engine's name for a boundary case, and
+     * it is the right name for the machine that made it. A person reading a
+     * list of eleven checks needs "Just under the insurance ceiling" (B5's own
+     * "with one more hour"). A rename is not in the evidence key, so nothing
+     * goes stale for it.
+     */
+    startRename(row) {
+        if (!this.canWrite) { return; }
+        this.state.renaming = row.id;
+        this.state.renameValue = row.name || "";
+    }
+
+    cancelRename() {
+        this.state.renaming = 0;
+        this.state.renameValue = "";
+    }
+
+    onRenameKey(ev) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            ev.stopPropagation();          // Enter on the step means "continue"
+            this.saveRename();
+        } else if (ev.key === "Escape") {
+            ev.preventDefault();
+            ev.stopPropagation();          // Escape here closes the input, not the step
+            this.cancelRename();
+        }
+    }
+
+    async saveRename() {
+        const id = this.state.renaming;
+        const name = (this.state.renameValue || "").trim();
+        if (!id || !name) { this.cancelRename(); return; }
+        this.state.busy = "rename";
+        const res = await this.rpc("bp_rename_sample",
+                                   [this.props.configId, id, name,
+                                    this.props.revision || 0]);
+        this.state.busy = "";
+        if (!res || !res.ok) {
+            this.notif.add((res && res.reason)
+                || _t("That scenario could not be renamed."), { type: "warning" });
+            return;
+        }
+        this.cancelRename();
+        this._apply(res);
+    }
+
     // ==================================================================
     // Running
     // ==================================================================
@@ -205,6 +296,10 @@ export class StepTest extends Component {
                 || _t("The checks could not be run."), { type: "warning", sticky: true });
             return;
         }
+        // Which verdicts this run actually CHANGED. The pills for those and
+        // no others get one short movement — the single moment on this step
+        // where something is worth pointing at (B5's own "with one more hour").
+        this._markMoved(res);
         this._apply(res);
         const tally = res.tally || {};
         if (tally.attention) {

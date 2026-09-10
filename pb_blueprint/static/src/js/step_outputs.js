@@ -166,6 +166,14 @@ export class StepOutputs extends Component {
             return;
         }
         if (this._raf) { cancelAnimationFrame(this._raf); }
+        // Reduced motion is a setting about MOVEMENT, not about information:
+        // the counts land at their value, and nothing spins on the way.
+        if (this.stillness) {
+            for (const key of ["inputs", "components", "rules"]) {
+                this.state.shown[key] = to[key];
+            }
+            return;
+        }
         const start = performance.now();
         const span = 520;
         const tick = (now) => {
@@ -178,6 +186,16 @@ export class StepOutputs extends Component {
             this._raf = t < 1 ? requestAnimationFrame(tick) : null;
         };
         this._raf = requestAnimationFrame(tick);
+    }
+
+    /** True when this person has asked their system not to animate. */
+    get stillness() {
+        try {
+            return !!(window.matchMedia
+                && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        } catch (e) {
+            return false;
+        }
     }
 
     get nodes() {

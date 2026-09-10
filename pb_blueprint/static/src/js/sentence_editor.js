@@ -66,7 +66,8 @@ export class SentenceEditor extends Component {
             generated: "",
             open: false,               // the tax/insurance disclosure
             // the proof strip
-            proof: { state: "idle", value: null, message: "", formula: "",
+            proof: { state: "idle", value: null, baseline: null,
+                     message: "", formula: "",
                      needs: [] },
             saving: false,
             confirmClose: false,
@@ -426,6 +427,15 @@ export class SentenceEditor extends Component {
         }
         this.state.proof.state = "ok";
         this.state.proof.message = "";
+        // What this component paid BEFORE the sentence was touched, kept the
+        // first time an answer arrives and shown beside the new one whenever
+        // they differ. One number on its own asks a person to remember what it
+        // used to be; a pair says what the change did (B2's own "with one more
+        // hour").
+        if (this.state.proof.baseline === null
+                || this.state.proof.baseline === undefined) {
+            this.state.proof.baseline = res.value;
+        }
         this.state.proof.value = res.value;
         if (this.state.lane === "guided" && res.excel_codes) {
             this.state.excel = res.excel_codes;
@@ -438,6 +448,21 @@ export class SentenceEditor extends Component {
             return _t("Add a sample employee on the right to see a value");
         }
         return Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 });
+    }
+
+    /**
+     * "was 500,000" — only when the number has actually moved.
+     *
+     * Absent rather than empty when nothing changed: a before/after pair that
+     * shows the same number twice is noise, and a person reads it as a bug.
+     */
+    get proofBefore() {
+        const p = this.state.proof;
+        if (p.value === null || p.value === undefined) { return ""; }
+        if (p.baseline === null || p.baseline === undefined) { return ""; }
+        if (Number(p.baseline) === Number(p.value)) { return ""; }
+        return _t("was %s", Number(p.baseline).toLocaleString(
+            "en-US", { maximumFractionDigits: 2 }));
     }
 
     get proofWho() {

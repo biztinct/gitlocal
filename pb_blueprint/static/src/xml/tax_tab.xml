@@ -132,6 +132,7 @@
                              t-att-disabled="!editable or row.index === 0"
                              t-att-value="group(row.lower)"
                              t-on-input="(ev) => this.onBandLower(row.index, ev)"
+                             t-on-keydown="(ev) => this.onBandKey(row.index, ev)"
                              t-on-blur="onBandBlur"
                              t-attf-aria-label="Band {{ row.index + 1 }} starts at"/>
                       <small t-if="row.index === 0">from the first dong</small>
@@ -146,6 +147,7 @@
                                t-att-disabled="!editable"
                                t-att-value="percent(row.rate)"
                                t-on-input="(ev) => this.onBandRate(row.index, ev)"
+                               t-on-keydown="(ev) => this.onBandKey(row.index, ev)"
                                t-attf-aria-label="Band {{ row.index + 1 }} rate"/>
                         <b>%</b>
                       </span>
@@ -187,6 +189,7 @@
               </div>
               <div class="pbbp-tax-try-r">
                 <span class="pbbp-tax-try-lbl">Income tax</span>
+                <span class="pbbp-tax-try-was" t-if="tryTaxBefore" t-esc="tryTaxBefore"/>
                 <b class="pbbp-tax-try-num" t-esc="group(tryTax)"/>
                 <span class="pbbp-tax-try-cur" t-esc="currency"/>
                 <span class="pbbp-tax-try-eff">effective rate <b t-esc="tryRate"/>%</span>
