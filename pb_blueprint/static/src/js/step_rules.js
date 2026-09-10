@@ -7,18 +7,21 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { RULE_TABS } from "./recipe_text";
 import { STEP_META } from "./blueprint_steps";
 import { ComponentsTab } from "./components_tab";
+import { TaxTab } from "./tax_tab";
+import { CalendarTab } from "./calendar_tab";
 
 /**
  * Step 2 — what goes into pay.
  *
- * Three tabs. **Components** is the whole of this release: every pay component
- * as a sentence you can change. **Tax & protection** and **Calendar & payment**
- * are honest panels — they say what arrives next, and they offer the door that
- * works today rather than pretending to be empty.
+ * Three tabs, and each one answers a different question about the same
+ * configuration. **Components**: what is paid and taken off, every line as a
+ * sentence. **Tax & protection**: the shared rules underneath those lines, and
+ * where they come from. **Calendar & payment**: when the money is worked out
+ * and how it leaves the bank.
  */
 export class StepRules extends Component {
     static template = "pb_blueprint.StepRules";
-    static components = { ComponentsTab };
+    static components = { ComponentsTab, TaxTab, CalendarTab };
     static props = {
         configId: { type: [Number, Boolean] },
         revision: { type: Number, optional: true },
@@ -35,7 +38,13 @@ export class StepRules extends Component {
     };
 
     setup() {
-        this.state = useState({ tab: this.props.tab || "components" });
+        this.state = useState({
+            tab: this.props.tab || "components",
+            // A number the Tax tab changes has to move the row on the
+            // Components tab too, so the two never disagree about what a
+            // person is paid. Bumping this reloads whichever tab is next shown.
+            crossTick: 0,
+        });
     }
 
     ic(name, size = 16) { return ic(name, size); }
@@ -48,29 +57,23 @@ export class StepRules extends Component {
         this.props.onTab(key);
     }
 
-    /** The heading of the tab you are standing on. */
-    get panelTitle() {
-        return {
-            tax: _t("Tax and the protections that come with pay"),
-            calendar: _t("When pay is worked out, and how it is sent"),
-        }[this.state.tab] || "";
+    /** Every tab reloads when another one has changed a shared number. */
+    get tick() {
+        return (this.props.reloadKey || 0) + this.state.crossTick;
     }
 
-    get panelLead() {
-        return {
-            tax: _t("The income-tax bands, the reliefs and the insurance caps this configuration uses."),
-            calendar: _t("The day inputs close, the day people are paid, and how the money leaves the bank."),
-        }[this.state.tab] || "";
+    onSubChanged(res) {
+        this.state.crossTick++;
+        this.props.onChanged(res);
     }
 
-    get panelNote() {
-        return {
-            tax: _t("Arrives in the next release — the starter's tax values are already in place and you can see them in the grid."),
-            calendar: _t("Arrives in the next release — pay runs already follow the company's own calendar until then."),
-        }[this.state.tab] || "";
+    /** "Review the insurance components" — the same list, already filtered. */
+    onComponents(what) {
+        this.state.tab = "components";
+        this.props.onTab("components");
+        this.componentSearch = what === "ins" ? _t("insurance") : "";
+        this.state.crossTick++;
     }
 
-    get panelIcon() {
-        return this.state.tab === "tax" ? "shield" : "calendar";
-    }
+    get search() { return this.componentSearch || ""; }
 }

@@ -32,6 +32,9 @@ export class ComponentsTab extends Component {
         sampleName: { type: String, optional: true },
         currency: { type: String, optional: true },
         reloadKey: { type: Number, optional: true },
+        // Somebody arrived here from another tab asking to see a subset — the
+        // Tax tab's "review the insurance components", for instance.
+        search: { type: String, optional: true },
         onChanged: { type: Function },       // something was saved -> refresh the hero
         onRevision: { type: Function },
         onGrid: { type: Function },
@@ -50,7 +53,7 @@ export class ComponentsTab extends Component {
             removed: [],
             counts: { included: 0, removed: 0 },
             group: "earning",
-            query: "",
+            query: this.props.search || "",
             selected: [],
             focus: 0,
             trayOpen: false,
@@ -74,6 +77,9 @@ export class ComponentsTab extends Component {
         // that caused the change still read 0 — a number that is quietly
         // wrong is worse than no number.
         onWillUpdateProps(async (next) => {
+            if ((next.search || "") !== (this.props.search || "")) {
+                this.state.query = next.search || "";
+            }
             if (next.reloadKey !== this.props.reloadKey
                     || next.sampleId !== this.props.sampleId) {
                 await this.load(next.sampleId);

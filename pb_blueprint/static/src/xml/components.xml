@@ -28,38 +28,40 @@
         </button>
       </div>
 
-      <ComponentsTab t-if="state.tab === 'components' and props.configId"
-                     configId="props.configId"
-                     revision="props.revision or 0"
-                     sampleId="props.sampleId or false"
-                     sampleName="props.sampleName or ''"
-                     currency="props.currency or ''"
-                     reloadKey="props.reloadKey or 0"
-                     onChanged="props.onChanged"
-                     onRevision="props.onRevision"
-                     onGrid="props.onGrid"/>
-      <div class="pbbp-card" t-elif="state.tab === 'components'">
+      <div class="pbbp-card" t-if="!props.configId">
         <div class="pbim-empty">
           <b>Create the configuration first</b>
           <p>Give it a name on the Start step and press Continue. The components
              appear here straight away.</p>
         </div>
       </div>
-      <div class="pbbp-card" t-else="">
-        <div class="pbbp-soon">
-          <span class="pbbp-soon-ic" t-out="ic(panelIcon, 19)"/>
-          <div>
-            <b t-esc="panelTitle"/>
-            <p t-esc="panelLead"/>
-            <p class="pbbp-soon-note" t-esc="panelNote"/>
-            <div class="pbbp-emptydoors-b">
-              <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">
-                <t t-out="ic('table', 14)"/> Open the grid
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ComponentsTab t-elif="state.tab === 'components'"
+                     configId="props.configId"
+                     revision="props.revision or 0"
+                     sampleId="props.sampleId or false"
+                     sampleName="props.sampleName or ''"
+                     currency="props.currency or ''"
+                     reloadKey="tick"
+                     search="search"
+                     onChanged="(res) => this.onSubChanged(res)"
+                     onRevision="props.onRevision"
+                     onGrid="props.onGrid"/>
+      <TaxTab t-elif="state.tab === 'tax'"
+              configId="props.configId"
+              revision="props.revision or 0"
+              currency="props.currency or ''"
+              reloadKey="tick"
+              onChanged="(res) => this.onSubChanged(res)"
+              onRevision="props.onRevision"
+              onGrid="props.onGrid"
+              onComponents="(what) => this.onComponents(what)"/>
+      <CalendarTab t-else=""
+                   configId="props.configId"
+                   revision="props.revision or 0"
+                   reloadKey="tick"
+                   onChanged="(res) => this.onSubChanged(res)"
+                   onRevision="props.onRevision"
+                   onGrid="props.onGrid"/>
 
     </div>
   </t>

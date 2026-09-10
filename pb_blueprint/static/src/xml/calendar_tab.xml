@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     Calendar and payment. No double hyphen inside any comment in
+     this file (BP9), and no comment between t-if siblings (BP10).
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.CalendarTab">
+    <div class="pbbp-cal" t-on-keydown="onKeydown">
+
+      <div class="pbbp-tax-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading the pay calendar…</span>
+      </div>
+      <div class="pbbp-card" t-elif="state.error">
+        <div class="pbim-empty">
+          <span class="i" t-out="ic('alert', 22)"/>
+          <b>The pay calendar could not be opened</b>
+          <p t-esc="state.error"/>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.load()">
+            <t t-out="ic('refresh', 14)"/> Try again
+          </button>
+        </div>
+      </div>
+      <t t-else="">
+
+        <div class="pbbp-alert is-info" t-if="!editable">
+          <span class="i" t-out="ic('lock', 18)"/>
+          <div>
+            <b>These choices are read only here</b>
+            <p t-esc="data.readonly_reason"/>
+          </div>
+        </div>
+
+        <!-- ========== the shape of the month ========== -->
+        <ol class="pbbp-cal-flow">
+          <li t-foreach="FLOW" t-as="f" t-key="f.key">
+            <span class="pbbp-cal-flow-ic" t-out="ic(f.icon, 15)"/>
+            <b t-esc="f.label"/>
+            <small t-if="f.sub" t-esc="f.sub"/>
+          </li>
+        </ol>
+
+        <!-- ========== the calendar ========== -->
+        <section class="pbbp-card">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('calendar', 18)"/>
+            <div>
+              <h2>A calendar people can rely on</h2>
+              <p>Everybody being paid should be able to say, without asking, when their
+                 money arrives and by when a change has to be in.</p>
+            </div>
+          </header>
+
+          <div class="pbbp-fields">
+            <div class="pbbp-field">
+              <label for="pbbp-cut">Inputs close on day</label>
+              <input id="pbbp-cut" type="number" min="1" max="28"
+                     t-att-disabled="!editable"
+                     t-att-value="state.calendar.cutoff_day"
+                     t-on-input="(ev) => this.onNumber('cutoff_day', ev)"/>
+              <small t-esc="cutoffLine"/>
+            </div>
+
+            <div class="pbbp-field">
+              <label>Payday</label>
+              <div class="pbim-seg pbbp-cal-seg">
+                <button t-foreach="PAYDAY_RULES" t-as="r" t-key="r.value"
+                        t-attf-class="pbim-segbtn {{ state.calendar.payday_rule === r.value ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setCalendar('payday_rule', r.value)">
+                  <t t-esc="r.label"/>
+                </button>
+              </div>
+              <small>A rule survives every month. A date does not.</small>
+            </div>
+
+            <div class="pbbp-field" t-if="isFixed">
+              <label for="pbbp-payday">Which day</label>
+              <input id="pbbp-payday" type="number" min="1" max="31"
+                     t-att-disabled="!editable"
+                     t-att-value="state.calendar.payday_day"
+                     t-on-input="(ev) => this.onNumber('payday_day', ev)"/>
+              <small>In a shorter month this becomes that month's last day.</small>
+            </div>
+          </div>
+
+          <div t-attf-class="pbbp-cal-next {{ state.previewBusy ? 'is-busy' : '' }}">
+            <span class="pbbp-cal-next-ic" t-out="ic('clock', 18)"/>
+            <div t-if="preview">
+              <b t-esc="preview.long"/>
+              <p t-esc="previewLine"/>
+              <small t-if="calendarNote" t-esc="calendarNote"/>
+            </div>
+            <div t-else="">
+              <b>No payday could be worked out</b>
+              <p t-esc="previewLine"/>
+            </div>
+          </div>
+
+          <div class="pbbp-field pbbp-cal-late">
+            <label>An input that arrives late</label>
+            <div class="pbbp-checks">
+              <label t-foreach="LATE_POLICIES" t-as="p" t-key="p.value"
+                     t-attf-class="pbbp-check {{ state.calendar.late_inputs === p.value ? 'is-on' : '' }}">
+                <input type="radio" name="pbbp-late"
+                       t-att-disabled="!editable"
+                       t-att-checked="state.calendar.late_inputs === p.value"
+                       t-on-change="() => this.setCalendar('late_inputs', p.value)"/>
+                <span class="pbbp-check-t">
+                  <b t-esc="p.label"/>
+                  <small t-esc="p.hint"/>
+                </span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== where the money goes ========== -->
+        <section class="pbbp-card">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('landmark', 18)"/>
+            <div>
+              <h2>Where the money goes</h2>
+              <p>Payment details belong to the bank layouts, not to a payroll formula.
+                 These two choices are all the calculation needs to know.</p>
+            </div>
+          </header>
+
+          <div class="pbbp-fields">
+            <div class="pbbp-field">
+              <label>Payment currency</label>
+              <span class="pbbp-chip-ro">
+                <t t-out="ic('coins', 14)"/><t t-esc="state.payment.currency"/>
+              </span>
+              <small>Paying in another currency? The bank layout converts at release. This
+                 configuration calculates in <t t-esc="state.payment.currency"/>.</small>
+            </div>
+
+            <div class="pbbp-field">
+              <label>The bank identifies an account by</label>
+              <div class="pbim-seg pbbp-cal-seg">
+                <button t-foreach="BANK_TYPES" t-as="b" t-key="b.value"
+                        t-attf-class="pbim-segbtn {{ state.payment.bank_id_type === b.value ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setPayment('bank_id_type', b.value)">
+                  <t t-esc="b.label"/>
+                </button>
+              </div>
+              <small>Account numbers stay text, so a leading zero is never lost.</small>
+            </div>
+          </div>
+
+          <div class="pbbp-cal-doorrow">
+            <p class="pbbp-note">No file is sent from here. The bank layouts screen is where
+               a payment file is built, checked and released.</p>
+            <button class="pbim-btn ghost pbim-btn-sm" t-if="hasPayDelivery"
+                    t-on-click="openPayDelivery">
+              <t t-out="ic('external', 14)"/> Open bank file layouts
+            </button>
+          </div>
+        </section>
+
+        <div class="pbbp-cal-save" t-if="editable">
+          <span class="pbbp-cal-save-t" t-if="state.dirty">Not saved yet.</span>
+          <span class="pbbp-cal-save-t is-ok" t-else="">Everything here is saved.</span>
+          <button class="pbim-btn primary pbim-btn-sm"
+                  t-att-disabled="!canSave" t-on-click="save">
+            <t t-if="state.busy">Saving…</t>
+            <t t-else="">Save the calendar</t>
+          </button>
+        </div>
+
+      </t>
+    </div>
+  </t>
+
+</templates>
