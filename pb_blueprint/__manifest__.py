@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -54,6 +54,8 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/js/tax_tab.js',
             'pb_blueprint/static/src/js/calendar_tab.js',
             'pb_blueprint/static/src/js/step_rules.js',
+            'pb_blueprint/static/src/js/connect_text.js',
+            'pb_blueprint/static/src/js/step_connect.js',
             'pb_blueprint/static/src/js/step_finish.js',
             'pb_blueprint/static/src/js/blueprint.js',
             'pb_blueprint/static/src/xml/pay_preview.xml',
@@ -62,6 +64,7 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/xml/components.xml',
             'pb_blueprint/static/src/xml/tax_tab.xml',
             'pb_blueprint/static/src/xml/calendar_tab.xml',
+            'pb_blueprint/static/src/xml/connect.xml',
             'pb_blueprint/static/src/xml/blueprint.xml',
         ],
         # Loaded only by /web/tests — never part of the backend bundle.

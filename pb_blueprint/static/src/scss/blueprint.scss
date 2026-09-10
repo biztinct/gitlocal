@@ -1666,6 +1666,356 @@ $bp-head-h: 64px;
         &.is-ok { color: var(--bp-muted); font-weight: 600; }
     }
 
+
+    // =================================================================
+    //  STEP 3 — CONNECT
+    //
+    //  Three cards, and the card is the whole design: an icon tile, one
+    //  status word, two sentences, a LIVE coverage line and one primary
+    //  door. Everything that is not the door — skip, undo, mark as done —
+    //  is a text link, so the eye lands on the thing to press first.
+    //  `.pbbp-cn-*`, and none of these names is used anywhere else in this
+    //  file (BP18: a reused class name is two things wearing one name).
+    // =================================================================
+    .pbbp-cn-boot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 34px 4px;
+        color: var(--bp-muted);
+        font-size: 13px;
+
+        .pbim-spin { width: 22px; height: 22px; border-width: 2px; }
+    }
+
+    // ---- identity: whose draft these doors open on -------------------
+    .pbbp-cn-id {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px 10px;
+        background: #fff;
+        border: 1px solid var(--bp-line);
+        border-radius: 14px;
+        padding: 11px 14px;
+        margin-bottom: 16px;
+    }
+    .pbbp-cn-id-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--bp-ink);
+
+        svg { color: var(--bp-i); }
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bp-muted);
+            background: var(--bp-soft);
+            border-radius: 6px;
+            padding: 2px 6px;
+        }
+    }
+    .pbbp-cn-id-sep { color: var(--bp-line); font-weight: 800; }
+    .pbbp-cn-id-sp { flex: 1 1 10px; }
+    .pbbp-cn-id-note { font-size: 12px; color: var(--bp-muted); }
+
+    // ---- the cards ---------------------------------------------------
+    .pbbp-cn-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        align-items: stretch;
+    }
+
+    .pbbp-cn-card {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        background: #fff;
+        border: 1px solid var(--bp-line);
+        border-radius: 16px;
+        padding: 16px 16px 14px;
+        transition: box-shadow .18s, border-color .18s;
+
+        &:hover { box-shadow: 0 6px 20px rgba(36, 31, 82, .07); }
+
+        // The card somebody just came back to, ringed for a moment. It fades
+        // on a timer rather than on a hover, because the reader's eye has to
+        // find it before their hand moves.
+        &.is-ring {
+            border-color: var(--bp-i);
+            box-shadow: 0 0 0 3px var(--bp-soft2);
+            animation: pbbp-cn-ring 1.4s ease-out 1;
+        }
+        &.is-configured { border-color: rgba(46, 125, 79, .34); }
+        &.is-needs_review { border-color: rgba(220, 38, 104, .34); }
+        &.is-skipped { border-color: rgba(217, 119, 6, .34); }
+    }
+
+    @keyframes pbbp-cn-ring {
+        0% { box-shadow: 0 0 0 0 var(--bp-i); }
+        30% { box-shadow: 0 0 0 4px var(--bp-soft2); }
+        100% { box-shadow: 0 0 0 0 rgba(90, 75, 176, 0); }
+    }
+
+    .pbbp-cn-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+    }
+    .pbbp-cn-ic {
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: var(--bp-soft);
+        color: var(--bp-i);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &.is-teal { background: #E6F4F1; color: #0F766E; }
+    }
+    .pbbp-cn-ttl {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+
+        h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -.01em;
+            color: var(--bp-ink);
+        }
+    }
+
+    // The status word. Never `.pbim-badge`: that primitive capitalises every
+    // word, which is right for a status and wrong for "Needs another look".
+    .pbbp-cn-pill {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .01em;
+        text-transform: none;
+        border-radius: 999px;
+        padding: 3px 9px;
+        border: 1px solid transparent;
+
+        &.is-idle { background: #F1F2F7; color: var(--bp-muted); }
+        &.is-open { background: var(--bp-soft); color: var(--bp-i); }
+        &.is-done { background: #E7F5EC; color: var(--bp-good); }
+        &.is-skip { background: #fff; color: var(--bp-warn); border-color: #F2D49B; }
+        &.is-review { background: #fff; color: var(--bp-rose); border-color: #F3C7D6; }
+        &.is-info { background: #E6F4F1; color: #0F766E; }
+    }
+
+    .pbbp-cn-lead {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--bp-ink);
+    }
+    .pbbp-cn-sub {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--bp-muted);
+    }
+
+    // The live number. It is the only thing on the card that changes, so it
+    // gets the tint and everything else stays quiet.
+    .pbbp-cn-cover {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: var(--bp-soft);
+        border-radius: 10px;
+        padding: 9px 11px;
+        font-size: 12.5px;
+        font-weight: 700;
+        line-height: 1.45;
+        color: var(--bp-deep);
+
+        .i { color: var(--bp-i); line-height: 0; padding-top: 1px; }
+    }
+
+    .pbbp-cn-hint {
+        margin: 0;
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--bp-muted);
+    }
+
+    .pbbp-cn-changed {
+        display: flex;
+        gap: 8px;
+        background: #FFF5F8;
+        border: 1px solid #F3C7D6;
+        border-radius: 10px;
+        padding: 9px 11px;
+
+        .i { color: var(--bp-rose); line-height: 0; padding-top: 1px; }
+        p { margin: 0 0 3px; font-size: 12px; font-weight: 700; color: var(--bp-ink); line-height: 1.45; }
+        small { font-size: 11px; color: var(--bp-muted); }
+    }
+
+    .pbbp-cn-more {
+        summary {
+            cursor: pointer;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--bp-i);
+            list-style: none;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: "▸ "; }
+        &[open] summary::before { content: "▾ "; }
+
+        ul { list-style: none; margin: 7px 0 0; padding: 0; display: grid; gap: 4px; }
+        li {
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            font-size: 11.5px;
+            color: var(--bp-muted);
+        }
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--bp-deep);
+            background: var(--bp-soft);
+            border-radius: 5px;
+            padding: 1px 5px;
+        }
+        .is-more { font-style: italic; }
+    }
+
+    .pbbp-cn-actions {
+        margin-top: auto;
+        padding-top: 4px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    // Every secondary verb is a LINK, so exactly one thing on the card looks
+    // like a button and it is the door.
+    .pbbp-cn-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: none;
+        border: 0;
+        padding: 3px 2px;
+        font-family: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--bp-muted);
+        cursor: pointer;
+        border-radius: 6px;
+
+        &:hover { color: var(--bp-i); text-decoration: underline; }
+        &:focus-visible { outline: 2px solid var(--bp-i); outline-offset: 2px; }
+    }
+
+    .pbbp-cn-blocked {
+        margin-top: auto;
+        display: flex;
+        gap: 8px;
+        background: #F7F8FC;
+        border: 1px dashed var(--bp-line);
+        border-radius: 10px;
+        padding: 10px 11px;
+
+        .i { color: var(--bp-muted); line-height: 0; padding-top: 1px; }
+        p { margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--bp-muted); }
+    }
+
+    .pbbp-cn-later {
+        margin: 0;
+        font-size: 10.5px;
+        color: #9AA0B4;
+        border-top: 1px dashed var(--bp-line);
+        padding-top: 8px;
+    }
+
+    // ---- approvals ---------------------------------------------------
+    .pbbp-cn-chain {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .pbbp-cn-tier {
+        display: inline-flex;
+        align-items: center;
+        background: #E6F4F1;
+        color: #0F766E;
+        border-radius: 8px;
+        padding: 4px 9px;
+        font-size: 11.5px;
+        font-weight: 800;
+    }
+    .pbbp-cn-arrow { color: var(--bp-muted); line-height: 0; }
+
+    .pbbp-cn-steps {
+        margin: 0 0 12px;
+        padding-left: 18px;
+        display: grid;
+        gap: 9px;
+
+        li { font-size: 13px; line-height: 1.5; }
+        b { display: block; color: var(--bp-ink); font-weight: 800; }
+        span { color: var(--bp-muted); }
+    }
+
+    .pbbp-cn-x {
+        background: none;
+        border: 0;
+        color: var(--bp-muted);
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 4px;
+        line-height: 0;
+
+        &:hover { background: var(--bp-soft); color: var(--bp-ink); }
+    }
+
+    // ---- skip the rest -----------------------------------------------
+    .pbbp-cn-rest {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        border: 1px dashed var(--bp-line);
+        border-radius: 14px;
+        padding: 13px 16px;
+
+        b { font-size: 13px; font-weight: 800; color: var(--bp-ink); }
+        p { margin: 3px 0 0; font-size: 12px; line-height: 1.5; color: var(--bp-muted); max-width: 620px; }
+        .pbim-btn { margin-left: auto; flex: 0 0 auto; }
+    }
+
+    // Three cards side by side need desk width. Below that they stack, at
+    // full width, in the order they are meant to be done.
+    @media (max-width: 1100px) {
+        .pbbp-cn-grid { grid-template-columns: 1fr; }
+        .pbbp-cn-rest { flex-direction: column; align-items: stretch; gap: 10px; }
+        .pbbp-cn-rest .pbim-btn { margin-left: 0; justify-content: center; }
+    }
+
     // Motion is a signal, not a decoration: somebody who has asked their
     // system to stop moving things gets the same information without it.
     @media (prefers-reduced-motion: reduce) {
@@ -1802,6 +2152,14 @@ $bp-head-h: 64px;
         .pbbp-cal-flow li { min-width: 116px; }
         .pbbp-cal-save { flex-wrap: wrap; justify-content: stretch; }
         .pbbp-cal-save .pbim-btn { flex: 1 1 auto; justify-content: center; }
+
+        // The three Connect cards stack, and the skip strip stops being a row.
+        .pbbp-cn-grid { grid-template-columns: 1fr; }
+        .pbbp-cn-rest { flex-direction: column; align-items: stretch; gap: 10px; }
+        .pbbp-cn-rest .pbim-btn { margin-left: 0; justify-content: center; }
+        .pbbp-cn-id { gap: 6px 8px; }
+        .pbbp-cn-id-note { flex: 1 1 100%; }
+        .pbbp-cn-actions .pbim-btn { flex: 1 1 auto; justify-content: center; }
     }
 }
 

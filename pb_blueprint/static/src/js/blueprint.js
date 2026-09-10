@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { router } from "@web/core/browser/router";
 import { useService } from "@web/core/utils/hooks";
@@ -18,6 +18,7 @@ import { SampleInputsDialog } from "./sample_inputs_dialog";
 import { StepStart } from "./step_start";
 import { StepThin } from "./step_thin";
 import { StepRules } from "./step_rules";
+import { StepConnect } from "./step_connect";
 import { StepFinish } from "./step_finish";
 
 /**
@@ -36,7 +37,7 @@ import { StepFinish } from "./step_finish";
  */
 export class PbBlueprint extends Component {
     static template = "pb_blueprint.Root";
-    static components = { PayPreview, SampleInputsDialog, StepStart, StepThin, StepRules, StepFinish, HubBackChip };
+    static components = { PayPreview, SampleInputsDialog, StepStart, StepThin, StepRules, StepConnect, StepFinish, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -51,6 +52,7 @@ export class PbBlueprint extends Component {
         }
 
         const params = this._arrival();
+        this.arrival = params;
         this.token = freshToken();
 
         this.state = useState({
@@ -99,6 +101,12 @@ export class PbBlueprint extends Component {
             confirmDiscard: false,
             kebabOpen: false,
             rulesTab: "components",
+            // --- step 3, Connect ----------------------------------------
+            // Which card to ring because a studio just sent us back to it, and
+            // a tick that makes the step re-read its counts rather than trust
+            // the ones it painted before the person left.
+            connectTask: params.task || "",
+            connectTick: 0,
             // Bumped every time the pay panel gets a fresh answer, so the
             // component list refreshes the value it shows for each row.
             payTick: 0,
@@ -129,6 +137,21 @@ export class PbBlueprint extends Component {
             this.state.loading = false;
         });
 
+        // B4 — say it again once we are on screen.
+        //
+        // `_rememberInUrl` runs inside `onWillStart`, and the action manager
+        // writes its OWN route state when the action mounts, a moment later —
+        // which wipes `?config_id=N` for any door that carried the draft in the
+        // CONTEXT rather than in `params`. That is exactly the shape of the
+        // return door from the two studios, so a refresh after coming back
+        // landed on an empty journey. Re-asserting after mount costs one call
+        // and makes every door's refresh behave the same (BP38).
+        onMounted(() => {
+            if (this.state.configId) {
+                this._rememberInUrl(this.state.configId);
+            }
+        });
+
         // Every pending timer dies with the component, or a fired callback sets
         // state on something that is no longer mounted (W100).
         onWillUnmount(() => {
@@ -148,6 +171,12 @@ export class PbBlueprint extends Component {
         const c = a.context || {};
         return {
             config_id: Number(p.config_id || c.config_id || 0) || null,
+            // B4 — a studio sending somebody back says WHICH step they left
+            // from and WHICH card they were working on, so the return lands on
+            // the Connect step with that card ringed rather than wherever the
+            // draft happened to be saved.
+            step: String(p.step || c.step || ""),
+            task: String(p.task || c.task || ""),
         };
     }
 
@@ -182,6 +211,14 @@ export class PbBlueprint extends Component {
             return;
         }
         this.applyLoad(res);
+        // A studio that sent somebody back names the step it sent them back to,
+        // and that beats the step the draft was saved on: the person pressed a
+        // chip that said "New configuration", and landing them anywhere but
+        // where they left would be the chip lying (B4 return door).
+        if (this.arrival && STEPS.includes(this.arrival.step)) {
+            this.state.step = this.arrival.step;
+            this.rememberStep();
+        }
         // A finished setup has nothing left to guide — go straight to the grid
         // rather than showing six steps that are all already behind you.
         if (res.blueprint.state === "finished") {
@@ -779,6 +816,16 @@ export class PbBlueprint extends Component {
             this._rememberInUrl(this.state.configId);
         }
         await this.refreshPreview();
+    }
+
+    // ==================================================================
+    // Step 3 — Connect
+    // ==================================================================
+    /** "Skip the rest & review outputs" has already skipped; walk on. */
+    onConnectContinue() {
+        this.state.connectTask = "";
+        this.state.step = nextStep("connect");
+        this.rememberStep();
     }
 
     onRulesRevision(revision) {

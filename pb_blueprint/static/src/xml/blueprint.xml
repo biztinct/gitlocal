@@ -125,6 +125,18 @@
                        onRevision.bind="onRulesRevision"
                        onGrid.bind="openGrid"/>
 
+            <StepConnect t-elif="state.step === 'connect' and created"
+                         configId="state.configId or false"
+                         configName="state.config and state.config.name or ''"
+                         configCode="state.config and state.config.code or ''"
+                         company="companyName"
+                         revision="state.blueprint and state.blueprint.revision or 0"
+                         reloadKey="state.connectTick"
+                         highlight="state.connectTask"
+                         onRevision.bind="onRulesRevision"
+                         onGrid.bind="openGrid"
+                         onContinue.bind="onConnectContinue"/>
+
             <StepFinish t-elif="state.step === 'finish'"
                         config="state.config"
                         blueprint="state.blueprint"

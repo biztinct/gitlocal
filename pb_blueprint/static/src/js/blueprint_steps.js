@@ -41,9 +41,9 @@ export const STEP_META = {
     connect: {
         label: _t("Connect"),
         hint: _t("Sources, payslip, approvals"),
-        eyebrow: _t("03 / CONNECT THE PIECES"),
-        title: _t("Where the numbers come from, and where they land."),
-        lead: _t("Point each input at the system that already holds it, decide how the payslip reads, and see who signs the pay run off."),
+        eyebrow: _t("03 / CONNECT WHAT YOU NEED"),
+        title: _t("Connect what you need. Continue when ready."),
+        lead: _t("These tasks belong to this company and configuration. Set them up here, or skip individually and come back through the configuration's Settings later."),
     },
     outputs: {
         label: _t("Outputs"),

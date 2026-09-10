@@ -6,7 +6,7 @@ import { _t } from "@web/core/l10n/translation";
 import { STEP_META } from "./blueprint_steps";
 
 /**
- * Steps 2 to 5, as they stand today.
+ * The steps whose own tool has not been built yet.
  *
  * These are HONEST placeholders, not empty pages: each one carries the real
  * heading and the real promise of the step, says plainly that the tools for it
@@ -39,8 +39,6 @@ export class StepThin extends Component {
         switch (this.props.step) {
             case "rules":
                 return _t("Writing each component as a plain sentence — and editing tax bands, reliefs and the pay calendar — arrives in the next release.");
-            case "connect":
-                return _t("Pointing inputs at the systems that already hold them, and arranging the payslip, arrives in the next release.");
             case "outputs":
                 return _t("The full table of every component, its calculation and its value for the sample employee arrives in the next release.");
             default:

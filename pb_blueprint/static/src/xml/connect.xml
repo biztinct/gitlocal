@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==========================================================
+       STEP 3 - Connect. Two doors into tools that already exist,
+       and one honest information card.
+       An XML comment may never contain a double hyphen (BP9), and
+       no comment may sit between t-if / t-elif / t-else siblings
+       (BP10).
+       ========================================================== -->
+  <t t-name="pb_blueprint.StepConnect">
+    <div class="pbbp-step pbbp-connect" t-on-keydown="onKeydown">
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
+        <h1 class="pbbp-h1" t-esc="meta.title"/>
+        <p class="pbbp-lead" t-esc="meta.lead"/>
+      </div>
+
+      <div class="pbbp-cn-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading what is already connected…</span>
+      </div>
+      <div class="pbbp-alert is-err" t-elif="state.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>This step could not be read</b>
+          <p t-esc="state.error"/>
+        </div>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.load()">
+          <t t-out="ic('rotate', 14)"/> Try again
+        </button>
+      </div>
+      <t t-else="">
+
+      <!-- ============ identity: whose draft these doors open on ============ -->
+      <section class="pbbp-cn-id">
+        <span class="pbbp-cn-id-chip">
+          <t t-out="ic('building', 14)"/>
+          <span t-esc="identity.company"/>
+        </span>
+        <span class="pbbp-cn-id-sep">·</span>
+        <span class="pbbp-cn-id-chip is-cfg">
+          <t t-out="ic('layers', 14)"/>
+          <span t-esc="identity.name"/>
+          <code t-if="identity.code" t-esc="identity.code"/>
+        </span>
+        <div class="pbbp-cn-id-sp"/>
+        <span class="pbbp-cn-id-note" t-esc="progressLine"/>
+      </section>
+
+      <!-- ============ the three task cards ============ -->
+      <div class="pbbp-cn-grid">
+
+        <section t-foreach="cards" t-as="c" t-key="c.key"
+                 t-attf-class="pbbp-cn-card {{ ringed(c.key) ? 'is-ring' : '' }} is-{{ c.pill.key }}">
+          <header class="pbbp-cn-head">
+            <span class="pbbp-cn-ic" t-out="ic(c.icon, 20)"/>
+            <div class="pbbp-cn-ttl">
+              <h2 t-esc="c.title"/>
+              <span t-attf-class="pbbp-cn-pill {{ c.pill.cls }}" t-esc="c.pill.label"/>
+            </div>
+          </header>
+
+          <p class="pbbp-cn-lead" t-esc="c.lead"/>
+          <p class="pbbp-cn-sub" t-esc="c.sub"/>
+
+          <div class="pbbp-cn-cover">
+            <span class="i" t-out="ic('gauge', 14)"/>
+            <span t-esc="c.coverage"/>
+          </div>
+
+          <p class="pbbp-cn-hint" t-if="c.hint" t-esc="c.hint"/>
+
+          <div class="pbbp-cn-changed" t-if="c.changed or c.removed">
+            <span class="i" t-out="ic('alert', 14)"/>
+            <div>
+              <p t-if="c.changed" t-esc="c.changed"/>
+              <p t-if="c.removed" t-esc="c.removed"/>
+              <small>Open it again to take care of them, then mark it done.</small>
+            </div>
+          </div>
+
+          <details class="pbbp-cn-more" t-if="c.unmapped.length">
+            <summary>
+              <t t-if="c.key === 'mapping'">Which inputs are still waiting</t>
+              <t t-else="">What is still in the tray</t>
+            </summary>
+            <ul>
+              <li t-foreach="c.unmapped" t-as="u" t-key="u.code">
+                <code t-esc="u.code"/><span t-esc="u.name"/>
+              </li>
+              <li class="is-more" t-if="c.unmappedMore">
+                and <t t-esc="c.unmappedMore"/> more
+              </li>
+            </ul>
+          </details>
+
+          <div class="pbbp-cn-actions" t-if="c.available and c.selectable">
+            <button class="pbim-btn primary pbim-btn-sm"
+                    t-att-disabled="state.busy === c.key"
+                    t-on-click="() => c.key === 'mapping' ? this.openMapping() : this.openPayslip()">
+              <t t-out="ic('external', 14)"/> <t t-esc="c.cta"/>
+            </button>
+
+            <button class="pbim-btn outline pbim-btn-sm"
+                    t-if="c.canDone and c.status !== 'configured'"
+                    t-att-disabled="state.busy === c.key"
+                    t-on-click="() => this.setStatus(c.key, 'configured')">
+              <t t-out="ic('check', 14)"/> Mark as done
+            </button>
+
+            <button class="pbbp-cn-link"
+                    t-if="editable and (c.status === 'not_started' or c.status === 'in_progress')"
+                    t-on-click="() => this.setStatus(c.key, 'skipped')">
+              Skip for now
+            </button>
+            <button class="pbbp-cn-link"
+                    t-if="c.status === 'skipped'"
+                    t-on-click="() => this.setStatus(c.key, 'not_started')">
+              <t t-out="ic('undo', 13)"/> Undo skip
+            </button>
+          </div>
+          <div class="pbbp-cn-blocked" t-else="">
+            <span class="i" t-out="ic('info', 14)"/>
+            <p t-esc="c.blocked"/>
+          </div>
+
+          <p class="pbbp-cn-later" t-esc="c.later"/>
+        </section>
+
+        <!-- Approvals: information, never a button. Pay runs already follow a
+             fixed chain and this step does not change it. -->
+        <section class="pbbp-cn-card is-info">
+          <header class="pbbp-cn-head">
+            <span class="pbbp-cn-ic is-teal" t-out="ic('checkCheck', 20)"/>
+            <div class="pbbp-cn-ttl">
+              <h2>Approvals</h2>
+              <span t-attf-class="pbbp-cn-pill {{ approvalsPill.cls }}"
+                    t-esc="approvalsPill.label"/>
+            </div>
+          </header>
+
+          <p class="pbbp-cn-lead" t-esc="approvalsText"/>
+          <p class="pbbp-cn-sub">Nothing to set up here, and nothing to skip.</p>
+
+          <div class="pbbp-cn-chain">
+            <t t-foreach="approvals.tiers" t-as="tier" t-key="tier.key">
+              <span class="pbbp-cn-tier" t-esc="tier.name"/>
+              <span class="pbbp-cn-arrow" t-if="!tier_last" t-out="ic('arrow', 12)"/>
+            </t>
+          </div>
+
+          <div class="pbbp-cn-actions">
+            <button class="pbbp-cn-link" t-on-click="openHow">
+              <t t-out="ic('info', 13)"/> How approvals work today
+            </button>
+          </div>
+
+          <p class="pbbp-cn-later" t-esc="approvalsLater"/>
+        </section>
+      </div>
+
+      <!-- ============ skip the rest ============ -->
+      <section class="pbbp-cn-rest" t-if="editable">
+        <div>
+          <b>Not ready for any of this yet?</b>
+          <p>Everything not started is marked skipped, and you go straight on to the
+             outputs. Nothing already done is touched, and nothing is lost.</p>
+        </div>
+        <button class="pbim-btn ghost pbim-btn-sm"
+                t-att-disabled="state.busy === 'rest'"
+                t-on-click="skipRest">
+          Skip the rest &amp; review outputs <t t-out="ic('arrow', 14)"/>
+        </button>
+      </section>
+      </t>
+
+      <div class="pbim-modal-scrim" t-if="state.howOpen" t-on-click="closeHow">
+        <div class="pbim-modal is-narrow" tabindex="-1" t-ref="how"
+             t-on-click.stop="" t-on-keydown="onModalKey">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl">How approvals work today</div>
+            <div class="pbim-modal__sp"/>
+            <button class="pbbp-cn-x" t-on-click="closeHow" title="Close"
+                    t-out="ic('x', 15)"/>
+          </div>
+          <div class="pbim-modal__body">
+            <ol class="pbbp-cn-steps">
+              <li t-foreach="approvals.tiers" t-as="tier" t-key="tier.key">
+                <b t-esc="tier.name"/>
+                <span t-esc="tier.what"/>
+              </li>
+            </ol>
+            <p class="pbim-note">
+              Every pay run goes through these three, in this order, whichever
+              configuration paid it. Approval rules that differ by configuration
+              are coming in a later release.
+            </p>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn primary" t-on-click="closeHow">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
