@@ -121,9 +121,14 @@ class PbFormulaBlueprint(models.Model):
         The record rule on `hr.formula.config` already scopes reads; this is the
         second lock, so a hand-crafted RPC cannot reach another company's draft.
         """
+        # `env.company` is not always a member of `env.companies` (a user's
+        # `company_id` can sit outside their `company_ids`), so the company the
+        # user is standing in is added explicitly — or the guard locks them out
+        # of their own screen.
+        reachable = set(self.env.companies.ids) | {self.env.company.id}
         for bp in self:
             company = bp.config_id.company_id
-            if company and company.id not in self.env.companies.ids:
+            if company and company.id not in reachable:
                 raise AccessError(_(
                     "This setup belongs to another company. Ask someone with "
                     "access to %s to open it.", company.name))

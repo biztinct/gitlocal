@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

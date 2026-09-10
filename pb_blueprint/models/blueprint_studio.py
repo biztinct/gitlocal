@@ -86,6 +86,18 @@ class PbBlueprintStudio(models.AbstractModel):
         return self.env['pb.formula.blueprint'].search(
             [('config_id', '=', config.id)], limit=1)
 
+    def _reachable_company_ids(self):
+        """Every company this user may act in, including the one they are in.
+
+        `env.company` is NOT guaranteed to be a member of `env.companies`: a
+        user's `company_id` can point at a company that is absent from their
+        `company_ids`, and on that user every guard written as
+        `company.id not in env.companies.ids` locks them out of the company
+        they are actually standing in. Verified on p9clone, where user 1's
+        current company ("Your Company") is missing from their allowed list.
+        """
+        return set(self.env.companies.ids) | {self.env.company.id}
+
     def _guard(self, config_id, require_blueprint=True):
         """Resolve a configuration for editing, or return the reason we cannot.
 
@@ -100,7 +112,7 @@ class PbBlueprintStudio(models.AbstractModel):
             return None, None, {'ok': False, 'reason': _(
                 "That configuration no longer exists. It may have been deleted.")}
         company = config.company_id
-        if company and company.id not in self.env.companies.ids:
+        if company and company.id not in self._reachable_company_ids():
             raise AccessError(_(
                 "This configuration belongs to another company. Ask someone "
                 "with access to %s to open it.", company.name))
