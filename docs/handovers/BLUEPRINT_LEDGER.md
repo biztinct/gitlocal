@@ -1,0 +1,306 @@
+# BLUEPRINT Programme Ledger — the guided "New configuration" journey
+
+Every BLUEPRINT phase handover references this file. Read it FULLY before coding. Append
+(never rewrite history) when you hit a new gotcha — that is part of every phase deliverable.
+
+## Where this programme came from
+
+On 2026-09-10 the owner approved an interactive prototype
+(`design_poc/vietnam_configurator/Payroll_Blueprint_Option2.html`, handoff
+`design_poc/vietnam_configurator/IMPLEMENTATION_HANDOFF.md`, rationale `OPTION2_DESIGN.md`)
+that replaces the 5-step "New Formula Config" popup in Formula Studio with a full-screen,
+six-step guided journey: **Start → Pay rules → Connect → Outputs → Test → Finish**, with a
+live "see it in someone's pay" panel, plain-language rule sentences that generate the Excel
+formulas underneath, and hand-offs to the existing Mapping Studio and Payslip Studio.
+Approved plan: `/Users/adity/.claude/plans/i-want-you-to-polymorphic-shore.md` (copied
+verbatim as `docs/handovers/BLUEPRINT_PLAN.md`).
+
+Method: Fable designs each phase handover; an Opus agent builds, tests, deploys, Chrome-
+validates, self-reviews and reports; phases run back to back. Only a destructive action
+or a genuine scope decision stops the run.
+
+| Phase | Name | Delivers |
+|---|---|---|
+| **B1** | Shell, Start, draft lifecycle | module `pb_blueprint`, client action, rail, hero panel, Start step, idempotent draft, picker rewiring, Resume setup, import return door |
+| **B2** | Guided rules engine + Components tab | recipe fields, `compile_recipe`, sentence editor (guided + Excel lanes), include/exclude, bulk + keyboard |
+| **B3** | Tax & Calendar tabs + Vietnam · Complete starter | PIT band editor, relief/caps, calendar/payment prefs, `config_template_vn_complete.xml` |
+| **B4** | Connect step | Mapping Studio + Payslip Studio round-trips, readiness counts, status semantics, Approvals info card |
+| **B5** | Outputs + Test steps | money-flow strip, outputs table + inspector, scenario runner, confirm-expected gate, evidence hash |
+| **B6** | Finish, VI, polish | Finish step, discard, `vi_VN.po`, motion/keyboard pass, all-DB walkthrough |
+
+## Owner decisions (2026-09-10) — binding
+
+- **Approvals** card on the Connect step is **information only** ("Pay runs already follow
+  Officer → HR → Finance approval. Custom approval rules per configuration are coming").
+  No button. The existing enforced chain (`pb_payruns/models/hr_payslip_run.py`) is untouched.
+- **Excel workbook** starting point creates a blank draft and launches the **existing**
+  multisheet import review, which returns to the journey. Re-skinning that screen is a later phase.
+- **Two Vietnam starters**: *Vietnam · Essentials* (= existing `pb_pack_vn` template
+  `vn_standard_2026`, untouched) and *Vietnam · Complete* (Essentials + the 38 workbook
+  components with guided rules; built in B3). **Complete is pre-selected.**
+- **Vocabulary on screen**: "configuration" (the picker is titled "Payroll configurations").
+  Never "schema", "blueprint", "config", "rule set" in anything a user reads. "Blueprint" is
+  an internal/engineering name only (module, docs, commit messages).
+
+## Parent ledgers — everything in them binds here
+
+Read before B1: `docs/handovers/GROUP_LEDGER.md` (binding rules 1–10, GR-series, deploy
+ritual), `docs/handovers/TIDY_LEDGER.md` (rules 11–15, T-series), `docs/handovers/WFPLAN_LEDGER.md`
+(W-series incl. **W2** Lucide registry only, **W17.4** `@pb_import_kit/js/import_icons`),
+`docs/handovers/MAPFIX_LEDGER.md` (code contract), `docs/handovers/JOURNEY_LEDGER.md` (Mapping
+Studio doors), `docs/FORMULA_ENGINE_CONVENTIONS.md`.
+
+## Target & credentials
+
+- Live databases on the cluster (verified 2026-09-10): **`p9clone`** (rehearsal + tests),
+  **`payobook`** (master, https://payobook.com), **`abm`** (tenant), **`payobook_template`**
+  (golden template). There is **no `acme`** database any more — older memory/docs that
+  list it are stale. Deploy order: p9clone → payobook → abm → payobook_template, `pg_dump` before each.
+- All four already have `pb_formula_studio 19.0.1.181.0`, `pb_hr_payroll_formula 19.0.1.123.0`,
+  `pb_import_kit 19.0.1.17.0`, `pb_hub 19.0.1.8.1`, `pb_integrations 19.0.1.13.0`,
+  **`pb_pack_vn 19.0.1.0.1` installed** (so the Essentials starter exists everywhere).
+- Master admin `ash@biztinct.com` / `{withheld: rize-admin}`; demo company **Payobook Vietnam JSC**
+  (id 5, VN, VND, 4,533 people, 15 active configurations incl. the 12 `DEMO_*` division ones).
+  Demo login `demo@payobook.com` / `{withheld: demo-user}` (locked to company 5).
+- ssh alias `Payobook19v2`; Odoo runs as `odoo`, `sudo service odoo-server {stop,start}`,
+  conf `/etc/odoo-server.conf`, log `/var/log/odoo/odoo-server.log`. ONE addons dir
+  `/odoo/odoo-server/addons` (needs `sudo` to list).
+
+## Binding rules (violations = phase failure)
+
+1. **White-label**: never "Odoo" in any user-visible string, manifest `description`, or `.po` msgstr.
+2. **Plain English** on every label, toast, empty state, sentence. Screen words, not code words.
+3. **ONE addons dir**; scoped per-module `rsync --delete` only; never `--delete` into
+   `/odoo/odoo-server/addons/` itself; never deploy vendored standard addons.
+4. **Commit per feature**, explicit paths, `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`,
+   never push. Unrelated dirty files exist in the tree (RIZE/ folders) — never stage them.
+5. **Design system**: Lucide via the single `ic()` registry (`pb_import_kit/static/src/js/import_icons.js`;
+   add missing icons THERE); `t-out` never `t-esc` for `ic()`; no emoji; no gradients; kit primitives
+   `.pbim-*` where they fit (`.pbim-modal` for popups); palette primary `#5A4BB0`, dark `#241F52`,
+   soft `#EDEAF8`, soft2 `#DDD6F2`, canvas `#F4F5FB`, ink `#1E1B2E`, muted `#6B7280`, line `#E8E9F3`,
+   good `#2E7D4F`, rose `#DC2668`, warn `#D97706`, teal `#0F766E`; font Inter.
+6. **Design bar (verbatim, score against it in every report): "extreme WOW, intuitive,
+   out-of-this-world experience, best in class."** Hero moment named; zero dead-ends (every
+   empty/loading/error/partial/huge state designed, every failure names its reason and next step);
+   plain language; motion with purpose; keyboard + bulk ergonomics; Chrome-MCP validate at
+   1440 and 390, every flow clicked, not just rendered.
+7. **Never edit `pb_formula_studio/models/pb_formula_studio.py`** (13.5k lines, parallel
+   programmes). Extend via `_inherit = 'pb.formula.studio'` in `pb_blueprint`. JS/XML seams in
+   `pb_formula_studio` are allowed but must be minimal and listed in the phase report.
+8. **The draft is the working copy.** Never mutate an active configuration as the wizard's
+   working copy; never half-create (draft creation is one transaction; on failure nothing exists).
+9. **Server decides readiness.** Client flags (`configured`, `passed`, `is_valid`) are display
+   only; every gate (finish, include/exclude, tax write) is enforced in the RPC.
+10. **Tenant parity**: every module deploys to every database (rule from `tenant-module-sync-rule`).
+11. **Tests on p9clone** with `--http-port=8199 --gevent-port=8198`, then production. Chrome-validate
+    on payobook AND abm.
+
+## Rulings (Fable, 2026-09-10 — binding unless the owner overrules)
+
+- **BP-R1 Full-screen client action, not a popup.** Tag `pb_blueprint`, action xmlid
+  `pb_blueprint.action_pb_blueprint` (name "New configuration"). The old modal stays in
+  the studio as the fallback when the tag is not registered.
+- **BP-R2 Steps are keys, not numbers**: `start, rules, connect, outputs, test, finish`
+  (`pb_payrun_wizard/static/src/js/payrun_wizard.js:26-33` pattern). Rail labels:
+  Start · Pay rules · Connect · Outputs · Test · Finish.
+- **BP-R3 Recipe provenance lives on the rule** (`_inherit hr.formula.rule`): `bp_recipe_json`,
+  `bp_generated_formula`, `bp_generated_revision`, `bp_formula_source` generated|manual —
+  mirrors `column_role_source`/`value_kind_source` (`formula_rule.py:660-664, 722-727`, guard
+  `:1682-1690`). A `write()` override flips to `manual` when `excel_formula` changes to
+  anything other than `bp_generated_formula`. Regeneration only rewrites `generated` rules.
+- **BP-R4 Generated formulas reference column LETTERS** (`=A+H`, `=BRACKET(VNTAX,AE)`), never
+  codes: letters are frozen for life (`formula_rule.py:1615`), the converter substitutes codes by
+  regex (`:1225-1238`), the VN pack is letter-based. Recipes reference codes; the compiler
+  resolves via a `{code: letter}` map. Validate with `pb.formula.studio._check_formula`
+  (`pb_formula_studio.py:11636`) + `FormulaValidator.check_circular_references`.
+- **BP-R5 Tax writes go through existing paths**: bands → `save_rate_table` (`:11558`);
+  relief/caps/rates → `constant_value` on constant rules (`_legis_constant` `:3466`, with
+  `formula_version_reason='legislation'`). Pack pin lives on the blueprint, not the config.
+  `vn_tax_table_id` / `vn_insurance_policy_id` are left alone (engine computes from VNTAX).
+- **BP-R6 Draft creation does NOT use `create_config`** (hard-codes VN, ignores company).
+  `bp_start` creates `hr.formula.config` with explicit `company_id`, then
+  `hr.formula.config.template.seed_config` (`formula_config_template.py:213`). `token` unique → idempotent.
+- **BP-R7 Include/exclude**: no `active` on `hr.formula.rule`. Exclude = delete the rule (warn if
+  edited by hand); include = re-seed that one component from the template JSON (new letter), then
+  regenerate dependants.
+- **BP-R8 Reuse by hand-off, not import.** Studio JS files export nothing; reach Mapping
+  Studio / Payslip Studio / Formula Studio via `doAction` with `pb_back`
+  (`pb_hub/static/src/js/hub_nav.js:52-101`).
+- **BP-R9 Bilingual labels = the rule's translatable `salary_rule_id.name`**
+  (`hr_payslip_formula.py:1212`). No new label fields.
+- **BP-R10 Evidence hash** = sha256 of sorted `(code, column_type, excel_formula, constant_value)`
+  + rate brackets; `tests_hash` stamped at run time; stale = mismatch. Samples with
+  `expected_confirmed=False` are pending, never passed.
+- **BP-R11 Company chip is read-only** (the current company); switching company happens in the
+  top bar. The draft, the blueprint and every search are scoped to `env.company`.
+
+## Plumbing facts (verified 2026-09-10 — do not re-derive)
+
+### The old wizard and the picker (pb_formula_studio)
+- Wizard methods `formula_studio.js:5753-5807` (`openWizard` … `importExcel`); markup
+  `studio.xml:3855-3994`; styles `studio.scss:604-660` (`.pbfs-wz-scrim/.pbfs-wz/.wz-rail/.wz-step`).
+  State keys `wizardOpen, wizardStep, wizardForm, wizardTemplates, wizardBusy` (`:390-394`).
+- Three doors into it: empty-state button `studio.xml:35`; switcher footer `studio.xml:3081-3084`;
+  native list "New" → `formula_config_views.js:12-18` (`doAction({tag:"pb_formula_studio", params:{open_wizard:1}})`)
+  consumed at `formula_studio.js:575-579`.
+- Picker ("Payroll configurations") = Config Switcher: markup `studio.xml:2946-3088`, styles
+  `scss/cfgsw.scss`, methods `formula_studio.js:4059-4142` + board loader `:2027-2065`
+  (`bureau_board`, `bureau_clone`, `csRemove`). Card template `studio.xml:3016-3069`.
+  Cold start with no config → switcher auto-opens (`:610-616`).
+- Arrival contract (`formula_studio.js:569-617`), each key read from `action.params` OR
+  `action.context`: `open_wizard`, `config_id`, `open_settings`, `pbfs_open_people_mapping`,
+  `pbfs_preview_payslip_id`, `pbfs_readonly`. `pb_back` chip via `HubBackChip` (`studio.xml:47`).
+- Server: `wizard_templates()` (`pb_formula_studio.py:13330`) → built-ins `vn_standard`+`blank`
+  (`_BUILTIN_TEMPLATES :13313`) + every `hr.formula.config.template` not superseded, each with
+  `key,name,country,flag,version,effective_date,state,certified,builtin,desc,components[],rate_tables[],refs,preview`.
+  `create_config` (`:13384`) — DO NOT USE (BP-R6). `_seed_template` (`:13402`), `apply_starter` (`:13451`).
+  `bureau_board` (`:3430-3480`) card dict keys: `id,name,company,division,cycle_type,state,score,rule_count,
+  problem_counts,problem_count,pending_changes,release_count,employees,code,country,currency,active,
+  sample_count,is_branch,is_variant,is_master,can_delete,delete_blocked_by`.
+- Studio action registration `formula_studio.js:5928`; `pb.formula.studio` is an **AbstractModel**
+  (`pb_formula_studio.py:144`); `load(configId)` → `get_studio_data`.
+
+### Configuration + rule models (pb_hr_payroll_formula)
+- `hr.formula.config` (`formula_config.py`): `name :36`, `code :42` (required, auto via
+  `_generate_unique_code :984` → `NAME_WITH_UNDERSCORES`), `cycle_type :62`
+  (`regular|mid_cycle|end_cycle|full_final`), `country_code :104` (required; `VN|ID|IN|SG|MY|TH|KH|PH`),
+  `currency_id` computed from country, `company_id :171` (required, default env.company),
+  `rule_ids :186`, `rate_table_ids :194`, `sample_data_ids`, `state :486`
+  (`draft|testing|validated|active|archived`), branch/variant fields `:208-257`.
+  **No** `division`, `effective_from`, `legislation_pack_id`, cutoff/payday fields.
+  `pb_division` exists only when `pb_demo` is installed (`pb_demo/models/demo_generator.py:37`).
+  Transitions `:1033-1078`; `action_regenerate_formulas :1156-1204`; `action_validate_formulas :1207-1235`;
+  `studio_people_mapping_action :1605-1632` (import return choke point); `PEOPLE_ROLES :1604`.
+- `hr.formula.rule` (`formula_rule.py`): `config_id :49`, `salary_rule_id :57` (translatable label),
+  `column_letter :76`, `name :93`, `code :99`, `column_type :120` (`input|formula|constant`),
+  `excel_formula :457`, `constant_value`, `default_value`, `visibility_rule :617`, `appears_on_payslip :605`,
+  `column_role :650` + `column_role_source :660`, `value_kind :686` + `value_kind_source :722`,
+  `is_required :762`. Code regex: letters+digits, no underscore (`:1911-1923`); readable ≤12, ≥6 preferred.
+  `python_formula` is a stored compute over `excel_formula` (`:916`); `_normalize_excel_formula :483`.
+- Template registry `hr.formula.config.template` (`formula_config_template.py:56`): `code, name,
+  country_code, flag, description, version, effective_date, state (draft|certified|superseded), components_json,
+  rate_tables_json, sample_tests_json, legislation_refs_json`; `seed_config(config, pack_version=None) :213`
+  (rate tables → rules with frozen letters → regen → sample tests `_seed_sample_tests :321`);
+  raises if the B4 pack is unpublished (`:270-278`) or any formula fails conversion.
+- VN pack `pb_pack_vn/data/config_template_vn.xml`: code `vn_standard_2026`, name "Vietnam Standard 2026",
+  version 2026.1, effective 2026-01-01, state draft, 37 components (A..AK: inputs BASIC DEPS STDDAYS OTHRS15/20/30
+  BONUS ALLOWIN; constants DEDUCTSELF 15.5m DEDUCTDEP 6.2m SIRATE HIRATE UIRATE SIEMPR HIEMPR UIEMPR CAPLO 46.8m CAPHI 99.2m
+  MULT15/20/30; formulas HOURRATE OTPAY GROSS SIBASE UIBASE SIDED HIDED UIDED EEDED TAXABLE PIT `=BRACKET(VNTAX,AE1)`
+  NET SICOMP HICOMP UICOMP ERCOST), rate table VNTAX **7 brackets** (5%…35%), 5+ sample tests
+  (`pack_version 2026.1`, `tol 1.0`). ⚠ The prototype shows a **5-band 2026 schedule** (Law 109/2025) —
+  a content question for B3/owner; the band editor must handle either.
+- Rate tables `formula_rate_table.py`: `hr.formula.rate.table` (`code` letters/digits, unique per config),
+  `.bracket` (`lower, rate`), `compile_brackets_excel :38-65`, `expand_brackets :132`,
+  `_refresh_dependent_rules` on bracket create/write/unlink (`:180-218`).
+- Samples/tests: `hr.formula.sample.data` (`formula_sample_data.py:17`; `input_values_json`,
+  `expected_values_json :97`, `expected_confirmed` from `formula_boundary.py:94`), `hr.formula.test.result :733`.
+  RPCs on `pb.formula.studio`: `compute_preview(config_id, sample_id) :2031` → `{sample_id, values{col: float}}`,
+  `get_test_data :12094`, `get_sample_detail :12330`, `save_sample_inputs :12345`, `add_manual_sample :12366`,
+  `generate_boundary_samples :12719`, `run_tests :11777`, `get_test_coverage :12245`,
+  `confirm_sample_expected :12734`, `confirm_all_samples :12748`, `_sample_verdict :12073`.
+- Studio formula save: `save_formula` (`:2426`), `bulk_save_formulas` (`:2330-2350`) with
+  `formula_version_reason` context; `save_rate_table` (`:11558`); `_check_formula` (`:11636`); `delete_component` (`:11752`);
+  `add_component(config_id, vals)` (`:11659`); `legislation_diff/apply` (`:3630/:3642`); `_legis_constant` (`:3466`).
+
+### Mapping Studio + Payslip Studio doors
+- Mapping Studio action tag `pb_mapping_studio` (`mapping_studio.js:2172`), xmlid
+  `pb_formula_studio.action_pb_mapping_studio`. Arrival context: **`pb_config`** (not `pb_config_id`),
+  `pb_mode` ∈ `journey|api|transform|import|employee|scheme|cycle|treatment` (`MODES :101-153`),
+  `pb_connector`, `pb_endpoint`, `pb_back`. Invalid config id is silently swapped —
+  `mapping_pickers` returns `defaults.fell_back` (`pb_formula_studio.py:5610-5640`).
+  Round-trip precedent: `formula_studio.js:4694-4711` (`openMapping`). Guard every door with
+  `registry.category("actions").contains("pb_mapping_studio")`.
+- Mapping lanes for coverage: `hr.integration.field.mapping.target_rule_id` (API),
+  `hr.payslip.import.mapping.salary_structure_id/component_id` (employee/contract/bank),
+  `hr.payroll.cycle.component.mapping` (mid↔end). Pattern `pb_formula_studio.py:7104-7110`.
+- Payslip Studio is an overlay INSIDE the Formula Studio cockpit (`state.psOpen`; `openPayslip`
+  `formula_studio.js:4714-4724`; `payslip_studio_data(config_id, sample_id) :10461`; sections =
+  `hr.payslip.config` bound by `salary_structure_id`; tray = unplaced). There is no arrival param
+  for it yet — B4 adds `pbfs_open_payslip`.
+- Import wizards: `hr.formula.multisheet.import.wizard` (7 states, `multisheet_import_wizard.py`),
+  launched with `{default_config_id, pbfs_studio_import: true}` (`formula_studio.js:5811-5817`);
+  terminal chain `:3092-3111` → `studio_people_mapping_action` → `category_review_action(next_action)`.
+
+### Design-system + kit
+- Studio tokens `.pbfs { --i --i600 --i-deep --i-soft --i-soft2 --i-border --ink --muted --line --bg }`
+  (`studio.scss:1-6`); kit tokens `pb_import_kit/static/src/scss/import_tokens.scss`
+  (`pbim-root-vars` mixin), primitives `import_kit.scss` (`pbim-rail/-step/-dot`, `pbim-card`, `pbim-btn`,
+  `pbim-chip`, `pbim-badge`, `pbim-seg`, `pbim-busy`, `pbim-empty`, `pbim-note`, `pbim-eyebrow`, `pbim-h1/h2/sub`),
+  `modal.scss` (`.pbim-modal-scrim/.pbim-modal`). Root class `pbim pbim-page pbbp`.
+- Hub back chip: `openHub(actionService, {tag|xmlid, back:{label, xmlid|tag, context}})` and
+  `hubBack(props)` + `<HubBackChip back="…" tone="light"/>` (`pb_hub/static/src/js/hub_nav.js:52-150`).
+- Breadcrumb name for a control-panel-less client action: `this.env.config.setDisplayName(_t("…"))`
+  in `setup()` (GR8).
+- Hoot tests import pure helpers: `pb_payrun_wizard/static/tests/payrun_mode.test.js`. Python
+  source-assertion tests: `pb_formula_studio/tests/test_one_mapping_home.py`.
+- Translations: `i18n/vi_VN.po` (never `vi.po`); every entry needs `#. module: pb_blueprint` (GR5);
+  tooling `tools/refresh_pb_vi.py`.
+
+## Deploy ritual
+Exactly the WFPLAN/GROUP ritual: clean stage `/tmp/bp_stage` (`sudo rm -rf` then `mkdir -p`),
+`rsync -az --exclude=__pycache__ --exclude='*.pyc' <modules> Payobook19v2:/tmp/bp_stage/`,
+per module `sudo rsync -a --delete --chown=odoo:odoo /tmp/bp_stage/<m>/ /odoo/odoo-server/addons/<m>/`,
+tests on p9clone (`--test-enable --test-tags /pb_blueprint --http-port=8199 --gevent-port=8198`),
+`pg_dump` per DB, detached `systemd-run` install/upgrade per DB (`-i pb_blueprint` first time,
+`-u pb_blueprint,pb_formula_studio` after) with a sentinel + `EXIT=`, service start, asset purge
+`DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` + bump `web.assets.version` param per DB,
+manifest-vs-`ir_module_module.latest_version` and tree-hash verification on every DB,
+never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
+
+## Gotcha ledger (append below; BP-numbers)
+
+- BP1 (design): the arrival key is **`pb_config`**, not `pb_config_id` (`pb_source_atlas/static/src/js/atlas.js:173`).
+- BP2 (design): `import { ic } from "@pb_import_kit/js/import_icons"` — the `js/` segment is mandatory
+  (W17.4); expose as a method and render with `t-out`.
+- BP3 (design): `save_rate_table` unlinks and recreates brackets — bracket ids change on every save;
+  never hold them client-side.
+- BP4 (design): `create_config` ignores `company_id` and hard-codes `'VN'` defaults; `seed_config`
+  raises on an unpublished B4 pack — wrap draft creation in one savepoint and surface the reason.
+- BP5 (design): Sass evaluates its own `min()/max()` — mixed `px`+`%` units break the WHOLE backend
+  bundle at page load, not at upgrade. Chrome-load a page after every SCSS deploy.
+- BP6 (design): a `.po` entry without `#. module:` takes the database down on install (GR5).
+- BP7 (design): the picker's Division facet reads `pb_division` which only exists with `pb_demo`;
+  `getattr` guards it — copy that guard if you read it.
+- BP8 (design): `hr.formula.rule` has no `active`; "excluded" components do not exist as rows (BP-R7).
+- BP9 (B1, cost 1 build): **an XML comment may not contain `--`.** The house style
+  `<!-- ---------- section ---------- -->` makes a QWeb template file NOT WELL-FORMED, and the
+  failure is silent at deploy time — the bundle simply has no templates from that file and every
+  component using them dies at mount with "Missing template". Use `<!-- ========== section ========== -->`.
+  `python3 -c "import xml.dom.minidom; xml.dom.minidom.parse('f.xml')"` on every template before deploy.
+- BP10 (B1): W23 restated, because it bites hardest on a whole-page state machine: **a comment
+  between `t-if` / `t-elif` / `t-else` siblings breaks the chain at runtime.** The loading, refusal
+  and journey states painted at once. Keep the three siblings adjacent and put the explanation
+  ABOVE the first one.
+- BP11 (B1): **`pbim-page` is the wrong root class for a full-bleed cockpit.** It carries 26px of
+  padding, `overflow:auto`, and two `body:has(.lrn-coachhost) .pbim.pbim-page { padding-bottom: 236px }`
+  rules in `import_kit.scss` that another module cannot reliably out-specify (equal specificity,
+  load order decides). Use `pbim <prefix>` — the tokens live on `.pbim`, which is the half you want —
+  and lay the shell out yourself.
+- BP12 (B1): **the kit's tokens are a MIXIN, not a stylesheet.** Never `@import`
+  `pb_import_kit/.../import_tokens` by relative path from another module. Either
+  `@include pbim-root-vars;` on your root or, when your root already carries `.pbim`, just read
+  `var(--pbim-*, literal)` (the `pb_insights` / `pb_lifecycle` convention).
+- BP13 (B1): **`env.company` is NOT guaranteed to be a member of `env.companies`.** A user's
+  `company_id` can point at a company absent from their `company_ids` — on p9clone user 1's current
+  company "Your Company" is missing from their allowed list, which failed 6 of 22 tests. Any guard
+  written `company.id not in self.env.companies.ids` locks a user out of the company they are
+  standing in. Always `set(env.companies.ids) | {env.company.id}`.
+- BP14 (B1): **`router.pushState({config_id})` only survives a refresh when the client action was
+  opened BY TAG.** `makeState` writes `action.path || action.id` when either exists and falls back to
+  `action.tag` only for a bare client action; `_getActionParams` then hands `params: state` back only
+  when `actionRegistry.contains(state.action)`. Opened by xmlid the URL is `/odoo/action-<id>` and the
+  extra params are dropped. So every door into the journey uses
+  `doAction({type:"ir.actions.client", tag:"pb_blueprint", params:{…}})`, never the xmlid.
+  (`web/static/src/webclient/actions/action_service.js:505-560, 1798-1820`.)
+- BP15 (B1): a white-label / vocabulary gate must read **string literals and template text only**.
+  A whole-file regex flags `blueprint="state.blueprint"` — a prop name — and a gate that cries wolf
+  on identifiers is a gate somebody deletes. Exclude docstrings and `_logger.*` arguments: engineers
+  read those and the white-label rule exempts them.
+- BP16 (B1): **`hr.formula.rule.net_role` is empty until somebody calls `classify_net_roles()`** —
+  it has no default and no `@api.depends` by design (a formula edit must not silently re-decide a
+  category a person accepted), and the VN pack does not ship it. `bp_start` calls the classifier
+  once, non-fatally, right after seeding, so the pay panel can label its lines on a configuration
+  whose codes are not the usual ones.
+- BP17 (B1): `pb_import_kit` had no `wallet` or `fileSpreadsheet` glyph. Added to the ONE registry
+  (`import_icons.js`, version → 19.0.1.18.0) per W2 — which means **pb_import_kit ships with any
+  phase that adds an icon**, and its version must be bumped or `-u` runs nothing.
