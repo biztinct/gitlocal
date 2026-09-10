@@ -234,7 +234,17 @@
             <span class="pbbp-comp-col" t-esc="c.column_letter"/>
           </div>
         </div>
-        <p class="pbbp-note" t-else="" t-esc="emptyLine"/>
+        <div class="pbbp-emptydoors" t-else="">
+          <p class="pbbp-note" t-esc="emptyLine"/>
+          <div class="pbbp-emptydoors-b">
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.props.onImport()">
+              <t t-out="ic('fileSpreadsheet', 14)"/> Import a workbook
+            </button>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+              <t t-out="ic('plus', 14)"/> Add components in the grid
+            </button>
+          </div>
+        </div>
       </section>
     </div>
   </t>

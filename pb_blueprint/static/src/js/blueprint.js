@@ -107,6 +107,7 @@ export class PbBlueprint extends Component {
         ];
 
         this._stepTimer = null;
+        this._saveTimer = null;
         this._agoTimer = setInterval(() => { this.state.tick++; }, 30000);
 
         // ⌘/Ctrl+Enter always continues, wherever the caret is. Plain Enter is
@@ -123,8 +124,11 @@ export class PbBlueprint extends Component {
             this.state.loading = false;
         });
 
+        // Every pending timer dies with the component, or a fired callback sets
+        // state on something that is no longer mounted (W100).
         onWillUnmount(() => {
             if (this._stepTimer) clearTimeout(this._stepTimer);
+            if (this._saveTimer) clearTimeout(this._saveTimer);
             if (this._agoTimer) clearInterval(this._agoTimer);
         });
     }
@@ -145,15 +149,21 @@ export class PbBlueprint extends Component {
     /**
      * Put the draft in the URL so a browser refresh comes back to it.
      *
-     * `router.pushState` (the module, not a service — Odoo 19 moved it) writes
-     * `?config_id=N` next to the action, and the action manager hands that
-     * straight back as `action.params` on the next load, which is exactly the
-     * key `_arrival()` already reads. No extra plumbing, no second source of
-     * truth for "which draft am I on".
+     * `router.pushState` (the module, not a service — Odoo 19 moved it) MERGES
+     * into the current route, so `?config_id=N` lands next to the action and
+     * the action manager hands it straight back as `action.params` on the next
+     * load — exactly the key `_arrival()` already reads.
+     *
+     * Deliberately NOT `{ replace: true }`: that option does not mean "replace
+     * the history entry", it means REPLACE THE WHOLE STATE, and
+     * `computeNextState` then keeps only the locked keys — dropping `action`.
+     * The URL became `/bizapp?config_id=578` with no action on it, and a
+     * refresh landed on an empty app instead of the journey.
+     * (`web/static/src/core/browser/router.js:45-52, 345`.)
      */
     _rememberInUrl(configId) {
         try {
-            router.pushState({ config_id: configId }, { replace: true });
+            router.pushState({ config_id: configId });
         } catch (e) {
             // A URL that did not update is a worse refresh, not a broken page.
             console.warn("pb_blueprint: could not record the draft in the URL", e);
@@ -199,9 +209,12 @@ export class PbBlueprint extends Component {
             audiences: (res.blueprint.situations && res.blueprint.situations.audiences) || [],
             reallife: (res.blueprint.situations && res.blueprint.situations.reallife) || [],
         };
-        if (!this.state.sampleId && res.samples.length) {
-            this.state.sampleId = res.samples[0].id;
-        }
+        // Deliberately NOT `sampleId = res.samples[0].id`. The SERVER decides
+        // which sample the panel opens on — it is the only side that knows
+        // which of them is actually paid, and a rule pack's suite leads with
+        // its boundary cases (the Vietnam pack's first is "Zero income", which
+        // opened the hero on a column of zeroes). Sending no sample asks the
+        // server to choose; `refreshPreview` then stores what it chose.
         this.state.savedAt = Date.now();
     }
 
@@ -403,7 +416,6 @@ export class PbBlueprint extends Component {
             }
             const load = await this.rpc("bp_load", [res.config_id]);
             if (load && load.ok) this.applyLoad(load);
-            this.state.sampleId = res.sample_id || this.state.sampleId;
             this._rememberInUrl(res.config_id);
             this.state.progress = [];
             await this.refreshPreview();
@@ -621,7 +633,7 @@ export class PbBlueprint extends Component {
         }
         const load = await this.rpc("bp_load", [this.state.configId]);
         if (load && load.ok) this.applyLoad(load);
-        this.state.sampleId = this.state.samples.length ? this.state.samples[0].id : null;
+        this.state.sampleId = null;   // the new components need a new choice
         await this.refreshPreview();
         this.notif.add(
             res.rule_count
@@ -653,8 +665,7 @@ export class PbBlueprint extends Component {
                 const load = await this.rpc("bp_load", [cid]);
                 if (load && load.ok) {
                     this.applyLoad(load);
-                    this.state.sampleId = this.state.samples.length
-                        ? this.state.samples[0].id : null;
+                    this.state.sampleId = null;   // the import changed the cast
                     await this.refreshPreview();
                 }
             },

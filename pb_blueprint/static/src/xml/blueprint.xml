@@ -124,7 +124,8 @@
                       components="state.components"
                       counts="state.counts"
                       templateName="state.blueprint and state.blueprint.template_name or ''"
-                      onGrid.bind="openGrid"/>
+                      onGrid.bind="openGrid"
+                      onImport.bind="openExcel"/>
           </div>
 
           <!-- footer: where you are, and the one thing to press next -->

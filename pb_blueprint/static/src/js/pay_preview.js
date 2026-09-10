@@ -38,7 +38,12 @@ export class PayPreview extends Component {
         this.state = useState({
             shown: null,       // the number currently painted
             delta: null,       // {text, up} or null
-            open: true,        // the phone/tablet bottom bar's disclosure
+            // The bottom bar's disclosure, and it starts CLOSED. On a wide
+            // screen this flag is ignored — the panel is always open there.
+            // On a phone an open panel covered the whole step, so the journey
+            // you came to walk was behind the answer to it; the bar still
+            // carries the take-home figure, which is the fact worth pinning.
+            open: false,
         });
         this._raf = null;
         this._deltaTimer = null;

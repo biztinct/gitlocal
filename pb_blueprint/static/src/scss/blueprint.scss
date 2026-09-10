@@ -585,6 +585,9 @@ $bp-head-h: 64px;
         p { margin: 5px 0 0; font-size: 12.5px; color: var(--bp-muted); line-height: 1.5; }
     }
 
+    .pbbp-emptydoors { display: flex; flex-direction: column; gap: 12px; }
+    .pbbp-emptydoors-b { display: flex; gap: 9px; flex-wrap: wrap; }
+
     .pbbp-comps {
         display: flex; flex-direction: column;
         border: 1px solid var(--bp-line);
@@ -695,8 +698,18 @@ $bp-head-h: 64px;
         z-index: 5;
     }
     .pbbp-pay { display: flex; flex-direction: column; }
+
+    // The coach pill and the assistant button are `position: fixed` in the
+    // bottom-right corner — directly over this panel's right-aligned numbers.
+    // The kit solves this for scrolling pages by padding the page bottom; a
+    // side panel needs the same gutter, or "Income tax  14,8…" is read with a
+    // button on top of it. The gutter is 0 by default (the `var()` fallback)
+    // and is set at the bottom of this file, only where those hosts exist.
     .pbbp-pay-bar { display: none; }
-    .pbbp-pay-body { padding: 22px 20px; display: flex; flex-direction: column; gap: 14px; }
+    .pbbp-pay-body {
+        padding: 22px 20px calc(22px + var(--bp-fab-gutter, 0px));
+        display: flex; flex-direction: column; gap: 14px;
+    }
 
     .pbbp-pay-head { display: flex; align-items: center; gap: 10px; }
     .pbbp-pill {
@@ -883,16 +896,26 @@ $bp-head-h: 64px;
     //  TABLET — the pay panel leaves the side and becomes a bottom bar.
     // =================================================================
     @media (max-width: 1199px) {
+        // The panel becomes the bottom bar of THIS column — never
+        // `position: fixed`. The app's own left navigation is a flex SIBLING
+        // of the action container (`pb_sidebar.scss:14-24`), not a fixed
+        // overlay, so a viewport-anchored `left: 0` slides underneath it and
+        // the numbers are read with a navigation rail on top of them.
+        // As the last item of an `overflow: hidden` flex column it is pinned
+        // to the bottom of the journey by the layout itself, and it lands in
+        // the right place whatever the navigation is doing.
+        .pbbp-body { flex-direction: column; overflow: hidden; }
+        .pbbp-main { flex: 1 1 auto; min-height: 0; }
         .pbbp-side {
-            position: fixed;
-            left: 0; right: 0; bottom: 0;
+            flex: 0 0 auto;
             width: auto;
-            flex: none;
+            max-width: 100%;
             border-left: none;
             border-top: 1px solid var(--bp-line);
-            box-shadow: 0 -10px 30px rgba(15, 12, 40, .1);
-            max-height: 78vh;
-            z-index: 20;
+            box-shadow: 0 -10px 30px rgba(15, 12, 40, .08);
+            max-height: 62vh;
+            overflow-y: auto;
+            z-index: 6;
         }
         .pbbp-pay-bar {
             display: flex; align-items: center; gap: 10px;
@@ -915,11 +938,10 @@ $bp-head-h: 64px;
         .pbbp-pay.is-open .pbbp-pay-body {
             display: flex;
             border-top: 1px solid var(--bp-line);
-            max-height: 62vh;
-            overflow-y: auto;
         }
-        // The sticky footer must never hide under the bar.
-        .pbbp-foot { padding-bottom: 74px; }
+        // The floating buttons sit over the page, not over this column, so the
+        // gutter that keeps the numbers clear of them is only needed here.
+        .pbbp-pay.is-open .pbbp-pay-body { padding-bottom: calc(22px + var(--bp-fab-gutter, 0px)); }
     }
 
     // =================================================================
@@ -958,7 +980,8 @@ $bp-head-h: 64px;
 
         .pbbp-scroll { padding: 18px 14px 14px; }
         .pbbp-h1 { font-size: 22px; }
-        .pbbp-foot { padding: 12px 14px 74px; }
+        .pbbp-foot { padding: 12px 14px; }
+        .pbbp-crumb code { display: none; }
         .pbbp-foot-l { flex: 1 1 100%; }
         .pbbp-cta { flex: 1 1 auto; justify-content: center; }
 
@@ -967,4 +990,17 @@ $bp-head-h: 64px;
         .pbbp-inputs-row { grid-template-columns: 1fr; }
         .pbbp-inputs-row input { text-align: left; }
     }
+}
+
+// The floating coach / assistant buttons sit over the bottom-right of the
+// viewport, which is exactly where the pay panel's numbers are. Give the panel
+// a gutter tall enough to scroll them clear — only on a database where those
+// surfaces are actually mounted (`import_kit.scss` uses the same probe).
+body:has(.lrn-coachhost) .pbim.pbbp,
+body:has(.payai-floating-pill) .pbim.pbbp {
+    --bp-fab-gutter: 150px;
+}
+body.pb-coach-absent:has(.lrn-coachhost) .pbim.pbbp,
+body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbbp {
+    --bp-fab-gutter: 96px;
 }

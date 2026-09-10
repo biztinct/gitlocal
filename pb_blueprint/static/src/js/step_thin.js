@@ -23,6 +23,7 @@ export class StepThin extends Component {
         counts: { type: Object, optional: true },
         templateName: { type: String, optional: true },
         onGrid: { type: Function },
+        onImport: { type: Function },
     };
 
     ic(name, size = 16) { return ic(name, size); }
@@ -61,4 +62,12 @@ export class StepThin extends Component {
     get emptyLine() {
         return _t("This configuration has no components yet. That is expected on a blank canvas — add them in the grid, or import a workbook.");
     }
+
+    /**
+     * A configuration with nothing in it needs the two doors that FILL it, not
+     * just a sentence naming them. Cancelling the workbook review left a draft
+     * with zero components and no way back to the review — the empty state
+     * described a door that did not exist.
+     */
+    get isEmpty() { return !this.components.length; }
 }

@@ -82,6 +82,29 @@ class PbBlueprintStudio(models.AbstractModel):
         except (TypeError, ValueError):
             return None
 
+    def _wrong_company_reason(self, config_id):
+        """Why this configuration cannot be opened, in the words on the screen.
+
+        The record rule on `hr.formula.config` refuses the read before any of
+        our own checks run, and the framework's own refusal is not something a
+        payroll manager should ever see: it names the technical model, offers a
+        joke about cookies, and is not white-labelled. The one fact that helps
+        is WHICH COMPANY to switch to, so we read just that, with sudo, and say
+        it plainly. Nothing else about the record is revealed.
+        """
+        try:
+            cfg = self.env['hr.formula.config'].sudo().browse(int(config_id or 0))
+            company = cfg.exists() and cfg.company_id
+        except Exception:                   # pragma: no cover - defensive
+            company = None
+        if company:
+            return _(
+                "This setup belongs to %(other)s. Switch to %(other)s in the "
+                "company selector at the top of the screen to open it.",
+                other=company.name)
+        return _("You do not have access to this configuration. Ask whoever "
+                 "looks after payroll setup to share it with you.")
+
     def _blueprint(self, config):
         return self.env['pb.formula.blueprint'].search(
             [('config_id', '=', config.id)], limit=1)
@@ -107,15 +130,21 @@ class PbBlueprintStudio(models.AbstractModel):
         in the top bar is a normal, explainable situation and comes back as a
         sentence with a next step (BP-R11).
         """
-        config = self._config(config_id)
+        try:
+            config = self._config(config_id)
+            # Force the company read HERE, inside the guard: the record rule
+            # fires on first access and its own message must never reach a
+            # person (it names the technical model and is not white-labelled).
+            company = config.company_id if config else None
+        except AccessError:
+            return None, None, {'ok': False,
+                                'reason': self._wrong_company_reason(config_id)}
         if not config:
             return None, None, {'ok': False, 'reason': _(
                 "That configuration no longer exists. It may have been deleted.")}
-        company = config.company_id
         if company and company.id not in self._reachable_company_ids():
-            raise AccessError(_(
-                "This configuration belongs to another company. Ask someone "
-                "with access to %s to open it.", company.name))
+            return None, None, {'ok': False,
+                                'reason': self._wrong_company_reason(config_id)}
         if company and company.id != self.env.company.id:
             return config, None, {'ok': False, 'reason': _(
                 "This setup belongs to %(other)s. Switch to %(other)s in the "
@@ -544,29 +573,34 @@ class PbBlueprintStudio(models.AbstractModel):
         if not samples:
             return {'ok': False, 'empty': True, 'reason': _(
                 "This configuration has no sample employee yet.")}
-        sample = samples.filtered(lambda s: s.id == int(sample_id or 0))[:1] or samples[:1]
 
-        try:
-            result = self.env['pb.formula.studio'].compute_preview(
-                config.id, sample.id)
-        except AccessError:
-            raise
-        except Exception as exc:
-            return {'ok': False, 'reason': _(
-                "The numbers could not be worked out: %s", self._plain(exc))}
-
-        by_letter = result.get('values') or {}
-        if not by_letter and config.rule_ids:
-            return {'ok': False, 'reason': _(
-                "The numbers could not be worked out from this sample. Check "
-                "the components for a formula the engine cannot read.")}
-
-        values = {}
-        for rule in config.rule_ids:
-            if rule.code and rule.column_letter in by_letter:
-                values[rule.code] = by_letter[rule.column_letter]
-
-        lines, take_home, path = self._pay_lines(config, values)
+        chosen = samples.filtered(lambda s: s.id == int(sample_id or 0))[:1]
+        # No sample asked for — this is the panel's FIRST paint, and it decides
+        # whether the whole journey looks like it works. A rule pack's
+        # certification suite leads with its boundary cases (the Vietnam pack's
+        # first is "Zero income"), so `samples[0]` opened the hero on a column
+        # of zeroes. Try each sample in order and stop at the first one who is
+        # actually PAID; the boundary cases stay one press away under "Try a
+        # different situation".
+        candidates = chosen or samples[:6]
+        result = fallback = None
+        for candidate in candidates:
+            try:
+                computed = self._evaluate(config, candidate)
+            except AccessError:
+                raise
+            except Exception as exc:
+                return {'ok': False, 'reason': _(
+                    "The numbers could not be worked out: %s", self._plain(exc))}
+            if computed is None:
+                return {'ok': False, 'reason': _(
+                    "The numbers could not be worked out from this sample. Check "
+                    "the components for a formula the engine cannot read.")}
+            fallback = fallback or (candidate, computed)
+            if computed[1]['value']:
+                result = (candidate, computed)
+                break
+        sample, (values, take_home, lines, path) = result or fallback
         currency = config.currency_id
         return {
             'ok': True,
@@ -585,6 +619,24 @@ class PbBlueprintStudio(models.AbstractModel):
                 'decimals': currency.decimal_places if currency else 2,
             },
         }
+
+    def _evaluate(self, config, sample):
+        """Run one sample through the engine and shape the panel's five numbers.
+
+        Returns `(values_by_code, take_home, lines, path)`, or None when the
+        engine produced nothing for a configuration that does have components —
+        which means a formula it cannot read, not an empty configuration.
+        """
+        result = self.env['pb.formula.studio'].compute_preview(config.id, sample.id)
+        by_letter = result.get('values') or {}
+        if not by_letter and config.rule_ids:
+            return None
+        values = {}
+        for rule in config.rule_ids:
+            if rule.code and rule.column_letter in by_letter:
+                values[rule.code] = by_letter[rule.column_letter]
+        lines, take_home, path = self._pay_lines(config, values)
+        return values, take_home, lines, path
 
     def _pay_lines(self, config, values):
         """The five numbers on the pay panel, and how we found them.
@@ -783,10 +835,30 @@ class PbBlueprintStudio(models.AbstractModel):
             return {'ok': False, 'reason': _(
                 "Two components depend on each other, so no number can be "
                 "worked out. Open the components grid and break the loop.")}
-        if config.has_errors:
+        # "The engine cannot read this" is `python_formula` being empty after
+        # regeneration — the conversion the engine actually executes, and the
+        # exact test `hr.formula.config.template.seed_config` uses to refuse a
+        # bad starter (`formula_config_template.py:308-315`).
+        #
+        # Deliberately NOT `has_errors`. That flag is `any(not rule.is_valid)`,
+        # and `is_valid` is a STATIC lint whose function list does not include
+        # the engine's own `BRACKET(...)` — the progressive-tax primitive the
+        # whole Vietnam rule pack is built on. Every configuration seeded from
+        # that pack therefore reports an error for a formula that computes
+        # perfectly (measured: PIT 14,896,200 on the 90m sample while the same
+        # rule was flagged "Unsupported function: BRACKET"). Gating Finish on it
+        # made the journey's own default starter impossible to finish.
+        # Widening the validator's function list is an engine change with a
+        # blast radius across every configuration on every database; it is
+        # logged for B2, not smuggled in here.
+        unreadable = config.rule_ids.filtered(
+            lambda r: r.column_type == 'formula' and r.excel_formula
+            and not r.python_formula)
+        if unreadable:
+            names = ', '.join(unreadable.mapped('code')[:5])
             return {'ok': False, 'reason': _(
-                "Some components still have a formula the engine cannot read. "
-                "Open the components grid to see which ones.")}
+                "The engine cannot read the formula on %(names)s. Open the "
+                "components grid to fix it, then finish.", names=names)}
         blueprint.write({'state': 'finished', 'step': 'finish',
                          'revision': blueprint.revision + 1})
         return {'ok': True, 'config_id': config.id, 'already': False}

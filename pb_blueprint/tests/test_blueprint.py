@@ -8,7 +8,6 @@ finishing refuses a configuration whose formulas do not compute.
 """
 import json
 
-from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -107,10 +106,19 @@ class TestBlueprint(TransactionCase):
         self.assertFalse(refusal['ok'])
         self.assertIn(other.name, refusal['reason'])
 
-        # A company the user cannot reach at all is an ACCESS failure.
+        # A company the user cannot reach at all is refused the SAME way. The
+        # record rule is still the security boundary — no data crosses — but
+        # the framework's own AccessError text must never reach a person: it
+        # names the technical model, is not white-labelled, and jokes about
+        # cookies. The only fact worth passing on is which company to switch to.
         as_one = self.Studio.with_context(allowed_company_ids=[self.company.id])
-        with self.assertRaises(AccessError):
-            as_one.bp_load(config.id)
+        blocked = as_one.bp_load(config.id)
+        self.assertFalse(blocked['ok'])
+        self.assertIn(other.name, blocked['reason'])
+        for banned in ('hr.formula.config', 'cookies', 'Odoo', 'access to:'):
+            self.assertNotIn(banned, blocked['reason'])
+        self.assertNotIn('config', blocked)
+        self.assertNotIn('blueprint', blocked)
 
     # ---- 6 ----------------------------------------------------------
     def test_bp_save_revision_conflict(self):
@@ -165,6 +173,28 @@ class TestBlueprint(TransactionCase):
         self.assertTrue(done['ok'], done.get('reason'))
         self.assertEqual(done['rule_count'], len(self.vn_tpl._components()))
         self.assertTrue(config.sample_data_ids)
+
+    # ---- 9a ---------------------------------------------------------
+    def test_bp_finish_accepts_the_rule_pack(self):
+        """The journey's own default starter must be finishable.
+
+        `has_errors` is `any(not rule.is_valid)`, and `is_valid` is a static
+        lint that does not know the engine's own `BRACKET(...)` — so every
+        configuration seeded from the Vietnam pack reports an error for a PIT
+        formula that computes correctly. Finish asks the question the engine
+        actually answers instead: did the formula convert?
+        """
+        if not self.vn_tpl:
+            self.skipTest("the Vietnam rule pack is not installed on this database")
+        res = self._start('tok-finish-pack', template_key='vn_standard_2026')
+        cfg = self.Config.browse(res['config_id'])
+        cfg.invalidate_recordset()
+        done = self.Studio.bp_finish(cfg.id)
+        self.assertTrue(done['ok'], done.get('reason'))
+        self.assertFalse(cfg.rule_ids.filtered(
+            lambda r: r.column_type == 'formula' and r.excel_formula
+            and not r.python_formula),
+            "every seeded formula converted, which is what Finish checks")
 
     # ---- 9 ----------------------------------------------------------
     def test_bp_finish_requires_valid_formulas(self):
