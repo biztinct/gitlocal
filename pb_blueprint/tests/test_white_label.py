@@ -231,6 +231,36 @@ class TestWhiteLabel(TransactionCase):
         ready = Studio.bp_readiness(res['config_id'])
         self._assert_clean('bp_readiness', list(_texts(ready)))
 
+    def test_the_outputs_and_the_checks_never_repeat_somebody_elses_jargon(self):
+        """B5 renders three things it did not write: the engine's own health
+        message under a broken calculation, the rule pack's component names, and
+        the words the boundary extractor puts on an edge. All three reach a
+        payroll manager through these payloads (BP34)."""
+        Studio = self.env['pb.blueprint.studio']
+        template = self.env['hr.formula.config.template'].sudo().search(
+            [('code', '=', 'vn_complete_2026')], limit=1)
+        if not template:
+            self.skipTest("the Vietnam · Complete starter is not installed")
+        res = Studio.bp_start({
+            'name': 'White label outputs check', 'country_code': 'VN',
+            'cycle_type': 'regular', 'template_key': 'vn_complete_2026',
+            'situations': {},
+        }, 'b5-white-label')
+        self.assertTrue(res.get('ok'), res.get('reason'))
+        config_id = res['config_id']
+
+        outputs = Studio.bp_outputs(config_id, None, 'all')
+        self._assert_clean('bp_outputs', list(_texts(outputs)))
+        first = outputs['rows'][0]['id']
+        self._assert_clean('bp_output_detail',
+                           list(_texts(Studio.bp_output_detail(config_id, first))))
+        self._assert_clean('bp_tests', list(_texts(Studio.bp_tests(config_id))))
+        self._assert_clean('bp_boundary_picks',
+                           list(_texts(Studio.bp_boundary_picks(config_id))))
+        catalog = Studio.bp_export_catalog(config_id)
+        self._assert_clean('bp_export_catalog filename', [catalog['filename']])
+        self._assert_clean('bp_export_catalog note', [catalog['content']])
+
     # ---- the manifest is read in Apps -------------------------------
     def test_manifest_is_white_labelled(self):
         manifest = self.env['ir.module.module'].sudo().search(

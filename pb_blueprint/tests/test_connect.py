@@ -350,8 +350,21 @@ class TestConnect(TransactionCase):
         self.assertIn('goBack(this.actionService, this.props.back);', src)
 
     def test_the_step_is_no_longer_a_placeholder(self):
+        """Every one of the six steps now has a step of its own.
+
+        B4 asserted this by reading the thin placeholder and checking it no
+        longer claimed `connect`. B5 gave the last two steps their own
+        components and DELETED that file, so the assertion is now the stronger
+        one: there is no placeholder left to claim anything.
+        """
+        import os
+        from odoo.modules.module import get_module_path
         shell = _read('pb_blueprint', 'static', 'src', 'xml', 'blueprint.xml')
         self.assertIn("<StepConnect t-elif=\"state.step === 'connect'", shell)
-        thin = _read('pb_blueprint', 'static', 'src', 'js', 'step_thin.js')
-        self.assertNotIn('case "connect":', thin,
-                         "the thin placeholder still claims the Connect step")
+        self.assertIn("<StepOutputs t-elif=\"state.step === 'outputs'", shell)
+        self.assertIn("<StepTest t-elif=\"state.step === 'test'", shell)
+        self.assertFalse(
+            os.path.exists(os.path.join(
+                get_module_path('pb_blueprint'), 'static', 'src', 'js',
+                'step_thin.js')),
+            "the thin placeholder is still on disk — nothing uses it")
