@@ -53,13 +53,38 @@
           </header>
 
           <div class="pbbp-fields">
+            <!-- The cut-off, in the same three shapes as the payday beside it.
+                 It used to be a bare day number, which let somebody choose the
+                 31st of a month that has no 31st. -->
             <div class="pbbp-field">
-              <label for="pbbp-cut">Inputs close on day</label>
+              <label>Inputs close on</label>
+              <div class="pbim-seg pbbp-cal-seg">
+                <button t-foreach="CUTOFF_RULES" t-as="r" t-key="r.value"
+                        t-attf-class="pbim-segbtn {{ state.calendar.cutoff_rule === r.value ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setCalendar('cutoff_rule', r.value)">
+                  <t t-esc="r.label"/>
+                </button>
+              </div>
+              <small t-esc="cutoffLine"/>
+            </div>
+
+            <div class="pbbp-field" t-if="isCutoffBefore">
+              <label for="pbbp-cutbefore">How many working days</label>
+              <input id="pbbp-cutbefore" type="number" min="0" max="20"
+                     t-att-disabled="!editable"
+                     t-att-value="state.calendar.cutoff_days_before"
+                     t-on-input="(ev) => this.onNumber('cutoff_days_before', ev)"/>
+              <small>Working days, so a long weekend never eats the deadline.</small>
+            </div>
+
+            <div class="pbbp-field" t-if="isCutoffFixed">
+              <label for="pbbp-cut">Which day</label>
               <input id="pbbp-cut" type="number" min="1" max="28"
                      t-att-disabled="!editable"
                      t-att-value="state.calendar.cutoff_day"
                      t-on-input="(ev) => this.onNumber('cutoff_day', ev)"/>
-              <small t-esc="cutoffLine"/>
+              <small t-esc="cutoffDayNote"/>
             </div>
 
             <div class="pbbp-field">
@@ -90,6 +115,12 @@
             <div t-if="preview">
               <b t-esc="preview.long"/>
               <p t-esc="previewLine"/>
+              <!-- The cut-off as a real date, worked out from the payday above
+                   it. A rule tells nobody which Friday their overtime is due. -->
+              <p class="pbbp-cal-cut" t-if="cutoffDateLine">
+                <span t-out="ic('inbox', 14)"/>
+                Inputs close <b t-esc="cutoffDateLine"/>
+              </p>
               <small t-if="calendarNote" t-esc="calendarNote"/>
             </div>
             <div t-else="">

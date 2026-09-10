@@ -54,8 +54,7 @@ export function identityRows(identity) {
           value: id.effective_from || _t("Not set") },
         { key: "starter", label: _t("Started from"), value: id.starter || "" },
         { key: "cutoff", label: _t("Inputs close on"),
-          value: cal.cutoff_day
-              ? _t("Day %s of the month", cal.cutoff_day) : "" },
+          value: cutoffValue(cal) },
         { key: "payday", label: _t("Payday"),
           value: paydayValue(cal) },
         { key: "late", label: _t("An input that arrives late"),
@@ -64,6 +63,31 @@ export function identityRows(identity) {
         { key: "bank", label: _t("Bank identifier"), value: pay.bank_label || "" },
     ];
     return rows.filter((r) => !!r.value);
+}
+
+/**
+ * "A fixed day of the month — day 20" / "3 working days before payday".
+ *
+ * The same shape as `paydayValue` on purpose: the two rows sit next to each
+ * other on the review page and they are the same kind of promise.
+ */
+export function cutoffValue(calendar) {
+    const cal = calendar || {};
+    if (!cal.cutoff_rule_label) {
+        // A configuration saved before the cut-off became a rule: it carries a
+        // day and nothing else, and that day is still exactly what it meant.
+        return cal.cutoff_day ? _t("Day %s of the month", cal.cutoff_day) : "";
+    }
+    if (cal.cutoff_rule === "fixed" && cal.cutoff_day) {
+        return _t("%(rule)s — day %(day)s",
+                  { rule: cal.cutoff_rule_label, day: cal.cutoff_day });
+    }
+    if (cal.cutoff_rule === "before_payday") {
+        const n = Number(cal.cutoff_days_before) || 0;
+        return n === 1 ? _t("1 working day before payday")
+                       : _t("%s working days before payday", n);
+    }
+    return cal.cutoff_rule_label;
 }
 
 /** "A fixed day of the month — the 25th" / "The last working day of the month". */

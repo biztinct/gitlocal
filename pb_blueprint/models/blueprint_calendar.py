@@ -25,7 +25,8 @@ from datetime import date, timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
-from .payday import DEFAULT_WORKDAYS, PAYDAY_RULES, next_month, payday_for
+from .payday import (CUTOFF_RULES, DEFAULT_WORKDAYS, MAX_DAYS_BEFORE,
+                     PAYDAY_RULES, cutoff_for, next_month, payday_for)
 
 _logger = logging.getLogger(__name__)
 
@@ -33,7 +34,18 @@ LATE_POLICIES = ('next_cycle', 'off_cycle', 'reopen')
 BANK_ID_TYPES = ('domestic', 'swift')
 
 DEFAULT_CALENDAR = {
+    # THE CUT-OFF IS A RULE NOW, AND `cutoff_day` IS STILL HERE.
+    #
+    # It used to be a bare day number, and every configuration on every
+    # database has one stored. Defaulting the new rule to `fixed` means a draft
+    # saved before today reads back as exactly what it was — "inputs close on
+    # the 20th" — rather than silently becoming a different promise during an
+    # upgrade. The day keeps its meaning under the fixed rule and is ignored,
+    # not deleted, under the other two, so switching rules and switching back
+    # returns the number the person typed.
+    'cutoff_rule': 'fixed',
     'cutoff_day': 20,
+    'cutoff_days_before': 3,
     'payday_rule': 'last_working',
     'payday_day': 25,
     'late_inputs': 'next_cycle',
@@ -87,8 +99,13 @@ class PbBlueprintCalendar(models.AbstractModel):
                         if k in DEFAULT_PAYMENT})
         calendar['cutoff_day'] = self._clamp(calendar['cutoff_day'], 1, 28,
                                              DEFAULT_CALENDAR['cutoff_day'])
+        calendar['cutoff_days_before'] = self._clamp(
+            calendar['cutoff_days_before'], 0, MAX_DAYS_BEFORE,
+            DEFAULT_CALENDAR['cutoff_days_before'])
         calendar['payday_day'] = self._clamp(calendar['payday_day'], 1, 31,
                                              DEFAULT_CALENDAR['payday_day'])
+        if calendar['cutoff_rule'] not in CUTOFF_RULES:
+            calendar['cutoff_rule'] = DEFAULT_CALENDAR['cutoff_rule']
         if calendar['payday_rule'] not in PAYDAY_RULES:
             calendar['payday_rule'] = DEFAULT_CALENDAR['payday_rule']
         if calendar['late_inputs'] not in LATE_POLICIES:
@@ -124,8 +141,15 @@ class PbBlueprintCalendar(models.AbstractModel):
     # The payday preview
     # ==================================================================
     @api.model
-    def bp_calendar_preview(self, config_id, month=None, rule=None, day=None):
-        """The real date the chosen rule lands on, before anything is saved."""
+    def bp_calendar_preview(self, config_id, month=None, rule=None, day=None,
+                            cutoff=None):
+        """The real dates the chosen rules land on, before anything is saved.
+
+        `cutoff` is an optional dict of the cut-off keys being tried, so the
+        screen can show the date for a rule the person is still deciding about.
+        `rule` and `day` stay as they were — every existing caller keeps its
+        signature.
+        """
         config, blueprint, err = self._guard(config_id, require_blueprint=False)
         if err:
             return err
@@ -135,6 +159,13 @@ class PbBlueprintCalendar(models.AbstractModel):
         if day is not None:
             calendar['payday_day'] = self._clamp(day, 1, 31,
                                                  calendar['payday_day'])
+        for key, low, high in (('cutoff_day', 1, 28),
+                               ('cutoff_days_before', 0, MAX_DAYS_BEFORE)):
+            if (cutoff or {}).get(key) is not None:
+                calendar[key] = self._clamp(cutoff[key], low, high,
+                                            calendar[key])
+        if (cutoff or {}).get('cutoff_rule') in CUTOFF_RULES:
+            calendar['cutoff_rule'] = cutoff['cutoff_rule']
         return {'ok': True,
                 'preview': self._payday_preview(config, blueprint, calendar, month)}
 
@@ -148,6 +179,13 @@ class PbBlueprintCalendar(models.AbstractModel):
             workdays, holidays)
         if not when:
             return None
+        # The cut-off is worked out FROM the payday that was just found, never
+        # from a second guess at it, so "three working days before payday" and
+        # the payday on screen can never be about different days.
+        closes = cutoff_for(
+            calendar['cutoff_rule'], calendar['cutoff_day'],
+            calendar['cutoff_days_before'], when, year, month_no,
+            workdays, holidays)
         return {
             'date': str(when),
             'weekday': self._weekday_name(when),
@@ -158,6 +196,12 @@ class PbBlueprintCalendar(models.AbstractModel):
             'has_calendar': has_calendar,
             'month_label': self._month_name(month_no),
             'year': year,
+            'cutoff': {
+                'date': str(closes),
+                'weekday': self._weekday_name(closes),
+                'long': self._long_date(closes),
+                'days_to_payday': (when - closes).days,
+            } if closes else None,
         }
 
     def _target_month(self, blueprint, month=None):
@@ -268,12 +312,24 @@ class PbBlueprintCalendar(models.AbstractModel):
         calendar = calendar or {}
         payment = payment or {}
 
+        cutoff_rule = calendar.get('cutoff_rule', current['cutoff_rule'])
+        if cutoff_rule not in CUTOFF_RULES:
+            return {'ok': False, 'reason': _(
+                "Choose one of the three cut-off rules.")}
         cutoff = self._whole(calendar.get('cutoff_day', current['cutoff_day']),
                              1, 28)
         if cutoff is None:
             return {'ok': False, 'reason': _(
                 "The cut-off day is a day between 1 and 28, so it exists in "
-                "every month.")}
+                "every month — February has no 29th most years, and April has "
+                "no 31st at all.")}
+        before = self._whole(
+            calendar.get('cutoff_days_before', current['cutoff_days_before']),
+            0, MAX_DAYS_BEFORE)
+        if before is None:
+            return {'ok': False, 'reason': _(
+                "A cut-off set before payday is between 0 and %s working "
+                "days before it.", MAX_DAYS_BEFORE)}
         rule = calendar.get('payday_rule', current['payday_rule'])
         if rule not in PAYDAY_RULES:
             return {'ok': False, 'reason': _(
@@ -291,7 +347,9 @@ class PbBlueprintCalendar(models.AbstractModel):
             return {'ok': False, 'reason': _(
                 "Choose how the bank identifies an account.")}
 
-        clean = {'cutoff_day': cutoff, 'payday_rule': rule, 'payday_day': day,
+        clean = {'cutoff_rule': cutoff_rule, 'cutoff_day': cutoff,
+                 'cutoff_days_before': before,
+                 'payday_rule': rule, 'payday_day': day,
                  'late_inputs': late}
         try:
             blueprint.write({

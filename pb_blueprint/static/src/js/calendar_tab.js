@@ -112,6 +112,15 @@ export class CalendarTab extends Component {
         ];
     }
 
+    /** The same three shapes as a payday, because it is the same promise. */
+    get CUTOFF_RULES() {
+        return [
+            { value: "before_payday", label: _t("Days before payday") },
+            { value: "last_working", label: _t("Last working day") },
+            { value: "fixed", label: _t("A fixed day of the month") },
+        ];
+    }
+
     get LATE_POLICIES() {
         return [
             { value: "next_cycle", label: _t("Carry it to the next pay run"),
@@ -131,6 +140,12 @@ export class CalendarTab extends Component {
     }
 
     get isFixed() { return this.state.calendar.payday_rule === "fixed"; }
+
+    get isCutoffFixed() { return this.state.calendar.cutoff_rule === "fixed"; }
+
+    get isCutoffBefore() {
+        return this.state.calendar.cutoff_rule === "before_payday";
+    }
 
     get previewLine() {
         const p = this.preview;
@@ -162,10 +177,42 @@ export class CalendarTab extends Component {
         return _t("Set the company's working calendar to get an exact date. Saturdays and Sundays only are skipped for now.");
     }
 
+    /**
+     * The cut-off in one sentence — the RULE, then the date it lands on.
+     *
+     * The date is the half that was missing. "Day 28" told nobody which Friday
+     * they had to have their overtime in by, and a person choosing 31 found
+     * out it was impossible only when the save was refused.
+     */
     get cutoffLine() {
-        const day = Number(this.state.calendar.cutoff_day) || 0;
-        return _t("Anything approved after the %s of the month waits for the next run.",
-                  this.ordinal(day));
+        const cal = this.state.calendar;
+        if (cal.cutoff_rule === "before_payday") {
+            const n = Number(cal.cutoff_days_before) || 0;
+            return n === 1
+                ? _t("Inputs close one working day before payday.")
+                : _t("Inputs close %s working days before payday.", n);
+        }
+        if (cal.cutoff_rule === "last_working") {
+            return _t("Inputs close on the last working day of the month.");
+        }
+        return _t("Inputs close on the %s of the month, or the working day before it.",
+                  this.ordinal(Number(cal.cutoff_day) || 0));
+    }
+
+    /** "Wednesday 28 October 2026 — 2 days before payday", or nothing. */
+    get cutoffDateLine() {
+        const c = this.preview && this.preview.cutoff;
+        if (!c) return "";
+        const gap = Number(c.days_to_payday) || 0;
+        if (gap <= 0) return c.long;
+        return gap === 1
+            ? _t("%s — the day before payday", c.long)
+            : _t("%s — %s days before payday", c.long, gap);
+    }
+
+    /** Why the day box stops at 28, said before it is typed into, not after. */
+    get cutoffDayNote() {
+        return _t("1 to 28, so the day exists in every month — February has no 29th most years, and April has no 31st at all.");
     }
 
     ordinal(n) {
@@ -182,7 +229,11 @@ export class CalendarTab extends Component {
     async setCalendar(key, value) {
         this.state.calendar[key] = value;
         this.state.dirty = true;
-        if (key === "payday_rule" || key === "payday_day") {
+        // The cut-off keys are in here too: a cut-off set "before payday" is
+        // worked out FROM the payday, so changing either one moves both dates
+        // and the panel would otherwise show a stale pair.
+        if (["payday_rule", "payday_day", "cutoff_rule", "cutoff_day",
+             "cutoff_days_before"].includes(key)) {
             await this.refreshPreview();
         }
     }
@@ -200,9 +251,11 @@ export class CalendarTab extends Component {
 
     async refreshPreview() {
         this.state.previewBusy = true;
+        const cal = this.state.calendar;
         const res = await this.rpc("bp_calendar_preview", [
-            this.props.configId, false, this.state.calendar.payday_rule,
-            this.state.calendar.payday_day]);
+            this.props.configId, false, cal.payday_rule, cal.payday_day,
+            { cutoff_rule: cal.cutoff_rule, cutoff_day: cal.cutoff_day,
+              cutoff_days_before: cal.cutoff_days_before }]);
         this.state.previewBusy = false;
         if (res && res.ok) this.state.preview = res.preview;
     }

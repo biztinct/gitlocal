@@ -372,3 +372,89 @@ class TestCalendarTab(TransactionCase):
         # Nothing was written by asking.
         self.assertEqual(self.Studio.bp_calendar_data(config.id)
                          ['calendar']['payday_rule'], 'last_working')
+
+    # ---- the cut-off, now a rule rather than a bare day number -------
+    def test_a_draft_saved_before_the_rule_existed_still_means_what_it_said(self):
+        """The upgrade must not change anybody's promise.
+
+        Every configuration on every database carries a cut-off DAY and no
+        rule. Reading one back has to say "the 20th", exactly as it did, or an
+        upgrade has quietly moved the day people's overtime is due.
+        """
+        config, blueprint = self._draft('b3-cut-old')
+        blueprint.calendar_json = json.dumps({
+            'calendar': {'cutoff_day': 20, 'payday_rule': 'last_working',
+                         'payday_day': 25, 'late_inputs': 'next_cycle'},
+            'payment': {'bank_id_type': 'domestic'}})
+        data = self.Studio.bp_calendar_data(config.id)
+        self.assertEqual(data['calendar']['cutoff_rule'], 'fixed')
+        self.assertEqual(data['calendar']['cutoff_day'], 20)
+
+    def test_the_three_cut_off_rules_land_on_three_different_days(self):
+        config, blueprint = self._draft('b3-cut-rules')
+        seen = {}
+        for rule in ('fixed', 'last_working', 'before_payday'):
+            res = self.Studio.bp_calendar_preview(
+                config.id, None, None, None,
+                {'cutoff_rule': rule, 'cutoff_day': 10,
+                 'cutoff_days_before': 5})
+            self.assertTrue(res['ok'], res.get('reason'))
+            cut = res['preview']['cutoff']
+            self.assertTrue(cut, 'the %s rule worked out no date' % rule)
+            seen[rule] = cut['date']
+        self.assertEqual(len(set(seen.values())), 3, seen)
+
+    def test_a_cut_off_never_lands_on_a_day_the_company_is_shut(self):
+        """A deadline on a closed Sunday is not a deadline.
+
+        Asserted for every rule and over a whole year, because the failure is
+        one month in seven and would never show up in a single spot check.
+        """
+        config, blueprint = self._draft('b3-cut-open')
+        for month in range(1, 13):
+            for rule in ('fixed', 'last_working', 'before_payday'):
+                res = self.Studio.bp_calendar_preview(
+                    config.id, '2026-%02d' % month, None, None,
+                    {'cutoff_rule': rule, 'cutoff_day': 28,
+                     'cutoff_days_before': 3})
+                cut = res['preview']['cutoff']
+                if not cut:
+                    continue
+                self.assertIn(
+                    date.fromisoformat(cut['date']).weekday(), (0, 1, 2, 3, 4),
+                    'the %s rule closed inputs on a weekend in month %s'
+                    % (rule, month))
+
+    def test_a_cut_off_before_payday_is_always_before_payday(self):
+        config, blueprint = self._draft('b3-cut-before')
+        for month in range(1, 13):
+            res = self.Studio.bp_calendar_preview(
+                config.id, '2026-%02d' % month, None, None,
+                {'cutoff_rule': 'before_payday', 'cutoff_days_before': 4})
+            preview = res['preview']
+            self.assertGreater(
+                preview['cutoff']['days_to_payday'], 0,
+                'inputs closed on or after payday in month %s' % month)
+
+    def test_the_new_cut_off_keys_survive_a_save_and_a_reread(self):
+        config, blueprint = self._draft('b3-cut-save')
+        res = self.Studio.bp_calendar_save(config.id, {
+            'cutoff_rule': 'before_payday', 'cutoff_days_before': 6,
+        }, None, blueprint.revision)
+        self.assertTrue(res['ok'], res.get('reason'))
+        again = self.Studio.bp_calendar_data(config.id)
+        self.assertEqual(again['calendar']['cutoff_rule'], 'before_payday')
+        self.assertEqual(again['calendar']['cutoff_days_before'], 6)
+        # The day is KEPT, not cleared: switching rules and back returns the
+        # number the person typed rather than a default they never chose.
+        self.assertEqual(again['calendar']['cutoff_day'], 20)
+
+    def test_nonsense_cut_off_settings_are_refused_by_name(self):
+        config, blueprint = self._draft('b3-cut-bad')
+        res = self.Studio.bp_calendar_save(config.id, {'cutoff_rule': 'whenever'})
+        self.assertFalse(res['ok'])
+        self.assertIn('cut-off rules', res['reason'])
+        res = self.Studio.bp_calendar_save(
+            config.id, {'cutoff_rule': 'before_payday',
+                        'cutoff_days_before': 99})
+        self.assertFalse(res['ok'])

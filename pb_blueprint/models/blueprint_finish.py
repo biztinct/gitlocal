@@ -48,6 +48,15 @@ def payday_rule_label(rule):
     }.get(rule, _("The last working day of the month"))
 
 
+def cutoff_rule_label(rule):
+    """The cut-off rule, in the words the Calendar tab uses for it."""
+    return {
+        'last_working': _("The last working day of the month"),
+        'before_payday': _("A set number of working days before payday"),
+        'fixed': _("A fixed day of the month"),
+    }.get(rule, _("A fixed day of the month"))
+
+
 def late_policy_label(policy):
     """What happens to an input that arrives after the cut-off."""
     return {
@@ -170,7 +179,10 @@ class PbBlueprintFinish(models.AbstractModel):
             or _("Blank canvas"),
             'situations': self._situation_labels(blueprint),
             'calendar': {
+                'cutoff_rule': calendar['cutoff_rule'],
+                'cutoff_rule_label': cutoff_rule_label(calendar['cutoff_rule']),
                 'cutoff_day': calendar['cutoff_day'],
+                'cutoff_days_before': calendar['cutoff_days_before'],
                 'payday_rule': calendar['payday_rule'],
                 'payday_rule_label': payday_rule_label(calendar['payday_rule']),
                 'payday_day': calendar['payday_day'],

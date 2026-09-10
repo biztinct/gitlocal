@@ -47,7 +47,10 @@ export function finishData(over = {}) {
             starter: "Vietnam · Complete",
             situations: ["Local employees", "Joiners & leavers"],
             calendar: {
+                cutoff_rule: "fixed",
+                cutoff_rule_label: "A fixed day of the month",
                 cutoff_day: 20,
+                cutoff_days_before: 3,
                 payday_rule: "last_working",
                 payday_rule_label: "The last working day of the month",
                 payday_day: 25,
