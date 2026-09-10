@@ -482,3 +482,69 @@ never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
   here matches “Edited by hand”" — and check the empty state of a configuration with
   nothing in it separately, because "no component matches this filter" is the wrong answer
   to somebody who has not added one yet.
+- BP47 (B6, and it invalidates the guard BP26 asked for): **`node --check
+  file.js` PASSES a file whose module syntax is broken.** Node 24 parses an
+  ambiguous `.js` as CommonJS, fails, retries as ESM, and reports success — so
+  two files in this phase carrying `_t("a "\n   "b")` (Python's implicit
+  concatenation, JavaScript's syntax error, and a BLANK BACKEND rather than a
+  broken component) were pronounced fine by the very check B2 introduced to
+  catch that class. The same bytes in a `.mjs` file are refused immediately.
+  **Copy each `.js` to `<name>.mjs` and check THAT**, and keep a source scan as
+  well (`test_i18n.py::test_no_javascript_string_is_split_across_two_lines`),
+  because a check that depends on which extension somebody used is not a guard.
+  The concatenation is also invisible to the translation extractor, which sees
+  only the first half of the string — so it fails twice.
+- BP48 (B6): **`tools/refresh_pb_vi.py` STRIPS edge whitespace from a msgid it
+  extracts from source** (`:406`), so `_t(" and ")` is stored as `and`, never
+  matches at runtime, and the screen keeps the English word with nothing
+  reporting it. Four entries across two modules this phase. Fixed after the
+  fact by `pb_blueprint/tools/vi_polish.py`, which restores every msgid the POT
+  holds and re-pads the translation; the shared tool is left alone because
+  forty modules' catalogues were built with its behaviour.
+- BP49 (B6): **a translatable FIELD can be a JSON document.** The Vietnam ·
+  Complete starter's `components_json` is 54,000 characters and the POT export
+  offers it as a string to translate; a machine-translated copy of it would be
+  a corrupted starter. Anything over ~1,500 characters is dropped from the
+  catalogue (`vi_polish.py`), and the empty msgstr it would otherwise carry is
+  not a safe answer either — the entry must go.
+- BP50 (B6, closes B2 §11.4, B3 §12.5, B4 §11.6 and B5 §11.7): **the browser
+  bridge CAN reach 390 px — with the right tool.** `resize_page` is floored at
+  ~500 px by the window, but `emulate` with a device viewport
+  (`390x844x3,mobile,touch`) sets the page's own viewport and reports
+  `innerWidth === 390`. Four phases said a device-accurate phone capture was
+  impossible; it was the wrong call, and the header's three-row wrap at 390 was
+  found within a minute of using it.
+- BP51 (B6, BP19's third sighting): **the kit's `.pbim-badge` is
+  `text-transform: capitalize`.** It rendered the count chip as "8 Open". The
+  fix is never a specificity fight — it is a class of your own
+  (`.pbbp-fin-open`) for anything that is a phrase rather than a status word.
+- BP52 (B6, the same shape as BP10): **a new `t-if` between the branches of a
+  `t-if`/`t-elif`/`t-else` chain does not join the chain — it starts a second
+  one, and the `t-else` after it then belongs to the NEW chain.** Adding a
+  "was 500,000" span before the value span made the proof strip render its
+  number while the calculation was still being worked out. Wrap the branch in a
+  `<t t-else="">` and put the new element INSIDE it.
+- BP53 (B6, a real bug in front of a user, caught in review): **a read RPC that
+  re-validates is a write.** `bp_finish_data` calls `action_validate_formulas`
+  so the gate answers about today's rules, and `is_valid` is a stored field —
+  which means a person who may only LOOK at payroll setup got the framework's
+  own access refusal instead of the Finish page. A re-check that cannot be
+  written falls back to what was last stored; the gate is enforced again inside
+  `bp_finish`, where writing is the point.
+- BP54 (B6, and it is the biggest of this phase): **a translation entry is only
+  visible to the half of the product whose EXTRACTOR COMMENT it carries.**
+  `odoo/tools/translate.py:1856` builds the Python code translations by keeping
+  only entries whose comments contain `odoo-python`; the web loader keeps
+  `odoo-javascript` (`:1863`). A string the screen says in JavaScript AND the
+  server says in Python is ONE entry in the catalogue, and the exporter writes
+  whichever comment it saw first — so "Regular payroll" came back Vietnamese on
+  the client and English from the server, in the same sentence, with a perfectly
+  valid `.po` and nothing in any log. **97 entries in `pb_blueprint` and 38 in
+  `pb_formula_studio` were in that state.** `pb_blueprint/tools/vi_polish.py`
+  now scans `models/`, `wizards/` and `static/src/js/` for `_()`/`_t()`
+  literals and marks each entry for both halves. Two corollaries: a
+  module-level dict of plain strings (`CYCLE_LABELS = {'regular': "Regular
+  payroll"}`) can never be translated at all — B2's `helper_label` rule applies
+  to every label a server payload carries, not only to lazy `_t()`; and a
+  screen that reads correctly in one language is not evidence, because the
+  English fallback IS the source string and looks like a deliberate choice.
