@@ -359,3 +359,44 @@ never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
   English is the source language, so "loaded with nothing" is exactly right: every term falls
   through to its own source string. Run the suite at `/web/tests?filter=<suite name>` — the tab
   title carries ✔ or ✖, and a green Python run says nothing about the JavaScript.
+- BP29 (B3, cost 2 rebuilds): **a starter cannot ship the helper inputs its own sentences need.**
+  `hr.formula.config.template._check_converter_contract` refuses any code that CONTAINS another
+  (`formula_config_template.py:199-208`), so `OTWDHRS` beside `OTWD` is a ValidationError at
+  authoring time — and `TAXGROSS` is refused because `GROSS` is inside it. Two consequences that
+  shape the whole Complete template: (a) a recipe may now NAME the input it reads
+  (`inputs: {hours: 'HRSWD', enrol: 'ENROLPREM', amount: 'PRIVINSAMT', run: 'PAIDVAR'}`), falling
+  back to the `<CODE><SUFFIX>` convention on a live configuration where the registry never looks;
+  (b) a component whose amount is simply "an approved amount" ships as `type: input` rather than a
+  formula, because an input-shaped formula would need a `<CODE>IN` companion the template may not
+  carry. Run the substring check in the generator, where the message is useful.
+- BP30 (B3): **`<data noupdate="1">` means a data file's second version never reaches an upgraded
+  database.** The record is created if its xmlid is missing and otherwise left alone, so editing
+  the template and running `-u` appears to do nothing — every number stays as first loaded. Right
+  for a shipped starter (a new version is a new record with `supersedes_id`), fatal for iteration:
+  during development delete the `ir.model.data` row AND the record, then upgrade.
+- BP31 (B3, a real bug in somebody's tax): **"taxed the same way as the original" is about the
+  TREATMENT, never the amount.** B2's `taxable_helper_formula` returned the SOURCE COMPONENT'S
+  VALUE as this component's taxable part, so a correction to last month's salary would have added
+  the whole of this month's salary to taxable income a second time. It now returns `=0` when the
+  original is exempt and no helper at all when it is taxable.
+- BP32 (B3): **a payment "the scheme decides" that is worked out from a salary is paid EVERY run.**
+  `frequency: 'scheme'` gated nothing, so a variable bonus of 10% of salary was paid every month
+  for ever — found because the Complete starter's first persona came out 3,000,000 too high. A
+  recipe that names its `run` switch waits to be told; one that does not behaves exactly as before.
+- BP33 (B3): **a benefit MIRROR is counted twice by the employer-cost total.** `PREMINSALW` is the
+  taxable value to the employee of the dependants' cover the employer already pays as
+  `PRIVHLTHDEP`; `employer_total` summed both. Totals now honour `of.exclude`.
+- BP34 (B3): **a screen is only as clean as the data it renders.** The white-label gate reads our
+  own files, and the Vietnam rule pack's `description` — "Serves both existing-config rollout (B4)
+  and new-config template seeding (F113)" — reached a payroll manager through the pack popover
+  because it came from `pb_pack_vn`, not from us. Scan RPC PAYLOADS, not just source files, and
+  never render another module's free text without reading it first.
+- BP35 (B3): **`_clamp` is for reading a stored preference, never for saving one.** Pulling a
+  person's cut-off day of 31 silently back to 28 changes what they asked for without telling them.
+  Two functions, two jobs: `_clamp` for display, `_whole` (range or None) for a write.
+- BP36 (B3, unresolved): **four hoot tests in `blueprint_steps.test.js` still throw "translations
+  have not been loaded"** when they stringify a `_t()` label from `blueprint_steps.js`'s own
+  module scope, even with BP28's flag set at import time, in a root `beforeEach`, AND in a
+  `beforeEach` inside every `describe`. The identical guard works for `recipe_text.test.js` and for
+  B3's `tax_math.test.js` (16/16 green). Pre-existing since B1; diagnosed, not fixed. B4 should
+  either mock the translation service or assert on the keys rather than the words.
