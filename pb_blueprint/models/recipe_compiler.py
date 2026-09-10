@@ -26,7 +26,7 @@ from odoo import _
 
 from .recipe_schema import (
     DEFAULT_CONTRACT_CODE, HELPER_INPUTS, HELPER_SUFFIXES, RecipeError,
-    helper_code,
+    helper_code, slot_code,
 )
 
 _logger = logging.getLogger(__name__)
@@ -103,6 +103,11 @@ def _members(ctx, of):
         if want_group and group != want_group:
             continue
         treat = (recipe or {}).get('treatment') or {}
+        # A plan total is a roll-up of costs that are already in this list.
+        # Counting it as well would charge the employer twice for the same
+        # scheme, so it is never a member of any group sum — including its own.
+        if treat.get('plan_total'):
+            continue
         if want_cash != 'any' and (treat.get('cash') or 'cash') != want_cash:
             continue
         if want_ins != 'any' and (treat.get('insurance') or 'excluded') != want_ins:
@@ -163,9 +168,12 @@ def _audience_test(recipe, ctx, needs):
     if audience == 'union':
         return '%s=1' % _ref('ISUNION', ctx, needs)
     if audience == 'enrolled':
-        return '%s=1' % _ref(helper_code(self_code, 'ENR'), ctx, needs)
+        return '%s=1' % _ref(slot_code(recipe, 'enrol', self_code), ctx, needs)
     if audience == 'role':
         return '%s>0' % _ref('ROLEGRADE', ctx, needs)
+    if audience == 'local_insured':
+        return 'AND(%s=1,%s=1)' % (_ref('ISLOCAL', ctx, needs),
+                                   _ref('ISINSURED', ctx, needs))
     return None
 
 
@@ -181,7 +189,7 @@ def _amount_expr(recipe, ctx, needs):
     if kind == 'input':
         if (ctx.get('types') or {}).get(self_code) == 'input':
             return None            # the component IS the input; no formula
-        return _ref(helper_code(self_code, 'IN'), ctx, needs)
+        return _ref(slot_code(recipe, 'amount', self_code), ctx, needs)
     if kind == 'fixed':
         return _num(amount.get('value'))
     if kind == 'contract':
@@ -204,7 +212,7 @@ def _amount_expr(recipe, ctx, needs):
         return 'IF(%(g)s=1,%(a)s,IF(%(g)s=2,%(b)s,IF(%(g)s=3,%(c)s,0)))' % {
             'g': grade, 'a': g1, 'b': g2, 'c': g3}
     if kind == 'hourly':
-        hours = _ref(helper_code(self_code, 'HRS'), ctx, needs)
+        hours = _ref(slot_code(recipe, 'hours', self_code), ctx, needs)
         rate = '(%s/(%s*%s))' % (_ref(contract, ctx, needs),
                                  _ref('STDDAYS', ctx, needs),
                                  _ref('HOURSDAY', ctx, needs))
@@ -222,16 +230,25 @@ def _amount_expr(recipe, ctx, needs):
     if kind == 'bracket':
         return 'BRACKET(%s,%s)' % ((amount.get('table') or '').upper(),
                                    _ref(amount.get('base'), ctx, needs))
+    if kind == 'pit_vn':
+        return _pit_vn_expr(amount, ctx, needs)
     if kind == 'insurance_base':
-        earnings = _members(ctx, {'group': 'earning', 'insurance': 'included'})
-        return 'MIN(%s,%s)' % (_sum_of(earnings, ctx, needs),
-                               _ref(amount.get('cap'), ctx, needs))
+        # "Contractual eligible pay" is the salary the contract promises, so a
+        # short month does not quietly reduce somebody's insurance. "Actual"
+        # adds up what was really paid and marked as counting.
+        if (amount.get('basis') or 'actual') == 'contract':
+            body = _ref((amount.get('contract') or contract), ctx, needs)
+        else:
+            earnings = _members(ctx, {'group': 'earning', 'insurance': 'included'})
+            body = _sum_of(earnings, ctx, needs)
+        return 'MIN(%s,%s)' % (body, _ref(amount.get('cap'), ctx, needs))
     if kind == 'taxable_base':
         parts = _members(ctx, {'group': 'earning'})
         taxed = [_taxable_part(c, ctx, needs) for c in parts
                  if _taxable_slice_counts(c, ctx)]
         body = _sum_of(taxed, ctx, needs)
-        allowed = _members(ctx, {'group': 'deduction', 'pit_deductible': 'yes'})
+        allowed = (_members(ctx, {'group': 'deduction', 'pit_deductible': 'yes'})
+                   if amount.get('deduct_contributions', True) else [])
         if allowed:
             body = '%s-%s' % (body, _sum_of(allowed, ctx, needs))
         if amount.get('relief_self'):
@@ -240,17 +257,22 @@ def _amount_expr(recipe, ctx, needs):
             body = '%s-(%s*%s)' % (body, _ref(amount['deps'], ctx, needs),
                                    _ref(amount['relief_dep'], ctx, needs))
         return 'MAX(0,%s)' % body
+    # A total may name components to leave out. The one that always has to be
+    # named is a benefit MIRROR: the taxable value of a premium to the employee
+    # is the same money the employer already pays as the premium itself, and
+    # adding both charges the employer twice for one policy.
+    skip = {'exclude': (amount.get('of') or {}).get('exclude') or []}
     if kind == 'net_total':
-        earnings = _members(ctx, {'group': 'earning', 'cash': 'cash'})
-        taken = _members(ctx, {'group': 'deduction'})
+        earnings = _members(ctx, dict(skip, group='earning', cash='cash'))
+        taken = _members(ctx, dict(skip, group='deduction'))
         body = _sum_of(earnings, ctx, needs)
         if taken:
             body = '%s-%s' % (body, _sum_of(taken, ctx, needs))
         return body
     if kind == 'employer_total':
-        cash = _members(ctx, {'group': 'earning', 'cash': 'cash'})
-        noncash = _members(ctx, {'group': 'earning', 'cash': 'noncash'})
-        borne = _members(ctx, {'group': 'benefit'})
+        cash = _members(ctx, dict(skip, group='earning', cash='cash'))
+        noncash = _members(ctx, dict(skip, group='earning', cash='noncash'))
+        borne = _members(ctx, dict(skip, group='benefit'))
         body = _sum_of(cash, ctx, needs)
         if borne:
             body = '%s+%s' % (body, _sum_of(borne, ctx, needs))
@@ -260,25 +282,102 @@ def _amount_expr(recipe, ctx, needs):
     raise RecipeError(_("That kind of amount is not available yet."))
 
 
+def _pit_vn_expr(amount, ctx, needs):
+    """The three ways Vietnamese income tax can be worked out, in one component.
+
+    A tax resident on a contract of three months or more is taxed on the
+    progressive bands. Somebody who is not a tax resident pays a flat rate on
+    the whole taxable payment. Somebody on a contract shorter than three months
+    has tax withheld at a flat rate once the payment reaches a threshold —
+    unless they have signed the commitment that says this is their only income.
+
+    Every route beyond the bands is optional: a configuration that has not got
+    the constants for them simply taxes everybody on the bands, which is
+    exactly what the Essentials starter does.
+    """
+    table = (amount.get('table') or '').upper()
+    bands = 'ROUND(BRACKET(%s,%s),0)' % (table, _ref(amount.get('base'), ctx, needs))
+    routes = amount.get('routes') or {}
+    gross = routes.get('gross_base')
+    body = bands
+
+    short_rate = routes.get('short_rate')
+    months = routes.get('months_input')
+    if gross and short_rate and months:
+        threshold = routes.get('short_threshold')
+        commit = routes.get('commit_input')
+        withheld = 'ROUND(%s*%s,0)' % (_ref(gross, ctx, needs),
+                                       _ref(short_rate, ctx, needs))
+        tests = []
+        if threshold:
+            tests.append('%s>=%s' % (_ref(gross, ctx, needs),
+                                     _ref(threshold, ctx, needs)))
+        if commit:
+            tests.append('%s=0' % _ref(commit, ctx, needs))
+        if len(tests) > 1:
+            short = 'IF(AND(%s),%s,0)' % (','.join(tests), withheld)
+        elif tests:
+            short = 'IF(%s,%s,0)' % (tests[0], withheld)
+        else:
+            short = withheld
+        body = 'IF(%s<3,%s,%s)' % (_ref(months, ctx, needs), short, body)
+
+    nonres = routes.get('nonres_rate')
+    resident = routes.get('resident_input')
+    if gross and nonres and resident:
+        flat = 'ROUND(%s*%s,0)' % (_ref(gross, ctx, needs),
+                                   _ref(nonres, ctx, needs))
+        body = 'IF(%s=0,%s,%s)' % (_ref(resident, ctx, needs), flat, body)
+    return body
+
+
 def _taxable_slice_counts(code, ctx):
     """False for a component that is entirely tax free."""
     recipe = (ctx.get('recipes') or {}).get(code.upper()) or {}
     return ((recipe.get('treatment') or {}).get('tax') or 'taxable') != 'exempt'
 
 
-def compile_recipe(recipe, ctx):
+def share_pct(recipe):
+    """What percentage of a shared benefit the employer carries, 0 to 100."""
+    treat = (recipe or {}).get('treatment') or {}
+    try:
+        pct = float(treat.get('employer_share_pct', 100.0))
+    except (TypeError, ValueError):
+        pct = 100.0
+    return min(100.0, max(0.0, pct))
+
+
+def compile_recipe(recipe, ctx, share_side='employer'):
     """``(excel_formula_with_letters_or_None, needs)``.
 
     ``None`` means "this component has no formula of its own" — an input, a
     fixed value, or one somebody wrote in Excel. ``needs`` lists the helper
     input codes the formula names that do not exist yet; compile again once
     they do and the result is pure column letters.
+
+    ``share_side`` decides which half of a cost-shared benefit is being asked
+    for. A private health plan the employee pays 30% of is TWO lines on a
+    payslip — the employer's 70% under benefits and the employee's 30% under
+    deductions — and both come from the one sentence, so the two halves can
+    never drift apart.
     """
     ctx = ctx if isinstance(ctx, Ctx) else Ctx(ctx or {})
     needs = []
     body = _amount_expr(recipe, ctx, needs)
     if body is None:
         return None, needs
+
+    ceiling = (recipe.get('amount') or {}).get('max')
+    if ceiling:
+        body = 'MIN(%s,%s)' % (body, _ref(ceiling, ctx, needs))
+
+    pct = share_pct(recipe)
+    if share_side == 'employee':
+        if pct >= 100.0:
+            return None, needs
+        body = '(%s*%s/100)' % (body, _num(100.0 - pct))
+    elif pct < 100.0:
+        body = '(%s*%s/100)' % (body, _num(pct))
 
     proration = recipe.get('proration') or 'none'
     if proration == 'working_days':
@@ -292,19 +391,34 @@ def compile_recipe(recipe, ctx):
     if recipe.get('frequency') == 'annual' and amount.get('kind') != 'annual_ratio':
         month = int(amount.get('payout_month') or 1)
         body = 'IF(%s=%d,%s,0)' % (_ref('PAYMONTH', ctx, needs), month, body)
+    # A payment "the scheme decides" that is worked out from a salary would
+    # otherwise be paid EVERY run — a variable bonus of 10% of salary, every
+    # month, for ever. When the rule names the switch the run is told about,
+    # the payment waits to be told.
+    if recipe.get('frequency') == 'scheme':
+        switch = (recipe.get('inputs') or {}).get('run')
+        if switch:
+            body = 'IF(%s=1,%s,0)' % (_ref(switch, ctx, needs), body)
 
     test = _audience_test(recipe, ctx, needs)
     if test:
         body = 'IF(%s,%s,0)' % (test, body)
 
     rounding = str(recipe.get('round', '0'))
-    if rounding != 'none':
+    if rounding == 'down':
+        body = 'ROUNDDOWN(%s,0)' % body
+    elif rounding != 'none':
         body = 'ROUND(%s,%s)' % (body, rounding)
 
-    if int(recipe.get('sign') or 1) < 0:
+    if int(recipe.get('sign') or 1) < 0 and share_side != 'employee':
         body = '-(%s)' % body
 
     return '=' + body, needs
+
+
+def employee_share_formula(recipe, ctx):
+    """The employee's half of a cost-shared benefit, or ``(None, [])``."""
+    return compile_recipe(recipe, ctx, share_side='employee')
 
 
 def taxable_helper_formula(recipe, ctx):
@@ -324,22 +438,31 @@ def taxable_helper_formula(recipe, ctx):
         return None, needs
     me = _ref(self_code, ctx, needs)
     if tax == 'qualified':
-        flag = _ref(helper_code(self_code, 'QUAL'), ctx, needs)
+        flag = _ref(slot_code(recipe, 'qual', self_code), ctx, needs)
         return '=IF(%s=1,0,%s)' % (flag, me), needs
     if tax == 'annual_cap':
-        ytd = _ref(helper_code(self_code, 'YTD'), ctx, needs)
+        ytd = _ref(slot_code(recipe, 'ytd', self_code), ctx, needs)
         cap = _num(treat.get('cap'))
         return '=MAX(0,%s-MAX(0,%s-%s))' % (me, cap, ytd), needs
     if tax == 'entitlement':
-        ent = _ref(helper_code(self_code, 'ENT'), ctx, needs)
+        ent = _ref(slot_code(recipe, 'ent', self_code), ctx, needs)
         return '=MAX(0,%s-%s)' % (me, ent), needs
     if tax == 'inherit':
+        # "Taxed the same way as the original" is about the TREATMENT, never
+        # about the amount. Returning the source's own value here was a real
+        # bug: a correction to last month's salary would have added the whole
+        # of this month's salary to taxable income a second time.
         source = (treat.get('source_code') or '').upper()
         if not source:
             return None, needs
-        source_tx = helper_code(source, 'TX')
-        target = source_tx if source_tx in ctx.letters else source
-        return '=%s' % _ref(target, ctx, needs), needs
+        source_tax = ((ctx.get('recipes') or {}).get(source) or {}) \
+            .get('treatment', {}).get('tax') or 'taxable'
+        if source_tax == 'exempt':
+            return '=0', needs
+        # Fully taxable, or conditional on evidence the correction does not
+        # carry: either way the whole correction is taxed, which is the safe
+        # answer, and `review_items` asks somebody to confirm the original.
+        return None, needs
     return None, needs
 
 
@@ -454,21 +577,32 @@ def recipe_references(recipe, ctx):
     amount = (recipe or {}).get('amount') or {}
     out = set()
     for key in ('base', 'link', 'cap', 'rate_code', 'relief_self',
-                'relief_dep', 'deps'):
+                'relief_dep', 'deps', 'contract', 'max'):
         if amount.get(key):
             out.add(str(amount[key]).upper())
+    for code in ((recipe or {}).get('inputs') or {}).values():
+        if code:
+            out.add(str(code).upper())
+    for code in (amount.get('routes') or {}).values():
+        if code:
+            out.add(str(code).upper())
     treat = (recipe or {}).get('treatment') or {}
     if treat.get('source_code'):
         out.add(str(treat['source_code']).upper())
     kind = amount.get('kind')
     filters = {
         'sum_group': (amount.get('of') or {},),
-        'insurance_base': ({'group': 'earning', 'insurance': 'included'},),
+        'insurance_base': ()
+        if (amount.get('basis') or 'actual') == 'contract'
+        else ({'group': 'earning', 'insurance': 'included'},),
         'taxable_base': ({'group': 'earning'},
                          {'group': 'deduction', 'pit_deductible': 'yes'}),
         'net_total': ({'group': 'earning'}, {'group': 'deduction'}),
         'employer_total': ({'group': 'earning'}, {'group': 'benefit'}),
     }.get(kind)
+    if kind in ('net_total', 'employer_total'):
+        skip = (amount.get('of') or {}).get('exclude') or []
+        filters = tuple(dict(one, exclude=skip) for one in filters)
     for one in (filters or ()):
         out |= set(_members(ctx, one))
     return out

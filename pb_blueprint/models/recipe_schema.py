@@ -28,8 +28,12 @@ GROUPS = ('earning', 'deduction', 'benefit', 'total', 'helper')
 #: switched off: the totals everything else feeds, and the plumbing.
 LOCKED_GROUPS = ('total', 'helper')
 
-#: Who the component applies to.
-AUDIENCES = ('all', 'local', 'foreign', 'insured', 'union', 'enrolled', 'role')
+#: Who the component applies to. ``local_insured`` is two conditions at once —
+#: Vietnamese unemployment insurance is for local employees who are in the
+#: scheme, and expressing that as one word beats asking somebody to nest two
+#: sentences.
+AUDIENCES = ('all', 'local', 'foreign', 'insured', 'union', 'enrolled', 'role',
+             'local_insured')
 
 #: How the amount is worked out.
 KINDS = (
@@ -48,6 +52,7 @@ KINDS = (
     'taxable_base',     # income the tax bands are applied to
     'net_total',        # take-home pay
     'employer_total',   # what the employer pays in total
+    'pit_vn',           # the Vietnamese income-tax routes, in one component
     'manual',           # written as Excel; the recipe only records what it IS
 )
 
@@ -58,7 +63,13 @@ TAX = ('taxable', 'exempt', 'qualified', 'annual_cap', 'entitlement', 'inherit')
 INSURANCE = ('included', 'excluded', 'inherit', 'review')
 BEARER = ('employee', 'employer')
 PIT_DEDUCTIBLE = ('no', 'yes', 'source')
-ROUNDING = ('none', '0', '2')
+#: ``down`` always moves toward zero (``ROUNDDOWN``) — the choice a payroll
+#: makes when it must never pay a fraction more than the rule allows.
+ROUNDING = ('none', '0', '2', 'down')
+#: Which components an insurance base is worked out from. ``actual`` adds up
+#: every earning marked as counting; ``contract`` uses the contract salary
+#: itself, whatever was actually paid this run.
+INSURANCE_BASIS = ('actual', 'contract')
 #: How a group sum treats the income-tax component itself.
 INCOME_TAX_FILTER = ('any', 'exclude', 'only')
 
@@ -72,8 +83,14 @@ NEEDS = {
     'annual_ratio': ('payout_month',),
     'linked': ('link',),
     'bracket': ('table', 'base'),
+    'pit_vn': ('table', 'base'),
     'insurance_base': ('cap',),
 }
+
+#: The helper inputs the Vietnamese income-tax routes need, and the name each
+#: one is known by inside a ``pit_vn`` recipe.
+PIT_VN_ROUTES = ('nonres_rate', 'short_rate', 'short_threshold',
+                 'resident_input', 'months_input', 'commit_input', 'gross_base')
 
 #: The canonical helper inputs the compiler provisions on demand, and the value
 #: each one starts at. Their labels live in :func:`helper_label` so that the
@@ -89,6 +106,9 @@ HELPER_INPUTS = {
     'ISLOCAL': 1.0,
     'ISINSURED': 1.0,
     'ISUNION': 1.0,
+    'ISRESIDENT': 1.0,
+    'CONTRACTMTH': 12.0,
+    'TAXCOMMIT': 0.0,
     'ROLEGRADE': 0.0,
     'SERVDAYS': 260.0,
     'ANNUALDAYS': 260.0,
@@ -105,6 +125,32 @@ HELPER_SUFFIXES = {
 }
 
 
+#: A recipe may name the input it reads instead of taking the conventional
+#: ``<CODE><SUFFIX>`` name. A starter has to: the template registry refuses any
+#: code that contains another, so a starter cannot ship ``OTWDHRS`` beside
+#: ``OTWD``. On a live configuration the convention is used and nothing changes.
+INPUT_SLOTS = {
+    'amount': 'IN',
+    'hours': 'HRS',
+    'enrol': 'ENR',
+    'qual': 'QUAL',
+    'ytd': 'YTD',
+    'ent': 'ENT',
+    # "Paid when the scheme says so" is only true if something SAYS so. A rule
+    # that names this slot is switched on per run; one that does not is paid
+    # every run, exactly as before.
+    'run': 'RUN',
+}
+
+
+def slot_code(recipe, slot, self_code):
+    """The input code a recipe reads for one slot — named, or conventional."""
+    named = ((recipe or {}).get('inputs') or {}).get(slot)
+    if named:
+        return str(named).strip().upper()
+    return helper_code(self_code, INPUT_SLOTS[slot])
+
+
 def helper_label(code):
     """The words on the screen for one shared helper input."""
     return {
@@ -117,6 +163,9 @@ def helper_label(code):
         'ISLOCAL': _("Local employee (1 = yes)"),
         'ISINSURED': _("In the insurance scheme (1 = yes)"),
         'ISUNION': _("Union member (1 = yes)"),
+        'ISRESIDENT': _("Tax resident (1 = yes)"),
+        'CONTRACTMTH': _("Months on this contract"),
+        'TAXCOMMIT': _("Signed the single-employer tax commitment (1 = yes)"),
         'ROLEGRADE': _("Pay grade (1, 2 or 3)"),
         'SERVDAYS': _("Days of service this year"),
         'ANNUALDAYS': _("Working days in a full year"),
@@ -239,6 +288,20 @@ def validate_recipe(recipe, ctx=None):
                          _("rounding")),
     }
 
+    raw_inputs = recipe.get('inputs') or {}
+    if not isinstance(raw_inputs, dict):
+        raise RecipeError(_("The inputs this rule reads could not be read."))
+    named = {}
+    for slot, code in raw_inputs.items():
+        if slot not in INPUT_SLOTS:
+            raise RecipeError(_(
+                "“%(slot)s” is not something a rule can read. Choose one of: "
+                "%(allowed)s.", slot=slot, allowed=', '.join(INPUT_SLOTS)))
+        if code:
+            named[slot] = _code(code, _("an input"))
+    if named:
+        out['inputs'] = named
+
     raw_amount = recipe.get('amount') or {}
     if not isinstance(raw_amount, dict):
         raise RecipeError(_("The amount could not be read."))
@@ -290,14 +353,48 @@ def validate_recipe(recipe, ctx=None):
         amount['table'] = table
         amount['base'] = known(_code(raw_amount.get('base'), _("the income")),
                                _("this rule"))
+    if kind == 'pit_vn':
+        table = _code(raw_amount.get('table'), _("the band table"))
+        if tables and table not in tables:
+            raise RecipeError(_(
+                "There is no band table called %s in this configuration.", table))
+        amount['table'] = table
+        amount['base'] = known(_code(raw_amount.get('base'), _("the income")),
+                               _("this rule"))
+        routes = raw_amount.get('routes') or {}
+        if not isinstance(routes, dict):
+            raise RecipeError(_("The tax routes could not be read."))
+        clean_routes = {}
+        for key in PIT_VN_ROUTES:
+            if routes.get(key):
+                clean_routes[key] = known(
+                    _code(routes[key], _("a tax route")), _("this rule"))
+        if clean_routes:
+            amount['routes'] = clean_routes
     if kind == 'insurance_base':
         amount['cap'] = known(_code(raw_amount.get('cap'), _("the cap")),
                               _("this rule"))
+        amount['basis'] = _one_of(raw_amount.get('basis') or 'actual',
+                                  INSURANCE_BASIS, _("an insurance basis"))
+        if amount['basis'] == 'contract' and raw_amount.get('contract'):
+            amount['contract'] = known(
+                _code(raw_amount.get('contract'), _("the contract salary")),
+                _("this rule"))
     if kind == 'taxable_base':
         for key in ('relief_self', 'relief_dep', 'deps'):
             if raw_amount.get(key):
                 amount[key] = known(_code(raw_amount.get(key), _("a relief")),
                                     _("this rule"))
+        # The income the bands are applied to has the person's own insurance
+        # taken off first; the income a flat rate is applied to does not. One
+        # kind of amount, one flag, two honest answers.
+        amount['deduct_contributions'] = bool(
+            raw_amount.get('deduct_contributions', True))
+    # A ceiling on the amount itself — union dues stop at a monthly maximum
+    # however large the salary is.
+    if raw_amount.get('max'):
+        amount['max'] = known(_code(raw_amount.get('max'), _("the maximum")),
+                              _("this rule"))
     if kind in ('sum_group', 'net_total', 'employer_total'):
         of = raw_amount.get('of') or {}
         clean = {}
@@ -339,7 +436,14 @@ def validate_recipe(recipe, ctx=None):
         'employer_share_pct': _number(raw_treat.get('employer_share_pct'),
                                       _("the employer share"), 100.0),
         'is_income_tax': bool(raw_treat.get('is_income_tax')),
+        # A plan total adds up other employer costs so a person can see one
+        # number for a scheme. It is a VIEW of costs already counted, so it is
+        # never itself summed into anything (see `_members`).
+        'plan_total': bool(raw_treat.get('plan_total')),
     }
+    if not 0.0 <= treatment['employer_share_pct'] <= 100.0:
+        raise RecipeError(_(
+            "The employer share is a percentage between 0 and 100."))
     if treatment['tax'] == 'annual_cap':
         treatment['cap'] = _number(raw_treat.get('cap'), _("the yearly limit"))
     if treatment['tax'] == 'inherit' or treatment['insurance'] == 'inherit' \
@@ -383,6 +487,17 @@ def review_items(recipe, included=None):
     if recipe.get('frequency') == 'annual' and not amount.get('payout_month'):
         items.append({'code': 'month',
                       'text': _("Choose the month it is paid in")})
+    # The employer paying somebody's tax on a benefit changes what the tax
+    # itself is (the top-up is taxable in its turn). This version taxes the
+    # value to the employee and says so, rather than quietly getting it wrong.
+    if treat.get('tax_bearer') == 'employer' and treat.get('tax') != 'exempt':
+        items.append({'code': 'employer_tax', 'text': _(
+            "The employer pays the tax on this: the value is taxed to the "
+            "employee for now, and the employer's top-up is not worked out yet")})
+    if amount.get('kind') == 'hourly' and treat.get('tax') == 'qualified':
+        items.append({'code': 'ot_scope', 'text': _(
+            "Confirm which part of overtime is tax free — the whole payment is "
+            "treated as tax free while the evidence is held")})
     return items
 
 

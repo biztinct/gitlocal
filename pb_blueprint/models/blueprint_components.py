@@ -158,6 +158,7 @@ class PbBlueprintComponents(models.AbstractModel):
             'linked': _("The same as another component"),
             'sum_group': _("Everything in a group, added up"),
             'bracket': _("Worked out from the tax bands"),
+            'pit_vn': _("Income tax, by the route that applies"),
             'insurance_base': _("Insurable pay, capped"),
             'taxable_base': _("Income the tax bands apply to"),
             'net_total': _("Take-home pay"),
@@ -397,8 +398,14 @@ class PbBlueprintComponents(models.AbstractModel):
         by_code = {(r.code or '').upper(): r for r in config.rule_ids if r.code}
         for code, recipe in clean.items():
             rule = by_code.get(code)
-            if rule and rule.column_type == 'formula':
-                self._write_tax_helper(config, rule, recipe)
+            if not rule:
+                continue
+            # Deliberately NOT limited to formula components. A payment the
+            # payroll is simply GIVEN can still be tax free up to a yearly
+            # limit, and without its taxable-part companion the tax bands would
+            # see the whole payment.
+            self._write_tax_helper(config, rule, recipe)
+            self._write_share_helper(config, rule, recipe)
         return clean
 
     # ==================================================================
@@ -427,6 +434,16 @@ class PbBlueprintComponents(models.AbstractModel):
             finally:
                 ctx['self_code'] = ''
             for need in tx_needs:
+                if need not in wanted:
+                    wanted.append(need)
+            ctx['self_code'] = code
+            try:
+                _ee, ee_needs = rc.employee_share_formula(recipe, ctx)
+            except RecipeError:
+                ee_needs = []
+            finally:
+                ctx['self_code'] = ''
+            for need in ee_needs:
                 if need not in wanted:
                     wanted.append(need)
         return wanted
@@ -638,6 +655,7 @@ class PbBlueprintComponents(models.AbstractModel):
             'union': _("union members"),
             'enrolled': _("employees enrolled in this"),
             'role': _("employees in eligible roles"),
+            'local_insured': _("local employees in the insurance scheme"),
         }
         return [{'value': key, 'label': labels[key]} for key in AUDIENCES]
 
@@ -654,6 +672,7 @@ class PbBlueprintComponents(models.AbstractModel):
             'linked': _("the same amount as another component"),
             'sum_group': _("everything in a group, added up"),
             'bracket': _("the amount the tax bands give"),
+            'pit_vn': _("income tax, by the route that applies to the person"),
             'insurance_base': _("insurable pay, capped"),
             'taxable_base': _("the income the tax bands apply to"),
             'net_total': _("take-home pay"),
@@ -929,6 +948,7 @@ class PbBlueprintComponents(models.AbstractModel):
                          'bp_generated_revision': (rule.bp_generated_revision or 0) + 1})
             rule.write(vals)
         self._write_tax_helper(config, rule, clean)
+        self._write_share_helper(config, rule, clean)
         return {'ok': True}
 
     def _write_tax_helper(self, config, rule, recipe):
@@ -973,6 +993,50 @@ class PbBlueprintComponents(models.AbstractModel):
         if created.exists():
             created.write(dict(vals, appears_on_payslip=False,
                                visibility_rule='never'))
+
+    def _write_share_helper(self, config, rule, recipe):
+        """Keep the `<CODE>EE` employee share of a shared benefit in step.
+
+        A benefit the employee pays part of is two lines on a payslip, not one:
+        the employer's share under benefits and the employee's share under
+        deductions. Both come from the same sentence, so changing the split
+        moves both at once and they can never disagree.
+        """
+        self_code = (rule.code or '').upper()
+        ctx = rc.build_ctx(config, self_code=self_code,
+                           extra_recipes={self_code: recipe})
+        formula, needs = rc.employee_share_formula(recipe, ctx)
+        code = helper_code(self_code, 'EE')
+        existing = config.rule_ids.filtered(lambda r: (r.code or '').upper() == code)
+        if formula is None or needs:
+            if existing and existing.bp_template_key == 'helper':
+                existing.unlink()
+            return
+        share = rc.share_pct(recipe)
+        ee_recipe = {
+            'v': 1, 'group': 'deduction', 'audience': recipe.get('audience') or 'all',
+            'amount': {'kind': 'manual'}, 'proration': 'none',
+            'frequency': recipe.get('frequency') or 'monthly', 'sign': 1,
+            'round': recipe.get('round', '0'),
+            'treatment': {'cash': 'cash', 'tax': 'exempt', 'insurance': 'excluded',
+                          'pit_deductible': 'no'},
+        }
+        vals = {'excel_formula': formula, 'bp_generated_formula': formula,
+                'bp_formula_source': 'generated', 'column_type': 'formula',
+                'bp_template_key': 'helper',
+                'bp_recipe_json': json.dumps(ee_recipe, sort_keys=True)}
+        if existing:
+            existing.write(vals)
+            return
+        result = self.env['pb.formula.studio'].add_component(config.id, {
+            'name': _("%(name)s — employee share (%(pct)s%%)",
+                      name=rule.name or self_code,
+                      pct=self._group(100.0 - share)),
+            'code': code, 'column_type': 'formula',
+        })
+        created = self.env['hr.formula.rule'].browse(result.get('rule_id') or 0)
+        if created.exists():
+            created.write(vals)
 
     # ==================================================================
     # Removing, restoring, regenerating
@@ -1027,7 +1091,7 @@ class PbBlueprintComponents(models.AbstractModel):
         """The per-component helpers that only exist for these components."""
         wanted = set()
         for code in codes:
-            for suffix in list(HELPER_SUFFIXES) + ['TX']:
+            for suffix in list(HELPER_SUFFIXES) + ['TX', 'EE']:
                 wanted.add(helper_code(code, suffix))
         return config.rule_ids.filtered(
             lambda r: (r.code or '').upper() in wanted

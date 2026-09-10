@@ -41,6 +41,7 @@ export function kindLabel(kind) {
         linked: _t("The same as another component"),
         sum_group: _t("Everything in a group, added up"),
         bracket: _t("Worked out from the tax bands"),
+        pit_vn: _t("Income tax, by the route that applies"),
         insurance_base: _t("Insurable pay, capped"),
         taxable_base: _t("Income the tax bands apply to"),
         net_total: _t("Take-home pay"),
@@ -203,6 +204,7 @@ export function detailFor(kind) {
         annual_ratio: ["payout_month"],
         linked: ["link"],
         bracket: ["table", "base"],
+        pit_vn: ["table", "base"],
         insurance_base: ["cap"],
         sum_group: ["of"],
     }[kind] || [];
