@@ -102,6 +102,29 @@ export function hubBack(props) {
 }
 
 /**
+ * Walk back through a return door.
+ *
+ * BLUEPRINT B4 — <HubBackChip/> has always known how to do this, and it was the
+ * only thing that did: a surface that closes an OVERLAY and wants to leave the
+ * way it came in (the payslip designer, closed from inside Formula Studio) had
+ * no chip to press. Rather than a second copy of four lines that must never
+ * drift, the chip's own click handler is this function, and every other caller
+ * uses the same one.
+ *
+ * @param {object} actionService
+ * @param {object} back  exactly what `openHub()` wrote into `pb_back`
+ */
+export function goBack(actionService, back) {
+    if (!back || !(back.tag || back.xmlid)) {
+        return null;
+    }
+    return openHub(actionService, {
+        tag: back.tag, xmlid: back.xmlid, lens: back.lens, lensKey: back.lensKey,
+        context: back.context || {},
+    });
+}
+
+/**
  * The return door, as a chip.
  *
  * <HubShell/> renders it in the command bar whenever the action it was opened
@@ -141,10 +164,6 @@ export class HubBackChip extends Component {
 
     /** A CLICK handler, never a lifecycle hook (W21). */
     goBack() {
-        const b = this.props.back;
-        openHub(this.actionService, {
-            tag: b.tag, xmlid: b.xmlid, lens: b.lens, lensKey: b.lensKey,
-            context: b.context || {},
-        });
+        goBack(this.actionService, this.props.back);
     }
 }
