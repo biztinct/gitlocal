@@ -342,6 +342,10 @@ class PbBlueprintStudio(models.AbstractModel):
                     'situations_json': json.dumps(vals.get('situations') or {}),
                     'optional_status_json': json.dumps(DEFAULT_OPTIONAL_STATUS),
                 })
+                # The starter's components arrive as Excel; this gives them the
+                # sentences they always implied, so the Pay rules step opens on
+                # readable rules rather than on 37 rows of formulas.
+                self._backfill_essentials(config, blueprint)
         except AccessError:
             raise
         except Exception as exc:
@@ -450,6 +454,7 @@ class PbBlueprintStudio(models.AbstractModel):
                 'situations': blueprint.situations(),
                 'optional_status': blueprint.optional_status(),
                 'revision': blueprint.revision,
+                'ui': blueprint.ui(),
                 'owner': blueprint.create_uid.name or '',
                 'write_date': blueprint.write_date and str(blueprint.write_date) or '',
             },
@@ -807,6 +812,7 @@ class PbBlueprintStudio(models.AbstractModel):
                         else _("Blank canvas")),
                     'revision': blueprint.revision + 1,
                 })
+                self._backfill_essentials(config, blueprint)
         except AccessError:
             raise
         except Exception as exc:

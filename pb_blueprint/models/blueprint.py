@@ -86,6 +86,13 @@ class PbFormulaBlueprint(models.Model):
         default=lambda self: json.dumps(DEFAULT_OPTIONAL_STATUS))
 
     calendar_json = fields.Text(string='Calendar (JSON)', default='{}')
+
+    # Where the screen was left: which tab of Pay rules was open, which group
+    # was showing. Deliberately its OWN field rather than a corner of
+    # `optional_status_json`: that one is read by the Connect step to decide
+    # what is done and what is skipped, and a display preference has no
+    # business changing the answer to that question.
+    ui_json = fields.Text(string='Screen State (JSON)', default='{}')
     review_items_json = fields.Text(string='Review Items (JSON)', default='[]')
 
     pack_id = fields.Many2one(
@@ -188,3 +195,16 @@ class PbFormulaBlueprint(models.Model):
         status = dict(DEFAULT_OPTIONAL_STATUS)
         status.update(self._json('optional_status_json', {}))
         return status
+
+    def ui(self):
+        return self._json('ui_json', {})
+
+    def set_ui(self, key, value):
+        """Remember one thing about the screen. Never bumps the revision —
+        which tab somebody had open is not a change anyone else can conflict
+        with."""
+        self.ensure_one()
+        state = self.ui()
+        state[key] = value
+        self.ui_json = json.dumps(state)
+        return state
