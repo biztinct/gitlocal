@@ -66,6 +66,25 @@ SEED_INPUTS = {
     'DEPS': 1.0,
 }
 
+#: The starters we ship, most complete first. A card the person reads left to
+#: right should offer the fullest answer before the smaller one, and neither
+#: alphabetical order nor a registry sequence says that reliably.
+STARTER_ORDER = ('vn_complete_2026', 'vn_standard_2026')
+
+
+def starter_tagline(key):
+    """One line under a starter's name — what it actually gives you."""
+    return {
+        'vn_complete_2026': _(
+            "Every line a Vietnamese payroll normally needs — allowances, four "
+            "kinds of overtime, insurance, union, private health cover and "
+            "income tax — each with a rule you can read. Remove what you do "
+            "not need."),
+        'vn_standard_2026': _(
+            "The essentials: paid salary, overtime, insurance, income tax and "
+            "take-home pay."),
+    }.get(key, '')
+
 
 class PbBlueprintStudio(models.AbstractModel):
     _name = 'pb.blueprint.studio'
@@ -201,11 +220,15 @@ class PbBlueprintStudio(models.AbstractModel):
                 continue
             if (tpl.get('country') or '').upper() != country:
                 continue
+            key = tpl.get('key')
             starters.append({
-                'key': tpl.get('key'),
+                'key': key,
                 'kind': 'template',
-                'name': tpl.get('name') or tpl.get('key'),
-                'desc': tpl.get('desc') or '',
+                'name': tpl.get('name') or key,
+                # The registry's own description is written for an engineer
+                # comparing versions. The card gets the sentence a person
+                # choosing between two starters actually needs.
+                'desc': starter_tagline(key) or tpl.get('desc') or '',
                 'country': tpl.get('country') or '',
                 'version': tpl.get('version') or '',
                 'effective_date': tpl.get('effective_date') or '',
@@ -215,7 +238,9 @@ class PbBlueprintStudio(models.AbstractModel):
                 'rate_table_count': len(tpl.get('rate_tables') or []),
                 'default': False,
             })
-        starters.sort(key=lambda s: (not s['certified'], s['name']))
+        starters.sort(key=lambda s: (
+            STARTER_ORDER.index(s['key']) if s['key'] in STARTER_ORDER else 9,
+            not s['certified'], s['name']))
 
         starters.append({
             'key': 'excel', 'kind': 'excel',
@@ -235,12 +260,12 @@ class PbBlueprintStudio(models.AbstractModel):
             'rate_table_count': 0, 'default': False,
         })
 
-        # Pre-selection, most complete first. Vietnam · Complete arrives with
-        # the next release; until then the rule-pack starter is the default,
-        # and on a country with no starter at all the blank canvas is.
-        preferred = ('vn_complete_2026', 'vn_standard_2026')
+        # Pre-selection, most complete first: the fullest starter is the one a
+        # person is least likely to regret, because taking a component out is
+        # one click and putting a missing one in is a decision they have to
+        # know to make. On a country with no starter at all, the blank canvas.
         chosen = None
-        for key in preferred:
+        for key in STARTER_ORDER:
             chosen = next((s for s in starters if s['key'] == key), None)
             if chosen:
                 break

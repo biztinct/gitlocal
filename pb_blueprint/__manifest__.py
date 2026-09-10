@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -34,6 +34,7 @@ configurations screen offers "Resume setup" on the card.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/config_template_vn_complete.xml',
         'views/pb_blueprint_action.xml',
     ],
     'assets': {
@@ -49,6 +50,9 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/js/step_thin.js',
             'pb_blueprint/static/src/js/sentence_editor.js',
             'pb_blueprint/static/src/js/components_tab.js',
+            'pb_blueprint/static/src/js/tax_math.js',
+            'pb_blueprint/static/src/js/tax_tab.js',
+            'pb_blueprint/static/src/js/calendar_tab.js',
             'pb_blueprint/static/src/js/step_rules.js',
             'pb_blueprint/static/src/js/step_finish.js',
             'pb_blueprint/static/src/js/blueprint.js',
@@ -56,6 +60,8 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/xml/steps.xml',
             'pb_blueprint/static/src/xml/sentence_editor.xml',
             'pb_blueprint/static/src/xml/components.xml',
+            'pb_blueprint/static/src/xml/tax_tab.xml',
+            'pb_blueprint/static/src/xml/calendar_tab.xml',
             'pb_blueprint/static/src/xml/blueprint.xml',
         ],
         # Loaded only by /web/tests — never part of the backend bundle.
@@ -63,6 +69,7 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/tests/**/*',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
