@@ -3047,9 +3047,9 @@
                       <div class="cs-metrics">
                         <div class="cs-metric"><span class="cs-m-val" t-esc="c.rule_count"/><span class="cs-m-lbl">components</span></div>
                         <div class="cs-metric"><span class="cs-m-val" t-esc="(c.employees || 0).toLocaleString('en-US')"/><span class="cs-m-lbl">employees</span></div>
-                        <div class="cs-resume" t-if="bpSetup(c)">Resume setup</div>
                       </div>
                     </div>
+                    <div class="cs-resume" t-if="bpSetup(c)">Still being set up — step <t t-esc="bpSetup(c).step_no"/> of <t t-esc="bpSetup(c).total"/></div>
                     <div class="cs-flags">
                       <span t-if="(c.problem_counts.error || 0)" class="cs-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
                       <span t-if="(c.problem_counts.warning || 0)" class="cs-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
