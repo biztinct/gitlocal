@@ -173,7 +173,7 @@ describe("the Finish step, mounted", () => {
         // "Revisit the setup" sits beside the primary button, and there is
         // exactly ONE of it: it was drawn twice on the first build (once in the
         // banner, once here), which is two answers to the same question.
-        expect(".pbbp-changelink").toHaveCount(1);
+        expect(".pbbp-fin-cta-b .pbbp-changelink").toHaveCount(1);
         await click(".pbbp-fin-cta-b .pbbp-changelink");
         await animationFrame();
         expect(calls.map((c) => c[0])).toInclude("bp_reopen");
