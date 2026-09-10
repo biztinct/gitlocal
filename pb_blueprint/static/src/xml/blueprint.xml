@@ -111,6 +111,19 @@
                        onUnlock.bind="onUnlock"
                        onRetry.bind="createDraft"/>
 
+            <StepRules t-elif="state.step === 'rules'"
+                       configId="state.configId or false"
+                       revision="state.blueprint and state.blueprint.revision or 0"
+                       sampleId="state.sampleId or false"
+                       sampleName="sampleName"
+                       currency="state.config and state.config.currency or ''"
+                       templateName="state.blueprint and state.blueprint.template_name or ''"
+                       tab="state.rulesTab"
+                       onTab.bind="onRulesTab"
+                       onChanged.bind="onRulesChanged"
+                       onRevision.bind="onRulesRevision"
+                       onGrid.bind="openGrid"/>
+
             <StepFinish t-elif="state.step === 'finish'"
                         config="state.config"
                         blueprint="state.blueprint"

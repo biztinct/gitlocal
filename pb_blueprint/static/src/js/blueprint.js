@@ -17,6 +17,7 @@ import { PayPreview } from "./pay_preview";
 import { SampleInputsDialog } from "./sample_inputs_dialog";
 import { StepStart } from "./step_start";
 import { StepThin } from "./step_thin";
+import { StepRules } from "./step_rules";
 import { StepFinish } from "./step_finish";
 
 /**
@@ -35,7 +36,7 @@ import { StepFinish } from "./step_finish";
  */
 export class PbBlueprint extends Component {
     static template = "pb_blueprint.Root";
-    static components = { PayPreview, SampleInputsDialog, StepStart, StepThin, StepFinish, HubBackChip };
+    static components = { PayPreview, SampleInputsDialog, StepStart, StepThin, StepRules, StepFinish, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -97,6 +98,7 @@ export class PbBlueprint extends Component {
             confirmStarter: null,      // the starter key we are about to swap to
             confirmDiscard: false,
             kebabOpen: false,
+            rulesTab: "components",
         });
 
         this.cycles = [
@@ -198,6 +200,8 @@ export class PbBlueprint extends Component {
         this.state.countries = (res.starters && res.starters.countries) || [];
         this.state.company = (res.starters && res.starters.company) || res.config.company;
         this.state.step = res.blueprint.step || "rules";
+        this.state.rulesTab = (res.blueprint.ui && res.blueprint.ui.rules_tab)
+            || "components";
         this.state.form = {
             name: res.config.name,
             country_code: res.config.country_code,
@@ -735,6 +739,50 @@ export class PbBlueprint extends Component {
     }
 
     toggleKebab() { this.state.kebabOpen = !this.state.kebabOpen; }
+
+    // ==================================================================
+    // Step 2 — Pay rules
+    // ==================================================================
+    /** Which of the three tabs was open, remembered for the next visit. */
+    async onRulesTab(tab) {
+        this.state.rulesTab = tab;
+        if (!this.created) return;
+        await this.rpc("bp_set_tab", [this.state.configId, tab]);
+    }
+
+    /**
+     * Something on the Pay rules step changed what a person is paid.
+     *
+     * The hero is the whole promise of this screen, so it is re-read from the
+     * server after every save rather than adjusted client-side: the number a
+     * person sees is always one the engine just worked out.
+     */
+    async onRulesChanged(res) {
+        if (res && res.conflict) {
+            this.state.saveError = res.reason || _t("Someone else changed this draft.");
+            return;
+        }
+        const load = await this.rpc("bp_load", [this.state.configId]);
+        if (load && load.ok) {
+            const step = this.state.step;
+            const tab = this.state.rulesTab;
+            this.applyLoad(load);
+            this.state.step = step;
+            this.state.rulesTab = tab;
+        }
+        await this.refreshPreview();
+    }
+
+    onRulesRevision(revision) {
+        if (this.state.blueprint && typeof revision === "number") {
+            this.state.blueprint.revision = revision;
+        }
+    }
+
+    get sampleName() {
+        const preview = this.state.preview;
+        return (preview && preview.sample && preview.sample.name) || "";
+    }
 }
 
 registry.category("actions").add("pb_blueprint", PbBlueprint);

@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.0.7',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -42,14 +42,20 @@ configurations screen offers "Resume setup" on the card.
             # import order matters: pure helpers, then the panel, then the
             # steps, then the shell that mounts them.
             'pb_blueprint/static/src/js/blueprint_steps.js',
+            'pb_blueprint/static/src/js/recipe_text.js',
             'pb_blueprint/static/src/js/sample_inputs_dialog.js',
             'pb_blueprint/static/src/js/pay_preview.js',
             'pb_blueprint/static/src/js/step_start.js',
             'pb_blueprint/static/src/js/step_thin.js',
+            'pb_blueprint/static/src/js/sentence_editor.js',
+            'pb_blueprint/static/src/js/components_tab.js',
+            'pb_blueprint/static/src/js/step_rules.js',
             'pb_blueprint/static/src/js/step_finish.js',
             'pb_blueprint/static/src/js/blueprint.js',
             'pb_blueprint/static/src/xml/pay_preview.xml',
             'pb_blueprint/static/src/xml/steps.xml',
+            'pb_blueprint/static/src/xml/sentence_editor.xml',
+            'pb_blueprint/static/src/xml/components.xml',
             'pb_blueprint/static/src/xml/blueprint.xml',
         ],
         # Loaded only by /web/tests — never part of the backend bundle.
