@@ -19,6 +19,10 @@ import {
 // English is the source language, so "loaded with nothing" is exactly right —
 // every term falls through to its own source string.
 // (`web/static/tests/core/l10n/translation.test.js:447` uses the same switch.)
+// Set at import time AND before every test: hoot restores module state
+// between tests, and a suite that runs before the one which set it would
+// otherwise read a `_t()` label with the flag already cleared.
+translatedTerms[translationLoaded] = true;
 beforeEach(() => {
     translatedTerms[translationLoaded] = true;
 });

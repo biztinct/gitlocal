@@ -186,6 +186,16 @@ class PbBlueprintTax(models.AbstractModel):
         return chosen[:1] or None
 
     def _pack_payload(self, pack):
+        """What the screen may say about a rule pack.
+
+        Deliberately NOT the pack's own ``description``. That field is written
+        for an engineer comparing pack versions and on the shipped Vietnam pack
+        it reads "Serves both existing-config rollout (B4) and new-config
+        template seeding (F113)" — internal vocabulary, in front of a payroll
+        manager. The facts that actually answer "where do these come from" are
+        the instrument, the date it took effect and how many values it carries,
+        and those are all clean.
+        """
         if not pack:
             return None
         return {
@@ -194,7 +204,6 @@ class PbBlueprintTax(models.AbstractModel):
             'version': pack.version or '',
             'effective_date': pack.effective_date and str(pack.effective_date) or '',
             'authority': pack.authority or '',
-            'description': pack.description or '',
             'state': pack.state,
             'item_count': len(pack.item_ids),
         }

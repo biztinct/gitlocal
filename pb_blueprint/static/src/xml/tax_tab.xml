@@ -69,7 +69,10 @@
           </div>
 
           <div class="pbbp-tax-source" t-if="state.sourceOpen and pack">
-            <p t-if="pack.description" t-esc="pack.description"/>
+            <p>Every statutory value below is set by this pack. Change one here and
+               this configuration stops following the pack for that value until you
+               take the pack's again — nothing else is affected, and the difference
+               is shown at the top of this card.</p>
             <dl class="pbbp-sum">
               <dt>Named in</dt>
               <dd t-esc="pack.authority or 'Not recorded'"/>

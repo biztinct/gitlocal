@@ -200,6 +200,18 @@ export class SentenceEditor extends Component {
     get details() { return detailFor(this.amount.kind); }
     needs(key) { return this.details.includes(key); }
 
+    /**
+     * True when this rule reads a band table.
+     *
+     * Somebody who opens income tax expecting to change 10% to 12% has to be
+     * told where the bands actually are, or this screen is a dead end wearing
+     * the right heading.
+     */
+    get usesBands() {
+        const kind = (this.amount || {}).kind;
+        return kind === "bracket" || kind === "pit_vn";
+    }
+
     get chips() { return treatmentChips(this.recipe); }
 
     get isDeduction() { return this.recipe.group === "deduction"; }

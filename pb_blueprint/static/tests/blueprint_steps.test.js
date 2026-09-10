@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
-import { describe, expect, test } from "@odoo/hoot";
+import { beforeEach, describe, expect, test } from "@odoo/hoot";
+import { translatedTerms, translationLoaded } from "@web/core/l10n/translation";
 
 import {
     STEPS, STEP_META, nextStep, prevStep, stepNumber, isDone, continueLabel,
@@ -13,11 +14,26 @@ import {
 // `===` would fail for a reason that has nothing to do with the label.
 const s = (v) => String(v);
 
+// BP28 — reading a `_t()` label THROWS ("translations have not been loaded")
+// until the runner is told they are: a unit test has no server to fetch them
+// from. English is the source language, so "loaded with nothing" is exactly
+// right — every term falls through to its own source string.
+// BP28 / BP29 — reading a `_t()` label throws ("translations have not been
+// loaded") because a unit test has no server to fetch them from. Setting the
+// flag at import time and again before every test fixes it for the labels this
+// module reads from `recipe_text`, but NOT for the four tests below that read
+// `blueprint_steps`' own module-level labels: see the B3 report, deferred item
+// 4. Left in place because it is the documented fix and it is correct.
+translatedTerms[translationLoaded] = true;
+beforeEach(() => {
+    translatedTerms[translationLoaded] = true;
+});
+
 describe("guided setup — the journey", () => {
     test("six steps, in one order, keyed not numbered", () => {
         expect(STEPS).toEqual(["start", "rules", "connect", "outputs", "test", "finish"]);
         for (const key of STEPS) {
-            expect(STEP_META[key]).toBeTruthy();
+            expect(Boolean(STEP_META[key])).toBe(true);
             expect(s(STEP_META[key].label)).not.toBe("");
             expect(s(STEP_META[key].hint)).not.toBe("");
             expect(s(STEP_META[key].title)).not.toBe("");
@@ -114,13 +130,13 @@ describe("guided setup — the Start step's choices", () => {
 
     test("every tile and check has a key, an icon and words", () => {
         for (const a of AUDIENCES) {
-            expect(a.key).toBeTruthy();
-            expect(a.icon).toBeTruthy();
+            expect(Boolean(a.key)).toBe(true);
+            expect(Boolean(a.icon)).toBe(true);
             expect(s(a.label)).not.toBe("");
             expect(s(a.hint)).not.toBe("");
         }
         for (const r of REALLIFE) {
-            expect(r.key).toBeTruthy();
+            expect(Boolean(r.key)).toBe(true);
             expect(s(r.label)).not.toBe("");
         }
     });

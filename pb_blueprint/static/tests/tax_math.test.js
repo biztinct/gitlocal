@@ -11,6 +11,10 @@ import {
 // BP28 — a unit test has no server to fetch translations from, and reading a
 // `_t()` label throws until the runner is told they are loaded. English is the
 // source language, so "loaded with nothing" is exactly right.
+// Set at import time AND before every test: hoot restores module state
+// between tests, and a suite that runs before the one which set it would
+// otherwise read a `_t()` label with the flag already cleared.
+translatedTerms[translationLoaded] = true;
 beforeEach(() => {
     translatedTerms[translationLoaded] = true;
 });
@@ -55,7 +59,9 @@ describe("the tax a set of bands gives", () => {
     });
 
     test("the effective rate is the tax over the income", () => {
-        expect(Math.round(effectiveRate(VN, 40000000) * 10000) / 100).toBe(13.63);
+        // 6,750,000 of tax on 40,000,000 of income.
+        expect(taxFor(VN, 40000000)).toBe(6750000);
+        expect(Math.round(effectiveRate(VN, 40000000) * 10000) / 100).toBe(16.88);
         expect(effectiveRate(VN, 0)).toBe(0);
     });
 

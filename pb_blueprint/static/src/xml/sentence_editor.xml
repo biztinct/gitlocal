@@ -242,6 +242,13 @@
               </t>
             </p>
 
+            <p class="pbbp-se-hint" t-if="usesBands">
+              The bands themselves — where each one starts and what rate it charges —
+              live on the <b>Tax &amp; protection</b> tab, beside the relief and the
+              insurance ceilings. Change them once there and every rule that reads
+              them follows.
+            </p>
+
             <!-- disclosure -->
             <div class="pbbp-se-disc">
               <button class="pbbp-se-disc-h"

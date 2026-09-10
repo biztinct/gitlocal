@@ -144,7 +144,14 @@ export class TaxTab extends Component {
 
     get packStatusLabel() {
         const n = this.drift.length;
-        if (this.data.status === "na") return _t("No rule pack for this country");
+        if (this.data.status === "na") {
+            // A pack that exists but matches nothing here is a different
+            // situation from a country with no pack at all, and saying the
+            // wrong one under the pack's own name reads as a contradiction.
+            return this.pack
+                ? _t("None of the pack's values are used here")
+                : _t("No rule pack for this country");
+        }
         if (this.data.status === "aligned") return _t("Aligned with the pack");
         return n === 1
             ? _t("1 value differs from the pack")
@@ -155,11 +162,12 @@ export class TaxTab extends Component {
         return { aligned: "ok", drift: "warn", na: "muted" }[this.data.status] || "muted";
     }
 
+    /** The pack's dates and version — never its name, which is the heading. */
     get packLine() {
         const p = this.pack;
         if (!p) return "";
-        const bits = [p.name];
-        if (p.version) bits.push(_t("version %s", p.version));
+        const bits = [];
+        if (p.version) bits.push(_t("Version %s", p.version));
         if (p.effective_date) {
             bits.push(_t("in force from %s", this.longDate(p.effective_date)));
         }

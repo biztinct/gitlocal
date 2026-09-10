@@ -149,6 +149,18 @@ def _py_strings(path):
     return out
 
 
+def _texts(payload):
+    """Every string anywhere inside an RPC answer."""
+    if isinstance(payload, str):
+        yield payload
+    elif isinstance(payload, dict):
+        for value in payload.values():
+            yield from _texts(value)
+    elif isinstance(payload, (list, tuple)):
+        for value in payload:
+            yield from _texts(value)
+
+
 @tagged('post_install', '-at_install')
 class TestWhiteLabel(TransactionCase):
 
@@ -187,6 +199,32 @@ class TestWhiteLabel(TransactionCase):
     def test_server_messages_say_configuration(self):
         for path in _walk(os.path.join(self.root, 'models'), '.py'):
             self._assert_clean(os.path.basename(path), _py_strings(path))
+
+    # ---- what a live answer says ------------------------------------
+    def test_the_tax_tab_never_repeats_somebody_elses_jargon(self):
+        """A screen is only as clean as the DATA it renders.
+
+        The Vietnam rule pack's own description is written for an engineer
+        comparing pack versions — "Serves both existing-config rollout (B4) and
+        new-config template seeding (F113)" — and it reached a payroll manager
+        through the "where these values come from" panel. Found in the browser,
+        not by a file scan, because no file of ours contained the words.
+        """
+        Studio = self.env['pb.blueprint.studio']
+        template = self.env['hr.formula.config.template'].sudo().search(
+            [('code', '=', 'vn_complete_2026')], limit=1)
+        if not template:
+            self.skipTest("the Vietnam · Complete starter is not installed")
+        res = Studio.bp_start({
+            'name': 'White label tax check', 'country_code': 'VN',
+            'cycle_type': 'regular', 'template_key': 'vn_complete_2026',
+            'situations': {},
+        }, 'b3-white-label')
+        self.assertTrue(res.get('ok'), res.get('reason'))
+        data = Studio.bp_tax_data(res['config_id'])
+        self._assert_clean('bp_tax_data', list(_texts(data)))
+        cal = Studio.bp_calendar_data(res['config_id'])
+        self._assert_clean('bp_calendar_data', list(_texts(cal)))
 
     # ---- the manifest is read in Apps -------------------------------
     def test_manifest_is_white_labelled(self):

@@ -1288,7 +1288,13 @@ $bp-head-h: 64px;
         background: var(--bp-soft);
         border-color: var(--bp-soft2);
     }
-    .pbbp-tax-status { flex: 0 0 auto; align-self: flex-start; }
+    // BP19 — the kit's badge is `text-transform: capitalize`, which is right
+    // for a status word and wrong for a sentence ("Aligned With The Pack").
+    .pbbp-tax-status {
+        flex: 0 0 auto;
+        align-self: flex-start;
+        text-transform: none;
+    }
     .pbbp-tax-auth {
         display: flex;
         align-items: flex-start;
@@ -1379,6 +1385,8 @@ $bp-head-h: 64px;
         font-size: 10.5px;
         color: var(--bp-muted);
     }
+    // In a table cell the code sits under the name, not glued to the end of it.
+    .pbbp-tax-bands td > b + .pbbp-tax-code { display: block; margin-top: 2px; }
     .pbbp-iconb {
         border: 0;
         background: transparent;
@@ -1566,7 +1574,12 @@ $bp-head-h: 64px;
     }
 
     .pbbp-tax-routes .pbbp-se-disc-h { width: 100%; }
-    .pbbp-tax-sync { width: 640px; }
+    .pbbp-tax-sync {
+        width: 660px;
+        // The comparison table is four short columns; it does not need the
+        // minimum width the band editor's number fields do.
+        .pbbp-tax-bands { min-width: 0; }
+    }
     .pbbp-tax-unmatched {
         border-top: 1px solid var(--bp-line);
         padding-top: 10px;
@@ -1640,9 +1653,11 @@ $bp-head-h: 64px;
         justify-content: flex-end;
         padding: 10px 12px;
         border-radius: 12px;
-        background: rgba(255, 255, 255, .92);
+        background: #fff;
         border: 1px solid var(--bp-line);
-        backdrop-filter: blur(6px);
+        // It sits over the cards it belongs to, so it has to read as a bar
+        // rather than as text floating on top of a radio button.
+        box-shadow: 0 -6px 18px rgba(30, 27, 46, .10);
     }
     .pbbp-cal-save-t {
         font-size: 12px;
