@@ -16,10 +16,12 @@ import {
 import { PayPreview } from "./pay_preview";
 import { SampleInputsDialog } from "./sample_inputs_dialog";
 import { StepStart } from "./step_start";
-import { StepThin } from "./step_thin";
 import { StepRules } from "./step_rules";
 import { StepConnect } from "./step_connect";
+import { StepOutputs } from "./step_outputs";
+import { StepTest } from "./step_test";
 import { StepFinish } from "./step_finish";
+import { Scoreboard } from "./scoreboard";
 
 /**
  * "New configuration" — the guided journey.
@@ -37,7 +39,9 @@ import { StepFinish } from "./step_finish";
  */
 export class PbBlueprint extends Component {
     static template = "pb_blueprint.Root";
-    static components = { PayPreview, SampleInputsDialog, StepStart, StepThin, StepRules, StepConnect, StepFinish, HubBackChip };
+    static components = { PayPreview, Scoreboard, SampleInputsDialog, StepStart,
+                          StepRules, StepConnect, StepOutputs, StepTest,
+                          StepFinish, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -110,6 +114,16 @@ export class PbBlueprint extends Component {
             // Bumped every time the pay panel gets a fresh answer, so the
             // component list refreshes the value it shows for each row.
             payTick: 0,
+            // --- steps 4 and 5, Outputs and Test ------------------------
+            // The Test step owns the checks; the shell keeps the last answer
+            // so the pay panel can become the scoreboard beside it, and so
+            // pressing Run from the panel reaches the step that owns it.
+            tests: null,
+            testsRunning: false,
+            runSignal: 0,
+            // A component the coverage line asked to look at, opened on the
+            // Outputs step the moment we land there.
+            inspectRule: 0,
         });
 
         this.cycles = [
@@ -816,6 +830,46 @@ export class PbBlueprint extends Component {
             this._rememberInUrl(this.state.configId);
         }
         await this.refreshPreview();
+    }
+
+    // ==================================================================
+    // Steps 4 and 5 — Outputs and Test
+    // ==================================================================
+    /** The Test step has a fresh answer: the scoreboard follows it. */
+    onTests(res) {
+        this.state.tests = res;
+        this.state.testsRunning = false;
+    }
+
+    onTestsBusy(running) { this.state.testsRunning = !!running; }
+
+    /**
+     * "Run the checks", pressed on the pay panel rather than on the step.
+     *
+     * The step owns the checks — it holds the revision, the list and every
+     * refusal — so the panel asks it to run rather than running a second copy
+     * of the same call. One implementation, one set of words when it fails.
+     */
+    runChecks() {
+        if (this.state.step !== "test") {
+            this.state.step = "test";
+            this.rememberStep();
+        }
+        this.state.testsRunning = true;
+        this.state.runSignal++;
+    }
+
+    /** "1 is untested: NIGHTPREM" — pressed, and here is that component. */
+    onInspectComponent(ruleId) {
+        this.state.inspectRule = ruleId || 0;
+        this.state.step = "outputs";
+        this.rememberStep();
+    }
+
+    /** Walking away from Outputs clears what the coverage line asked for. */
+    async gotoTest() {
+        this.state.step = "test";
+        this.rememberStep();
     }
 
     // ==================================================================

@@ -189,67 +189,6 @@
   </t>
 
   <!-- ==========================================================
-       STEPS 2-5 — real headings, an honest note, and the door that
-       works today.
-       ========================================================== -->
-  <t t-name="pb_blueprint.StepThin">
-    <div class="pbbp-step">
-      <div class="pbbp-step-head">
-        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
-        <h1 class="pbbp-h1" t-esc="meta.title"/>
-        <p class="pbbp-lead" t-esc="meta.lead"/>
-      </div>
-
-      <section class="pbbp-card">
-        <div class="pbbp-soon">
-          <span class="pbbp-soon-ic" t-out="ic('sparkles', 20)"/>
-          <div>
-            <b t-esc="promise"/>
-            <p t-esc="door"/>
-          </div>
-          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
-            <t t-out="ic('table', 14)"/> Open the grid
-          </button>
-        </div>
-      </section>
-
-      <section class="pbbp-card" t-if="showsComponents">
-        <header class="pbbp-card-head">
-          <span class="pbbp-card-ic" t-out="ic('list', 18)"/>
-          <div>
-            <h2>What this configuration already holds</h2>
-            <p t-if="props.templateName">
-              Seeded from <b t-esc="props.templateName"/>. Every one of these is live in the engine now.
-            </p>
-            <p t-else="">Every component currently in this configuration.</p>
-          </div>
-        </header>
-
-        <div class="pbbp-comps" t-if="components.length">
-          <div class="pbbp-comp" t-foreach="components" t-as="c" t-key="c.id">
-            <code class="pbbp-comp-code" t-esc="c.code"/>
-            <span class="pbbp-comp-nm" t-esc="c.name"/>
-            <span t-attf-class="pbim-badge {{ c.column_type === 'input' ? 'info' : (c.column_type === 'constant' ? 'muted' : 'ok') }}"
-                  t-esc="typeLabel(c.column_type)"/>
-            <span class="pbbp-comp-col" t-esc="c.column_letter"/>
-          </div>
-        </div>
-        <div class="pbbp-emptydoors" t-else="">
-          <p class="pbbp-note" t-esc="emptyLine"/>
-          <div class="pbbp-emptydoors-b">
-            <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.props.onImport()">
-              <t t-out="ic('fileSpreadsheet', 14)"/> Import a workbook
-            </button>
-            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
-              <t t-out="ic('plus', 14)"/> Add components in the grid
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </t>
-
-  <!-- ==========================================================
        STEP 6 — Finish.
        ========================================================== -->
   <t t-name="pb_blueprint.StepFinish">

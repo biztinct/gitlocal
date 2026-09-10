@@ -18,14 +18,22 @@
         <p class="pbbp-lead" t-esc="meta.lead"/>
       </div>
 
-      <div class="pbim-seg pbbp-ruletabs" role="tablist">
-        <button t-foreach="TABS" t-as="t" t-key="t.key"
-                t-attf-class="pbim-segbtn {{ state.tab === t.key ? 'on' : '' }}"
-                role="tab"
-                t-att-aria-selected="state.tab === t.key ? 'true' : 'false'"
-                t-on-click="() => this.onTab(t.key)">
-          <t t-esc="t.label"/>
-        </button>
+      <div class="pbbp-ruletabsrow">
+        <div class="pbim-seg pbbp-ruletabs" role="tablist">
+          <button t-foreach="TABS" t-as="t" t-key="t.key"
+                  t-attf-class="pbim-segbtn {{ state.tab === t.key ? 'on' : '' }}"
+                  role="tab"
+                  t-att-aria-selected="state.tab === t.key ? 'true' : 'false'"
+                  t-on-click="() => this.onTab(t.key)">
+            <t t-esc="t.label"/>
+          </button>
+        </div>
+        <div class="pbbp-ruletabs-sp"/>
+        <EvidenceChip t-if="showEvidence"
+                      evidence="state.evidence"
+                      showWhen="true"
+                      goLabel="'Check them'"
+                      onRun="() => this.props.onGoTest()"/>
       </div>
 
       <div class="pbbp-card" t-if="!props.configId">

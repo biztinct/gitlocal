@@ -123,7 +123,8 @@
                        onTab.bind="onRulesTab"
                        onChanged.bind="onRulesChanged"
                        onRevision.bind="onRulesRevision"
-                       onGrid.bind="openGrid"/>
+                       onGrid.bind="openGrid"
+                       onGoTest.bind="gotoTest"/>
 
             <StepConnect t-elif="state.step === 'connect' and created"
                          configId="state.configId or false"
@@ -137,21 +138,49 @@
                          onGrid.bind="openGrid"
                          onContinue.bind="onConnectContinue"/>
 
-            <StepFinish t-elif="state.step === 'finish'"
+            <StepOutputs t-elif="state.step === 'outputs' and created"
+                         configId="state.configId or false"
+                         revision="state.blueprint and state.blueprint.revision or 0"
+                         sampleId="state.sampleId or false"
+                         sampleName="sampleName"
+                         currency="state.config and state.config.currency or ''"
+                         reloadKey="state.payTick"
+                         inspectRule="state.inspectRule"
+                         onChanged.bind="onRulesChanged"
+                         onRevision.bind="onRulesRevision"
+                         onGrid.bind="openGrid"/>
+
+            <StepTest t-elif="state.step === 'test' and created"
+                      configId="state.configId or false"
+                      revision="state.blueprint and state.blueprint.revision or 0"
+                      currency="state.config and state.config.currency or ''"
+                      reloadKey="state.payTick"
+                      runSignal="state.runSignal"
+                      onRevision.bind="onRulesRevision"
+                      onTests.bind="onTests"
+                      onBusy.bind="onTestsBusy"
+                      onChanged.bind="onRulesChanged"
+                      onGrid.bind="openGrid"
+                      onInspect.bind="onInspectComponent"/>
+
+            <StepFinish t-elif="state.step === 'finish' and created"
                         config="state.config"
                         blueprint="state.blueprint"
                         counts="state.counts"
                         busy="state.busy"
                         error="false"
                         onFinish.bind="finish"/>
-
-            <StepThin t-else=""
-                      step="state.step"
-                      components="state.components"
-                      counts="state.counts"
-                      templateName="state.blueprint and state.blueprint.template_name or ''"
-                      onGrid.bind="openGrid"
-                      onImport.bind="openExcel"/>
+            <div class="pbbp-card" t-else="">
+              <div class="pbim-empty">
+                <b>Create the configuration first</b>
+                <p>Give it a name on the Start step and press Continue. Everything
+                   else on this journey opens as soon as it exists.</p>
+                <button class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.goto('start')">
+                  Back to the start
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- footer: where you are, and the one thing to press next -->
@@ -176,7 +205,11 @@
 
         <!-- the hero -->
         <aside class="pbbp-side">
-          <PayPreview configId="state.configId or false"
+          <Scoreboard t-if="state.step === 'test' and created"
+                      tests="state.tests or false"
+                      running="state.testsRunning"
+                      onRun.bind="runChecks"/>
+          <PayPreview t-else="" configId="state.configId or false"
                       samples="state.samples"
                       sampleId="state.sampleId or false"
                       preview="state.preview or false"
