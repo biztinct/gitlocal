@@ -55,6 +55,11 @@
           <button class="pbbp-kebab-b" t-on-click="toggleKebab" title="More"
                   t-out="ic('moreVertical', 16)"/>
           <div class="pbbp-kebab-menu" t-if="state.kebabOpen">
+            <!-- The same door as the header's "Skip to the grid", which gives
+                 up its place in the bar on a narrow phone. -->
+            <button t-on-click="() => this.openGrid()">
+              <t t-out="ic('table', 14)"/> Skip to the grid
+            </button>
             <button t-on-click="askDiscard">
               <t t-out="ic('trash', 14)"/> Discard this draft
             </button>

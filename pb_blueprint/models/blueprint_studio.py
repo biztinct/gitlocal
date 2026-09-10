@@ -23,12 +23,18 @@ _logger = logging.getLogger(__name__)
 
 #: Plain-English names for the kinds of pay run. The engine's own labels are
 #: shorthand ("Mid-Cycle"); these are the words on the screen.
-CYCLE_LABELS = {
-    'regular': "Regular payroll",
-    'mid_cycle': "Mid-month advance",
-    'end_cycle': "End-month payroll",
-    'full_final': "Full and final",
-}
+#:
+#: A FUNCTION, not a dict of plain strings: a module-level literal is built at
+#: import time, before any language is known, and it reached the Vietnamese
+#: journey in English (B6 found it on the Finish page). Called per request, `_()`
+#: answers in the reader's language.
+def cycle_label(cycle):
+    return {
+        'regular': _("Regular payroll"),
+        'mid_cycle': _("Mid-month advance"),
+        'end_cycle': _("End-month payroll"),
+        'full_final': _("Full and final"),
+    }.get(cycle or 'regular', _("Regular payroll"))
 
 #: The five numbers the pay panel shows, and the component code that carries
 #: each one when the configuration follows the usual naming. Used only where
@@ -50,12 +56,16 @@ ROLE_FOR_LINE = {
     'employer': 'employer_cost',
 }
 
-LINE_LABELS = {
-    'cash': "Cash earnings",
-    'deductions': "Employee deductions",
-    'tax': "Income tax",
-    'employer': "Employer cost",
-}
+def line_label(key):
+    """The four lines under the hero number — a function for the same reason
+    `cycle_label` is one: a module-level literal is built before any language is
+    known, and the pay panel is the most-read surface in the journey."""
+    return {
+        'cash': _("Cash earnings"),
+        'deductions': _("Employee deductions"),
+        'tax': _("Income tax"),
+        'employer': _("Employer cost"),
+    }.get(key, '')
 
 #: Sensible opening numbers for a brand-new sample employee, so the pay panel
 #: shows a believable person instead of a column of zeroes. Only used when the
@@ -485,7 +495,7 @@ class PbBlueprintStudio(models.AbstractModel):
                 'country_code': config.country_code or '',
                 'country_label': country_labels.get(config.country_code, ''),
                 'cycle_type': config.cycle_type or 'regular',
-                'cycle_label': CYCLE_LABELS.get(config.cycle_type or 'regular', ''),
+                'cycle_label': cycle_label(config.cycle_type),
                 'currency': config.currency_id.name or '',
                 'state': config.state,
                 'company': config.company_id.name or '',
@@ -601,7 +611,7 @@ class PbBlueprintStudio(models.AbstractModel):
             'revision': blueprint.revision,
             'name': config.name,
             'code': config.code or '',
-            'cycle_label': CYCLE_LABELS.get(config.cycle_type or 'regular', ''),
+            'cycle_label': cycle_label(config.cycle_type),
         }
 
     @api.model
@@ -740,7 +750,7 @@ class PbBlueprintStudio(models.AbstractModel):
             value, code = resolve(key)
             lines.append({
                 'key': key,
-                'label': LINE_LABELS[key],
+                'label': line_label(key),
                 'value': value,
                 'code': code,
             })

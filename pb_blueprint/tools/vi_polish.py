@@ -3,7 +3,7 @@
 """Repair and validate a generated Vietnamese catalogue.
 
 `tools/refresh_pb_vi.py` merges the POT with the shared translation memory and
-fills the gaps; this is the pass after it, and it exists because of two things
+fills the gaps; this is the pass after it, and it exists because of three things
 that pass silently:
 
 1. **The shared tool STRIPS edge whitespace from a msgid it extracted from
@@ -14,6 +14,15 @@ that pass silently:
 2. **A translatable FIELD can be a JSON document.** The Vietnam · Complete
    starter's `components_json` is 54,000 characters of data, and a "translated"
    copy of it would be a corrupted starter. Anything that big is dropped.
+3. **An entry is only visible to the half of the product whose EXTRACTOR
+   comment it carries.** `odoo/tools/translate.py:1856` filters code
+   translations by `odoo-python` in the entry's comments, and the web loader by
+   `odoo-javascript`. A string the screen says in JavaScript and the server also
+   says in Python is stored ONCE, with whichever comment the exporter wrote
+   first — so "Regular payroll" came back in Vietnamese on the client and in
+   English from the server, inside the same sentence. Every entry a Python
+   source asks for is marked `odoo-python` here, and every entry a JavaScript
+   source asks for is marked `odoo-javascript`, whatever the exporter thought.
 
 Then it validates what a `.po` must satisfy before it goes anywhere near a
 database: every entry carries `#. module: <name>` (GR5 — a missing one is an
@@ -24,6 +33,7 @@ and no translation contains a word a user may never read.
         --po pb_blueprint/i18n/vi_VN.po --pot /tmp/bp6_pots/pb_blueprint.pot
 """
 import argparse
+import os
 import re
 import sys
 
@@ -33,6 +43,18 @@ MODULE_RE = re.compile(r"(module[s]?): (\w+)")
 BANNED = ('odoo', 'blueprint')
 #: Longer than this and it is data, not a sentence.
 MAX_MSGID = 1500
+
+#: `_("…")` / `_t("…")` on one line. A literal built from a variable is not
+#: extractable in any language, so it is not looked for.
+LITERAL_RE = re.compile(r"""\b_t?\(\s*(["'])((?:\\.|(?!\1).)*)\1""")
+
+#: The two markers `odoo/tools/translate.py` filters code translations by
+#: (`:1856`). An entry without the right one is invisible to that half of the
+#: product — see the module docstring.
+PY_MARK = 'odoo-python'
+JS_MARK = 'odoo-javascript'
+SOURCE_FOLDERS = (('models', PY_MARK), ('wizards', PY_MARK),
+                  ('static/src/js', JS_MARK))
 
 
 def polish(po_path, pot_path=None, quiet=False):
@@ -65,9 +87,35 @@ def polish(po_path, pot_path=None, quiet=False):
             entry.msgid = wanted.msgid
             entry.msgstr = '%s%s%s' % (lead, entry.msgstr.strip(), tail)
 
+    # ---- 3. an entry is invisible to the half that did not claim it --
+    root = os.path.dirname(os.path.dirname(os.path.abspath(po_path)))
+    marked = 0
+    for folder, mark in SOURCE_FOLDERS:
+        base = os.path.join(root, folder)
+        if not os.path.isdir(base):
+            continue
+        for name in sorted(os.listdir(base)):
+            if not name.endswith(('.py', '.js')):
+                continue
+            with open(os.path.join(base, name), encoding='utf-8') as handle:
+                source = handle.read()
+            for _quote, literal in LITERAL_RE.findall(source):
+                text = literal.replace('\\"', '"').replace("\\'", "'")
+                entry = catalog.find(text)
+                if not entry:
+                    continue
+                comments = [c for c in (entry.comment or '').split('\n') if c]
+                if mark in comments:
+                    continue
+                entry.comment = '\n'.join(comments + [mark])
+                marked += 1
+    if marked:
+        say("marked %s entries for the half of the product that could not see "
+            "them" % marked)
+
     catalog.save(po_path)
 
-    # ---- 3. the checks that stand between this file and an outage ----
+    # ---- 4. the checks that stand between this file and an outage ----
     problems = []
     for entry in catalog:
         if not MODULE_RE.match(entry.comment or ''):

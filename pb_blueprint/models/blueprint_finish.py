@@ -151,7 +151,7 @@ class PbBlueprintFinish(models.AbstractModel):
         are written here, beside the choice itself, rather than rebuilt from a
         key in three different places.
         """
-        from .blueprint_studio import CYCLE_LABELS
+        from .blueprint_studio import cycle_label
         country_labels = dict(
             self.env['hr.formula.config']._fields['country_code'].selection)
         calendar, payment = self._calendar_prefs(blueprint)
@@ -163,7 +163,7 @@ class PbBlueprintFinish(models.AbstractModel):
             'company': config.company_id.name or '',
             'country': country_labels.get(config.country_code, '')
             or (config.country_code or ''),
-            'cycle': CYCLE_LABELS.get(config.cycle_type or 'regular', ''),
+            'cycle': cycle_label(config.cycle_type),
             'effective_from': (blueprint.effective_from
                                and str(blueprint.effective_from) or ''),
             'starter': (blueprint.template_name if blueprint else '')
@@ -283,10 +283,16 @@ class PbBlueprintFinish(models.AbstractModel):
         reasons = []
 
         # --- 1. can the engine read this at all? ------------------------
+        # Re-checking WRITES (`is_valid` is a stored field), and this method is
+        # also reached by `bp_finish_data`, which is a read. Somebody who may
+        # only look at payroll setup must still be able to open the Finish page,
+        # so a refused re-check falls back to what was last stored rather than
+        # taking the whole page down with the framework's own access message.
         try:
             config.action_validate_formulas()
         except AccessError:
-            raise
+            _logger.info("Guided setup: validation skipped for %s (read only)",
+                         self.env.user.login)
         except Exception as exc:            # noqa: BLE001 — advisory
             _logger.info("Guided setup: validation raised: %s", exc)
         config.invalidate_recordset(['has_errors', 'has_circular_refs'])
@@ -625,7 +631,7 @@ class PbBlueprintFinish(models.AbstractModel):
             {'task': 'payslip', 'label': task_label('payslip'),
              'status': status.get('payslip') or 'not_started',
              'mapped': payslip.get('placed') or 0,
-             'total': payslip.get('components') or 0},
+             'total': payslip.get('total') or 0},
             {'task': 'approvals', 'label': task_label('approvals'),
              'status': 'info', 'mapped': 0, 'total': 0},
         ]

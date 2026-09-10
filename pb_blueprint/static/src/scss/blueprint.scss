@@ -2282,6 +2282,17 @@ $bp-head-h: 64px;
         .pbbp-crumb b { max-width: none; font-size: 14px; }
         .pbbp-top-sp { display: none; }
         .pbbp-saveclose .pbim-btn-sm, .pbbp-saveclose { flex: 0 0 auto; }
+        // The pill wrapped to three lines and made the bar 103px tall — one
+        // row is a row of things that each fit on one line.
+        .pbbp-status { white-space: nowrap; flex: 0 1 auto; overflow: hidden; }
+    }
+
+    // The narrowest phones: the shortcut into the grid gives up its place in
+    // the header and keeps its own row in the overflow menu, where nothing is
+    // lost and nothing wraps.
+    @media (max-width: 560px) {
+        .pbbp-top .pbim-btn.ghost { display: none; }
+        .pbbp-status { max-width: 108px; text-overflow: ellipsis; }
 
         .pbbp-body { flex-direction: column; }
 

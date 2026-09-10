@@ -70,8 +70,8 @@ class PbBlueprintCalendar(models.AbstractModel):
         }
 
     def _cycle_label(self, config):
-        from .blueprint_studio import CYCLE_LABELS
-        return CYCLE_LABELS.get(config.cycle_type or 'regular', '')
+        from .blueprint_studio import cycle_label
+        return cycle_label(config.cycle_type)
 
     def _has_pay_delivery(self):
         return bool(self.env.ref('pb_pay_delivery.action_pb_pay_delivery',

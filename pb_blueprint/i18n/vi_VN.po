@@ -15,6 +15,7 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:56
 #: code:addons/pb_blueprint/static/src/js/blueprint_doors.js:31
 #: code:addons/pb_blueprint/static/src/js/blueprint_doors.js:47
@@ -28,27 +29,31 @@ msgstr "Cấu hình mới"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:147
 msgid "Regular payroll"
 msgstr "Kỳ lương thường"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:148
 msgid "Mid-month advance"
 msgstr "Tạm ứng giữa tháng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:149
 msgid "End-month payroll"
-msgstr "Lương cuối tháng"
+msgstr "Kỳ lương cuối tháng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:150
 msgid "Full and final"
-msgstr "Đầy đủ và cuối cùng"
+msgstr "Thanh toán nghỉ việc"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -82,21 +87,21 @@ msgstr "Có điều gì đó đã không xảy ra"
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:370
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:228
 msgid "1 check needs attention"
-msgstr "1 kiểm tra cần chú ý"
+msgstr "1 kiểm tra cần xem lại"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:371
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:229
 msgid "%s checks need attention"
-msgstr "Kiểm tra %s cần chú ý"
+msgstr "%s kiểm tra cần xem lại"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:373
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:176
 msgid "%(passed)s of %(total)s checks passed"
-msgstr "Kiểm tra %(passed)s của %(total)s đã được thông qua"
+msgstr "%(passed)s trong %(total)s kiểm tra đã đạt"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -133,7 +138,7 @@ msgstr "Chưa lưu"
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:410
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
 msgid "Setup complete"
-msgstr "Thiết lập hoàn tất"
+msgstr "Đã hoàn tất thiết lập"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -164,7 +169,7 @@ msgstr "1 thành phần"
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:423
 #: code:addons/pb_blueprint/static/src/js/step_start.js:109
 msgid "%s components"
-msgstr "Linh kiện %s"
+msgstr "%s thành phần"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -236,6 +241,7 @@ msgstr "Những con số không thể giải quyết được."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint.js:674
 #: code:addons/pb_blueprint/models/blueprint_studio.py:813
 msgid "The sample could not be added."
@@ -607,10 +613,11 @@ msgstr "Tiếp tục kết thúc"
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:218
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:222
 msgid "Finish & open"
-msgstr "Kết thúc và mở"
+msgstr "Hoàn tất và mở"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:168
 #: code:addons/pb_blueprint/models/blueprint_finish.py:208
 msgid "Local employees"
@@ -624,6 +631,7 @@ msgstr "Tiền lương, phụ cấp, bảo hiểm và thuế thu nhập"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:170
 #: code:addons/pb_blueprint/models/blueprint_finish.py:209
 msgid "International employees"
@@ -637,6 +645,7 @@ msgstr "Nơi cư trú, tính đủ điều kiện bảo hiểm và loại tiền
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:172
 #: code:addons/pb_blueprint/models/blueprint_finish.py:210
 msgid "Short-term employees"
@@ -650,6 +659,7 @@ msgstr "Thời hạn hợp đồng, ngưỡng thanh toán và cam kết thuế"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:174
 #: code:addons/pb_blueprint/models/blueprint_finish.py:211
 msgid "Guaranteed take-home pay"
@@ -663,6 +673,7 @@ msgstr "Một công thức chuyên môn cho các hợp đồng ròng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:180
 #: code:addons/pb_blueprint/models/blueprint_finish.py:212
 msgid "Joiners & leavers"
@@ -676,6 +687,7 @@ msgstr "Trả lương một phần tháng cho bất kỳ ai bắt đầu hoặc 
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:182
 #: code:addons/pb_blueprint/models/blueprint_finish.py:213
 msgid "Annual & event-based pay"
@@ -689,6 +701,7 @@ msgstr "Tháng thứ mười ba, tiền thưởng và thanh toán một lần"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:184
 #: code:addons/pb_blueprint/models/blueprint_finish.py:214
 msgid "Salary changes within a month"
@@ -702,6 +715,7 @@ msgstr "Hai mức lương trong một kỳ, chia theo ngày thay đổi"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:186
 #: code:addons/pb_blueprint/models/blueprint_finish.py:215
 msgid "Corrections & arrears"
@@ -812,6 +826,7 @@ msgstr "Ngày làm việc cuối cùng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/calendar_tab.js:111
 #: code:addons/pb_blueprint/models/blueprint_finish.py:47
 msgid "A fixed day of the month"
@@ -870,6 +885,7 @@ msgstr "Mã ngân hàng trong nước"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/calendar_tab.js:129
 #: code:addons/pb_blueprint/models/blueprint_finish.py:64
 msgid "SWIFT / BIC"
@@ -1155,7 +1171,7 @@ msgstr "Cần một cái nhìn khác"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/connect_text.js:45
 msgid "Already in place"
-msgstr "Đã có mặt tại chỗ"
+msgstr "Đã sẵn có"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1193,6 +1209,7 @@ msgstr "Việc này đã hoàn tất và cấu hình đã thay đổi kể từ 
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/connect_text.js:77
 #: code:addons/pb_blueprint/models/blueprint_connect.py:49
 msgid "from the connected system"
@@ -1200,6 +1217,7 @@ msgstr "từ hệ thống được kết nối"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/connect_text.js:78
 #: code:addons/pb_blueprint/models/blueprint_connect.py:50
 msgid "from spreadsheets"
@@ -1207,6 +1225,7 @@ msgstr "từ bảng tính"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/connect_text.js:79
 #: code:addons/pb_blueprint/models/blueprint_connect.py:51
 msgid "from employee records"
@@ -1214,6 +1233,7 @@ msgstr "từ hồ sơ nhân viên"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/connect_text.js:80
 #: code:addons/pb_blueprint/models/blueprint_connect.py:52
 msgid "carried from the mid-month run"
@@ -1352,7 +1372,7 @@ msgstr "Thành phần lương"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:26
 msgid "Everything this payroll can pay or take off"
-msgstr "Mọi thứ mà bảng lương này có thể trả hoặc mang đi"
+msgstr "Mọi khoản bảng lương này có thể trả hoặc trừ"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1409,7 +1429,7 @@ msgstr "Quốc gia"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:52
 msgid "Kind of pay run"
-msgstr "Kiểu trả lương"
+msgstr "Loại kỳ lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1434,13 +1454,13 @@ msgstr "Bắt đầu từ"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:56
 msgid "Inputs close on"
-msgstr "Đầu vào đóng"
+msgstr "Chốt dữ liệu vào"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:58
 msgid "Day %s of the month"
-msgstr "Ngày %s của tháng"
+msgstr "Ngày %s hàng tháng"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1454,13 +1474,13 @@ msgstr "Ngày lĩnh lương"
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:61
 #: code:addons/pb_blueprint/static/src/xml/calendar_tab.xml:1
 msgid "An input that arrives late"
-msgstr "Đầu vào đến muộn"
+msgstr "Dữ liệu đến muộn"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:63
 msgid "Paid in"
-msgstr "Đã thanh toán"
+msgstr "Trả bằng"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1484,14 +1504,14 @@ msgstr "phiên bản %s"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:98
 msgid "Aligned with the rule pack"
-msgstr "Căn chỉnh với gói quy tắc"
+msgstr "Khớp với gói quy tắc"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:103
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:157
 msgid "None of the pack's values are used here"
-msgstr "Không có giá trị nào của gói được sử dụng ở đây"
+msgstr "Không dùng giá trị nào của gói quy tắc ở đây"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1503,19 +1523,19 @@ msgstr "1 giá trị khác với gói quy tắc"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:109
 msgid "%s values differ from the rule pack"
-msgstr "Giá trị %s khác với gói quy tắc"
+msgstr "%s giá trị khác với gói quy tắc"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:116
 msgid "1 open"
-msgstr "1 mở"
+msgstr "1 đang mở"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:116
 msgid "%s open"
-msgstr "%s mở"
+msgstr "%s đang mở"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1557,37 +1577,37 @@ msgstr "Chưa có séc nào"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:170
 msgid "%(passed)s of %(total)s passed — before the change"
-msgstr "%(passed)s của %(total)s đã được thông qua — trước khi thay đổi"
+msgstr "%(passed)s trong %(total)s đã đạt — trước khi thay đổi"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:192
 msgid "Pay runs already follow the approval chain"
-msgstr "Các lần thanh toán đã tuân theo chuỗi phê duyệt"
+msgstr "Kỳ lương đã đi theo chuỗi phê duyệt sẵn có"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:199
 msgid "%s of 1 input has a source"
-msgstr "%s của 1 đầu vào có nguồn"
+msgstr "%s trong 1 đầu vào đã có nguồn"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:200
 msgid "%(done)s of %(total)s inputs have a source"
-msgstr "%(done)s của đầu vào %(total)s có nguồn"
+msgstr "%(done)s trong %(total)s đầu vào đã có nguồn"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:202
 msgid "%(done)s of %(total)s components placed"
-msgstr "%(done)s của các thành phần %(total)s được đặt"
+msgstr "đã đặt %(done)s trong %(total)s thành phần"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/finish_text.js:214
 msgid "Open the configuration"
-msgstr "Mở cấu hình"
+msgstr "Mở cấu hình lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -1672,6 +1692,7 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/output_inspector.js:131
 #: code:addons/pb_blueprint/models/blueprint_components.py:135
 msgid "A fixed value: %s"
@@ -1768,6 +1789,7 @@ msgstr "Đầu ra cuối cùng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:32
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:92
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:19
@@ -1777,6 +1799,7 @@ msgstr "Đầu vào & giá trị cố định"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:33
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:88
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:16
@@ -1786,6 +1809,7 @@ msgstr "Thu nhập"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:34
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:89
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:17
@@ -1795,6 +1819,7 @@ msgstr "Khấu trừ"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:35
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:90
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:18
@@ -1816,6 +1841,7 @@ msgstr "Đã được chỉnh sửa bằng tay"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:38
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:75
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:191
@@ -1921,6 +1947,7 @@ msgstr "vấn đề"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:79
 #: code:addons/pb_blueprint/models/blueprint_outputs.py:171
 msgid "From your data"
@@ -1928,6 +1955,7 @@ msgstr "Từ dữ liệu của bạn"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:80
 #: code:addons/pb_blueprint/models/blueprint_outputs.py:173
 msgid "Fixed value"
@@ -1935,6 +1963,7 @@ msgstr "Giá trị cố định"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:91
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:20
 #: code:addons/pb_blueprint/models/blueprint_components.py:689
@@ -1991,6 +2020,7 @@ msgstr "Được trả lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:159
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:106
 #: code:addons/pb_blueprint/models/blueprint_components.py:140
@@ -2044,6 +2074,7 @@ msgstr "%s chưa được kiểm tra"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:215
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:303
 #: code:addons/pb_blueprint/models/blueprint_tests.py:70
@@ -2073,25 +2104,25 @@ msgstr "Kiểm tra %s đang chờ bạn xác nhận"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:244
 msgid "1 check passed"
-msgstr "1 lần kiểm tra đã được thông qua"
+msgstr "1 kiểm tra đã đạt"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:244
 msgid "%s checks passed"
-msgstr "Kiểm tra %s đã được thông qua"
+msgstr "%s kiểm tra đã đạt"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:256
 msgid "Last checked %(when)s by %(who)s"
-msgstr "%(when)s được kiểm tra lần cuối bởi %(who)s"
+msgstr "Kiểm tra lần cuối %(when)s bởi %(who)s"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:259
 msgid "Last checked %s"
-msgstr "Đã kiểm tra lần cuối %s"
+msgstr "Kiểm tra lần cuối %s"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -2137,6 +2168,7 @@ msgstr "%s ngày trước"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:294
 #: code:addons/pb_blueprint/models/blueprint_tests.py:66
 msgid "Passed"
@@ -2144,6 +2176,7 @@ msgstr "Đạt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:297
 #: code:addons/pb_blueprint/models/blueprint_tests.py:67
 msgid "Needs attention"
@@ -2151,6 +2184,7 @@ msgstr "Cần chú ý"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/outputs_text.js:300
 #: code:addons/pb_blueprint/models/blueprint_tests.py:68
 msgid "Pending your confirmation"
@@ -2384,6 +2418,7 @@ msgstr "Lịch & thanh toán"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:33
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:50
 #: code:addons/pb_blueprint/models/blueprint_components.py:166
@@ -2393,6 +2428,7 @@ msgstr "Số tiền được phê duyệt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:34
 #: code:addons/pb_blueprint/models/blueprint_components.py:151
 msgid "A fixed amount"
@@ -2400,6 +2436,7 @@ msgstr "Một lượng cố định"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:35
 #: code:addons/pb_blueprint/models/blueprint_components.py:152
 msgid "Contract salary"
@@ -2407,6 +2444,7 @@ msgstr "Lương hợp đồng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:36
 #: code:addons/pb_blueprint/models/blueprint_components.py:153
 msgid "A share of contract salary"
@@ -2414,6 +2452,7 @@ msgstr "Một phần lương theo hợp đồng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:37
 #: code:addons/pb_blueprint/models/blueprint_components.py:154
 msgid "A share of another component"
@@ -2421,6 +2460,7 @@ msgstr "Một phần của thành phần khác"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:38
 #: code:addons/pb_blueprint/models/blueprint_components.py:155
 msgid "An amount per grade"
@@ -2428,6 +2468,7 @@ msgstr "Số tiền cho mỗi lớp"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:39
 #: code:addons/pb_blueprint/models/blueprint_components.py:156
 msgid "Hours at an hourly rate"
@@ -2435,6 +2476,7 @@ msgstr "Số giờ tính theo giờ"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:40
 #: code:addons/pb_blueprint/models/blueprint_components.py:157
 msgid "A yearly payment, by service"
@@ -2442,6 +2484,7 @@ msgstr "Thanh toán hàng năm, theo dịch vụ"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:41
 #: code:addons/pb_blueprint/models/blueprint_components.py:158
 msgid "The same as another component"
@@ -2449,6 +2492,7 @@ msgstr "Tương tự như một thành phần khác"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:42
 #: code:addons/pb_blueprint/models/blueprint_components.py:159
 msgid "Everything in a group, added up"
@@ -2456,6 +2500,7 @@ msgstr "Mọi thứ trong một nhóm được cộng lại"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:43
 #: code:addons/pb_blueprint/models/blueprint_components.py:160
 msgid "Worked out from the tax bands"
@@ -2463,6 +2508,7 @@ msgstr "Làm việc từ các nhóm thuế"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:44
 #: code:addons/pb_blueprint/models/blueprint_components.py:161
 msgid "Income tax, by the route that applies"
@@ -2470,6 +2516,7 @@ msgstr "Thuế thu nhập, theo lộ trình áp dụng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:45
 #: code:addons/pb_blueprint/models/blueprint_components.py:162
 msgid "Insurable pay, capped"
@@ -2477,6 +2524,7 @@ msgstr "Lương bảo hiểm, có giới hạn"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:46
 #: code:addons/pb_blueprint/models/blueprint_components.py:163
 msgid "Income the tax bands apply to"
@@ -2484,6 +2532,7 @@ msgstr "Thu nhập mà các nhóm thuế áp dụng cho"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:47
 #: code:addons/pb_blueprint/models/blueprint_components.py:164
 msgid "Take-home pay"
@@ -2491,6 +2540,7 @@ msgstr "Lương thực nhận"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:48
 #: code:addons/pb_blueprint/models/blueprint_components.py:165
 msgid "What the employer pays in total"
@@ -2498,6 +2548,7 @@ msgstr "Tổng số tiền mà người sử dụng lao động trả"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:55
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:58
 #: code:addons/pb_blueprint/models/blueprint_components.py:696
@@ -2506,6 +2557,7 @@ msgstr "không có gì"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:56
 #: code:addons/pb_blueprint/models/blueprint_components.py:697
 msgid "paid working days"
@@ -2513,6 +2565,7 @@ msgstr "ngày làm việc được trả lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:57
 #: code:addons/pb_blueprint/models/blueprint_components.py:698
 msgid "paid calendar days"
@@ -2520,6 +2573,7 @@ msgstr "ngày dương lịch được trả lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:63
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:69
 #: code:addons/pb_blueprint/models/blueprint_components.py:180
@@ -2529,6 +2583,7 @@ msgstr "Chịu thuế"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:64
 #: code:addons/pb_blueprint/models/blueprint_components.py:175
 msgid "Tax free"
@@ -2536,6 +2591,7 @@ msgstr "Miễn thuế"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:65
 #: code:addons/pb_blueprint/models/blueprint_components.py:176
 msgid "Tax free with evidence"
@@ -2543,6 +2599,7 @@ msgstr "Miễn thuế có bằng chứng"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:66
 #: code:addons/pb_blueprint/models/blueprint_components.py:177
 msgid "Tax free up to a yearly limit"
@@ -2550,6 +2607,7 @@ msgstr "Miễn thuế đến mức giới hạn hàng năm"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:67
 #: code:addons/pb_blueprint/models/blueprint_components.py:178
 msgid "Tax free within the entitlement"
@@ -2557,6 +2615,7 @@ msgstr "Miễn thuế trong phạm vi quyền lợi"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:68
 #: code:addons/pb_blueprint/models/blueprint_components.py:179
 msgid "Follows the original component"
@@ -2596,6 +2655,7 @@ msgstr "Mỗi lần trả lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:84
 #: code:addons/pb_blueprint/models/blueprint_components.py:182
 msgid "Paid once a year"
@@ -2603,6 +2663,7 @@ msgstr "Được thanh toán mỗi năm một lần"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:85
 #: code:addons/pb_blueprint/models/blueprint_components.py:184
 msgid "Paid when approved"
@@ -2610,6 +2671,7 @@ msgstr "Thanh toán khi được phê duyệt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:86
 #: code:addons/pb_blueprint/models/blueprint_components.py:186
 msgid "Paid by scheme"
@@ -2617,6 +2679,7 @@ msgstr "Thanh toán theo chương trình"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:91
 #: code:addons/pb_blueprint/models/blueprint_components.py:629
 msgid "A benefit, not cash"
@@ -2624,6 +2687,7 @@ msgstr "Một lợi ích, không phải tiền mặt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:91
 #: code:addons/pb_blueprint/models/blueprint_components.py:628
 msgid "Paid in cash"
@@ -2631,6 +2695,7 @@ msgstr "Đã trả bằng tiền mặt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:110
 #: code:addons/pb_blueprint/models/blueprint_components.py:168
 msgid "Prorated by working days"
@@ -2638,6 +2703,7 @@ msgstr "Chia theo ngày làm việc"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/recipe_text.js:112
 #: code:addons/pb_blueprint/models/blueprint_components.py:170
 msgid "Prorated by calendar days"
@@ -2842,6 +2908,7 @@ msgstr "Đã xảy ra lỗi."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/sentence_editor.js:425
 #: code:addons/pb_blueprint/models/blueprint_components.py:238
 msgid "This calculation cannot be read."
@@ -2885,6 +2952,7 @@ msgstr "Điều này sẽ thêm các con số mà bảng lương sẽ được c
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/sentence_editor.js:513
 #: code:addons/pb_blueprint/models/blueprint_components.py:848
 msgid "That rule could not be saved."
@@ -2922,10 +2990,11 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/step_connect.js:156
 #: code:addons/pb_blueprint/models/blueprint_finish.py:71
 msgid "Source mapping"
-msgstr "Ánh xạ nguồn"
+msgstr "Kết nối nguồn dữ liệu"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -2965,6 +3034,7 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/step_connect.js:179
 #: code:addons/pb_blueprint/models/blueprint_finish.py:72
 msgid "Payslip layout"
@@ -3308,6 +3378,7 @@ msgstr "Các cạnh %(n)s được chọn - bổ sung các kịch bản %(rows)s
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/step_test.js:467
 #: code:addons/pb_blueprint/models/blueprint_tests.py:740
 msgid "Those checks could not be added."
@@ -3340,6 +3411,7 @@ msgstr "Không thể đọc được các kỳ lương."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/step_test.js:537
 #: code:addons/pb_blueprint/models/blueprint_tests.py:893
 msgid "That person's numbers could not be worked out."
@@ -3347,6 +3419,7 @@ msgstr "Con số của người đó không thể tìm ra được."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/step_test.js:559
 #: code:addons/pb_blueprint/models/blueprint_tests.py:936
 msgid "That person could not be kept as a scenario."
@@ -3361,6 +3434,7 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_math.js:75
 #: code:addons/pb_blueprint/models/blueprint_tax.py:386
 msgid "A tax table needs at least one band."
@@ -3368,6 +3442,7 @@ msgstr "Một bảng thuế cần ít nhất một băng tần."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_math.js:80
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:220
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:369
@@ -3377,6 +3452,7 @@ msgstr "Tỷ lệ là tỷ lệ phần trăm từ 0 đến 100."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_math.js:84
 #: code:addons/pb_blueprint/models/blueprint_tax.py:381
 msgid "A band cannot start below zero."
@@ -3384,6 +3460,7 @@ msgstr "Một ban nhạc không thể bắt đầu dưới mức 0."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_math.js:91
 #: code:addons/pb_blueprint/models/blueprint_tax.py:391
 msgid "Two bands start at the same amount."
@@ -3450,6 +3527,7 @@ msgstr "có hiệu lực từ %s"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:185
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:243
 #: code:addons/pb_blueprint/models/blueprint_components.py:642
@@ -3458,6 +3536,7 @@ msgstr "Tháng Một"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:185
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:243
 #: code:addons/pb_blueprint/models/blueprint_components.py:642
@@ -3466,6 +3545,7 @@ msgstr "Tháng Hai"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:185
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:243
 #: code:addons/pb_blueprint/models/blueprint_components.py:642
@@ -3474,6 +3554,7 @@ msgstr "Tháng Ba"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:185
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:243
 #: code:addons/pb_blueprint/models/blueprint_components.py:642
@@ -3482,6 +3563,7 @@ msgstr "Tháng Tư"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:186
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:243
 #: code:addons/pb_blueprint/models/blueprint_components.py:642
@@ -3490,6 +3572,7 @@ msgstr "Th5"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:186
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:244
 #: code:addons/pb_blueprint/models/blueprint_components.py:643
@@ -3498,6 +3581,7 @@ msgstr "Tháng Sáu"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:186
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:244
 #: code:addons/pb_blueprint/models/blueprint_components.py:643
@@ -3506,6 +3590,7 @@ msgstr "Tháng Bảy"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:186
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:244
 #: code:addons/pb_blueprint/models/blueprint_components.py:643
@@ -3514,6 +3599,7 @@ msgstr "Tháng Tám"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:187
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:244
 #: code:addons/pb_blueprint/models/blueprint_components.py:643
@@ -3522,6 +3608,7 @@ msgstr "Tháng Chín"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:187
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:245
 #: code:addons/pb_blueprint/models/blueprint_components.py:644
@@ -3530,6 +3617,7 @@ msgstr "Tháng Mười"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:187
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:245
 #: code:addons/pb_blueprint/models/blueprint_components.py:644
@@ -3538,6 +3626,7 @@ msgstr "Tháng Mười một"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:188
 #: code:addons/pb_blueprint/models/blueprint_calendar.py:245
 #: code:addons/pb_blueprint/models/blueprint_components.py:644
@@ -3552,6 +3641,7 @@ msgstr "Một ban nhạc bắt đầu ở một số tiền."
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/js/tax_tab.js:298
 #: code:addons/pb_blueprint/models/blueprint_tax.py:354
 msgid "The bands could not be saved."
@@ -3881,6 +3971,7 @@ msgstr "thu nhập mà các nhóm thuế áp dụng cho"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_components.py:678
 #: code:addons/pb_blueprint/static/src/xml/outputs.xml:1
 msgid "take-home pay"
@@ -4285,7 +4376,7 @@ msgstr "Ngày làm việc cuối cùng của tháng"
 #: code:addons/pb_blueprint/models/blueprint_finish.py:57
 #: code:addons/pb_blueprint/models/blueprint_finish.py:54
 msgid "It waits for the next pay run"
-msgstr "Nó chờ kỳ lương tiếp theo"
+msgstr "Chờ sang kỳ lương sau"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -4314,22 +4405,23 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:46
 msgid "The second last working day of the month"
-msgstr "Ngày làm việc cuối cùng thứ hai của tháng"
+msgstr "Ngày làm việc áp chót của tháng"
 
 #. module: pb_blueprint
 #. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:55
 msgid "An off-cycle run is approved for it"
-msgstr "Một lần chạy ngoài chu kỳ được phê duyệt cho nó"
+msgstr "Duyệt một kỳ lương ngoài lịch cho khoản đó"
 
 #. module: pb_blueprint
 #. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:56
 msgid "The run is reopened, with two approvals"
-msgstr "Cuộc chạy được mở lại với hai lần phê duyệt"
+msgstr "Mở lại kỳ lương, với hai chữ ký duyệt"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:73
 #: code:addons/pb_blueprint/static/src/xml/connect.xml:1
 msgid "Approvals"
@@ -4414,7 +4506,7 @@ msgstr ""
 #: code:addons/pb_blueprint/models/blueprint_finish.py:317
 #: code:addons/pb_blueprint/models/blueprint_finish.py:337
 msgid "Open Pay rules"
-msgstr "Quy tắc thanh toán mở"
+msgstr "Mở Quy tắc lương"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -4434,7 +4526,7 @@ msgstr ""
 #: code:addons/pb_blueprint/models/blueprint_finish.py:405
 #: code:addons/pb_blueprint/models/blueprint_finish.py:539
 msgid "Go to Test"
-msgstr "Đi kiểm tra"
+msgstr "Sang bước Kiểm thử"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -4452,7 +4544,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:522
 msgid "Open Connect"
-msgstr "Mở kết nối"
+msgstr "Mở Kết nối"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -4468,7 +4560,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:601
 msgid "Open Tax & protection"
-msgstr "Thuế mở và bảo vệ"
+msgstr "Mở Thuế và bảo hiểm"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -4483,6 +4575,7 @@ msgstr ""
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/models/blueprint_finish.py:365
 #: code:addons/pb_blueprint/static/src/xml/evidence.xml:1
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
@@ -5800,7 +5893,7 @@ msgstr "thành phần ban đầu"
 #. odoo-python
 #: code:addons/pb_blueprint/models/recipe_schema.py:478
 msgid "Choose the insurance treatment"
-msgstr "Chọn phương pháp điều trị bảo hiểm"
+msgstr "Chọn cách xử lý bảo hiểm"
 
 #. module: pb_blueprint
 #. odoo-python
@@ -5994,7 +6087,7 @@ msgstr "Thêm"
 #: code:addons/pb_blueprint/static/src/xml/blueprint.xml:1
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
 msgid "Discard this draft"
-msgstr "Hủy bản nháp này"
+msgstr "Bỏ bản nháp này"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -6834,29 +6927,33 @@ msgstr "xuất hiện ở đây vào thời điểm cấu hình được tạo"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 msgid "Cash earnings"
-msgstr "Thu nhập tiền mặt"
+msgstr "Thu nhập bằng tiền"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 msgid "Employee deductions"
-msgstr "Khấu trừ của người lao động"
+msgstr "Các khoản trừ của nhân viên"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 #: code:addons/pb_blueprint/static/src/xml/sentence_editor.xml:1
 #: code:addons/pb_blueprint/static/src/xml/tax_tab.xml:1
 msgid "Income tax"
-msgstr "Thuế thu nhập"
+msgstr "Thuế thu nhập cá nhân"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 msgid "Employer cost"
-msgstr "Chi phí của người sử dụng lao động"
+msgstr "Chi phí của công ty"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -7448,7 +7545,7 @@ msgstr "Đang kiểm tra…"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
 msgid "Revisit the setup"
-msgstr "Xem lại thiết lập"
+msgstr "Xem lại các bước thiết lập"
 
 #. module: pb_blueprint
 #. odoo-javascript
