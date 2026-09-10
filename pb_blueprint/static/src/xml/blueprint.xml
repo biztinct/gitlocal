@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.Root">
+    <div class="pbim pbbp" t-on-keydown="onKeydown">
+
+      <!-- Three whole-page states in ONE unbroken t-if / t-elif / t-else
+           chain: loading, a refusal that names its reason and its way out,
+           and the journey. Nothing — not even a comment — may sit between
+           these three siblings: a comment breaks the chain at runtime (W23),
+           and the failure mode is two states painting at once. -->
+      <div class="pbbp-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Getting your starting points ready…</span>
+      </div>
+      <div class="pbbp-boot is-stop" t-elif="state.fatal">
+        <span class="i" t-out="ic('alert', 26)"/>
+        <b>This setup cannot be opened</b>
+        <p t-esc="state.fatal"/>
+        <button class="pbim-btn primary" t-on-click="backToConfigs">
+          <t t-out="ic('back', 14)"/> Back to Payroll configurations
+        </button>
+      </div>
+      <t t-else="">
+      <header class="pbbp-top">
+        <HubBackChip back="backChip" tone="'light'"/>
+
+        <div class="pbbp-crumb">
+          <b t-if="created" t-esc="state.config.name"/>
+          <b t-else="">New configuration</b>
+          <code t-if="created and state.config.code" t-esc="state.config.code"/>
+        </div>
+
+        <div class="pbbp-top-sp"/>
+
+        <button t-attf-class="pbbp-status {{ statusPill.cls }}"
+                t-att-disabled="!statusPill.retry"
+                t-on-click="retrySave">
+          <span class="d" t-if="statusPill.cls !== 'busy'"/>
+          <span class="pbbp-status-spin" t-else=""/>
+          <t t-esc="statusPill.text"/>
+        </button>
+
+        <button class="pbim-btn ghost pbim-btn-sm" t-if="created"
+                t-on-click="() => this.openGrid()">
+          <t t-out="ic('table', 14)"/> Skip to the grid
+        </button>
+
+        <button class="pbim-btn outline pbim-btn-sm pbbp-saveclose" t-on-click="saveAndClose">
+          <t t-if="created">Save &amp; close</t>
+          <t t-else="">Close</t>
+        </button>
+
+        <div class="pbbp-kebab" t-if="created">
+          <button class="pbbp-kebab-b" t-on-click="toggleKebab" title="More"
+                  t-out="ic('moreVertical', 16)"/>
+          <div class="pbbp-kebab-menu" t-if="state.kebabOpen">
+            <button t-on-click="() => this.state.confirmDiscard = true">
+              <t t-out="ic('trash', 14)"/> Discard this draft
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ================ three columns ================ -->
+      <div class="pbbp-body">
+
+        <!-- rail: vertical at desk width, a horizontal stepper on a phone -->
+        <nav class="pbbp-rail" aria-label="Setup steps">
+          <span class="pbbp-rail-eyebrow">New configuration</span>
+          <button t-foreach="STEPS" t-as="s" t-key="s"
+                  t-attf-class="pbbp-rail-row is-{{ railState(s) }}"
+                  t-att-disabled="railDisabled(s)"
+                  t-att-title="railTitle(s)"
+                  t-att-aria-current="s === state.step ? 'step' : false"
+                  t-on-click="() => this.goto(s)">
+            <span class="pbbp-rail-n">
+              <t t-if="railState(s) === 'done'"><t t-out="ic('check', 13)"/></t>
+              <t t-else=""><t t-esc="s_index + 1"/></t>
+            </span>
+            <span class="pbbp-rail-t">
+              <b t-esc="META[s].label"/>
+              <small t-esc="META[s].hint"/>
+            </span>
+          </button>
+          <div class="pbbp-rail-foot" t-if="companyName">
+            <t t-out="ic('building', 13)"/>
+            <span>Saved to <b t-esc="companyName"/></span>
+          </div>
+        </nav>
+
+        <!-- content -->
+        <main class="pbbp-main">
+          <div class="pbbp-scroll">
+            <StepStart t-if="state.step === 'start'"
+                       form="state.form"
+                       situations="state.situations"
+                       starters="state.starters"
+                       countries="state.countries"
+                       cycles="cycles"
+                       company="companyName"
+                       created="created"
+                       busy="state.busy"
+                       progress="state.progress"
+                       error="state.startError"
+                       nameError="state.nameError"
+                       onSet.bind="onSet"
+                       onPickStarter.bind="onPickStarter"
+                       onToggleAudience.bind="onToggleAudience"
+                       onToggleReallife.bind="onToggleReallife"
+                       onUnlock.bind="onUnlock"
+                       onRetry.bind="createDraft"/>
+
+            <StepFinish t-elif="state.step === 'finish'"
+                        config="state.config"
+                        blueprint="state.blueprint"
+                        counts="state.counts"
+                        busy="state.busy"
+                        error="false"
+                        onFinish.bind="finish"/>
+
+            <StepThin t-else=""
+                      step="state.step"
+                      components="state.components"
+                      counts="state.counts"
+                      templateName="state.blueprint and state.blueprint.template_name or ''"
+                      onGrid.bind="openGrid"/>
+          </div>
+
+          <!-- footer: where you are, and the one thing to press next -->
+          <footer class="pbbp-foot">
+            <span class="pbbp-foot-l" t-esc="footerLine"/>
+            <div class="pbbp-foot-sp"/>
+            <button class="pbim-btn ghost" t-if="created and state.step !== 'start'"
+                    t-on-click="onBack">
+              <t t-out="ic('chevronLeft', 14)"/> Back
+            </button>
+            <button class="pbim-btn primary pbbp-cta" t-att-disabled="state.busy"
+                    t-on-click="onContinue">
+              <t t-if="state.busy">
+                <span class="pbbp-cta-spin"/> Creating…
+              </t>
+              <t t-else="">
+                <t t-esc="continueLabel"/> <t t-out="ic('arrow', 15)"/>
+              </t>
+            </button>
+          </footer>
+        </main>
+
+        <!-- the hero -->
+        <aside class="pbbp-side">
+          <PayPreview configId="state.configId or false"
+                      samples="state.samples"
+                      sampleId="state.sampleId or false"
+                      preview="state.preview or false"
+                      status="state.payStatus"
+                      reason="state.payReason"
+                      currencyCode="state.config and state.config.currency or ''"
+                      onPickSample.bind="onPickSample"
+                      onAdjust.bind="onAdjust"
+                      onRetry.bind="refreshPreview"
+                      onAddSample.bind="onAddSample"/>
+        </aside>
+      </div>
+
+      <!-- ================ overlays ================ -->
+      <SampleInputsDialog t-if="state.inputsOpen"
+                          title="state.preview and state.preview.sample.name or ''"
+                          rows="state.inputsRows"
+                          busy="state.inputsBusy"
+                          onSave.bind="onSaveInputs"
+                          onClose="() => this.state.inputsOpen = false"/>
+
+      <!-- Replacing components destroys work: the dialog says how much. -->
+      <div class="pbim-modal-scrim" t-if="state.confirmStarter"
+           t-on-click="() => this.state.confirmStarter = null">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl">Replace the components?</div>
+            <div class="pbim-modal__sp"/>
+          </div>
+          <div class="pbim-modal__body">
+            <p t-esc="confirmStarterText"/>
+            <p class="pbim-note">Nothing outside this draft changes, and no payslip is affected.</p>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="() => this.state.confirmStarter = null">
+              Keep what I have
+            </button>
+            <button class="pbim-btn danger" t-on-click="doRestart">Replace components</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbim-modal-scrim" t-if="state.confirmDiscard"
+           t-on-click="() => this.state.confirmDiscard = false">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl">Discard this draft?</div>
+            <div class="pbim-modal__sp"/>
+          </div>
+          <div class="pbim-modal__body">
+            <p>
+              The configuration <b t-esc="state.config and state.config.name"/> and everything
+              set up in it is deleted. This cannot be undone.
+            </p>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="() => this.state.confirmDiscard = false">
+              Keep the draft
+            </button>
+            <button class="pbim-btn danger" t-on-click="doDiscard">Discard it</button>
+          </div>
+        </div>
+      </div>
+      </t>
+    </div>
+  </t>
+
+</templates>

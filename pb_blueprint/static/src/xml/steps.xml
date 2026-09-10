@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==========================================================
+       STEP 1 — Start. The only step that creates anything.
+       ========================================================== -->
+  <t t-name="pb_blueprint.StepStart">
+    <div class="pbbp-step">
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
+        <h1 class="pbbp-h1" t-esc="meta.title"/>
+        <p class="pbbp-lead" t-esc="meta.lead"/>
+      </div>
+
+      <!-- The draft could not be created: the reason, and one button. -->
+      <div class="pbbp-alert is-err" t-if="props.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>The configuration was not created</b>
+          <p t-esc="props.error"/>
+          <p class="pbbp-alert-sub">Nothing was saved, so nothing needs cleaning up.</p>
+        </div>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onRetry()">
+          <t t-out="ic('rotate', 14)"/> Try again
+        </button>
+      </div>
+
+      <!-- ================ Identity ================ -->
+      <section t-attf-class="pbbp-card {{ props.busy ? 'is-dimmed' : '' }}">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('idCard', 18)"/>
+          <div>
+            <h2>Identity</h2>
+            <p>What this configuration is called, and the shape of the pay run it drives.</p>
+          </div>
+        </header>
+
+        <div class="pbbp-fields">
+          <div class="pbbp-field">
+            <label>Company</label>
+            <span class="pbbp-chip-ro">
+              <t t-out="ic('building', 14)"/><t t-esc="props.company"/>
+            </span>
+            <small>Switch company in the top bar.</small>
+          </div>
+
+          <div class="pbbp-field">
+            <label for="pbbp-name">Configuration name <span class="req">required</span></label>
+            <input id="pbbp-name" type="text" t-ref="name"
+                   placeholder="Vietnam · Monthly payroll"
+                   t-att-value="props.form.name"
+                   t-att-class="props.nameError ? 'is-bad' : ''"
+                   t-att-aria-invalid="props.nameError ? 'true' : 'false'"
+                   t-on-input="(ev) => this.onField('name', ev)"/>
+            <small class="pbbp-err" t-if="props.nameError" t-esc="props.nameError"/>
+            <small t-else="">People will search for this name. Say where and who it pays.</small>
+          </div>
+
+          <div class="pbbp-field">
+            <label for="pbbp-country">Country</label>
+            <select id="pbbp-country" t-if="!props.created"
+                    t-on-change="(ev) => this.onField('country_code', ev)">
+              <option t-foreach="props.countries" t-as="c" t-key="c.code"
+                      t-att-value="c.code" t-att-selected="c.code === props.form.country_code"
+                      t-esc="c.label"/>
+            </select>
+            <div class="pbbp-locked" t-else="">
+              <span t-esc="countryLabel"/>
+              <button class="pbbp-changelink" t-on-click="() => this.props.onUnlock('country')">Change</button>
+            </div>
+            <small>Decides the currency, the statutory rules and how people are matched.</small>
+          </div>
+
+          <div class="pbbp-field">
+            <label for="pbbp-cycle">Pay cycle</label>
+            <select id="pbbp-cycle" t-on-change="(ev) => this.onField('cycle_type', ev)">
+              <option t-foreach="props.cycles" t-as="cy" t-key="cy.value"
+                      t-att-value="cy.value" t-att-selected="cy.value === props.form.cycle_type"
+                      t-esc="cy.label"/>
+            </select>
+            <small>A regular monthly payroll, an advance, the closing run, or a leaver's last pay.</small>
+          </div>
+
+          <div class="pbbp-field">
+            <label for="pbbp-eff">Effective from</label>
+            <input id="pbbp-eff" type="date" t-att-value="props.form.effective_from"
+                   t-on-change="(ev) => this.onField('effective_from', ev)"/>
+            <small>The first pay period this configuration is meant for.</small>
+          </div>
+        </div>
+
+        <!-- Creation progress: three real facts, ticked as they land. -->
+        <ol class="pbbp-progress" t-if="props.progress.length">
+          <li t-foreach="props.progress" t-as="p" t-key="p.label"
+              t-attf-class="{{ p.done ? 'is-done' : '' }}">
+            <span class="k" t-if="p.done" t-out="ic('check', 13)"/>
+            <span class="k is-spin" t-else=""/>
+            <t t-esc="p.label"/>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ================ Starting point ================ -->
+      <section t-attf-class="pbbp-card {{ props.busy ? 'is-dimmed' : '' }}">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('layers', 18)"/>
+          <div>
+            <h2>How would you like to start?</h2>
+            <p>A ready-made library, your own workbook, or nothing at all.</p>
+          </div>
+        </header>
+
+        <p class="pbbp-note is-warn" t-if="noStarterNote" t-esc="noStarterNote"/>
+
+        <div class="pbbp-starters">
+          <button t-foreach="starters" t-as="s" t-key="s.key"
+                  t-attf-class="pbbp-starter {{ s.key === props.form.template_key ? 'is-on' : '' }}"
+                  t-att-aria-pressed="s.key === props.form.template_key ? 'true' : 'false'"
+                  t-on-click="() => this.props.onPickStarter(s.key)">
+            <span class="pbbp-starter-top">
+              <span class="pbbp-starter-ic" t-out="ic(starterIcon(s), 18)"/>
+              <span class="pbbp-starter-chk" t-if="s.key === props.form.template_key"
+                    t-out="ic('check', 14)"/>
+            </span>
+            <span class="pbbp-starter-nm" t-esc="s.name"/>
+            <span class="pbbp-starter-badges" t-if="s.kind === 'template'">
+              <span t-if="s.certified" class="pbim-badge ok">Certified</span>
+              <span t-else="" class="pbim-badge muted">Draft</span>
+              <span class="pbbp-starter-meta" t-esc="starterMeta(s)"/>
+            </span>
+            <span class="pbbp-starter-counts" t-if="s.kind === 'template'" t-esc="starterCounts(s)"/>
+            <span class="pbbp-starter-desc" t-esc="s.desc"/>
+          </button>
+        </div>
+
+        <p class="pbbp-note" t-if="starterNote" t-esc="starterNote"/>
+      </section>
+
+      <!-- ================ Who are you paying ================ -->
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('users', 18)"/>
+          <div>
+            <h2>Who are you paying?</h2>
+            <p>Pick every group that applies. It decides which components and which sample
+               people the next steps offer you.</p>
+          </div>
+        </header>
+
+        <div class="pbbp-tiles">
+          <button t-foreach="AUDIENCES" t-as="a" t-key="a.key"
+                  t-attf-class="pbbp-tile {{ has(props.situations.audiences, a.key) ? 'is-on' : '' }}"
+                  t-att-aria-pressed="has(props.situations.audiences, a.key) ? 'true' : 'false'"
+                  t-on-click="() => this.props.onToggleAudience(a.key)">
+            <span class="pbbp-tile-ic" t-out="ic(a.icon, 18)"/>
+            <span class="pbbp-tile-t">
+              <b t-esc="a.label"/>
+              <small t-esc="a.hint"/>
+            </span>
+            <span class="pbbp-tile-chk" t-if="has(props.situations.audiences, a.key)"
+                  t-out="ic('check', 14)"/>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================ Real life ================ -->
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('calendar', 18)"/>
+          <div>
+            <h2>Real life belongs in the design</h2>
+            <p>The months that are not ordinary. Tick them now and the next steps bring them up
+               instead of leaving them to be discovered on payday.</p>
+          </div>
+        </header>
+
+        <div class="pbbp-checks">
+          <label t-foreach="REALLIFE" t-as="r" t-key="r.key" class="pbbp-check">
+            <input type="checkbox" t-att-checked="has(props.situations.reallife, r.key)"
+                   t-on-change="() => this.props.onToggleReallife(r.key)"/>
+            <span class="pbbp-check-t">
+              <b t-esc="r.label"/>
+              <small t-esc="r.hint"/>
+            </span>
+          </label>
+        </div>
+      </section>
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       STEPS 2-5 — real headings, an honest note, and the door that
+       works today.
+       ========================================================== -->
+  <t t-name="pb_blueprint.StepThin">
+    <div class="pbbp-step">
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
+        <h1 class="pbbp-h1" t-esc="meta.title"/>
+        <p class="pbbp-lead" t-esc="meta.lead"/>
+      </div>
+
+      <section class="pbbp-card">
+        <div class="pbbp-soon">
+          <span class="pbbp-soon-ic" t-out="ic('sparkles', 20)"/>
+          <div>
+            <b t-esc="promise"/>
+            <p t-esc="door"/>
+          </div>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+            <t t-out="ic('table', 14)"/> Open the grid
+          </button>
+        </div>
+      </section>
+
+      <section class="pbbp-card" t-if="showsComponents">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('list', 18)"/>
+          <div>
+            <h2>What this configuration already holds</h2>
+            <p t-if="props.templateName">
+              Seeded from <b t-esc="props.templateName"/>. Every one of these is live in the engine now.
+            </p>
+            <p t-else="">Every component currently in this configuration.</p>
+          </div>
+        </header>
+
+        <div class="pbbp-comps" t-if="components.length">
+          <div class="pbbp-comp" t-foreach="components" t-as="c" t-key="c.id">
+            <code class="pbbp-comp-code" t-esc="c.code"/>
+            <span class="pbbp-comp-nm" t-esc="c.name"/>
+            <span t-attf-class="pbim-badge {{ c.column_type === 'input' ? 'info' : (c.column_type === 'constant' ? 'muted' : 'ok') }}"
+                  t-esc="typeLabel(c.column_type)"/>
+            <span class="pbbp-comp-col" t-esc="c.column_letter"/>
+          </div>
+        </div>
+        <p class="pbbp-note" t-else="" t-esc="emptyLine"/>
+      </section>
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       STEP 6 — Finish.
+       ========================================================== -->
+  <t t-name="pb_blueprint.StepFinish">
+    <div class="pbbp-step">
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow" t-esc="meta.eyebrow"/>
+        <h1 class="pbbp-h1" t-esc="meta.title"/>
+        <p class="pbbp-lead" t-esc="meta.lead"/>
+      </div>
+
+      <div class="pbbp-alert is-err" t-if="props.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>Not ready to finish yet</b>
+          <p t-esc="props.error"/>
+        </div>
+      </div>
+
+      <div class="pbbp-tilerow">
+        <div class="pbbp-stat" t-foreach="tiles" t-as="t" t-key="t.key">
+          <span class="pbbp-stat-ic" t-out="ic(t.icon, 16)"/>
+          <b t-esc="t.value"/>
+          <span t-esc="t.label"/>
+        </div>
+      </div>
+
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('idCard', 18)"/>
+          <div>
+            <h2>What you decided</h2>
+            <p>Hand this page to somebody else and they can tell what this payroll does.</p>
+          </div>
+        </header>
+
+        <dl class="pbbp-sum">
+          <t t-foreach="rows" t-as="r" t-key="r.label">
+            <dt t-esc="r.label"/>
+            <dd t-attf-class="{{ r.mono ? 'is-mono' : '' }}" t-esc="r.value"/>
+          </t>
+        </dl>
+
+        <div class="pbbp-sum-chips" t-if="chips.length">
+          <span class="pbbp-eyebrow">You told us about</span>
+          <div class="pbim-chips">
+            <span class="pbim-chip" t-foreach="chips" t-as="c" t-key="c" t-esc="c"/>
+          </div>
+        </div>
+      </section>
+
+      <section class="pbbp-card is-cta">
+        <div>
+          <h2 t-if="finished">Setup is already complete</h2>
+          <h2 t-else="">Ready when you are</h2>
+          <p>Finishing marks the setup as complete. Activating the configuration for real pay
+             runs stays a separate, checked step.</p>
+        </div>
+        <button class="pbim-btn primary" t-att-disabled="props.busy"
+                t-on-click="() => this.props.onFinish()">
+          <t t-if="props.busy">Checking…</t>
+          <t t-else="">Finish &amp; open</t>
+        </button>
+      </section>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,185 @@
+# -*- coding: utf-8 -*-
+"""The record behind the guided "New configuration" journey.
+
+One row per configuration that was created through the journey. It holds
+everything the journey knows that the configuration itself has no field for —
+which step you stopped on, which starter you chose, who you said you were
+paying — so that closing the browser loses nothing and the configurations
+screen can offer "Resume setup".
+
+The configuration is the working copy and it is ALWAYS a draft while this row
+is `draft`: the journey never edits a live configuration (BP-R8).
+"""
+import json
+import logging
+
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
+
+_logger = logging.getLogger(__name__)
+
+#: The six steps, in order. Keys, never numbers — a number changes meaning the
+#: day a step is inserted, a key does not (BP-R2).
+STEPS = ('start', 'rules', 'connect', 'outputs', 'test', 'finish')
+
+DEFAULT_OPTIONAL_STATUS = {
+    'mapping': 'not_started',
+    'payslip': 'not_started',
+    'approvals': 'info',
+}
+
+
+class PbFormulaBlueprint(models.Model):
+    _name = 'pb.formula.blueprint'
+    _description = 'Guided Payroll Setup'
+    _order = 'write_date desc'
+
+    config_id = fields.Many2one(
+        'hr.formula.config',
+        string='Configuration',
+        required=True,
+        ondelete='cascade',
+        index=True,
+        help="The configuration this setup is building.")
+
+    company_id = fields.Many2one(
+        'res.company',
+        string='Company',
+        related='config_id.company_id',
+        store=True,
+        index=True)
+
+    # The client mints this once per journey and sends it with every attempt to
+    # create the draft. Two presses of Continue, a double click or a retry after
+    # a dropped connection therefore all resolve to the SAME configuration.
+    token = fields.Char(
+        string='Setup Key',
+        required=True,
+        index=True,
+        help="Identifies one run of the setup so a repeated press never "
+             "creates a second configuration.")
+
+    state = fields.Selection([
+        ('draft', 'Being set up'),
+        ('finished', 'Setup complete'),
+        ('abandoned', 'Abandoned'),
+    ], string='Status', default='draft', required=True, index=True)
+
+    step = fields.Char(
+        string='Step',
+        default='start',
+        required=True,
+        help="Which of the six steps the person stopped on.")
+
+    template_key = fields.Char(string='Starting Point')
+    template_name = fields.Char(string='Starting Point Name')
+
+    effective_from = fields.Date(string='Effective From')
+
+    situations_json = fields.Text(
+        string='Situations (JSON)',
+        default='{}',
+        help="Who is being paid and which real-life situations were ticked.")
+
+    optional_status_json = fields.Text(
+        string='Optional Steps (JSON)',
+        default=lambda self: json.dumps(DEFAULT_OPTIONAL_STATUS))
+
+    calendar_json = fields.Text(string='Calendar (JSON)', default='{}')
+    review_items_json = fields.Text(string='Review Items (JSON)', default='[]')
+
+    pack_id = fields.Many2one(
+        'hr.formula.legislation.pack',
+        string='Rule Pack',
+        ondelete='set null',
+        help="The statutory rule pack the tax values were pinned to.")
+    pack_version = fields.Char(string='Rule Pack Version')
+
+    evidence_hash = fields.Char(string='Evidence Key')
+    tests_hash = fields.Char(string='Checks Key')
+
+    revision = fields.Integer(
+        string='Revision', default=1, required=True,
+        help="Bumped on every save so two people cannot overwrite each other "
+             "without being told.")
+
+    # Odoo 19: `_sql_constraints` is silently ignored (GROUP ledger C9) — a
+    # uniqueness promise that never reaches the database is worse than none.
+    _config_uniq = models.Constraint(
+        'unique(config_id)',
+        'A configuration can only have one guided setup.')
+    _token_uniq = models.Constraint(
+        'unique(token, company_id)',
+        'That setup key is already in use.')
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _ensure_company(self):
+        """Refuse a blueprint the current user's companies do not cover.
+
+        The record rule on `hr.formula.config` already scopes reads; this is the
+        second lock, so a hand-crafted RPC cannot reach another company's draft.
+        """
+        for bp in self:
+            company = bp.config_id.company_id
+            if company and company.id not in self.env.companies.ids:
+                raise AccessError(_(
+                    "This setup belongs to another company. Ask someone with "
+                    "access to %s to open it.", company.name))
+        return True
+
+    @property
+    def _step_no(self):
+        self.ensure_one()
+        try:
+            return STEPS.index(self.step or 'start') + 1
+        except ValueError:
+            return 1
+
+    def step_number(self):
+        """1..6 for the saved step — the number the picker card shows."""
+        self.ensure_one()
+        return self._step_no
+
+    @api.model
+    def _clean_step(self, step):
+        """A step key we are willing to store. Anything else is `start`."""
+        step = (step or 'start').strip()
+        return step if step in STEPS else 'start'
+
+    def write(self, vals):
+        if 'step' in vals:
+            vals = dict(vals, step=self._clean_step(vals.get('step')))
+        return super().write(vals)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if 'step' in vals:
+                vals['step'] = self._clean_step(vals.get('step'))
+        return super().create(vals_list)
+
+    # ------------------------------------------------------------------
+    # JSON accessors — every reader gets a dict, never a parse error
+    # ------------------------------------------------------------------
+    def _json(self, field, fallback):
+        self.ensure_one()
+        raw = self[field]
+        if not raw:
+            return fallback
+        try:
+            value = json.loads(raw)
+        except (TypeError, ValueError):
+            _logger.warning("pb.formula.blueprint %s: %s is not readable JSON",
+                            self.id, field)
+            return fallback
+        return value if isinstance(value, type(fallback)) else fallback
+
+    def situations(self):
+        return self._json('situations_json', {})
+
+    def optional_status(self):
+        status = dict(DEFAULT_OPTIONAL_STATUS)
+        status.update(self._json('optional_status_json', {}))
+        return status
