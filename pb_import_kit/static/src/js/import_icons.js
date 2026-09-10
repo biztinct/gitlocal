@@ -269,6 +269,13 @@ export const IC = {
     // general (`banknote`/`coins`).
     fileSpreadsheet: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/>',
     wallet:       '<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M18 12h.01"/>',
+    // BLUEPRINT B4 — the three task cards on the Connect step. `layoutList` is
+    // the payslip being arranged (a page with its lines placed on it), and
+    // `checkCheck` is Lucide's two-tick "already approved by more than one
+    // person" — the exact sentence the approvals card makes. `arrowLeftRight`
+    // was already here and carries the source mapping.
+    layoutList:   '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7M14 9h7M14 15h7M14 20h7"/>',
+    checkCheck:   '<path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/>',
 };
 
 /**
