@@ -23,6 +23,7 @@ from . import component_code
 # resolver, the payslip recompute and the bare `python3` battery must agree on what
 # "where did this number come from" is allowed to say.
 from . import input_provenance
+from . import pay_period
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule

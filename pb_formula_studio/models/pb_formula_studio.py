@@ -779,7 +779,8 @@ class PbFormulaStudio(models.AbstractModel):
         'excel': "Spreadsheet", 'feed': "Connected system", 'rule': "Rule output",
         'contract_component': "Contract component", 'employee_field': "Employee record",
         'contract_field': "Contract record", 'bank_account': "Bank account",
-        'calculated': "Calculated", 'constant': "Fixed value", 'none': "No source",
+        'calculated': "Calculated", 'constant': "Fixed value",
+        'period': "Pay period", 'none': "No source",
     }
 
     @api.model
@@ -803,6 +804,7 @@ class PbFormulaStudio(models.AbstractModel):
             'bank_account': _("Bank account"),
             'calculated': _("Calculated"),
             'constant': _("Fixed value"),
+            'period': _("Pay period"),
             'none': _("No source"),
         }.get(kind or 'none', _("No source"))
 

@@ -90,6 +90,11 @@ LANES = (
     {'key': 'constant', 'label': 'Scheme constants', 'icon': 'sigma',
      'tone': 'slate', 'kind': 'declared',
      'blurb': 'The same number for everyone on this scheme.'},
+    # The run's own dates. It fills only what nothing else filled, so a lane
+    # with rows in it is a lane saying "nobody had to type the month".
+    {'key': 'period', 'label': 'The pay period', 'icon': 'calendar',
+     'tone': 'indigo', 'kind': 'declared',
+     'blurb': 'Read off the dates of the run itself — nobody types it.'},
     {'key': 'calculated', 'label': 'Computed by the scheme', 'icon': 'calculator',
      'tone': 'indigo', 'kind': 'declared',
      'blurb': 'Worked out here, by this scheme\'s own formulas.'},
@@ -125,6 +130,7 @@ VIA_LABELS = {
     'overtime_request': 'from the employee\'s approved overtime',
     'business_trip': 'from the employee\'s approved business trip',
     'constant': 'it is a fixed value',
+    'pay_period': 'the dates of this pay run answered it',
     'proration': 'this component exists because of proration',
     'retro': 'this component exists because of a retro adjustment',
     'carryover': 'this component exists because of a carry-over',
@@ -746,6 +752,14 @@ class PbSourceAtlas(models.AbstractModel):
         elif src == 'constant':
             step['raw_value'] = (component or {}).get('constant_value')
             step['detail'] = _('The same number for every employee on this scheme.')
+        elif src == 'period':
+            # `slip` is a recordset here, not the blob dict — the record-source
+            # branches below read it the same way.
+            step['raw_value'] = str(
+                (slip.date_to or slip.date_from) if slip else '') or ''
+            step['detail'] = _(
+                'Read off the dates of this pay run. Nobody typed it, and no '
+                'file had to carry it.')
         else:
             step['raw_value'] = (component or {}).get('default_value')
             step['detail'] = _("No source carried a value for %s.", code)

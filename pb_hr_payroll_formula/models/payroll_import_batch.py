@@ -18,6 +18,7 @@ from .bank_account_util import (
     sanitize_bank_text,
 )
 from . import input_provenance
+from . import pay_period
 from . import value_kind_classifier
 from .column_role_classifier import (
     EMPLOYEE_CODE_MARKERS,
@@ -3959,6 +3960,10 @@ class HrPayrollImportBatch(models.Model):
         away.
         """
         input_values = {}
+        # The codes that reach the end of the walk with nothing behind them,
+        # collected as it runs. Only these are offered to the pay period, so it
+        # can never take a number off a spreadsheet, a feed or a contract.
+        period_unresolved = set()
         # `provenance is None` must stay distinguishable from an empty dict: the
         # former means "the caller does not want this", the latter "nothing resolved
         # yet". Writing into a local and copying out at the end would lose that.
@@ -4531,6 +4536,9 @@ class HrPayrollImportBatch(models.Model):
                         else:
                             resolved_source = 'default'
                             input_values[rule.code] = rule.default_value
+                            # Nothing anywhere answered this one. The pay
+                            # period gets its turn after the loop.
+                            period_unresolved.add(rule.code)
 
                 # SOURCING S1 — one entry, built from what the branches above already
                 # decided. `via` is finer-grained than `resolved_source`: a header
@@ -4609,6 +4617,18 @@ class HrPayrollImportBatch(models.Model):
                 self.name, config.id, len(excluded_people_codes),
                 ', '.join(c for c in excluded_people_codes if c),
             )
+
+        # THE PAY PERIOD, LAST AMONG THE SOURCES — below every declared one and
+        # above nothing but the default it replaces. `PAYMONTH` had no source
+        # at all on either resolver, so a "pay this in month 12" rule compared
+        # 12 against a default of 1 in every month of the year and paid nobody.
+        # Done here rather than after the adjustments below, so a proration or
+        # a carryover that reads the month reads the real one.
+        for code in pay_period.fill_period_inputs(
+                input_values, period_unresolved, self.date_from, self.date_to):
+            if prov is not None:
+                prov[code] = input_provenance.entry(
+                    'period', key=code, via=pay_period.PERIOD_VIA)
 
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):

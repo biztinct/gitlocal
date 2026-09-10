@@ -40,6 +40,11 @@ SOURCES = (
     'employee_field',      # a field read off the employee or contract record
     'calculated',          # computed by this scheme's own formula
     'constant',            # the same number for everyone
+    # The run's own dates. A pay run for October is a pay run for October, and
+    # no source outside the run has a better answer than that — which is why
+    # this is a source rather than a default. It fills only what nothing else
+    # filled, so it can never take a number off a spreadsheet or a feed.
+    'period',              # read off the pay period being run
     'none',                # nothing feeds it; it fell back to its default
 )
 
@@ -64,6 +69,7 @@ VIAS = (
     'overtime_request',
     'business_trip',
     'constant',           # it is a fixed value
+    'pay_period',         # the run's own dates answered it
     # The three adjustments, as the reason a code EXISTS at all. An adjustment that
     # merely rewrites an already-resolved value does not change its `via` — it adds
     # itself to `adj` and the entry keeps saying where the number came from. These

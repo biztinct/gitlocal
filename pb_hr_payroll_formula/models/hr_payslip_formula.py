@@ -7,6 +7,7 @@ import json
 import logging
 
 from . import input_provenance
+from . import pay_period
 from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
@@ -640,6 +641,12 @@ class HrPayslipFormula(models.Model):
                 self.id, exc_info=True)
             mapping_by_rule, component_amounts = {}, {}
 
+        # The codes that reach the end of the walk with nothing behind them.
+        # Collected as the loop runs rather than worked out afterwards, because
+        # re-deriving "did anything answer this?" would have to guess which
+        # branch won — the exact class of bug the provenance pass replaced.
+        unresolved = set()
+
         for rule in input_rules:
             value = rule.default_value
             src, key, via = 'none', None, 'default'
@@ -750,8 +757,20 @@ class HrPayslipFormula(models.Model):
                                  'contract_default')
 
             values[rule.code] = value
+            if src == 'none':
+                unresolved.add(rule.code)
             if provenance is not None:
                 provenance[rule.code] = input_provenance.entry(src, key=key, via=via)
+
+        # THE PAY PERIOD, LAST — below every declared source and above nothing
+        # but the default it replaces. `PAYMONTH` was never filled by anything
+        # on this path, so a "pay this in month 12" rule compared 12 against a
+        # default of 1 every month of the year and paid nobody.
+        for code in pay_period.fill_period_inputs(
+                values, unresolved, self.date_from, self.date_to):
+            if provenance is not None:
+                provenance[code] = input_provenance.entry(
+                    'period', key=code, via=pay_period.PERIOD_VIA)
 
         # ==============================================================
         # GROUP P5 — PEOPLE IN TWO PLACES.

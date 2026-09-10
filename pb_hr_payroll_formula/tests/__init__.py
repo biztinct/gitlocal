@@ -141,3 +141,8 @@ from . import test_payslip_token_format
 # BP-R12 — the static formula checker knows BRACKET(...), the engine's own
 # progressive-band primitive, so a healthy country pack stops reporting errors.
 from . import test_bracket_lint
+
+# The pay period as a source of its own: "which month is being paid" is a fact
+# about the run, and nothing used to fill it in, so every yearly payment
+# compared its month against a default of 1 and paid nobody.
+from . import test_pay_period_source
