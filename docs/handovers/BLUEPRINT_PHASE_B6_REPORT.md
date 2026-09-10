@@ -11,6 +11,10 @@ phase). `pb_hr_payroll_formula 19.0.1.125.0`, `pb_import_kit 19.0.1.19.0`,
 `pb_hub 19.0.1.9.0` and `pb_pay_delivery 19.0.1.2.0` are unchanged from B5 — no
 engine change was needed and no icon was added, so none of them had to ship.
 
+**Final verification run**: 155/155 Python on p9clone against the exact tree
+that is on the server (tree hashes byte-identical repo ↔ server:
+`pb_blueprint 2b5a495ee72d502d`, `pb_formula_studio f4843ebec3a8b261`).
+
 **Tests**: **155 Python** on p9clone (`--test-tags /pb_blueprint`), 0 failed
 0 error, of which **25 are new**. In the browser, **123 hoot tests under
 `@pb_blueprint`**, all green, of which **14 are new and 14 MOUNT a component**
@@ -156,6 +160,14 @@ worth remembering:
 | the configuration's own name and code | typed by the person who made it |
 | country names in the identity card | Odoo's own selection labels; this database has them in English |
 | the legacy Excel import review | a binding non-goal of this programme — re-skinning that screen is a later phase, and its strings belong to `pb_hr_payroll_formula` |
+
+One string is translated but **assembled from fragments**: the picker card's
+*"Still being set up — step 3 of 6"* is written in B1's QWeb as three pieces, so
+the catalogue holds *"Still being set up — step"* and *"of 6"* separately. It
+reads correctly in Vietnamese because the word order happens to match, and it is
+the one place in this programme where a translator cannot move the number.
+Fixing it means a new msgid and another export/translate/upgrade round on four
+databases, so it is named here rather than smuggled into the last hour (W80).
 
 **Numbers keep `en-US` grouping** (`1,177` not `1.177`). Stated as a choice: the
 glossary sets no rule for it, every other Payobook screen groups this way, and a
