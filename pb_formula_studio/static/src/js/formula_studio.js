@@ -41,7 +41,7 @@ import {
 // story: the mapping overlay is retired and the Mapping button is a DOOR into
 // the full-screen board, pre-scoped to the scheme on screen. A link that hands
 // over a board hands over a return door with it (W5) — see `openMapping`.
-import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
+import { HubBackChip, hubBack, openHub, goBack } from "@pb_hub/js/hub_nav";
 import { _t } from "@web/core/l10n/translation";
 import { ROLES, roleMeta, roleIcon, roleLabel, roleHint } from "./mapping/mapping_roles";
 
@@ -603,6 +603,17 @@ export class PbFormulaStudio extends Component {
                     await this.openSettings();
                 }
                 if (peopleSignal && this.state.config) this.openMapping("employee");
+                // BLUEPRINT B4 — arriving from the guided setup's Connect step:
+                // open the payslip designer straight away on this scheme, and
+                // remember the door we came through so closing the designer
+                // walks back through it (see `closePayslip`). Read from params
+                // OR context, like every other arrival key here.
+                const psSignal = (a.params && a.params.pbfs_open_payslip)
+                    || (a.context && a.context.pbfs_open_payslip);
+                if (psSignal && this.state.config) {
+                    this._psBack = hubBack(this.props);
+                    await this.openPayslip();
+                }
                 if (slipId && this.state.config) {
                     await this.pickPerson(slipId);
                     this.state.previewDrawer = true;   // the panel IS the answer
@@ -4753,7 +4764,23 @@ export class PbFormulaStudio extends Component {
         this.state.psDeleteBusy = false;
         this._loadPayslip();
     }
-    closePayslip() { this.state.psOpen = false; }
+    /**
+     * BLUEPRINT B4 — closing the designer.
+     *
+     * Normally it just closes and leaves you in the grid, which is right when
+     * you opened it from here. But when the guided setup opened it — the only
+     * case in which `_psBack` is set — the designer IS the errand, and closing
+     * it has to walk back through the same door the back chip uses. Same
+     * function, not a copy: `goBack` is what <HubBackChip/> calls.
+     */
+    closePayslip() {
+        this.state.psOpen = false;
+        if (this._psBack) {
+            const back = this._psBack;
+            this._psBack = null;
+            goBack(this.action, back);
+        }
+    }
     async _loadPayslip(sampleId) {
         this.state.psBusy = true;
         try {
