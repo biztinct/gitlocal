@@ -10,7 +10,8 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip } from "@pb_hub/js/hub_nav";
 
 import {
-    STEPS, STEP_META, nextStep, prevStep, stepNumber, isDone, continueLabel,
+    STEPS, STEP_META, nextStep, stepNumber, isDone,
+    continueTarget, backTarget,
     freshSituations, freshToken, firstOfNextMonth, savedAgo, toggle,
 } from "./blueprint_steps";
 import { discardText } from "./finish_text";
@@ -338,7 +339,12 @@ export class PbBlueprint extends Component {
     get created() { return !!this.state.configId; }
     get stepNo() { return stepNumber(this.state.step); }
     get total() { return STEPS.length; }
-    get continueLabel() { return continueLabel(this.state.step); }
+    /** Where the primary button goes — a tab of this step, or the next step. */
+    get continueTarget() {
+        return continueTarget(this.state.step, this.state.rulesTab);
+    }
+
+    get continueLabel() { return this.continueTarget.label; }
 
     railState(step) {
         if (step === this.state.step) return "on";
@@ -566,13 +572,25 @@ export class PbBlueprint extends Component {
             await this.finish();
             return;
         }
-        this.state.step = nextStep(this.state.step);
+        // A step made of tabs is walked tab by tab before it is left. The
+        // button already said so; this is the half that makes it true.
+        const target = this.continueTarget;
+        if (target.kind === "tab") {
+            await this.onRulesTab(target.tab);
+            return;
+        }
+        this.state.step = target.step;
         this.rememberStep();
     }
 
-    onBack() {
+    async onBack() {
         if (!this.created || this.state.step === "start") return;
-        this.state.step = prevStep(this.state.step);
+        const target = backTarget(this.state.step, this.state.rulesTab);
+        if (target.kind === "tab") {
+            await this.onRulesTab(target.tab);
+            return;
+        }
+        this.state.step = target.step;
         this.rememberStep();
     }
 

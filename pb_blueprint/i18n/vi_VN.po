@@ -591,6 +591,12 @@ msgstr "Tiếp tục kết nối"
 
 #. module: pb_blueprint
 #. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:150
+msgid "Continue to %s"
+msgstr "Tiếp tục đến %s"
+
+#. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:104
 msgid "Continue to outputs"
 msgstr "Tiếp tục xuất ra"
@@ -8198,3 +8204,87 @@ msgstr "Chọn người khác"
 #: code:addons/pb_blueprint/static/src/xml/test.xml:1
 msgid "Keep as a scenario"
 msgstr "Giữ như một kịch bản"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "Days before payday"
+msgstr "Số ngày trước ngày trả lương"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "Inputs close one working day before payday."
+msgstr "Dữ liệu đầu vào chốt trước ngày trả lương một ngày làm việc."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "Inputs close %s working days before payday."
+msgstr "Dữ liệu đầu vào chốt trước ngày trả lương %s ngày làm việc."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "Inputs close on the last working day of the month."
+msgstr "Dữ liệu đầu vào chốt vào ngày làm việc cuối cùng của tháng."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "Inputs close on the %s of the month, or the working day before it."
+msgstr "Dữ liệu đầu vào chốt vào ngày %s hằng tháng, hoặc ngày làm việc liền trước."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "%s — the day before payday"
+msgstr "%s — một ngày trước ngày trả lương"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "%s — %s days before payday"
+msgstr "%s — %s ngày trước ngày trả lương"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/calendar_tab.js:1
+msgid "1 to 28, so the day exists in every month — February has no 29th most years, and April has no 31st at all."
+msgstr "Từ 1 đến 28, để ngày đó tồn tại trong mọi tháng — tháng Hai thường không có ngày 29, còn tháng Tư không hề có ngày 31."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/finish_text.js:1
+msgid "1 working day before payday"
+msgstr "1 ngày làm việc trước ngày trả lương"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/finish_text.js:1
+msgid "%s working days before payday"
+msgstr "%s ngày làm việc trước ngày trả lương"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/calendar_tab.xml:1
+msgid "How many working days"
+msgstr "Bao nhiêu ngày làm việc"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/calendar_tab.xml:1
+msgid "Working days, so a long weekend never eats the deadline."
+msgstr "Tính theo ngày làm việc, để một kỳ nghỉ dài không nuốt mất hạn chót."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/calendar_tab.xml:1
+msgid "Inputs close"
+msgstr "Dữ liệu đầu vào chốt"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/outputs.xml:1
+msgid "A spreadsheet you can read and share — every component, its calculation and the sample figure. Not a workbook you can run a payroll in."
+msgstr "Một bảng tính bạn có thể đọc và chia sẻ — từng thành phần, cách tính của nó và con số mẫu. Không phải là sổ tính để chạy một kỳ lương."

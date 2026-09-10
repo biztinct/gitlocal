@@ -5,6 +5,7 @@ import { translatedTerms, translationLoaded } from "@web/core/l10n/translation";
 
 import {
     STEPS, STEP_META, nextStep, prevStep, stepNumber, isDone, continueLabel,
+    continueTarget, backTarget,
     fmtShort, fmtFull, deltaLabel, toNumber, toggle, freshSituations,
     firstOfNextMonth, savedAgo, freshToken, AUDIENCES, REALLIFE,
 } from "@pb_blueprint/js/blueprint_steps";
@@ -71,6 +72,58 @@ describe("guided setup — the journey", () => {
         expect(s(continueLabel("finish"))).toBe("Finish & open");
         for (const key of STEPS) {
             expect(s(continueLabel(key)).toLowerCase()).not.toBe("continue");
+        }
+    });
+
+    test("a step made of tabs is walked tab by tab before it is left", () => {
+        const a = continueTarget("rules", "components");
+        expect(a.kind).toBe("tab");
+        expect(a.tab).toBe("tax");
+        expect(s(a.label)).toBe("Continue to Tax & protection");
+
+        const b = continueTarget("rules", "tax");
+        expect(b.kind).toBe("tab");
+        expect(b.tab).toBe("calendar");
+        expect(s(b.label)).toBe("Continue to Calendar & payment");
+
+        // Only the LAST tab leaves the step — this is the whole point: the
+        // button can no longer walk past two screens of unseen decisions.
+        const c = continueTarget("rules", "calendar");
+        expect(c.kind).toBe("step");
+        expect(c.step).toBe("connect");
+        expect(s(c.label)).toBe("Continue to connect");
+    });
+
+    test("a step with no tabs is unchanged", () => {
+        for (const key of ["start", "connect", "outputs", "test", "finish"]) {
+            const t = continueTarget(key, "");
+            expect(t.kind).toBe("step");
+            expect(s(t.label)).toBe(s(continueLabel(key)));
+        }
+    });
+
+    test("no tab is skipped when the stored tab key is unknown", () => {
+        // A draft saved by an older version, or a tab that has since been
+        // renamed: the walk starts at the beginning rather than jumping out.
+        const t = continueTarget("rules", "somethingelse");
+        expect(t.kind).toBe("tab");
+        expect(t.tab).toBe("tax");
+    });
+
+    test("Back walks the same tabs in reverse", () => {
+        expect(backTarget("rules", "calendar")).toEqual({ kind: "tab", tab: "tax" });
+        expect(backTarget("rules", "tax")).toEqual({ kind: "tab", tab: "components" });
+        // From the first tab it leaves the step, so Continue and Back are
+        // exact opposites everywhere on the strip.
+        expect(backTarget("rules", "components")).toEqual({ kind: "step", step: "start" });
+        expect(backTarget("outputs", "")).toEqual({ kind: "step", step: "connect" });
+    });
+
+    test("Continue and Back undo each other on every tab", () => {
+        for (const tab of ["components", "tax"]) {
+            const fwd = continueTarget("rules", tab);
+            expect(fwd.kind).toBe("tab");
+            expect(backTarget("rules", fwd.tab)).toEqual({ kind: "tab", tab });
         }
     });
 });

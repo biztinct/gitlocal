@@ -2,6 +2,8 @@
 
 import { _t } from "@web/core/l10n/translation";
 
+import { RULE_TABS } from "./recipe_text";
+
 /**
  * The journey, as facts — no components, no services, nothing to mount.
  *
@@ -106,6 +108,67 @@ export function continueLabel(step) {
         case "test": return _t("Continue to finish");
         default: return _t("Finish & open");
     }
+}
+
+/**
+ * The tabs a step has to walk through before it is allowed to leave.
+ *
+ * Keyed by step, so a step that grows tabs later says so here and nothing else
+ * changes. A step absent from this map has no tabs and behaves as it always
+ * did.
+ */
+export const STEP_TABS = {
+    rules: RULE_TABS,
+};
+
+/**
+ * Where the primary button goes from here, and what it says on it.
+ *
+ * A STEP WITH TABS IS NOT ONE SCREEN. Pay rules is three: the components, the
+ * tax and protection rules, and the calendar. The button used to say "Continue
+ * to connect" from all three, so pressing it on the first one walked past two
+ * screens of decisions the person had never seen — and nothing on the way out
+ * said they existed. The tab strip was the only clue, and a tab strip reads as
+ * "more detail if you want it", not as "two thirds of this step".
+ *
+ * So the button walks the tabs first, naming each one, and only leaves the step
+ * from the last of them. Nobody is trapped: the tab strip and the step rail
+ * both still go anywhere in one click. What changes is the DEFAULT path, which
+ * is the one almost everybody takes.
+ *
+ * Returns `{kind, label}` plus `tab` or `step` — one shape, so the caller
+ * branches once and the label can never disagree with where it goes.
+ */
+export function continueTarget(step, tab) {
+    const tabs = STEP_TABS[step];
+    if (tabs && tabs.length) {
+        const here = tab || tabs[0].key;
+        const i = tabs.findIndex((t) => t.key === here);
+        // An unknown tab counts as the first one, so a stored tab key from an
+        // older version walks the whole strip rather than skipping the step.
+        const next = tabs[i < 0 ? 1 : i + 1];
+        if (next) {
+            return { kind: "tab", tab: next.key,
+                     label: _t("Continue to %s", next.label) };
+        }
+    }
+    return { kind: "step", step: nextStep(step), label: continueLabel(step) };
+}
+
+/**
+ * Where Back goes, the same walk in reverse.
+ *
+ * Symmetry is the whole reason this exists: a Continue that moved one tab and
+ * a Back that jumped a whole step would make the pair impossible to reason
+ * about, and pressing Back to undo a Continue would lose the step instead.
+ */
+export function backTarget(step, tab) {
+    const tabs = STEP_TABS[step];
+    if (tabs && tabs.length) {
+        const i = tabs.findIndex((t) => t.key === (tab || tabs[0].key));
+        if (i > 0) return { kind: "tab", tab: tabs[i - 1].key };
+    }
+    return { kind: "step", step: prevStep(step) };
 }
 
 /**
