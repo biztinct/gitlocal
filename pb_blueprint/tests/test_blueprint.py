@@ -189,12 +189,26 @@ class TestBlueprint(TransactionCase):
         res = self._start('tok-finish-pack', template_key='vn_standard_2026')
         cfg = self.Config.browse(res['config_id'])
         cfg.invalidate_recordset()
-        done = self.Studio.bp_finish(cfg.id)
-        self.assertTrue(done['ok'], done.get('reason'))
+        # B6 — the setup may not be finished before anybody has CHECKED it, so
+        # a brand-new draft is refused. The refusal that matters here is the one
+        # about evidence: nothing may be refused for its arithmetic, because the
+        # starter's own formulas all convert.
+        refused = self.Studio.bp_finish(cfg.id)
+        self.assertFalse(refused['ok'])
+        codes = {r['code'] for r in refused.get('reasons') or []}
+        self.assertIn('not_run', codes,
+                      "a configuration nobody has checked cannot be finished")
+        self.assertFalse(codes & {'unreadable', 'invalid', 'circular'},
+                         "nothing about the pack's own formulas may be refused")
         self.assertFalse(cfg.rule_ids.filtered(
             lambda r: r.column_type == 'formula' and r.excel_formula
             and not r.python_formula),
-            "every seeded formula converted, which is what Finish checks")
+            "every seeded formula converted, which is what Finish checks first")
+
+        ran = self.Studio.bp_run_checks(cfg.id)
+        self.assertTrue(ran.get('ok'), ran.get('reason'))
+        done = self.Studio.bp_finish(cfg.id)
+        self.assertTrue(done['ok'], done.get('reason'))
 
     # ---- 9 ----------------------------------------------------------
     def test_bp_finish_requires_valid_formulas(self):

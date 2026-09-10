@@ -875,51 +875,13 @@ class PbBlueprintStudio(models.AbstractModel):
     # ==================================================================
     # Finishing and discarding
     # ==================================================================
-    @api.model
-    def bp_finish(self, config_id):
-        config, blueprint, err = self._guard(config_id)
-        if err:
-            return err
-        if blueprint.state == 'finished':
-            return {'ok': True, 'config_id': config.id, 'already': True}
-        try:
-            config.action_validate_formulas()
-        except AccessError:
-            raise
-        except Exception as exc:
-            _logger.info("Guided setup: validation raised: %s", exc)
-        config.invalidate_recordset(['has_errors', 'has_circular_refs'])
-        if config.has_circular_refs:
-            return {'ok': False, 'reason': _(
-                "Two components depend on each other, so no number can be "
-                "worked out. Open the components grid and break the loop.")}
-        # "The engine cannot read this" is `python_formula` being empty after
-        # regeneration — the conversion the engine actually executes, and the
-        # exact test `hr.formula.config.template.seed_config` uses to refuse a
-        # bad starter (`formula_config_template.py:308-315`).
-        #
-        # Deliberately NOT `has_errors`. That flag is `any(not rule.is_valid)`,
-        # and `is_valid` is a STATIC lint whose function list does not include
-        # the engine's own `BRACKET(...)` — the progressive-tax primitive the
-        # whole Vietnam rule pack is built on. Every configuration seeded from
-        # that pack therefore reports an error for a formula that computes
-        # perfectly (measured: PIT 14,896,200 on the 90m sample while the same
-        # rule was flagged "Unsupported function: BRACKET"). Gating Finish on it
-        # made the journey's own default starter impossible to finish.
-        # Widening the validator's function list is an engine change with a
-        # blast radius across every configuration on every database; it is
-        # logged for B2, not smuggled in here.
-        unreadable = config.rule_ids.filtered(
-            lambda r: r.column_type == 'formula' and r.excel_formula
-            and not r.python_formula)
-        if unreadable:
-            names = ', '.join(unreadable.mapped('code')[:5])
-            return {'ok': False, 'reason': _(
-                "The engine cannot read the formula on %(names)s. Open the "
-                "components grid to fix it, then finish.", names=names)}
-        blueprint.write({'state': 'finished', 'step': 'finish',
-                         'revision': blueprint.revision + 1})
-        return {'ok': True, 'config_id': config.id, 'already': False}
+    # `bp_finish` used to live here. It is now ONE method in
+    # `blueprint_finish.py`, where the same conversion check B1 wrote
+    # (`python_formula` empty — the question the engine itself answers, never
+    # `has_errors`, which B1 measured flagging a perfectly good `BRACKET(...)`
+    # formula) is the first of the reasons the Finish step also PRINTS. Two
+    # copies of a gate is two answers to "may I finish", and the screen would
+    # eventually show one while the server enforced the other.
 
     @api.model
     def bp_discard(self, config_id):

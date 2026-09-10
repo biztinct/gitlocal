@@ -6,4 +6,6 @@ from . import test_connect
 from . import test_outputs
 from . import test_tax_calendar
 from . import test_vn_complete
+from . import test_finish
+from . import test_workbook
 from . import test_white_label
