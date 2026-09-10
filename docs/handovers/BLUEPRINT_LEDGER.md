@@ -304,3 +304,58 @@ never `pkill -f odoo-bin`, then Chrome-MCP walkthrough on payobook and abm.
 - BP17 (B1): `pb_import_kit` had no `wallet` or `fileSpreadsheet` glyph. Added to the ONE registry
   (`import_icons.js`, version → 19.0.1.18.0) per W2 — which means **pb_import_kit ships with any
   phase that adds an icon**, and its version must be bumped or `-u` runs nothing.
+- BP18 (B2, cost 2 builds): **a reused CSS class name is not a specificity fight — it is two
+  things wearing one name.** The sentence editor styled its inline choices `.pbbp-pill`, which B1
+  already owns for the pay panel's status badge (`inline-flex`, `text-transform: uppercase`). The
+  sentence rendered as a stack of full-width boxes shouting in capitals, and no amount of
+  `select.pbbp-pill` out-specified it reliably. Renamed `.pbbp-word`. Grep the module's own SCSS
+  for a class name before minting it.
+- BP19 (B2): **the backend theme styles every bare `select` and `input`** — `display: block;
+  width: 100%` plus `text-transform` — so any inline control inside a sentence has to name the
+  ELEMENT in its selector (`select.pbbp-word`) to win without `!important`. The kit's `.pbim-badge`
+  is `text-transform: capitalize`, which is right for a status word and wrong for a sentence
+  fragment ("Tax Free", "Written As Excel").
+- BP20 (B2, a real bug in front of a user): **the journey shell listens for Enter on the whole
+  page and treats it as "continue".** Any inner surface with its own Enter must
+  `stopPropagation()`, or opening a component also walks the person to the next step. Same for
+  Escape: a hand-built `.pbim-modal` is not a framework Dialog, so nothing claims focus and the
+  hotkey service has no surface to route to — take focus on mount (`tabindex="-1"` + `.focus()`)
+  and handle the keys on the element as well.
+- BP21 (B2): **`regenerate` must pass `bp_formula_source` explicitly.** The rule's own `write()`
+  guard flips anything writing a formula other than `bp_generated_formula` to `manual`, and on the
+  FIRST pass `bp_generated_formula` is still empty — so regeneration silently marked its own
+  output as somebody's hand-written Excel and then refused to touch it ever again. Symptom: the
+  backfill appeared to do nothing, every total kept its pack formula, and removing a component was
+  refused with "used by GROSS, NET, TAXABLE, which is written as Excel".
+- BP22 (B2): **a helper rule needs a `helper` group of its own.** `<CODE>TX` (the taxable slice of
+  a conditionally-exempt payment) is a formula column with no recipe, so `derived_group` classified
+  it as an earning and summed it into the very total it exists to feed. Anything the guided setup
+  creates for its own plumbing carries `bp_template_key='helper'`, and `derived_group` reads that
+  before it guesses.
+- BP23 (B2): **the value beside a row has to follow the sample employee.** The list is loaded once
+  and the pay panel refreshes on its own, so editing a sample input moved the take-home figure
+  while the row that caused it still read 0. A number that is quietly wrong is worse than no
+  number — pass a tick that changes whenever the panel gets a fresh answer.
+- BP24 (B2): **`_normalize_excel_formula` keeps the leading `=`.** It strips row numbers only
+  (`=Y1*K1` -> `=Y*K`). Two tests were written against `Y*K`.
+- BP25 (B2): **a deleted record raises on every field access.** Read `column_letter` (or anything
+  else you will assert on) BEFORE the unlink, not after.
+- BP26 (B2): Python's implicit string concatenation across lines is a **syntax error in
+  JavaScript**, and it takes the WHOLE backend bundle down with "Uncaught SyntaxError: missing )
+  after argument list" — a blank page, not a broken component. `node --check` every `.js` file in
+  the module before deploying; it costs a second and catches this class entirely.
+- BP27 (B2): the Vietnam pack's first certification sample is **"Zero income"**, so
+  `sample_data_ids[0]` is a column of zeroes and any "did the number change" assertion written
+  against it passes for the wrong reason. Pick the sample that is actually paid (B1 hit the same
+  edge in the pay panel; it bites in tests too).
+- BP28 (B2): **a hoot test that reads a `_t()` label throws** — "Cannot translate string:
+  translations have not been loaded" — because a unit test has no server to fetch them from, and
+  `_t()` returns a lazy object whose `valueOf` refuses until they are. Six of ten tests failed on
+  it. Fix, which is Odoo's own (`web/static/tests/core/l10n/translation.test.js:447`):
+  ```js
+  import { translatedTerms, translationLoaded } from "@web/core/l10n/translation";
+  beforeEach(() => { translatedTerms[translationLoaded] = true; });
+  ```
+  English is the source language, so "loaded with nothing" is exactly right: every term falls
+  through to its own source string. Run the suite at `/web/tests?filter=<suite name>` — the tab
+  title carries ✔ or ✖, and a green Python run says nothing about the JavaScript.

@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
-import { describe, expect, test } from "@odoo/hoot";
+import { beforeEach, describe, expect, test } from "@odoo/hoot";
+import { translatedTerms, translationLoaded } from "@web/core/l10n/translation";
 
 import {
     GROUP_TABS, RULE_TABS, summaryOf, treatmentChips, codeFromName,
@@ -9,9 +10,19 @@ import {
     groupLabel,
 } from "@pb_blueprint/js/recipe_text";
 
-// `_t()` returns a lazily translated object, so every assertion about a LABEL
+// `_t()` returns a LAZILY translated object, so every assertion about a label
 // goes through String() — `===` on the object fails for a reason that has
 // nothing to do with the words.
+//
+// And reading one throws outright ("translations have not been loaded") unless
+// the runner is told they are: a unit test has no server to fetch them from.
+// English is the source language, so "loaded with nothing" is exactly right —
+// every term falls through to its own source string.
+// (`web/static/tests/core/l10n/translation.test.js:447` uses the same switch.)
+beforeEach(() => {
+    translatedTerms[translationLoaded] = true;
+});
+
 const s = (v) => String(v);
 
 const recipe = (over = {}) => ({
