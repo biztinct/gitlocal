@@ -225,6 +225,11 @@ class TestWhiteLabel(TransactionCase):
         self._assert_clean('bp_tax_data', list(_texts(data)))
         cal = Studio.bp_calendar_data(res['config_id'])
         self._assert_clean('bp_calendar_data', list(_texts(cal)))
+        # B4 — the Connect step reads two things it did not write: the mapping
+        # screen's own refusal, and the approval stage names that belong to the
+        # pay-run board. Both reach a payroll manager through this payload.
+        ready = Studio.bp_readiness(res['config_id'])
+        self._assert_clean('bp_readiness', list(_texts(ready)))
 
     # ---- the manifest is read in Apps -------------------------------
     def test_manifest_is_white_labelled(self):
