@@ -318,7 +318,7 @@ Vietnamese on the screen and English from the server, with nothing in any log.
 
 ## 11. Commits
 
-Nine this phase, in the order each piece was verified, with explicit paths and
+Eleven this phase, in the order each piece was verified, with explicit paths and
 nothing unrelated staged (`RIZE/` and `design_poc/` were never touched):
 
 1. `feat(blueprint): the Finish step's server half — the page, and the gate`
@@ -330,10 +330,11 @@ nothing unrelated staged (`RIZE/` and `design_poc/` were never touched):
 7. `i18n(blueprint): the guided setup, in Vietnamese`
 8. `fix(blueprint): three things the Vietnamese walk found, and the header at 390`
 9. `docs(blueprint): gotchas BP47 to BP54, the eight this phase paid for`
+10. `docs(blueprint): the B6 report, and the programme's closeout`
+11. `test(blueprint): scope the revisit-link assertion to the button row`
 
-Plus this report and the closeout. **Nothing has been pushed** — 49 commits from
-the whole programme now sit on `19.1` on top of the ~104 the branch was already
-carrying.
+**Nothing has been pushed** — **51 commits** from the whole programme now sit on
+`19.1` on top of the ~104 the branch was already carrying.
 
 ---
 

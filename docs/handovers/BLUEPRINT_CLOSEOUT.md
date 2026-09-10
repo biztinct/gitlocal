@@ -111,7 +111,7 @@ with the step that fixes it one click away.
 | Databases | payobook, abm, payobook_template, p9clone — all four on the same versions |
 | Automated tests | **155** on the server, **123** in the browser, all green |
 | Vietnamese | 1,177 phrases for the new screens, 2,256 for the configurations screen |
-| Commits | **49** across the six phases, none pushed yet |
+| Commits | **51** across the six phases, none pushed yet |
 | Starter | Vietnam · Complete — 93 components, certified against five real people on every database, to the dong |
 
 ---
@@ -152,7 +152,7 @@ These are the ones only you can make. Nothing is blocked while they wait.
 7. **One permission changed in the payroll engine** (the checks-can-only-run-once
    fix above). It is the smallest possible change and it makes the studio's own
    Test workbench work again as well.
-8. **Nothing has been pushed.** 49 commits from this programme sit on the `19.1`
+8. **Nothing has been pushed.** 51 commits from this programme sit on the `19.1`
    branch on top of roughly 104 the branch was already carrying. Say the word.
 
 ---
