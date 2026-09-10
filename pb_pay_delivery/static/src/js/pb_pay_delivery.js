@@ -26,6 +26,11 @@ export class PbPayDelivery extends Component {
         this.action = useService("action");
         this.ic = ic;
         const runId = this.props.action?.params?.run_id;
+        // Somewhere else sent the person here and has to be able to take them
+        // back. Deliberately read from the action's own context rather than
+        // imported from the hub: this cockpit does not depend on that module,
+        // and an import it does not have takes the whole bundle down.
+        this.back = this.props.action?.context?.pb_back || null;
         this.state = useState({
             loaded: false,
             busy: false,
@@ -57,6 +62,20 @@ export class PbPayDelivery extends Component {
             this.notif.add(this._err(e), { type: "danger" });
             this.state.loaded = true;
         }
+    }
+
+    /** Back to whatever sent us here, with everything it was holding. */
+    goBack() {
+        if (!this.back) { return; }
+        const context = this.back.context || {};
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: this.back.tag,
+            name: this.back.label,
+            target: "current",
+            params: { ...context },
+            context: { ...context },
+        }, { clearBreadcrumbs: true });
     }
 
     async pickRun(id) {

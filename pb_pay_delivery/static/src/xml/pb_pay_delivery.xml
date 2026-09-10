@@ -4,6 +4,11 @@
   <t t-name="pb_pay_delivery.PbPayDelivery">
     <div class="pbpd pbim">
 
+      <!-- A way back to whatever sent us here. Only shown when something did. -->
+      <button class="pbpd-back" t-if="back" t-on-click="goBack">
+        <t t-out="ic('back', 14)"/> <t t-esc="back.label"/>
+      </button>
+
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbpd-loading">
         <div class="pbpd-spin"/><span>Loading Pay &amp; Deliver…</span>
