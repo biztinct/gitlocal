@@ -87,6 +87,12 @@ class PbFormulaBlueprint(models.Model):
 
     calendar_json = fields.Text(string='Calendar (JSON)', default='{}')
 
+    # The two tax preferences that are a CHOICE rather than a statutory value:
+    # which pay the insurance base is worked out from, and how money is
+    # rounded. They live here rather than on the configuration because they are
+    # decisions taken during setup, and the configuration has no field for them.
+    tax_json = fields.Text(string='Tax Preferences (JSON)', default='{}')
+
     # Where the screen was left: which tab of Pay rules was open, which group
     # was showing. Deliberately its OWN field rather than a corner of
     # `optional_status_json`: that one is read by the Connect step to decide
@@ -195,6 +201,12 @@ class PbFormulaBlueprint(models.Model):
         status = dict(DEFAULT_OPTIONAL_STATUS)
         status.update(self._json('optional_status_json', {}))
         return status
+
+    def calendar(self):
+        return self._json('calendar_json', {})
+
+    def tax_prefs(self):
+        return self._json('tax_json', {})
 
     def ui(self):
         return self._json('ui_json', {})
