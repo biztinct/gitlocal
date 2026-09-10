@@ -40,6 +40,17 @@
 
         <div class="pbim-modal__body pbbp-se-body">
 
+          <div class="pbbp-se-conflict" t-if="state.conflict">
+            <span class="i" t-out="ic('alert', 16)"/>
+            <div>
+              <b>Somebody else changed this configuration</b>
+              <p t-esc="state.conflict"/>
+            </div>
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="reloadForConflict">
+              <t t-out="ic('refresh', 13)"/> Show me their version
+            </button>
+          </div>
+
           <!-- new component: name + code + group -->
           <div class="pbbp-se-new" t-if="isNew">
             <label class="pbbp-se-f">
@@ -70,7 +81,8 @@
                     t-on-click="() => this.onLane('guided')">
               <t t-out="ic('sparkles', 14)"/> Guided
             </button>
-            <button t-attf-class="pbim-segbtn {{ state.lane === 'excel' ? 'on' : '' }}"
+            <button t-if="isFormula"
+                    t-attf-class="pbim-segbtn {{ state.lane === 'excel' ? 'on' : '' }}"
                     role="tab" t-att-aria-selected="state.lane === 'excel' ? 'true' : 'false'"
                     t-on-click="() => this.onLane('excel')">
               <t t-out="ic('fileSpreadsheet', 14)"/> Excel
@@ -327,11 +339,9 @@
           <!-- ============ generated formula + proof ============ -->
           <div class="pbbp-se-out">
             <div class="pbbp-se-out-l">
-              <span class="pbbp-se-out-lbl" t-if="state.lane === 'guided'">
-                Excel generated from these choices
-              </span>
-              <span class="pbbp-se-out-lbl" t-else="">What the engine will run</span>
-              <code class="pbbp-se-formula" t-esc="state.proof.formula or state.excel or '—'"/>
+              <span class="pbbp-se-out-lbl" t-esc="outLabel"/>
+              <code t-attf-class="pbbp-se-formula {{ isFormula ? '' : 'is-plain' }}"
+                    t-esc="outBody"/>
               <span class="pbbp-se-needs" t-if="needsLine" t-esc="needsLine"/>
             </div>
             <div class="pbbp-se-proof">

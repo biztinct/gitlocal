@@ -63,12 +63,14 @@ export class SentenceEditor extends Component {
             code: "",
             codeTouched: false,
             excel: "",
+            generated: "",
             open: false,               // the tax/insurance disclosure
             // the proof strip
             proof: { state: "idle", value: null, message: "", formula: "",
                      needs: [] },
             saving: false,
             confirmClose: false,
+            conflict: "",
         });
 
         this._pristine = null;
@@ -171,6 +173,7 @@ export class SentenceEditor extends Component {
         this.state.name = (res.rule && res.rule.name) || "";
         this.state.code = (res.rule && res.rule.code) || "";
         this.state.excel = res.display_formula || "";
+        this.state.generated = res.generated_formula || "";
         this.state.lane = this.state.source === "manual" && res.display_formula
             ? "excel" : "guided";
         this._pristine = cloneRecipe(this.state.recipe);
@@ -227,10 +230,41 @@ export class SentenceEditor extends Component {
         return this.state.proof.state !== "bad";
     }
 
-    /** The banner on the Guided lane when somebody typed the formula. */
+    /**
+     * True only when there is a guided formula to GO BACK TO.
+     *
+     * A component the payroll is simply given — an input, a fixed value — has
+     * no formula at all, so it is always "manual" in the technical sense. It
+     * showed the "this rule was edited by hand" banner and offered to restore a
+     * calculation that never existed, which is a promise the button cannot keep.
+     */
     get showRestore() {
-        return this.state.source === "manual" && this.state.hasRecipe
+        return this.isFormula && this.state.source === "manual"
+            && this.state.hasRecipe && !!this.state.generated
             && this.state.lane === "guided";
+    }
+
+    /** Whether this component is worked out at all, or simply provided. */
+    get isFormula() {
+        const rule = this.state.rule;
+        if (this.isNew) return true;
+        return !rule || rule.column_type === "formula";
+    }
+
+    /** The label on the dark card, in the words of what this component IS. */
+    get outLabel() {
+        if (!this.isFormula) return _t("What this component holds");
+        return this.state.lane === "guided"
+            ? _t("Excel generated from these choices")
+            : _t("What the engine will run");
+    }
+
+    get outBody() {
+        if (this.isFormula) return this.state.proof.formula || this.state.excel || "—";
+        const rule = this.state.rule || {};
+        return rule.column_type === "constant"
+            ? _t("A fixed value that every calculation can use")
+            : _t("A number this payroll is given for each person");
     }
 
     // ==================================================================
@@ -432,7 +466,11 @@ export class SentenceEditor extends Component {
         this.state.saving = false;
         if (!res || !res.ok) {
             if (res && res.conflict) {
-                this.state.error = res.reason;
+                // NOT the "could not be opened" panel: the rule opened fine,
+                // somebody else changed the configuration underneath it. The
+                // person needs the newer version and a way to get it, not a
+                // heading that describes a different failure.
+                this.state.conflict = res.reason;
                 return;
             }
             this.notif.add((res && res.reason) || _t("That rule could not be saved."),
@@ -462,6 +500,11 @@ export class SentenceEditor extends Component {
     onEscape() {
         if (this.state.confirmClose) { this.state.confirmClose = false; return; }
         this.tryClose();
+    }
+
+    /** Take the newer version: reload the journey on this draft. */
+    reloadForConflict() {
+        window.location.reload();
     }
 
     tryClose() {
