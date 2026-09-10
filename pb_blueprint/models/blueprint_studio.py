@@ -352,6 +352,12 @@ class PbBlueprintStudio(models.AbstractModel):
                         raise UserError(_(
                             "“%(starter)s” could not be added: %(why)s",
                             starter=tpl.name, why=self._plain(exc))) from exc
+                    # Everything the starter brought is a certification
+                    # scenario, and the Test step says so on the row. Stamped
+                    # HERE because this is the only moment anybody can tell:
+                    # afterwards a starter's scenario and a person's own are
+                    # both an ordinary sample with numbers in it.
+                    self._stamp_origin(config.sample_data_ids, 'starter')
                 self._ensure_sample(config)
                 self._classify(config)
                 blueprint = Blueprint.create({
@@ -408,12 +414,29 @@ class PbBlueprintStudio(models.AbstractModel):
                 rule.default_value or SEED_INPUTS.get(rule.code.upper(), 0.0))
         if not inputs:
             inputs = dict(SEED_INPUTS)
-        return self.env['hr.formula.sample.data'].create({
+        sample = self.env['hr.formula.sample.data'].create({
             'config_id': config.id,
             'name': _("Sample employee"),
             'source_type': 'manual',
             'input_values_json': json.dumps(inputs),
         })
+        self._stamp_origin(sample, 'yours')
+        return sample
+
+    def _stamp_origin(self, samples, origin):
+        """Remember where a scenario came from, where the field exists.
+
+        Guarded rather than assumed: this runs during install, when the column
+        may not be in the registry yet on a database mid-upgrade, and a stamp
+        that cannot be written must never stop a draft from being created.
+        """
+        try:
+            rows = samples.filtered(lambda s: not s.bp_origin) \
+                if 'bp_origin' in samples._fields else samples.browse()
+            if rows:
+                rows.bp_origin = origin
+        except Exception as exc:        # pragma: no cover - advisory only
+            _logger.info("Guided setup: scenario origin not stamped: %s", exc)
 
     def _classify(self, config):
         """Ask the engine what each component does to net pay.
@@ -777,6 +800,9 @@ class PbBlueprintStudio(models.AbstractModel):
             if config.sample_data_ids:
                 result = self.env['pb.formula.studio'].add_manual_sample(config.id)
                 sample_id = result.get('sample_id')
+                self._stamp_origin(
+                    self.env['hr.formula.sample.data'].browse(sample_id or 0),
+                    'yours')
             else:
                 sample_id = self._ensure_sample(config).id
         except AccessError:
@@ -828,6 +854,7 @@ class PbBlueprintStudio(models.AbstractModel):
                         raise UserError(_(
                             "“%(starter)s” could not be added: %(why)s",
                             starter=tpl.name, why=self._plain(exc))) from exc
+                    self._stamp_origin(config.sample_data_ids, 'starter')
                 self._ensure_sample(config)
                 self._classify(config)
                 blueprint.write({

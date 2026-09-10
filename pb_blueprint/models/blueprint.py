@@ -125,8 +125,21 @@ class PbFormulaBlueprint(models.Model):
         help="The statutory rule pack the tax values were pinned to.")
     pack_version = fields.Char(string='Rule Pack Version')
 
+    # What the checks were run against, and what came of them.
+    #
+    # `evidence_hash` is the key of the rules as they were at the moment of the
+    # last run; `tests_hash` is the key the run itself stamped. They are two
+    # fields rather than one because "has anything moved since" is a comparison,
+    # and a single field could only ever answer "what is it now".
     evidence_hash = fields.Char(string='Evidence Key')
     tests_hash = fields.Char(string='Checks Key')
+
+    tests_passed = fields.Integer(string='Checks Passed')
+    tests_failed = fields.Integer(string='Checks Needing Attention')
+    tests_pending = fields.Integer(string='Checks Awaiting Confirmation')
+    tests_run_at = fields.Datetime(string='Checks Last Run')
+    tests_run_by = fields.Many2one(
+        'res.users', string='Checks Last Run By', ondelete='set null')
 
     revision = fields.Integer(
         string='Revision', default=1, required=True,
