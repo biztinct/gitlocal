@@ -153,6 +153,18 @@ class PbBlueprintTests(models.AbstractModel):
                                     if r['kind'] in KIND_ORDER else 9, r['id']))
 
         picks, _cut = self._boundary_picks(config)
+
+        # The chip beside this list reports the LIVE standing, not the stored
+        # one. Adding six boundary cases changes no formula, so the evidence key
+        # does not move and nothing is stale — but a chip reading "5 checks
+        # passed" over a list with six rows waiting for confirmation is the same
+        # contradiction B4 spent a defect learning to avoid (BP39). The stamp
+        # keeps the historical counts for the Finish step; this payload says
+        # what is true right now.
+        evidence = self._evidence_payload(config, blueprint)
+        evidence.update({'passed': tally['passed'], 'failed': tally['attention'],
+                         'pending': tally['pending']})
+
         payload = {
             'ok': True,
             'revision': blueprint.revision if blueprint else 0,
@@ -161,9 +173,13 @@ class PbBlueprintTests(models.AbstractModel):
             'currency': config.currency_id.name or '',
             'samples': samples,
             'tally': tally,
-            'checks': tally['passed'] + tally['attention'] + tally['pending'],
+            # Every scenario, including the ones nothing is expected of yet.
+            # The run card says "1 meaningful check" from this same list, and a
+            # scoreboard reading "nothing to check" beside it would be the two
+            # halves of one screen disagreeing (BP39).
+            'checks': len(samples),
             'coverage': self._coverage(config),
-            'evidence': self._evidence_payload(config, blueprint),
+            'evidence': evidence,
             'boundary_available': sum(1 for p in picks if not p['exists']),
             'has_real_people': self._has_real_people(config),
         }
@@ -367,6 +383,15 @@ class PbBlueprintTests(models.AbstractModel):
             return {'ok': False, 'reason': _(
                 "There is nothing to check yet. Add a boundary case or a sample "
                 "employee first.")}
+        # Running the checks WRITES: it re-evaluates every scenario and replaces
+        # the previous results. Somebody who may only look at payroll setup
+        # therefore gets a sentence rather than the framework's own refusal,
+        # which names a technical model and is not white-labelled (rule 9, and
+        # the same defect B1 fixed for the wrong-company message).
+        if not self._can_run():
+            return {'ok': False, 'reason': _(
+                "Only somebody who can change payroll setup may run the checks. "
+                "Ask whoever looks after payroll setup to run them for you.")}
         try:
             result = self.env['pb.formula.studio'].run_tests(config.id)
         except AccessError:
@@ -395,7 +420,10 @@ class PbBlueprintTests(models.AbstractModel):
                 'tests_run_at': fields.Datetime.now(),
                 'tests_run_by': self.env.user.id,
             })
-            payload['evidence'] = self._evidence_payload(config, blueprint)
+            fresh = self._evidence_payload(config, blueprint)
+            fresh.update({'passed': tally['passed'], 'failed': tally['attention'],
+                          'pending': tally['pending']})
+            payload['evidence'] = fresh
         payload['ran'] = True
         return payload
 

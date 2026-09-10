@@ -168,12 +168,12 @@ class PbBlueprintOutputs(models.AbstractModel):
         if health == 'review':
             return 'review', health_text or _("Needs a decision")
         if rule.column_type == 'input':
-            return 'input', _("A number this payroll is given")
+            return 'input', _("From your data")
         if rule.column_type == 'constant':
-            return 'constant', _("A fixed value")
+            return 'constant', _("Fixed value")
         if source == 'generated':
-            return 'generated', _("Generated from your settings")
-        return 'manual', _("Written as Excel")
+            return 'generated', _("Worked out from the rule you chose")
+        return 'manual', _("Written as Excel by somebody, and never rewritten")
 
     @api.model
     def _is_final(self, rule, recipe, group, code):
