@@ -101,6 +101,26 @@ CATALOGUE = [
      'Read the pay reports and the cost explorer. Sees totals and trends, '
      'never edits a payslip.', None),
 
+    # ------------------------------------------------------- formula engine
+    # THE CALCULATION ITSELF, AS THREE ROWS SOMEBODY CAN FIND. These three
+    # abilities were seeded from the start and no role named them, so the only
+    # way to reach the Formula Studio was the Tenant administrator bundle —
+    # which is to say an administrator looking for "the formula one" in a list
+    # of twenty-four roles found nothing, because there was nothing to find.
+    # They are the tiers the studio's own gate checks, one row each.
+    (('formula-view',), 'payroll', 70,
+     'Pay formulas — can look',
+     'Open a pay formula and see exactly how a number on a payslip was worked '
+     'out. Changes no formula and computes nothing.', None),
+    (('formula-build',), 'payroll', 80,
+     'Pay formula builder',
+     'Write and change the formulas that calculate pay, and test them against '
+     'real figures before they go anywhere near a pay run.', None),
+    (('formula-admin',), 'payroll', 90,
+     'Formula engine administrator',
+     'Everything a formula builder does, plus the settings the formulas '
+     'themselves run on and the connected systems they read from.', None),
+
     # ------------------------------------------------------------ lifecycle
     (('lifecycle-read',), 'lifecycle', 10,
      'Joiners and leavers — can look',
@@ -662,6 +682,15 @@ def _existing_profile(env, ability_keys):
     and on databases seeded after. Before: the role carries the single group the
     ability wraps, and that column is unique, so it is an exact key. After: the
     role names the ability.
+
+    A BUNDLE THAT MERELY CONTAINS THE ABILITY IS NOT THIS ROLE. "Tenant
+    administrator" holds fifteen abilities, one of which is the formula engine's
+    — and a plain `ability_ids in (…)` search matches it, which would mean every
+    catalogue row added after that bundle existed silently decided it was
+    already seeded and was never created. So the match is on a bundle whose
+    abilities are a SUBSET of the ones this row is made of: the single-ability
+    rows this catalogue is almost entirely made of still match themselves
+    exactly, and a wider bundle never stands in for a narrower one.
     """
     Profile = env['pb.role.profile'].sudo().with_context(active_test=False)
     legacy_ids = []
@@ -676,9 +705,11 @@ def _existing_profile(env, ability_keys):
             return found
     abilities = env['pb.role.ability'].by_keys(list(ability_keys))
     if abilities:
-        found = Profile.search([('ability_ids', 'in', abilities.ids)], limit=1)
+        wanted = set(abilities.ids)
+        found = Profile.search([('ability_ids', 'in', abilities.ids)]).filtered(
+            lambda p: set(p.ability_ids.ids) <= wanted)
         if found:
-            return found
+            return found[0]
     return Profile.browse()
 
 
