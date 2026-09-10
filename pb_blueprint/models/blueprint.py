@@ -22,10 +22,27 @@ _logger = logging.getLogger(__name__)
 #: day a step is inserted, a key does not (BP-R2).
 STEPS = ('start', 'rules', 'connect', 'outputs', 'test', 'finish')
 
+#: The three tasks on the Connect step, and the words behind each pill.
+#:
+#: `mapping` and `payslip` are things a person does; `approvals` is information
+#: only (the owner's ruling of 2026-09-10 — pay runs already follow a fixed
+#: chain and a per-configuration approval rule is a later programme), so it has
+#: exactly one status for ever and no button.
+CONNECT_TASKS = ('mapping', 'payslip', 'approvals')
+
+#: not_started → in_progress → configured, with skipped reachable from any of
+#: them and reversible. `needs_review` is NEVER STORED: it is what
+#: `bp_readiness` says about a `configured` task whose components have changed
+#: since, and storing it would make a status that has to be recomputed anyway
+#: into a second, staler answer to the same question.
+CONNECT_STATUSES = ('not_started', 'in_progress', 'configured', 'skipped')
+
 DEFAULT_OPTIONAL_STATUS = {
-    'mapping': 'not_started',
-    'payslip': 'not_started',
-    'approvals': 'info',
+    'mapping': {'status': 'not_started', 'opened_at': '', 'done_at': '',
+                'snapshot': []},
+    'payslip': {'status': 'not_started', 'opened_at': '', 'done_at': '',
+                'snapshot': [], 'snapshot_all': []},
+    'approvals': {'status': 'info'},
 }
 
 
@@ -198,8 +215,40 @@ class PbFormulaBlueprint(models.Model):
         return self._json('situations_json', {})
 
     def optional_status(self):
-        status = dict(DEFAULT_OPTIONAL_STATUS)
-        status.update(self._json('optional_status_json', {}))
+        """The three Connect tasks, always in the same shape.
+
+        B1 stored one WORD per task (`{"mapping": "not_started"}`) because that
+        was all the step needed; B4 has to remember when a task was opened, when
+        it was marked done, and what the configuration looked like at that
+        moment. A draft created before this phase therefore holds the old shape,
+        and a reader that assumed the new one would raise on the first live
+        draft — so the coercion happens HERE, once, and nothing downstream ever
+        sees a bare string.
+        """
+        status = {}
+        for task, blank in DEFAULT_OPTIONAL_STATUS.items():
+            status[task] = dict(blank)
+        stored = self._json('optional_status_json', {})
+        for task, value in (stored or {}).items():
+            if task not in status:
+                continue
+            if isinstance(value, str):
+                value = {'status': value}
+            if not isinstance(value, dict):
+                continue
+            entry = status[task]
+            entry.update({k: v for k, v in value.items() if k in entry})
+            if entry.get('status') not in CONNECT_STATUSES and task != 'approvals':
+                entry['status'] = 'not_started'
+        status['approvals']['status'] = 'info'
+        return status
+
+    def set_optional_status(self, status):
+        """Store the three tasks. Never bumps the revision on its own — the
+        caller decides, because opening a door is not a change anybody else can
+        conflict with while marking one done is."""
+        self.ensure_one()
+        self.optional_status_json = json.dumps(status or {})
         return status
 
     def calendar(self):
