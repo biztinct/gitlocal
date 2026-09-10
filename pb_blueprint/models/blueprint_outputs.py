@@ -21,6 +21,9 @@ Three promises this file keeps:
   at sixty nodes, saying how many more there are. A configuration with a hundred
   and eleven components must not be able to freeze the screen that explains it.
 """
+import base64
+import csv
+import io
 import json
 import logging
 import re
@@ -480,31 +483,212 @@ class PbBlueprintOutputs(models.AbstractModel):
                 'expected_confirmed': bool(sample.expected_confirmed),
             })
 
-        payload = {
-            'configuration': config.name or '',
-            'code': config.code or '',
-            'company': config.company_id.name or '',
-            'country': config.country_code or '',
-            'currency': config.currency_id.name or '',
-            'generated_at': fields.Datetime.to_string(fields.Datetime.now()),
-            'starting_point': (blueprint.template_name or '') if blueprint else '',
-            'components': components,
-            'rate_tables': tables,
-            'samples': samples,
-            'note': _("A readable catalogue of this configuration's rules. It "
-                      "is not a spreadsheet you can run."),
-        }
+        about = [
+            (_("Configuration"), config.name or ''),
+            (_("Reference"), config.code or ''),
+            (_("Company"), config.company_id.name or ''),
+            (_("Country"), config.country_code or ''),
+            (_("Paid in"), config.currency_id.name or ''),
+            (_("Started from"),
+             (blueprint.template_name or '') if blueprint else ''),
+            (_("Produced"), fields.Datetime.to_string(fields.Datetime.now())),
+            (_("What this is"),
+             _("A readable catalogue of this configuration's rules. It is a "
+               "document, not a workbook you can run a payroll in.")),
+        ]
         name = re.sub(r'[^A-Za-z0-9_-]+', '-',
                       (config.code or config.name or 'configuration')).strip('-')
+        name = name or 'configuration'
+
+        book = self._catalog_workbook(about, components, tables, samples)
+        if book is not None:
+            return {
+                'ok': True,
+                'filename': '%s-rules.xlsx' % name,
+                'mimetype': ('application/vnd.openxmlformats-officedocument'
+                             '.spreadsheetml.sheet'),
+                'encoding': 'base64',
+                'content': book,
+                'components': len(components),
+                'rate_tables': len(tables),
+            }
+        # No xlsxwriter on this server. A comma-separated file of the
+        # components still opens in any spreadsheet and is still readable,
+        # which JSON never was — losing two sheets beats losing the download.
         return {
             'ok': True,
-            'filename': '%s-rules.json' % (name or 'configuration'),
-            'mimetype': 'application/json',
-            'content': json.dumps(payload, indent=2, sort_keys=False,
-                                  default=str),
+            'filename': '%s-rules.csv' % name,
+            'mimetype': 'text/csv',
+            'content': self._catalog_csv(about, components),
             'components': len(components),
             'rate_tables': len(tables),
         }
+
+    #: The component table's columns, in the order somebody reads them.
+    _CATALOG_COLUMNS = (
+        ('code', 40), ('name', 46), ('kind', 18), ('group', 22),
+        ('formula', 64), ('sample', 18), ('payslip', 12),
+    )
+
+    def _catalog_headers(self):
+        """One translated header per column. Written out, never generated —
+        `_(variable)` extracts nothing and ships English for ever."""
+        return {
+            'code': _("Code"),
+            'name': _("Component"),
+            'kind': _("What it is"),
+            'group': _("Group"),
+            'formula': _("How it is worked out"),
+            'sample': _("For the sample person"),
+            'payslip': _("On the payslip"),
+        }
+
+    def _catalog_kind(self, component):
+        """"A value that arrives", "Worked out here", "A fixed number"."""
+        return {
+            'input': _("A value that arrives"),
+            'formula': _("Worked out here"),
+            'constant': _("A fixed number"),
+        }.get(component.get('type') or '', _("Worked out here"))
+
+    def _catalog_rows(self, components):
+        """The component table as plain rows — one shape, two file formats."""
+        rows = []
+        for c in components:
+            rows.append({
+                'code': c['code'],
+                'name': c['name'],
+                'kind': self._catalog_kind(c),
+                'group': c['group'] or '',
+                # The formula with COMPONENT CODES in it, never the column
+                # letters: "=MIN(SALARYPAID,CAPLO)" is a sentence somebody can
+                # check, and "=MIN(BP,CX)" is a puzzle.
+                'formula': c['excel_codes'] or (
+                    '' if c['constant_value'] is None
+                    else str(c['constant_value'])),
+                'sample': c['sample_value'],
+                'payslip': _("Yes") if c['on_payslip'] else _("No"),
+            })
+        return rows
+
+    def _catalog_workbook(self, about, components, tables, samples):
+        """The catalogue as a workbook, base64 — or None if it cannot be built.
+
+        FOUR SHEETS, BECAUSE IT IS FOUR DIFFERENT TABLES. Cramming the rate
+        bands and the sample people in under the components would make one long
+        sheet whose columns mean different things at different rows, which is
+        the thing a spreadsheet is worst at being read as.
+        """
+        try:
+            import xlsxwriter                       # noqa: PLC0415
+        except ImportError:
+            _logger.info(
+                "Guided setup: xlsxwriter is not installed, so the rule "
+                "catalogue is written as CSV instead of a workbook")
+            return None
+        try:
+            out = io.BytesIO()
+            book = xlsxwriter.Workbook(out, {'in_memory': True})
+            head = book.add_format({'bold': True, 'bg_color': '#EDEAF8',
+                                    'font_color': '#241F52', 'border': 1,
+                                    'valign': 'vcenter'})
+            cell = book.add_format({'border': 1, 'valign': 'top'})
+            wrap = book.add_format({'border': 1, 'valign': 'top',
+                                    'text_wrap': True})
+            mono = book.add_format({'border': 1, 'valign': 'top',
+                                    'font_name': 'Consolas'})
+            money = book.add_format({'border': 1, 'num_format': '#,##0.##'})
+            title = book.add_format({'bold': True, 'font_size': 13,
+                                     'font_color': '#241F52'})
+
+            sheet = book.add_worksheet(_("About"))
+            sheet.set_column(0, 0, 24)
+            sheet.set_column(1, 1, 90)
+            sheet.write(0, 0, _("This configuration"), title)
+            for i, (label, value) in enumerate(about, start=2):
+                sheet.write(i, 0, label, head)
+                sheet.write(i, 1, value, wrap)
+
+            sheet = book.add_worksheet(_("Components"))
+            headers = self._catalog_headers()
+            for col, (key, width) in enumerate(self._CATALOG_COLUMNS):
+                sheet.set_column(col, col, width)
+                sheet.write(0, col, headers[key], head)
+            sheet.freeze_panes(1, 0)
+            for r, row in enumerate(self._catalog_rows(components), start=1):
+                for col, (key, _w) in enumerate(self._CATALOG_COLUMNS):
+                    value = row[key]
+                    if key == 'sample':
+                        if isinstance(value, (int, float)):
+                            sheet.write_number(r, col, value, money)
+                        else:
+                            sheet.write(r, col, '' if value is None
+                                        else str(value), cell)
+                    elif key == 'formula':
+                        sheet.write(r, col, value, mono)
+                    else:
+                        sheet.write(r, col, value, cell)
+
+            sheet = book.add_worksheet(_("Rate bands"))
+            for col, width in enumerate((16, 46, 20, 12)):
+                sheet.set_column(col, col, width)
+            for col, label in enumerate((_("Table"), _("Name"),
+                                         _("From"), _("Rate"))):
+                sheet.write(0, col, label, head)
+            sheet.freeze_panes(1, 0)
+            pct = book.add_format({'border': 1, 'num_format': '0.00%'})
+            r = 1
+            for table in tables:
+                for band in table['brackets']:
+                    sheet.write(r, 0, table['code'], cell)
+                    sheet.write(r, 1, table['name'], cell)
+                    sheet.write_number(r, 2, band['from'] or 0, money)
+                    sheet.write_number(r, 3, band['rate'] or 0, pct)
+                    r += 1
+
+            sheet = book.add_worksheet(_("Sample people"))
+            for col, width in enumerate((34, 22, 26, 18)):
+                sheet.set_column(col, col, width)
+            for col, label in enumerate((_("Person"), _("Kind"),
+                                         _("Input"), _("Value"))):
+                sheet.write(0, col, label, head)
+            sheet.freeze_panes(1, 0)
+            r = 1
+            for sample in samples:
+                for code in sorted(sample['inputs']):
+                    sheet.write(r, 0, sample['name'], cell)
+                    sheet.write(r, 1, sample['kind'] or '', cell)
+                    sheet.write(r, 2, code, cell)
+                    value = sample['inputs'][code]
+                    if isinstance(value, (int, float)):
+                        sheet.write_number(r, 3, value, money)
+                    else:
+                        sheet.write(r, 3, str(value), cell)
+                    r += 1
+
+            book.close()
+            out.seek(0)
+            return base64.b64encode(out.read()).decode('ascii')
+        except Exception:                           # noqa: BLE001
+            # A download that fails is a dead end; a CSV is not.
+            _logger.warning("Guided setup: the rule catalogue workbook could "
+                            "not be built", exc_info=True)
+            return None
+
+    def _catalog_csv(self, about, components):
+        """The fallback: the components, comma-separated, with the header on
+        top and the configuration's own details above it as comment lines."""
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        for label, value in about:
+            writer.writerow(['# %s' % label, value])
+        writer.writerow([])
+        headers = self._catalog_headers()
+        writer.writerow([headers[key] for key, _w in self._CATALOG_COLUMNS])
+        for row in self._catalog_rows(components):
+            writer.writerow(['' if row[key] is None else row[key]
+                             for key, _w in self._CATALOG_COLUMNS])
+        return buf.getvalue()
 
     @api.model
     def _loads(self, raw):

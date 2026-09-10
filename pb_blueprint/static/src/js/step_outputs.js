@@ -430,9 +430,25 @@ export class StepOutputs extends Component {
             { type: "success" });
     }
 
-    /** Text to a saved file, without ever leaving the page. */
+    /**
+     * A saved file, without ever leaving the page.
+     *
+     * The catalogue used to be JSON, which the button honestly called
+     * "readable" and no payroll manager could read. It is a workbook now, so
+     * the content arrives base64-encoded and has to become BYTES before it is
+     * put in the file — handing a Blob the base64 TEXT writes a file that is
+     * the right size, the right name, and not a workbook.
+     */
     download(res) {
-        const blob = new Blob([res.content], { type: res.mimetype });
+        let body = res.content;
+        if (res.encoding === "base64") {
+            const raw = atob(res.content);
+            body = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) {
+                body[i] = raw.charCodeAt(i);
+            }
+        }
+        const blob = new Blob([body], { type: res.mimetype });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;

@@ -25,9 +25,13 @@ Source assertions, in the shape `pb_formula_studio/tests/test_one_mapping_home.p
 established: a naming decision has no runtime handle to grab.
 """
 import ast
+import base64
+import io
 import os
 import re
 import xml.etree.ElementTree as ET
+
+import openpyxl
 
 from odoo.modules.module import get_module_path
 from odoo.tests import TransactionCase, tagged
@@ -259,7 +263,18 @@ class TestWhiteLabel(TransactionCase):
                            list(_texts(Studio.bp_boundary_picks(config_id))))
         catalog = Studio.bp_export_catalog(config_id)
         self._assert_clean('bp_export_catalog filename', [catalog['filename']])
-        self._assert_clean('bp_export_catalog note', [catalog['content']])
+        # THE WORKBOOK IS OPENED, NOT SCANNED AS TEXT. The catalogue used to be
+        # JSON and this line read its raw content; base64 would pass that check
+        # while carrying the banned word in plain sight on a sheet, which is a
+        # gate that reports green and guards nothing.
+        book = openpyxl.load_workbook(
+            io.BytesIO(base64.b64decode(catalog['content'])))
+        cells = [str(cell.value) for sheet in book.worksheets
+                 for row in sheet.iter_rows() for cell in row
+                 if cell.value is not None]
+        self.assertTrue(cells, 'the catalogue workbook came back empty')
+        self._assert_clean('bp_export_catalog sheets',
+                           book.sheetnames + cells)
 
     # ---- the manifest is read in Apps -------------------------------
     def test_manifest_is_white_labelled(self):

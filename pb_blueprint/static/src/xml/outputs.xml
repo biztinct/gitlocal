@@ -92,7 +92,9 @@
               <t t-else=""><t t-out="ic('download', 14)"/> Download the rule catalogue</t>
             </button>
             <small class="pbbp-out-hint-note">
-              A readable catalogue of these rules. Not a spreadsheet you can run.
+              A spreadsheet you can read and share — every component, its
+              calculation and the sample figure. Not a workbook you can run a
+              payroll in.
             </small>
           </div>
         </div>

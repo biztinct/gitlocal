@@ -7,8 +7,14 @@ hand-built fixture would prove the shape of a payload and nothing about the
 product. Where the starter is absent the test says so and skips rather than
 asserting something weaker under the same name.
 """
+import base64
+import csv
+import io
 import json
 import re
+from unittest.mock import patch
+
+import openpyxl
 
 from odoo.tests import TransactionCase, tagged
 
@@ -172,32 +178,70 @@ class TestOutputsAndTests(TransactionCase):
     # ==================================================================
     # 3 — the catalogue
     # ==================================================================
-    def test_the_catalogue_is_readable_json_with_everything_in_it(self):
+    def test_the_catalogue_is_a_spreadsheet_a_person_can_open(self):
+        """It used to be JSON, under a button that called it readable.
+
+        Nobody running a payroll can read JSON, so "readable catalogue" was a
+        promise the file broke the moment it was opened. It is a workbook now,
+        and this asserts the thing that actually matters: that the sheets are
+        there and the rows say what the screen said.
+        """
         config = self._complete('b5-export-1')
         res = self.Studio.bp_export_catalog(config.id)
         self.assertTrue(res['ok'])
-        self.assertTrue(res['filename'].endswith('.json'))
-        payload = json.loads(res['content'])
-        self.assertEqual(len(payload['components']), len(config.rule_ids))
-        self.assertEqual(len(payload['rate_tables']), len(config.rate_table_ids))
-        self.assertTrue(payload['rate_tables'][0]['brackets'])
-        self.assertTrue(payload['samples'])
-        self.assertNotIn('odoo', res['content'].lower())
-        # Both forms of every formula, so the file can be read AND replayed.
-        salary = next(c for c in payload['components']
-                      if c['code'] == 'SALARYPAID')
-        self.assertTrue(salary['excel_codes'])
-        self.assertTrue(salary['excel_letters'])
-        self.assertNotEqual(salary['excel_codes'], salary['excel_letters'])
+        self.assertTrue(res['filename'].endswith('.xlsx'), res['filename'])
+        self.assertEqual(res['encoding'], 'base64')
+        blob = base64.b64decode(res['content'])
+        # Every .xlsx is a zip, and every zip starts with these two bytes. A
+        # file that does not is one the browser will save and nothing opens.
+        self.assertEqual(blob[:2], b'PK')
+
+        book = openpyxl.load_workbook(io.BytesIO(blob))
+        self.assertEqual(book.sheetnames,
+                         ['About', 'Components', 'Rate bands', 'Sample people'])
+        sheet = book['Components']
+        self.assertEqual(sheet.max_row - 1, len(config.rule_ids))
+        headers = [c.value for c in sheet[1]]
+        self.assertEqual(headers[0], 'Code')
+        self.assertIn('How it is worked out', headers)
+
+        # The formula is written in COMPONENT CODES, never column letters:
+        # "=MIN(SALARYPAID,CAPLO)" can be checked and "=MIN(BP,CX)" cannot.
+        formula_col = headers.index('How it is worked out') + 1
+        code_col = headers.index('Code') + 1
+        found = None
+        for row in range(2, sheet.max_row + 1):
+            if sheet.cell(row, code_col).value == 'SALARYPAID':
+                found = sheet.cell(row, formula_col).value
+        self.assertTrue(found, 'SALARYPAID is not in the catalogue')
+        self.assertIn('BASIC', found)
+
+        self.assertGreater(book['Rate bands'].max_row, 1)
+        self.assertGreater(book['Sample people'].max_row, 1)
 
     def test_a_blank_configuration_exports_without_an_error(self):
         config = self._draft('b5-export-2', key='blank')
         res = self.Studio.bp_export_catalog(config.id)
         self.assertTrue(res['ok'])
-        payload = json.loads(res['content'])
-        self.assertEqual(payload['rate_tables'], [])
+        book = openpyxl.load_workbook(io.BytesIO(base64.b64decode(res['content'])))
+        # A configuration with no bands still gets the sheet, with its header
+        # and nothing under it — an absent sheet reads as a broken export.
+        self.assertEqual(book['Rate bands'].max_row, 1)
         outputs = self.Studio.bp_outputs(config.id)
         self.assertTrue(outputs['ok'])
+
+    def test_the_csv_fallback_carries_the_same_rows(self):
+        """No xlsxwriter on a server is not a reason to lose the download."""
+        config = self._complete('b5-export-3')
+        with patch.dict('sys.modules', {'xlsxwriter': None}):
+            res = self.Studio.bp_export_catalog(config.id)
+        self.assertTrue(res['ok'])
+        self.assertTrue(res['filename'].endswith('.csv'), res['filename'])
+        self.assertNotIn('encoding', res)
+        rows = list(csv.reader(io.StringIO(res['content'])))
+        codes = {r[0] for r in rows if r}
+        self.assertIn('SALARYPAID', codes)
+        self.assertIn('# Configuration', codes)
 
     # ==================================================================
     # 4 — evidence
