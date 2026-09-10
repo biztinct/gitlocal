@@ -99,7 +99,9 @@ class PbAccessDelegation(models.Model):
 
     #: The roles board's grants and removals are rows here too, so there is one
     #: audit trail rather than two. `origin` is what tells them apart on a
-    #: screen; nothing in the machinery branches on it.
+    #: screen, and the ONE place the machinery branches on it is
+    #: `_check_two_people`: a hand-over needs two people, a grant somebody
+    #: makes to themselves does not.
     origin = fields.Selection(
         [('delegation', 'Delegated'),
          ('board', 'Granted on the roles board'),
@@ -137,9 +139,28 @@ class PbAccessDelegation(models.Model):
                 raise ValidationError(_(
                     "It would end before it starts. Check the two dates."))
 
-    @api.constrains('delegator_user_id', 'delegate_user_id')
+    @api.constrains('delegator_user_id', 'delegate_user_id', 'origin')
     def _check_two_people(self):
+        """A HAND-OVER needs two people. A GRANT does not, and that difference
+        is the whole of this rule.
+
+        Lending yourself your own access is meaningless, so a delegation is
+        still refused. But this table is also the audit trail for the roles
+        board (`origin` 'board' / 'board_removal'), where the two columns mean
+        something else entirely: who pressed the button, and who it was pressed
+        against. Those are the same person every time an administrator gives
+        themselves a role — which is an ordinary, deliberate, auditable act and
+        was being refused with a sentence about lending that had nothing to do
+        with what they had just done.
+
+        Found on a new tenant whose own administrator could not give themselves
+        the Formula Engine role: the permissions were written, the audit row
+        was refused, and the whole transaction rolled back — so the screen said
+        "you cannot hand your access to yourself" and nothing had changed.
+        """
         for rec in self:
+            if rec.origin and rec.origin != 'delegation':
+                continue
             if (rec.delegator_user_id and rec.delegate_user_id
                     and rec.delegator_user_id == rec.delegate_user_id):
                 raise ValidationError(_(
