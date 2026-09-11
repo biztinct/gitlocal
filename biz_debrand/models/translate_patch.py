@@ -19,6 +19,14 @@ environments.py:21) which backs the modern ``self.env._(...)`` idiom.
 
 The vendor name is stripped from the *template*, never from the interpolated
 arguments — so a record whose own name contains the vendor word is left alone.
+
+The two languages are asked different questions. In ``en_US`` there is no
+catalogue and the msgid is the output, so the cheap pre-filter runs on the
+source. In every other language the catalogue entry is resolved FIRST and the
+pre-filter runs on the *translation*: a string whose English does not name the
+vendor may well have a translation that does (``calendar``'s Vietnamese
+catalogue, ERRORS E2-2), and filtering on the msgid let every one of those
+through.
 """
 import logging
 
@@ -39,24 +47,48 @@ def _install():
 
     def get_translation(module, lang, source, args):
         try:
-            if not source or not HAS_ODOO_RE.search(source):
+            if not source:
                 return original(module, lang, source, args)
-            pair = current_brand()
-            if not pair:
-                # Cache not primed (very early boot) — fail open, never raise.
-                return original(module, lang, source, args)
-            brand, website = pair
+
             if lang == "en_US":
                 # Source language: no catalogue lookup happens, the msgid IS
-                # the output. Rewrite it before the args are interpolated.
+                # the output, so the cheap pre-filter on the source is both
+                # correct and the hot path. Rewrite it before the args are
+                # interpolated.
+                if not HAS_ODOO_RE.search(source):
+                    return original(module, lang, source, args)
+                pair = current_brand()
+                if not pair:
+                    # Cache not primed (very early boot) — fail open, never raise.
+                    return original(module, lang, source, args)
+                brand, website = pair
                 return original(module, lang, debrand_text(source, brand, website), args)
-            # Translated language: resolve the catalogue entry for the ORIGINAL
-            # msgid (so the .po lookup still hits), debrand the result, then let
-            # the original handle markup/lazy/list argument formatting. The
-            # second lookup misses and returns the string unchanged.
+
+            # Translated language: the SOURCE is the wrong thing to ask.
+            # `Synchronize your calendar with Google Calendar` does not name the
+            # vendor — its Vietnamese translation does
+            # (`Đồng bộ lịch của bạn trên Odoo với Lịch Google`), and a
+            # pre-filter on the msgid never let it reach the rewrite. So resolve
+            # the catalogue entry for the ORIGINAL msgid first (that is what the
+            # .po lookup hits) and put the question to the RESULT.
+            #
+            # get_python_translations returns a per-(module, lang) dict held in
+            # memory by CodeTranslations, so this is a dict `get`, not a query.
             translated = tr_mod.code_translations.get_python_translations(module, lang).get(
                 source, source
             )
+            if not translated or not HAS_ODOO_RE.search(translated):
+                # Nothing to rewrite in either language: hand the ORIGINAL msgid
+                # back untouched so the normal lookup path runs exactly as it
+                # did before this patch existed.
+                return original(module, lang, source, args)
+            pair = current_brand()
+            if not pair:
+                return original(module, lang, source, args)
+            brand, website = pair
+            # Pass the debranded translation back in as the msgid: the second
+            # lookup misses and returns it unchanged, and the original still
+            # handles markup / lazy / list argument formatting.
             return original(module, lang, debrand_text(translated, brand, website), args)
         except Exception:
             _logger.warning("biz_debrand: translation debrand failed", exc_info=True)

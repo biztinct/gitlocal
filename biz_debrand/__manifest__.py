@@ -17,7 +17,7 @@ repeat. Nothing in the platform's own source is edited. The engineering README
 beside this file explains how it is put together and what it deliberately
 leaves alone.
 """,
-    "version": "19.0.2.4.1",
+    "version": "19.0.2.5.0",
     "category": "Debranding",
     "summary": "Portable white-label layer: replaces every user-visible vendor "
                "reference with a configurable brand. No project dependencies.",
@@ -53,6 +53,9 @@ leaves alone.
         ],
         "web.assets_frontend": [
             "biz_debrand/static/src/js/biz_debrand_runtime.js",
+        ],
+        "web.assets_unit_tests": [
+            "biz_debrand/static/tests/**/*",
         ],
     },
     "installable": True,
