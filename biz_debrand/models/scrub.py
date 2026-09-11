@@ -1,5 +1,5 @@
 # Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
-"""One-off scrub of vendor references already written into the database.
+r"""One-off scrub of vendor references already written into the database.
 
 The runtime seams (``_()`` patch, QWeb tree walker, JS ``_t()`` patch, Apps-list
 ``read()``) cover everything rendered *from source*. They cannot touch content
@@ -14,8 +14,15 @@ when they still match.
 Deliberately NOT scrubbed:
   * ``ir_module_module`` metadata — re-imported from every ``__manifest__.py``
     on each ``-u``; handled at ``read()`` instead (see ir_module_module.py).
-  * ``ir_model_fields*`` — already debranded at runtime by web_debranding's
-    ``get_field_string`` / ``get_field_help`` / ``get_field_selection``.
+  * ``ir_model_fields*`` — debranded at runtime, not in the row. ``-u``
+    re-imports every label and tooltip from source on each upgrade, so a scrub
+    of these tables is a fix with a half-life. The seam is
+    ``get_field_string`` / ``get_field_help`` / ``get_field_selection``, which
+    ``web_debranding`` overrides and ``models/ir_model_fields.py`` then layers
+    the canonical rules on top of — ERRORS E3-1 found web_debranding's own rule
+    refusing ``OdooBot`` (its word rule ends ``(?!\w)``), so "already debranded
+    at runtime" was true of the 37 ``help`` rows and false of the ``Bot``-shaped
+    ``field_description`` ones.
   * email *addresses* — only the display name of an address is rewritten;
     rewriting the addr-spec would silently change routing.
 """

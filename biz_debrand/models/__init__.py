@@ -3,7 +3,9 @@
 # wrapper is in place for the whole registry-load pass.
 from . import translate_patch
 from . import brand
+from . import base
 from . import ir_config_parameter
+from . import ir_model_fields
 from . import ir_module_module
 from . import ir_ui_view
 from . import scrub

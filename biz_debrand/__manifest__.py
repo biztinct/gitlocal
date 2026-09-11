@@ -17,7 +17,7 @@ repeat. Nothing in the platform's own source is edited. The engineering README
 beside this file explains how it is put together and what it deliberately
 leaves alone.
 """,
-    "version": "19.0.2.5.0",
+    "version": "19.0.2.6.0",
     "category": "Debranding",
     "summary": "Portable white-label layer: replaces every user-visible vendor "
                "reference with a configurable brand. No project dependencies.",
