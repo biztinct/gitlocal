@@ -36,7 +36,7 @@ What it adds
 Deliberately untouched: the website 404 page, the backend error dialogs and the
 developer-mode rail, each of which is already owned elsewhere.
 ''',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Technical',
     'license': 'LGPL-3',
     'author': 'Biztinct',

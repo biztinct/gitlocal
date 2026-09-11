@@ -19,7 +19,12 @@ a same-named method silently replaces the one registered before it.
 import werkzeug.exceptions
 
 from odoo import http
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
+
+#: The real sentence the ORM produces, model name and all. It is what the brand
+#: owner met through the escape hatch in ER12.
+ACCESS_SENTENCE = ("You are not allowed to access 'System Parameter' "
+                   "(ir.config_parameter) records.")
 
 
 class BizErrorsTestRoutes(http.Controller):
@@ -57,6 +62,22 @@ class BizErrorsTestRoutes(http.Controller):
         # There is no http_routing.409, so _get_error_html falls back to
         # http_routing.4xx. That is the only way to reach that template.
         raise werkzeug.exceptions.Conflict()
+
+    @http.route('/biz_errors/test/access', type='http', auth='public',
+                website=True, sitemap=False)
+    def biz_errors_test_access(self, **kw):
+        # Reaches _handle_error as a 403 and is handled normally. The ESCAPE
+        # case (ER12) is this same exception raised again from inside
+        # _serve_fallback; the test forces that by patching _serve_fallback,
+        # because reproducing it honestly needs a published website page whose
+        # arch reads a restricted model.
+        raise AccessError(ACCESS_SENTENCE)
+
+    @http.route('/biz_errors/test/json_access', type='jsonrpc', auth='public')
+    def biz_errors_test_json_access(self, **kw):
+        # The thing most likely to break: a backend JSON-RPC failure must still
+        # come back as the JSON error the web client is built around.
+        raise AccessError(ACCESS_SENTENCE)
 
     @http.route('/biz_errors/test/generic', type='http', auth='public',
                 website=True, sitemap=False)

@@ -27,7 +27,7 @@ import secrets
 
 from odoo import models
 from odoo.exceptions import UserError
-from odoo.http import request
+from odoo.http import Response, request
 
 _logger = logging.getLogger(__name__)
 
@@ -69,6 +69,90 @@ class IrHttp(models.AbstractModel):
             _logger.warning('biz_errors: could not decorate the breakdown page',
                             exc_info=True)
         return super()._get_error_html(env, code, values)
+
+    # ------------------------------------------------------------------
+    # The net under the seam
+    # ------------------------------------------------------------------
+    @classmethod
+    def _handle_error(cls, exception):
+        """Catch the one failure that escapes the handler entirely (ER12).
+
+        ``http_routing.ir_http._handle_error`` guards its fallback render with a
+        single clause::
+
+            if code in (404, 403):
+                try:
+                    response = cls._serve_fallback()
+                    ...
+                except werkzeug.exceptions.Forbidden:
+                    pass
+
+        An ``odoo.exceptions.AccessError`` raised *inside* that render is not a
+        ``werkzeug.exceptions.Forbidden``, so it leaves ``_handle_error``
+        altogether and ``_get_error_html`` — the whole of E1 — is never reached.
+        The visitor gets werkzeug's bare 403 carrying the ORM's own message,
+        model name included: *"You are not allowed to access 'System Parameter'
+        (ir.config_parameter) records."*
+
+        SCOPE. Only a frontend request is caught. A backend JSON-RPC failure
+        must keep returning the JSON error the web client is built around — an
+        ``AccessError`` there is how the client knows to draw its access dialog,
+        and swallowing it would break every save, every action and every menu.
+        """
+        try:
+            return super()._handle_error(exception)
+        except Exception as escaped:                             # noqa: BLE001
+            if not bool(getattr(request, 'is_frontend', False)):
+                raise
+            response = cls._biz_escape_response(escaped)
+            if response is None:
+                raise
+            return response
+
+    @classmethod
+    def _biz_escape_response(cls, escaped):
+        """Render E1's own breakdown page for an exception that got out.
+
+        Returns ``None`` when it cannot — the caller then re-raises the original
+        exception, which is exactly what happened before this method existed. A
+        last-ditch handler that itself raises would be strictly worse than the
+        bare framework page it is replacing.
+        """
+        try:
+            _logger.warning(
+                'biz_errors: an exception escaped the frontend error handler; '
+                'serving the breakdown page instead', exc_info=escaped)
+            # The failure may have left the transaction aborted, and the render
+            # below reads ir.ui.view and ir.config_parameter.
+            try:
+                request.env.cr.rollback()
+            except Exception:                                    # noqa: BLE001
+                pass
+            # Go through our own _get_error_html, so the reference, the logging,
+            # the blanking and the brand are the SAME code path as every other
+            # breakdown page. `view` is what _get_values_500_error injects.
+            # No `exception` and no `error_message`. An AccessError IS a
+            # UserError, so handing it over would let its text — model name and
+            # all — through the ER6 gate and onto the page.
+            values = {
+                'status_code': 500,
+                'status_message': 'Internal Server Error',
+                'view': request.env['ir.ui.view'],
+            }
+            code, html = cls._get_error_html(request.env, 500, values)
+            response = Response(html, status=code,
+                                content_type='text/html;charset=utf-8')
+            try:
+                cls._post_dispatch(response)
+            except Exception:                                    # noqa: BLE001
+                # Cookies and headers are a nicety here; the page is the point.
+                _logger.warning('biz_errors: _post_dispatch failed on the '
+                                'escape path', exc_info=True)
+            return response
+        except Exception:                                        # noqa: BLE001
+            _logger.exception('biz_errors: could not render the breakdown page '
+                              'for an escaped exception')
+            return None
 
     # ------------------------------------------------------------------
     # Internals

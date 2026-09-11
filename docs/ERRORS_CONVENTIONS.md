@@ -296,3 +296,56 @@ Which also means the guard has to be repeated in every location that proxies —
 here `location /` and the `*/static/` regex. `proxy_intercept_errors` is off by
 default, so the `error_page` only ever sees the `return 404` on the line below
 it and never a 404 the application itself produced.
+
+## ER18 — `AccessError` IS a `UserError`, so ER6's gate lets an ORM message through
+
+`odoo.exceptions.AccessError` subclasses `UserError`. ER6's rule — *keep
+`error_message` only when the exception is a `UserError`* — therefore keeps the
+ORM's own sentence, model name included:
+
+> You are not allowed to access 'System Parameter' (ir.config_parameter) records.
+
+Which is precisely the string ER12's escape hatch was leaking. So when a
+breakdown page is built for an exception we caught ourselves (rather than one
+`_get_exception_code_values` shaped), **do not put the exception in
+`values['exception']`** and do not set `error_message`. Hand
+`_biz_error_values` a values dict with neither, and it has nothing to leak.
+
+## ER19 — a translated string that names the vendor is usually a VIEW TERM, not a code string
+
+The two Vietnamese cases named in the E2 handover —
+
+```
+Synchronize your calendar with Google Calendar
+    -> Đồng bộ lịch của bạn trên Odoo với Lịch Google
+```
+
+— are **not** code translations. Their `.po` entries are marked
+`#: model_terms:ir.ui.view,arch_db:calendar.res_config_settings_view_form`: they
+are view-arch terms, stored in `ir_ui_view.arch_db`'s per-language JSON, and they
+never pass through `tools.translate.get_translation` at all. The QWeb tree walker
+(`biz_debrand/models/ir_ui_view.py`) already rewrites them — verified live on
+`rize`, where the rendered `vi_VN` arch reads *"Đồng bộ lịch của bạn trên **Rize**
+với Lịch Google"*.
+
+So before attributing a translated leak to a seam, read the `#:` marker above the
+msgid:
+
+| Marker | Seam that owns it |
+|---|---|
+| `#. odoo-python` / `code:addons/**.py` | `translate_patch.py` |
+| `#. odoo-javascript` / `code:addons/**.js` | `TranslatedString.prototype.valueOf` (JS) |
+| `model_terms:ir.ui.view,arch_db:` | the QWeb tree walker |
+| `model:ir.model.fields,field_description:` etc. | the data scrub |
+
+A sweep of every installed module's `vi.po` on this build finds **zero**
+`odoo-python` entries whose msgid is clean and whose msgstr names the vendor, and
+one `odoo-javascript` entry (`google_calendar`) that the JS seam already covers.
+E2-2's Python fix is a rail against a future catalogue, not a visible change
+today — say so rather than claiming a screen changed.
+
+**Still open (found here, not fixed):** the rendered `vi_VN` arch of the Settings
+page keeps one vendor reference, `help="Cho phép người dùng đăng nhập/xuất từ
+Odoo."` (hr_attendance), although `debrand_text` rewrites that exact string
+correctly when called directly. The walker is not reaching that particular view.
+Candidate for E3.
