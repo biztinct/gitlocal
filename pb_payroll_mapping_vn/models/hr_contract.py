@@ -63,6 +63,9 @@ class HrContract(models.Model):
     pb_vn_qual_night = fields.Boolean(
         string='Night work — exemption evidence held',
         help=_HELP['pb_vn_qual_night'])
+    pb_vn_variable_bonus = fields.Boolean(
+        string='Variable bonus approved', tracking=True,
+        help=_HELP['pb_vn_variable_bonus'])
 
     # ---- derived -----------------------------------------------------
     pb_vn_contract_months = fields.Integer(

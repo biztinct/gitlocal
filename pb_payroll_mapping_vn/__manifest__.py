@@ -20,10 +20,10 @@ This module supplies the missing half of that arrangement:
   Vietnam payroll fact — whole numbers for counts, yes/no for the flags, a
   decimal for the hours in a working day. Two of them (months on the contract,
   days of service this year) are DERIVED from dates nobody should restate.
-* **Contract components** for the steady amounts — uniform allowance, the
-  approved private-insurance allowance, the two private-health premiums — as
-  `hr.contract.advantage.template` rows keyed on the scheme's own component
-  code, which is how the payroll engine already finds them.
+* **Contract components** for every amount — allowances, incentives, benefits
+  and deductions — as `hr.contract.advantage.template` rows keyed on the
+  scheme's own component code, which is how the payroll engine already finds
+  them. The monthly file carries no money at all.
 * **`hr.formula.config.pb_apply_vn_mapping()`** — applies the whole profile to
   one configuration: it creates the `hr.payslip.import.mapping` rows, adds the
   bank and employee-code columns if the scheme has none, and corrects the value
@@ -40,10 +40,10 @@ built from the same starter can run the same profile.
         'pb_hr_payroll_formula',
     ],
     'data': [
-        'data/contract_advantage_templates.xml',
         'views/hr_employee_views.xml',
         'views/hr_contract_views.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

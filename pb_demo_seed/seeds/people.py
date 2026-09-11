@@ -88,7 +88,7 @@ PEOPLE = [
             'pb_vn_qual_night': True,
             'pb_vn_qual_transport': True,
         },
-        'components': {'UNIFORM': 500000.0},
+        'components': {'UNIFORM': 500000.0, 'REFERINC': 3000000.0},
     },
     {
         'key': 'pip',
@@ -115,7 +115,7 @@ PEOPLE = [
             'dependents': 1,
             'pb_vn_qual_transport': True,
         },
-        'components': {'HLTHEEAMT': 1200000.0},
+        'components': {'HLTHEEAMT': 1200000.0, 'ADVANCE': 2000000.0},
     },
     {
         'key': 'fixed_term',
@@ -147,7 +147,7 @@ PEOPLE = [
             'pb_vn_qual_ot_weekend': True,
             'pb_vn_qual_ot_holiday': True,
         },
-        'components': {'UNIFORM': 500000.0},
+        'components': {'UNIFORM': 500000.0, 'AGROINC': 1500000.0},
     },
     {
         'key': 'manager',
@@ -187,6 +187,7 @@ PEOPLE = [
             'PRIVINSAMT': 6000000.0,
             'HLTHEEAMT': 2500000.0,
             'HLTHDEPAMT': 3500000.0,
+            'OTHERTAX': 5000000.0,
         },
     },
 ]
@@ -376,11 +377,31 @@ def _contract_components(ctx, contract, spec):
     wanted = spec.get('components') or {}
     if not wanted:
         return
+    seen = set()
     for advantage in contract.sudo().advantages_ids:
         code = (advantage.advantage_template_code
                 or advantage.advantage_template_id.code or '').upper()
+        seen.add(code)
         if code in wanted:
             advantage.sudo().amount = wanted[code]
+
+    # A LINE THE CONTRACT NEVER GOT. `hr.contract.create` gives a new contract
+    # one line per template that existed AT THAT MOMENT, so a component added to
+    # the profile later leaves every earlier contract without anywhere to put
+    # the amount. Creating the missing line is what a person would do, and it
+    # keeps the seeder working whichever order the two modules were installed in.
+    Template = ctx.env['hr.contract.advantage.template'].sudo()
+    for code, amount in wanted.items():
+        if code in seen:
+            continue
+        template = Template.search([('code', '=', code)], limit=1)
+        if not template:
+            continue
+        ctx.env['hr.contract.advantage'].sudo().create({
+            'contract_id': contract.id,
+            'advantage_template_id': template.id,
+            'amount': amount,
+        })
 
 
 def _reporting_lines(people):

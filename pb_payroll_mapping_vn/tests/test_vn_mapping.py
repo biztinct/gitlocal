@@ -129,6 +129,7 @@ class TestVnMapping(TransactionCase):
         self.assertNotIn('BASIC', declared)
         self.assertNotIn('PAYMONTH', declared)
         self.assertNotIn('UNIFORM', declared)
+        self.assertNotIn('PRIVINSAMT', declared)
 
         # Declaring a source must not change what anybody is paid, so the row
         # count is stable across a second run too.
@@ -138,6 +139,38 @@ class TestVnMapping(TransactionCase):
         after = len(self.env['hr.formula.rule.source'].search(
             [('rule_id', 'in', self.config.rule_ids.ids)]))
         self.assertEqual(before, after)
+
+    def test_03c_a_wire_this_profile_no_longer_believes_is_withdrawn(self):
+        """The file shrank; the board must shrink with it.
+
+        Sixteen money columns moved off the spreadsheet and onto the contract.
+        A wire this applier drew last time and no longer believes is worse than
+        no wire: the board would keep promising a heading the file stopped
+        sending, and the allowance behind it would quietly come out as zero.
+        """
+        self.config.pb_apply_vn_mapping()
+        uniform = self.config.rule_ids.filtered(lambda r: r.code == 'UNIFORM')
+        # Pretend an earlier version of this profile wired it to the sheet.
+        uniform.set_source_binding('excel', 'Uniform allowance', origin='board')
+        self.assertEqual(uniform.source_binding, 'excel')
+
+        report = self.config.pb_apply_vn_mapping()[self.config.id]
+        self.assertFalse(uniform.source_binding)
+        self.assertGreaterEqual(report['sheet_sources_cleared'], 1)
+
+    def test_03d_a_source_somebody_chose_by_hand_is_never_withdrawn(self):
+        """`origin` is the difference between our wire and theirs.
+
+        A person who wired a column by hand knows something this profile does
+        not, and the profile has no business overruling them on its next run.
+        """
+        self.config.pb_apply_vn_mapping()
+        uniform = self.config.rule_ids.filtered(lambda r: r.code == 'UNIFORM')
+        uniform.set_source_binding('excel', 'Their own heading', origin='user')
+
+        self.config.pb_apply_vn_mapping()
+        self.assertEqual(uniform.source_binding, 'excel')
+        self.assertEqual(uniform.source_binding_key, 'Their own heading')
 
     def test_04_contract_components_get_a_template(self):
         self.config.pb_apply_vn_mapping()

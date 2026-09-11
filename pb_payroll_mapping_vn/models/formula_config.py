@@ -88,7 +88,8 @@ class HrFormulaConfig(models.Model):
         rules = {r.code: r for r in self.rule_ids if r.code}
         report = {'config': self.display_name, 'mapped': 0, 'already': 0,
                   'contract_components': 0, 'columns_added': 0,
-                  'value_kinds': 0, 'sheet_sources': 0, 'flags_repaired': 0,
+                  'value_kinds': 0, 'sheet_sources': 0,
+                  'sheet_sources_cleared': 0, 'flags_repaired': 0,
                   'missing': []}
 
         owned = self._pb_vn_ensure_extra_columns(rules, report)
@@ -190,18 +191,14 @@ class HrFormulaConfig(models.Model):
         is say that the column IS one, and make sure there is a template for the
         per-contract line to hang on.
         """
-        Template = self.env['hr.contract.advantage.template'].sudo()
-        for code, label, upper in CONTRACT_COMPONENTS:
+        # ONE definition of the templates, shared with the install hook.
+        from ..hooks import ensure_advantage_templates
+        ensure_advantage_templates(self.env)
+        for code, _label, _upper in CONTRACT_COMPONENTS:
             rule = rules.get(code)
             if not rule:
                 report['missing'].append(code)
                 continue
-            if not Template.search_count([('code', '=', code)]):
-                Template.create({
-                    'name': label, 'code': code,
-                    'lower_bound': 0.0, 'upper_bound': upper,
-                    'default_value': 0.0, 'value_type': 'amount',
-                })
             if not rule.is_contract_component:
                 rule.sudo().is_contract_component = True
             report['contract_components'] += 1
@@ -315,8 +312,9 @@ class HrFormulaConfig(models.Model):
         file does not have would be a claim about a heading nobody sends, and the
         board would then show a wire to nothing.
         """
-        for code, header in [SHEET_KEY_COLUMN] + SHEET_TIME_COLUMNS \
-                + SHEET_MONEY_COLUMNS:
+        carried = dict([SHEET_KEY_COLUMN] + SHEET_TIME_COLUMNS
+                       + SHEET_MONEY_COLUMNS)
+        for code, header in carried.items():
             rule = rules.get(code)
             if not rule:
                 continue
@@ -325,6 +323,27 @@ class HrFormulaConfig(models.Model):
                 continue
             rule.sudo().set_source_binding('excel', header, origin='board')
             report['sheet_sources'] = report.get('sheet_sources', 0) + 1
+
+        # AND TAKE BACK THE ONES THAT ARE NO LONGER TRUE.
+        #
+        # The file shrank: sixteen money columns moved onto the contract. A wire
+        # this profile drew last time and no longer believes is worse than no
+        # wire — the board would keep promising a heading the file stopped
+        # sending, and the first person to trust it would wonder why the
+        # allowance came out as zero.
+        #
+        # ONLY OUR OWN WIRES. `origin == 'board'` is the mark this applier
+        # leaves; a source somebody chose by hand says `user` and is never
+        # touched, because they know something this profile does not.
+        for rule in self.rule_ids:
+            if (rule.code or '') in carried:
+                continue
+            ours = rule.source_ids.filtered(
+                lambda s: s.kind == 'excel' and s.origin == 'board')
+            if ours:
+                ours.sudo().unlink()
+                report['sheet_sources_cleared'] = (
+                    report.get('sheet_sources_cleared', 0) + 1)
 
     # -- what a value IS -------------------------------------------------
     def _pb_vn_apply_value_kinds(self, rules, report):

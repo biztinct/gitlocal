@@ -351,7 +351,7 @@ a:focus-visible, summary:focus-visible {
             <span class="lbl">Check</span>
             <ul>
               <li>Open <span class="code">rize.payobook.com</span> and sign in. Leave it on <b>Home</b>.</li>
-              <li>Have <b>Rize Vietnam - demo pay data.xlsx</b> on the desktop of the machine you are presenting from. Do not open it in Excel during the demo — you only need to upload it.</li>
+              <li>Have <b>Rize Vietnam - demo pay data.xlsx</b> on the desktop of the machine you are presenting from. It is eight columns wide. Open it once beforehand so you know what it looks like — how short it is, is the point of the whole demo.</li>
               <li>Search People for <b>Demo</b>. Five people should come back, DEMO001 to DEMO005. If they do not, the demo data is not loaded.</li>
             </ul>
           </div>
@@ -671,6 +671,10 @@ a:focus-visible, summary:focus-visible {
                 payroll calculated.</li>
               <li>His <b>benefit enrolments</b> — family health cover with three dependants named,
                 and group life.</li>
+              <li>Now open his <b>contract</b> and scroll to the component list. Nineteen lines:
+                the uniform allowance, the private insurance allowance, both health premiums, the
+                incentives, the deductions. Four of his carry an amount. <b>This is where money
+                is edited</b> — not in a spreadsheet.</li>
               <li>The <b>payroll calendar</b>: last month closed, this month open with its cut-off
                 and pay dates, next month ahead. Reminders go out five, two and zero days before
                 cut-off.</li>
@@ -797,12 +801,17 @@ a:focus-visible, summary:focus-visible {
         <div class="lanes">
           <div class="lane">
             <span class="lbl">Set it up</span>
-            <p>Before you upload anything, open <span class="path">Settings → Mapping</span> and
-              show them the <b>Employee &amp; contract</b> board: twenty-seven columns of the pay
-              scheme already read from the employee record, the contract, the bank account or the
-              pay period.</p>
+            <p>Before you upload anything, open <span class="path">Settings → Mapping</span>.
+              Show them two boards in this order:</p>
+            <ul>
+              <li><b>Employee &amp; contract</b> — twenty-three columns of the pay scheme read
+                straight off the employee record, the contract or the bank account, plus the
+                nineteen amounts that live on the contract as components.</li>
+              <li><b>Spreadsheet columns → Scheme</b> — seven wires. That is the entire file.</li>
+            </ul>
             <p class="say">The Vietnamese pay rules ask for about forty-five things per person per
-              month. We have taken all but a handful off you. Here is what is left.</p>
+              month. Six of them are genuinely different each month, and those six are the only
+              ones we ask you for.</p>
           </div>
           <div class="lane">
             <span class="lbl">Then</span>
@@ -818,12 +827,12 @@ a:focus-visible, summary:focus-visible {
           </div>
           <div class="lane">
             <span class="lbl">The point</span>
-            <p>Open the file's column list on screen, or just describe it. It carries the employee
-              code, six columns of days and hours, and sixteen columns for one-off amounts that are
-              almost all empty.</p>
-            <p class="notice">It does not carry anybody's salary, their dependants, whether they are
-              in the union, their tax residency, their pay grade, their uniform allowance, their
-              health premium or their bank details. Every one of those came off their record.</p>
+            <p>Put the file on screen. Eight columns: who the row is about, their name so a human
+              can read it, and six columns of days and hours.</p>
+            <p class="notice">It carries no money at all. Not a salary, not an allowance, not a
+              bonus, not a deduction. Every amount on those five payslips came off the person's
+              contract, and every fact — union member, tax resident, dependants, pay grade — came
+              off their record.</p>
           </div>
           <div class="lane">
             <span class="lbl">Expected</span>
@@ -852,14 +861,14 @@ a:focus-visible, summary:focus-visible {
                     <td class="num mono">35,650,000</td>
                     <td class="num mono">3,030,000</td>
                     <td class="num mono">29,760,000</td>
-                    <td>Union dues of 130,000 — nobody typed that he is a member</td>
+                    <td>Union dues of 130,000, and a 3,000,000 referral bonus sitting on his contract</td>
                   </tr>
                   <tr>
                     <td>DEMO003 Hoa</td>
                     <td class="num mono">30,380,769</td>
                     <td class="num mono">320,846</td>
                     <td class="num mono">25,087,616</td>
-                    <td>Three days' leave taken, and an advance being repaid</td>
+                    <td>Three days' leave taken, and a 2,000,000 advance being repaid from her contract</td>
                   </tr>
                   <tr>
                     <td>DEMO004 Quan</td>
@@ -882,10 +891,12 @@ a:focus-visible, summary:focus-visible {
           <div class="lane">
             <span class="lbl">Finish on</span>
             <p>Open <b>Son's</b> payslip and find the private insurance allowance. Then open his
-              contract and show the same figure sitting there.</p>
+              contract and show the same 6,000,000 sitting in the component list.</p>
             <p class="say">That number is on his contract. It will be on every payslip until
               somebody changes his contract. It is never going to be mistyped into a spreadsheet
               again.</p>
+            <p>Change it on the contract and run it again if you have the time. It is the most
+              convincing thirty seconds in the demo.</p>
           </div>
         </div>
       </section>
@@ -932,6 +943,17 @@ a:focus-visible, summary:focus-visible {
           changes.</p>
       </div>
 
+      <div class="panel warn">
+        <h3>"What about a one-off — a bonus, or an advance being repaid?"</h3>
+        <p>Answer this one carefully, because it is the honest limit of the current setup. You put
+          the amount on the contract, and it is paid <b>every month until you clear it</b>. For a
+          referral bonus or an advance repayment, that means going back to the contract after the
+          run and setting it to zero.</p>
+        <p>The six to watch are the referral incentive, the salary advance recovery, the two
+          prior-period adjustments and the two other deductions. Everything else — allowances,
+          premiums, the standing incentives — is meant to repeat.</p>
+      </div>
+
       <div class="panel">
         <h3>"How do we know where a number came from?"</h3>
         <p>Every payslip records, for every input, whether it came from the file, from the employee
@@ -947,7 +969,7 @@ a:focus-visible, summary:focus-visible {
 
       <footer class="end">
         <span>Rize Farms · Vietnam · rize.payobook.com</span>
-        <span class="mono">Five people · 188 records · one pay run</span>
+        <span class="mono">Five people · 188 records · an eight-column file</span>
       </footer>
 
     </main>

@@ -7,10 +7,15 @@ carries what is left over are all generated from the constants below. Two lists
 that are supposed to agree are two lists that will one day disagree, so there is
 only this one — `tools/pb_vn_pay_data.py` imports it rather than restating it.
 
-THE SORTING RULE THE OWNER SET (2026-09-11). A column belongs on a RECORD when
-the answer is a standing fact about the person, their contract or their bank. It
-stays in the monthly SPREADSHEET when the answer is genuinely different every
-run — the days actually worked, the overtime hours, an approved one-off amount.
+THE SORTING RULE THE OWNER SET (2026-09-11, revised the same day after seeing it
+on screen). There are three homes and a column belongs to exactly one:
+
+  * the monthly SPREADSHEET carries the DAYS AND THE HOURS, and nothing else;
+  * an AMOUNT is a contract COMPONENT, edited on the person's contract and read
+    from there by every run — see `CONTRACT_COMPONENTS`;
+  * everything else — every yes/no, every count, every rate — is a FIELD on the
+    employee or the contract, see `FIELD_MAPPING`.
+
 Nothing else decides it; in particular, "it would be convenient" does not.
 
 DELIBERATELY PLAIN PYTHON — no ``odoo`` import — so the spreadsheet builder and
@@ -74,6 +79,11 @@ CONTRACT_FIELDS = [
     ('pb_vn_qual_night', 'boolean',
      'Night work — exemption evidence held',
      "Tick when the night-work premium is tax-exempt."),
+    # Not an amount, so not a contract component; not a fact about the person,
+    # so not on the employee. It is a standing approval on this contract.
+    ('pb_vn_variable_bonus', 'boolean', 'Variable bonus approved',
+     "Tick while this contract is approved for the variable bonus. It is read "
+     "every run, so untick it when the approval lapses."),
 ]
 
 #: THE MAPPING. `component code -> ('hr.employee'|'hr.contract', field name)`.
@@ -98,6 +108,7 @@ FIELD_MAPPING = {
     'OTWEQUAL':     ('hr.contract', 'pb_vn_qual_ot_weekend'),
     'OTHOLQUAL':    ('hr.contract', 'pb_vn_qual_ot_holiday'),
     'NIGHTPREQUAL': ('hr.contract', 'pb_vn_qual_night'),
+    'PAIDVAR':      ('hr.contract', 'pb_vn_variable_bonus'),
     # --- the person facts ---------------------------------------------
     'ISLOCAL':      ('hr.employee', 'pb_vn_is_local'),
     'ISINSURED':    ('hr.employee', 'pb_vn_in_insurance'),
@@ -114,19 +125,58 @@ FIELD_MAPPING = {
 #: setter, and so the spreadsheet builder knows to leave them out.
 COMPUTED_FIELDS = ('pb_vn_contract_months', 'pb_vn_service_days')
 
-#: Steady amounts that live on the contract as COMPONENTS rather than as fields.
+#: Every AMOUNT lives on the contract as a COMPONENT. `(code, label, upper bound)`.
 #:
-#: They are amounts, they differ per person, and the payroll engine already
-#: finds them by the scheme's own component code
-#: (`payroll_import_batch._contract_component_amounts`), so they need no mapping
-#: row — only `is_contract_component` on the column and a template to hang the
-#: per-contract line on. `(code, label, upper bound)`.
+#: THE OWNER'S RULING, 2026-09-11: the monthly spreadsheet carries the days and
+#: the hours and nothing else. Allowances, incentives, benefits and deductions
+#: are properties of the person's contract, are edited there, and are read from
+#: there by every pay run.
+#:
+#: They need no mapping row — the engine finds them by the scheme's own component
+#: code (`payroll_import_batch._contract_component_amounts`) — only
+#: `is_contract_component` on the column and a template for the per-contract line
+#: to hang on.
+#:
+#: WHAT THIS COSTS, STATED ONCE HERE SO NOBODY HAS TO REDISCOVER IT. A contract
+#: component is a STANDING amount: it is paid every month until somebody edits
+#: the contract. That is exactly right for a uniform allowance or a health
+#: premium, and it means a genuinely one-off item — the referral bonus, the
+#: salary advance being repaid, a prior-period correction — keeps being applied
+#: until it is cleared. The four marked `one-off` below are the ones to watch;
+#: a scheme that wants them to lapse on their own needs a rule that clears them,
+#: not a different rung of the ladder.
+#:
+#: The bounds are guard rails against a mistyped figure, not policy.
 CONTRACT_COMPONENTS = [
+    # --- standing, month after month ----------------------------------
     ('UNIFORM', 'Uniform allowance', 50000000.0),
     ('PRIVINSAMT', 'Private insurance allowance approved', 500000000.0),
     ('HLTHEEAMT', 'Private health premium — employee', 100000000.0),
     ('HLTHDEPAMT', 'Private health premium — dependants', 100000000.0),
+    ('TRANSPADD', 'Additional transportation', 50000000.0),
+    ('OTHERBEN', 'Other company benefits', 200000000.0),
+    ('NONCASHBEN', 'Taxable non-cash benefit', 200000000.0),
+    # --- earned, and usually recurring while the role lasts -----------
+    ('LOGISINC', 'Logistics incentive', 200000000.0),
+    ('AGROINC', 'Season agronomy incentive', 200000000.0),
+    ('LAUNCHINC', 'New product launch incentive', 200000000.0),
+    ('OTHERTAX', 'Other taxable allowance', 500000000.0),
+    ('ALENCASH', 'Unused annual-leave encashment', 500000000.0),
+    ('OTHEREXMP', 'Other exempt reimbursement', 200000000.0),
+    # --- one-off: clear these once they have been paid ----------------
+    ('REFERINC', 'Referral incentive', 100000000.0),
+    ('ADVANCE', 'Salary advance recovery', 500000000.0),
+    ('ADJADD', 'Prior-period addition', 500000000.0),
+    ('ADJDEDAMT', 'Prior-period deduction approved', 500000000.0),
+    ('PRIORDED', 'Prior-period deduction', 500000000.0),
+    ('OTHERDED', 'Other deduction', 500000000.0),
 ]
+
+#: The four whose amount should be cleared after the run that pays them.
+#: Read by nothing yet; written down because the person who wonders "why is he
+#: still repaying that advance" deserves to find the answer in one place.
+ONE_OFF_COMPONENTS = ('REFERINC', 'ADVANCE', 'ADJADD', 'ADJDEDAMT',
+                      'PRIORDED', 'OTHERDED')
 
 #: Columns the scheme may not have at all, added when it does not.
 #: `(code, label, column role, value kind, destination)`.
@@ -169,10 +219,15 @@ VALUE_KINDS = {
 #  What is left in the monthly spreadsheet
 # ======================================================================
 #
-# Everything the scheme asks a person for, minus everything above. Written out
-# rather than derived so that a reader can see the whole monthly file in one
-# place — and so that adding a column to the scheme does not silently add a
-# column to everybody's spreadsheet.
+# THE FILE IS THE TIMESHEET AND NOTHING ELSE (owner's ruling, 2026-09-11).
+#
+# It carries the days and the hours, because those are the only things that are
+# genuinely different for a person from one month to the next. Every AMOUNT —
+# allowance, incentive, benefit, deduction — is a property of the contract and is
+# read from there; see `CONTRACT_COMPONENTS`. Every yes/no is a property of the
+# person or the contract and is read from there; see `FIELD_MAPPING`.
+#
+# Eight columns, of which a payroll clerk fills in six.
 
 #: The days and hours. Different every run by definition.
 SHEET_TIME_COLUMNS = [
@@ -184,25 +239,11 @@ SHEET_TIME_COLUMNS = [
     ('HRSNIGHT', 'Night work — hours this run'),
 ]
 
-#: The approved one-off amounts. Usually blank; typed when somebody approves one.
-SHEET_MONEY_COLUMNS = [
-    ('LOGISINC', 'Logistics incentive'),
-    ('AGROINC', 'Season agronomy incentive'),
-    ('LAUNCHINC', 'New product launch incentive'),
-    ('REFERINC', 'Referral incentive'),
-    ('PAIDVAR', 'Variable bonus approved this run (1 = yes)'),
-    ('OTHERTAX', 'Other taxable allowance'),
-    ('TRANSPADD', 'Additional transportation'),
-    ('ALENCASH', 'Unused annual-leave encashment'),
-    ('OTHEREXMP', 'Other exempt reimbursement'),
-    ('NONCASHBEN', 'Taxable non-cash benefit'),
-    ('OTHERBEN', 'Other company benefits'),
-    ('ADJADD', 'Prior-period addition'),
-    ('ADJDEDAMT', 'Prior-period deduction approved'),
-    ('ADVANCE', 'Salary advance recovery'),
-    ('PRIORDED', 'Prior-period deduction'),
-    ('OTHERDED', 'Other deduction'),
-]
+#: Kept, and deliberately EMPTY. Every amount that used to be here is now a
+#: contract component. The name survives because the sheet builder, the applier
+#: and the tests all read it, and because "the file carries no amounts" is a
+#: statement worth being able to point at.
+SHEET_MONEY_COLUMNS = []
 
 #: The header the importer keys the file on.
 SHEET_KEY_COLUMN = ('EMPCODE', 'Employee code')
@@ -264,15 +305,26 @@ def sheet_layout():
     come out exactly, and it is asserted rather than assumed, because a silent
     off-by-one here reintroduces precisely the defect the reserved positions
     exist to prevent.
+
+    ONLY THE RESERVATIONS THAT ARE STILL IN RANGE. A reservation protects a
+    position the file actually occupies; one past the end of the file protects
+    nothing, and honouring it anyway would pad an eight-column sheet out to
+    twenty-five, seventeen of them blank. Which reservations are in range depends
+    on the width, and the width depends on how many are in range — so it is
+    settled by iteration rather than guessed. It converges in two passes and the
+    loop is bounded so a bad reservation list cannot hang a build step.
     """
-    reserved = {_letter_to_index(letter): (code, label)
-                for letter, code, label in RESERVED_POSITIONS}
+    all_reserved = {_letter_to_index(letter): (code, label)
+                    for letter, code, label in RESERVED_POSITIONS}
     columns = sheet_columns()
-    width = len(columns) + len(reserved)
-    # A reserved position past the end of the sheet protects nothing and would
-    # also make the widths disagree, so the sheet grows to cover them all.
-    while reserved and max(reserved) >= width:
-        width = max(reserved) + 1
+    width = len(columns)
+    reserved = {}
+    for _pass in range(len(all_reserved) + 2):
+        in_range = {i: v for i, v in all_reserved.items() if i < width}
+        new_width = len(columns) + len(in_range)
+        if new_width == width and in_range.keys() == reserved.keys():
+            break
+        reserved, width = in_range, new_width
     layout, queue = [], list(columns)
     for index in range(width):
         if index in reserved:

@@ -50,6 +50,10 @@ DEFAULT_OUT = os.path.join(
 #: executive works the odd late evening, and the country manager does not record
 #: overtime at all. A demo in which everybody has the same eight hours of
 #: weekend work is a demo nobody believes.
+#:
+#: `money` is kept for the note it carries, and is NOT written into the sheet:
+#: every amount is a contract component now (owner's ruling, 2026-09-11), and
+#: the demo seeder puts these same figures onto the five contracts.
 ROWS = [
     {
         'code': 'DEMO001', 'name': 'Demo Nguyen Thi Mai',
@@ -151,8 +155,6 @@ def build(path):
         }
         for code in ('HRSWD', 'HRSWE', 'HRSHOL', 'HRSNIGHT'):
             values[code] = row.get(code, 0)
-        for code, _label in vn_profile.SHEET_MONEY_COLUMNS:
-            values.setdefault(code, row['money'].get(code, 0))
 
         for col_index, (code, _label, reserved) in enumerate(layout, start=1):
             if reserved:

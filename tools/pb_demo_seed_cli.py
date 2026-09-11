@@ -107,7 +107,9 @@ def mapping(env):
     print('Contract components    : %s' % report['contract_components'])
     print('Columns added          : %s' % report['columns_added'])
     print('Value kinds corrected  : %s' % report['value_kinds'])
-    print('Spreadsheet columns    : %s declared' % report.get('sheet_sources', 0))
+    print('Spreadsheet columns    : %s declared, %s withdrawn'
+          % (report.get('sheet_sources', 0),
+             report.get('sheet_sources_cleared', 0)))
     print('Wrong flags repaired   : %s' % report.get('flags_repaired', 0))
     if report['missing']:
         print('Columns the scheme does not have: %s'

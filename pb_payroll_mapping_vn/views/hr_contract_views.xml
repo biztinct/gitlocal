@@ -20,6 +20,7 @@
                             <field name="pb_vn_hours_per_day"/>
                             <field name="pb_vn_pay_grade"/>
                             <field name="pb_vn_annual_days"/>
+                            <field name="pb_vn_variable_bonus"/>
                         </group>
                         <group string="Worked out from the dates">
                             <field name="pb_vn_contract_months" readonly="1"/>
