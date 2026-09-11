@@ -144,3 +144,54 @@ every module the master gets, except `pb_tenants`/`pb_demo`/`pb_demo_portal`/`pb
 Deploy contract is in `CLAUDE.md`: one addons directory, `/odoo/odoo-server/addons`; clean the
 staging dir first; `--delete` is scoped to a single module directory and **never** to the addons
 root. Verify both file content **and** `ir_module_module.latest_version` per database.
+
+## ER10 — Blank `debug` to `''`, never to `False`
+
+`debug` is a **string** of comma-separated flags everywhere in the platform
+(`'1'`, `'assets'`, `'tests,assets'`, `''`). Templates ask membership questions
+of it: `web.conditional_assets_tests` is literally
+`<t t-if="'tests' in debug or test_mode_enabled"/>`.
+
+Setting `values['debug'] = False` to shut the technical block therefore raises
+`TypeError: argument of type 'bool' is not iterable` inside
+`web.frontend_layout`, which takes down the whole 4xx family — and the failure
+surfaces as *"Couldn't render a template for http status 422"* followed by the
+418 fallback, which looks nothing like the real cause. Cost one test run on
+2026-09-11 (E1). Use `''`. `editable = False` is fine; only `debug` is a string.
+
+## ER11 — An undefined name in a QWeb expression is falsy, not an error
+
+Verified on this build: `<t t-esc="nosuchvar"/>` renders nothing and
+`<t t-if="nosuchvar">` is false. No `NameError`, no `QWebException`.
+
+This is what makes it safe for a replaced core template to reference values that
+only one of its callers injects. `http_routing.http_error` is rendered directly
+by `account/controllers/terms.py` and `website_forum` with nothing but
+`status_code`/`status_message`, and by `_handle_error`'s 418 fallback with the
+full error values; one template body can serve both, and `brand_home or '/'`
+quietly becomes `/` when nobody set it.
+
+## ER12 — An `AccessError` raised while rendering a website page escapes the handler
+
+`http_routing.ir_http._handle_error` wraps its `_serve_fallback()` call in
+`except werkzeug.exceptions.Forbidden`. When the original failure was an
+`odoo.exceptions.AccessError` raised *during the page render*, the fallback
+re-renders the same page, raises `AccessError` again — which that clause does
+**not** catch — and the exception leaves `_handle_error` entirely. The visitor
+gets werkzeug's bare `403 Forbidden` document carrying the ORM's own message,
+including the technical model name: *"You are not allowed to access 'System
+Parameter' (ir.config_parameter) records."*
+
+No module-level seam can reach this: our `_get_error_html` is never called. It is
+stock behaviour, unchanged by E1, and it is the remaining hole in the breakdown
+programme. Reproduced on 2026-09-11 with a website page whose arch reads a
+restricted model. Candidate for E2.
+
+## ER13 — A shell write is not visible to the running server until it is
+
+`odoo-bin shell` in a second process commits fine, but the running server keeps
+serving the old compiled QWeb template: a `website.page` whose view arch and
+`visibility` had both been rewritten still answered with the previous render,
+and busting the URL with a query string changed nothing. `systemctl restart
+odoo-server` made it correct immediately. When a shell edit "did not take",
+restart before you go looking for a bug.

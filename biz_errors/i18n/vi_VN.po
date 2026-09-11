@@ -1,0 +1,107 @@
+# Vietnamese catalogue for biz_errors.
+# Every string here is read by a person on their worst minute with the product:
+# keep it calm, keep it plain, and never name the platform vendor.
+msgid ""
+msgstr ""
+"Project-Id-Version: biz_errors 19.0.1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-11 00:00+0000\n"
+"PO-Revision-Date: 2026-09-11 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "Something went wrong on our side"
+msgstr "Đã xảy ra sự cố ở phía chúng tôi"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "You don't have access to this page"
+msgstr "Bạn không có quyền truy cập trang này"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "That file type isn't supported here"
+msgstr "Định dạng tệp này không được hỗ trợ ở đây"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "That request didn't come through"
+msgstr "Yêu cầu của bạn chưa được gửi đi"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "This page couldn't be opened"
+msgstr "Không thể mở trang này"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid ""
+"This wasn't you. Try again — if it keeps happening, let your administrator "
+"know so support can look into it."
+msgstr ""
+"Đây không phải lỗi của bạn. Hãy thử lại — nếu tình trạng này vẫn tiếp diễn, "
+"hãy báo cho quản trị viên của bạn để bộ phận hỗ trợ kiểm tra."
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid ""
+"This area is limited to certain roles. If you need it for your work, ask your"
+" administrator to extend your access."
+msgstr ""
+"Khu vực này chỉ dành cho một số vai trò nhất định. Nếu bạn cần dùng cho công "
+"việc, hãy đề nghị quản trị viên mở rộng quyền truy cập cho bạn."
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid ""
+"Try again with a different file format. If you are not sure which formats are"
+" accepted, ask your administrator."
+msgstr ""
+"Hãy thử lại với một định dạng tệp khác. Nếu bạn không chắc định dạng nào được "
+"chấp nhận, hãy hỏi quản trị viên của bạn."
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid ""
+"Something in the address or in the details sent with it was not right. Go "
+"back and try again."
+msgstr ""
+"Có điều gì đó trong địa chỉ hoặc trong thông tin gửi kèm chưa đúng. Hãy quay "
+"lại và thử lại."
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid ""
+"This wasn't you. Go back and try again — if it keeps happening, let your "
+"administrator know so support can look into it."
+msgstr ""
+"Đây không phải lỗi của bạn. Hãy quay lại và thử lại — nếu tình trạng này vẫn "
+"tiếp diễn, hãy báo cho quản trị viên của bạn để bộ phận hỗ trợ kiểm tra."
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "If you need help, give your administrator this reference"
+msgstr "Nếu bạn cần trợ giúp, hãy cung cấp mã tham chiếu này cho quản trị viên của bạn"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "Go back"
+msgstr "Quay lại"
+
+#. module: biz_errors
+#: model_terms:ir.ui.view,arch_db:biz_errors.breakdown_card
+msgid "Home"
+msgstr "Trang chủ"
+
+#. module: biz_errors
+#: code:addons/biz_errors/models/ir_http.py:0
+#: model_terms:ir.ui.view,arch_db:biz_errors.b500
+msgid "Something went wrong"
+msgstr "Đã xảy ra sự cố"
