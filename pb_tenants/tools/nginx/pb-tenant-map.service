@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh the nginx known-workspace map from the live database list
+Documentation=file:///usr/local/bin/pb-tenant-map
+After=network.target postgresql.service nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pb-tenant-map
+# A failure here is never fatal: the script leaves the previous, working map in
+# place and the box keeps behaving exactly as it did.
+SuccessExitStatus=0

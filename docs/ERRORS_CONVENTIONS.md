@@ -264,3 +264,35 @@ manager page is rendered before a database is chosen, so none of `biz_debrand`'s
 five seams can reach it and its `<title>odoo</title>` stands. It is unreachable
 in production — `location ^~ /web/database/ { return 404; }` is in every server
 block — so it is logged here rather than fixed.
+
+## ER17 — nginx ignores a server-level `error_page` for a server-level `if … return`
+
+Verified on nginx 1.24.0 (Ubuntu), on this box, at the cost of two reload cycles.
+
+```nginx
+server {
+    if ($pb_workspace = 0) { return 418; }
+    error_page 418 =404 /_pb_no_workspace;   # NEVER CONSULTED
+    location = /_pb_no_workspace { internal; alias /var/www/...; }
+}
+```
+
+The visitor gets a bare `418` — and with `return 404` + `error_page 404` at the
+same level, nginx's own grey *"404 Not Found"*. The `if` at server level runs in
+the rewrite phase, before location selection, and the config it finalises the
+request against does not carry the server block's `error_page`.
+
+**The guard and its `error_page` must sit in the SAME `location` block:**
+
+```nginx
+location / {
+    error_page 404 /_pb_no_workspace;
+    if ($pb_workspace = 0) { return 404; }
+    proxy_pass http://127.0.0.1:8069;
+}
+```
+
+Which also means the guard has to be repeated in every location that proxies —
+here `location /` and the `*/static/` regex. `proxy_intercept_errors` is off by
+default, so the `error_page` only ever sees the `return 404` on the line below
+it and never a 404 the application itself produced.
