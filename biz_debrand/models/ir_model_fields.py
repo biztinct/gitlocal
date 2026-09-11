@@ -31,7 +31,7 @@ import logging
 
 from odoo import api, models, tools
 
-from .brand import brand_for_env, debrand_text
+from .brand import debrand_text, source_brand
 
 _logger = logging.getLogger(__name__)
 
@@ -47,12 +47,15 @@ class IrModelFields(models.Model):
         for every other reader.
         """
         try:
-            brand, website = brand_for_env(self.env)
+            # A field label comes from a Python field definition: SOURCE, so
+            # the product rule applies here (E3-2).
+            brand, website, product = source_brand(self.env)
         except Exception:
             _logger.warning("biz_debrand: field-term debrand failed", exc_info=True)
             return terms
         return {
-            name: debrand_text(value, brand, website) if isinstance(value, str) else value
+            name: debrand_text(value, brand, website, product)
+            if isinstance(value, str) else value
             for name, value in terms.items()
         }
 
@@ -71,11 +74,12 @@ class IrModelFields(models.Model):
     def get_field_selection(self, model_name, field_name):
         selection = super().get_field_selection(model_name, field_name)
         try:
-            brand, website = brand_for_env(self.env)
+            brand, website, product = source_brand(self.env)
         except Exception:
             _logger.warning("biz_debrand: selection debrand failed", exc_info=True)
             return selection
         return [
-            (value, debrand_text(label, brand, website) if isinstance(label, str) else label)
+            (value, debrand_text(label, brand, website, product)
+             if isinstance(label, str) else label)
             for value, label in selection
         ]

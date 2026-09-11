@@ -21,7 +21,7 @@ import logging
 
 from odoo import models
 
-from .brand import brand_for_env, debrand_text
+from .brand import debrand_text, source_brand
 
 _logger = logging.getLogger(__name__)
 
@@ -38,7 +38,9 @@ class IrModuleModule(models.Model):
         if fnames and not any(f in fnames for f in BRANDED_FIELDS):
             return result
         try:
-            brand, website = brand_for_env(self.env)
+            # Apps-list text is re-imported from every __manifest__.py on each
+            # -u, so it is SOURCE and the product rule applies (E3-2).
+            brand, website, product = source_brand(self.env)
         except Exception:
             _logger.warning("biz_debrand: Apps-list debrand failed", exc_info=True)
             return result
@@ -46,5 +48,5 @@ class IrModuleModule(models.Model):
             for fname in BRANDED_FIELDS:
                 value = values.get(fname)
                 if isinstance(value, str):
-                    values[fname] = debrand_text(value, brand, website)
+                    values[fname] = debrand_text(value, brand, website, product)
         return result

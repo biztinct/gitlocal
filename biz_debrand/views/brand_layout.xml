@@ -16,6 +16,11 @@
                   t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name')"/>
             <meta name="biz-brand-website"
                   t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_website')"/>
+            <!-- ERRORS E3-2. Empty unless this database is a tenant whose brand
+                 differs from the master product name, in which case the JS
+                 seams that rewrite SOURCE text rewrite that name too. -->
+            <meta name="biz-brand-product"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.product_name')"/>
         </xpath>
     </template>
 </odoo>

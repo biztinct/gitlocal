@@ -36,7 +36,11 @@
 
           <div class="oe_website_login_container" t-out="0"/>
 
-          <p class="rz-login__foot">Powered by Payobook</p>
+          <!-- A deliberate statement about who built the platform, not a
+               name that leaked onto a tenant screen. data-biz-brand="keep"
+               stops the white-label layer rewriting it (biz_debrand,
+               ERRORS E3-2). -->
+          <p class="rz-login__foot" data-biz-brand="keep">Powered by Payobook</p>
         </div>
       </div>
     </xpath>

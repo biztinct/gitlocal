@@ -349,3 +349,153 @@ page keeps one vendor reference, `help="Cho phép người dùng đăng nhập/x
 Odoo."` (hr_attendance), although `debrand_text` rewrites that exact string
 correctly when called directly. The walker is not reaching that particular view.
 Candidate for E3.
+
+## ER20 — `web_debranding`'s word rule refuses a sentence that ENDS in the vendor name
+
+Its generic rule (`web_debranding/models/ir_translation.py:56`) is
+
+```python
+re.sub(r"\b(?<!\.)odoo(?!\.\S|\s?=|\w|\[)\b", new_name, source, flags=re.IGNORECASE)
+```
+
+The `(?!\.\S)` guard was written to protect the JS namespace (`odoo.define`).
+It also rejects **any sentence whose last word is the vendor name**, because the
+character after the full stop then only has to be non-whitespace. Inside a view
+arch that character is always `<`.
+
+Measured on `rztest` 2026-09-11, the same function, the same brand:
+
+| input | output |
+|---|---|
+| `Cho phép người dùng đăng nhập/xuất từ Odoo.` | `…từ BizApp.` ✅ |
+| `Cho phép người dùng đăng nhập/xuất từ Odoo.</span>` | **unchanged** ❌ |
+
+That one character is the whole of the E3-1 bug: the Vietnamese Settings page.
+Its `(?!\w)` guard refuses `OdooBot` for the same kind of reason, which is why
+`res.users.odoobot_state` was still labelled `Trạng thái OdooBot`.
+
+**Never widen that regex.** `web_debranding` is gutted, OPL-1 and not where
+coverage goes. Layer `biz_debrand`'s canonical `debrand_text` on top of it —
+the pre-filter makes the second pass free for everything the first already
+fixed.
+
+## ER21 — ask ER19's marker question BEFORE picking a seam, even when a table looks guilty
+
+E3-1 was handed three candidate seams and the row counts that seemed to point at
+`ir_model_fields` (37 `help` rows, 5 `field_description`). Both readings of that
+evidence were wrong:
+
+* the 37 `help` rows are **already clean** at runtime — 0 of them reach a
+  tooltip naming the vendor, in either language;
+* the sentence actually observed on screen was never an `ir_model_fields` row at
+  all. It is `model_terms:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form`,
+  `ir_ui_view` id 2009 — a view term, reaching the screen through `base.get_view`.
+
+The two-minute check that settles it, before any code:
+
+```sql
+SELECT count(*) FROM ir_model_fields WHERE help::text ILIKE '%<the sentence>%';
+SELECT id, name FROM ir_ui_view  WHERE arch_db::text ILIKE '%<the sentence>%';
+```
+
+## ER22 — the backend arch and server-rendered QWeb are two different seams
+
+`ir.ui.view._get_view_etrees` (ER1, `biz_debrand/models/ir_ui_view.py`) is reached
+only by `ir.qweb._preload_trees`, i.e. website, portal, reports and the webclient
+shell. A **form / list / settings arch** never goes near it: it travels
+`base.get_view` → `ir.ui.view._get_view_cache`, and core re-parses and
+re-serialises it on every call (`ir_ui_view.py:3168-3171`), so a post-processing
+override there costs a parse, not a second cache.
+
+Both are needed and neither substitutes for the other. `biz_debrand/models/base.py`
+is the second one.
+
+## ER23 — a rule that can reach STORED ROWS must be opt-in per call site
+
+`debrand_text` is shared by the runtime seams **and** by `scrub.py`, which
+rewrites rows in place. The vendor rules are safe there because no customer is
+called "Odoo". The product rule is not: a company genuinely named "Payobook
+Vietnam JSC" is data, and renaming it is a silent corruption far worse than the
+bug the rule exists to fix.
+
+So the product name is an explicit fourth argument, defaulting to off, and the
+question each seam must answer is **"could this string already carry an
+interpolated record name?"** — not "is this seam at runtime?". That is why the
+JS notification seam (E2-3) sits on the DATA side despite being a runtime seam:
+by the time a message reaches `notificationService.add` it is finished prose
+with `str(e)` and record names already in it.
+
+Enabled (SOURCE): `translate_patch`, `ir_ui_view`, `base.get_view`,
+`ir_model_fields`, `ir_module_module`, JS seams 1 and 2.
+Off (DATA): `scrub.py`, JS seam 3, and `debrand_url` — `payobook.com` resolves
+and a rewritten one would not.
+
+`biz_debrand/tests/test_rewrite.py::TestProductRuleIsOptIn` reads the source of
+each seam and fails if that line ever moves.
+
+## ER24 — a blanket rule needs an author's opt-out, or one deliberate line turns it off
+
+E3-2's product rule cannot tell two sentences apart. On a tenant's screen
+"Welcome to Payobook" is the bug; "Powered by Payobook" in that same tenant's
+footer is a deliberate statement about who built the platform, and rewriting it
+to "Powered by Rize" is nonsense, not a fix. Without a hatch the only remedy for
+one such line is turning the rule off for the whole database.
+
+`data-biz-brand="keep"` on an element takes that element **and its subtree** out
+of the walk, in both halves. Implementation notes that are easy to get wrong:
+
+* Python: `element.iter()` is flat and cannot skip a subtree — `debrand_tree`
+  walks an explicit stack instead.
+* JS: the TreeWalker filter must return `NodeFilter.FILTER_REJECT`, not
+  `FILTER_SKIP`. Only REJECT excludes the descendants.
+* `tail` is the text after an element's CLOSING tag and belongs to the parent,
+  so it is rewritten either way. The hatch covers the subtree, not the page
+  after it.
+
+## ER25 — node IS on this server, so the two halves of the rewrite can be tested against each other
+
+ER15 stands for hoot: there is no chrome binary, so `.test.js` files never run
+here. But `/usr/bin/node` is present (v18.19.1).
+
+`biz_debrand_runtime.js` therefore carries sentinel comments
+(`biz_debrand:rules:begin` / `:end`) around a region that is **pure** — no
+imports, no DOM, no module state, just the rules and the two functions that
+apply them. `tests/test_rewrite.py::TestPythonAndJavascriptAgree` slices that
+region out, refuses it if it has stopped being import-free, runs it under
+`node -e`, and compares the output to `brand.py`'s for every case in the shared
+tables. "Keep the two in step" stops being a comment.
+
+It tests the RULES, not the seams. It is not a substitute for a hoot suite and
+must not be reported as one.
+
+## ER26 — `web_debranding` substitutes a FULL URL where a bare host belongs (pre-existing, not fixed)
+
+Found while measuring E3-2, present on every database, unrelated to this phase.
+
+```python
+# web_debranding/models/ir_translation.py:28
+def debrand_links(source, new_website):
+    return re.sub(r"\bodoo.com\b", new_website, source)
+```
+
+`new_website` is `web_debranding.new_website`, which `_biz_debrand_apply_brand`
+seeds with the full `https://…` URL. So a vendor link in a backend arch comes
+out with two schemes:
+
+```
+https://odoo.com/pricing        ->  https://https://payobook.com/pricing
+placeholder="https://www.odoo.com"  ->  https://www.https://payobook.com
+href="https://apps.odoo.com/…"  ->  https://apps.https://rize.payobook.com/…
+```
+
+Verified 2026-09-11 on both `payobook` and `rize`; 12 such URLs in the English
+`res.config.settings` / `ir.module.module` / `payment.provider` / `res.company`
+arches. They are all links to vendor services, so nobody has complained, but
+they are broken URLs on a settings screen.
+
+`biz_debrand`'s own `debrand_url` is correct — it strips the scheme with
+`website_host()` first. The fix is therefore **not** to touch the gutted module:
+either seed `web_debranding.new_website` with the bare host, checking its other
+readers first, or collapse the two shapes in `biz_debrand/models/base.py`, which
+already post-processes the arch. Left alone here because it is outside E3 and
+the brand-parameter seeding has other consumers.

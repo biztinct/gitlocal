@@ -30,7 +30,10 @@ class TestNotificationSeam(TransactionCase):
                       'reaches the screen again.')
         self.assertIn('debrandNotificationValue', source)
         # The markup guard. Flattening a Markup message double-escapes the page.
-        self.assertIn('typeof value === "string" ? debrandText(value) : value',
+        # Pinned on the DATA variant specifically: seam 1 carries the same line
+        # with debrandText, so asserting on that spelling would pass even if
+        # this seam lost its guard entirely (ERRORS E3-2).
+        self.assertIn('typeof value === "string" ? debrandDataText(value) : value',
                       source,
                       'The markup guard is gone from the notification seam.')
 

@@ -16,6 +16,10 @@
  *     (`static/src/xml/**`), e.g. the scoped-app install page and the import
  *     wizard's "Odoo Field" column header.
  *
+ *  Seams 1 and 2 rewrite SOURCE text, so they also carry ERRORS E3-2's product
+ *  rule (our own product name, on a tenant's screen). Seam 3 does not: it sees
+ *  the finished message, record names and all. See models/brand.py.
+ *
  *  3. notificationService.add — every toast, message AND title, at the last
  *     moment before it is drawn. Seam 1 rewrites a translation TEMPLATE and
  *     deliberately never its interpolated arguments (so a partner genuinely
@@ -35,6 +39,18 @@ import { patch } from "@web/core/utils/patch";
 
 const DEFAULT_BRAND = "BizApp";
 const DEFAULT_WEBSITE = "https://example.com";
+
+/* --- biz_debrand:rules:begin -------------------------------------------------
+ * Everything between these two markers is PURE: no imports, no DOM, no module
+ * state, nothing but the rewrite rules and the two functions that apply them.
+ *
+ * models/brand.py mirrors this region rule for rule, and
+ * tests/test_rewrite.py slices it out of this file and RUNS it under node
+ * against the very same table it runs the Python one against — so the two
+ * halves cannot drift apart without a test going red. Keep the region
+ * self-contained; anything that needs the page itself belongs below the end
+ * marker.
+ * -------------------------------------------------------------------------- */
 
 // Cheap pre-filter. Deliberately NOT global: `.test()` on a /g regex is
 // stateful via lastIndex and would return alternating results.
@@ -71,6 +87,85 @@ const PHRASES = [
     ],
 ];
 
+// The product rule — ERRORS E3-2. OUR OWN name, shown to a tenant as if it
+// were theirs ("Welcome to Payobook" on a Rize employee's screen). Mirrors
+// product_rules() in models/brand.py, including the four shapes that must
+// survive: `payobook.com`, `payobook_template`, `/payobook/`, `Payobook-navy`.
+//
+// Cached on the cfg object because building two RegExps per string would make
+// the hot path allocate; cfg is created once per bundle below.
+function bizProductRules(cfg) {
+    if (cfg.rules === undefined) {
+        const product = (cfg.product || "").trim();
+        const name = (cfg.name || "").trim();
+        if (product.length < 2 || product.toLowerCase() === name.toLowerCase()) {
+            cfg.rules = null;
+        } else {
+            const escaped = product.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            cfg.rules = {
+                has: new RegExp("odoo|" + escaped, "i"),
+                word: new RegExp(
+                    "(^|[^.\\w/-])" + escaped + "(?![\\w/[-])(?!\\.\\w)(?!\\s*=)",
+                    "gi"
+                ),
+            };
+        }
+    }
+    return cfg.rules;
+}
+
+/**
+ * The rewrite itself. `cfg` is `{name, host, docUrl, product}` — `product`
+ * empty or absent turns E3-2's product rule off, which is what every seam that
+ * can see interpolated DATA passes.
+ *
+ * @param {string} text
+ * @param {object} cfg
+ * @returns {string}
+ */
+function bizRewrite(text, cfg) {
+    if (!text || typeof text !== "string") {
+        return text;
+    }
+    const rules = cfg.product ? bizProductRules(cfg) : null;
+    if (!(rules ? rules.has : HAS_ODOO).test(text)) {
+        return text;
+    }
+    let out = text;
+    for (const [pattern, replacement] of PHRASES) {
+        out = out.replace(pattern, replacement);
+    }
+    out = out
+        .replace(DOC_URL, cfg.docUrl)
+        .replace(DOMAIN, (m, prefix) => prefix + cfg.host)
+        .replace(BOT, cfg.name)
+        .replace(SA, cfg.name)
+        .replace(WORD, (match, prefix) => prefix + cfg.name);
+    if (rules) {
+        out = out.replace(rules.word, (match, prefix) => prefix + cfg.name);
+    }
+    return out;
+}
+
+/**
+ * Repoint vendor URLs at the brand's own site. Only the domain rules apply —
+ * never the generic word rule, and never the product rule: `payobook.com` is a
+ * host that resolves and rewriting it would invent one that does not. So
+ * `/odoo/action-1` and `odoocdn.com` asset URLs keep working while a visitable
+ * https://odoo.com link does not.
+ *
+ * @param {string} url
+ * @param {object} cfg
+ * @returns {string}
+ */
+function bizRewriteUrl(url, cfg) {
+    if (!url || typeof url !== "string" || !HAS_ODOO.test(url)) {
+        return url;
+    }
+    return url.replace(DOC_URL, cfg.docUrl).replace(DOMAIN, (m, prefix) => prefix + cfg.host);
+}
+/* --- biz_debrand:rules:end ------------------------------------------------ */
+
 /**
  * Read the brand injected by biz_debrand's web.layout inherit. Synchronous and
  * available on both backend and frontend pages, unlike web_debranding's
@@ -79,58 +174,63 @@ const PHRASES = [
 function readBrand() {
     let name = DEFAULT_BRAND;
     let website = DEFAULT_WEBSITE;
+    let product = "";
     try {
         const nameMeta = document.querySelector('meta[name="biz-brand"]');
         const siteMeta = document.querySelector('meta[name="biz-brand-website"]');
+        const productMeta = document.querySelector('meta[name="biz-brand-product"]');
         if (nameMeta && nameMeta.content) {
             name = nameMeta.content;
         }
         if (siteMeta && siteMeta.content) {
             website = siteMeta.content;
         }
+        if (productMeta && productMeta.content) {
+            product = productMeta.content;
+        }
     } catch {
         // Keep the defaults; branding must never break the page.
     }
-    return { name, website };
+    return { name, website, product };
 }
 
 const brand = readBrand();
 const host = brand.website.replace(/^https?:\/\//, "").replace(/\/+$/, "") || "example.com";
 const docUrl = brand.website.replace(/\/+$/, "") + "/documentation/";
 
+// Two configurations, and which one a seam gets is the whole of E3-2's trap 1.
+// SOURCE_CFG carries the product rule and is for text that came from a template
+// or a _t() msgid. DATA_CFG leaves it off and is for text that may already have
+// a record's own name interpolated into it — see seam 3.
+const SOURCE_CFG = { name: brand.name, host, docUrl, product: brand.product };
+const DATA_CFG = { name: brand.name, host, docUrl, product: "" };
+
 /**
- * @param {string} text
+ * @param {string} text source text — a msgid or a static template's prose
  * @returns {string} the text with every user-visible vendor reference replaced
  */
 export function debrandText(text) {
-    if (!text || typeof text !== "string" || !HAS_ODOO.test(text)) {
-        return text;
-    }
-    let out = text;
-    for (const [pattern, replacement] of PHRASES) {
-        out = out.replace(pattern, replacement);
-    }
-    return out
-        .replace(DOC_URL, docUrl)
-        .replace(DOMAIN, (m, prefix) => prefix + host)
-        .replace(BOT, brand.name)
-        .replace(SA, brand.name)
-        .replace(WORD, (match, prefix) => prefix + brand.name);
+    return bizRewrite(text, SOURCE_CFG);
 }
 
 /**
- * Repoint vendor URLs at the brand's own site. Only the domain rules apply —
- * never the generic word rule — so `/odoo/action-1` and `odoocdn.com` asset
- * URLs keep working while a visitable https://odoo.com link does not.
+ * The same rewrite for text that may carry interpolated record DATA. Identical
+ * except that E3-2's product rule is off, so a partner genuinely named
+ * "Payobook Vietnam JSC" is not renamed on its way to a toast.
  *
+ * @param {string} text
+ * @returns {string}
+ */
+export function debrandDataText(text) {
+    return bizRewrite(text, DATA_CFG);
+}
+
+/**
  * @param {string} url
  * @returns {string}
  */
 export function debrandUrl(url) {
-    if (!url || typeof url !== "string" || !HAS_ODOO.test(url)) {
-        return url;
-    }
-    return url.replace(DOC_URL, docUrl).replace(DOMAIN, (m, prefix) => prefix + host);
+    return bizRewriteUrl(url, SOURCE_CFG);
 }
 
 // ---------------------------------------------------------------------------
@@ -171,9 +271,30 @@ const URL_ATTRS = new Set(["href", "src", "action", "data-url", "data-src"]);
 // Python and JS that the generic word rule would rewrite into broken code.
 const OPAQUE_TAGS = new Set(["script", "style", "code", "pre", "samp", "kbd"]);
 
+// The author's own opt-out, mirroring KEEP_ATTR in models/brand.py:
+// `data-biz-brand="keep"` takes an element and its whole subtree out of the
+// walk. FILTER_REJECT (not FILTER_SKIP) is what makes it cover the subtree.
+const KEEP_ATTR = "data-biz-brand";
+const KEEP_VALUE = "keep";
+
 registerTemplateProcessor((doc) => {
     try {
-        const walker = doc.createTreeWalker(doc, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+        const walker = doc.createTreeWalker(
+            doc,
+            NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+            {
+                acceptNode(node) {
+                    if (
+                        node.nodeType === Node.ELEMENT_NODE &&
+                        node.getAttribute &&
+                        node.getAttribute(KEEP_ATTR) === KEEP_VALUE
+                    ) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return NodeFilter.FILTER_ACCEPT;
+                },
+            }
+        );
         let node = walker.currentNode;
         while (node) {
             if (node.nodeType === Node.TEXT_NODE) {
@@ -233,11 +354,17 @@ registerTemplateProcessor((doc) => {
  * left untouched rather than flattened into a primitive — the same guard the
  * valueOf patch above uses, for the same reason.
  *
+ * Uses debrandDataText, NOT debrandText: by the time a message reaches the
+ * notification service it is finished prose with a record's own name already
+ * interpolated into it — which is the whole reason seam 3 exists (E2-3). So
+ * this is the one JS seam that must NOT carry E3-2's product rule, or a
+ * customer called "Payobook Vietnam JSC" would be renamed in a toast.
+ *
  * @param {*} value
  * @returns {*}
  */
 function debrandNotificationValue(value) {
-    return typeof value === "string" ? debrandText(value) : value;
+    return typeof value === "string" ? debrandDataText(value) : value;
 }
 
 /**

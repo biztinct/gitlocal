@@ -16,7 +16,7 @@ import logging
 
 from odoo import models
 
-from .brand import brand_for_env, debrand_tree
+from .brand import debrand_tree, source_brand
 
 _logger = logging.getLogger(__name__)
 
@@ -29,9 +29,10 @@ class IrUiView(models.Model):
         if not trees:
             return trees
         try:
-            brand, website = brand_for_env(self.env)
+            # A template is SOURCE, so the product rule applies here (E3-2).
+            brand, website, product = source_brand(self.env)
             for tree in trees:
-                debrand_tree(tree, brand, website)
+                debrand_tree(tree, brand, website, product)
         except Exception:
             # Never let branding break template rendering.
             _logger.warning("biz_debrand: QWeb tree debrand failed", exc_info=True)

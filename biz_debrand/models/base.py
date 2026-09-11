@@ -28,7 +28,12 @@ expressions and ``<pre>``/``<code>`` bodies left exactly as they are.
 
 Cost: ``get_view`` already parses and re-serialises the arch on every call
 (``ir_ui_view.py:3170``), so the extra pass is a parse only when the string
-mentions the vendor at all, and a re-serialise only when something changed.
+mentions a name we rewrite at all, and a re-serialise only when something
+changed.
+
+An arch is SOURCE — every value a customer typed arrives through an expression
+attribute this walker skips — so this is one of the seams that carries E3-2's
+product rule.
 """
 import logging
 
@@ -36,7 +41,7 @@ from lxml import etree
 
 from odoo import models
 
-from .brand import HAS_ODOO_RE, brand_for_env, debrand_tree
+from .brand import debrand_tree, prefilter_for, source_brand
 
 _logger = logging.getLogger(__name__)
 
@@ -47,12 +52,15 @@ class Base(models.AbstractModel):
     def get_view(self, view_id=None, view_type="form", **options):
         result = super().get_view(view_id=view_id, view_type=view_type, **options)
         arch = result.get("arch") if isinstance(result, dict) else None
-        if not arch or not isinstance(arch, str) or not HAS_ODOO_RE.search(arch):
+        if not arch or not isinstance(arch, str):
             return result
         try:
-            brand, website = brand_for_env(self.env)
+            # An arch is SOURCE, so the product rule applies here (E3-2).
+            brand, website, product = source_brand(self.env)
+            if not prefilter_for(brand, product).search(arch):
+                return result
             tree = etree.fromstring(arch)
-            if not debrand_tree(tree, brand, website):
+            if not debrand_tree(tree, brand, website, product):
                 return result
             result = dict(result)
             result["arch"] = etree.tostring(tree, encoding="unicode")

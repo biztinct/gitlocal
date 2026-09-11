@@ -22,6 +22,14 @@
                                  help="Brand color (hex).">
                             <field name="biz_debrand_theme_color" placeholder="#1565C0"/>
                         </setting>
+                        <setting id="biz_debrand_product_name_setting" string="Name to Replace"
+                                 help="The name typed into these screens by the people who built
+                                       this system. Fill it in and every screen shows the Brand
+                                       Name above instead. Leave it empty and nothing changes.
+                                       Web addresses, e-mail addresses and technical names are
+                                       never touched.">
+                            <field name="biz_debrand_product_name" placeholder="Leave empty to change nothing"/>
+                        </setting>
                     </block>
                 </div>
             </xpath>

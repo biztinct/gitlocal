@@ -100,7 +100,8 @@
         <!-- =========================== FOOTER =========================== -->
         <footer class="rz-foot">
           <span class="rz-foot__tag">Modernizing the world's most essential crop.</span>
-          <span class="rz-foot__meta">© Rize · Powered by Payobook</span>
+          <!-- Deliberate platform credit — see login_templates.xml. -->
+          <span class="rz-foot__meta" data-biz-brand="keep">© Rize · Powered by Payobook</span>
         </footer>
 
       </div>

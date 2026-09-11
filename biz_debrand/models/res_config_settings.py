@@ -51,6 +51,15 @@ class ResConfigSettings(models.TransientModel):
         help="Brand color (hex, e.g. #1565C0). Consumed by integrations "
              "such as a PWA if you wire one up.",
     )
+    biz_debrand_product_name = fields.Char(
+        string="Name to Replace",
+        config_parameter="biz_debrand.product_name",
+        help="The name the people who built this system typed into its "
+             "screens. Fill this in and every screen shows the Brand Name "
+             "above instead. Leave it empty and nothing changes. Web "
+             "addresses, e-mail addresses and technical names are never "
+             "touched.",
+    )
 
     # ------------------------------------------------------------------
     # Seeding — runs on install AND every upgrade (via data <function>),
@@ -125,6 +134,17 @@ class ResConfigSettings(models.TransientModel):
         brand_mod.invalidate(self.env.cr.dbname)
         brand_mod.cache_brand(self.env)
         self._biz_debrand_scrub_data()
+
+        # ERRORS E3-2. Deliberately NOT seeded: the product rule is off until
+        # somebody sets it on purpose, and "off" is the rollback. Logged when it
+        # is on, because it is the one rule that rewrites a name this product
+        # answers to and that has to be visible in the boot log.
+        product = brand_mod.product_for_env(self.env)
+        if product:
+            _logger.info(
+                "biz_debrand: the product rule is ON — %r will be shown as %r "
+                "in source text (never in stored rows)", product, brand,
+            )
 
         _logger.info("biz_debrand: white-label identity applied as %r", brand)
         return True
