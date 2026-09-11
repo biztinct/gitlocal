@@ -334,6 +334,11 @@ class HrFormulaConfigTemplate(models.Model):
                     self.code, self.version),
                 'input_values_json': json.dumps(test.get('inputs') or {}),
                 'expected_values_json': json.dumps(test.get('expected') or {}),
+                # The certified numbers were certified AGAINST these inputs, so
+                # the two are written together. A scenario whose inputs are
+                # later changed can then say which one moved, instead of only
+                # listing the six components that moved with it.
+                'expected_inputs_json': json.dumps(test.get('inputs') or {}),
                 'sequence': (i + 1) * 10,
             })
         if vals_list:

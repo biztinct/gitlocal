@@ -8324,3 +8324,9 @@ msgstr "Đã có người đồng ý về kết quả mà tình huống này ph�
 #: code:addons/pb_blueprint/static/src/xml/test.xml:1
 msgid "Taking…"
 msgstr "Đang lấy…"
+
+#. module: pb_blueprint
+#. odoo-python
+#: code:addons/pb_blueprint/models/blueprint_tests.py:0
+msgid "%(what)s was %(was)s when these numbers were agreed, and is %(now)s now."
+msgstr "%(what)s là %(was)s khi các con số này được thống nhất, và bây giờ là %(now)s."

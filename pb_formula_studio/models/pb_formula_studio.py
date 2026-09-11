@@ -12684,6 +12684,10 @@ class PbFormulaStudio(models.AbstractModel):
         if not s.exists():
             return {'ok': False}
         s.expected_values_json = s.computed_values_json or '{}'
+        # The inputs go with them. "These are the numbers to expect" is only
+        # meaningful alongside "worked out from these", and recording the pair
+        # here is what lets a later failure say WHICH input moved.
+        s.expected_inputs_json = s.input_values_json or '{}'
         return self.get_sample_detail(s.id)
 
     @api.model

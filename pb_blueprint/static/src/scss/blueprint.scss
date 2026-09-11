@@ -1035,13 +1035,22 @@ $bp-head-h: 64px;
     .pbbp-inputs .pbim-modal__body { padding: 16px 26px 20px 22px; }
     // The consequence note, warm rather than indigo: it is a cost of the
     // change, not another description of the screen.
-    .pbbp-inputs .pbim-note.is-warn {
+    .pbbp-inputs .pbim-note.is-warn,
+    .pbbp-confirm .pbim-note.is-warn {
         margin-top: 10px;
         background: #FFF7ED; color: #7C4A11;
         border: 1px solid #FBD9A8;
     }
     // The way out of a check whose scenario has moved on. Left of the buttons
     // so it is read before they are pressed.
+    // "Pay grade was 0, now 1" — the cause, under the symptoms.
+    .pbbp-scen-moved {
+        display: flex; align-items: flex-start; gap: 6px; margin-top: 4px;
+        font-size: 12px; line-height: 1.45; color: #7C4A11;
+        svg { flex: none; margin-top: 2px; }
+        b { font-weight: 800; }
+    }
+
     .pbbp-confirm .pbbp-retake-note {
         font-size: 11.5px; color: var(--bp-muted); font-weight: 600;
         max-width: 42ch; line-height: 1.45;

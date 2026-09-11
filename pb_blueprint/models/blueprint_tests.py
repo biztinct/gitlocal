@@ -208,11 +208,96 @@ class PbBlueprintTests(models.AbstractModel):
             'verdict_label': verdict_label(verdict),
             'reason': reason,
             'discrepancies': discrepancies,
+            # WHICH INPUT MOVED, not just which numbers did. A failing check
+            # listing six red components and nothing else sends the reader to
+            # the formulas, and the cause is almost always one input somebody
+            # changed on purpose two screens ago.
+            'input_changes': (self._input_changes(config, sample)
+                              if verdict == 'attention' else []),
             'has_expected': self._has_expected(sample),
             'confirmed': bool(sample.expected_confirmed),
             'last_computed': (fields.Datetime.to_string(sample.last_computed)
                               if sample.last_computed else ''),
         }
+
+    def _input_changes(self, config, sample):
+        """The inputs that have moved since these numbers were agreed.
+
+        SILENCE IS THE CORRECT ANSWER WHEN NOTHING WAS RECORDED. A scenario
+        agreed before the inputs behind it were kept has an empty snapshot, and
+        an empty snapshot compared against today's inputs would report every
+        single input as "added" — a wall of noise on exactly the screen that
+        exists to make a failure legible. Empty means "nobody wrote this down",
+        never "it used to have none".
+
+        A CODE THE SNAPSHOT DOES NOT NAME MEANS "AT ITS DEFAULT", NOT "ZERO".
+        This is the whole of the arithmetic and it was wrong the first time.
+        A starter certifies its scenarios against the eleven inputs its persona
+        names; the other forty arrive afterwards, when the compiler provisions
+        the helper inputs every component needs, each at its own default. Half
+        of those defaults are 1, not 0 — every "has the evidence" flag is — so
+        comparing an unnamed code against zero reported eight changes nobody
+        made and buried the one they did.
+
+        The comparison is therefore against the component's own default on both
+        sides, which is exactly what an unnamed code resolved to when the
+        numbers were certified and what it resolves to now.
+        """
+        agreed = self._loads(sample.expected_inputs_json)
+        if not agreed:
+            return []
+        current = self._loads(sample.input_values_json)
+        inputs = {}
+        for rule in config.rule_ids:
+            if rule.column_type == 'input' and rule.code:
+                inputs[rule.code] = (rule.name or rule.code,
+                                     rule.default_value or 0.0)
+        out = []
+        for code in sorted(set(agreed) | set(current) | set(inputs)):
+            # Only components this configuration still has: a code left over
+            # from a starter that has since been edited is not a change
+            # somebody made, and naming it would send them looking for a
+            # component that is not there.
+            if code not in inputs:
+                continue
+            name, default = inputs[code]
+            was = agreed.get(code, default)
+            now = current.get(code, default)
+            if self._same_number(was, now):
+                continue
+            out.append({
+                'code': code, 'name': name, 'was': was, 'now': now,
+                # THE SENTENCE IS BUILT HERE, NOT IN THE TEMPLATE. Assembling
+                # it from four fragments around two `t-esc`s gives the
+                # translator four half-phrases and no way to reorder them,
+                # which is how a screen ends up grammatical in English only.
+                'line': _("%(what)s was %(was)s when these numbers were "
+                          "agreed, and is %(now)s now.",
+                          what=name, was=self._input_text(was),
+                          now=self._input_text(now)),
+            })
+        return out[:8]
+
+    @api.model
+    def _input_text(self, value):
+        """One input value, grouped — and never a crash on the way to a
+        sentence. An input can hold a word on a scheme that reads YES/NO off a
+        contract, and `_group` is only ever handed numbers elsewhere."""
+        try:
+            return self._group(float(value or 0))
+        except (TypeError, ValueError):
+            return str(value)
+
+    @api.model
+    def _same_number(self, left, right):
+        """Two input values, compared as numbers where they are numbers."""
+        try:
+            return abs(float(left or 0) - float(right or 0)) < 1e-9
+        except (TypeError, ValueError):
+            return str(left or '') == str(right or '')
+
+    # `_loads` is the Outputs step's, on the same abstract model. One reader of
+    # a stored blob, not two that could come to disagree about a broken one.
 
     @api.model
     def _has_expected(self, sample):

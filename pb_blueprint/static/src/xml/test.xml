@@ -113,6 +113,16 @@
             </div>
             <div class="pbbp-scen-sub" t-esc="s.subtitle"/>
             <div class="pbbp-scen-why" t-esc="s.reason"/>
+            <!-- WHICH INPUT MOVED. The reason above names the numbers that
+                 disagree; this names the thing that made them. -->
+            <div class="pbbp-scen-moved" t-if="s.input_changes and s.input_changes.length">
+              <span t-out="ic('sliders', 12)"/>
+              <span>
+                <t t-foreach="s.input_changes" t-as="c" t-key="c.code">
+                  <t t-if="!c_first"> </t><t t-esc="c.line"/>
+                </t>
+              </span>
+            </div>
           </div>
           <span t-attf-class="pbbp-scen-pill {{ pill(s.verdict).cls }} {{ state.moved[s.id] ? 'is-moved' : '' }}">
             <span class="i" t-out="ic(pill(s.verdict).icon, 12)"/>
@@ -231,6 +241,12 @@
           </div>
           <div class="pbim-modal__body">
             <p class="pbim-note" t-if="state.detail" t-esc="state.detail.reason"/>
+            <p class="pbim-note is-warn"
+               t-if="state.detail and state.detail.input_changes and state.detail.input_changes.length">
+              <t t-foreach="state.detail.input_changes" t-as="c" t-key="c.code">
+                <t t-if="!c_first"> </t><t t-esc="c.line"/>
+              </t>
+            </p>
             <div class="pbbp-confirm-rows" t-if="state.detail">
               <div class="pbbp-confirm-head">
                 <span>Component</span><span>Expected</span><span>Worked out</span>

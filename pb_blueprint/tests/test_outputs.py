@@ -439,6 +439,125 @@ class TestOutputsAndTests(TransactionCase):
         self.assertEqual(row['verdict'], 'attention',
                          'retaking one scenario silently agreed to another')
 
+    def test_a_failing_check_names_the_input_that_moved(self):
+        """The reason says WHICH NUMBERS disagree; this says what made them.
+
+        On the reference tenant a scenario called "Full month" had its pay
+        grade nudged from 0 to 1, which switched on a transport allowance and
+        turned six rows red. The screen could only list the six, and the cause
+        had to be found by reading the database — twice.
+        """
+        config = self._complete('b5-moved-1')
+        sample = config.sample_data_ids[0]
+        agreed = json.loads(sample.expected_inputs_json or '{}')
+        self.assertTrue(
+            agreed,
+            "the starter did not record the inputs its numbers were certified "
+            "against, so nothing downstream can name a change")
+
+        inputs = json.loads(sample.input_values_json or '{}')
+        grade = config.rule_ids.filtered(lambda r: r.code == 'ROLEGRADE')
+        if not grade:
+            self.skipTest('this starter has no pay grade')
+        inputs['ROLEGRADE'] = 1.0
+        sample.input_values_json = json.dumps(inputs)
+
+        res = self.Studio.bp_run_checks(config.id)
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'attention')
+        moved = {c['code']: c for c in row['input_changes']}
+        self.assertIn('ROLEGRADE', moved)
+        self.assertEqual(float(moved['ROLEGRADE']['now']), 1.0)
+        self.assertEqual(float(moved['ROLEGRADE']['was'] or 0), 0.0)
+        self.assertEqual(moved['ROLEGRADE']['name'], grade.name)
+        # One change, not a list of every input the scenario happens to carry.
+        self.assertEqual(len(moved), 1, moved)
+
+    def test_an_input_the_snapshot_never_named_is_read_at_its_default(self):
+        """The arithmetic that was wrong the first time.
+
+        A starter certifies its scenarios against the eleven inputs its persona
+        names. The other forty arrive afterwards, when the compiler provisions
+        the helper inputs every component needs, each at its own default — and
+        half of those defaults are 1, not 0, because every "has the evidence"
+        flag is. Comparing an unnamed code against zero reported eight changes
+        nobody made and buried the one they did.
+        """
+        config = self._complete('b5-moved-2')
+        sample = config.sample_data_ids[0]
+        agreed = json.loads(sample.expected_inputs_json or '{}')
+        if not agreed:
+            self.skipTest('this starter records no agreed inputs')
+        unnamed = [r for r in config.rule_ids
+                   if r.column_type == 'input' and r.code
+                   and r.code not in agreed and r.default_value]
+        if not unnamed:
+            self.skipTest('every helper input on this starter defaults to 0')
+
+        # Untouched: sitting at its default is not a change, whatever the
+        # default happens to be.
+        row = next(r for r in self.Studio.bp_tests(config.id)['samples']
+                   if r['id'] == sample.id)
+        self.assertNotIn(unnamed[0].code,
+                         {c['code'] for c in row['input_changes']})
+
+        # Moved OFF its default: that IS a change and is named.
+        inputs = json.loads(sample.input_values_json or '{}')
+        inputs[unnamed[0].code] = float(unnamed[0].default_value) + 1
+        sample.input_values_json = json.dumps(inputs)
+        res = self.Studio.bp_run_checks(config.id)
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        if row['verdict'] != 'attention':
+            self.skipTest('that input changes no number on this starter')
+        moved = {c['code']: c for c in row['input_changes']}
+        self.assertIn(unnamed[0].code, moved)
+        self.assertEqual(float(moved[unnamed[0].code]['was']),
+                         float(unnamed[0].default_value))
+
+    def test_a_scenario_that_recorded_nothing_says_nothing(self):
+        """Silence, never a wall of every input reported as new.
+
+        A scenario agreed before the inputs behind it were kept has an empty
+        snapshot, and comparing an empty snapshot against today's inputs would
+        report every one of them as a change.
+        """
+        config = self._complete('b5-moved-3')
+        sample = config.sample_data_ids[0]
+        sample.expected_inputs_json = '{}'
+        inputs = json.loads(sample.input_values_json or '{}')
+        inputs['DEPS'] = float(inputs.get('DEPS') or 0) + 3
+        sample.input_values_json = json.dumps(inputs)
+
+        res = self.Studio.bp_run_checks(config.id)
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'attention')
+        self.assertEqual(row['input_changes'], [])
+
+    def test_a_passing_check_is_not_given_something_to_explain(self):
+        config = self._complete('b5-moved-4')
+        res = self.Studio.bp_run_checks(config.id)
+        for row in res['samples']:
+            if row['verdict'] == 'passed':
+                self.assertEqual(row['input_changes'], [])
+
+    def test_retaking_records_the_inputs_it_agreed_against(self):
+        """Otherwise the next change could not be named either."""
+        config = self._complete('b5-moved-5')
+        sample = config.sample_data_ids[0]
+        inputs = json.loads(sample.input_values_json or '{}')
+        inputs['DEPS'] = float(inputs.get('DEPS') or 0) + 2
+        sample.input_values_json = json.dumps(inputs)
+        self.Studio.bp_run_checks(config.id)
+
+        res = self.Studio.bp_retake_expected(config.id, sample.id)
+        self.assertTrue(res['ok'], res.get('reason'))
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'passed')
+        self.assertEqual(row['input_changes'], [])
+        self.assertEqual(
+            json.loads(sample.expected_inputs_json or '{}').get('DEPS'),
+            inputs['DEPS'])
+
     def test_retaking_a_scenario_that_is_not_here_is_refused_by_name(self):
         config = self._complete('b5-retake-4')
         res = self.Studio.bp_retake_expected(config.id, 0)

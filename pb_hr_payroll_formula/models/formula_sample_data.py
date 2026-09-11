@@ -100,6 +100,27 @@ class HrFormulaSampleData(models.Model):
         help="JSON object with expected calculated values for comparison"
     )
 
+    #: THE INPUTS THOSE EXPECTED NUMBERS WERE AGREED AGAINST.
+    #:
+    #: Without it a failing check can say WHICH NUMBERS moved and never WHY,
+    #: and the why is almost always one changed input. On the reference tenant
+    #: a scenario called "Full month" had its pay grade nudged from 0 to 1,
+    #: which switched on a 1,200,000 transport allowance and made six rows go
+    #: red; the screen could only list the six. Twice in a row the answer had
+    #: to be found by reading the database.
+    #:
+    #: It is written whenever the expected numbers are taken, and never at any
+    #: other time — a snapshot that drifts with the inputs it is supposed to be
+    #: the memory of would be worse than having none. An EMPTY one means
+    #: "nobody recorded this", which every reader must treat as "say nothing"
+    #: rather than as "nothing changed".
+    expected_inputs_json = fields.Text(
+        string='Inputs behind the expected values (JSON)',
+        default='{}',
+        help="The input values in force when the expected numbers were agreed. "
+             "Empty on a sample agreed before this was recorded."
+    )
+
     # ==========================================
     # USER-FRIENDLY INPUT LINES
     # ==========================================
