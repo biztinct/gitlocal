@@ -20,11 +20,32 @@ Branding is **per customer, and three levels**, not one global rule:
 
 Two absolutes:
 
-* **"BizApp" must never appear to a user.** It is a technical placeholder. Already removed from all
-  six databases' data on 2026-09-12; E4 removes it from the code.
-* **"Odoo" must never appear to a user** (standing white-label rule), including in text an AI writes.
+* **"Odoo" must never appear to a user** (standing white-label rule), *including in text an AI
+  writes*. Where the vendor name is currently shown, it becomes the brand — `Payobook` on a default
+  tenant, the customer's own name on a white-labelled one.
+* **"BizApp" must never appear as a LABEL, HEADING or product name** — nothing that would make a
+  user think the product is called BizApp. It was removed from all six databases' data on
+  2026-09-12, which is what that required.
 
-**The fallback, wherever one is needed, is `Payobook`. Never `BizApp`, never `Odoo`.**
+### BizApp stays in the code. Do not touch it. (Owner's ruling, 2026-09-12)
+
+**The owner has ruled that "BizApp" is NOT to be removed from the code at all**, and is right: it is
+the deliberate technical stand-in for the vendor across this platform's plumbing — the `/bizapp`
+backend URL prefix (`biz_deroute`, live), `biz_debrand.web_app_scope`, module names, config keys.
+Ripping it out would break routing and the installed-app scope. The owner is content for it to
+appear in a URL or any other technical element.
+
+So, revising what an earlier draft of this document said:
+
+* `biz_debrand/models/brand.py:47` `DEFAULT_BRAND = "BizApp"` — **LEAVE IT.**
+* `biz_debrand/static/src/js/biz_debrand_runtime.js:40` — **LEAVE IT.**
+* The `/bizapp` prefix and every technical identifier — **LEAVE THEM.**
+
+These fallbacks are unreachable in practice anyway: all six databases now carry a real brand, and
+the template does too, so a new tenant inherits `Payobook`. The placeholder can only surface on a
+database with no brand parameter at all, which no longer exists.
+
+**The one fallback that still must change is the vendor one** — see P4-2.
 
 ---
 
@@ -59,31 +80,23 @@ reads the old brand.
 **Test** by provisioning a throwaway tenant at each of the three levels and reading back what a
 browser would get. Remove it afterwards.
 
-## P4-2 — The fallbacks: only Payobook
+## P4-2 — One fallback, and one only: the vendor's
 
-Three last-resort defaults, none reachable on today's six databases (all now carry a real brand),
-all reachable on a future one that slips through:
+**Scope is exactly one line.** `biz_theme/models/ir_http.py:246` ends the browser-tab name chain
+with `or "Odoo"`. If every earlier step were empty, the product would put the **vendor's name** in
+the browser tab. That is the standing rule broken by a default value, and it goes.
 
-| Where | Today | Must become |
-|---|---|---|
-| `biz_debrand/models/brand.py:47` `DEFAULT_BRAND` | `"BizApp"` | Payobook, **see the caveat** |
-| `biz_debrand/static/src/js/biz_debrand_runtime.js:40` | `"BizApp"` | same, and the two must stay in step |
-| `biz_theme/models/ir_http.py:246` | `or "Odoo"` | never the vendor. This one is a bug outright |
+Replace it with the brand — and `biz_theme` is a **reusable, product-neutral** module
+(`biz_debrand/README.md` states the design), so do not hard-code `Payobook` into it. The chain
+already reads `biz_theme.app_name`, then the debrand suite's keys, then the company name. Let it end
+there, or on the reusable core's own neutral constant. The Payobook-specific default, if one is
+wanted, belongs in `pb_theme`, which already exists for this and already depends on `biz_theme`.
 
-**Caveat, and it matters.** `biz_debrand` and `biz_theme` are deliberately **product-neutral,
-reusable** modules (`biz_debrand/README.md`: "Defaults are neutral placeholders so an unconfigured
-install visibly signals 'set your brand'"). Hard-coding `Payobook` into them destroys that. Put the
-Payobook default in the **Payobook-specific overlay** instead — `pb_theme` already exists for
-exactly this and already depends on `biz_theme` — so the reusable core keeps a neutral constant, and
-every Payobook deployment resolves to `Payobook`. The visible outcome is identical; the reuse
-survives. If you find a reason that cannot work, say so in your report rather than quietly
-hard-coding it.
+**Do not touch the two `BizApp` constants** (`brand.py:47`, `biz_debrand_runtime.js:40`) or anything
+else carrying that word — see the owner's ruling above. This item is the vendor fallback alone.
 
-`biz_theme:246`'s vendor fallback is different: remove it regardless of the above. A reusable theme
-must not fall back to the vendor's name either.
-
-Add a guard so an unset brand self-heals rather than showing a placeholder, and a test that fails if
-either `BizApp` or `Odoo` can ever be returned as a brand.
+**Test** that no code path can return the vendor's name as a brand or a tab title, on a database
+with the brand parameters present and on one with them absent.
 
 ## P4-3 — The AI assistant says both wrong names
 
@@ -98,11 +111,21 @@ backend exists in no source file and no rize database column — it is written b
   **Odoo-based** multi-country…"*. The assistant is being told what it is built on, so it can tell a
   customer. **That is a direct breach of the standing rule and the sharpest item in this phase.**
 
-Make the prompts read the brand at runtime. Strip the vendor entirely — the assistant never needs to
-know what the platform is built on to answer a payroll question. Generated prose cannot be caught by
-any rule afterwards, so the prompt is the only place this can be fixed.
+Make the prompts read the brand at runtime, so the assistant introduces itself as `Payobook` on a
+default tenant and as the customer's own name on a white-labelled one.
 
-**Test** by asking the live assistant on rize who it is and what it runs on, and read the answer.
+**The vendor mentions do not get rewritten to the brand — they get deleted.** "a Payobook-based
+multi-country platform" is nonsense; the assistant never needs to know what the platform is built on
+to answer a payroll question, and a sentence describing its own foundations is one it should not be
+able to write at all. Owner's instruction is that the user must never see the vendor name; removing
+the fact from the prompt is how that is guaranteed rather than hoped for.
+
+Generated prose cannot be caught by any rule afterwards, so the prompt is the only place this can be
+fixed.
+
+**Test** by asking the live assistant on rize, in its own words, who it is, what product this is, and
+what it is built on. Quote all three answers in your report. An assistant that still names the
+vendor when asked directly is a failed item, however clean the prompt looks.
 
 ## P4-4 — 21 texts that skip the translation step
 
