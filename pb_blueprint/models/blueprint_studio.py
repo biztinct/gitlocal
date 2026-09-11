@@ -781,7 +781,12 @@ class PbBlueprintStudio(models.AbstractModel):
                 'value': stored.get(rule.code, rule.default_value or 0.0),
             })
         return {'ok': True, 'sample_id': sample.id,
-                'name': sample.name or '', 'rows': rows}
+                'name': sample.name or '', 'rows': rows,
+                # Changing an input on a scenario whose numbers are already
+                # agreed makes its check disagree, for ever, until somebody
+                # agrees to the new ones. The dialog says so before the change
+                # rather than leaving it to be discovered two steps later.
+                'confirmed': bool(sample.expected_confirmed)}
 
     @api.model
     def bp_save_sample_inputs(self, config_id, sample_id, inputs):

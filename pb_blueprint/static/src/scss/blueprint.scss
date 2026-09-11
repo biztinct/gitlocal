@@ -1033,6 +1033,19 @@ $bp-head-h: 64px;
     // focus ring of whichever one you were typing in. The right side is wider
     // than the left for exactly that reason: it has a scrollbar to clear.
     .pbbp-inputs .pbim-modal__body { padding: 16px 26px 20px 22px; }
+    // The consequence note, warm rather than indigo: it is a cost of the
+    // change, not another description of the screen.
+    .pbbp-inputs .pbim-note.is-warn {
+        margin-top: 10px;
+        background: #FFF7ED; color: #7C4A11;
+        border: 1px solid #FBD9A8;
+    }
+    // The way out of a check whose scenario has moved on. Left of the buttons
+    // so it is read before they are pressed.
+    .pbbp-confirm .pbbp-retake-note {
+        font-size: 11.5px; color: var(--bp-muted); font-weight: 600;
+        max-width: 42ch; line-height: 1.45;
+    }
     .pbbp-inputs-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
     .pbbp-inputs-row {
         display: grid;

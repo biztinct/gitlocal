@@ -8288,3 +8288,39 @@ msgstr "Dữ liệu đầu vào chốt"
 #: code:addons/pb_blueprint/static/src/xml/outputs.xml:1
 msgid "A spreadsheet you can read and share — every component, its calculation and the sample figure. Not a workbook you can run a payroll in."
 msgstr "Một bảng tính bạn có thể đọc và chia sẻ — từng thành phần, cách tính của nó và con số mẫu. Không phải là sổ tính để chạy một kỳ lương."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_test.js:1
+msgid "Those numbers could not be taken."
+msgstr "Không thể lấy các con số đó."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_test.js:1
+msgid "“%s” now expects the numbers it works out today."
+msgstr "“%s” bây giờ kỳ vọng đúng các con số mà nó tính ra hôm nay."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/test.xml:1
+msgid "Expect today's numbers instead"
+msgstr "Lấy các con số hôm nay làm kỳ vọng"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/test.xml:1
+msgid "Changed this scenario's inputs on purpose? The numbers it expects are still the old ones."
+msgstr "Bạn đã cố ý đổi dữ liệu đầu vào của tình huống này? Các con số nó kỳ vọng vẫn là những con số cũ."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
+msgid "Somebody has already agreed what this scenario should produce. Change an input and its check will disagree until you agree to the new numbers — open it on the Test step and choose “Expect today's numbers instead”."
+msgstr "Đã có người đồng ý về kết quả mà tình huống này phải tạo ra. Nếu bạn đổi một dữ liệu đầu vào, phần kiểm tra sẽ báo lệch cho tới khi bạn đồng ý với các con số mới — hãy mở nó ở bước Kiểm tra và chọn “Lấy các con số hôm nay làm kỳ vọng”."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/test.xml:1
+msgid "Taking…"
+msgstr "Đang lấy…"

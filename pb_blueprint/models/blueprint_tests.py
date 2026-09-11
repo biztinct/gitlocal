@@ -496,6 +496,70 @@ class PbBlueprintTests(models.AbstractModel):
         payload['confirmed'] = len(targets)
         return payload
 
+    @api.model
+    def bp_retake_expected(self, config_id, sample_id, revision=None):
+        """"Those old numbers are out of date — take today's instead."
+
+        THE DEAD END THIS OPENS. Changing a scenario's inputs is invited: the
+        panel says so, and trying "what if this person only worked twenty days"
+        is the whole point of it. But the numbers a person agreed to were
+        agreed against the OLD inputs, so the moment an input moves the check
+        disagrees — correctly, permanently, and with no way out on the screen.
+        `bp_confirm_expected` only ever snapshots a scenario that had NO
+        expectations, so pressing Confirm again changed nothing. The only
+        escape was to remember the old input and type it back.
+
+        Found on a tenant whose "Full month" scenario had been changed to pay
+        twenty days of twenty-six. The salary was prorated exactly as it should
+        have been, sixteen components moved with it, and the screen reported a
+        failure at a configuration that was working perfectly.
+
+        WHY IT IS A SEPARATE ACT AND NOT A QUIETER CONFIRM. Re-taking the
+        expected numbers is how a wrong calculation gets blessed as a right
+        one. It names ONE scenario, never "all", it says on the button what it
+        is about to do, and it is refused to anybody who may not change payroll
+        setup — the same gate the first confirmation answers to.
+        """
+        config, blueprint, err = self._guard(config_id, require_blueprint=False)
+        if err:
+            return err
+        conflict = self._revision_guard(blueprint, revision)
+        if conflict:
+            return conflict
+        if not self._can_run():
+            return {'ok': False, 'reason': _(
+                "Only somebody who can change payroll setup may change what a "
+                "check should produce. Ask whoever looks after payroll setup.")}
+        sample = config.sample_data_ids.filtered(
+            lambda s: s.id == int(sample_id or 0))[:1]
+        if not sample:
+            return {'ok': False, 'reason': _("That scenario no longer exists.")}
+        if not (sample.computed_values_json or '').strip() \
+                or sample.computed_values_json in ('{}', ''):
+            return {'ok': False, 'reason': _(
+                "%s has no numbers worked out yet, so there is nothing to "
+                "take. Run the checks first.", sample.name or '')}
+
+        Studio = self.env['pb.formula.studio']
+        try:
+            with self.env.cr.savepoint():
+                Studio.snapshot_expected(sample.id)
+                sample.expected_confirmed = True
+        except AccessError:
+            raise
+        except Exception as exc:        # noqa: BLE001
+            return {'ok': False, 'reason': self._plain(exc)}
+
+        try:
+            Studio.run_tests(config.id)
+        except AccessError:
+            raise
+        except Exception as exc:        # noqa: BLE001
+            _logger.info("Guided setup: re-run after retake failed: %s", exc)
+        payload = self._stamp(config, blueprint)
+        payload['retaken'] = sample.name or ''
+        return payload
+
     # ==================================================================
     # Boundary cases
     # ==================================================================

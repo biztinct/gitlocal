@@ -101,6 +101,9 @@ export class PbBlueprint extends Component {
             payReason: "",
             // --- overlays -----------------------------------------------
             inputsOpen: false,
+            // Whether this scenario's expected numbers are already agreed, so
+            // the dialog can say what changing an input will cost.
+            inputsConfirmed: false,
             inputsRows: [],
             inputsBusy: false,
             confirmStarter: null,      // the starter key we are about to swap to
@@ -714,6 +717,7 @@ export class PbBlueprint extends Component {
             return;
         }
         this.state.inputsRows = res.rows;
+        this.state.inputsConfirmed = !!res.confirmed;
         this.state.inputsOpen = true;
     }
 

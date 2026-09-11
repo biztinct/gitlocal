@@ -20,6 +20,10 @@ export class SampleInputsDialog extends Component {
         title: { type: String },
         rows: { type: Array },        // [{code, name, value}]
         busy: { type: Boolean, optional: true },
+        // True when somebody has already agreed to the numbers this scenario
+        // should produce. Changing an input then makes its check disagree, and
+        // being told that here is cheaper than finding it on the Test step.
+        confirmed: { type: Boolean, optional: true },
         onSave: { type: Function },
         onClose: { type: Function },
     };

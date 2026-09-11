@@ -366,6 +366,85 @@ class TestOutputsAndTests(TransactionCase):
         self.assertTrue(sample.expected_confirmed)
         self.assertTrue(json.loads(sample.expected_values_json or '{}'))
 
+    # ---- changing a scenario's inputs, and the way back -------------
+    def test_changing_an_input_breaks_the_check_and_says_it_will(self):
+        """The trap, reproduced.
+
+        Changing a sample input is invited — the panel says so, and trying
+        "what if this person only worked twenty days" is the whole point of it.
+        But the numbers somebody agreed to were agreed against the OLD inputs,
+        so the check disagrees the moment an input moves. That is correct and
+        it is unfindable: the screen reports a failure at a configuration that
+        is working perfectly.
+        """
+        config = self._complete('b5-retake-1')
+        sample = config.sample_data_ids[0]
+        inputs = json.loads(sample.input_values_json or '{}')
+        if 'PAIDDAYS' not in inputs or 'STDDAYS' not in inputs:
+            self.skipTest('this starter does not prorate by working days')
+
+        # The dialog that makes the change knows it will cost something.
+        before = self.Studio.bp_sample_inputs(config.id, sample.id)
+        self.assertTrue(before['confirmed'],
+                        'the warning cannot be shown without this flag')
+
+        inputs['PAIDDAYS'] = inputs['STDDAYS'] - 6
+        sample.input_values_json = json.dumps(inputs)
+        res = self.Studio.bp_run_checks(config.id)
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'attention')
+
+        # Confirming again is NOT the way out and never was: it only ever
+        # snapshots a scenario that had no expectations at all.
+        again = self.Studio.bp_confirm_expected(config.id, [sample.id])
+        row = next(r for r in again['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'attention',
+                         'Confirm quietly agreed to numbers nobody read')
+
+    def test_retaking_the_numbers_is_the_way_out(self):
+        config = self._complete('b5-retake-2')
+        sample = config.sample_data_ids[0]
+        inputs = json.loads(sample.input_values_json or '{}')
+        if 'PAIDDAYS' not in inputs or 'STDDAYS' not in inputs:
+            self.skipTest('this starter does not prorate by working days')
+        inputs['PAIDDAYS'] = inputs['STDDAYS'] - 6
+        sample.input_values_json = json.dumps(inputs)
+        self.Studio.bp_run_checks(config.id)
+
+        res = self.Studio.bp_retake_expected(config.id, sample.id)
+        self.assertTrue(res['ok'], res.get('reason'))
+        self.assertEqual(res['retaken'], sample.name)
+        row = next(r for r in res['samples'] if r['id'] == sample.id)
+        self.assertEqual(row['verdict'], 'passed')
+
+        # And it took the numbers it actually works out, not a blank slate.
+        self.assertTrue(json.loads(sample.expected_values_json or '{}'))
+        self.assertTrue(sample.expected_confirmed)
+
+    def test_retaking_names_one_scenario_and_leaves_the_others_alone(self):
+        """It may never become "agree to everything"."""
+        config = self._complete('b5-retake-3')
+        if len(config.sample_data_ids) < 2:
+            self.skipTest('this starter ships one scenario')
+        first, second = config.sample_data_ids[0], config.sample_data_ids[1]
+        expected = json.loads(second.expected_values_json or '{}')
+        self.assertIn('PIT', expected)
+        expected['PIT'] = float(expected['PIT'] or 0) + 7500.0
+        second.expected_values_json = json.dumps(expected)
+        self.Studio.bp_run_checks(config.id)
+
+        res = self.Studio.bp_retake_expected(config.id, first.id)
+        self.assertTrue(res['ok'], res.get('reason'))
+        row = next(r for r in res['samples'] if r['id'] == second.id)
+        self.assertEqual(row['verdict'], 'attention',
+                         'retaking one scenario silently agreed to another')
+
+    def test_retaking_a_scenario_that_is_not_here_is_refused_by_name(self):
+        config = self._complete('b5-retake-4')
+        res = self.Studio.bp_retake_expected(config.id, 0)
+        self.assertFalse(res['ok'])
+        self.assertIn('no longer exists', res['reason'])
+
     # ==================================================================
     # 6 — boundary cases
     # ==================================================================

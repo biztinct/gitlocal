@@ -247,7 +247,21 @@
             </div>
           </div>
           <div class="pbim-modal__foot">
+            <!-- The way out of a check that disagrees because the SCENARIO
+                 changed, not because the calculation is wrong. Without it the
+                 only escape was remembering the old input and typing it back. -->
+            <small class="pbbp-retake-note" t-if="canRetake">
+              Changed this scenario's inputs on purpose? The numbers it expects
+              are still the old ones.
+            </small>
             <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-if="canRetake"
+                    t-att-disabled="state.busy"
+                    t-on-click="retakeExpected"
+                    title="Agree that what this scenario works out today is what it should work out">
+              <t t-if="state.busy === 'retake'">Taking…</t>
+              <t t-else="">Expect today's numbers instead</t>
+            </button>
             <button class="pbim-btn ghost" t-on-click="closeDetail">Close</button>
           </div>
         </div>

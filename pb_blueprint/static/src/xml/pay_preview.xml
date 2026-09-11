@@ -141,6 +141,14 @@
             These are the numbers the panel calculates from. Change one and the take-home
             figure moves — nobody's real pay is touched.
           </p>
+          <!-- The consequence, where the change is made. A scenario whose
+               numbers are already agreed will report a failure the moment an
+               input moves, and the Test step cannot say why on its own. -->
+          <p class="pbim-note is-warn" t-if="props.confirmed">
+            Somebody has already agreed what this scenario should produce. Change an
+            input and its check will disagree until you agree to the new numbers —
+            open it on the Test step and choose “Expect today's numbers instead”.
+          </p>
           <div class="pbbp-inputs-grid">
             <label class="pbbp-inputs-row" t-foreach="props.rows" t-as="row" t-key="row.code">
               <span class="pbbp-inputs-lbl">

@@ -239,6 +239,7 @@
                           title="state.preview and state.preview.sample.name or ''"
                           rows="state.inputsRows"
                           busy="state.inputsBusy"
+                          confirmed="state.inputsConfirmed"
                           onSave.bind="onSaveInputs"
                           onClose="() => this.state.inputsOpen = false"/>
 

@@ -408,6 +408,47 @@ export class StepTest extends Component {
             (r) => r.expected !== null && r.passed === false);
     }
 
+    /**
+     * Offer the way out only where there is something to get out of.
+     *
+     * A scenario that passes has nothing to re-take, and offering it there
+     * would put "agree to whatever it says" next to a green tick — which is
+     * how somebody presses it without reading it.
+     */
+    get canRetake() {
+        const d = this.state.detail || {};
+        return !!d.can_write && this.detailChanged.length > 0;
+    }
+
+    /**
+     * "Take today's numbers as the ones to expect."
+     *
+     * Deliberately one scenario at a time and deliberately wordy: this is how
+     * a wrong calculation gets blessed as a right one, so the person has to
+     * mean it.
+     */
+    async retakeExpected() {
+        const id = this.state.open;
+        if (!id || this.state.busy) return;
+        this.state.busy = "retake";
+        const res = await this.rpc("bp_retake_expected",
+                                   [this.props.configId, id,
+                                    this.props.revision || 0]);
+        this.state.busy = "";
+        if (!res || !res.ok) {
+            this.notif.add((res && res.reason)
+                || _t("Those numbers could not be taken."),
+                { type: "warning", sticky: true });
+            return;
+        }
+        this.closeDetail();
+        this._apply(res);
+        this.notif.add(
+            _t("“%s” now expects the numbers it works out today.",
+               res.retaken || ""),
+            { type: "success" });
+    }
+
     // ==================================================================
     // Boundary cases
     // ==================================================================
