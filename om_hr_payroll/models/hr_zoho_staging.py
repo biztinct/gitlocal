@@ -203,31 +203,38 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
             except requests.exceptions.RequestException as e:
                 raise Exception(f"Error getting Zoho People tokens: {e}")
 
-        # Supplied by an administrator, never committed. These three used to be
-        # literals in this file — a live client id, client secret and a one-time
-        # authorization code — which put working credentials in a PUBLIC git
-        # repository. They are read from ir.config_parameter now. Nothing that
-        # worked stops working: an OAuth authorization code is single-use and
-        # expires within minutes, so the hardcoded one had been dead for as long
-        # as it had been here.
-        icp = self.env["ir.config_parameter"].sudo()
-        client_id = icp.get_param("zoho.client_id")
-        client_secret = icp.get_param("zoho.client_secret")
-        auth_code = icp.get_param("zoho.auth_code")
-        if not (client_id and client_secret and auth_code):
-            raise UserError(_(
-                "The connection to the external HR system is not configured "
-                "yet. An administrator needs to add its credentials before "
-                "this can run."))
+        # RETIRED 2026-09-11. These three were LITERALS here — a real client id,
+        # client secret and one-time authorization code — sitting in a PUBLIC git
+        # repository since 2025-06-22. The placeholders below are deliberately
+        # not credentials and are never to be filled in.
+        #
+        # Connections are configured in the application now, on the record, not
+        # in source: model `hr.integration.connector`
+        # (pb_hr_payroll_formula/models/integration_connector.py, `client_id` :90
+        # and `client_secret` :95), reached from Integrations -> Connectors. The
+        # live connectors on abm carry their own keys there and none of them is
+        # the leaked one — checked against the databases on 2026-09-11, not
+        # inferred from a ledger.
+        #
+        # The whole function is kept rather than deleted because a button in
+        # hr_zoho_views.xml still names it; it now explains where the real
+        # screen is instead of dead-ending. The unreachable code below the guard
+        # is left as the record of what this once did.
+        client_id = "PLACEHOLDER-NOT-A-CREDENTIAL"
+        client_secret = "PLACEHOLDER-NOT-A-CREDENTIAL"
+        auth_code = "PLACEHOLDER-NOT-A-CREDENTIAL"
+
+        raise UserError(_(
+            "This button is no longer used.\n\n"
+            "Connections to an outside HR system are set up on the connection "
+            "itself, under Integrations > Connectors. Open the connection you "
+            "want and enter its keys there."))
 
         tokens = get_zoho_people_tokens(client_id, client_secret, auth_code)
 
         access_token = tokens["access_token"]
         refresh_token = tokens["refresh_token"]
 
-        # The tokens are what this button exists to hand over. The client secret
-        # and the authorization code are NOT — printing a secret into a dialog
-        # is how it ends up in a screenshot, a ticket or a chat thread.
         _logger.info("Zoho People tokens refreshed")
 
         raise UserError(_(
