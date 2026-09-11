@@ -7,7 +7,7 @@ import json
 import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__) 
@@ -203,22 +203,36 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
             except requests.exceptions.RequestException as e:
                 raise Exception(f"Error getting Zoho People tokens: {e}")
 
-        # Example usage
-        client_id = "PLACEHOLDER-NOT-A-CREDENTIAL"
-        client_secret = "PLACEHOLDER-NOT-A-CREDENTIAL"
-        auth_code = "PLACEHOLDER-NOT-A-CREDENTIAL"  # Obtained from the authorization URL
+        # Supplied by an administrator, never committed. These three used to be
+        # literals in this file — a live client id, client secret and a one-time
+        # authorization code — which put working credentials in a PUBLIC git
+        # repository. They are read from ir.config_parameter now. Nothing that
+        # worked stops working: an OAuth authorization code is single-use and
+        # expires within minutes, so the hardcoded one had been dead for as long
+        # as it had been here.
+        icp = self.env["ir.config_parameter"].sudo()
+        client_id = icp.get_param("zoho.client_id")
+        client_secret = icp.get_param("zoho.client_secret")
+        auth_code = icp.get_param("zoho.auth_code")
+        if not (client_id and client_secret and auth_code):
+            raise UserError(_(
+                "The connection to the external HR system is not configured "
+                "yet. An administrator needs to add its credentials before "
+                "this can run."))
 
         tokens = get_zoho_people_tokens(client_id, client_secret, auth_code)
 
         access_token = tokens["access_token"]
         refresh_token = tokens["refresh_token"]
 
-        _logger.info(f"Access Token: {access_token}")
-        _logger.info(f"Refresh Token: {refresh_token}")
+        # The tokens are what this button exists to hand over. The client secret
+        # and the authorization code are NOT — printing a secret into a dialog
+        # is how it ends up in a screenshot, a ticket or a chat thread.
+        _logger.info("Zoho People tokens refreshed")
 
-        raise UserError("Client Id : " + client_id + " Client secret : " + client_secret + 
-        " Auth Code : " + auth_code + " Access token : " + access_token + 
-        " Refresh token : " + refresh_token   )
+        raise UserError(_(
+            "Access token: %(access)s\n\nRefresh token: %(refresh)s",
+            access=access_token, refresh=refresh_token))
 
     def _get_access_token(self, refresh_token, client_id , client_secret):
         """
@@ -227,8 +241,6 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
         url = "https://accounts.zoho.com/oauth/v2/token"
         data = {
             "refresh_token": refresh_token,
-            #"client_id": "PLACEHOLDER-NOT-A-CREDENTIAL",
-            #"client_secret": "PLACEHOLDER-NOT-A-CREDENTIAL",
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "refresh_token"

@@ -425,8 +425,8 @@ class ZohoTimesheetImporter(models.TransientModel):
         url = "https://accounts.zoho.com/oauth/v2/token"
         data = {
             "refresh_token": refresh_token,
-            #"client_id": "PLACEHOLDER-NOT-A-CREDENTIAL",
-            #"client_secret": "PLACEHOLDER-NOT-A-CREDENTIAL",
+            #"client_id": "REMOVED-see-ir.config_parameter-zoho.client_id",
+            #"client_secret": "REMOVED-see-ir.config_parameter-zoho.client_secret",
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "refresh_token"

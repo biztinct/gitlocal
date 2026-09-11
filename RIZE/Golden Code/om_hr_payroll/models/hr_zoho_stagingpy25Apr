@@ -200,9 +200,9 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
                 raise Exception(f"Error getting Zoho People tokens: {e}")
 
         # Example usage
-        client_id = "PLACEHOLDER-NOT-A-CREDENTIAL"
-        client_secret = "PLACEHOLDER-NOT-A-CREDENTIAL"
-        auth_code = "PLACEHOLDER-NOT-A-CREDENTIAL"  # Obtained from the authorization URL
+        client_id = "REMOVED-see-ir.config_parameter-zoho.client_id"
+        client_secret = "REMOVED-see-ir.config_parameter-zoho.client_secret"
+        auth_code = "REMOVED-see-ir.config_parameter-zoho.auth_code"  # Obtained from the authorization URL
 
         tokens = get_zoho_people_tokens(client_id, client_secret, auth_code)
 
@@ -223,8 +223,8 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
         url = "https://accounts.zoho.com/oauth/v2/token"
         data = {
             "refresh_token": refresh_token,
-            #"client_id": "PLACEHOLDER-NOT-A-CREDENTIAL",
-            #"client_secret": "PLACEHOLDER-NOT-A-CREDENTIAL",
+            #"client_id": "REMOVED-see-ir.config_parameter-zoho.client_id",
+            #"client_secret": "REMOVED-see-ir.config_parameter-zoho.client_secret",
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "refresh_token"
