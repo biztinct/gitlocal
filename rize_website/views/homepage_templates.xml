@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Rize landing page — inherits website.homepage so it renders at /.
+    Tenant-only: this module is installed on the `rize` database and nowhere else.
+    Header/footer of the generic website chrome are suppressed; we ship our own.
+  -->
+  <template id="rize_homepage" inherit_id="website.homepage" name="Rize Landing Page">
+
+    <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title">Rize — People &amp; Payroll</t>
+    </xpath>
+
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <div id="wrap" class="rz-home">
+
+        <t t-call="rize_website.rz_field"/>
+
+        <!-- ============================ NAV ============================ -->
+        <header class="rz-nav">
+          <a href="/" class="rz-nav__brand" aria-label="Rize home">
+            <img src="/rize_website/static/src/img/rize_logo.png" alt="Rize"/>
+          </a>
+          <div class="rz-nav__right">
+            <a class="rz-nav__link" href="https://www.rize.farm" target="_blank" rel="noopener">rize.farm</a>
+            <a class="rz-btn rz-btn--gold" href="/web/login">Sign in</a>
+          </div>
+        </header>
+
+        <!-- ============================ HERO ============================ -->
+        <section class="rz-hero">
+          <div class="rz-hero__inner">
+            <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span>People &amp; Payroll</span>
+
+            <h1 class="rz-hero__title">
+              The people behind
+              <span class="rz-hero__title-gold">the harvest.</span>
+            </h1>
+
+            <p class="rz-hero__sub">
+              One private workspace for everyone at Rize — pay runs, employee records
+              and country compliance, kept in one place.
+            </p>
+
+            <div class="rz-hero__cta">
+              <a class="rz-btn rz-btn--gold rz-btn--lg" href="/web/login">Sign in</a>
+              <a class="rz-btn rz-btn--ghost rz-btn--lg" href="https://www.rize.farm" target="_blank" rel="noopener">Visit rize.farm</a>
+            </div>
+
+            <ul class="rz-countries">
+              <li>Vietnam</li>
+              <li>Indonesia</li>
+              <li>India</li>
+              <li>Singapore</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- =========================== CARDS ============================ -->
+        <section class="rz-cards">
+          <article class="rz-card">
+            <span class="rz-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="12" x="2" y="6" rx="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <path d="M6 12h.01"/><path d="M18 12h.01"/>
+              </svg>
+            </span>
+            <h3>Pay runs</h3>
+            <p>Prepare, check and approve each month's pay in a few clear steps.</p>
+          </article>
+
+          <article class="rz-card">
+            <span class="rz-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </span>
+            <h3>People</h3>
+            <p>Every employee record, contract and change of pay, in one history.</p>
+          </article>
+
+          <article class="rz-card">
+            <span class="rz-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </span>
+            <h3>Compliance</h3>
+            <p>Statutory figures and filing reports prepared for each country.</p>
+          </article>
+        </section>
+
+        <!-- =========================== FOOTER =========================== -->
+        <footer class="rz-foot">
+          <span class="rz-foot__tag">Modernizing the world's most essential crop.</span>
+          <span class="rz-foot__meta">© Rize · Powered by Payobook</span>
+        </footer>
+
+      </div>
+    </xpath>
+  </template>
+</odoo>

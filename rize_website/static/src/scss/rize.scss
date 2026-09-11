@@ -1,0 +1,553 @@
+// =============================================================================
+//  Rize — landing page + sign-in page
+//  Tenant-only styling (installed on the `rize` database).
+//  Palette sampled from rize.farm: deep paddy green, harvest gold, husk cream.
+//  Everything is scoped under .rz-* so no other frontend page is touched.
+// =============================================================================
+
+:root {
+    --rz-night:    #07110A;
+    --rz-forest:   #101F0B;
+    --rz-paddy:    #192D06;
+    --rz-olive:    #4D5F3D;
+    --rz-gold:     #CC9900;
+    --rz-gold-lt:  #E7C46B;
+    --rz-gold-hi:  #F2D800;
+    --rz-cream:    #FAEED3;
+    --rz-mist:     rgba(250, 238, 211, 0.72);
+}
+
+// -----------------------------------------------------------------------------
+//  Neutralise the generic website chrome on our two pages.
+//  The `no_header` / `no_footer` t-set does not survive the website page render,
+//  so we hide the stock header/footer with :has, scoped to our own pages only.
+//  (Same technique as pb_website — see that module's landing.scss.)
+// -----------------------------------------------------------------------------
+body:has(#wrap.rz-home),
+body:has(.rz-login) {
+    background: var(--rz-night);
+
+    #wrapwrap > header,
+    #wrapwrap > footer,
+    header#top,
+    header.o_header_standard,
+    .o_header_affix,
+    #footer,
+    .o_footer,
+    .o_frontend_to_backend_nav,
+    .o_frontend_to_backend_edit_btn { display: none !important; }
+
+    #wrapwrap { padding-top: 0 !important; }
+}
+
+// -----------------------------------------------------------------------------
+//  Shared backdrop: a dawn rice field
+// -----------------------------------------------------------------------------
+.rz-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    &__sky {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(130% 95% at 50% 104%, rgba(204, 153, 0, .50) 0%, rgba(204, 153, 0, .10) 46%, rgba(204, 153, 0, 0) 68%),
+            linear-gradient(180deg, var(--rz-night) 0%, var(--rz-forest) 44%, var(--rz-paddy) 100%);
+    }
+
+    // Low sun sitting on the horizon.
+    &__sun {
+        position: absolute;
+        left: 50%;
+        bottom: 16%;
+        // Interpolated: Sass owns the bare min() name and rejects mixed units.
+        width: #{"min(58vw, 680px)"};
+        aspect-ratio: 1;
+        transform: translate(-50%, 50%);
+        border-radius: 50%;
+        background: radial-gradient(circle,
+            rgba(242, 216, 128, .62) 0%,
+            rgba(204, 153, 0, .34) 36%,
+            rgba(204, 153, 0, 0) 70%);
+        filter: blur(2px);
+        animation: rzBreathe 11s ease-in-out infinite;
+    }
+
+    &__svg {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        width: 100%;
+        height: #{"min(62vh, 560px)"};
+        display: block;
+    }
+
+    // The far bank of the paddy.
+    &__ridge {
+        fill: rgba(25, 45, 6, .82);
+    }
+
+    &__row--far  { color: rgba(126, 144, 88, .40); }
+    &__row--mid  { color: rgba(62, 82, 34, .78); }
+    &__row--near { color: rgba(9, 19, 5, .97); }
+
+    // A soft veil so the text above always stays readable.
+    &__haze {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+            rgba(7, 17, 10, .55) 0%,
+            rgba(7, 17, 10, .18) 34%,
+            rgba(7, 17, 10, .00) 62%);
+    }
+}
+
+.rz-sway {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: rzSway 7s ease-in-out infinite;
+    will-change: transform;
+}
+.rz-sway--1 { animation-duration: 6.2s;  animation-delay: -0.4s; }
+.rz-sway--2 { animation-duration: 7.4s;  animation-delay: -1.9s; }
+.rz-sway--3 { animation-duration: 8.6s;  animation-delay: -3.1s; }
+.rz-sway--4 { animation-duration: 5.8s;  animation-delay: -2.4s; }
+.rz-sway--5 { animation-duration: 9.3s;  animation-delay: -0.9s; }
+.rz-sway--6 { animation-duration: 6.9s;  animation-delay: -4.2s; }
+
+@keyframes rzSway {
+    0%, 100% { transform: rotate(-1.7deg); }
+    50%      { transform: rotate(2.0deg); }
+}
+@keyframes rzBreathe {
+    0%, 100% { opacity: .78; transform: translate(-50%, 50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%, 50%) scale(1.06); }
+}
+@keyframes rzRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+}
+
+// -----------------------------------------------------------------------------
+//  Shared bits
+// -----------------------------------------------------------------------------
+.rz-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .62rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .01em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+
+    &:hover { text-decoration: none; transform: translateY(-1px); }
+    &:focus-visible { outline: 2px solid var(--rz-gold-lt); outline-offset: 3px; }
+
+    &--lg { padding: .82rem 1.7rem; font-size: 1rem; }
+
+    &--gold {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        color: #1B1403;
+        box-shadow: 0 8px 24px rgba(204, 153, 0, .28);
+        &:hover { color: #1B1403; box-shadow: 0 12px 30px rgba(204, 153, 0, .38); }
+    }
+
+    &--ghost {
+        color: var(--rz-cream);
+        border-color: rgba(250, 238, 211, .32);
+        background: rgba(250, 238, 211, .04);
+        &:hover { color: #fff; border-color: rgba(250, 238, 211, .6); background: rgba(250, 238, 211, .10); }
+    }
+}
+
+// =============================================================================
+//  LANDING PAGE
+// =============================================================================
+.rz-home {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--rz-cream);
+    background: var(--rz-night);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+
+    > *:not(.rz-field) { position: relative; z-index: 2; }
+
+    // :where() keeps the reset at zero specificity so the block rules below win.
+    *, *::before, *::after { box-sizing: border-box; }
+    :where(h1, h2, h3, p, ul) { margin: 0; }
+    :where(ul) { list-style: none; padding: 0; }
+    :where(a) { color: inherit; text-decoration: none; }
+    :where(img, svg) { display: block; max-width: 100%; }
+}
+
+.rz-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.4rem clamp(1.1rem, 5vw, 4rem);
+
+    &__brand img {
+        height: 34px;
+        width: auto;
+        display: block;
+        filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .45));
+    }
+
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: clamp(.7rem, 2vw, 1.6rem);
+    }
+
+    &__link {
+        color: var(--rz-mist);
+        font-size: .92rem;
+        font-weight: 500;
+        text-decoration: none;
+        &:hover { color: var(--rz-cream); text-decoration: none; }
+    }
+}
+
+.rz-hero {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    padding: clamp(1.5rem, 5vh, 4rem) clamp(1.1rem, 5vw, 4rem) clamp(1.2rem, 3vh, 2.4rem);
+
+    &__inner {
+        max-width: 860px;
+        animation: rzRise .9s cubic-bezier(.2, .7, .3, 1) both;
+    }
+
+    &__title {
+        margin: 1.1rem 0 0;
+        font-size: clamp(2.6rem, 7.2vw, 5.2rem);
+        line-height: 1.02;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+
+        &-gold {
+            display: block;
+            background: linear-gradient(100deg, var(--rz-gold-lt) 0%, var(--rz-gold-hi) 48%, var(--rz-gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    }
+
+    &__sub {
+        margin: 1.4rem 0 0;
+        max-width: 41rem;
+        font-size: clamp(1.02rem, 1.5vw, 1.22rem);
+        line-height: 1.65;
+        color: var(--rz-mist);
+    }
+
+    &__cta {
+        margin-top: 2.2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .8rem;
+    }
+}
+
+.rz-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .38rem .9rem .38rem .7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(231, 196, 107, .3);
+    background: rgba(204, 153, 0, .10);
+    color: var(--rz-gold-lt);
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+
+    &__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--rz-gold-hi);
+        box-shadow: 0 0 0 0 rgba(242, 216, 128, .7);
+        animation: rzPulse 2.6s ease-out infinite;
+    }
+}
+
+@keyframes rzPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(242, 216, 128, .55); }
+    70%  { box-shadow: 0 0 0 9px rgba(242, 216, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(242, 216, 128, 0); }
+}
+
+.rz-countries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.6rem;
+    margin: 2rem 0 0;
+    padding: 1rem 0 0;
+    list-style: none;
+    border-top: 1px solid rgba(250, 238, 211, .14);
+
+    li {
+        font-size: .84rem;
+        font-weight: 600;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: rgba(250, 238, 211, .55);
+    }
+}
+
+.rz-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    padding: 0 clamp(1.1rem, 5vw, 4rem) clamp(1.2rem, 3vh, 2.2rem);
+}
+
+.rz-card {
+    padding: 1.5rem 1.5rem 1.6rem;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 238, 211, .12);
+    background: rgba(7, 17, 10, .42);
+    backdrop-filter: blur(9px);
+    transition: transform .22s ease, border-color .22s ease, background .22s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        border-color: rgba(231, 196, 107, .38);
+        background: rgba(7, 17, 10, .58);
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(204, 153, 0, .14);
+        color: var(--rz-gold-lt);
+
+        svg { width: 21px; height: 21px; }
+    }
+
+    h3 {
+        margin: 1rem 0 .35rem;
+        font-size: 1.06rem;
+        font-weight: 650;
+        color: #fff;
+    }
+
+    p {
+        margin: 0;
+        font-size: .93rem;
+        line-height: 1.55;
+        color: rgba(250, 238, 211, .62);
+    }
+}
+
+.rz-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    padding: 1.2rem clamp(1.1rem, 5vw, 4rem) 1.7rem;
+    border-top: 1px solid rgba(250, 238, 211, .10);
+    font-size: .82rem;
+    color: rgba(250, 238, 211, .48);
+
+    &__tag { font-style: italic; }
+}
+
+// =============================================================================
+//  SIGN-IN PAGE
+// =============================================================================
+.rz-login {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.1rem;
+    overflow: auto;
+    background: var(--rz-night);
+    color: var(--rz-cream);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    &__card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 400px;
+        padding: 2.1rem 2rem 1.6rem;
+        border-radius: 22px;
+        border: 1px solid rgba(250, 238, 211, .14);
+        background: rgba(10, 20, 10, .72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .55);
+        animation: rzRise .7s cubic-bezier(.2, .7, .3, 1) both;
+    }
+
+    &__brand {
+        display: block;
+        text-align: center;
+
+        img {
+            display: block;
+            height: 38px;
+            width: auto;
+            margin: 0 auto;
+            filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5));
+        }
+    }
+
+    &__welcome {
+        margin: .7rem 0 1.6rem;
+        text-align: center;
+        font-size: .78rem;
+        font-weight: 600;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: rgba(231, 196, 107, .85);
+    }
+
+    &__foot {
+        margin: 1.5rem 0 0;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(250, 238, 211, .12);
+        text-align: center;
+        font-size: .76rem;
+        color: rgba(250, 238, 211, .42);
+    }
+
+    // --- Odoo's own form markup, re-skinned in place ---------------------------
+    label,
+    .form-label { color: rgba(250, 238, 211, .78); font-size: .85rem; font-weight: 600; }
+
+    .form-control,
+    .form-select {
+        background-color: rgba(255, 255, 255, .05);
+        border: 1px solid rgba(250, 238, 211, .18);
+        color: var(--rz-cream);
+        border-radius: 12px;
+        padding: .62rem .85rem;
+
+        &::placeholder { color: rgba(250, 238, 211, .34); }
+        &:focus {
+            background-color: rgba(255, 255, 255, .08);
+            border-color: var(--rz-gold);
+            color: #fff;
+            box-shadow: 0 0 0 .2rem rgba(204, 153, 0, .22);
+        }
+    }
+
+    // The native dropdown list itself is painted by the OS, so keep its
+    // options readable rather than cream-on-white.
+    .form-select option { color: #16210E; background: #fff; }
+
+    // Anything Odoo or an auth add-on drops in here (passkey, OAuth providers)
+    // arrives as a light Bootstrap button — re-skin it as a quiet ghost button.
+    .btn:not(.btn-primary):not(.btn-link):not(.o_show_password) {
+        background-color: rgba(250, 238, 211, .06);
+        border: 1px solid rgba(250, 238, 211, .22);
+        color: var(--rz-cream);
+        border-radius: 999px;
+        font-weight: 600;
+
+        &:hover, &:focus {
+            background-color: rgba(250, 238, 211, .13);
+            border-color: rgba(250, 238, 211, .45);
+            color: #fff;
+        }
+    }
+
+    .input-group .btn {
+        border-radius: 0 12px 12px 0;
+        border-left: 0;
+        background-color: rgba(255, 255, 255, .05);
+        border-color: rgba(250, 238, 211, .18);
+        color: rgba(250, 238, 211, .6);
+        &:hover { color: var(--rz-gold-lt); }
+    }
+
+    .input-group .form-control { border-radius: 12px 0 0 12px; }
+
+    // The passkey / OAuth entries arrive as Bootstrap list-group items (white).
+    .list-group,
+    .list-group-item {
+        background-color: rgba(250, 238, 211, .06);
+        border-color: rgba(250, 238, 211, .22);
+        color: var(--rz-cream);
+        border-radius: 14px;
+
+        &:hover, &:focus {
+            background-color: rgba(250, 238, 211, .13);
+            color: #fff;
+        }
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        border: 0;
+        color: #1B1403;
+        font-weight: 650;
+        border-radius: 999px;
+        padding: .68rem 1rem;
+        box-shadow: 0 8px 24px rgba(204, 153, 0, .28);
+
+        &:hover, &:focus, &:active {
+            background: linear-gradient(135deg, var(--rz-gold-hi) 0%, var(--rz-gold) 100%);
+            color: #1B1403;
+            box-shadow: 0 12px 30px rgba(204, 153, 0, .38);
+        }
+    }
+
+    .btn-link,
+    a {
+        color: var(--rz-gold-lt);
+        &:hover { color: var(--rz-gold-hi); }
+    }
+
+    .alert-danger {
+        background: rgba(190, 60, 40, .16);
+        border-color: rgba(234, 73, 46, .45);
+        color: #FFC8BC;
+    }
+    .alert-success {
+        background: rgba(77, 95, 61, .25);
+        border-color: rgba(150, 190, 110, .45);
+        color: #DFF3C8;
+    }
+}
+
+// -----------------------------------------------------------------------------
+//  Motion preferences
+// -----------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    .rz-sway,
+    .rz-field__sun,
+    .rz-eyebrow__dot,
+    .rz-hero__inner,
+    .rz-login__card {
+        animation: none !important;
+    }
+    .rz-btn, .rz-card { transition: none; }
+}
