@@ -99,7 +99,7 @@ class PbOnboardingPortal(CustomerPortal):
             values.update(self._journey_values(emp, case))
         else:
             values.update({'team': self._team_strip(emp),
-                           'buddy': self._card(emp._pb_buddy_now()),
+                           'buddy': self._ob_card(emp._pb_buddy_now()),
                            'hrbp': self._user_card(emp.hrbp_user_id)})
         return request.render('pb_onboarding.portal_my_journey', values)
 
@@ -148,7 +148,7 @@ class PbOnboardingPortal(CustomerPortal):
             'step_count': len(steps),
             'steps': steps,
             'open_mine': len([s for s in steps if s['mine']]),
-            'buddy': self._card(emp._pb_buddy_now()),
+            'buddy': self._ob_card(emp._pb_buddy_now()),
             'hrbp': self._user_card(emp.hrbp_user_id),
             'team': self._team_strip(emp),
             'complete': emp.profile_complete_pct,
@@ -218,7 +218,7 @@ class PbOnboardingPortal(CustomerPortal):
                 order='scheduled_date')
             nxt = rows.filtered(lambda c: c.state == 'scheduled')[:1]
             looking_after.append({
-                'card': self._card(joiner),
+                'card': self._ob_card(joiner),
                 'joined': joiner._pb_join_date(),
                 'is_cover': bool(joiner.buddy_temp_id
                                  and joiner.buddy_temp_id.id == emp.id),
@@ -234,9 +234,9 @@ class PbOnboardingPortal(CustomerPortal):
             'page_name': 'buddy',
             'employee': emp,
             'looking_after': looking_after,
-            'my_buddy': self._card(my_buddy),
+            'my_buddy': self._ob_card(my_buddy),
             'my_connects': [self._connect_row(c) for c in my_connects],
-            'temp': self._card(emp.buddy_temp_id),
+            'temp': self._ob_card(emp.buddy_temp_id),
             'temp_from': emp.buddy_temp_from,
             'temp_to': emp.buddy_temp_to,
             'colleagues': self._handover_options(emp),
@@ -363,7 +363,7 @@ class PbOnboardingPortal(CustomerPortal):
         term = (kw.get('q') or '').strip()
         results = []
         if term:
-            results = [self._card(e) for e in Emp.search(
+            results = [self._ob_card(e) for e in Emp.search(
                 [('active', '=', True), ('company_id', '=', company.id),
                  ('name', 'ilike', term)], order='name',
                 limit=ORG_MAX_SEARCH)]
@@ -372,7 +372,7 @@ class PbOnboardingPortal(CustomerPortal):
         chain, seen, node = [], set(), focus.parent_id
         while node and node.id not in seen and len(chain) < ORG_MAX_DEPTH:
             seen.add(node.id)
-            chain.append(self._card(node))
+            chain.append(self._ob_card(node))
             node = node.parent_id
         chain.reverse()
 
@@ -398,11 +398,11 @@ class PbOnboardingPortal(CustomerPortal):
             'page_name': 'orgchart',
             'employee': emp,
             'me_id': emp.id,
-            'focus': self._card(focus),
-            'manager': self._card(focus.parent_id),
+            'focus': self._ob_card(focus),
+            'manager': self._ob_card(focus.parent_id),
             'chain': chain,
-            'children': [self._card(e) for e in children],
-            'siblings': [self._card(e) for e in siblings],
+            'children': [self._ob_card(e) for e in children],
+            'siblings': [self._ob_card(e) for e in siblings],
             'more_children': more_children,
             'more_siblings': more_siblings,
             'max_children': ORG_MAX_CHILDREN,
@@ -416,8 +416,20 @@ class PbOnboardingPortal(CustomerPortal):
         })
 
     # ------------------------------------------------------------- the cards
-    def _card(self, employee):
-        """The ONLY employee shape that leaves this file (whitelist)."""
+    def _ob_card(self, employee):
+        """The ONLY employee shape that leaves this file (whitelist).
+
+        MODULE-PREFIXED ON PURPOSE. Every ``CustomerPortal`` subclass on the
+        server is merged into ONE class (http.py builds
+        ``type(name, tuple(reversed(leaf_controllers)), {})``), so a private
+        helper is NOT private to its module: the last module registered wins
+        and silently replaces every same-named helper before it. This one used
+        to be ``_card``, and so was pb_rnr's — which takes a nomination, not an
+        employee. pb_rnr registers later, so `/my/journey`, `/my/buddy` and
+        `/my/orgchart` all 500'd with
+        ``'hr.employee' object has no attribute 'nominee_id'``. Never give a
+        portal helper a bare, generic name.
+        """
         if not employee:
             return None
         try:
@@ -448,7 +460,7 @@ class PbOnboardingPortal(CustomerPortal):
         Emp = request.env['hr.employee'].sudo()
         out = []
         if emp.parent_id:
-            card = self._card(emp.parent_id)
+            card = self._ob_card(emp.parent_id)
             if card:
                 card['role'] = _('Manager')
                 out.append(card)
@@ -456,7 +468,7 @@ class PbOnboardingPortal(CustomerPortal):
                 [('parent_id', '=', emp.parent_id.id), ('id', '!=', emp.id),
                  ('active', '=', True)], order='name', limit=11)
             for peer in peers:
-                card = self._card(peer)
+                card = self._ob_card(peer)
                 if card:
                     card['role'] = ''
                     out.append(card)

@@ -196,7 +196,7 @@ class PbRnrPortal(CustomerPortal):
             ('state', '=', 'submitted'),
             ('nominee_id.parent_id', '=', emp.id),
         ], order='submitted_at desc, id desc', limit=25)
-        return [self._card(rec) for rec in recs]
+        return [self._rnr_card(rec) for rec in recs]
 
     def _mine(self, emp, field):
         domain = [(field, '=', emp.id)]
@@ -208,9 +208,15 @@ class PbRnrPortal(CustomerPortal):
                        ('outcome', 'in', ('recognised', 'awarded'))]
         recs = request.env['pb.rnr.nomination'].sudo().search(
             domain, order='id desc', limit=25)
-        return [self._card(rec) for rec in recs]
+        return [self._rnr_card(rec) for rec in recs]
 
-    def _card(self, rec):
+    def _rnr_card(self, rec):
+        """Module-prefixed on purpose — see pb_onboarding's ``_ob_card``.
+
+        All ``CustomerPortal`` subclasses merge into one class, so a helper
+        named ``_card`` here shadowed pb_onboarding's ``_card`` and took its
+        three portal pages down.
+        """
         Nom = request.env['pb.rnr.nomination'].sudo()
         nominee = Nom._person(rec.nominee_id)
         nominator = Nom._person(rec.nominator_id)

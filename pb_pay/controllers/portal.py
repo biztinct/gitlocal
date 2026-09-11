@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 class PbPayPortal(CustomerPortal):
 
-    def _ess_employee(self):
+    def _pay_ess_employee(self):
         """The OWN employee, resolved from the session user.
 
         The same helper the rest of the portal uses: prefer the employee
@@ -49,7 +49,7 @@ class PbPayPortal(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
         if 'pay_change_count' in counters:
-            employee = self._ess_employee()
+            employee = self._pay_ess_employee()
             values['pay_change_count'] = request.env['pb.pay.apply'].sudo(
             ).search_count([('employee_id', '=', employee.id),
                             ('state', '=', 'applied')]) if employee else 0
@@ -57,7 +57,7 @@ class PbPayPortal(CustomerPortal):
 
     @http.route(['/my/pay'], type='http', auth='user', website=True)
     def portal_my_pay(self, **kw):
-        employee = self._ess_employee()
+        employee = self._pay_ess_employee()
         if not employee:
             return request.redirect('/my')
         company = employee.company_id or request.env.company
@@ -89,7 +89,7 @@ class PbPayPortal(CustomerPortal):
         address bar is a route that hands out everybody's letters to whoever
         can count.
         """
-        employee = self._ess_employee()
+        employee = self._pay_ess_employee()
         if not employee:
             return request.redirect('/my')
         row = request.env['pb.pay.apply'].sudo().search([

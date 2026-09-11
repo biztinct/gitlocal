@@ -52,7 +52,7 @@ else gets it.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji anywhere — including in the emails.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
