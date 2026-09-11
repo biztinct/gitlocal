@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from markupsafe import Markup
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import format_date
 import json
 import logging
 
@@ -1191,6 +1192,65 @@ class HrPayslipFormula(models.Model):
         'mono': "'SF Mono', 'Cascadia Code', Consolas, monospace",
     }
 
+    def _payslip_meta_employment(self):
+        """What the person does, on what contract, and between which dates.
+
+        Every read is guarded. These live on `hr.version` in Odoo 19 and reach
+        the employee as related, non-stored fields, so which of them exists
+        depends on the modules a database has installed — and a payslip must
+        print with a blank line, never fail to print at all. A missing fact
+        renders as the same dash an empty one does.
+        """
+        self.ensure_one()
+
+        def _text(record, *names):
+            for name in names:
+                try:
+                    field = record._fields[name] if name in record._fields else None
+                    value = record[name] if field else False
+                except Exception:
+                    continue
+                if not value:
+                    continue
+                # A many2one answers with its display name.
+                if hasattr(value, '_name'):
+                    return value.display_name
+                # A selection answers with its KEY, and a key is exactly the
+                # kind of internal word an employee must never be handed: the
+                # contract type printed as "indefinite" rather than
+                # "Indefinite-term". Ask the field for the label it shows on
+                # screen, in the reader's own language.
+                if field and field.type == 'selection':
+                    labels = dict(field._description_selection(record.env))
+                    return labels.get(value) or str(value)
+                return str(value)
+            return ''
+
+        def _date(record, *names):
+            for name in names:
+                try:
+                    value = record[name] if name in record._fields else False
+                except Exception:
+                    continue
+                if value:
+                    return value.strftime('%d/%m/%Y')
+            return ''
+
+        employee = self.employee_id
+        contract = self.contract_id or employee.contract_id
+        return {
+            'position': _text(employee, 'job_title', 'job_id',
+                              'position_name', 'job_title_text'),
+            'contract_type': _text(contract, 'contract_type_id',
+                                   'vietnam_contract_type', 'structure_type_id'),
+            # The day they started with the company, not the day this contract
+            # did — a renewed contract must not reset somebody's service date.
+            'date_joined': (_date(employee, 'date_of_joining',
+                                  'first_contract_date')
+                            or _date(contract, 'date_start')),
+            'date_left': _date(employee, 'departure_date') or _date(contract, 'date_end'),
+        }
+
     def _themed_payslip_render(self):
         """Build the F9-scheme render tree for the themed QWeb report, read-only:
         sections by ``payslip_identifier`` ordered by sequence, lines by
@@ -1246,8 +1306,33 @@ class HrPayslipFormula(models.Model):
         ) if config else Section.browse()
         currency = (config.currency_id.symbol if (config and config.currency_id)
                     else (self.company_id.currency_id.symbol if self.company_id else ''))
+        # What a template may quote by name.
+        #
+        # A payslip LINE is the first answer, and for anything that prints it is
+        # the only one. But a payslip often has to state a figure that is not a
+        # payment at all — the standard working days, the days actually worked,
+        # the contract salary the pro-rata was taken from, how many dependants
+        # the tax relief counted. None of those may become a line: a line has a
+        # `total` and every roll-up on the system sums it, which is how a bank
+        # account number once contributed 1,084,804,462,467,690 to a tenant's
+        # gross (VALUEKIND P2, in `_create_payslip_lines_from_formulas`).
+        #
+        # So the run's own computed values are the fallback. They are already
+        # stored on the slip, they hold every rule the scheme evaluated, and
+        # reading them creates nothing. `dsal` still wins wherever it has an
+        # entry, so no printed figure changes.
+        computed_values = {}
+        if config and self.formula_computed_values:
+            try:
+                parsed = json.loads(self.formula_computed_values)
+                if isinstance(parsed, dict):
+                    computed_values = parsed
+            except (TypeError, ValueError):
+                computed_values = {}
         values_by_rule = {
-            rule.id: dsal.get(rule.code) for rule in config.rule_ids
+            rule.id: (dsal[rule.code] if rule.code in dsal
+                      else computed_values.get(rule.code))
+            for rule in config.rule_ids
         } if config else {}
         rich_blocks = []
         if config:
@@ -1343,6 +1428,16 @@ class HrPayslipFormula(models.Model):
         }
         meta['period'] = ('From %s to %s' % (meta['date_from'], meta['date_to'])
                           if meta['date_from'] or meta['date_to'] else '')
+        meta.update(self._payslip_meta_employment())
+        # The period as a title writes it. Taken from the period END: a run for
+        # 01–30 June is June's payslip, whichever day it was produced on.
+        anchor = self.date_to or self.date_from
+        if anchor:
+            meta['month'] = '%02d' % anchor.month
+            meta['year'] = str(anchor.year)
+            meta['month_name'] = format_date(
+                self.env, anchor, date_format='LLLL').upper()
+        meta['company_name'] = (self.company_id.name or '') if self.company_id else ''
         return {
             'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
             'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),

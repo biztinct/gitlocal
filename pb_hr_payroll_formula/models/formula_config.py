@@ -650,8 +650,28 @@ class HrFormulaConfig(models.Model):
     # sanitizer can remain fully enabled without losing the component link.
     _payslip_component_token_re = re.compile(
         r'\{\{pb_component:(\d+):(label|value|both)\}\}')
+    #: Facts a payslip may state about the person and the period, none of which
+    #: is a pay COMPONENT. Kept as one list because four places have to agree on
+    #: it: this pattern, the meta dictionary the payslip builds
+    #: (`hr.payslip._themed_payslip_render`), and the Payslip Studio's editor —
+    #: which DELETES any token it does not recognise when the document is saved.
+    #: Add a key here and in `PS_META_KEYS` in the Studio's JS, or a template
+    #: that prints it will lose it the first time somebody opens it.
+    PAYSLIP_META_KEYS = (
+        'employee_name', 'employee_id', 'department',
+        'date_from', 'date_to', 'period',
+        # The employment facts a statutory payslip is usually required to
+        # carry: what they do, on what kind of contract, and between which
+        # dates. Blank where the record does not say.
+        'position', 'contract_type', 'date_joined', 'date_left',
+        # The period as a person writes it — "07", "2026", "JULY" — so a
+        # payslip can title itself without anybody typing the month in.
+        'month', 'month_name', 'year',
+        # The employer, for a payslip that prints its own letterhead.
+        'company_name',
+    )
     _payslip_meta_token_re = re.compile(
-        r'\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}')
+        r'\{\{pb_meta:(%s)\}\}' % '|'.join(PAYSLIP_META_KEYS))
 
     def _normalise_payslip_content_tokens(self, html_value):
         """Keep only canonical tokens belonging to this configuration."""

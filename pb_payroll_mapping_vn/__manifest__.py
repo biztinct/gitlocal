@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Vietnam — Record Mapping',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Typed employee/contract fields for the Vietnam pay scheme, plus '
                'the mapping that wires every steady column onto them.',
@@ -24,6 +24,13 @@ This module supplies the missing half of that arrangement:
   and deductions — as `hr.contract.advantage.template` rows keyed on the
   scheme's own component code, which is how the payroll engine already finds
   them. The monthly file carries no money at all.
+* **The statutory payslip** — `hr.formula.config.pb_apply_vn_payslip_layout()`
+  writes the Vietnamese payslip as a complete document onto the configuration:
+  employee information, working days, gross income, the compulsory insurance and
+  union deductions, personal income tax and the net, bilingual throughout, with
+  every figure a live marker rather than a typed number. The letterhead and the
+  registered address are the caller's to supply, because a legal entity's
+  registered name is rarely the name the database calls it.
 * **`hr.formula.config.pb_apply_vn_mapping()`** — applies the whole profile to
   one configuration: it creates the `hr.payslip.import.mapping` rows, adds the
   bank and employee-code columns if the scheme has none, and corrects the value

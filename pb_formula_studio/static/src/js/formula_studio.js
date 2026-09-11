@@ -54,6 +54,30 @@ const PEOPLE_GROUP = "People & Data";
 // employee's pay. Must match `EMPLOYER_GROUP` in pb_formula_studio.py.
 const EMPLOYER_GROUP = "Employer contributions";
 const GROUPS = ["Inputs", "Earnings", "Deductions", EMPLOYER_GROUP, "Totals", PEOPLE_GROUP];
+
+// The facts a payslip document may state about the person and the period, in
+// the order the picker offers them. One list, because saving the document
+// DELETES every token not named here — a key added to `PAYSLIP_META_KEYS` in
+// hr_payroll_formula's formula_config.py but forgotten here would print
+// correctly until the first time somebody opened the editor, and then vanish.
+const PS_META_FIELDS = [
+    { key: "employee_name", name: "Employee name", badge: "NAME", source: "Employee record" },
+    { key: "employee_id", name: "Employee ID", badge: "ID", source: "Employee record" },
+    { key: "position", name: "Position", badge: "ROLE", source: "Employee record" },
+    { key: "department", name: "Department", badge: "DEPT", source: "Employee record" },
+    { key: "contract_type", name: "Contract type", badge: "TYPE", source: "Employment contract" },
+    { key: "date_joined", name: "Starting date", badge: "JOIN", source: "Employee record" },
+    { key: "date_left", name: "Leaving date", badge: "LEFT", source: "Employee record" },
+    { key: "period", name: "Pay period", badge: "PER", source: "Payslip period" },
+    { key: "date_from", name: "Period start", badge: "FROM", source: "Payslip period" },
+    { key: "date_to", name: "Period end", badge: "TO", source: "Payslip period" },
+    { key: "month", name: "Month number", badge: "MM", source: "Payslip period" },
+    { key: "month_name", name: "Month name", badge: "MONTH", source: "Payslip period" },
+    { key: "year", name: "Year", badge: "YYYY", source: "Payslip period" },
+    { key: "company_name", name: "Company name", badge: "CO", source: "Company record" },
+];
+const PS_META_KEYS = PS_META_FIELDS.map((f) => f.key);
+const PS_META_TOKEN_RE = () => new RegExp(`\\{\\{pb_meta:(${PS_META_KEYS.join("|")})\\}\\}`, "g");
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", employer: "#7C3AED", total: "#059669", people: "#64748B" };
 
 // COLROLES P2 — the role vocabulary moved DOWN to `mapping/mapping_roles.js` in
@@ -5155,7 +5179,7 @@ export class PbFormulaStudio extends Component {
     }
     _psRichMetaKeys(htmlValue) {
         const keys = [];
-        const re = /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g;
+        const re = PS_META_TOKEN_RE();
         for (const match of String(htmlValue || "").matchAll(re)) {
             if (!keys.includes(match[1])) keys.push(match[1]);
         }
@@ -5183,14 +5207,7 @@ export class PbFormulaStudio extends Component {
         return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Live payroll component ${code}: ${name} · inserts ${modeLabel}">${identity}${preview}<button type="button" tabindex="-1" data-ps-remove-token="1" title="Remove ${name}">×</button></span>`;
     }
     _psRichMetaField(key) {
-        return [
-            { key: "employee_name", name: "Employee name", badge: "NAME", source: "Employee record" },
-            { key: "employee_id", name: "Employee ID", badge: "ID", source: "Employee record" },
-            { key: "department", name: "Department", badge: "DEPT", source: "Employee record" },
-            { key: "period", name: "Pay period", badge: "PER", source: "Payslip period" },
-            { key: "date_from", name: "Period start", badge: "FROM", source: "Payslip period" },
-            { key: "date_to", name: "Period end", badge: "TO", source: "Payslip period" },
-        ].find(field => field.key === key);
+        return PS_META_FIELDS.find(field => field.key === key);
     }
     _psRichMetaTokenHtml(fieldOrKey) {
         const field = typeof fieldOrKey === "string" ? this._psRichMetaField(fieldOrKey) : fieldOrKey;
@@ -5206,12 +5223,11 @@ export class PbFormulaStudio extends Component {
                 return component ? this._psRichTokenHtml(component, mode) : "";
             });
         return components.replace(
-            /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g,
+            PS_META_TOKEN_RE(),
             (_token, key) => this._psRichMetaTokenHtml(key));
     }
     get psRichMetaFields() {
-        const fields = ["employee_name", "employee_id", "department", "period", "date_from", "date_to"]
-            .map(key => this._psRichMetaField(key));
+        const fields = PS_META_FIELDS;
         const query = (this.state.psRichQuery || "").trim().toLowerCase();
         return query ? fields.filter(field =>
             [field.name, field.key, field.source].some(value =>
@@ -5669,8 +5685,7 @@ export class PbFormulaStudio extends Component {
         }
         for (const token of clone.querySelectorAll(".ps-meta-token")) {
             const key = token.dataset.psMeta || "";
-            const marker = ["employee_name", "employee_id", "department", "date_from", "date_to", "period"].includes(key)
-                ? `{{pb_meta:${key}}}` : "";
+            const marker = PS_META_KEYS.includes(key) ? `{{pb_meta:${key}}}` : "";
             token.replaceWith(document.createTextNode(marker));
         }
         // Browsers implement fontName with the legacy <font face="…"> tag.

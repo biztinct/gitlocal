@@ -4,12 +4,33 @@
          and the portal binding stay byte-untouched. Odoo 19 explicit
          <record model="ir.actions.report"> form (NEVER the removed <report> shortcut),
          cloning the F6 shadow-certificate wiring. -->
+    <!-- Page setup. The default A4 format reserves 52mm at the top for a page
+         header, and this payslip has none: both branches below draw their own
+         letterhead inside the page. Left as it was, every payslip printed with
+         an empty band a fifth of the page deep before anything appeared —
+         visible the first time a customer's own template was reproduced
+         (Rize, 2026-09-11). Margins are the paper's, not the design's; the
+         document keeps its own spacing inside them. -->
+    <record id="paperformat_payslip_themed" model="report.paperformat">
+        <field name="name">Payslip (themed)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_spacing">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
     <record id="action_report_payslip_themed" model="ir.actions.report">
         <field name="name">Print Payslip (Themed)</field>
         <field name="model">hr.payslip</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">pb_hr_payroll_formula.payslip_themed</field>
         <field name="report_file">pb_hr_payroll_formula.payslip_themed</field>
+        <field name="paperformat_id" ref="paperformat_payslip_themed"/>
         <field name="binding_model_id" ref="model_hr_payslip"/>
         <field name="binding_type">report</field>
     </record>
@@ -18,7 +39,12 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-set="ps" t-value="o._themed_payslip_render()"/>
-                <t t-call="web.external_layout">
+                <!-- basic_layout, not external_layout: this payslip supplies its
+                     own letterhead in BOTH branches (a reconstructed document
+                     carries the customer's, and the themed branch draws the
+                     brand header a few lines down). The external layout added a
+                     second, usually empty, company header above them. -->
+                <t t-call="web.basic_layout">
                     <div class="page" t-attf-style="font-family:{{ ps['font_stack'] }}; color:#1E1B2E;">
                         <style>
                             .pb-ps-rich p { margin: 0 0 5px; }
