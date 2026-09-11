@@ -1,8 +1,8 @@
 /** @odoo-module **/
 /* Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
  *
- * Client-side half of the white-label layer. Two global seams replace what
- * would otherwise be ~30 brittle per-component patches:
+ * Client-side half of the white-label layer. Three global seams replace what
+ * would otherwise be ~100 brittle per-call-site edits:
  *
  *  1. TranslatedString.prototype.valueOf — every `_t(...)` in every module.
  *     web_debranding cannot reach these: its only surviving hook rewrites the
@@ -16,11 +16,22 @@
  *     (`static/src/xml/**`), e.g. the scoped-app install page and the import
  *     wizard's "Odoo Field" column header.
  *
+ *  3. notificationService.add — every toast, message AND title, at the last
+ *     moment before it is drawn. Seam 1 rewrites a translation TEMPLATE and
+ *     deliberately never its interpolated arguments (so a partner genuinely
+ *     called "Odoo Ltd" survives a rename), which means the ~64 legacy call
+ *     sites that build `_('Error: %s') % str(e)` put a raw Python failure —
+ *     vendor name, module path and all — straight on the screen. Wrapping the
+ *     service catches all of them, every future one, and the stock
+ *     error_notifications messages besides. See ERRORS E2-3.
+ *
  * The rewrite rules mirror biz_debrand/models/brand.py character for
  * character; keep the two in step.
  */
 import { TranslatedString } from "@web/core/l10n/translation";
 import { registerTemplateProcessor } from "@web/core/templates";
+import { notificationService } from "@web/core/notifications/notification_service";
+import { patch } from "@web/core/utils/patch";
 
 const DEFAULT_BRAND = "BizApp";
 const DEFAULT_WEBSITE = "https://example.com";
@@ -41,6 +52,7 @@ const SA = /\bodoo\s+s\.?\s?a\.?(?![\w.])/gi;
 // so it works on browsers without lookbehind support. The guards keep code
 // intact: `odoo.define`, `odoo[`, `odoo =`, `@odoo-module`, `/odoo/`.
 const WORD = /(^|[^.\w/-])odoo(?![\w/[-])(?!\.\w)(?!\s*=)/gi;
+
 
 /**
  * Read the brand injected by biz_debrand's web.layout inherit. Synchronous and
@@ -174,4 +186,85 @@ registerTemplateProcessor((doc) => {
     } catch (error) {
         console.warn("biz_debrand: template debranding skipped", error);
     }
+});
+
+// ---------------------------------------------------------------------------
+// Seam 3 — every notification, on its way to the screen
+//
+// Seam 1 rewrites the translation template, never the interpolated argument.
+// That is deliberate and must stay that way — it is what keeps a record whose
+// own name contains the vendor word intact. The cost is that
+// `_('Error: %s') % str(e)`, the shape used at ~64 legacy call sites, hands a
+// raw Python failure to `display_notification` and the template seam sees
+// nothing wrong with it.
+//
+// Rather than edit those call sites (and the next one somebody writes), the
+// notification service itself is wrapped: whatever the message and title are
+// by the time they are handed over, they pass the same rules every other seam
+// uses. One place, no churn, and it covers core's own error_notifications
+// toasts too.
+// ---------------------------------------------------------------------------
+
+/**
+ * Debrand a value that may not be a plain string.
+ *
+ * A Markup result is a String SUBCLASS carrying already-escaped HTML. It is
+ * left untouched rather than flattened into a primitive — the same guard the
+ * valueOf patch above uses, for the same reason.
+ *
+ * @param {*} value
+ * @returns {*}
+ */
+function debrandNotificationValue(value) {
+    return typeof value === "string" ? debrandText(value) : value;
+}
+
+/**
+ * Rewrite the prose fields of a notification options object.
+ *
+ * Returns the SAME object when nothing changed, so the common case allocates
+ * nothing and a caller that relies on identity is not surprised.
+ *
+ * @param {object|undefined} options
+ * @returns {object|undefined}
+ */
+function debrandNotificationOptions(options) {
+    if (!options || typeof options !== "object") {
+        return options;
+    }
+    const title = debrandNotificationValue(options.title);
+    const message = debrandNotificationValue(options.message);
+    if (title === options.title && message === options.message) {
+        return options;
+    }
+    const next = Object.assign({}, options);
+    next.title = title;
+    next.message = message;
+    return next;
+}
+
+patch(notificationService, {
+    start() {
+        const service = super.start(...arguments);
+        const originalAdd = service.add;
+        service.add = function (message, options) {
+            let nextMessage = debrandNotificationValue(message);
+            // Some callers pass a single options-shaped object instead of
+            // (message, options). Reach its prose too rather than assume the
+            // first argument is always the text.
+            if (
+                nextMessage &&
+                typeof nextMessage === "object" &&
+                !(nextMessage instanceof String)
+            ) {
+                nextMessage = debrandNotificationOptions(nextMessage);
+            }
+            return originalAdd.call(
+                this,
+                nextMessage,
+                options === undefined ? options : debrandNotificationOptions(options)
+            );
+        };
+        return service;
+    },
 });
