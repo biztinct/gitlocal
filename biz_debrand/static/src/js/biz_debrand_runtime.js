@@ -53,6 +53,23 @@ const SA = /\bodoo\s+s\.?\s?a\.?(?![\w.])/gi;
 // intact: `odoo.define`, `odoo[`, `odoo =`, `@odoo-module`, `/odoo/`.
 const WORD = /(^|[^.\w/-])odoo(?![\w/[-])(?!\.\w)(?!\s*=)/gi;
 
+// Whole sentences that must be REPLACED, not word-swapped, and therefore run
+// before every rule above. They point the reader at a vendor SERVICE the brand
+// does not operate, so rewriting the domain would invent a help desk that does
+// not answer — worse than leaving the vendor name in. Mirrors PHRASES in
+// models/brand.py. See ERRORS E2-4.
+const PHRASES = [
+    // o_spreadsheet's own crash line, which reaches the screen through the
+    // library's setTranslationMethod(_t) bridge and so through seam 1.
+    [
+        /An unexpected error occurred\.\s*Submit a support ticket at (?:www\.)?odoo\.com\/help\.?/gi,
+        "Something went wrong on our side. If it keeps happening, let your administrator know.",
+    ],
+    [
+        /Submit a support ticket at (?:www\.)?odoo\.com\/help\.?/gi,
+        "If it keeps happening, let your administrator know.",
+    ],
+];
 
 /**
  * Read the brand injected by biz_debrand's web.layout inherit. Synchronous and
@@ -89,7 +106,11 @@ export function debrandText(text) {
     if (!text || typeof text !== "string" || !HAS_ODOO.test(text)) {
         return text;
     }
-    return text
+    let out = text;
+    for (const [pattern, replacement] of PHRASES) {
+        out = out.replace(pattern, replacement);
+    }
+    return out
         .replace(DOC_URL, docUrl)
         .replace(DOMAIN, (m, prefix) => prefix + host)
         .replace(BOT, brand.name)

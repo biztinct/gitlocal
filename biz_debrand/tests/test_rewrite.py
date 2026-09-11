@@ -92,6 +92,29 @@ class TestRewriteRules(TransactionCase):
         ):
             self.assertEqual(debrand_url(url, WEBSITE), url, url)
 
+    def test_vendor_support_line_is_replaced_not_repointed(self):
+        """ERRORS E2-4 — o_spreadsheet's own crash line.
+
+        The generic domain rule would turn `odoo.com/help` into
+        `payobook.com/help`, a help desk nobody runs. A sentence that points at
+        a vendor SERVICE has to be replaced whole, in the same voice as the
+        breakdown screens.
+        """
+        out = debrand_text(
+            "An unexpected error occurred. Submit a support ticket at odoo.com/help.",
+            BRAND, WEBSITE,
+        )
+        self.assertEqual(
+            out,
+            "Something went wrong on our side. "
+            "If it keeps happening, let your administrator know.",
+        )
+        self.assertNotIn("help", out)
+        self.assertNotIn("payobook.com", out)
+        self.assertNotIn("odoo", out.lower())
+        # Idempotent: the replacement itself has nothing left to match.
+        self.assertEqual(debrand_text(out, BRAND, WEBSITE), out)
+
     def test_no_op_returns_same_object(self):
         # Callers rely on identity to detect "nothing changed" and skip a write.
         source = "nothing to see here"

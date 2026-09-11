@@ -42,6 +42,34 @@ WORD_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Whole sentences that must be REPLACED, not word-swapped, and therefore run
+# before every rule above. They point the reader at a vendor SERVICE the brand
+# does not operate, so rewriting the domain would invent a help desk that never
+# answers — worse than leaving the vendor name in place. Mirrored character for
+# character by PHRASES in the JS runtime. See ERRORS E2-4.
+PHRASES = [
+    # o_spreadsheet's own crash line. The library routes its strings through
+    # Odoo's _t (spreadsheet/static/src/o_spreadsheet/odoo_module.js), so the
+    # sentence reaches a screen through the JS seam; the rule lives here too so
+    # the two sides stay identical.
+    (
+        re.compile(
+            r"An unexpected error occurred\.\s*"
+            r"Submit a support ticket at (?:www\.)?odoo\.com/help\.?",
+            re.IGNORECASE,
+        ),
+        "Something went wrong on our side. "
+        "If it keeps happening, let your administrator know.",
+    ),
+    (
+        re.compile(
+            r"Submit a support ticket at (?:www\.)?odoo\.com/help\.?",
+            re.IGNORECASE,
+        ),
+        "If it keeps happening, let your administrator know.",
+    ),
+]
+
 # db name -> (brand, website); refreshed on registry load and on save.
 _BRAND_CACHE = {}
 
@@ -77,7 +105,10 @@ def debrand_text(text, brand, website):
         return text
     host = website_host(website)
     doc_url = (website or DEFAULT_WEBSITE).rstrip("/") + "/documentation/"
-    out = DOC_URL_RE.sub(lambda m: doc_url, text)
+    out = text
+    for pattern, replacement in PHRASES:
+        out = pattern.sub(replacement, out)
+    out = DOC_URL_RE.sub(lambda m: doc_url, out)
     out = DOMAIN_RE.sub(lambda m: host, out)
     out = BOT_RE.sub(lambda m: brand, out)
     out = SA_RE.sub(lambda m: brand, out)
