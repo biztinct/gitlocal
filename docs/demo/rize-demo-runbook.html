@@ -1,0 +1,955 @@
+<title>Rize Demo Run Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ------------------------------------------------------------------
+   Rize demo run sheet — a stage manager's cue sheet for a payroll demo.
+   Palette is a surveyor's-notebook green: chosen neutrals with a green
+   bias, one deep teal for "go here", one burnt orange for "this is the
+   moment". Zilla Slab carries the headings, IBM Plex Sans the prose,
+   IBM Plex Mono every number, code and cue mark.
+   ------------------------------------------------------------------ */
+:root {
+  --paper:      #F5F7F4;
+  --surface:    #FFFFFF;
+  --surface-2:  #EDF1EE;
+  --ink:        #14211D;
+  --ink-2:      #3A4A44;
+  --muted:      #6C7F79;
+  --rule:       #D6DFDB;
+  --accent:     #0E6E5B;
+  --accent-soft:#DCEDE7;
+  --flag:       #B4511A;
+  --flag-soft:  #F8E7DA;
+  --shadow:     0 1px 2px rgba(20,33,29,.06), 0 8px 24px -16px rgba(20,33,29,.28);
+
+  --step: clamp(1rem, .84rem + .78vw, 1.5rem);
+  --measure: 66ch;
+  color-scheme: light dark;
+}
+/* Dark, for the viewer whose system says so and who has not overridden it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0D1513;
+    --surface:    #15201D;
+    --surface-2:  #1B2724;
+    --ink:        #E7EEEA;
+    --ink-2:      #B6C5BF;
+    --muted:      #8DA29B;
+    --rule:       #27352F;
+    --accent:     #47B99E;
+    --accent-soft:#14312B;
+    --flag:       #E8894F;
+    --flag-soft:  #3A2416;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:      #0D1513;
+  --surface:    #15201D;
+  --surface-2:  #1B2724;
+  --ink:        #E7EEEA;
+  --ink-2:      #B6C5BF;
+  --muted:      #8DA29B;
+  --rule:       #27352F;
+  --accent:     #47B99E;
+  --accent-soft:#14312B;
+  --flag:       #E8894F;
+  --flag-soft:  #3A2416;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.62 "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 {
+  font-family: "Zilla Slab", Georgia, serif;
+  text-wrap: balance;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -.005em;
+}
+p { margin: 0; }
+a { color: var(--accent); }
+
+.mono, .cue, .mark, td.num, .code {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.lbl {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .68rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- shell */
+.wrap {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 var(--step) 5rem;
+}
+.cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+@media (min-width: 1040px) {
+  .cols { grid-template-columns: 15.5rem minmax(0, 1fr); gap: 3.25rem; }
+  .rail { position: sticky; top: 1.5rem; }
+}
+
+/* ----------------------------------------------------------- head */
+.masthead {
+  border-bottom: 2px solid var(--ink);
+  padding: 2.75rem 0 1.25rem;
+  margin-bottom: 2.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.masthead h1 { font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.3rem); font-weight: 700; }
+.masthead .sub {
+  color: var(--ink-2);
+  max-width: 46ch;
+  margin-top: .6rem;
+  font-size: 1.02rem;
+}
+.stamp {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  font-size: .78rem;
+}
+.stamp .big { font-size: 1.5rem; font-weight: 500; color: var(--ink); }
+
+/* ----------------------------------------------------------- rail */
+.rail ol {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rule);
+}
+.rail li { border-bottom: 1px solid var(--rule); }
+.rail a {
+  display: grid;
+  grid-template-columns: 2.1rem 1fr auto;
+  gap: .55rem;
+  align-items: baseline;
+  padding: .5rem .15rem;
+  text-decoration: none;
+  color: var(--ink-2);
+  font-size: .875rem;
+}
+.rail a:hover { color: var(--accent); background: var(--accent-soft); }
+.rail a .n { font-size: .74rem; color: var(--muted); }
+.rail a .t { line-height: 1.3; }
+.rail a .m { font-size: .72rem; color: var(--muted); }
+.rail a.is-peak { color: var(--flag); font-weight: 600; }
+.rail .railcap { margin-top: 1.4rem; }
+
+/* ----------------------------------------------------------- acts */
+.act {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--surface);
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 1.5rem;
+  overflow: hidden;
+}
+.act > header {
+  display: grid;
+  grid-template-columns: 3.1rem minmax(0, 1fr) auto;
+  gap: .5rem 1rem;
+  align-items: baseline;
+  padding: 1.05rem 1.25rem .9rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-2);
+}
+.act > header .cue {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1;
+}
+.act > header h2 { font-size: 1.28rem; font-weight: 600; }
+.act > header .who {
+  display: block;
+  margin-top: .3rem;
+  font-size: .82rem;
+  color: var(--muted);
+}
+.act > header .mark { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+
+.lanes { display: flex; flex-direction: column; }
+.lane {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .3rem;
+  padding: .95rem 1.25rem;
+  border-bottom: 1px dashed var(--rule);
+}
+.lane:last-child { border-bottom: 0; }
+@media (min-width: 680px) {
+  .lane { grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+  .lane .lbl { padding-top: .28rem; }
+}
+.lane p, .lane ul { max-width: var(--measure); }
+.lane ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .35rem; }
+.lane ol { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .5rem; max-width: var(--measure); }
+.say { font-style: italic; color: var(--ink-2); }
+.say::before { content: "“"; }
+.say::after { content: "”"; }
+
+.path {
+  display: inline-flex;
+  align-items: center;
+  gap: .38rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .82rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: .14rem .5rem;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.notice { color: var(--flag); font-weight: 500; }
+
+/* ------------------------------------------------------- the peak */
+.act.peak { border: 2px solid var(--flag); }
+.act.peak > header { background: var(--flag-soft); }
+.act.peak > header .cue { color: var(--flag); }
+
+/* ---------------------------------------------------------- misc */
+.panel {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+}
+.panel.warn { border-left-color: var(--flag); }
+.panel h3 { font-size: 1.05rem; margin-bottom: .45rem; }
+.panel p + p { margin-top: .5rem; }
+.panel p, .panel ul { max-width: var(--measure); color: var(--ink-2); }
+.panel ul { margin: .5rem 0 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .35rem; }
+
+.tablewrap { overflow-x: auto; margin-top: .6rem; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 34rem; }
+caption { text-align: left; padding-bottom: .5rem; }
+th, td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .68rem; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--muted); font-weight: 500;
+  border-bottom: 1px solid var(--ink);
+}
+td.num, th.num { text-align: right; }
+tbody tr:last-child td { border-bottom: 0; }
+.code { font-size: .84rem; color: var(--accent); }
+
+.section-head {
+  display: flex; align-items: baseline; gap: 1rem;
+  margin: 2.75rem 0 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--ink);
+}
+.section-head h2 { font-size: 1.5rem; font-weight: 600; }
+.section-head .lbl { margin-left: auto; }
+
+.cast td:first-child { white-space: nowrap; }
+.cast .code { display: block; }
+
+footer.end {
+  margin-top: 3rem; padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted); font-size: .84rem;
+  display: flex; flex-wrap: wrap; gap: .5rem 2rem; justify-content: space-between;
+}
+
+a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <span class="lbl">Run sheet · Rize Farms · Vietnam</span>
+      <h1>Rize Demo Run Sheet</h1>
+      <p class="sub">Twelve cues, five people, one live pay run. Everything below is already
+        loaded on <span class="code">rize.payobook.com</span> and can be taken back out
+        afterwards.</p>
+    </div>
+    <div class="stamp mono">
+      <span class="big">≈ 45 min</span>
+      <span class="lbl">total running time</span>
+    </div>
+  </div>
+
+  <div class="cols">
+
+    <!-- ------------------------------------------------ rail -->
+    <nav class="rail" aria-label="Running order">
+      <span class="lbl">Running order</span>
+      <ol>
+        <li><a href="#cue-0"><span class="n mono">00</span><span class="t">Before they arrive</span><span class="m mono">−10</span></a></li>
+        <li><a href="#cue-1"><span class="n mono">01</span><span class="t">The five people</span><span class="m mono">2′</span></a></li>
+        <li><a href="#cue-2"><span class="n mono">02</span><span class="t">Joining &amp; orientation</span><span class="m mono">5′</span></a></li>
+        <li><a href="#cue-3"><span class="n mono">03</span><span class="t">Assets</span><span class="m mono">9′</span></a></li>
+        <li><a href="#cue-4"><span class="n mono">04</span><span class="t">Probation</span><span class="m mono">14′</span></a></li>
+        <li><a href="#cue-5"><span class="n mono">05</span><span class="t">Performance plan</span><span class="m mono">18′</span></a></li>
+        <li><a href="#cue-6"><span class="n mono">06</span><span class="t">Contract decision</span><span class="m mono">22′</span></a></li>
+        <li><a href="#cue-7"><span class="n mono">07</span><span class="t">Exit &amp; asset return</span><span class="m mono">25′</span></a></li>
+        <li><a href="#cue-8"><span class="n mono">08</span><span class="t">Pay &amp; benefits</span><span class="m mono">28′</span></a></li>
+        <li><a href="#cue-9"><span class="n mono">09</span><span class="t">Recognition</span><span class="m mono">31′</span></a></li>
+        <li><a href="#cue-10"><span class="n mono">10</span><span class="t">Suppliers &amp; access</span><span class="m mono">33′</span></a></li>
+        <li><a href="#cue-11"><span class="n mono">11</span><span class="t">Budget</span><span class="m mono">35′</span></a></li>
+        <li><a class="is-peak" href="#cue-12"><span class="n mono">12</span><span class="t">Run the payroll</span><span class="m mono">38′</span></a></li>
+      </ol>
+      <div class="railcap">
+        <span class="lbl">Afterwards</span>
+        <ol>
+          <li><a href="#reset"><span class="n mono">—</span><span class="t">Put it back</span><span class="m mono"></span></a></li>
+          <li><a href="#faq"><span class="n mono">—</span><span class="t">If they ask</span><span class="m mono"></span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- ------------------------------------------------ main -->
+    <main>
+
+      <!-- 0 ------------------------------------------------- -->
+      <section class="act" id="cue-0">
+        <header>
+          <span class="cue">00</span>
+          <div>
+            <h2>Before they arrive</h2>
+            <span class="who">Ten minutes, on your own</span>
+          </div>
+          <span class="mark">−10′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Check</span>
+            <ul>
+              <li>Open <span class="code">rize.payobook.com</span> and sign in. Leave it on <b>Home</b>.</li>
+              <li>Have <b>Rize Vietnam - demo pay data.xlsx</b> on the desktop of the machine you are presenting from. Do not open it in Excel during the demo — you only need to upload it.</li>
+              <li>Search People for <b>Demo</b>. Five people should come back, DEMO001 to DEMO005. If they do not, the demo data is not loaded.</li>
+            </ul>
+          </div>
+          <div class="lane">
+            <span class="lbl">Clear away</span>
+            <p>There is an unfinished <b>Payroll June 2026</b> run on the system with three
+              payslips in it. Delete it, or at least do not open it — the pay-data file is for
+              the current month and a June run will not line up with it.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Set the frame</span>
+            <p class="say">Everything you are about to see is one company, five people and one
+              month. The people are made up. The rules underneath them are the real Vietnamese
+              ones.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1 ------------------------------------------------- -->
+      <section class="act" id="cue-1">
+        <header>
+          <span class="cue">01</span>
+          <div>
+            <h2>The five people</h2>
+            <span class="who">Set up the whole demo in two minutes</span>
+          </div>
+          <span class="mark">2′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">People → Employees</span> and search <b>Demo</b>.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Say this</span>
+            <p class="say">Rather than show you a hundred empty screens, we gave five people one
+              story each. Every screen after this is one of these five.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">The cast</span>
+            <div class="tablewrap">
+              <table class="cast">
+                <thead>
+                  <tr><th>Who</th><th>Role</th><th>Their story</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Nguyen Thi Mai<span class="code">DEMO001</span></td>
+                    <td>Agronomist</td>
+                    <td>Three days in. Laptop being sorted, buddy assigned, trial period just started.</td>
+                  </tr>
+                  <tr>
+                    <td>Tran Van Hung<span class="code">DEMO002</span></td>
+                    <td>Field operations supervisor</td>
+                    <td>Trial period ends in 18 days. Colleagues have been asked; two have answered.</td>
+                  </tr>
+                  <tr>
+                    <td>Le Thi Hoa<span class="code">DEMO003</span></td>
+                    <td>Sales executive</td>
+                    <td>Two years in. Week five of a six-week performance plan.</td>
+                  </tr>
+                  <tr>
+                    <td>Pham Minh Quan<span class="code">DEMO004</span></td>
+                    <td>Field technician</td>
+                    <td>Fixed-term contract ends in 45 days. Extension refused, so he is leaving.</td>
+                  </tr>
+                  <tr>
+                    <td>Vo Thanh Son<span class="code">DEMO005</span></td>
+                    <td>Country manager</td>
+                    <td>Hired from abroad, so the expatriate rules apply. Manages the other four.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 ------------------------------------------------- -->
+      <section class="act" id="cue-2">
+        <header>
+          <span class="cue">02</span>
+          <div>
+            <h2>Joining and orientation</h2>
+            <span class="who">Nguyen Thi Mai · DEMO001</span>
+          </div>
+          <span class="mark">5′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Lifecycle → New joiners</span> and open her joining checklist.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>The checklist itself. The first steps are ticked because their day has passed; the rest are dated forward from her joining date.</li>
+              <li>Her <b>buddy</b>. Point out that the system checked the buddy was out of probation, permanent and had six months' service before offering her.</li>
+              <li>The <b>orientation session</b> she has been put into. Nobody booked it; her joining date did.</li>
+              <li>Her <b>HR business partner</b>, filled in by rule, so she has a name to contact on day one.</li>
+              <li>The <b>30, 60 and 90 day</b> conversations already in the diary, and the seven-day check that has already gone out to her.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">Nobody typed any of this. One date — her start date — produced a
+              checklist, a buddy, a session, a partner and five diary entries.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 ------------------------------------------------- -->
+      <section class="act" id="cue-3">
+        <header>
+          <span class="cue">03</span>
+          <div>
+            <h2>Assets</h2>
+            <span class="who">The register, then Mai's laptop</span>
+          </div>
+          <span class="mark">9′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">People → Assets</span></p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>Fourteen items in one register: laptops, a phone, a corporate card, a SIM — and
+                the <b>email accounts and system logins</b>, which are assets too and are the ones
+                that get forgotten at exit.</li>
+              <li>The <b>statuses</b>. One laptop spare, one with the supplier for a screen fault,
+                one passed on rather than bought.</li>
+              <li>Open any laptop and show <b>cost in đồng and in dollars</b>, the warranty date,
+                the invoice reference and the full handover history.</li>
+              <li>Now Mai's <b>laptop request</b>. It was raised by her joining checklist. It is
+                sitting at "spare found, manager agreed, not yet handed over".</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">The spare was checked before anything was bought — which is exactly
+              what their own requirement asks for.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 ------------------------------------------------- -->
+      <section class="act" id="cue-4">
+        <header>
+          <span class="cue">04</span>
+          <div>
+            <h2>Probation</h2>
+            <span class="who">Tran Van Hung · DEMO002</span>
+          </div>
+          <span class="mark">14′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Lifecycle → Probation</span> and open his review.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>Where it is: <b>feedback running</b>. The review started itself, counted back
+                from his trial end date.</li>
+              <li>Four colleagues were nominated. <b>Two have answered, two have not</b>, and the
+                window shuts in two days.</li>
+              <li>Open one of the answers. Four ratings and two written questions, about work
+                rather than about personality.</li>
+              <li>The manager's one-to-one is already in the diary for after the window shuts.</li>
+              <li>On his own record, his <b>trial period status</b> and the date it ends — visible
+                to HR, to his manager and to him.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">Also worth a look</span>
+            <p>Mai's mandatory training sits on her record and has to be finished before her own
+              trial period can be signed off. That gate is the one their agronomist requirement asks for.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">Nobody has to remember a trial end date. The date remembers itself
+              and pulls everybody else in.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 ------------------------------------------------- -->
+      <section class="act" id="cue-5">
+        <header>
+          <span class="cue">05</span>
+          <div>
+            <h2>Performance plan</h2>
+            <span class="who">Le Thi Hoa · DEMO003</span>
+          </div>
+          <span class="mark">18′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Lifecycle → Growth plans</span> and open hers.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>The <b>coaching</b> that happened first. Two sessions, a written note, and the
+                conclusion that the problem was pipeline discipline rather than product knowledge.</li>
+              <li>Three objectives, each with what good looks like and a number. One is
+                <b>at risk</b>, one is met, one is on track.</li>
+              <li>Six weekly check-ins: four held with notes, two ahead. Week three carries a
+                <b>flag</b> and says why.</li>
+              <li>She has <b>acknowledged</b> the plan, with a date.</li>
+              <li>The evaluation form is already waiting for the manager at the end.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">Say this</span>
+            <p class="say">A performance plan is the most sensitive record in an HR system. Only
+              HR and the people who need to see it can open this one.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 ------------------------------------------------- -->
+      <section class="act" id="cue-6">
+        <header>
+          <span class="cue">06</span>
+          <div>
+            <h2>Contract decision</h2>
+            <span class="who">Pham Minh Quan · DEMO004</span>
+          </div>
+          <span class="mark">22′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Lifecycle → Contracts</span> and open his decision.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>His fixed term ends in 45 days. The decision was raised <b>sixty days out</b>,
+                which is configurable.</li>
+              <li>The three options the system offers: <b>let it end, extend it, or make it permanent</b>.</li>
+              <li>The manager <b>did</b> ask for six more months, and the request is here with his
+                reason — he is the only technician certified on the new sprayer.</li>
+              <li>It was turned down, with the reason recorded: the seasonal programme finishes
+                with this harvest.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">The refused request is still on the record. A year later you can
+              reconstruct who asked, when, and why the answer was no.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 ------------------------------------------------- -->
+      <section class="act" id="cue-7">
+        <header>
+          <span class="cue">07</span>
+          <div>
+            <h2>Exit and asset return</h2>
+            <span class="who">Pham Minh Quan · DEMO004, continued</span>
+          </div>
+          <span class="mark">25′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Lifecycle → Exits</span> — the decision above opened this checklist.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>Four desks have to clear him: <b>IT, HR, Finance, Admin</b>. HR has; three have not.</li>
+              <li>The <b>handover list</b>. Three items, one done, each naming who picks it up.</li>
+              <li>His <b>exit questionnaire</b>, already prepared.</li>
+              <li>Now go back to Assets and show that his laptop, his email account and his system
+                login are <b>still out</b>.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">His final settlement cannot be closed while anything is still in his
+              hands. That is the gate, and it is not a reminder — it is a stop.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 ------------------------------------------------- -->
+      <section class="act" id="cue-8">
+        <header>
+          <span class="cue">08</span>
+          <div>
+            <h2>Pay and benefits</h2>
+            <span class="who">Vo Thanh Son · DEMO005</span>
+          </div>
+          <span class="mark">28′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Pay Run → Calendar</span> and <span class="path">Pay Run → Awards</span>,
+              then his own record.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>His <b>package</b>, broken into eight lines: salary, the expatriate insurance
+                allowance, private health cover for him and his dependants, phone, transport, the
+                thirteenth month and the annual bonus. This is what he was offered, not what the
+                payroll calculated.</li>
+              <li>His <b>benefit enrolments</b> — family health cover with three dependants named,
+                and group life.</li>
+              <li>The <b>payroll calendar</b>: last month closed, this month open with its cut-off
+                and pay dates, next month ahead. Reminders go out five, two and zero days before
+                cut-off.</li>
+              <li>The <b>awards</b> waiting to go into the next pay run.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">Say this</span>
+            <p class="say">Keep that private health premium in mind. In ten minutes you will watch
+              it land on his payslip without anybody typing it into a spreadsheet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 ------------------------------------------------- -->
+      <section class="act" id="cue-9">
+        <header>
+          <span class="cue">09</span>
+          <div>
+            <h2>Recognition</h2>
+            <span class="who">Nominations across all five</span>
+          </div>
+          <span class="mark">31′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">People → Praise</span>, and the wall on <span class="path">Home</span>.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>Four nominations, each against one of the <b>company values</b> and each with a
+                real story rather than a rating.</li>
+              <li>They sit at different stages: being written, with the manager, with HR, decided.</li>
+              <li>The decided one from <b>last quarter</b> carries a cash award — and that award
+                became an entry on the next pay run. Follow that link.</li>
+              <li>This quarter is still <b>collecting</b>.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">They should notice</span>
+            <p class="notice">A nomination somebody wrote about a colleague ends up as money on a
+              payslip, without anybody re-keying it.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 ------------------------------------------------ -->
+      <section class="act" id="cue-10">
+        <header>
+          <span class="cue">10</span>
+          <div>
+            <h2>Suppliers and access</h2>
+            <span class="who">No person — the company's own admin</span>
+          </div>
+          <span class="mark">33′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Settings → Vendors</span> and <span class="path">Settings → Access &amp; delegation</span>.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>Five suppliers — recruitment, learning, assessments, insurance broking and the
+                workplace committee — each with a named contact and a responsible person.</li>
+              <li>Each agreement carries a start, an end, a <b>renewal date</b> and a value.</li>
+              <li>One of them <b>ends next month</b> and is already showing as ending soon.</li>
+              <li>Then the roles list: who can see what, and how to hand a responsibility to
+                somebody else temporarily.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 ------------------------------------------------ -->
+      <section class="act" id="cue-11">
+        <header>
+          <span class="cue">11</span>
+          <div>
+            <h2>Budget</h2>
+            <span class="who">Four functions, three months</span>
+          </div>
+          <span class="mark">35′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Go to</span>
+            <p><span class="path">Insights → Budget</span></p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Walk through</span>
+            <ol>
+              <li>The <b>people budget</b>, cut by function: Agronomy, Field Operations, Commercial,
+                People &amp; Culture. Budget, spent, left, and headcount planned against headcount paid.</li>
+              <li>Three months, so the line is a trend rather than a snapshot. The two closed
+                months came in a little under.</li>
+              <li>The separate <b>HR operating budget</b> with its four real expenses — agency fees,
+                the leadership programme, assessments, the broker retainer — each tied back to the
+                supplier from the previous cue.</li>
+              <li>Everything downloads.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">Say this</span>
+            <p class="say">Function heads see only their own function. Finance sees what finance
+              needs. That is set once, not argued about every month.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 ------------------------------------------------ THE PEAK -->
+      <section class="act peak" id="cue-12">
+        <header>
+          <span class="cue">12</span>
+          <div>
+            <h2>Run the payroll</h2>
+            <span class="who">All five · this is the moment the demo is for</span>
+          </div>
+          <span class="mark">38′</span>
+        </header>
+        <div class="lanes">
+          <div class="lane">
+            <span class="lbl">Set it up</span>
+            <p>Before you upload anything, open <span class="path">Settings → Mapping</span> and
+              show them the <b>Employee &amp; contract</b> board: twenty-seven columns of the pay
+              scheme already read from the employee record, the contract, the bank account or the
+              pay period.</p>
+            <p class="say">The Vietnamese pay rules ask for about forty-five things per person per
+              month. We have taken all but a handful off you. Here is what is left.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Then</span>
+            <ol>
+              <li>Go to <span class="path">Pay Run → Import Data</span>.</li>
+              <li>Choose the scheme <b>Rize Vietnam</b>.</li>
+              <li>Set the period to <b>this month</b>, first to last day.</li>
+              <li>Upload <b>Rize Vietnam - demo pay data.xlsx</b> and load it. Five rows.</li>
+              <li>Match the employees. <b>Five matched, nothing in error</b> — matched on the
+                employee code alone.</li>
+              <li>Process. Five payslips.</li>
+            </ol>
+          </div>
+          <div class="lane">
+            <span class="lbl">The point</span>
+            <p>Open the file's column list on screen, or just describe it. It carries the employee
+              code, six columns of days and hours, and sixteen columns for one-off amounts that are
+              almost all empty.</p>
+            <p class="notice">It does not carry anybody's salary, their dependants, whether they are
+              in the union, their tax residency, their pay grade, their uniform allowance, their
+              health premium or their bank details. Every one of those came off their record.</p>
+          </div>
+          <div class="lane">
+            <span class="lbl">Expected</span>
+            <div class="tablewrap">
+              <table>
+                <caption class="lbl">What the five payslips should come to, in đồng</caption>
+                <thead>
+                  <tr>
+                    <th>Person</th>
+                    <th class="num">Gross</th>
+                    <th class="num">Tax</th>
+                    <th class="num">Take home</th>
+                    <th>Worth pointing at</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>DEMO001 Mai</td>
+                    <td class="num mono">3,551,923</td>
+                    <td class="num mono">0</td>
+                    <td class="num mono">3,323,461</td>
+                    <td>Three paid days, so her salary is pro-rated</td>
+                  </tr>
+                  <tr>
+                    <td>DEMO002 Hung</td>
+                    <td class="num mono">35,650,000</td>
+                    <td class="num mono">3,030,000</td>
+                    <td class="num mono">29,760,000</td>
+                    <td>Union dues of 130,000 — nobody typed that he is a member</td>
+                  </tr>
+                  <tr>
+                    <td>DEMO003 Hoa</td>
+                    <td class="num mono">30,380,769</td>
+                    <td class="num mono">320,846</td>
+                    <td class="num mono">25,087,616</td>
+                    <td>Three days' leave taken, and an advance being repaid</td>
+                  </tr>
+                  <tr>
+                    <td>DEMO004 Quan</td>
+                    <td class="num mono">20,199,999</td>
+                    <td class="num mono">0</td>
+                    <td class="num mono">18,879,999</td>
+                    <td>Weekday, weekend, holiday and night overtime, all four rates</td>
+                  </tr>
+                  <tr>
+                    <td>DEMO005 Son</td>
+                    <td class="num mono">97,000,000</td>
+                    <td class="num mono">14,070,000</td>
+                    <td class="num mono">82,930,000</td>
+                    <td>Expatriate: no union dues, no local statutory cover, 6,000,000 insurance allowance</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="lane">
+            <span class="lbl">Finish on</span>
+            <p>Open <b>Son's</b> payslip and find the private insurance allowance. Then open his
+              contract and show the same figure sitting there.</p>
+            <p class="say">That number is on his contract. It will be on every payslip until
+              somebody changes his contract. It is never going to be mistyped into a spreadsheet
+              again.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- afterwards ---------------------------------------- -->
+      <div class="section-head" id="reset">
+        <h2>Put it back</h2>
+        <span class="lbl">after the demo</span>
+      </div>
+
+      <div class="panel">
+        <h3>Removing the demo data</h3>
+        <p>Go to <span class="path">Settings → Demo data</span> and press <b>Remove demo data</b>.
+          The page lists every record the load created; removing takes out exactly those and
+          nothing else. It does not search for names beginning with "Demo".</p>
+        <p>If you ran the payroll during the demo, the pay run will hold those five people down and
+          the removal will say so, by name. Delete the pay run first, then remove again.</p>
+      </div>
+
+      <div class="panel warn">
+        <h3>Loading it again</h3>
+        <p>The same screen loads it. One demo world per company at a time — if one is already
+          loaded it will tell you rather than build a second set on top.</p>
+        <p>The pay-data spreadsheet is built for the month it is generated in. If you are demoing
+          in a later month, ask for a fresh one; the standard working days and the joiner's paid
+          days both move.</p>
+      </div>
+
+      <div class="section-head" id="faq">
+        <h2>If they ask</h2>
+        <span class="lbl">likely questions</span>
+      </div>
+
+      <div class="panel">
+        <h3>"Can we use our own spreadsheet?"</h3>
+        <p>Yes. The file is matched on its column headings, not on where the columns sit, so a file
+          with extra columns or a different order still works. The mapping screen is where you tell
+          it which heading means what.</p>
+      </div>
+
+      <div class="panel">
+        <h3>"What happens when someone's salary changes?"</h3>
+        <p>You change their contract. The next pay run reads it. Nothing about the monthly file
+          changes.</p>
+      </div>
+
+      <div class="panel">
+        <h3>"How do we know where a number came from?"</h3>
+        <p>Every payslip records, for every input, whether it came from the file, from the employee
+          record, from the contract, from a connected system, or from the pay period itself. That is
+          shown on the payslip and on the Source screens.</p>
+      </div>
+
+      <div class="panel">
+        <h3>"Is this our data?"</h3>
+        <p>No. Five invented people on a demo tenant. Say so plainly and early — it is the only
+          answer that builds trust, and the delete button is right there.</p>
+      </div>
+
+      <footer class="end">
+        <span>Rize Farms · Vietnam · rize.payobook.com</span>
+        <span class="mono">Five people · 188 records · one pay run</span>
+      </footer>
+
+    </main>
+  </div>
+</div>
