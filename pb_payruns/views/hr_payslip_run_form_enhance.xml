@@ -70,6 +70,10 @@
             <xpath expr="//form/header" position="inside">
                 <!-- drives the Undo Approval button's invisible= rule -->
                 <field name="pb_can_undo_approval" invisible="1"/>
+                <!-- the stages this database signs off at, read by the stepper
+                     below; a tenant with no Payroll Officer tier gets four
+                     steps instead of five -->
+                <field name="pb_stage_rail" invisible="1"/>
                 <button name="action_pb_delete_draft_payslips"
                         type="object"
                         string="Delete Draft Payslips"
@@ -78,7 +82,10 @@
             </xpath>
 
             <xpath expr="//sheet/label[@for='name']" position="before">
+                <!-- steps_field wins; steps/labels stay as the fallback so the
+                     rail still draws if the field is ever empty -->
                 <widget name="vu_progress_rail"
+                        steps_field="pb_stage_rail"
                         steps="draft,level0,level1,level2,done"
                         labels="Draft,Officer review,HR review,Finance approval,Done"
                         state_field="state"/>

@@ -4,7 +4,9 @@
     'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
     # 19.0.1.6.0 — W105: the hr.payslip.line read ACL that had to sit beside the
     # hr.payslip one, plus tests/test_payslip_line_access.py.
-    'version': '19.0.1.18.0',
+    # 19.0.1.19.0 — the Officer-review tier is a per-database setting; a tenant
+    # may run Draft → HR review → Finance approval instead.
+    'version': '19.0.1.19.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -25,6 +27,7 @@
         'views/pb_payruns_action.xml',
         'views/hr_payslip_run_kanban.xml',
         'views/hr_payslip_run_form_enhance.xml',
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

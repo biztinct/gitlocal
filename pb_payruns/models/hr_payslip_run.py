@@ -59,6 +59,27 @@ PB_SEND_BACK = {
 PB_SEND_BACK_TIER = {
     'level0': 'level0', 'level1': 'level1', 'level2': 'level2', 'done': 'level2',
 }
+
+# ------------------------------------------------ Officer tier, per database
+# Not every company reviews a pay run three times. Some want the run to leave
+# Draft and land straight on HR review, with the Payroll Officer preparing it
+# rather than signing it off. That is a per-DATABASE arrangement, not a code
+# fork — each tenant is its own database, so one system parameter carries it and
+# every surface that draws the chain asks for it through the helpers below
+# instead of re-reading the parameter or re-typing the stage list.
+#
+# ABSENT means ON. Every database that has never heard of this key keeps all
+# three tiers byte-for-byte, so turning it off is always a deliberate act.
+#
+# What the switch does NOT do: it never renames or removes a state. 'level0'
+# stays a legal value of the field, keeps its ondelete rule and keeps its
+# gate — a run parked there before the switch was thrown is still readable,
+# still approvable, and still shows up as its own board column (group_expand
+# adds empty groups; it never hides full ones).
+PB_OFFICER_PARAM = 'pb_payruns.officer_review'
+#: Parameter values that mean "no Officer tier here". Anything else, including
+#: a missing key, leaves the tier in place.
+_PB_OFF_VALUES = ('0', 'false', 'off', 'no', 'none', 'disabled')
 # run state -> the payslip state that belongs with it. Chain entry confirms the
 # slips and each later tier cascades them, so walking the run BACK has to walk
 # the slips back too — otherwise a run sitting at Officer review would hold
@@ -142,9 +163,77 @@ class HrPayslipRun(models.Model):
          ('level2', 'Finance approval'), ('done', 'Done')],
         string='Sent back from', readonly=True, copy=False)
 
+    # The stepper on the form is drawn by a generic widget that cannot read a
+    # system parameter, so the server hands it the stages it should draw:
+    # "draft:Draft,level1:HR review,…". Computed, never stored — the answer
+    # belongs to the database and the reader's language, not to the run.
+    pb_stage_rail = fields.Char(
+        string='Approval stages', compute='_compute_pb_stage_rail')
+    # Same answer as a plain yes/no, for the screens that only need to know
+    # whether to draw the Officer lane at all.
+    pb_officer_tier = fields.Boolean(
+        string='Officer review in use', compute='_compute_pb_stage_rail')
+
+    # The answer is the same for every run on the database, but `state` is what
+    # makes the client re-read it, and a compute with no dependency at all is a
+    # compute the ORM warns about.
+    @api.depends('state')
+    def _compute_pb_stage_rail(self):
+        labels = {'draft': _('Draft'), 'level0': _('Officer review'),
+                  'level1': _('HR review'), 'level2': _('Finance approval'),
+                  'done': _('Done')}
+        on = self._pb_officer_tier()
+        rail = ','.join('%s:%s' % (s, labels[s]) for s in self._pb_board_states())
+        for run in self:
+            run.pb_stage_rail = rail
+            run.pb_officer_tier = on
+
+    # ------------------------------------------------------------------
+    # Which tiers this database actually uses
+    # ------------------------------------------------------------------
+    # ONE reader of the parameter, and every other surface — the board, the
+    # Approvals cockpit, the kanban columns, the form stepper — asks these
+    # helpers. A screen that drew the chain from its own copy of the stage list
+    # is exactly how a button ends up offering a stage the model will refuse.
+    @api.model
+    def _pb_officer_tier(self):
+        """Does this database review a pay run at the Payroll Officer tier?"""
+        value = self.env['ir.config_parameter'].sudo().get_param(
+            PB_OFFICER_PARAM, '1')
+        return str(value or '').strip().lower() not in _PB_OFF_VALUES
+
+    @api.model
+    def _pb_chain_entry(self):
+        """The stage a submitted run lands on, leaving Draft."""
+        return 'level0' if self._pb_officer_tier() else 'level1'
+
+    @api.model
+    def _pb_chain_states(self):
+        """The pending stages, in chain order, that this database uses."""
+        if self._pb_officer_tier():
+            return PB_PENDING_STATES
+        return ('level1', 'level2')
+
+    @api.model
+    def _pb_board_states(self):
+        """Every stage the board draws as a column, in order."""
+        return ('draft',) + self._pb_chain_states() + ('done',)
+
+    @api.model
+    def _pb_send_back_map(self):
+        """state -> the stage a send-back returns it to, for THIS database.
+
+        With no Officer tier, the stage before HR review is Draft. Derived from
+        the board order rather than typed out a second time, so the two can
+        never disagree.
+        """
+        if self._pb_officer_tier():
+            return dict(PB_SEND_BACK)
+        return {'level1': 'draft', 'level2': 'level1', 'done': 'level2'}
+
     @api.model
     def _pb_group_expand_state(self, values, domain):
-        return ['draft', 'level0', 'level1', 'level2', 'done']
+        return list(self._pb_board_states())
 
     # STORED: computed once when the run's payslips change, read instantly forever.
     # Aggregating every payslip line at read time does not scale (a 600k-row
@@ -629,10 +718,13 @@ class HrPayslipRun(models.Model):
         the numbers and resubmits.
         """
         note = (self.env.context.get('pb_sendback_note') or '').strip()[:512]
+        # Where "one stage back" points depends on which tiers this database
+        # uses: with no Officer tier, the stage before HR review is Draft.
+        send_back = self._pb_send_back_map()
         # validate the WHOLE recordset before moving any of it
         for run in self:
             st = run.state or 'draft'
-            target = PB_SEND_BACK.get(st)
+            target = send_back.get(st) or PB_SEND_BACK.get(st)
             if not target:
                 raise UserError(_(
                     "“%(name)s” is at %(stage)s — there is no earlier stage to "
@@ -654,7 +746,7 @@ class HrPayslipRun(models.Model):
         now = fields.Datetime.now()
         for run in self:
             came_from = run.state or 'draft'
-            target = PB_SEND_BACK[came_from]
+            target = send_back.get(came_from) or PB_SEND_BACK[came_from]
             run._pb_walk_slips_back(target)
             run._pb_chain_ctx().write({'state': target})
             # `pb_sendback_from` is the stage the run actually left, read off
@@ -759,16 +851,22 @@ class HrPayslipRun(models.Model):
         # Resubmitting IS the fix for a send-back, so the note stops applying
         # the moment the run re-enters the chain.
         self._pb_clear_sendback()
+        entry = self._pb_chain_entry()
         if accountless:
             accountless.slip_ids.filtered(lambda s: s.state == 'draft').write({'state': 'level1'})
-            accountless._pb_chain_ctx().write({'state': 'level0'})
+            accountless._pb_chain_ctx().write({'state': entry})
         if standard:
             # The legacy base cascades the slips then writes 'level1'
             # unconditionally; we re-write the run to 'level0' straight after.
             # Two writes on the run, ZERO edits to om_hr_payroll — and
             # idempotent: 'level0' is the only state anyone ever observes.
+            #
+            # With the Officer tier switched off, 'level1' is already where the
+            # run belongs, so the second write is skipped rather than made and
+            # undone.
             res = super(HrPayslipRun, standard._pb_chain_ctx()).done_payslip_run()
-            standard._pb_chain_ctx().write({'state': 'level0'})
+            if entry != 'level1':
+                standard._pb_chain_ctx().write({'state': entry})
             return res
         return True
 

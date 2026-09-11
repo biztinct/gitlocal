@@ -62,6 +62,15 @@ class PbPayruns(models.AbstractModel):
         # and priced them all in the active company's money. A run belongs to
         # the company that its payslips belong to (and, since P2, to the
         # company of the scheme it was run for), so that is what scopes it.
+        # Which tiers this database uses, asked of the model rather than
+        # assumed. A tenant with no Payroll Officer sign-off draws four columns,
+        # and a run submitted here goes straight to HR review.
+        board_states = list(self._safe(lambda: Run._pb_board_states(),
+                                       default=tuple(STAGE_ORDER)))
+        send_back_map = self._safe(lambda: Run._pb_send_back_map(),
+                                   default=dict(PB_SEND_BACK))
+        officer_tier = 'level0' in board_states
+
         runs = self._safe(
             lambda: Run.search([], order='date_end desc, id desc',
                                limit=BOARD_LIMIT * 4),
@@ -91,6 +100,8 @@ class PbPayruns(models.AbstractModel):
             if state == 'draft':
                 next_action, can_act = 'submit', has_officer
             elif state == 'level0':
+                # Reached only while the Officer tier is in use, or by a run
+                # that was already parked there when it was switched off.
                 next_action, can_act = 'approve_officer', has_officer
             elif state == 'level1':
                 next_action, can_act = 'approve_hr', has_manager
@@ -108,7 +119,7 @@ class PbPayruns(models.AbstractModel):
             if state == 'done':
                 can_send_back = has_final and self._safe(
                     lambda r=run: bool(r.pb_can_undo_approval), default=False)
-            back_to = PB_SEND_BACK.get(state, '')
+            back_to = send_back_map.get(state) or PB_SEND_BACK.get(state, '')
 
             net = self._safe(lambda r=run: r.pb_total_net)
             run_company = owner.get(run.id, company.id)
@@ -155,8 +166,14 @@ class PbPayruns(models.AbstractModel):
                 'currency_name': run_currency['name'],
             })
 
+        # The stages this database uses, plus any stage a run is actually
+        # sitting in. The second half matters the day the Officer tier is
+        # switched off with a run still parked there: dropping its column would
+        # hide the run rather than move it.
+        drawn = [s for s in STAGE_ORDER
+                 if s in board_states or stage_counts.get(s, 0)]
         columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
-                   for s in STAGE_ORDER]
+                   for s in drawn]
 
         # Division filter chips — derived from the formula configs that carry a
         # division (the demo's 6; empty for plain structure-based payroll).
@@ -197,6 +214,7 @@ class PbPayruns(models.AbstractModel):
             'can_officer': has_officer,
             'can_manager': has_manager,
             'can_final': has_final,
+            'officer_tier': officer_tier,
             'columns': columns,
             'batches': batches,
             'rejected_count': stage_counts.get('cancel', 0),

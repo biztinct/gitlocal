@@ -2,6 +2,9 @@
 from . import test_approval_chain
 from . import test_payslip_line_access
 
+# The Officer tier is a per-database setting; switching it off must be complete.
+from . import test_officer_tier_switch
+
 # The KPI band reports the run it is attached to: the unflushed-SQL blind spot
 # and the missing GROSS category (ABM June 2026, "146 employees, 0.00").
 from . import test_run_totals

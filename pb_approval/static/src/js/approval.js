@@ -66,8 +66,20 @@ export class PbApproval extends Component {
         return "₫" + Math.round(n);
     }
     laneCls(key) { return key === "level0" ? "l0" : key === "level1" ? "l1" : "l2"; }
-    // 3-dot chain stepper: dots before `step` are cleared, `step` is current
+    // One dot per tier THIS database signs off at (the server sends the count),
+    // falling back to three so an older payload still draws the full chain.
+    chainDots(run) {
+        const n = (run && run.steps) || 3;
+        return Array.from({ length: n }, (_v, i) => i);
+    }
+    // Chain stepper: dots before `step` are cleared, `step` is current
     dotCls(run, i) { return i < run.step ? "done" : (i === run.step ? "current" : "future"); }
+    // The chain in words, for the headline. Server-supplied so it can never
+    // name a tier this database has switched off.
+    get chainLabel() {
+        return this.d.chain_label || _t("Officer review → HR review → Finance approval");
+    }
+    get officerTier() { return this.d.officer_tier !== false; }
     waitsOn(run) { return _t("Waits on %s", run.role); }
 
     _err(e) {

@@ -23,7 +23,7 @@
                     <div class="hero-l" t-if="!props.embedded">
                         <div class="eyebrow"><span t-out="ic('stamp',15)"/> Payroll</div>
                         <h1>Approval Pipeline</h1>
-                        <div class="sub">Officer review → HR review → Finance approval</div>
+                        <div class="sub" t-esc="chainLabel"/>
                     </div>
                     <div class="hero-r">
                         <div class="mine-chip" t-if="summary.mine">
@@ -38,7 +38,9 @@
 
                 <!-- ============================= KPIs ============================= -->
                 <div class="pba-kpis" data-coach="pa-kpis">
-                    <div class="kpi l0">
+                    <!-- Hidden where the tier is switched off, unless a run is
+                         still parked there and needs someone to notice it. -->
+                    <div class="kpi l0" t-if="officerTier or summary.officer">
                         <span class="ico" t-out="ic('clock',18)"/>
                         <span class="n" t-esc="summary.officer or 0"/>
                         <span class="l">at Officer review</span>
@@ -64,7 +66,7 @@
                 <div t-if="isEmpty" class="pba-empty">
                     <span class="i" t-out="ic('checkCircle',30)"/>
                     <div class="t">Nothing awaiting approval.</div>
-                    <div class="s">Submitted pay runs land here for Officer, HR and Finance sign-off.</div>
+                    <div class="s">Submitted pay runs land here for sign-off: <t t-esc="chainLabel"/>.</div>
                 </div>
 
                 <!-- ============================= lanes ============================ -->
@@ -98,11 +100,14 @@
                                 </div>
                             </div>
 
-                            <!-- 3-dot chain stepper: filled = tiers already cleared -->
+                            <!-- Chain stepper: filled = tiers already cleared.
+                                 One dot per tier this database signs off at, so
+                                 a two-tier chain never draws a third dot the
+                                 run can never reach. -->
                             <div class="c-chain">
-                                <t t-foreach="[0,1,2]" t-as="i" t-key="i">
+                                <t t-foreach="chainDots(run)" t-as="i" t-key="i">
                                     <span t-attf-class="cd {{ dotCls(run, i) }}"/>
-                                    <span t-if="i &lt; 2" t-attf-class="cl {{ i &lt; run.step ? 'done' : '' }}"/>
+                                    <span t-if="i &lt; chainDots(run).length - 1" t-attf-class="cl {{ i &lt; run.step ? 'done' : '' }}"/>
                                 </t>
                             </div>
 

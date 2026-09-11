@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      The approval chain, as a setting rather than a hidden parameter.
+
+      Switched ON (the default, and what every database has unless somebody
+      changes it): Draft → Officer review → HR review → Finance approval.
+      Switched OFF: Draft → HR review → Finance approval.
+
+      The Payroll Officer still prepares and submits the run either way; what
+      goes is the separate sign-off stage in their name.
+    -->
+    <record id="res_config_settings_view_form_pb_payruns" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb-payruns</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="46"/>
+        <field name="inherit_id" ref="om_hr_payroll.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='om_hr_payroll']" position="inside">
+                <block title="Approving a pay run">
+                    <setting string="Payroll Officer reviews pay runs"
+                             help="A submitted pay run stops with the Payroll Officer before it reaches HR. Switch this off and it goes straight to HR review, then Finance approval.">
+                        <field name="pb_payrun_officer_review"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

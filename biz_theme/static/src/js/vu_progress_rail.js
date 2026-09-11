@@ -10,6 +10,15 @@
 //           steps="draft,confirmed,assigned,in_progress,completed,closed"
 //           labels="Created,Confirmed,Assigned,In Progress,Completed,Closed"
 //           state_field="state"/>
+//
+// Or with the steps decided by the SERVER, when the stages a record can move
+// through depend on a setting rather than on the code (a pay run's approval
+// chain, say, where one database signs off twice and another three times):
+//   <widget name="vu_progress_rail"
+//           steps_field="pb_stage_rail" state_field="state"/>
+// The named field holds "state:Label,state:Label,…". It wins over `steps` when
+// it has a value, and falls back to `steps` when it is empty, so a view can
+// carry both and still render on a database that has never set the field.
 // =============================================================================
 
 import { Component } from "@odoo/owl";
@@ -33,6 +42,7 @@ export class VuProgressRail extends Component {
         steps: { type: String, optional: true },
         labels: { type: String, optional: true },
         stateField: { type: String, optional: true },
+        stepsField: { type: String, optional: true },
     };
 
     get stateField() {
@@ -44,6 +54,24 @@ export class VuProgressRail extends Component {
     }
 
     get stepList() {
+        // A server-supplied list wins: the record knows which stages apply to
+        // it, the view only knows what the code was written with.
+        const fromField =
+            this.props.stepsField && this.props.record?.data?.[this.props.stepsField];
+        if (fromField) {
+            const pairs = String(fromField).split(",").filter((p) => p.trim());
+            if (pairs.length) {
+                return pairs.map((pair) => {
+                    const cut = pair.indexOf(":");
+                    const state = (cut === -1 ? pair : pair.slice(0, cut)).trim();
+                    return {
+                        state,
+                        label: (cut === -1 ? state : pair.slice(cut + 1)).trim() || state,
+                        icon: "fa-circle",
+                    };
+                });
+            }
+        }
         if (this.props.steps) {
             const states = this.props.steps.split(",");
             const labels = (this.props.labels || this.props.steps).split(",");
@@ -102,5 +130,6 @@ registry.category("view_widgets").add("vu_progress_rail", {
         steps: attrs.steps,
         labels: attrs.labels,
         stateField: attrs.state_field,
+        stepsField: attrs.steps_field,
     }),
 });

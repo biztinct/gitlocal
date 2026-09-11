@@ -1719,13 +1719,18 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     def submit_for_approval(self, run_id):
-        """Enter the approval chain at its FIRST tier (Officer review).
+        """Enter the approval chain at its FIRST tier.
+
+        Which tier that is belongs to the database, not to this wizard: most
+        land on Officer review, and one that has switched that tier off lands on
+        HR review. `done_payslip_run` decides; the caller is told the state it
+        actually reached.
 
         Phase L fix: this used to call action_payslip_run_level1_done() on a
         DRAFT run — and that legacy method writes 'level2' unconditionally, so a
         submit jumped the run straight past the HR tier. done_payslip_run() is
         the only correct draft→chain transition (it confirms the payslips, then
-        lands on level0).
+        lands on the entry tier).
 
         It also swallowed every exception into a bare ok=False; the caller now
         gets the server's real refusal (the tier gate's own words).

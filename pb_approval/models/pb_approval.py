@@ -98,7 +98,12 @@ class PbApproval(models.AbstractModel):
         # Reads the STORED totals on hr.payslip.run (instant) — no line aggregation.
         labels = labels if labels is not None else self._stage_labels()
         info = labels.get(run.state)
-        idx = STAGE_ORDER.index(run.state) if run.state in STAGE_ORDER else -1
+        # The chain as THIS database runs it — a two-tier chain must not draw a
+        # three-dot stepper, and "one stage back" from HR review is Draft when
+        # there is no Officer tier before it.
+        chain = list(run._pb_chain_states())
+        send_back = run._pb_send_back_map()
+        idx = chain.index(run.state) if run.state in chain else -1
         return {
             'id': run.id, 'name': run.name,
             'period': '%s → %s' % (run.date_start, run.date_end) if run.date_start else '',
@@ -110,8 +115,9 @@ class PbApproval(models.AbstractModel):
                 else _('Done') if run.state == 'done' else run.state),
             'role': info[1] if info else '',
             'pending': bool(info),
-            # chain stepper: how many of the 3 tiers this run has cleared
-            'step': idx if idx >= 0 else (len(STAGE_ORDER) if run.state == 'done' else 0),
+            # chain stepper: how many of this database's tiers the run cleared
+            'step': idx if idx >= 0 else (len(chain) if run.state == 'done' else 0),
+            'steps': len(chain),
             # actionable BY ME? drives the card's Approve/Reject vs "waits on…"
             'mine': bool(info) and run._pb_tier_ok(run.state),
             'reject_note': run.pb_reject_note or '',
@@ -123,8 +129,8 @@ class PbApproval(models.AbstractModel):
             'can_send_back': (bool(info) and run._pb_tier_ok(run.state)
                               if run.state != 'done'
                               else bool(run.pb_can_undo_approval)),
-            'send_back_to': PB_SEND_BACK.get(run.state, ''),
-            'send_back_label': self._stage_name(PB_SEND_BACK.get(run.state, '')),
+            'send_back_to': send_back.get(run.state, ''),
+            'send_back_label': self._stage_name(send_back.get(run.state, '')),
             'sendback_note': run.pb_sendback_note or '',
             'sendback_by': run.pb_sendback_uid.name or '',
             'sendback_from': self._stage_name(run.pb_sendback_from or ''),
@@ -136,14 +142,24 @@ class PbApproval(models.AbstractModel):
         Run = self.env['hr.payslip.run']
         labels = self._stage_labels()
         # hr.payslip.run has no company_id (C18.43) — never filter by company.
+        # Every tier is SEARCHED, including one this database has switched off:
+        # a run parked at a retired stage must still be reachable by the people
+        # who can move it on. Only the LANES follow the switch.
         pending = Run.search([('state', 'in', list(STAGE_ORDER))], order='id desc')
         recent = Run.search([('state', 'in', ['done', 'cancel'])], order='id desc', limit=6)
         pend = [self._run_dict(r, labels) for r in pending]
+        in_use = set(Run._pb_chain_states())
+        occupied = {p['state'] for p in pend}
         lanes = [{'key': s, 'label': labels[s][0], 'role': labels[s][1],
                   'runs': [p for p in pend if p['state'] == s]}
-                 for s in STAGE_ORDER]
+                 for s in STAGE_ORDER if s in in_use or s in occupied]
         return {
             'lanes': lanes,
+            # Which tiers this database signs off at, so the cockpit's headline
+            # and its tally chips describe the chain it actually has.
+            'officer_tier': 'level0' in in_use,
+            'chain_label': ' → '.join(
+                labels[s][0] for s in STAGE_ORDER if s in in_use),
             'pending': pend,
             'recent': [self._run_dict(r, labels) for r in recent],
             'summary': {

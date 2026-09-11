@@ -12,8 +12,6 @@ const STAGES = [
     { key: "level2", label: _t("Finance approval") },
     { key: "done", label: _t("Done") },
 ];
-const INDEX = { draft: 0, level0: 1, level1: 2, level2: 3, done: 4 };
-
 export class PbPipelineField extends Component {
     static template = "pb_payruns.PipelineField";
     static props = { ...standardFieldProps };
@@ -22,8 +20,17 @@ export class PbPipelineField extends Component {
     get rejected() { return this.value === "cancel"; }
 
     get stages() {
-        const cur = INDEX[this.value] ?? 0;
-        return STAGES.map((s, i) => ({
+        // Officer review is a tier a database may switch off. The record says
+        // so when the view loaded the flag; with no flag, keep all five — that
+        // is what every database had before the switch existed. A run still
+        // parked at a switched-off stage keeps its step, so the rail never
+        // shows it as further along than it is.
+        const officer =
+            this.props.record.data.pb_officer_tier !== false ||
+            this.value === "level0";
+        const stages = STAGES.filter((s) => officer || s.key !== "level0");
+        const cur = Math.max(stages.findIndex((s) => s.key === this.value), 0);
+        return stages.map((s, i) => ({
             ...s,
             cls: i < cur ? "done" : (i === cur ? "current" : "future"),
         }));
