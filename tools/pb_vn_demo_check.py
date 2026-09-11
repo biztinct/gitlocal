@@ -126,6 +126,18 @@ def run(env):
     batch.action_process()
     slips = batch.created_payslip_ids
     print('payslips created  : %s' % len(slips))
+    # FROM HERE ON, THE CLEANUP RUNS WHATEVER HAPPENS. This script's output is
+    # routinely piped through `head`, which closes the pipe and raises
+    # BrokenPipeError on the next print — and the first time that happened it
+    # killed the run between creating the payslips and deleting them, leaving a
+    # pay run on the database that looked like somebody's work.
+    try:
+        _report(env, slips)
+    finally:
+        _cleanup(env, batch, slips)
+
+
+def _report(env, slips):
 
     codes = ('BASIC', 'ISUNION', 'DEPS', 'ROLEGRADE', 'ISLOCAL', 'HRSWD',
              'OTWD', 'SALARYPAID', 'GROSS', 'PIT', 'NET', 'SHUILOCAL',
@@ -155,17 +167,22 @@ def run(env):
                          'HOURSDAY', 'CONTRACTMTH', 'HRSWD', 'STDDAYS',
                          'PAYMONTH', 'UNIFORM', 'PRIVINSAMT', 'OTWDQUAL'))
 
-    if not KEEP:
-        run_record = batch.payslip_run_id
-        slips.unlink()
-        if run_record:
-            run_record.unlink()
-        batch.unlink()
+def _cleanup(env, batch, slips):
+    if KEEP:
         env.cr.commit()
+        return
+    run_record = batch.payslip_run_id
+    slips.exists().unlink()
+    if run_record and run_record.exists():
+        run_record.unlink()
+    if batch.exists():
+        batch.unlink()
+    env.cr.commit()
+    try:
         print('')
         print('check run removed; the database is back as it was.')
-    else:
-        env.cr.commit()
+    except BrokenPipeError:                        # nobody is reading any more
+        pass
 
 
 def _fmt(value):

@@ -69,8 +69,17 @@ class TestVnMapping(TransactionCase):
         self.assertEqual(by_code['EMPCODE'].target_field_id.name, 'employee_id')
         # A bank column holds text, and a column letter nobody has used.
         bank = self.config.rule_ids.filtered(lambda r: r.code == 'BANKACC')
-        self.assertTrue(bank.is_text_component)
         self.assertEqual(bank.column_role, 'bank')
+        self.assertEqual(bank.value_kind, 'identifier')
+        # AND IS NOT A CONTRACT COMPONENT. `is_text_component` does not mean
+        # "holds text" — it means "is a contract component that holds text", and
+        # setting it here made every one of these five draw a SECOND wire, to
+        # "Contract component — text", beside the bank destination they actually
+        # have. One column, two destinations, one of them fiction.
+        for code in ('EMPCODE', 'BANKACC', 'BANKNAME', 'BANKBIC', 'BANKHOLDER'):
+            rule = self.config.rule_ids.filtered(lambda r: r.code == code)
+            self.assertFalse(rule.is_text_component, code)
+            self.assertFalse(rule.is_contract_component, code)
         letters = [r.column_letter for r in self.config.rule_ids
                    if r.column_letter]
         self.assertEqual(len(letters), len(set(letters)))
@@ -98,6 +107,37 @@ class TestVnMapping(TransactionCase):
         # arithmetic.
         self.assertGreater(second['already'], 0)
         self.assertEqual(first['mapped'], count)
+
+    def test_03b_the_file_columns_declare_what_they_read(self):
+        """The Spreadsheet board reads DECLARED sources, not lucky name matches.
+
+        The importer finds these columns by matching their heading against the
+        component's name, and a pay run works with nothing declared at all — but
+        the board shows only what is declared, so a scheme that resolves
+        perfectly by name reads as completely unmapped on the screen a person
+        looks at before running payroll.
+        """
+        self.config.pb_apply_vn_mapping()
+        declared = {r.code: r.source_binding_key
+                    for r in self.config.rule_ids
+                    if r.source_binding == 'excel'}
+        self.assertEqual(declared.get('HRSWD'), 'Weekday overtime — hours this run')
+        self.assertEqual(declared.get('STDDAYS'), 'Standard working days')
+        self.assertEqual(declared.get('EMPCODE'), 'Employee code')
+        # A column the file does NOT carry must declare nothing: a wire to a
+        # heading nobody sends is worse than no wire.
+        self.assertNotIn('BASIC', declared)
+        self.assertNotIn('PAYMONTH', declared)
+        self.assertNotIn('UNIFORM', declared)
+
+        # Declaring a source must not change what anybody is paid, so the row
+        # count is stable across a second run too.
+        before = len(self.env['hr.formula.rule.source'].search(
+            [('rule_id', 'in', self.config.rule_ids.ids)]))
+        self.config.pb_apply_vn_mapping()
+        after = len(self.env['hr.formula.rule.source'].search(
+            [('rule_id', 'in', self.config.rule_ids.ids)]))
+        self.assertEqual(before, after)
 
     def test_04_contract_components_get_a_template(self):
         self.config.pb_apply_vn_mapping()

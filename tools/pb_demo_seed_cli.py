@@ -25,6 +25,7 @@ import sys
 ACTION = (os.environ.get('PB_DEMO_ACTION') or 'status').strip().lower()
 PROFILE = (os.environ.get('PB_DEMO_PROFILE') or 'rize_vn').strip()
 CONFIG_CODE = (os.environ.get('PB_DEMO_CONFIG') or 'RIZE_VIETNAM').strip()
+FORCE = os.environ.get('PB_DEMO_FORCE') == '1'
 
 
 def _seed(env):
@@ -54,9 +55,21 @@ def status(env):
 
 def load(env):
     seed = _seed(env)
-    if seed.state == 'loaded':
-        print('Already loaded. Run with PB_DEMO_ACTION=remove first.')
+    if seed.state == 'loaded' and not FORCE:
+        print('Already loaded. Run with PB_DEMO_ACTION=remove first, or set '
+              'PB_DEMO_FORCE=1 to rebuild on top of what a blocked removal '
+              'left behind.')
         return seed
+    if seed.state == 'loaded':
+        # A removal that was blocked leaves the rows it could not delete, and
+        # the panel still reads "loaded". Clearing those rows lets the build run
+        # again; the records themselves are picked back up by code as it goes
+        # (see `people._employee`), so nothing is orphaned and nothing is
+        # duplicated.
+        print('Rebuilding over %s record(s) a blocked removal left.'
+              % len(seed.record_ids))
+        seed.record_ids.unlink()
+        seed.sudo().write({'state': 'empty'})
     seed.profile = PROFILE
     summary = seed.load_demo()
     env.cr.commit()
@@ -94,6 +107,8 @@ def mapping(env):
     print('Contract components    : %s' % report['contract_components'])
     print('Columns added          : %s' % report['columns_added'])
     print('Value kinds corrected  : %s' % report['value_kinds'])
+    print('Spreadsheet columns    : %s declared' % report.get('sheet_sources', 0))
+    print('Wrong flags repaired   : %s' % report.get('flags_repaired', 0))
     if report['missing']:
         print('Columns the scheme does not have: %s'
               % ', '.join(sorted(set(report['missing']))))

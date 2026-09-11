@@ -27,7 +27,7 @@ from odoo.exceptions import UserError
 
 from .vn_profile import (
     COMPUTED_FIELDS, CONTRACT_COMPONENTS, EXTRA_COLUMNS, FIELD_MAPPING,
-    VALUE_KINDS,
+    SHEET_KEY_COLUMN, SHEET_MONEY_COLUMNS, SHEET_TIME_COLUMNS, VALUE_KINDS,
 )
 
 _logger = logging.getLogger(__name__)
@@ -88,7 +88,8 @@ class HrFormulaConfig(models.Model):
         rules = {r.code: r for r in self.rule_ids if r.code}
         report = {'config': self.display_name, 'mapped': 0, 'already': 0,
                   'contract_components': 0, 'columns_added': 0,
-                  'value_kinds': 0, 'missing': []}
+                  'value_kinds': 0, 'sheet_sources': 0, 'flags_repaired': 0,
+                  'missing': []}
 
         owned = self._pb_vn_ensure_extra_columns(rules, report)
         rules.update(owned)
@@ -97,6 +98,7 @@ class HrFormulaConfig(models.Model):
         self._pb_vn_apply_extra_mappings(rules, owned, report)
         self._pb_vn_apply_contract_components(rules, report)
         self._pb_vn_apply_value_kinds(rules, report)
+        self._pb_vn_declare_sheet_sources(rules, report)
         return report
 
     # -- rank 4, the field destinations ---------------------------------
@@ -245,7 +247,9 @@ class HrFormulaConfig(models.Model):
                 'column_role_source': 'user',
                 'value_kind': kind,
                 'value_kind_source': 'user',
-                'is_text_component': True,
+                # NOT A CONTRACT COMPONENT — see `_pb_vn_normalise_extra_flags`.
+                'is_text_component': False,
+                'is_contract_component': False,
                 'appears_on_payslip': False,
                 'default_value': 0.0,
             })
@@ -253,7 +257,74 @@ class HrFormulaConfig(models.Model):
             next_sequence += 10
             next_index += 1
             report['columns_added'] += 1
+        self._pb_vn_normalise_extra_flags(owned, report)
         return owned
+
+    def _pb_vn_normalise_extra_flags(self, owned, report):
+        """An employee code is not a contract component. Nor is a bank account.
+
+        THE DEFECT THIS REPAIRS, because it was visible and wrong. The first
+        version of this profile set `is_text_component` on the five columns it
+        adds, reasoning that they hold text rather than money. They do — but that
+        flag does not mean "holds text". It means **"is a contract component, and
+        the component holds text"**, and the Mapping board reads it exactly that
+        way: every one of the five drew a second wire to "Contract component —
+        text" and announced "On import: kept on the contract as text under
+        BANKACC" beside the bank destination it actually has. One column, two
+        destinations, one of them fiction.
+
+        What makes a value text here is `value_kind` (`text` / `identifier`),
+        which is what the resolver reads and what stops the value being coerced
+        to a number. These five are left with that and nothing else.
+
+        REPAIRS AS WELL AS PREVENTS: a scheme wired by the earlier version is
+        carrying the wrong flag now, and an applier that only got it right on
+        fresh schemes would leave the live one misdrawn for ever.
+        """
+        for code, _label, _role, _kind, _dest in EXTRA_COLUMNS:
+            rule = owned.get(code)
+            if not rule:
+                continue
+            wrong = {}
+            if rule.is_text_component:
+                wrong['is_text_component'] = False
+            if rule.is_contract_component:
+                wrong['is_contract_component'] = False
+            if wrong:
+                rule.sudo().write(wrong)
+                report['flags_repaired'] = report.get('flags_repaired', 0) + 1
+
+    # -- what the monthly file actually carries ---------------------------
+    def _pb_vn_declare_sheet_sources(self, rules, report):
+        """Say, on the record, which columns the monthly file delivers.
+
+        WHY THIS IS NOT REDUNDANT. The importer already finds these columns by
+        matching their heading against the component's name, and the pay run
+        works without a single declared source. But "it works" and "a person can
+        see that it works" are different things, and the Spreadsheet columns →
+        Scheme board reads DECLARED sources — so a scheme that resolves perfectly
+        by name shows an empty board and reads as unmapped. That is the screen
+        the owner was looking at.
+
+        It also converts a heuristic into a statement. Matching by name is a
+        guess that happens to be right; a declared source is the scheme saying
+        which heading it reads, which is what a later rename gets checked
+        against.
+
+        ONLY THE COLUMNS THE FILE CARRIES. Declaring a source for a column the
+        file does not have would be a claim about a heading nobody sends, and the
+        board would then show a wire to nothing.
+        """
+        for code, header in [SHEET_KEY_COLUMN] + SHEET_TIME_COLUMNS \
+                + SHEET_MONEY_COLUMNS:
+            rule = rules.get(code)
+            if not rule:
+                continue
+            current = rule.source_ids.filtered(lambda s: s.kind == 'excel')
+            if current and (current[0].key or '').strip() == header:
+                continue
+            rule.sudo().set_source_binding('excel', header, origin='board')
+            report['sheet_sources'] = report.get('sheet_sources', 0) + 1
 
     # -- what a value IS -------------------------------------------------
     def _pb_vn_apply_value_kinds(self, rules, report):

@@ -234,8 +234,7 @@ class PbDemoSeed(models.Model):
                 removed += 1
             except Exception as exc:              # noqa: BLE001
                 blocked.append('%s — %s' % (
-                    row.label or row.model_name,
-                    str(exc).strip().split('\n')[0]))
+                    row.label or row.model_name, self._why_blocked(exc)))
                 _logger.info("pb_demo_seed: could not remove %s(%s): %s",
                              row.model_name, row.res_id, exc)
         self.record_ids.filtered(lambda r: not r._record().exists()).unlink()
@@ -268,6 +267,18 @@ class PbDemoSeed(models.Model):
                 'state': 'returned', 'returned_date': fields.Date.today(),
                 'condition_in': 'Demo data removed'})
 
+        # A RUNNING CONTRACT holds its EMPLOYEE down — `hr.employee` refuses to
+        # be deleted while any contract of theirs is open, which is right, and
+        # which the register's reverse walk cannot fix on its own: the contract
+        # is deleted first, but only if nothing blocks it, and a contract whose
+        # employee is reused across loads can outlive one register. Closing them
+        # first costs nothing (they are deleted seconds later) and turns a
+        # refusal nobody can act on into no refusal at all.
+        contracts = self._registered('hr.contract')
+        running = contracts.filtered(lambda c: c.state == 'open')
+        if running:
+            self._quietly(running.write, {'state': 'close'})
+
         # An APPROVED time-off record refuses too, for the same kind of reason:
         # somebody has been told they have those days. Both of these take the
         # product's own route back to draft where there is one, because
@@ -283,6 +294,31 @@ class PbDemoSeed(models.Model):
                         break
                 if record.exists() and record.state not in ('draft', 'cancel'):
                     self._quietly(record.write, {'state': 'draft'})
+
+    #: Why a demo record most often will not go, in words rather than in SQL.
+    #:
+    #: Each of these is REAL WORK somebody did on top of the demo data, and the
+    #: whole reason the remove reports instead of forcing. The first one is the
+    #: one that matters: a pay run built on a demo person is the most likely
+    #: thing anybody will have made, and "violates foreign key constraint
+    #: hr_payslip_employee_id_fkey" is not a sentence that tells them so.
+    _BLOCK_REASONS = (
+        ('hr_payslip', "a pay run still includes this person — delete or "
+                       "cancel that run first"),
+        ('hr_contract', "a contract still points at this person"),
+        ('hr_leave', "a time-off record still points at this person"),
+        ('linked to an employee', "the contact belongs to an employee that is "
+                                  "still here"),
+        ('still with somebody', "the item is still handed out"),
+    )
+
+    @api.model
+    def _why_blocked(self, exc):
+        text = str(exc).strip().replace('\n', ' ')
+        for needle, sentence in self._BLOCK_REASONS:
+            if needle in text:
+                return sentence
+        return text.split('  ')[0][:160]
 
     def _registered(self, model_name):
         """The live records of one kind that this load made."""
@@ -448,6 +484,14 @@ class SeedContext:
             if (one._name, one.id) in self._seen:
                 continue
             self._seen.add((one._name, one.id))
+            # A row may already be here from a load whose removal was blocked —
+            # a pay run holding an employee down, say. Registering it twice
+            # would make the register describe one record as two.
+            if self.env['pb.demo.record'].sudo().search_count([
+                    ('seed_id', '=', self.seed.id),
+                    ('model_name', '=', one._name),
+                    ('res_id', '=', one.id)]):
+                continue
             if last:
                 self._late -= 1
                 sequence = self._late

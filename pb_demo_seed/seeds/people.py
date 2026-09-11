@@ -247,7 +247,27 @@ def _employee(ctx, spec, departments, jobs):
         if name in Employee._fields:
             vals[name] = value
 
-    employee = ctx.create('hr.employee', vals, label=spec['name'])
+    # REUSE A DEMO PERSON WHO SURVIVED A REMOVAL, rather than mint a second one
+    # with the same code.
+    #
+    # A remove reports what it could not delete instead of forcing, and the
+    # commonest reason is real work somebody built on top: a pay run that
+    # includes a demo employee holds that employee down. The rest of the world
+    # goes, the person stays, and the next load would otherwise create a SECOND
+    # DEMO002 — two people, one code, and an importer that has to pick.
+    #
+    # Matched on the employee code because that is what the pay-data file keys
+    # on, and scoped to this company because two tenants in one database may
+    # each have their own.
+    existing = Employee.sudo().with_context(active_test=False).search([
+        ('employee_id', '=', spec['code']),
+        ('company_id', '=', ctx.company.id),
+    ], limit=1)
+    if existing:
+        existing.sudo().write(dict(vals, active=True))
+        employee = ctx.track(existing, label=spec['name'])
+    else:
+        employee = ctx.create('hr.employee', vals, label=spec['name'])
 
     # The private contact Odoo makes for an employee is a record in its own
     # right and does not go when the employee does, so it joins the register.
@@ -285,13 +305,29 @@ def _bank_account(ctx, employee, spec):
         ctx.track(partner, label='%s — contact' % spec['name'], last=True)
         employee.sudo().work_contact_id = partner.id
 
-    account = ctx.create('res.partner.bank', {
+    # A BANK ACCOUNT IS ARCHIVED, NOT DELETED. Odoo keeps the row — an account
+    # number is evidence of where money went — so a removal leaves it behind
+    # archived, and a second load asking for the same number is refused outright
+    # with "already exists but is archived". Unarchiving what is there is both
+    # what Odoo asks for and what a person would do.
+    values = {
         'acc_number': number,
         'partner_id': partner.id,
         'bank_id': bank.id,
         'acc_holder_name': spec['name'],
         'company_id': ctx.company.id,
-    }, label='%s — %s' % (spec['name'], bank_name))
+    }
+    label = '%s — %s' % (spec['name'], bank_name)
+    existing = ctx.env['res.partner.bank'].sudo().with_context(
+        active_test=False).search([
+            ('partner_id', '=', partner.id),
+            ('acc_number', '=', number),
+        ], limit=1)
+    if existing:
+        existing.sudo().write(dict(values, active=True))
+        account = ctx.track(existing, label=label)
+    else:
+        account = ctx.create('res.partner.bank', values, label=label)
 
     if 'bank_account_ids' in employee._fields:
         employee.sudo().bank_account_ids = [(4, account.id)]

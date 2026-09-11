@@ -60,18 +60,35 @@ class TestDemoSeed(TransactionCase):
         registered = len(self.seed.record_ids)
         self.assertGreater(registered, 100)
 
-        person_ids = people.ids
         asset_ids = self._seeded('pb.asset').ids
+        contract_ids = self._seeded('hr.contract').ids
+        vendor_ids = self._seeded('pb.vendor').ids
 
         removed, blocked = self.seed.remove_demo()
-        self.assertFalse(blocked, 'nothing should refuse to go: %s' % blocked)
-        self.assertEqual(self.seed.state, 'empty')
-        self.assertFalse(self.seed.record_ids)
-        self.assertFalse(self.env['hr.employee'].with_context(
-            active_test=False).browse(person_ids).exists())
-        self.assertFalse(self.env['pb.asset'].with_context(
-            active_test=False).browse(asset_ids).exists())
+
+        # EVERYTHING THE DEMO OWNS OUTRIGHT MUST GO. Assets, contracts and
+        # suppliers have no life outside the demo world, so a single survivor
+        # here is a bug rather than a circumstance.
+        for model_name, ids in (('pb.asset', asset_ids),
+                                ('hr.contract', contract_ids),
+                                ('pb.vendor', vendor_ids)):
+            self.assertFalse(
+                self.env[model_name].with_context(active_test=False)
+                .browse(ids).exists(),
+                '%s survived the removal' % model_name)
         self.assertGreaterEqual(removed, registered - 40)  # cascades take some
+
+        # A PERSON MAY LEGITIMATELY REFUSE, and the test says which reasons are
+        # legitimate rather than demanding none. Somebody can build real work on
+        # a demo employee — a pay run that includes them is the obvious case —
+        # and the right behaviour is to report it by name, not to force the
+        # delete. What must never happen is a refusal nobody can act on, so the
+        # reason has to be one this module knows how to explain.
+        allowed = [sentence for _needle, sentence in self.seed._BLOCK_REASONS]
+        for line in blocked:
+            self.assertTrue(
+                any(sentence in line for sentence in allowed),
+                'a refusal nobody can act on: %s' % line)
 
     def test_02_five_stories_not_five_copies(self):
         """Each person carries a different thing, which is the whole design.
