@@ -23,8 +23,15 @@ import {
     patchWithCleanup,
 } from "@web/../tests/web_test_helpers";
 import { WarningDialog } from "@web/core/errors/error_dialogs";
+import { registry } from "@web/core/registry";
 
-import { BizErrorDialog, stripOdoo } from "@biz_theme/js/biz_error_dialogs";
+import {
+    BizErrorDialog,
+    bizRpcFallbackHandler,
+    stripOdoo,
+} from "@biz_theme/js/biz_error_dialogs";
+import { RPCError } from "@web/core/network/rpc";
+import { UncaughtPromiseError } from "@web/core/errors/error_service";
 
 describe.current.tags("desktop");
 
@@ -97,4 +104,101 @@ test("T3c — stripOdoo leaves technical identifiers alone", () => {
     );
     expect(stripOdoo("odoo.exceptions.UserError")).toBe("odoo.exceptions.UserError");
     expect(stripOdoo(null)).toBe(null);
+});
+
+// ---------------------------------------------------------------------------
+// ERRORS E2-1 — on the portal the calm dialog must win over the stock toast.
+//
+// The frontend bundle carries web/static/src/public/error_notifications.js,
+// which core's rpcErrorHandler consults BEFORE the dialog registry. Every name
+// we claim has to be off it, or the visitor gets a notification titled "Odoo
+// Session Expired" and none of the work above is ever reached.
+// ---------------------------------------------------------------------------
+const BIZ_CLAIMED = [
+    "odoo.http.SessionExpiredException",
+    "werkzeug.exceptions.Forbidden",
+    "504",
+    "odoo.exceptions.AccessError",
+    "odoo.exceptions.AccessDenied",
+    "odoo.exceptions.UserError",
+    "odoo.exceptions.ValidationError",
+    "odoo.exceptions.MissingError",
+];
+
+test("E1 — every name we draw a dialog for is off the notification registry", () => {
+    const notifications = registry.category("error_notifications");
+    const dialogs = registry.category("error_dialogs");
+    for (const name of BIZ_CLAIMED) {
+        expect(notifications.contains(name)).toBe(false, {
+            message: `${name} would still be shown as a plain toast`,
+        });
+        expect(dialogs.get(name)).toBe(BizErrorDialog, {
+            message: `${name} is no longer routed to the calm dialog`,
+        });
+    }
+});
+
+test("E2 — a notification key we do NOT claim is left to notify", () => {
+    // The removal has to be by name. Anything else registered for a toast —
+    // MailDeliveryException, a third-party module — must still get one, which
+    // means our fallback handler stands down and core's takes over.
+    const notifications = registry.category("error_notifications");
+    notifications.add("third.party.Boom", { title: "Boom", type: "warning" });
+    const env = {
+        services: {
+            dialog: { add: () => expect.step("dialog") },
+            notification: { add: () => expect.step("notification") },
+        },
+    };
+    const { error, originalError } = rpcPair("third.party.Boom");
+    expect(bizRpcFallbackHandler(env, error, originalError)).toBe(false, {
+        message: "we stole a notification key that was not ours",
+    });
+    expect.verifySteps([]);
+    notifications.remove("third.party.Boom");
+});
+
+/** Build the (error, originalError) pair core's handlers are called with. */
+function rpcPair(exceptionName) {
+    const originalError = new RPCError("boom");
+    originalError.exceptionName = exceptionName;
+    originalError.data = { message: "boom", arguments: ["boom"], context: {} };
+    originalError.code = 200;
+    const error = new UncaughtPromiseError();
+    error.unhandledRejectionEvent = { preventDefault() {} };
+    return { error, originalError };
+}
+
+test("E3 — a session-expired error opens the calm dialog, and adds no toast", async () => {
+    const opened = [];
+    const toasted = [];
+    const env = {
+        services: {
+            dialog: { add: (Component, props) => opened.push({ Component, props }) },
+            notification: { add: (message) => toasted.push(message) },
+        },
+    };
+    for (const name of ["odoo.http.SessionExpiredException", "werkzeug.exceptions.Forbidden"]) {
+        const { error, originalError } = rpcPair(name);
+        expect(bizRpcFallbackHandler(env, error, originalError)).toBe(true, {
+            message: `${name} was not handled by our fallback`,
+        });
+    }
+    expect(opened.length).toBe(2);
+    expect(opened.every((o) => o.Component === BizErrorDialog)).toBe(true);
+    expect(toasted.length).toBe(0);
+});
+
+test("E4 — the calm session screen says our sentence and offers a way back in", async () => {
+    patchWithCleanup(odoo, { debug: "" });
+    await mountBiz({
+        exceptionName: "odoo.http.SessionExpiredException",
+        message: "Your Odoo session expired. The current page is about to be refreshed.",
+        name: "odoo.http.SessionExpiredException",
+    });
+    expect(queryText(".biz-err__title")).toBe("Your session ended");
+    expect(queryAllTexts("footer button")).toEqual(["Sign in again"]);
+    expect(queryText(".biz-err")).not.toMatch(/odoo/i);
+    // Nothing technical on a session screen, in any mode.
+    expect(".biz-err__details-toggle").toHaveCount(0);
 });

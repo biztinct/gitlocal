@@ -21,6 +21,10 @@
  * to the stock dialog — which carries a vendor-branded title and an ungated
  * traceback expander. Every import below resolves to web/static/src/core/**,
  * which the frontend bundle already contains.
+ *
+ * On the FRONTEND bundle the "error_dialogs" registry is not enough on its own:
+ * core consults "error_notifications" first and returns. See the block just
+ * below the class, which takes our own names back off that registry.
  */
 
 import { browser } from "@web/core/browser/browser";
@@ -228,10 +232,44 @@ export class BizErrorDialog extends Component {
 }
 
 const errorDialogRegistry = registry.category("error_dialogs");
-for (const exceptionName of Object.keys(EXCEPTION_VARIANT)) {
+const errorNotificationRegistry = registry.category("error_notifications");
+
+/** Every exception name this file draws a dialog for. */
+const BIZ_DIALOG_KEYS = [...Object.keys(EXCEPTION_VARIANT), "504"];
+
+for (const exceptionName of BIZ_DIALOG_KEYS) {
     errorDialogRegistry.add(exceptionName, BizErrorDialog, { force: true });
 }
-errorDialogRegistry.add("504", BizErrorDialog, { force: true });
+
+// ---------------------------------------------------------------------------
+// ...and take those same names OFF the notification registry.
+//
+// web/static/src/core/errors/error_handlers.js:52 asks the "error_notifications"
+// registry BEFORE "error_dialogs" and returns as soon as it hits:
+//
+//     if (errorNotificationRegistry.contains(exceptionName)) {
+//         env.services.notification.add(...); return true;   // dialogs never consulted
+//     }
+//
+// web/static/src/public/error_notifications.js — bundled into
+// web.assets_frontend but NOT into web.assets_backend (web/__manifest__.py) —
+// fills that registry with `odoo.http.SessionExpiredException`,
+// `werkzeug.exceptions.Forbidden`, `504` AND, through the
+// odooExceptionTitleMap.forEach loop at the top of the file, every named
+// exception in error_dialogs.js (AccessError, UserError, ValidationError,
+// MissingError, ...). So on the PORTAL and the WEBSITE every dialog below was
+// silently skipped and the visitor got a stock toast titled "Odoo Session
+// Expired" instead. The backend was unaffected, which is why it went unnoticed.
+//
+// We remove exactly the names we ourselves claim above — never more. A
+// notification key belonging to anybody else (MailDeliveryException, a
+// third-party module) is left registered and keeps notifying.
+// ---------------------------------------------------------------------------
+for (const exceptionName of BIZ_DIALOG_KEYS) {
+    if (errorNotificationRegistry.contains(exceptionName)) {
+        errorNotificationRegistry.remove(exceptionName);
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Generic (unnamed) error dialogs. An uncaught server/client/network traceback
@@ -301,7 +339,13 @@ patch(RedirectWarningDialog.prototype, {
 // behind debug mode and offers "Copy details" for support.
 // ---------------------------------------------------------------------------
 const errorHandlerRegistry = registry.category("error_handlers");
-const errorNotificationRegistry = registry.category("error_notifications");
+
+/** True when `name` still resolves to OUR dialog in the error_dialogs registry. */
+function bizOwnsDialog(name) {
+    return Boolean(
+        name && errorDialogRegistry.contains(name) && errorDialogRegistry.get(name) === BizErrorDialog
+    );
+}
 
 /**
  * True when this server error already has its own presentation and should be
@@ -313,6 +357,16 @@ function hasSpecificHandling(originalError) {
         return true;
     }
     const name = originalError.exceptionName;
+    // A name WE claim is ours to draw, whatever the notification registry says.
+    // Asked here, per error, rather than only at module load: it makes the
+    // portal fix independent of whether this file happens to evaluate after
+    // web/static/src/public/error_notifications.js. If the removal above ran
+    // too early and core re-registered the key, this still routes the error to
+    // BizErrorDialog through bizRpcFallbackHandler (sequence 96) — one step
+    // ahead of the core handler that would have toasted it.
+    if (bizOwnsDialog(name)) {
+        return false;
+    }
     if (name && (errorNotificationRegistry.contains(name) || errorDialogRegistry.contains(name))) {
         return true;
     }

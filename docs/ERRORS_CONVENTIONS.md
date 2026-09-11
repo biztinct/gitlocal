@@ -195,3 +195,72 @@ serving the old compiled QWeb template: a `website.page` whose view arch and
 and busting the URL with a query string changed nothing. `systemctl restart
 odoo-server` made it correct immediately. When a shell edit "did not take",
 restart before you go looking for a bug.
+
+## ER14 — `error_notifications` holds far more than the three obvious keys
+
+`web/static/src/public/error_notifications.js` looks like three registrations
+(`odoo.http.SessionExpiredException`, `werkzeug.exceptions.Forbidden`, `504`),
+but its first statement is:
+
+```js
+odooExceptionTitleMap.forEach((title, exceptionName) => {
+    registry.category("error_notifications").add(exceptionName, {...});
+});
+```
+
+`odooExceptionTitleMap` (`web/static/src/core/errors/error_dialogs.js:30`) holds
+nine more — `AccessError`, `AccessDenied`, `UserError`, `ValidationError`,
+`MissingError`, `MissingActionError`, `ServerActionWithWarningsError`,
+`MailDeliveryException`, `Warning`. Since core's `rpcErrorHandler` consults
+`error_notifications` **before** `error_dialogs` and returns on a hit, **every**
+`BizErrorDialog` variant was shadowed on the portal and the website, not just
+the session one.
+
+Two consequences, both binding:
+
+* the removal must cover every name `biz_error_dialogs.js` claims, not three;
+* it must be **by name**. `MailDeliveryException` is in that map but is not one
+  of ours; clearing the registry would steal a presentation we never designed.
+
+The file is bundled into `web.assets_frontend` only — `web/__manifest__.py:238`
+adds `web/static/src/public/**/*.js`, and `web.assets_unit_tests:462` removes
+this one file explicitly. So the backend never had the bug, and a hoot test
+cannot assert on the registry's real frontend contents: it must assert on the
+*behaviour* (does our fallback handler take this error, or stand down).
+
+## ER15 — hoot JS unit tests cannot run on this server
+
+There is no `chromium` / `google-chrome` binary on `Payobook19v2`, so
+`HttpCase.browser_js`, `/web/tests` and therefore the whole `web.assets_unit_tests`
+suite have nothing to run in. A `.test.js` file added to `web.assets_unit_tests`
+is written, deployed and never executed here.
+
+So a JS behaviour needs **two** proofs on this platform:
+
+1. a Python test for the plumbing the JS depends on — is the file in the bundle,
+   is it in the right order, is the seam still in the source (`ir.asset._get_asset_paths`
+   answers the first two); and
+2. a Chrome MCP pass against the live site for the behaviour itself.
+
+Neither substitutes for the other. Do not report a hoot suite as "passing".
+
+## ER16 — `--db-filter=.*` fails four unrelated tests, and they are not yours
+
+ER7's override is required, and it has a side effect: with more than one
+database visible, `/web/login` and `/web/database/manager` answer the **database
+selector**, not the page the test expects. On this build that reliably fails:
+
+| Test | Why |
+|---|---|
+| `biz_theme … TestTheBlockRuns.test_the_rail_is_armed_by_default` | selector page has no `debug: "…"` marker |
+| `biz_theme … TestTheBlockRuns.test_the_switch_stands_the_rail_down` | same |
+| `biz_theme … TestTheBlockRuns.test_asking_for_developer_mode_without_being_anybody_gets_nothing` | same |
+| `biz_debrand … TestBizDebrandHttp.test_database_manager_debranded` | fails **with or without** the flag — see below |
+
+Re-run the first three **without** `--db-filter=.*` before blaming a change.
+
+`test_database_manager_debranded` is a genuine, pre-existing leak: the database
+manager page is rendered before a database is chosen, so none of `biz_debrand`'s
+five seams can reach it and its `<title>odoo</title>` stands. It is unreachable
+in production — `location ^~ /web/database/ { return 404; }` is in every server
+block — so it is logged here rather than fixed.
