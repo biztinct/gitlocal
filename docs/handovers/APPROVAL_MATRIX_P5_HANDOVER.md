@@ -79,3 +79,14 @@ Local: `runtests.sh pb_pay_delivery` (`EXTRA=` nothing — must install without 
 
 ## 7. Report back
 Per P2 §8 plus: the hash/control-total verification points, the exact fast-lane behaviour per process, the migration for existing Records Desk rows, and anything P6 must know about `pb.oneoff.feed` state constants.
+
+## 8. Addendum after Phase 4 (13 Sep) — read before starting
+- Ledger now runs AM1–AM69; P4's report is the last message of agent "Build Approval Matrix Phase 4" and `APPROVAL_MATRIX_P4_DEPLOY.md` lists its modules. Phase 3 rewrote `hr.payslip.run` states to `draft/approval_pending/done/cancel` (read `pb_payruns/models/hr_payslip_run.py` for `_approval_context`, `pb_prepared_uid`, seal, `approval_state`) — clone its adapter shape.
+- `pb.oneoff.feed` was NOT touched by P3/P4: `FEEDABLE_SLIP_STATES` still names the old states — fix it in this phase (item 2) and add the ledger entry.
+- Two generic adapter hooks exist: `_approval_card_count(request)` and `_approval_detail(request)` — implement them for counts/small tables (bank file rows, records rows, arrival rows); write no inbox JS.
+- Timesheets: `pb.timesheet.packet` owns its week's overtime states; the freeze on `hr.attendance`/`hr.overtime.request` refuses writers without `_TS_CHAIN_TOKEN`. Not in P5 scope, but do not touch those tables.
+- Scheme changes: never call `action_activate`/`branch_merge`/`release_approve`/`rollback_apply` directly; the only door is `pb.scheme.proposal.propose(...)` + `action_submit()`. `hr.formula.config._content_hash()` is the single content stamp.
+- `pb_hr_payroll_formula` depends on `biz_approval_workflow` only — never on `pb_approval_config` (AM52). Put the import-batch cockpit/wizard changes in `pb_import_batch` / `pb_payrun_wizard`.
+- Process keys are short single words (`scheme`, `payrun`, AM51): use `bankfile`, `release`, `journal`, `payslips`, `records`, `runonly`, `loads`, `arrivals` exactly; catalogue rows in `pb_approval_config/data/processes.xml` are `noupdate` — repoint model/connected via the adapter seeds (AM45).
+- A seat is also a read (AM60): every new model needs read access for whoever can be seated (mirror `seat_user_ids` + record rule as `pb_timesheet_approval/models/week_freeze.py` does).
+- Test harness: `RUN-TESTS: <module> [EXTRA=<mods>]` when the model under test lives in another module (AM57); the 8090 server must not hold the DB you re-run (AM69).
