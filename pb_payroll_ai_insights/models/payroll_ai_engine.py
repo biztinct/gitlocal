@@ -12,8 +12,63 @@ from .ai_redaction import (
 _logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# ERRORS E4-3 — the assistant is the ONE surface no rewrite rule can reach
+# ---------------------------------------------------------------------------
+# "Welcome to Payobook", greeting a Rize employee, exists in no source file and
+# no rize database column. The assistant WROTE it, because the prompt told it
+# what the product is called. Generated prose arrives after every seam has run,
+# so the prompt is the only place this can be fixed.
+#
+# TWO DIFFERENT FIXES FOR TWO DIFFERENT NAMES, AND THE DIFFERENCE IS THE POINT.
+#
+#   * OUR product name is PARAMETERISED: `%(brand)s`, filled in at send time
+#     from the brand this database carries. On a default customer that is
+#     "Payobook"; on a white-labelled one it is their own name. Nothing is lost,
+#     because the assistant genuinely needs to know what to call the product.
+#
+#   * The VENDOR's name is DELETED. It is not reworded, not parameterised and
+#     not replaced: the sentence that told the assistant what the platform is
+#     built on is gone. "A Payobook-based multi-country platform" would be
+#     nonsense, and the assistant never needs the fact to answer a payroll
+#     question. The owner's rule is that a user must never see the vendor's
+#     name; removing the fact is how that is GUARANTEED rather than hoped for.
+#
+# And because a large model can guess a framework from the shape of a screen
+# even with the fact removed, IDENTITY_RULES below closes the question
+# explicitly. Deleting the fact is necessary; the instruction is what makes the
+# behaviour reliable when somebody asks outright. Both prompts carry it.
+IDENTITY_RULES = """
+ABOUT YOURSELF — THESE RULES OVERRIDE ANYTHING ELSE IN THIS PROMPT:
+- You are PayAI, the payroll assistant inside %(brand)s. The product is called %(brand)s.
+- ANSWER questions about WHAT this is: if asked what product this is, what app this is, or what it does, say it is %(brand)s and describe what it does for payroll. That is a normal question and must never be refused.
+- REFUSE questions about WHAT IT IS MADE OF: you do not know, and must never name, guess, hint at or discuss the software, framework, vendor, library, database or platform %(brand)s is built on, or any other product it may resemble. That information is not available to you.
+- If you are asked what it is built on, what it runs on, what technology or framework it uses, who makes it, or whether it is based on some other product, say in one short sentence that you cannot discuss the technology behind %(brand)s, then offer to help with a payroll question. Do not speculate and do not apologise at length.
+- Never mention any company or product name other than %(brand)s and the customer's own.
+"""
+
+
+#: The slot a prompt leaves for whatever this customer calls the product.
+BRAND_SLOT = "%(brand)s"
+
+
+def brand_prompt(template, brand):
+    """Fill a prompt template's brand slots with this database's brand.
+
+    A plain function so that "the prompt names the brand and not the product"
+    is a claim about a STRING, assertable with no provider and no network —
+    the same reason ``data_query_prompt`` and the report builders are pure.
+
+    A literal ``replace`` rather than ``%`` or ``.format``: these templates are
+    full of JSON braces and Chart.js examples, and a prompt that raises on a
+    stray ``%`` or ``{`` would take the whole assistant down for a branding
+    change. The substitution cannot fail.
+    """
+    return template.replace(BRAND_SLOT, brand or "this product")
+
+
 # System prompt for PayAI
-PAYAI_SYSTEM_PROMPT = """You are PayAI, an intelligent payroll analytics assistant for Payobook.
+PAYAI_SYSTEM_PROMPT = """You are PayAI, an intelligent payroll analytics assistant for %(brand)s.
 You help HR managers and payroll administrators with:
 
 1. PAYROLL DATA QUERIES: When users ask about payroll data (salaries, costs, headcount, overtime, deductions, etc.), you analyze the provided data and generate insights with chart configurations.
@@ -72,13 +127,13 @@ FOR NON-DATA QUESTIONS:
   - "follow_up_questions": []
 
 ALWAYS respond with valid JSON. Never include markdown code fences around the JSON.
-"""
+""" + IDENTITY_RULES
 
 INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one of these categories:
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "onboarding" - User asks HOW to USE the Payobook app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started).
+3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started).
 4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
@@ -88,15 +143,23 @@ Respond with ONLY the category name, nothing else. Just one word from: payroll_d
 
 # Onboarding copilot — grounded in the real Payobook demo product so answers are
 # accurate, and able to open a pb_learn LESSON via an optional "action".
-ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for Payobook, an Odoo-based multi-country payroll platform. The user is exploring a shared, read-only Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions; payroll is computed by Excel-style FORMULA CONFIGS, not traditional salary structures).
+#
+# E4-3. The sentence that used to stand here read "…the in-app onboarding
+# copilot for Payobook, an Odoo-based multi-country payroll platform". The
+# vendor clause is DELETED rather than reworded — the assistant was being told
+# what the platform is built on so that it could tell a customer, and that is
+# the breach. The demo company's name stays as written because it is the name of
+# a real record in the demo world, not a statement about what the product is
+# called (ER23: a record's own name is data and is never rewritten).
+ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for %(brand)s, a multi-country payroll platform. The user is exploring a shared, read-only Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions; payroll is computed by Excel-style FORMULA CONFIGS, not traditional salary structures).
 
-Answer "how do I…" / "where is…" / "show me" questions about USING Payobook with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable.
+Answer "how do I…" / "where is…" / "show me" questions about USING %(brand)s with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable.
 
 NAVIGATION: a left sidebar, in this order — Overview (Dashboard, Approvals), Pay Run (Run Payroll, Pay Runs, Payslips, Import Data, Full & Final, Proration Audit, Retro Adjustments), Setup (Formula Engine, Salary Structures, Statutory, Integrations), People (Employees, Contracts), Insights (Insights, Explorer, Workforce Analytics), Compliance (Government Reports) and Learning (Learn — the guided Journey, where every lesson below lives). Admin is not available to demo accounts, and Setup is read-only there.
 
 HOW TO RUN PAYROLL (the core flow):
 1. On the Dashboard, click "Run Payroll" (top-right) to open the pay-run wizard.
-2. "Select period": pick a Division (e.g. Retail). Payobook auto-loads that division's formula config and eligible employees; the period is the demo month (June 2026).
+2. "Select period": pick a Division (e.g. Retail). %(brand)s auto-loads that division's formula config and eligible employees; the period is the demo month (June 2026).
 3. Click "Compute payslips" — the formula engine generates a draft payslip per employee (gross, allowances, overtime, statutory BHXH/BHYT/BHTN, PIT, net).
 4. "Review exceptions": check any flagged items, then "Open Payroll" to open the draft run.
 5. Approve through the states: Draft -> Submit -> HR review -> GM approval -> Done. Each transition is role-gated.
@@ -124,7 +187,7 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "follow_up_questions": ["<2-3 helpful next questions>"],
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
-Include "action" ONLY when a listed lesson clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or lesson keys that are not listed above."""
+Include "action" ONLY when a listed lesson clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or lesson keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -299,6 +362,35 @@ class PayrollAIEngine(models.Model):
             _logger.warning("PayAI: could not store the redaction map: %s", exc)
             return False
 
+    def _brand_name(self):
+        """What THIS customer calls the product, read at send time.
+
+        ERRORS E4-3. Read per request rather than cached on the class: one
+        server process serves every customer's database on this platform, so a
+        value remembered at import time would be whichever database happened to
+        boot the registry first — and the assistant would introduce itself to
+        one customer under another customer's brand.
+
+        Falls back to the company's own name and then to a neutral phrase.
+        Never to a hard-coded product name: a fallback is the path nobody
+        watches, and getting this one wrong is exactly the bug E4 exists to fix.
+        """
+        try:
+            icp = self.env["ir.config_parameter"].sudo()
+            brand = (
+                icp.get_param("biz_debrand.brand_name")
+                or icp.get_param("web_debranding.new_name")
+                or (self.env.company.name if self.env.company else "")
+            )
+            return (brand or "").strip() or "this product"
+        except Exception:                                   # noqa: BLE001
+            _logger.warning("PayAI: could not read the brand", exc_info=True)
+            return "this product"
+
+    def _system_prompt(self, template):
+        """A prompt template, branded for this database."""
+        return brand_prompt(template, self._brand_name())
+
     def _classify_intent(self, provider, message):
         """Classify the user's message intent.
 
@@ -408,7 +500,7 @@ class PayrollAIEngine(models.Model):
             safe_message, json.dumps(redacted_data, indent=2, default=str))
 
         messages = [
-            {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
+            {"role": "system", "content": self._system_prompt(PAYAI_SYSTEM_PROMPT)},
         ]
         # Add recent conversation history for context
         for msg in conversation_history[-6:]:
@@ -468,7 +560,7 @@ class PayrollAIEngine(models.Model):
                                  mapping=None):
         """Process a payroll knowledge question."""
         messages = [
-            {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
+            {"role": "system", "content": self._system_prompt(PAYAI_SYSTEM_PROMPT)},
         ]
         for msg in conversation_history[-6:]:
             messages.append({
@@ -635,7 +727,8 @@ class PayrollAIEngine(models.Model):
     def _process_onboarding_query(self, provider, message, conversation_history,
                                   context=None, mapping=None):
         """Answer a 'how do I use Payobook' question, optionally launching a tour."""
-        messages = [{"role": "system", "content": ONBOARDING_SYSTEM_PROMPT}]
+        messages = [{"role": "system",
+                     "content": self._system_prompt(ONBOARDING_SYSTEM_PROMPT)}]
         screen_desc = self._describe_screen((context or {}).get('screen'))
         if screen_desc:
             messages.append({
@@ -667,7 +760,7 @@ class PayrollAIEngine(models.Model):
                                mapping=None):
         """Process a general (non-payroll) question."""
         messages = [
-            {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
+            {"role": "system", "content": self._system_prompt(PAYAI_SYSTEM_PROMPT)},
         ]
         for msg in conversation_history[-6:]:
             messages.append({
