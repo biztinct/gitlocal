@@ -109,23 +109,29 @@ class SchemeProposalCase(TransactionCase):
                     'scope_label': scope or self.company.name,
                     'user_id': self.env.user.id})
 
-    def _config(self, name='SC probe', code='SCPROBE', state='draft'):
+    def _config(self, name='SC probe', code='SCPROBE', state='draft',
+                on_payslip=False):
         config = self.env['hr.formula.config'].create({
             'name': name, 'code': code, 'country_code': 'VN',
             'company_id': self.company.id, 'state': state})
         self._clear_payrun_gap(config)
-        # `category_id` is NOT NULL on `hr.payslip.line`, so a component that
-        # appears on a payslip and has no category takes the whole computation
-        # down at INSERT time. Every fixture component carries one.
+        # A COMPONENT THAT APPEARS ON A PAYSLIP BECOMES A PAYSLIP LINE, and a
+        # payslip line needs both a category and a salary rule — both NOT NULL
+        # on this build, both failing from deep inside the computation with a
+        # message about a column. These fixtures are about the approval of a
+        # scheme change and not about printing anything, so their components
+        # stay off the payslip; the category is filled anyway, because a
+        # fixture that is wrong in a way nothing checks is a trap for the next
+        # reader.
         category = self._category()
-        self.env['hr.formula.rule'].create({
+        base = {'category_id': category.id, 'appears_on_payslip': on_payslip}
+        self.env['hr.formula.rule'].create(dict(base, **{
             'config_id': config.id, 'name': 'Basic', 'code': 'SCBASIC',
-            'column_type': 'input', 'sequence': 10,
-            'category_id': category.id})
-        self.env['hr.formula.rule'].create({
+            'column_type': 'input', 'sequence': 10}))
+        self.env['hr.formula.rule'].create(dict(base, **{
             'config_id': config.id, 'name': 'Gross', 'code': 'SCGROSS',
-            'column_type': 'formula', 'excel_formula': '=A1', 'sequence': 20,
-            'category_id': category.id})
+            'column_type': 'formula', 'excel_formula': '=A1',
+            'sequence': 20}))
         return config
 
     def _category(self):

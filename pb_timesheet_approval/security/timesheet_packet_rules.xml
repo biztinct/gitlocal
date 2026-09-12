@@ -10,6 +10,12 @@
          no HR role at all, which is why the narrow rule below exists: their
          own week, and the weeks of the people who report to them.
 
+         The third clause is the one that keeps a route working: a person who
+         has been ASKED to decide a week can read it, whatever else they hold.
+         Most HR leads hold no workforce role at all, and without this the
+         engine would give them a seat and then refuse them the record the seat
+         is about.
+
          Rules attached to different groups are OR-ed, so the wide rule does
          not have to repeat the narrow one — an HR officer sees the company,
          a plain manager sees their own people, and both come out of the same
@@ -27,9 +33,10 @@
         <field name="name">Weekly timesheet: mine and my team's</field>
         <field name="model_id" ref="model_pb_timesheet_packet"/>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-        <field name="domain_force">['|',
+        <field name="domain_force">['|', '|',
             ('employee_id.user_id', '=', user.id),
-            ('employee_id.parent_id.user_id', '=', user.id)]</field>
+            ('employee_id.parent_id.user_id', '=', user.id),
+            ('seat_user_ids', 'in', [user.id])]</field>
     </record>
 
     <record id="rule_packet_workforce" model="ir.rule">

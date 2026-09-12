@@ -200,3 +200,31 @@ class HrOvertimeRequest(models.Model):
     def _pb_freeze_bypass(self):
         from .timesheet_packet import _TS_CHAIN_KEY, _TS_CHAIN_TOKEN
         return self.env.context.get(_TS_CHAIN_KEY) is _TS_CHAIN_TOKEN
+
+
+class BizApprovalRequestSeat(models.Model):
+    """A seat on a week's approval is also a permission to READ that week.
+
+    Not a permission to do anything else: `seat_user_ids` is used by one record
+    rule and nothing else, and the engine still re-checks the seat, the account
+    and the independence rule on every decision. Written on create so a
+    hand-over or a late reassignment — both of which create a new seat — carry
+    the same read with them.
+    """
+    _inherit = 'biz.approval.request.seat'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        seats = super().create(vals_list)
+        for seat in seats:
+            request = seat.step_id.request_id
+            if request.res_model != 'pb.timesheet.packet' or not request.res_id:
+                continue
+            packet = self.env['pb.timesheet.packet'].sudo().browse(
+                request.res_id).exists()
+            people = {seat.acting_user_id.id, seat.user_id.id}
+            people.discard(False)
+            if packet and people:
+                packet.sudo().write({
+                    'seat_user_ids': [(4, uid) for uid in sorted(people)]})
+        return seats

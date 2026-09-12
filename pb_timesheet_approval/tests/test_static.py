@@ -22,6 +22,13 @@ def _read(*parts):
         return handle.read()
 
 
+def _strip_comments(text):
+    """XML and block comments out — an engineering note is not a screen."""
+    out = re.sub(r'<!--.*?-->', '', text, flags=re.S)
+    out = re.sub(r'/\*.*?\*/', '', out, flags=re.S)
+    return re.sub(r'^\s*//.*$', '', out, flags=re.M)
+
+
 def _walk(root, suffixes):
     for base, _dirs, files in os.walk(root):
         if '__pycache__' in base or os.sep + 'tests' in base + os.sep:
@@ -35,8 +42,9 @@ def _walk(root, suffixes):
 class StaticContractCase(TransactionCase):
 
     def test_no_vendor_name_in_anything_a_person_reads(self):
-        """The white-label rule. Technical identifiers are never touched, so
-        this looks only at the strings and the markup."""
+        """The white-label rule. Technical identifiers and engineering
+        COMMENTS are never touched — the rule binds what a person can read on
+        a screen — so both are stripped before the scan."""
         offenders = []
         for path in _walk(HERE, ('.py', '.js', '.xml', '.scss', '.csv')):
             if path.endswith('.py'):
@@ -47,7 +55,7 @@ class StaticContractCase(TransactionCase):
                     and 'import' not in line
                     and not line.strip().startswith('#'))
             else:
-                text = _read(path)
+                text = _strip_comments(_read(path))
             if 'Odoo' in text:
                 offenders.append(os.path.relpath(path, HERE))
         self.assertFalse(offenders, 'the vendor name is readable in %s'
@@ -82,6 +90,12 @@ class StaticContractCase(TransactionCase):
                 if not (stripped.startswith('raise UserError(')
                         or stripped.startswith('raise AccessError(')
                         or stripped.startswith('raise ValidationError(')):
+                    continue
+                # A raise whose argument is a call — `_frozen_message(...)`
+                # — carries no string of its own to translate; the message it
+                # builds is translated where it is written. Only a raise with a
+                # LITERAL in it can be an untranslated message.
+                if '"' not in line and "'" not in line:
                     continue
                 if '_(' not in line:
                     offenders.append('%s:%s' % (

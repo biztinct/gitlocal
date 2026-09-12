@@ -386,18 +386,25 @@ class TimesheetPacketCase(TransactionCase):
         self.assertFalse(rows)
 
     def test_s04_the_rung_is_silent_when_the_setting_is_off(self):
-        """With the setting off, this module contributes no value at all."""
+        """With the setting off, this module answers for nothing.
+
+        Asserted as "the value did not come from the approved week" rather than
+        as "there is no value": the rung BELOW may well fill a declared input
+        from its own sources or its own default, and it is not this module's
+        business whether it does.
+        """
+        packet = self._approved_week()
+        self.assertEqual(packet.reg_hours, 40.0)
         self.company.pb_timesheet_payroll = False
-        packet = self.Packet.sudo().create({
-            'employee_id': self.worker.id, 'week_start': self.monday,
-            'company_id': self.company.id})
-        self.assertTrue(packet.id)
         config = self._fake_config(['REGHRS'])
         if config is None:
             self.skipTest('the formula engine is not installed here')
         slip = self._slip(config)
-        values = slip._get_formula_input_values(config, provenance={})
-        self.assertNotIn('REGHRS', values)
+        provenance = {}
+        values = slip._get_formula_input_values(config, provenance=provenance)
+        self.assertNotEqual(values.get('REGHRS'), 40.0)
+        self.assertNotEqual((provenance.get('REGHRS') or {}).get('via'),
+                            'timesheet_packet')
 
     def test_s04_the_rung_fills_the_codes_the_scheme_declares(self):
         packet = self._approved_week()

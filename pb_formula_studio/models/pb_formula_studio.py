@@ -3936,7 +3936,12 @@ class PbFormulaStudio(models.AbstractModel):
         while code in existing:
             i += 1
             code = '%s_BR%s' % (base_code, i)
-        fork = self.env['hr.formula.config.milestone'].sudo().record(
+        # SEALED with its version high-water mark, not merely `record`ed. A
+        # milestone with no hwm falls back to a TIMESTAMP boundary, and inside
+        # one transaction every row shares one timestamp — so a branch forked
+        # and merged in the same request found "nothing has changed since the
+        # fork" and sealed no release (W86, in its most total form).
+        fork = self._seal_milestone(
             parent, _("Branched: %s") % ((name or '').strip() or _("branch")))
         branch = parent.copy({
             'name': (name or '').strip() or (_("%s — branch") % parent.name),
@@ -7025,6 +7030,12 @@ class PbFormulaStudio(models.AbstractModel):
         'employee_mapping': 'fallback',
         'contract': 'fallback',
         'contract_field': 'fallback',
+        # The run's own dates answering a code is a FALLBACK, not a wiring:
+        # the pay-period source fills only what nothing else filled, and can
+        # never take a number off a spreadsheet or a feed. It arrived with the
+        # pay-period source and had no bucket at all, so the landing tab has
+        # been counting it silently as 'default' ever since.
+        'pay_period': 'fallback',
         'contract_default': 'default',
         'constant': 'default',
         'default': 'default',

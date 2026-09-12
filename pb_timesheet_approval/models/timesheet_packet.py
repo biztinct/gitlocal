@@ -118,6 +118,18 @@ class PbTimesheetPacket(models.Model):
     ot_apply_note = fields.Char(string='Overtime carried out', readonly=True,
                                 copy=False)
 
+    # WHO HAS BEEN ASKED TO DECIDE THIS WEEK — a technical mirror of the
+    # request's own seats, and the only reason it exists is that a record rule
+    # is a DOMAIN. The engine re-checks `check_access('read')` on this record
+    # before it lets anybody decide a step, so an HR lead who holds no
+    # workforce role at all — which is most of them — could be given a seat and
+    # then refused the very record the seat is about. The same shape as the
+    # engine's own `maker_user_ids` (ledger AM8): the answer already exists,
+    # and a rule cannot reach it without a column.
+    seat_user_ids = fields.Many2many(
+        'res.users', 'pb_timesheet_packet_seat_rel', 'packet_id', 'user_id',
+        string='Asked to decide', copy=False, readonly=True)
+
     _week_uniq = models.Constraint(
         'unique(employee_id, week_start)',
         'This person already has a timesheet for that week.')

@@ -36,6 +36,31 @@ class TestRd46PersonPreview(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.Studio = cls.env['pb.formula.studio']
+        cls._no_scheme_change_route()
+
+    @classmethod
+    def _no_scheme_change_route(cls):
+        """This company has not set up approval for scheme changes.
+
+        Two of these cases edit a formula on a LIVE scheme, because that is the
+        point of the panel: try a change against a real case. From the Approval
+        Matrix phase onwards that edit is refused wherever the business has
+        published a scheme-change route — "create a branch, make the change
+        there, then propose it" — and the seed publishes one for every company.
+
+        The rule is not bypassed here and there is no blanket exemption: the
+        test company is simply put in the other state the product supports,
+        which is a business that has not asked for that check. The isolation
+        rule itself is tested where it belongs, in
+        `test_scheme_gate.py` and `pb_hr_payroll_formula`'s own suite.
+        """
+        process = cls.env['biz.approval.process']._by_key('scheme')
+        if not process:
+            return
+        cls.env['biz.approval.binding'].sudo().search([
+            ('company_id', '=', cls.env.company.id),
+            ('process_id', '=', process.id),
+            ('active', '=', True)]).write({'active': False})
 
     # ------------------------------------------------------------- fixtures
     #: A scheme CODE is unique per database, and three of these cases build a

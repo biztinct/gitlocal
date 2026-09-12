@@ -103,7 +103,9 @@ class SchemeGateCase(TransactionCase):
         category = self.env['hr.salary.rule.category'].search(
             [('code', '=', 'BASIC')], limit=1) \
             or self.env['hr.salary.rule.category'].search([], limit=1)
-        values = {'category_id': category.id} if category else {}
+        values = {'appears_on_payslip': False}
+        if category:
+            values['category_id'] = category.id
         self.env['hr.formula.rule'].create(dict(values, **{
             'config_id': config.id, 'name': 'Basic', 'code': 'SGBASIC',
             'column_type': 'input', 'sequence': 10}))
