@@ -170,6 +170,12 @@
               </div>
               <div class="pbam-reqright">
                 <div t-if="cd.amount" class="pbam-amt" t-esc="money(cd.amount, cd.currency)"/>
+                <!-- How big it is, in the units the thing is counted in, and
+                     what kind of thing it is. Both come off the frozen facts,
+                     so a card never says something the decision was not made
+                     on. -->
+                <div t-if="cd.count" class="pbam-cnt" t-esc="cd.count"/>
+                <div t-if="cd.kind" class="pbam-kind" t-esc="cd.kind"/>
                 <div t-if="cd.due_at" class="pbam-due" t-att-class="{ 'is-late': cd.late }">
                   <t t-out="ic('clock',11)"/> <span>Due <t t-esc="when(cd.due_at)"/></span>
                 </div>

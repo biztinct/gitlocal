@@ -2,6 +2,7 @@
 <odoo>
     <!--
       Enhance the native Payslip Batch form (kept editable + VU-skinned):
+        - replace the old three-tier header buttons with one Submit
         - swap the plain statusbar for the pb_pipeline approval widget
         - inject a KPI summary band (gross / deductions / net / employees)
         - tag the <form> for scoped styling (pb-payrun-form)
@@ -17,43 +18,20 @@
                 <attribute name="class" add="pb-payrun-form" separator=" "/>
             </xpath>
 
-            <!-- Phase L: the Officer tier the legacy header knows nothing about.
-                 Its label says "Submit for HR Manager" on the draft button; the
-                 run now lands on Officer review first, so relabel it and add the
-                 officer advance. (Server-side _pb_require_tier is the guard —
-                 these invisible= rules are only tidiness.) -->
-            <xpath expr="//header/button[@name='done_payslip_run']" position="attributes">
-                <attribute name="string">Submit for approval</attribute>
-            </xpath>
-            <xpath expr="//header/button[@name='action_payslip_run_level1_done']" position="before">
-                <button name="action_payslip_run_level0_done" type="object"
-                        string="Payroll Officer Approve" invisible="state != 'level0'"
-                        class="oe_highlight"/>
-            </xpath>
-            <xpath expr="//header/button[@name='action_payslip_run_level2_done']" position="attributes">
-                <attribute name="string">Finance Approve</attribute>
+            <!-- The two tier-advance buttons are gone with the tiers. Who signs
+                 a pay run off is now a published route, so there is exactly one
+                 thing to press here — Submit for approval — and the decision
+                 itself is made in Approvals, against the request. -->
+            <xpath expr="//header/button[@name='action_payslip_run_level1_done']" position="replace"/>
+            <xpath expr="//header/button[@name='action_payslip_run_level2_done']" position="replace"/>
+
+            <xpath expr="//header/button[@name='done_payslip_run']" position="replace">
+                <button name="action_approval_submit" type="object"
+                        string="Submit for approval" class="oe_highlight"
+                        invisible="state != 'draft'"/>
             </xpath>
             <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="attributes">
-                <attribute name="invisible">state not in ('draft', 'level0', 'level1', 'level2')</attribute>
-            </xpath>
-
-            <!-- Refusing a run has two shapes now. "Send back" returns it ONE
-                 stage with its payslips intact — what an approver looking at a
-                 wrong number nearly always wants — while Reject still kills the
-                 run and cancels its payslips. On a finished run the same action
-                 is the final approver's undo of a mistaken Approve; the server
-                 withdraws it once the payslips have been emailed out
-                 (pb_can_undo_approval). Server-side gating lives in
-                 action_pb_send_back — these invisible= rules are only tidiness. -->
-            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="before">
-                <button name="action_pb_send_back" type="object"
-                        string="Send Back"
-                        invisible="state not in ('level0', 'level1', 'level2')"
-                        confirm="Send this pay run back one stage? The payslips are kept as they are, so the numbers can be corrected and resubmitted."/>
-                <button name="action_pb_send_back" type="object"
-                        string="Undo Approval"
-                        invisible="not pb_can_undo_approval"
-                        confirm="Undo the approval of this pay run? It goes back to Finance approval for you to decide again."/>
+                <attribute name="invisible">state not in ('draft', 'approval_pending')</attribute>
             </xpath>
 
             <!-- hide the cramped native statusbar; render the workflow as a
@@ -64,16 +42,13 @@
             </xpath>
             <!-- Starting the period again without deleting the run. Deleting
                  the run is what used to leave 152 drafts loose for the next
-                 run to adopt, so the safe way needs to be the visible one.
-                 Hidden once the run is past draft: by then the payslips are
-                 somebody's decision, not a working copy. -->
+                 run to adopt, so the safe way needs to be the visible one. -->
             <xpath expr="//form/header" position="inside">
-                <!-- drives the Undo Approval button's invisible= rule -->
-                <field name="pb_can_undo_approval" invisible="1"/>
-                <!-- the stages this database signs off at, read by the stepper
-                     below; a tenant with no Payroll Officer tier gets four
-                     steps instead of five -->
-                <field name="pb_stage_rail" invisible="1"/>
+                <button name="action_split_review_groups"
+                        type="object"
+                        string="Split Into Review Groups"
+                        invisible="state != 'draft' or not slip_ids"
+                        confirm="This makes one pay run per pay scheme and part of the business, moving every payslip into the right one. The original run is removed once it is empty. Continue?"/>
                 <button name="action_pb_delete_draft_payslips"
                         type="object"
                         string="Delete Draft Payslips"
@@ -82,30 +57,27 @@
             </xpath>
 
             <xpath expr="//sheet/label[@for='name']" position="before">
-                <!-- steps_field wins; steps/labels stay as the fallback so the
-                     rail still draws if the field is ever empty -->
                 <widget name="vu_progress_rail"
-                        steps_field="pb_stage_rail"
-                        steps="draft,level0,level1,level2,done"
-                        labels="Draft,Officer review,HR review,Finance approval,Done"
+                        steps="draft,approval_pending,done"
+                        labels="Draft,Waiting for approval,Done"
                         state_field="state"/>
             </xpath>
 
-            <!-- VALUEKIND P5 — payroll that ran on no data must not be able to
-                 look like payroll that ran. Above the KPI band, because the
-                 band is exactly what it is warning you not to believe. -->
             <xpath expr="//sheet/group" position="after">
-                <!-- Why this run came back. Written by action_pb_send_back and
-                     cleared the moment the run moves forward again, so it always
-                     reads as "this is what has to be fixed", never as history. -->
+                <!-- Why this run came back. Written when an approver sends it
+                     back and cleared the moment it is sent in again, so it
+                     always reads as "this is what has to be fixed", never as
+                     history. -->
                 <div class="alert alert-warning pb-payrun-sentback" role="alert"
-                     invisible="not pb_sendback_note">
-                    <b>Sent back from
-                        <field name="pb_sendback_from" nolabel="1" readonly="1" class="pb-sb-from"/>
-                        by <field name="pb_sendback_uid" nolabel="1" readonly="1" class="pb-sb-who"/>
-                        on <field name="pb_sendback_date" nolabel="1" readonly="1" class="pb-sb-when"/>:</b>
-                    <field name="pb_sendback_note" nolabel="1" readonly="1" class="pb-sb-why"/>
+                     invisible="not pb_return_note">
+                    <b>Sent back by
+                        <field name="pb_return_uid" nolabel="1" readonly="1" class="pb-sb-who"/>
+                        on <field name="pb_return_date" nolabel="1" readonly="1" class="pb-sb-when"/>:</b>
+                    <field name="pb_return_note" nolabel="1" readonly="1" class="pb-sb-why"/>
                 </div>
+                <!-- VALUEKIND P5 — payroll that ran on no data must not be able
+                     to look like payroll that ran. Above the KPI band, because
+                     the band is exactly what it is warning you not to believe. -->
                 <div class="alert alert-warning pb-payrun-nodata" role="alert"
                      invisible="not pb_unsourced_count">
                     <b><field name="pb_unsourced_count" nolabel="1" readonly="1"
@@ -153,7 +125,7 @@
                         <field name="date_to"/>
                         <field name="state" widget="badge"
                                decoration-success="state == 'done'"
-                               decoration-info="state in ('level1','level2')"
+                               decoration-info="state == 'verify'"
                                decoration-muted="state == 'cancel'"/>
                     </list>
                 </field>

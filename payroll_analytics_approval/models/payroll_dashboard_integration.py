@@ -43,22 +43,24 @@ class PayrollDashboardAnalytics(models.Model):
         if not country:
             raise UserError(_('Unable to determine country for analytics dashboard'))
         
-        # Get ALL Level 2 payslip batches and create separate analytics for each
-        level2_batches = self.env['hr.payslip.run'].search([
-            ('state', '=', 'level2')
+        # Every pay run that is WAITING FOR ITS APPROVAL, one analytics record
+        # each. It used to be "every run in level2", the last rung of a ladder
+        # that no longer exists; the honest translation is the state a run is
+        # in while somebody is deciding about it.
+        pending_batches = self.env['hr.payslip.run'].search([
+            ('state', '=', 'approval_pending')
         ], order='date_start desc')  # Most recent first for better UX
-        
+
         generated_analytics = []
-        
-        if level2_batches:
-            _logger.info(f"Found {len(level2_batches)} Level 2 batches to process for {country}")
-            
-            # Process each Level 2 batch separately
-            for batch in level2_batches:
+
+        if pending_batches:
+            _logger.info(f"Found {len(pending_batches)} batches awaiting approval to process for {country}")
+
+            for batch in pending_batches:
                 batch_first_day = batch.date_start
                 batch_last_day = batch.date_end
                 
-                _logger.info(f"Processing Level 2 batch: {batch.name} ({batch_first_day} to {batch_last_day})")
+                _logger.info(f"Processing batch awaiting approval: {batch.name} ({batch_first_day} to {batch_last_day})")
                 
                 # Search for existing analytics for this specific batch period
                 existing_analytics = self.env['payroll.analytics'].search([

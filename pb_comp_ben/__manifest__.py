@@ -29,7 +29,7 @@ WHAT THIS MODULE IS
   * **Benefits, and the employee's own page.** `/my/compensation` — the
     package, what they are covered by with a real link to the provider, and the
     awards they have actually been paid, with the letter to download.
-  * **The finance pack.** On Finance approval (`action_payslip_run_level2_done`
+  * **The finance pack.** When a pay run's approval completes (`_approval_apply`
     — NOT `done_payslip_run`, which is the draft→officer entry), the bank file
     and a one-page run summary are attached to the run and emailed. It runs
     after `super()`, inside its own try/except: a pack that fails must never

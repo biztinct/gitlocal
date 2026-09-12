@@ -41,8 +41,9 @@ export function statusPill(status) {
         case "needs_review":
             return { key: "needs_review", cls: "is-review",
                      label: _t("Needs another look") };
-        case "info":
-            return { key: "info", cls: "is-info", label: _t("Already in place") };
+        case "inherit":
+            return { key: "inherit", cls: "is-info",
+                     label: _t("Same as the rest of the company") };
         default:
             return { key: "not_started", cls: "is-idle", label: _t("Not started") };
     }
@@ -180,7 +181,7 @@ export function manageLater(task) {
         case "payslip":
             return _t("Manage later: Settings → Payslip layout · same configuration");
         default:
-            return _t("Manage later: Pay runs → Approvals · every configuration");
+            return _t("Manage later: Approvals → Matrix · every kind of request");
     }
 }
 

@@ -276,7 +276,7 @@ class PayrollAnalytics(models.Model):
             ('employee_id', 'in', employee_ids),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
-            ('state', 'in', ['level2', 'done'])
+            ('state', 'in', ['verify', 'done'])
         ])
 
     def _get_batch_employee_ids(self):
@@ -335,29 +335,30 @@ class PayrollAnalytics(models.Model):
             ('struct_id', '=', structure.id),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
-            ('state', 'in', ['level2', 'done'])
+            ('state', 'in', ['verify', 'done'])
         ])
         
         _logger.info(f"Found {len(payslips)} payslips with specific structure")
         
-        # If no payslips found, try broader search for any payslips in level2 state
+        # If no payslips found, try broader search for any payslips awaiting a
+        # decision in the period (a payslip waits in 'verify' while its run's
+        # approval is open — the old 'level2' state is gone with the ladder).
         if not payslips:
             _logger.info("No payslips found with specific structure, trying broader search...")
-            all_level2_payslips = self.env['hr.payslip'].search([
-                ('state', '=', 'level2'),
+            all_waiting_payslips = self.env['hr.payslip'].search([
+                ('state', '=', 'verify'),
                 ('date_from', '>=', date_from),
                 ('date_to', '<=', date_to)
             ])
-            _logger.info(f"Found {len(all_level2_payslips)} payslips in level2 state")
-            
-            if all_level2_payslips:
-                _logger.info(f"Level2 payslip structures: {[p.struct_id.name for p in all_level2_payslips]}")
-                # Use all level2 payslips if they exist
-                payslips = all_level2_payslips
-        
+            _logger.info(f"Found {len(all_waiting_payslips)} payslips waiting for approval")
+
+            if all_waiting_payslips:
+                _logger.info(f"Waiting payslip structures: {[p.struct_id.name for p in all_waiting_payslips]}")
+                payslips = all_waiting_payslips
+
         # If still no payslips, try any recent payslips
         if not payslips:
-            _logger.info("No level2 payslips found, trying any recent payslips...")
+            _logger.info("No waiting payslips found, trying any recent payslips...")
             recent_payslips = self.env['hr.payslip'].search([
                 ('date_from', '>=', date_from),
                 ('date_to', '<=', date_to)
@@ -875,29 +876,23 @@ class PayrollAnalytics(models.Model):
             ('date_end', '<=', self.date_to)
         ])
 
-        # Finalize the specific batch linked to this analytics record when possible
-        if self.payslip_run_id:
-            runs_to_finalize = self.payslip_run_id.filtered(lambda r: r.state == 'level2')
-        else:
-            runs_to_finalize = self.env['hr.payslip.run'].search([
-                ('state', '=', 'level2'),
-                ('date_start', '>=', self.date_from),
-                ('date_end', '<=', self.date_to)
-            ])
+        # APPROVING AN ANALYTICS RECORD DOES NOT APPROVE A PAY RUN.
+        #
+        # It used to: this method finished every matching run with
+        # `runs_to_finalize.sudo().action_payslip_run_level2_done()`. Two things
+        # were wrong with that and only one of them was the sudo. A pay run is
+        # approved by the people its published route names, each of them
+        # recorded by name against the step they decided — and a second screen
+        # that quietly writes 'done' on behalf of nobody is exactly the hole
+        # every part of that machinery exists to close. The sudo made it worse
+        # (it bypassed the run's own access as well), but removing only the
+        # sudo would have left a pay run being approved from a reporting
+        # screen.
+        #
+        # So it does nothing to the runs at all now. Approving the analytics
+        # marks the analytics approved; approving the pay run is done in
+        # Approvals, by the people who hold its seats.
 
-        if runs_to_finalize:
-            _logger.info(
-                "Final approve: setting %d payslip run(s) to done from analytics %s",
-                len(runs_to_finalize),
-                self.id,
-            )
-            runs_to_finalize.sudo().action_payslip_run_level2_done()
-        else:
-            _logger.info(
-                "Final approve: no level2 payslip runs found to finalize for analytics %s",
-                self.id,
-            )
-        
         _logger.info(f"Found {len(all_payslip_runs)} total payslip runs in period")
         for run in all_payslip_runs:
             _logger.info(f"Payslip run {run.name}: state={run.state}, payslips={len(run.slip_ids)}")

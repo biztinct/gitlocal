@@ -236,7 +236,13 @@ class PbApprovalInbox(models.AbstractModel):
             'sub': request.scope_label or request.company_id.name,
             'amount': request.amount or 0.0,
             'currency': request.currency_id.name or '',
-            'count': request.scope_label or '',
+            # HOW BIG IS THIS, IN THE UNITS THE THING IS COUNTED IN. A pay run
+            # is a number of payslips; something else will be a number of
+            # something else. Read off the frozen facts rather than named here,
+            # so the card learns a new process's own count without this file
+            # knowing what that process is.
+            'count': self._card_count(request),
+            'kind': self._kind_label(request),
             'workflow': _('%(name)s · v%(rev)s',
                           name=request.version_id.workflow_id.name or '',
                           rev=request.version_id.revision),
@@ -316,6 +322,47 @@ class PbApprovalInbox(models.AbstractModel):
             'reassign': _('moved it to somebody else'),
             'cancel': _('withdrew it'),
         }.get(action, action or '')
+
+    def _card_count(self, request):
+        """The one number that says how big this request is, in plain words."""
+        facts = request.facts or {}
+
+        def _value(key):
+            raw = facts.get(key)
+            if raw is None:
+                return None
+            value = raw.get('value') if isinstance(raw, dict) else raw
+            try:
+                return int(float(value))
+            except (TypeError, ValueError):
+                return None
+
+        payslips = _value('payslip_count')
+        if payslips is not None:
+            return _('%s payslip', payslips) if payslips == 1 \
+                else _('%s payslips', payslips)
+        people = _value('employee_count')
+        if people is not None:
+            return _('%s person', people) if people == 1 \
+                else _('%s people', people)
+        return request.scope_label or ''
+
+    def _kind_label(self, request):
+        """What kind of thing this is, in the adapter's own words."""
+        key = request.kind_key or 'any'
+        if key == 'any':
+            return ''
+        process = request.process_id
+        model = process.model_name
+        if not (model and model in self.env
+                and getattr(self.env[model], '_approval_process_key', None)):
+            return ''
+        caps = self._safe(
+            lambda: self.env[model]._approval_capabilities(), default={}) or {}
+        for row in (caps.get('kinds') or []):
+            if isinstance(row, dict) and row.get('key') == key:
+                return row.get('label') or ''
+        return ''
 
     def _facts(self, request):
         """The facts, exactly as they were frozen — never as they are today."""

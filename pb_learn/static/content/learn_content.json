@@ -237,9 +237,9 @@
       "en": "'%(mission)s' is a practice mission — it has nothing to check on the server.",
       "vi": "'%(mission)s' là nhiệm vụ thực hành — không có gì để kiểm tra trên máy chủ."
     },
-    "live.notPastOfficer": {
-      "en": "Nobody at the Payroll Officer gate has said yes yet.",
-      "vi": "Chưa ai ở cổng Chuyên viên tính lương nói đồng ý."
+    "live.noDecisionYet": {
+      "en": "Nobody has approved a step on this pay run yet.",
+      "vi": "Chưa ai phê duyệt bước nào của kỳ lương này."
     },
     "live.notVerified": {
       "en": "Step '%(step)s' is not verified by the server.",
@@ -253,17 +253,9 @@
       "en": "Draft",
       "vi": "Nháp"
     },
-    "live.stateLevel0": {
-      "en": "Payroll Officer pending",
-      "vi": "Chờ Chuyên viên tính lương"
-    },
-    "live.stateLevel1": {
-      "en": "HR review",
-      "vi": "HR soát xét"
-    },
-    "live.stateLevel2": {
-      "en": "Finance approval",
-      "vi": "Tài chính phê duyệt"
+    "live.statePending": {
+      "en": "Waiting for approval",
+      "vi": "Đang chờ phê duyệt"
     },
     "live.stillDraft": {
       "en": "Still a draft. Submit the run for approval from the Pay Runs board.",

@@ -635,6 +635,7 @@ class PbBlueprintFinish(models.AbstractModel):
         status = (readiness or {}).get('status') or {}
         mapping = (readiness or {}).get('mapping') or {}
         payslip = (readiness or {}).get('payslip') or {}
+        approvals = (readiness or {}).get('approvals') or {}
         return [
             {'task': 'mapping', 'label': task_label('mapping'),
              'status': status.get('mapping') or 'not_started',
@@ -644,8 +645,16 @@ class PbBlueprintFinish(models.AbstractModel):
              'status': status.get('payslip') or 'not_started',
              'mapped': payslip.get('placed') or 0,
              'total': payslip.get('total') or 0},
+            # The real answer, from the same reader the Connect card uses —
+            # not a constant. A Finish page that said "already in place" over a
+            # route with an empty seat would be the last screen anybody
+            # believed.
             {'task': 'approvals', 'label': task_label('approvals'),
-             'status': 'info', 'mapped': 0, 'total': 0},
+             'status': status.get('approvals') or 'not_started',
+             'mapped': 0, 'total': 0,
+             'route': approvals.get('route_labels') or [],
+             'gap': approvals.get('gap') or '',
+             'scope_key': approvals.get('scope_key') or ''},
         ]
 
     # ==================================================================

@@ -1719,21 +1719,16 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     def submit_for_approval(self, run_id):
-        """Enter the approval chain at its FIRST tier.
+        """Send the run in for approval, and say what happened.
 
-        Which tier that is belongs to the database, not to this wizard: most
-        land on Officer review, and one that has switched that tier off lands on
-        HR review. `done_payslip_run` decides; the caller is told the state it
-        actually reached.
-
-        Phase L fix: this used to call action_payslip_run_level1_done() on a
-        DRAFT run — and that legacy method writes 'level2' unconditionally, so a
-        submit jumped the run straight past the HR tier. done_payslip_run() is
-        the only correct draft→chain transition (it confirms the payslips, then
-        lands on the entry tier).
-
-        It also swallowed every exception into a bare ok=False; the caller now
-        gets the server's real refusal (the tier gate's own words).
+        WHO SIGNS IT OFF IS NOT THIS WIZARD'S BUSINESS. It used to be — the
+        wizard called the ladder's first tier by name. There is no ladder now:
+        the run goes to whatever route the business published for its pay
+        scheme, its part of the business and its kind of run, and a route with
+        no step at all applies it at once and records that choice. All this
+        does is press Send, and report the server's own refusal when there is
+        one (no route set up, a seat with nobody in it, a run whose people are
+        paid by two different schemes).
         """
         run = self.env['hr.payslip.run'].browse(int(run_id))
         if not run.exists():
@@ -1741,12 +1736,14 @@ class PbPayrunWizard(models.AbstractModel):
                     'msg': _('This pay run no longer exists.')}
         if run.state != 'draft':
             return {'ok': False, 'run_id': run.id, 'state': run.state,
-                    'msg': _('This pay run is already in the approval chain.')}
+                    'msg': _('This pay run has already been sent in for '
+                             'approval.')}
         try:
             with self.env.cr.savepoint():
-                run.done_payslip_run()
+                run.action_approval_submit()
         except (AccessError, UserError) as e:
-            # a real, actionable refusal (missing tier / bad state) — surface it.
+            # a real, actionable refusal (no route, an empty seat, a run
+            # spanning two schemes) — surface the server's own words.
             # invalidate: the savepoint rollback undid writes the ORM cache may
             # still hold, so `state` below must be re-read from the DB.
             self.env.invalidate_all()

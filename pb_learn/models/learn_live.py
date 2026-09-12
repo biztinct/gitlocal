@@ -165,8 +165,8 @@ def _my_june_run(env):
 
 
 _STATE_KEY = {
-    'draft': 'stateDraft', 'level0': 'stateLevel0', 'level1': 'stateLevel1',
-    'level2': 'stateLevel2', 'done': 'stateDone',
+    'draft': 'stateDraft', 'approval_pending': 'statePending',
+    'done': 'stateDone',
 }
 
 
@@ -210,17 +210,33 @@ def _p_june_run_submitted(env):
     run = _my_june_run(env)
     if not run:
         return {'ok': False, 'note': _note(env, 'noRun')}
-    if not _at_least(run, ('level0', 'level1', 'level2', 'done')):
+    if not _at_least(run, ('approval_pending', 'done')):
         return {'ok': False, 'note': _note(env, 'stillDraft')}
     return {'ok': True, 'note': _state_note(env, run)}
 
 
 def _p_june_run_officer_done(env):
+    """Has anybody actually signed a step off on this run?
+
+    It used to mean "past the Payroll Officer tier", which was a question the
+    product could answer because every database had the same three tiers. It no
+    longer does: a run follows whatever route its company published, which may
+    name one person, five, or nobody at all. So the mission checks the thing
+    that is true under every route — that a decision has been recorded — and
+    counts a finished run as satisfying it, because a route with no step at all
+    applies the run at once and records that choice.
+    """
     run = _my_june_run(env)
     if not run:
         return {'ok': False, 'note': _note(env, 'noRun')}
-    if not _at_least(run, ('level1', 'level2', 'done')):
-        return {'ok': False, 'note': _note(env, 'notPastOfficer')}
+    if run.state == 'done':
+        return {'ok': True, 'note': _state_note(env, run)}
+    request = run.approval_request_id if 'approval_request_id' in run._fields \
+        else None
+    decided = bool(request) and bool(request.sudo().decision_ids.filtered(
+        lambda d: d.action == 'approve'))
+    if not decided:
+        return {'ok': False, 'note': _note(env, 'noDecisionYet')}
     return {'ok': True, 'note': _state_note(env, run)}
 
 

@@ -38,9 +38,7 @@
     .pbr-col-h .nm { font-size: 13px; font-weight: 800; flex: 1; }
     .pbr-col-h .ct { font-size: 11px; font-weight: 800; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 2px 9px; }
     .col-draft .pbr-col-h .dot { background: var(--slate); }
-    .col-level0 .pbr-col-h .dot { background: var(--cyan, #2563EB); }
-    .col-level1 .pbr-col-h .dot { background: var(--amber); }
-    .col-level2 .pbr-col-h .dot { background: var(--i); }
+    .col-approval_pending .pbr-col-h .dot { background: var(--amber); }
     .col-done .pbr-col-h .dot { background: var(--green); }
     .pbr-col-body { display: flex; flex-direction: column; gap: 10px; }
     .pbr-col-empty { text-align: center; color: var(--muted); font-size: 12px; padding: 18px 0; opacity: .7; }
@@ -151,6 +149,16 @@
     }
     .pbr-sentback .hd { font-size: 10.5px; font-weight: 800; color: var(--amber); letter-spacing: .02em; }
     .pbr-sentback .why { font-size: 11.5px; color: var(--ink); line-height: 1.4; }
+
+    /* which step a waiting run is on, and whose desk it is on */
+    .pbr-route {
+        margin-top: 10px; padding: 8px 10px; border-radius: 8px;
+        background: var(--soft, #F5F6FA); border: 1px solid var(--line, #E5E7EB);
+        display: flex; flex-direction: column; gap: 2px;
+    }
+    .pbr-route .hd { font-size: 10.5px; font-weight: 800; color: var(--ink); letter-spacing: .02em; }
+    .pbr-route .who { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+    .pbr-route .why { font-size: 11.5px; color: var(--amber); line-height: 1.4; }
 
     @media (max-width: 1200px) {
         .pbr-board { grid-template-columns: repeat(2, 1fr); }

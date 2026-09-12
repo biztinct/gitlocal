@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Step 3 — Connect: where the numbers come from, and where they land.
 
-Three tasks, and only two of them are work. **Source mapping** points the
+Three tasks, and all three of them are work now. **Source mapping** points the
 configuration's inputs at the systems that already hold them; **payslip layout**
-arranges those components on the page a person is handed; **approvals** is
-information, because pay runs already follow a fixed Officer → HR → Finance
-chain and a per-configuration approval rule is a later programme (owner ruling,
-2026-09-10).
+arranges those components on the page a person is handed; **approvals** chooses
+who has to say yes before a pay run computed by this scheme is finished — which
+used to be a fixed Officer → HR → Finance chain nobody could change, and is now
+a published route this scheme may share or have to itself.
 
 Nothing here re-implements either tool. Both doors open the screen that already
 exists — the Mapping Studio and the payslip designer — ON THIS DRAFT, and both
@@ -53,25 +53,6 @@ def lane_label(lane):
     }.get(lane, '')
 
 
-#: The three tiers a pay run already passes through, and what each one does.
-#:
-#: A FUNCTION, not a module-level dictionary: `_()` at import time runs before
-#: any language is known and would ship English for ever (B2's helper labels and
-#: B3's `value_label` exist for the same reason). The NAMES here are only the
-#: fallback — the live ones are read from the pay-run screen's own field labels
-#: where that module is installed, so this card can never name a stage the board
-#: does not.
-def tier_rows():
-    return (
-        ('level0', _("Officer review"),
-         _("The payroll officer checks the run and sends it on.")),
-        ('level1', _("HR review"),
-         _("HR checks the people and the amounts.")),
-        ('level2', _("Finance approval"),
-         _("Finance releases the money.")),
-    )
-
-
 class PbBlueprintConnect(models.AbstractModel):
     _inherit = 'pb.blueprint.studio'
 
@@ -108,6 +89,7 @@ class PbBlueprintConnect(models.AbstractModel):
             status['payslip'].get('snapshot'), payslip['placed_codes'],
             status['payslip'].get('status'))
 
+        approvals = self._approval_state(config)
         shown = {
             'mapping': self._shown_status(
                 status['mapping'].get('status'),
@@ -115,7 +97,16 @@ class PbBlueprintConnect(models.AbstractModel):
             'payslip': self._shown_status(
                 status['payslip'].get('status'),
                 bool(payslip['changed_since'] or payslip['removed_placed'])),
-            'approvals': 'info',
+            # THE APPROVALS PILL IS NOT A REMEMBERED PRESS. The other two ask
+            # "did somebody say they were done with this?"; this one asks the
+            # engine what the route actually is, because a route that is there
+            # is there whether or not anybody ticked a box, and a route with an
+            # empty seat is not finished however many times they did. The one
+            # thing that IS remembered is a deliberate skip, because that is a
+            # statement about the person and not about the route.
+            'approvals': ('skipped'
+                          if status['approvals'].get('status') == 'skipped'
+                          else approvals['status']),
         }
 
         # Internal keys the client has no use for. Sent nowhere: a payload is
@@ -141,7 +132,7 @@ class PbBlueprintConnect(models.AbstractModel):
             'status': shown,
             'stored_status': {k: v.get('status') for k, v in status.items()},
             'doors': self._connect_doors(config),
-            'approvals': self._approval_tiers(),
+            'approvals': approvals,
         }
 
     def _blank_status(self):
@@ -361,34 +352,64 @@ class PbBlueprintConnect(models.AbstractModel):
         }
 
     # ------------------------------------------------------------------
-    # Approvals — information only
+    # Approvals — who has to say yes before a pay run on this scheme is done
     # ------------------------------------------------------------------
-    @api.model
-    def _approval_tiers(self):
-        """The chain a pay run already follows, in the words the pay-run screen
-        uses.
+    def _approval_state(self, config):
+        """The scheme's own approval answer, read from the engine.
 
-        Read from that screen's own field labels where the module is installed,
-        so this card can never name a stage the board does not. It changes
-        nothing and offers no button: custom approval rules per configuration
-        are a later release, and pretending otherwise here would be a promise
-        the product does not keep.
+        NOTHING IS RE-DERIVED HERE. The panel the card mounts calls
+        `pb.approval.matrix.get_scheme_panel` for itself; this is the same
+        answer, asked once on the server so the card's PILL and the panel's
+        badge cannot disagree — which is the whole reason there is one
+        component and one facade rather than a card that draws its own version
+        of the truth.
+
+        `status` is deliberately one of the Connect step's own four words, so
+        the pill beside "Approvals" reads like the two beside it.
         """
-        rows = tier_rows()
-        labels = {key: name for key, name, _what in rows}
-        Run = self.env.get('hr.payslip.run')
-        if Run is not None and 'pb_sendback_from' in Run._fields:
+        blank = {'available': False, 'selection': '', 'status': 'not_started',
+                 'workflow': '', 'route_labels': [], 'summary': '',
+                 'source': '', 'coverage': '', 'gap': '',
+                 'scope_key': '', 'scope_label': config.name or ''}
+        Matrix = self.env.get('pb.approval.matrix')
+        if Matrix is None:
+            return blank
+        company = config.company_id or self.env.company
+        scope_key = 'scheme:%s' % config.id
+        try:
+            panel = Matrix.get_scheme_panel('payrun', scope_key, company.id)
+        except Exception as exc:        # noqa: BLE001 — never take the step down
+            _logger.info("Guided setup: the approvals panel is unavailable: %s",
+                         exc)
+            return blank
+
+        gap = ''
+        if 'hr.formula.config' in self.env and hasattr(config, '_pb_approval_gap'):
             try:
-                live = dict(Run._fields['pb_sendback_from'].selection or [])
-                for key in labels:
-                    if live.get(key):
-                        labels[key] = live[key]
-            except Exception as exc:        # noqa: BLE001
-                _logger.info("Guided setup: approval labels unavailable: %s", exc)
+                gap = config._pb_approval_gap()
+            except Exception as exc:    # noqa: BLE001
+                _logger.info("Guided setup: the approvals check failed: %s", exc)
+
+        selection = panel.get('selection') or 'inherit'
+        if gap:
+            status = 'in_progress'
+        elif panel.get('workflow_id'):
+            status = 'configured'
+        else:
+            status = 'not_started'
         return {
-            'installed': Run is not None,
-            'tiers': [{'key': key, 'name': labels[key], 'what': what}
-                      for key, _name, what in rows],
+            'available': True,
+            'selection': selection,
+            'status': status,
+            'workflow': panel.get('workflow_name') or '',
+            'route_labels': panel.get('route_labels') or [],
+            'summary': panel.get('summary') or '',
+            'source': panel.get('source') or '',
+            'coverage': 'needs' if gap else 'ok',
+            'gap': gap,
+            'scope_key': scope_key,
+            'scope_label': panel.get('scope_label') or config.name or '',
+            'can_config': bool(panel.get('can_config')),
         }
 
     # ==================================================================
@@ -403,10 +424,6 @@ class PbBlueprintConnect(models.AbstractModel):
         if task not in CONNECT_TASKS:
             return None, None, None, {'ok': False, 'reason': _(
                 "That is not one of the things this step sets up.")}
-        if task == 'approvals':
-            return None, None, None, {'ok': False, 'reason': _(
-                "Approvals are already in place for every pay run, so there is "
-                "nothing to set up or skip here.")}
         return config, blueprint, task, None
 
     @api.model
@@ -448,6 +465,15 @@ class PbBlueprintConnect(models.AbstractModel):
 
         state = blueprint.optional_status()
         entry = state[task]
+        if status == 'configured' and task == 'approvals':
+            # Nothing to tick. This card is done when the route is complete and
+            # everybody it names has somebody in the seat, and the engine is
+            # the only honest answer to that — a remembered press would let a
+            # card read "Done" over a route that cannot resolve.
+            return {'ok': False, 'reason': _(
+                "Approvals are finished when the route is complete and "
+                "everybody it asks for has somebody in the seat, so there is "
+                "nothing to mark here.")}
         if status == 'configured':
             if task == 'mapping':
                 current = self._mapping_state(config)
@@ -495,8 +521,6 @@ class PbBlueprintConnect(models.AbstractModel):
         state = blueprint.optional_status()
         skipped = []
         for task in CONNECT_TASKS:
-            if task == 'approvals':
-                continue
             if state[task].get('status') == 'not_started':
                 state[task]['status'] = 'skipped'
                 skipped.append(task)

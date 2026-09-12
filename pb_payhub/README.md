@@ -26,15 +26,14 @@ already exist; it stores nothing and it invents nothing.
 |---|---|---|
 | *(no run at all)* | nothing covers this month | **1** |
 | `draft` | created, computing / being edited | **2** |
-| `level0` | with the Payroll Officer tier | **3** |
-| `level1` | with the HR tier | **3** |
-| `level2` | with the Finance / GM tier | **3** |
+| `approval_pending` | sent in, waiting on whoever its published route names | **3** |
 | `done` | approved | **4** |
 | `done` **and** a `pb.payslip.delivery.batch` on it in state `done` | delivered | **5** |
 | `cancel` | *excluded from the scope entirely* | — |
 
-`level0` is not in stock `om_hr_payroll`: `pb_payruns` adds the Payroll Officer
-tier through `selection_add`
+The state vocabulary is `pb_payruns`', not stock `om_hr_payroll`': it replaces
+the base selection outright, retiring the old `level0`/`level1`/`level2` ladder
+when pay runs moved onto the approval engine
 (`pb_payruns/models/hr_payslip_run.py`). The delivery model is
 `pb_pay_delivery/models/payslip_delivery.py`.
 

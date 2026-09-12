@@ -4,22 +4,13 @@ from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
-# Approval pipeline — ordered stages + display labels (Phase L: 3 tiers).
-STAGE_ORDER = ['draft', 'level0', 'level1', 'level2', 'done']
-STAGE_LABEL = {
-    'draft': 'Draft', 'level0': 'Officer review', 'level1': 'HR review',
-    'level2': 'Finance approval', 'done': 'Done', 'cancel': 'Rejected',
-}
-BOARD_LIMIT = 60
+# The stages the board draws and the words for them — imported rather than
+# re-typed, so the board can never offer a stage the model does not have.
+from .hr_payslip_run import PB_BOARD_STATES, PB_STAGE_NAME
 
-# Where a refused run goes back to — mirrors PB_SEND_BACK on hr.payslip.run.
-# Imported rather than re-typed so the board can never offer a send-back the
-# model would not perform.
-try:
-    from .hr_payslip_run import PB_SEND_BACK
-except ImportError:  # pragma: no cover - defensive, same package
-    PB_SEND_BACK = {'level0': 'draft', 'level1': 'level0',
-                    'level2': 'level1', 'done': 'level2'}
+STAGE_ORDER = list(PB_BOARD_STATES)
+STAGE_LABEL = dict(PB_STAGE_NAME)
+BOARD_LIMIT = 60
 
 
 class PbPayruns(models.AbstractModel):
@@ -39,37 +30,15 @@ class PbPayruns(models.AbstractModel):
         company = self.env.company
         cur = company.currency_id
         Run = self.env['hr.payslip.run']
-        user = self.env.user
 
-        # Demo users drive the full approval workflow (showcase) — see note in
-        # hr.payslip.run._pb_user_roles. They keep the upsell sidebar locks.
-        try:
-            is_demo_role = user.has_group('pb_demo.group_payobook_demo')
-        except Exception:
-            is_demo_role = False
-        has_officer = is_demo_role \
-            or user.has_group('pb_hr_payroll_base.group_payroll_base_officer') \
-            or user.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-        has_manager = is_demo_role \
-            or user.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-        has_final = is_demo_role \
-            or user.has_group('pb_hr_payroll_base.group_payroll_final_approver') \
-            or user.has_group('pb_hr_payroll_base.group_payroll_super_admin')
-
-        # GROUP P3 — the board used to list EVERY pay run on the database.
-        # `hr.payslip.run` has no `company_id` of its own, so nothing scoped
-        # it: on a group, one company's board showed another company's runs
-        # and priced them all in the active company's money. A run belongs to
-        # the company that its payslips belong to (and, since P2, to the
-        # company of the scheme it was run for), so that is what scopes it.
-        # Which tiers this database uses, asked of the model rather than
-        # assumed. A tenant with no Payroll Officer sign-off draws four columns,
-        # and a run submitted here goes straight to HR review.
-        board_states = list(self._safe(lambda: Run._pb_board_states(),
-                                       default=tuple(STAGE_ORDER)))
-        send_back_map = self._safe(lambda: Run._pb_send_back_map(),
-                                   default=dict(PB_SEND_BACK))
-        officer_tier = 'level0' in board_states
+        # WHO MAY DO WHAT IS NO LONGER A GROUP QUESTION. A pay run is signed
+        # off by whoever the published route resolves to, so the board asks the
+        # engine which runs are waiting on THIS person rather than deciding it
+        # from a role. Submitting and rejecting are ordinary edits of the run,
+        # so they follow the run's own write access.
+        may_write = self._safe(lambda: Run.has_access('write'), default=False)
+        awaiting = self._safe(lambda: Run._pb_runs_awaiting(self.env.uid),
+                              default=set())
 
         runs = self._safe(
             lambda: Run.search([], order='date_end desc, id desc',
@@ -94,32 +63,15 @@ class PbPayruns(models.AbstractModel):
         for run in runs:
             state = run.state or 'draft'
             stage_counts[state] = stage_counts.get(state, 0) + 1
-            # context-aware next action + permission
-            next_action = ''
-            can_act = False
+            waiting_on_me = run.id in awaiting
             if state == 'draft':
-                next_action, can_act = 'submit', has_officer
-            elif state == 'level0':
-                # Reached only while the Officer tier is in use, or by a run
-                # that was already parked there when it was switched off.
-                next_action, can_act = 'approve_officer', has_officer
-            elif state == 'level1':
-                next_action, can_act = 'approve_hr', has_manager
-            elif state == 'level2':
-                next_action, can_act = 'approve_gm', has_final
-            if can_act and state in ('level0', 'level1', 'level2'):
+                next_action, can_act = 'submit', may_write
+            elif state == 'approval_pending':
+                next_action, can_act = 'decide', waiting_on_me
+            else:
+                next_action, can_act = '', False
+            if waiting_on_me:
                 my_pending += 1
-
-            # Send back one stage. Offered to the tier that holds the run — the
-            # same people who may reject it, minus draft (nothing before it).
-            # On a finished run this is the final approver's undo, and the model
-            # is asked whether it is still allowed (payslips already emailed
-            # close the door) rather than the board guessing.
-            can_send_back = can_act and state in ('level0', 'level1', 'level2')
-            if state == 'done':
-                can_send_back = has_final and self._safe(
-                    lambda r=run: bool(r.pb_can_undo_approval), default=False)
-            back_to = send_back_map.get(state) or PB_SEND_BACK.get(state, '')
 
             net = self._safe(lambda r=run: r.pb_total_net)
             run_company = owner.get(run.id, company.id)
@@ -145,14 +97,16 @@ class PbPayruns(models.AbstractModel):
                 'credit_note': bool(run.credit_note),
                 'next_action': next_action,
                 'can_act': can_act,
-                'can_send_back': can_send_back,
-                'send_back_to': back_to,
-                'send_back_label': STAGE_LABEL.get(back_to, ''),
-                # why this run is sitting where it is, if somebody sent it back
-                'sendback_note': run.pb_sendback_note or '',
-                'sendback_by': run.pb_sendback_uid.name or '',
-                'sendback_from_label': STAGE_LABEL.get(run.pb_sendback_from or '', ''),
-                'journal': self._journal_name(run),
+                'can_reject': may_write and state in ('draft',
+                                                      'approval_pending'),
+                'awaiting_me': waiting_on_me,
+                # The route this run is on, and where it has got to — read off
+                # the request rather than off a state name, because "who is it
+                # with" is now a person, not a tier.
+                'approval': self._approval_chip(run),
+                # why this run came back, if an approver sent it back
+                'return_note': run.pb_return_note or '',
+                'return_by': run.pb_return_uid.name or '',
                 # The division key the board's chips filter on. It has always
                 # been sent as the CHIP LIST ('divisions' below) with nothing on
                 # the cards to match it against, so the board could offer a
@@ -166,12 +120,7 @@ class PbPayruns(models.AbstractModel):
                 'currency_name': run_currency['name'],
             })
 
-        # The stages this database uses, plus any stage a run is actually
-        # sitting in. The second half matters the day the Officer tier is
-        # switched off with a run still parked there: dropping its column would
-        # hide the run rather than move it.
-        drawn = [s for s in STAGE_ORDER
-                 if s in board_states or stage_counts.get(s, 0)]
+        drawn = [s for s in STAGE_ORDER]
         columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
                    for s in drawn]
 
@@ -211,24 +160,42 @@ class PbPayruns(models.AbstractModel):
             'divisions': divisions,
             'is_demo_user': is_demo_user,
             'demo_period': demo_period,
-            'can_officer': has_officer,
-            'can_manager': has_manager,
-            'can_final': has_final,
-            'officer_tier': officer_tier,
+            'can_submit': may_write,
             'columns': columns,
             'batches': batches,
             'rejected_count': stage_counts.get('cancel', 0),
             'kpis': {
                 'total': len(batches),
                 'done': stage_counts.get('done', 0),
-                'in_pipeline': stage_counts.get('draft', 0) + stage_counts.get('level0', 0)
-                + stage_counts.get('level1', 0) + stage_counts.get('level2', 0),
+                'in_pipeline': stage_counts.get('draft', 0)
+                + stage_counts.get('approval_pending', 0),
                 'my_pending': my_pending,
                 'period_net': period_net,
             },
         }
 
     # ---------------- helpers ----------------
+    @api.model
+    def _approval_chip(self, run):
+        """Which route this run is on and who it is waiting for, in words."""
+        request = self._safe(lambda: run.approval_request_id, default=None)
+        if not request:
+            return {}
+        step = None
+        if request.current_step_key:
+            step = request.step_ids.filtered(
+                lambda s: s.key == request.current_step_key)[:1]
+        return {
+            'request_id': request.id,
+            'state': request.state,
+            'workflow': request.version_id.workflow_id.name or '',
+            'step': (step.title if step else ''),
+            'with': ', '.join(sorted(set(
+                step.seat_ids.filtered(lambda s: s.status == 'open')
+                .mapped('acting_user_id.name')))) if step else '',
+            'blocked': request.block_reason or '',
+        }
+
     @api.model
     def _run_companies(self, runs):
         """{run id: company id} — the entity a pay run actually happened in.
@@ -278,11 +245,3 @@ class PbPayruns(models.AbstractModel):
             return '%s – %s' % (a, b)
         except Exception:
             return '%s – %s' % (d1 or '?', d2 or '?')
-
-    @api.model
-    def _journal_name(self, run):
-        try:
-            j = getattr(run, 'journal_id', False)
-            return j.name if j else ''
-        except Exception:
-            return ''

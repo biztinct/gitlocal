@@ -213,7 +213,13 @@ export function optionalDetail(row) {
     const total = Number(r.total || 0);
     const done = Number(r.mapped || 0);
     if (r.task === "approvals") {
-        return _t("Pay runs already follow the approval chain");
+        if (r.gap) { return r.gap; }
+        const route = r.route || [];
+        // The route in its own words, not a count: "who has to say yes" is the
+        // question, and three names answer it where "3 steps" does not.
+        return route.length
+            ? route.join(" → ")
+            : _t("Nobody has to approve a pay run on this scheme");
     }
     if (!total) {
         return "";

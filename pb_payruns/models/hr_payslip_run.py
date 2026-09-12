@@ -1,4 +1,38 @@
 # -*- coding: utf-8 -*-
+"""The pay run, on the approval engine.
+
+CLEAN REPLACEMENT (AM ledger, "no payroll is live"). The three-tier ladder that
+used to live here — ``level0``/``level1``/``level2``, ``PB_TIER``, the
+``officer_review`` system parameter, the send-back map and the three
+``action_payslip_run_levelN_done`` entry points — is GONE, not kept beside the
+engine. A pay run now has four states:
+
+    draft → approval_pending → done,  and  cancel
+
+and the only thing that moves it between them is
+``biz.approval.engine``, through the four adapter methods below. Who signs a
+run off is no longer a constant in this file; it is whatever route the business
+published for this company, this pay scheme and this kind of run.
+
+WHAT THE SEAL STILL DOES. ``write({'state': …})`` is still refused unless it
+carries the module-level sentinel, for exactly the reason it always was: a
+state machine nothing enforces is decoration, and a raw ``call_kw`` write to
+``done`` would hand a run to the bank without an approval. Only
+``_approval_freeze``, ``_approval_apply``, ``_approval_return`` and the reject
+action carry it.
+
+SCOPE. The engine never parses a scope key (ledger AM2). This adapter mints
+them, most specific first, in the Matrix's own canonical order:
+
+    scheme:<config id>|division:<division id>
+    scheme:<config id>
+    division:<division id>
+    ''                                (the whole company)
+
+A run whose payslips do not all land on ONE (scheme, division, currency) has no
+single answer to "who approves this?", so it is refused at submission and
+offered a split into one run per group.
+"""
 import logging
 
 from odoo import _, api, fields, models
@@ -11,102 +45,40 @@ NET_CODES = ('NET',)
 GROSS_CODES = ('GROSS',)
 DED_CODES = ('DED', 'DEDUCTION', 'COMP')
 
-# ---------------------------------------------------------------- Phase L
-# Approval chain: draft → level0 (Officer) → level1 (HR) → level2 (Finance/GM)
-# → done, with cancel reachable from any pending tier.
-#
-# state -> (group that may ADVANCE it, human role name). This map is the SINGLE
-# tier truth: the model-side gate (_pb_require_tier), the kanban button flags
-# and the Approvals cockpit all read it, so button visibility can never disagree
-# with enforcement — and visibility is NEVER the guard (C18.17). Every advance /
-# cancel entry point runs the gate as its first line, so a raw call_kw at
-# action_payslip_run_level1_done hits exactly the same wall as the button.
-PB_TIER = {
-    'level0': ('pb_hr_payroll_base.group_payroll_base_officer', 'Payroll Officer'),
-    'level1': ('pb_hr_payroll_base.group_payroll_base_manager', 'HR Manager'),
-    'level2': ('pb_hr_payroll_base.group_payroll_final_approver', 'Finance / GM'),
-}
-PB_PENDING_STATES = ('level0', 'level1', 'level2')
+#: The four states a pay run may be in, and the words for them. ONE map, read
+#: by the board, the kanban and the form, so a screen can never name a stage
+#: the model does not have.
+PB_STATES = [
+    ('draft', 'Draft'),
+    ('approval_pending', 'Waiting for approval'),
+    ('done', 'Done'),
+    ('cancel', 'Rejected'),
+]
+PB_STAGE_NAME = dict(PB_STATES)
+#: The columns the board draws, in order. ``cancel`` is not a column: a
+#: rejected run is an outcome, not a stage on the way somewhere.
+PB_BOARD_STATES = ('draft', 'approval_pending', 'done')
 
-# Human stage names, one place. Used in the send-back messages below so a
-# refusal names the stage the way the board does.
-PB_STAGE_NAME = {
-    'draft': 'Draft', 'level0': 'Officer review', 'level1': 'HR review',
-    'level2': 'Finance approval', 'done': 'Done', 'cancel': 'Rejected',
-}
+#: The payslip state a run in each state expects. Slips wait in the standard
+#: "Waiting" state while an approval is open, so the bank export — which filters
+#: on slip state ``done`` — can never see a run nobody has approved.
+PB_SLIP_STATE = {'draft': 'draft', 'approval_pending': 'verify', 'done': 'done'}
 
-# ---------------------------------------------------------------- Send back
-# Where a run lands when the tier holding it refuses to sign.
-#
-# "Reject" used to mean one thing only: write 'cancel' and cancel every payslip.
-# That is terminal, and nothing walks it back — but an approver who spots a
-# wrong number almost always wants the run returned to the people who can fix
-# it, not killed. So refusing now has two shapes: send back one stage (this
-# map), or reject outright (action_payslip_run_cancel, unchanged).
-#
-# 'done' is in the map on purpose. A final approver who clicks Approve by
-# mistake gets the run back into their OWN queue (level2) — an undo of the
-# click, not a re-opened chain. Walking it all the way back to draft stays
-# draft_payslip_run.
-PB_SEND_BACK = {
-    'level0': 'draft',
-    'level1': 'level0',
-    'level2': 'level1',
-    'done': 'level2',
-}
-# state -> the tier that OWNS the send-back out of it. Same as PB_TIER for the
-# pending stages; 'done' was Finance's decision, so Finance owns undoing it.
-PB_SEND_BACK_TIER = {
-    'level0': 'level0', 'level1': 'level1', 'level2': 'level2', 'done': 'level2',
-}
-
-# ------------------------------------------------ Officer tier, per database
-# Not every company reviews a pay run three times. Some want the run to leave
-# Draft and land straight on HR review, with the Payroll Officer preparing it
-# rather than signing it off. That is a per-DATABASE arrangement, not a code
-# fork — each tenant is its own database, so one system parameter carries it and
-# every surface that draws the chain asks for it through the helpers below
-# instead of re-reading the parameter or re-typing the stage list.
-#
-# ABSENT means ON. Every database that has never heard of this key keeps all
-# three tiers byte-for-byte, so turning it off is always a deliberate act.
-#
-# What the switch does NOT do: it never renames or removes a state. 'level0'
-# stays a legal value of the field, keeps its ondelete rule and keeps its
-# gate — a run parked there before the switch was thrown is still readable,
-# still approvable, and still shows up as its own board column (group_expand
-# adds empty groups; it never hides full ones).
-PB_OFFICER_PARAM = 'pb_payruns.officer_review'
-#: Parameter values that mean "no Officer tier here". Anything else, including
-#: a missing key, leaves the tier in place.
-_PB_OFF_VALUES = ('0', 'false', 'off', 'no', 'none', 'disabled')
-# run state -> the payslip state that belongs with it. Chain entry confirms the
-# slips and each later tier cascades them, so walking the run BACK has to walk
-# the slips back too — otherwise a run sitting at Officer review would hold
-# payslips still stamped Finance-approved, and the bank export (which filters on
-# slip state 'done') would happily pay a run nobody has approved.
-PB_SLIP_STATE = {'draft': 'draft', 'level0': 'level1', 'level1': 'level1',
-                 'level2': 'level2', 'done': 'done'}
-#: payslip states in chain order — a send-back only ever moves a slip DOWN this
-#: list, never up (a stray draft slip is left alone rather than promoted).
-_PB_SLIP_ORDER = ('draft', 'level1', 'level2', 'done')
-
-# C18.24: a state machine is decorative unless write() enforces it. The tier
-# gates above guard the ACTIONS; without this, anyone holding plain write access
-# to hr.payslip.run could call_kw `write({'state': 'done'})` and skip every tier
-# (proven live before this guard existed). The key is a module-level object()
-# IDENTITY — a client-supplied context value can never equal it, whereas a plain
-# boolean flag would be forgeable through the call_kw context merge.
+# C18.24: a state machine is decorative unless write() enforces it. Without
+# this, anyone holding plain write access to hr.payslip.run could call_kw
+# `write({'state': 'done'})` and skip the whole approval (proven live before
+# this guard existed). The key is a module-level object() IDENTITY — a
+# client-supplied context value can never equal it, whereas a plain boolean flag
+# would be forgeable through the call_kw context merge.
 _PB_CHAIN_KEY = 'pb_chain_state_write'
 _PB_CHAIN_TOKEN = object()
-# EVERY state value is sealed on write: a raw call_kw write to 'cancel' would
-# kill a run awaiting Finance without the owning tier or any testimony, and a
-# raw write to 'draft' would undo a Finance decision — the exact holes the
-# reject/reset gates exist to close (review finding L-2). All state changes ride
-# a chain method, which attaches the sentinel; demo/cleanup paths run as
-# admin/su, which the seal already exempts. The tuple below is the CREATE guard:
-# a run may be born in draft, never mid-chain or decided.
-_PB_BORN_SEALED = ('level0', 'level1', 'level2', 'done', 'cancel')
+#: A run may be born in draft, never already approved or already under way.
+_PB_BORN_SEALED = ('approval_pending', 'done', 'cancel')
+
+#: Salary-rule codes that mean "this run contains overtime". Read as a
+#: SUBSTRING of the line's own code, because a scheme built from a workbook
+#: names its components after the workbook's headings.
+_PB_OT_TOKENS = ('OT', 'OVERTIME', 'TANGCA')
 
 
 class HrPayslip(models.Model):
@@ -115,6 +87,24 @@ class HrPayslip(models.Model):
     # Index the run FK — every cockpit aggregates payslips per run; without this
     # the SQL roll-ups seq-scan the payslip table as volume grows.
     payslip_run_id = fields.Many2one(index=True)
+
+    def action_payslip_done(self):
+        """A payslip may not be finished behind its own run's back.
+
+        Safety rail 3: the run is what the approval is about, so confirming one
+        of its payslips while that approval is still open would put money in a
+        bank file nobody signed off.
+        """
+        sanctioned = self.env.context.get(_PB_CHAIN_KEY) is _PB_CHAIN_TOKEN
+        blocked = self.filtered(
+            lambda s: s.payslip_run_id
+            and s.payslip_run_id.state == 'approval_pending')
+        if blocked and not sanctioned:
+            raise UserError(_(
+                "This payslip belongs to a pay run that is waiting for "
+                "approval, so it cannot be finished on its own. The whole run "
+                "is finished once the approval is complete."))
+        return super().action_payslip_done()
 
 
 class HrPayslipLine(models.Model):
@@ -126,114 +116,48 @@ class HrPayslipLine(models.Model):
 
 
 class HrPayslipRun(models.Model):
-    _inherit = 'hr.payslip.run'
+    _name = 'hr.payslip.run'
+    _inherit = ['hr.payslip.run', 'biz.approval.adapter.mixin']
 
-    # Always show the full pipeline as columns (even empty Officer/HR/Finance
-    # stages), like the old board — native kanban hides empty selection groups
-    # otherwise.
-    #
-    # Phase L inserts the Payroll Officer tier through selection_add so the
-    # legacy om_hr_payroll base field stays byte-untouched; the ('level1',)
-    # anchor positions level0 immediately BEFORE the HR tier. Existing state
-    # KEYS are frozen downstream contracts ('done' is the approved signal read
-    # by pb_pay_delivery and payroll analytics) — nothing is renamed.
+    #: The row in the approval catalogue this model is approved under.
+    _approval_process_key = 'payrun'
+
+    # The whole selection is REPLACED rather than added to: the two states the
+    # base module ships ('level1', 'HR Manager pending' / 'level2', 'General
+    # Manager pending') are the old ladder, and leaving them in the list would
+    # leave a board column and a search filter for a stage nothing can reach.
     state = fields.Selection(
-        selection_add=[('level0', 'Payroll Officer pending'), ('level1',)],
-        ondelete={'level0': 'set draft'},
-        group_expand='_pb_group_expand_state')
+        selection=PB_STATES, group_expand='_pb_group_expand_state')
 
-    # Rejection testimony (who refused the run, why, when) — written only by
+    # ------------------------------------------------------------ testimony
+    # Rejection (who killed the run, why, when) — written only by
     # action_payslip_run_cancel below, readonly everywhere else.
     pb_reject_note = fields.Char(string='Rejection reason', readonly=True, copy=False)
     pb_reject_uid = fields.Many2one('res.users', string='Rejected by', readonly=True, copy=False)
     pb_reject_date = fields.Datetime(string='Rejected on', readonly=True, copy=False)
 
-    # Send-back testimony (who sent the run back, why, from which stage) —
-    # written only by action_pb_send_back, cleared the moment the run moves
-    # forward again so the note always answers "why is this run sitting here"
-    # rather than "what happened to it once, months ago".
-    pb_sendback_note = fields.Char(string='Sent back because', readonly=True, copy=False)
-    pb_sendback_uid = fields.Many2one('res.users', string='Sent back by', readonly=True, copy=False)
-    pb_sendback_date = fields.Datetime(string='Sent back on', readonly=True, copy=False)
-    # A Selection, not a Char: the form prints this field, and a raw state key
-    # ("level2") on a screen is exactly the kind of internal vocabulary a user
-    # must never be shown.
-    pb_sendback_from = fields.Selection(
-        [('level0', 'Officer review'), ('level1', 'HR review'),
-         ('level2', 'Finance approval'), ('done', 'Done')],
-        string='Sent back from', readonly=True, copy=False)
+    # Sent back (the approver returned it to be fixed). Cleared the moment the
+    # run is submitted again, so the note always answers "why is this sitting
+    # here" rather than "what happened to it once, months ago".
+    pb_return_note = fields.Char(string='Sent back because', readonly=True, copy=False)
+    pb_return_uid = fields.Many2one('res.users', string='Sent back by', readonly=True, copy=False)
+    pb_return_date = fields.Datetime(string='Sent back on', readonly=True, copy=False)
 
-    # The stepper on the form is drawn by a generic widget that cannot read a
-    # system parameter, so the server hands it the stages it should draw:
-    # "draft:Draft,level1:HR review,…". Computed, never stored — the answer
-    # belongs to the database and the reader's language, not to the run.
-    pb_stage_rail = fields.Char(
-        string='Approval stages', compute='_compute_pb_stage_rail')
-    # Same answer as a plain yes/no, for the screens that only need to know
-    # whether to draw the Officer lane at all.
-    pb_officer_tier = fields.Boolean(
-        string='Officer review in use', compute='_compute_pb_stage_rail')
+    # Who actually prepared the numbers. The Run Payroll screen writes it; the
+    # payslips' own authors are added to it at submission, and together they are
+    # the "makers" an independence rule keeps away from the decision.
+    pb_prepared_uid = fields.Many2one(
+        'res.users', string='Prepared by', readonly=True, copy=False,
+        help="Who ran the payroll that produced these payslips.")
 
-    # The answer is the same for every run on the database, but `state` is what
-    # makes the client re-read it, and a compute with no dependency at all is a
-    # compute the ORM warns about.
-    @api.depends('state')
-    def _compute_pb_stage_rail(self):
-        labels = {'draft': _('Draft'), 'level0': _('Officer review'),
-                  'level1': _('HR review'), 'level2': _('Finance approval'),
-                  'done': _('Done')}
-        on = self._pb_officer_tier()
-        rail = ','.join('%s:%s' % (s, labels[s]) for s in self._pb_board_states())
-        for run in self:
-            run.pb_stage_rail = rail
-            run.pb_officer_tier = on
-
-    # ------------------------------------------------------------------
-    # Which tiers this database actually uses
-    # ------------------------------------------------------------------
-    # ONE reader of the parameter, and every other surface — the board, the
-    # Approvals cockpit, the kanban columns, the form stepper — asks these
-    # helpers. A screen that drew the chain from its own copy of the stage list
-    # is exactly how a button ends up offering a stage the model will refuse.
-    @api.model
-    def _pb_officer_tier(self):
-        """Does this database review a pay run at the Payroll Officer tier?"""
-        value = self.env['ir.config_parameter'].sudo().get_param(
-            PB_OFFICER_PARAM, '1')
-        return str(value or '').strip().lower() not in _PB_OFF_VALUES
-
-    @api.model
-    def _pb_chain_entry(self):
-        """The stage a submitted run lands on, leaving Draft."""
-        return 'level0' if self._pb_officer_tier() else 'level1'
-
-    @api.model
-    def _pb_chain_states(self):
-        """The pending stages, in chain order, that this database uses."""
-        if self._pb_officer_tier():
-            return PB_PENDING_STATES
-        return ('level1', 'level2')
-
-    @api.model
-    def _pb_board_states(self):
-        """Every stage the board draws as a column, in order."""
-        return ('draft',) + self._pb_chain_states() + ('done',)
-
-    @api.model
-    def _pb_send_back_map(self):
-        """state -> the stage a send-back returns it to, for THIS database.
-
-        With no Officer tier, the stage before HR review is Draft. Derived from
-        the board order rather than typed out a second time, so the two can
-        never disagree.
-        """
-        if self._pb_officer_tier():
-            return dict(PB_SEND_BACK)
-        return {'level1': 'draft', 'level2': 'level1', 'done': 'level2'}
+    # What the numbers looked like when the run was sent in. If they move, the
+    # approval no longer covers them and the engine refuses to carry it out.
+    pb_source_revision = fields.Char(
+        string='Pay data stamp', readonly=True, copy=False)
 
     @api.model
     def _pb_group_expand_state(self, values, domain):
-        return list(self._pb_board_states())
+        return list(PB_BOARD_STATES)
 
     # STORED: computed once when the run's payslips change, read instantly forever.
     # Aggregating every payslip line at read time does not scale (a 600k-row
@@ -273,7 +197,7 @@ class HrPayslipRun(models.Model):
         string='Division', compute='_compute_pb_division', store=True, index=True)
     # Human-readable division for the kanban card chip (e.g. "manufacturing" ->
     # "Manufacturing", "corporate_office" -> "Corporate Office"). Empty for plain
-    # structure-based payroll, where the card falls back to the journal name.
+    # structure-based payroll.
     pb_division_label = fields.Char(
         string='Division (label)', compute='_compute_pb_division', store=True)
 
@@ -290,14 +214,6 @@ class HrPayslipRun(models.Model):
             run.pb_division = div
             run.pb_division_label = div.replace('_', ' ').title() if div else ''
 
-    # `category_id` belongs here: the sums below are grouped BY category, so a
-    # line moving from "Other" to "Deduction" changes every figure in the band
-    # while the amounts stay untouched. Without it, re-categorising a scheme
-    # left the stored KPIs reporting the old grouping until something else
-    # happened to touch a total. `component_detail` lives in the formula engine,
-    # which this module does not depend on, so it cannot be named here — it is
-    # written at the same moment as the category on both paths that set it, and
-    # this trigger covers that write.
     #: Category codes that still mean something when a line carries no pay role.
     _PB_CATEGORY_BUCKETS = ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
                             'BASIC', 'ALW')
@@ -323,14 +239,6 @@ class HrPayslipRun(models.Model):
         `info` and `mixed` deliberately return NULL: a component counted in
         hours is not an amount, and a component that is both added and taken off
         has no single band. Both are dropped from every money figure here.
-
-        Note `employer_cost` gets a bucket of its OWN (`ERCOST`) rather than
-        reusing `COMP`. A line written before the stamp existed still lands in
-        `COMP` through the fallback, and `COMP` still means exactly what it
-        meant then — part of the deductions figure. That is the whole of the
-        promise that an existing tenant's numbers do not move until the run is
-        recomputed: the separation only happens for lines that actually say
-        which side they are on.
         """
         if not role_aware:
             return ("CASE WHEN c.code IN %s THEN c.code END"
@@ -365,20 +273,12 @@ class HrPayslipRun(models.Model):
         # This compute reads the tables directly, so anything still sitting in
         # the ORM's write buffer is invisible to it — and a recompute triggered
         # by the very write that has not landed yet is the normal case, not an
-        # exotic one. Attaching payslips to a run and reading its totals in the
-        # same transaction (the Run Payroll wizard does exactly that) returned
-        # zeros for that reason alone.
+        # exotic one.
         self.env['hr.payslip'].flush_model(['payslip_run_id', 'state'])
         line_fields = ['slip_id', 'category_id', 'total']
-        # NETROLE — the flag lives in `pb_hr_payroll_formula` (the payslip-line
-        # extension that already carries report_visible/component_type). This
-        # cockpit does not depend on the formula engine, so the column may
-        # genuinely be absent; when it is, the sums are exactly what they were.
         detail_aware = 'component_detail' in self.env['hr.payslip.line']._fields
         if detail_aware:
             line_fields.append('component_detail')
-        # VALUEKIND P5 — the same column the Analytics Explorer switched to, for
-        # the same reason. See `_pb_bucket_sql`.
         role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
         if role_aware:
             line_fields.append('pay_role')
@@ -391,9 +291,6 @@ class HrPayslipRun(models.Model):
             GROUP BY p.payslip_run_id
         """, (tuple(run_ids),))
         counts = dict(cr.fetchall())
-        # Payslips computed entirely on defaults. The column lives in the
-        # formula engine, which this cockpit does not depend on, so it may
-        # genuinely be absent — when it is, the banner simply never shows.
         unsourced = {}
         if 'pb_sourced_inputs' in self.env['hr.payslip']._fields:
             self.env['hr.payslip'].flush_model(['pb_sourced_inputs'])
@@ -405,22 +302,12 @@ class HrPayslipRun(models.Model):
                   AND p.calculation_method = 'formula'
                   -- A payslip with no provenance blob PREDATES the recording of
                   -- it, which is a different statement from "this payslip
-                  -- sourced nothing" and no reader may collapse the two. The
-                  -- 19.0.1.97.0 migration counts every blob that does exist, so
-                  -- what is left here is genuinely unmeasurable, not zero.
+                  -- sourced nothing" and no reader may collapse the two.
                   AND p.formula_input_sources IS NOT NULL
                   AND p.formula_input_sources <> ''
                 GROUP BY p.payslip_run_id
             """, (tuple(run_ids),))
             unsourced = dict(cr.fetchall())
-        # NETROLE — a component that is folded into a roll-up is counted through
-        # the roll-up, never twice. `SI-HI-IU Total 10.5%`, `Monthly PIT` and
-        # `Total Deduction` are all subtracted from net pay, but the third one
-        # IS the first two plus one more; summing all three is how ABM's June
-        # run reported ₫5,058,029,390 of deductions against ₫1.9bn of gross.
-        # Net is exempt: net pay is one component, never a roll-up of others.
-        # A line created before any classification has the flag NULL, so every
-        # existing tenant's figures are bit-for-bit what they were.
         net_clause = ("pl.pay_role = 'net' OR c.code = 'NET'"
                       if role_aware else "c.code = 'NET'")
         detail_clause = ("AND ((" + net_clause + ") "
@@ -446,60 +333,66 @@ class HrPayslipRun(models.Model):
             run.pb_employee_count = counts.get(run.id, 0)
             run.pb_unsourced_count = unsourced.get(run.id, 0)
             run.pb_total_net = d.get('NET', 0.0)
-            # A scheme built by importing a payroll workbook rarely has a
-            # component filed under "Gross" — it has a basic and a list of
-            # allowances, and gross is their sum. Reading only 'GROSS' showed
-            # ₫0 next to ₫1.9bn of basic pay on ABM's June run.
             run.pb_total_gross = d.get('GROSS') or (
                 d.get('BASIC', 0.0) + d.get('ALW', 0.0))
-            # COMP stays in this sum, unchanged. A line in that bucket is one
-            # nothing has classified — on such a run, the reference tenant's
-            # whole deductions KPI is COMP lines, and dropping the bucket would
-            # replace a wrong number with a blank one. VALUEKIND P5 does not
-            # move that money; it gives a line that DOES know it is employer
-            # cost somewhere else to go.
             run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
                                           + d.get('COMP', 0.0))
             run.pb_total_employer_cost = abs(d.get('ERCOST', 0.0))
 
     # ---- context-aware permission flags for kanban card buttons ----
-    # NOTE: these are COSMETIC. Enforcement lives in _pb_require_tier below;
-    # both read _pb_user_roles so they can never drift apart.
+    # NOTE: these are COSMETIC. Enforcement lives in the engine and in the
+    # write seal below; a screen boolean is decoration (ledger, "server is the
+    # authority").
     pb_can_submit = fields.Boolean(compute='_compute_pb_perms')
-    pb_can_approve_officer = fields.Boolean(compute='_compute_pb_perms')
-    pb_can_approve_hr = fields.Boolean(compute='_compute_pb_perms')
-    pb_can_approve_gm = fields.Boolean(compute='_compute_pb_perms')
     pb_can_reject = fields.Boolean(compute='_compute_pb_perms')
-    # "Send this back one stage" — offered wherever Reject is, minus draft
-    # (nothing sits before draft).
-    pb_can_send_back = fields.Boolean(compute='_compute_pb_perms')
-    # "Undo my approval" on a finished run — Finance only, and only while the
-    # payslips have not been emailed out yet (_pb_undo_blocker).
-    pb_can_undo_approval = fields.Boolean(compute='_compute_pb_perms')
+    pb_is_pending = fields.Boolean(compute='_compute_pb_perms')
     pb_is_done = fields.Boolean(compute='_compute_pb_perms')
     pb_awaiting_me = fields.Boolean(
         compute='_compute_pb_awaiting_me', search='_search_pb_awaiting_me')
 
-    def _pb_user_roles(self):
-        """(officer, manager, final) for the CURRENT user — the one role read.
+    @api.depends_context('uid')
+    @api.depends('state')
+    def _compute_pb_perms(self):
+        may_write = self.env['hr.payslip.run'].has_access('write')
+        for run in self:
+            st = run.state or 'draft'
+            run.pb_can_submit = st == 'draft' and may_write
+            run.pb_can_reject = st in ('draft', 'approval_pending') and may_write
+            run.pb_is_pending = st == 'approval_pending'
+            run.pb_is_done = st == 'done'
 
-        Used by both the cosmetic button flags and the model-side tier gate, so
-        what a user can see and what a user may actually do are computed from
-        the same three booleans.
+    @api.depends_context('uid')
+    @api.depends('state')
+    def _compute_pb_awaiting_me(self):
+        """Is this run waiting on a seat THIS person holds right now?
+
+        Asked of the engine's own seats and never of a group: "anybody in HR"
+        is exactly the fallback the engine refuses to make.
         """
-        u = self.env.user
-        root = u._is_admin() \
-            or u.has_group('pb_hr_payroll_base.group_payroll_super_admin')
-        officer = (root
-                   or u.has_group('pb_hr_payroll_base.group_payroll_base_officer')
-                   or u.has_group('pb_hr_payroll_base.group_payroll_base_manager'))
-        manager = root or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-        final = root or u.has_group('pb_hr_payroll_base.group_payroll_final_approver')
-        return officer, manager, final
+        mine = self._pb_runs_awaiting(self.env.uid)
+        for run in self:
+            run.pb_awaiting_me = run.id in mine
 
-    # ---------------- Phase L: model-side tier enforcement ----------------
+    @api.model
+    def _pb_runs_awaiting(self, uid):
+        Seat = self.env['biz.approval.request.seat'].sudo()
+        seats = Seat.search([
+            ('acting_user_id', '=', uid), ('status', '=', 'open'),
+            ('request_id.res_model', '=', 'hr.payslip.run'),
+            ('request_id.state', 'in', ('pending', 'blocked')),
+        ])
+        return set(seats.mapped('request_id.res_id'))
+
+    def _search_pb_awaiting_me(self, operator, value):
+        ids = list(self._pb_runs_awaiting(self.env.uid)) or [0]
+        positive = (operator in ('=', '!=') and bool(value)) == (operator == '=')
+        return [('id', 'in', ids)] if positive else [('id', 'not in', ids)]
+
+    # ==================================================================
+    # The seal: only the adapter may move a run between states
+    # ==================================================================
     def _pb_chain_ctx(self):
-        """The recordset the sanctioned chain writers use (carries the sentinel)."""
+        """The recordset the sanctioned writers use (carries the sentinel)."""
         return self.with_context(**{_PB_CHAIN_KEY: _PB_CHAIN_TOKEN})
 
     def _pb_seal_ok(self):
@@ -519,135 +412,524 @@ class HrPayslipRun(models.Model):
     def write(self, vals):
         if 'state' in vals and not self._pb_seal_ok():
             raise AccessError(_(
-                "A pay run's approval status can only change through the "
-                "approval actions (Submit / Approve / Reject)."))
+                "A pay run's approval status can only change through Submit "
+                "for approval, an approval decision, or Reject."))
         return super().write(vals)
 
-    def _pb_demo_user(self):
-        try:
-            return self.env.user.has_group('pb_demo.group_payobook_demo')
-        except Exception:
+    # ==================================================================
+    # Adapter — what an approval of a pay run is about
+    # ==================================================================
+    def _pb_review_groups(self):
+        """The (scheme, division, currency) groups this run's payslips fall in.
+
+        One group is the normal case and the only one that can be approved: a
+        run spanning two schemes has two different published routes and no
+        honest way to pick between them.
+        """
+        self.ensure_one()
+        Division = self.env.get('pb.division')
+        by_department = {}
+        groups = {}
+        slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
+        run_config = getattr(self, 'pb_formula_config_id', False)
+        on_date = self.date_end or self.date_start or fields.Date.context_today(self)
+        for slip in slips:
+            config = slip.formula_config_id or run_config
+            department = slip.employee_id.department_id
+            key_dept = department.id or 0
+            if key_dept not in by_department:
+                found = self.env['pb.division']
+                if Division is not None and department:
+                    try:
+                        found = Division.division_for(department, on_date)
+                    except Exception:   # noqa: BLE001 — never stop a submission
+                        _logger.warning(
+                            'pb_payruns: division lookup failed on run %s',
+                            self.id)
+                by_department[key_dept] = found
+            division = by_department[key_dept]
+            company = slip.company_id or self.env.company
+            currency = company.currency_id
+            key = (config.id if config else 0,
+                   division.id if division else 0, currency.id)
+            row = groups.setdefault(key, {
+                'config': config, 'division': division, 'company': company,
+                'currency': currency, 'slip_ids': [], 'employee_ids': [],
+            })
+            row['slip_ids'].append(slip.id)
+            if slip.employee_id:
+                row['employee_ids'].append(slip.employee_id.id)
+        return list(groups.values())
+
+    def _pb_scope_keys(self, config, division):
+        """The opaque keys the engine walks, most specific first."""
+        scheme = 'scheme:%s' % config.id if config else ''
+        area = 'division:%s' % division.id if division else ''
+        keys = []
+        if scheme and area:
+            keys.append('%s|%s' % (scheme, area))
+        if scheme:
+            keys.append(scheme)
+        if area:
+            keys.append(area)
+        keys.append('')
+        return keys
+
+    def _pb_kind_key(self):
+        """What kind of run this is, in the scheme map's own vocabulary."""
+        config = getattr(self, 'pb_formula_config_id', False) \
+            or self.slip_ids[:1].formula_config_id
+        return (getattr(config, 'cycle_type', False) or 'any') if config else 'any'
+
+    def _pb_slip_money(self, slips):
+        """{slip id: (net, gross)} — the same buckets the KPI band uses."""
+        if not slips:
+            return {}
+        role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
+        bucket = self._pb_bucket_sql(role_aware)
+        self.env['hr.payslip.line'].flush_model(['slip_id', 'category_id',
+                                                 'total'])
+        self.env.cr.execute("""
+            SELECT pl.slip_id, """ + bucket + """ AS bucket,
+                   COALESCE(SUM(pl.total), 0)
+            FROM hr_payslip_line pl
+            JOIN hr_salary_rule_category c ON c.id = pl.category_id
+            WHERE pl.slip_id IN %s AND """ + bucket + """ IS NOT NULL
+            GROUP BY pl.slip_id, 2
+        """, (tuple(slips.ids),))
+        agg = {}
+        for slip_id, code, total in self.env.cr.fetchall():
+            agg.setdefault(slip_id, {})[code] = float(total or 0.0)
+        out = {}
+        for slip in slips:
+            d = agg.get(slip.id, {})
+            gross = d.get('GROSS') or (d.get('BASIC', 0.0) + d.get('ALW', 0.0))
+            out[slip.id] = (d.get('NET', 0.0), gross)
+        return out
+
+    def _pb_overtime_included(self):
+        """Does this run pay overtime? Read off the components it actually has."""
+        self.ensure_one()
+        slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
+        if not slips:
             return False
+        for line in slips.mapped('line_ids'):
+            code = (line.code or '').upper().replace('_', '').replace('-', '')
+            if not code:
+                continue
+            for token in _PB_OT_TOKENS:
+                if token in code:
+                    return True
+        return False
 
-    def _pb_demo_reach(self):
-        """Demo logins drive the showcase chain — but their authority stops at
-        the demo world: every run in ``self`` must be generator-stamped
-        ``is_demo`` (review L-1: the demo group's all-records rules would
-        otherwise let any demo login walk a REAL run through all three tiers)."""
-        if not self or 'is_demo' not in self._fields:
-            return False
-        return all(bool(r.sudo().is_demo) for r in self)
+    def _pb_variance_pct(self, config, net_total):
+        """How far this run's net pay is from the last approved one like it."""
+        self.ensure_one()
+        if not config or not self.date_start:
+            return 0.0
+        domain = [('id', '!=', self.id), ('state', '=', 'done'),
+                  ('date_start', '<', self.date_start)]
+        if 'pb_formula_config_id' in self._fields:
+            domain.append(('pb_formula_config_id', '=', config.id))
+        previous = self.sudo().search(domain, order='date_start desc, id desc',
+                                      limit=1)
+        if not previous or not previous.pb_total_net:
+            return 0.0
+        before = float(previous.pb_total_net)
+        return round((float(net_total) - before) / before * 100.0, 2)
 
-    def _pb_tier_ok(self, state):
-        """May the current user advance a run that sits in ``state``?
+    def _approval_validate(self):
+        """Everything about THIS run that would stop it being sent in."""
+        self.ensure_one()
+        if self.state != 'draft':
+            raise UserError(_(
+                "“%(name)s” has already been sent in (status: %(state)s).",
+                name=self.name or '',
+                state=_(PB_STAGE_NAME.get(self.state or 'draft',
+                                          self.state or ''))))
+        if not self.slip_ids.filtered(lambda s: s.state != 'cancel'):
+            raise UserError(_(
+                "There are no payslips in this pay run yet, so there is "
+                "nothing to approve. Generate the payslips first."))
+        groups = self._pb_review_groups()
+        if len(groups) > 1:
+            raise UserError(_(
+                "This pay run covers %(n)s different groups of people — "
+                "different pay schemes, parts of the business or currencies — "
+                "and each of them can be approved by different people. Split "
+                "it into one run per group first, using “Split into review "
+                "groups” on the run.", n=len(groups)))
+        return True
 
-        ``env.su`` passes: a server-side sudo caller (the analytics finalize
-        path) is sanctioned code — call_kw can never hand a client su.
+    def _approval_context(self):
+        """The frozen truth about this run at the moment it is sent in."""
+        self.ensure_one()
+        groups = self._pb_review_groups()
+        if not groups:
+            raise UserError(_(
+                "There are no payslips in this pay run yet, so there is "
+                "nothing to approve."))
+        group = groups[0]
+        config, division = group['config'], group['division']
+        company = group['company']
+        currency = group['currency']
+        slips = self.env['hr.payslip'].browse(group['slip_ids'])
+
+        net_total = float(self.pb_total_net or 0.0)
+        gross_total = float(self.pb_total_gross or 0.0)
+        unit = currency.name or ''
+        facts = {
+            'net_total': {'value': net_total, 'unit': unit},
+            'gross_total': {'value': gross_total, 'unit': unit},
+            'payslip_count': {'value': len(slips), 'unit': ''},
+            'employee_count': {'value': len(set(group['employee_ids'])),
+                               'unit': ''},
+            'variance_pct': {'value': self._pb_variance_pct(config, net_total),
+                             'unit': ''},
+            'overtime_included': {'value': self._pb_overtime_included(),
+                                  'unit': ''},
+        }
+
+        makers = set(slips.mapped('create_uid').ids)
+        if self.pb_prepared_uid:
+            makers.add(self.pb_prepared_uid.id)
+        subjects = set(slips.mapped('employee_id.user_id').ids)
+
+        label_bits = [b for b in (config.name if config else '',
+                                  division.name if division else '') if b]
+        return {
+            'company_id': company.id,
+            'title': self.name or _('Pay run'),
+            'scope_keys': self._pb_scope_keys(config, division),
+            'scope_label': ' · '.join(label_bits) or company.name,
+            'kind_key': self._pb_kind_key(),
+            'facts': facts,
+            'amount': net_total,
+            'currency_id': currency.id,
+            'maker_uids': sorted(makers),
+            'submitter_uid': self.env.uid,
+            'subject_uids': sorted(subjects),
+            'source_revision': self._pb_source_revision(slips),
+            'evidence': self._pb_evidence(),
+        }
+
+    def _pb_source_revision(self, slips=None):
+        """A stamp of the numbers this approval covers.
+
+        WHICH PAYSLIPS, AND WHAT EACH ONE PAYS — and deliberately NOT their
+        `write_date`. Sending a run in moves every payslip from Draft to
+        Waiting, which stamps a new write_date on all of them; a revision that
+        included it would differ from itself the moment it was taken, and every
+        approval would then be refused as "this changed after it was sent in".
+        What an approver signs for is the money, so that is what is stamped:
+        add a payslip, remove one, or move a single figure on one of them and
+        the stamp changes.
         """
-        if self.env.su:
+        self.ensure_one()
+        if slips is None:
+            slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
+        money = self._pb_slip_money(slips)
+        rows = sorted(
+            (slip.id, round(money.get(slip.id, (0.0, 0.0))[0], 2),
+             round(money.get(slip.id, (0.0, 0.0))[1], 2))
+            for slip in slips)
+        return self._approval_revision_of(rows)
+
+    def _pb_evidence(self):
+        """What is attached to this run, as the route may ask for it."""
+        self.ensure_one()
+        attachments = self.env['ir.attachment'].sudo().search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id)], limit=40)
+        names = [a.name or '' for a in attachments]
+        control = any('control' in (n or '').lower() for n in names)
+        return [{'key': 'control_report',
+                 'name': _('Control report'),
+                 'ok': control,
+                 'note': (names[0] if control and names else '')}]
+
+    @api.model
+    def _approval_capabilities(self):
+        """What a workflow designer may ask about a pay run."""
+        from odoo.addons.pb_scheme_map.models.formula_scheme_assignment import (
+            CYCLE_SELECTION)
+        return {
+            'facts': {
+                'net_total': {'type': 'decimal', 'label': _('Total net pay'),
+                              'unit': 'currency'},
+                'gross_total': {'type': 'decimal', 'label': _('Total gross pay'),
+                                'unit': 'currency'},
+                'payslip_count': {'type': 'int', 'label': _('Payslips')},
+                'employee_count': {'type': 'int', 'label': _('Employees')},
+                'variance_pct': {'type': 'percent',
+                                 'label': _('Change against the last run')},
+                'overtime_included': {'type': 'bool',
+                                      'label': _('Contains overtime')},
+            },
+            'kinds': [{'key': key, 'label': _(label)}
+                      for key, label in CYCLE_SELECTION],
+            'evidence': [
+                {'key': 'control_report', 'label': _('Control report')},
+                {'key': 'variance_note', 'label': _('Note on the changes')},
+                {'key': 'bank_control_total',
+                 'label': _('Bank control total')},
+            ],
+            # Labels rather than keys: nothing reads this yet, and the day
+            # something does it will be putting it on a screen.
+            'scope_levels': [_('Pay scheme'), _('Division')],
+            # A pay run is a batch about many people, so "their manager" has no
+            # single answer worth offering in the builder.
+            'manager_mode': False,
+        }
+
+    @api.model
+    def _approval_scope_options(self, company):
+        """The narrowings a pay-run route may be given: which scheme, and the
+        kind of run. The division level is added for every process by the
+        configuration module, so it is deliberately not repeated here."""
+        options = []
+        Config = self.env.get('hr.formula.config')
+        if Config is not None:
+            domain = [('company_id', '=', company.id)]
+            if 'state' in Config._fields:
+                domain.append(('state', '!=', 'archived'))
+            for config in Config.sudo().search(domain, limit=200,
+                                               order='name'):
+                options.append({'key': 'scheme:%s' % config.id,
+                                'label': config.name or ''})
+        if not options:
+            return []
+        return [{'level': 'scheme', 'label': _('Pay scheme'),
+                 'options': options}]
+
+    @api.model
+    def _approval_coverage_scopes(self, company):
+        """Every (scheme, division) pair pay actually happens in."""
+        rows = []
+        Map = self.env.get('pb.scheme.map')
+        Config = self.env.get('hr.formula.config')
+        if Config is None:
+            return rows
+        headcount = {}
+        if Map is not None:
+            try:
+                coverage = Map.coverage(company.id)
+                headcount = {int(k): v
+                             for k, v in (coverage.get('by_config') or {}).items()}
+            except Exception:       # noqa: BLE001 — a scan must never raise
+                _logger.warning('pb_payruns: scheme coverage unavailable')
+        configs = Config.sudo().search([('company_id', '=', company.id)],
+                                       limit=200, order='name')
+        for config in configs:
+            rows.append({
+                'scope_key': 'scheme:%s' % config.id,
+                'scope_keys': ['scheme:%s' % config.id, ''],
+                'label': config.name or '',
+                'headcount': headcount.get(config.id, 0),
+                'kind_key': getattr(config, 'cycle_type', False) or 'any',
+                'facts': {},
+            })
+        if not rows:
+            rows.append({'scope_key': '', 'scope_keys': [''],
+                         'label': company.name, 'headcount': 0,
+                         'kind_key': 'any', 'facts': {}})
+        return rows
+
+    # ------------------------------------------------------- the transitions
+    def _approval_freeze(self, request):
+        """Lock the numbers while somebody is deciding about them."""
+        self.ensure_one()
+        slips = self.slip_ids.filtered(lambda s: s.state == 'draft')
+        if slips:
+            slips.write({'state': 'verify'})
+        self._pb_chain_ctx().write({
+            'state': 'approval_pending',
+            'pb_source_revision': request.source_revision or '',
+            'pb_return_note': False, 'pb_return_uid': False,
+            'pb_return_date': False,
+        })
+        return True
+
+    def _approval_apply(self, request):
+        """Carry out what the approval authorised: finish the run.
+
+        This is the legacy "done" body, guarded exactly as it always was. A
+        run whose payslips are computed by a scheme has no per-rule GL
+        accounts, so posting journal entries for it either does nothing useful
+        or raises a multi-company account error; those runs advance the
+        workflow only and the journals are produced in the dedicated Pay Salary
+        step. Traditional structure-based payroll keeps the standard accounting
+        flow untouched, through `hr.payslip.action_payslip_done`.
+
+        Idempotent: a run already `done` is left alone.
+        """
+        self.ensure_one()
+        if self.state == 'done':
             return True
-        officer, manager, final = self._pb_user_roles()
-        if {'level0': officer, 'level1': manager, 'level2': final}.get(state, False):
-            return True
-        return self._pb_demo_user() and self._pb_demo_reach()
 
-    def _pb_require_tier(self, state):
-        """Raise unless the current user holds the tier that owns ``state``.
+        def _accountless(run):
+            return getattr(run, 'is_demo', False) or bool(run.slip_ids) and all(
+                getattr(s, 'calculation_method', False) == 'formula'
+                for s in run.slip_ids)
 
-        First line of EVERY advance/cancel entry point. The cockpit, the kanban
-        buttons, the native form buttons and a hand-rolled call_kw all funnel
-        through here — there is no path that only the UI guards (C18.17).
+        slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
+        if _accountless(self):
+            if slips:
+                slips.write({'state': 'done'})
+        else:
+            # `action_payslip_done` is where the accounting bridge posts the
+            # journal entry; the sentinel lets it past the "not behind your own
+            # run's back" rail, which exists for direct clicks, not for this.
+            sanctioned = slips.with_context(
+                **{_PB_CHAIN_KEY: _PB_CHAIN_TOKEN})
+            for slip in sanctioned.sorted(lambda s: s.employee_id.name or ''):
+                slip.action_payslip_done()
+            slips.write({'state': 'done'})
+        self._pb_chain_ctx().write({'state': 'done'})
+        if hasattr(self, '_sync_analytics_state_on_done'):
+            try:
+                self._sync_analytics_state_on_done()
+            except Exception:       # noqa: BLE001 — never half-apply
+                _logger.exception(
+                    'pb_payruns: analytics sync failed on run %s', self.id)
+        return True
+
+    def _approval_return(self, request, reason):
+        """Sent back: the numbers become editable again, with the reason."""
+        self.ensure_one()
+        slips = self.slip_ids.filtered(lambda s: s.state == 'verify')
+        if slips:
+            slips.write({'state': 'draft'})
+        self._pb_chain_ctx().write({
+            'state': 'draft',
+            'pb_return_note': (reason or '')[:512] or False,
+            'pb_return_uid': self.env.uid,
+            'pb_return_date': fields.Datetime.now(),
+        })
+        return True
+
+    # ------------------------------------------------------------ submitting
+    def action_approval_submit(self):
+        """Send this run in for approval, and say what happened."""
+        self.ensure_one()
+        result = super().action_approval_submit()
+        return {
+            'type': 'ir.actions.client', 'tag': 'display_notification',
+            'params': {
+                'title': _('Sent in for approval'),
+                'message': (_("“%s” is finished — nobody had to check it, and "
+                              "that is recorded.", self.name or '')
+                            if self.state == 'done'
+                            else _("“%s” is now waiting for its approval.",
+                                   self.name or '')),
+                'type': 'success', 'sticky': False,
+                'next': {'type': 'ir.actions.client', 'tag': 'reload'},
+            },
+        } if result else True
+
+    # ==================================================================
+    # Split into review groups
+    # ==================================================================
+    def action_split_review_groups(self):
+        """One draft run per (scheme, division, currency) group.
+
+        Every payslip ends up in exactly one child, the nets add back up to
+        the source's net, and the source — now empty — is deleted. Anything
+        short of that raises and the whole split is rolled back.
         """
-        if state not in PB_TIER:
-            raise UserError(_("This pay run is not awaiting an approval decision."))
-        if not self._pb_tier_ok(state):
-            raise AccessError(_(
-                "This pay run is waiting on the %s tier — your user does not "
-                "hold that role.", PB_TIER[state][1]))
+        self.ensure_one()
+        if self.state != 'draft':
+            raise UserError(_(
+                "Only a pay run that is still a draft can be split."))
+        groups = self._pb_review_groups()
+        if len(groups) < 2:
+            raise UserError(_(
+                "Everybody in this pay run is paid by the same scheme in the "
+                "same part of the business, so there is nothing to split."))
+        before_slips = set(self.slip_ids.ids)
+        before_net = round(float(self.pb_total_net or 0.0), 2)
 
-    def _pb_guard_advance(self, expected):
-        """Tier gate + state gate for an advance.
+        children = self.browse()
+        moved = set()
+        has_config = 'pb_formula_config_id' in self._fields
+        for group in groups:
+            bits = [b for b in (group['config'].name if group['config'] else '',
+                                group['division'].name if group['division']
+                                else '') if b]
+            suffix = ' · '.join(bits) or group['currency'].name or ''
+            # CREATED, never copied: `slip_ids` is a plain one2many with no
+            # `copy=False`, so `copy()` would DUPLICATE every payslip — the
+            # opposite of conserving them.
+            values = {
+                'name': '%s · %s' % (self.name or _('Pay run'), suffix),
+                'date_start': self.date_start,
+                'date_end': self.date_end,
+                'credit_note': self.credit_note,
+            }
+            if has_config and group['config']:
+                values['pb_formula_config_id'] = group['config'].id
+            child = self.create(values)
+            slips = self.env['hr.payslip'].browse(group['slip_ids'])
+            slips.write({'payslip_run_id': child.id})
+            moved |= set(slips.ids)
+            children |= child
 
-        The state check closes the second half of the found hole: the legacy
-        advance methods write their target state UNCONDITIONALLY, so calling
-        action_payslip_run_level1_done on a *draft* run used to jump it straight
-        to level2 and skip HR entirely.
-        """
-        for run in self:
-            if run.state != expected:
-                raise UserError(_(
-                    "“%(name)s” is not at the %(stage)s stage (current status: "
-                    "%(state)s).",
-                    name=run.name or '', stage=PB_TIER[expected][1],
-                    state=run.state or 'draft'))
-        self._pb_require_tier(expected)
+        self.env['hr.payslip'].flush_model(['payslip_run_id'])
+        self.invalidate_recordset()
+        children.invalidate_recordset()
+        if moved != before_slips:
+            raise UserError(_(
+                "The split was stopped because it would not have kept every "
+                "payslip. Nothing was changed."))
+        after_net = sum(float(child.pb_total_net or 0.0) for child in children)
+        if round(after_net, 2) != round(before_net, 2):
+            raise UserError(_(
+                "The split was stopped because the totals did not add back "
+                "up. Nothing was changed."))
+        if self.slip_ids:
+            raise UserError(_(
+                "The split was stopped because the original pay run still has "
+                "payslips in it. Nothing was changed."))
+        names = ', '.join(child.name or '' for child in children)
+        source_name = self.name or ''
+        self.unlink()
+        _logger.info('pb_payruns: split "%s" into %s runs', source_name,
+                     len(children))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Pay runs'),
+            'res_model': 'hr.payslip.run',
+            'view_mode': 'kanban,list,form',
+            'domain': [('id', 'in', children.ids)],
+            'context': {'pb_split_from': source_name, 'pb_split_names': names},
+        }
 
-    def draft_payslip_run(self):
-        """Reset an approved run to draft.
-
-        Not a tier advance, but it UNDOES the Finance decision and re-opens the
-        whole chain — so it carries the same gate as the tier that made that
-        decision. (Found while mapping the chain: like the advances, this was
-        guarded by nothing but the native form button's invisible= rule.)
-        """
-        _officer, _manager, final = self._pb_user_roles()
-        if not (self.env.su or final
-                or (self._pb_demo_user() and self._pb_demo_reach())):
-            raise AccessError(_(
-                "Only the Finance / GM tier can reset an approved pay run to "
-                "draft."))
-        # the legacy body writes 'draft' — sanctioned, so it carries the sentinel
-        return super(HrPayslipRun, self._pb_chain_ctx()).draft_payslip_run()
-
-    def action_payslip_run_level0_done(self):
-        """Payroll Officer review → HR review.
-
-        No payslip cascade (the slips were confirmed once at chain entry, see
-        done_payslip_run) and NO mail — the Officer tier is a pure run-level
-        move (C18.47/48: no new sends on this server).
-        """
-        self._pb_guard_advance('level0')
-        self._pb_chain_ctx().write({'state': 'level1'})
-        self._pb_clear_sendback()
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
-
-    def action_payslip_run_level1_done(self):
-        """HR review → Finance approval — gated, then the legacy body verbatim
-        (slip cascade, batch analytics, the existing GM notify).
-
-        The sentinel context travels on the recordset so the LEGACY body's own
-        `write({'state': 'level2'})` passes the seal without om_hr_payroll
-        knowing anything about it.
-        """
-        self._pb_guard_advance('level1')
-        res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()
-        self._pb_clear_sendback()
-        return res
-
-    def action_payslip_run_level2_done(self):
-        """Finance approval → done — gated, then the legacy body verbatim."""
-        self._pb_guard_advance('level2')
-        res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level2_done()
-        self._pb_clear_sendback()
-        return res
-
+    # ==================================================================
+    # Rejecting a run outright
+    # ==================================================================
     def action_payslip_run_cancel(self):
-        """Reject the run from any pending tier, recording the reason.
+        """Reject the run, recording the reason and withdrawing its approval.
 
-        Gated by the tier that currently OWNS the run (a draft is owned by the
-        Officer tier). The reason rides the context because the method is also
-        a plain view button with no arguments; the actor and timestamp are
-        forced server-side and are never client-supplied (C18.24/57).
+        Not an approval decision: it is the preparer's own "this run should not
+        exist". Anyone who may edit the run may do it, and the reason rides the
+        context because this is also a plain view button with no arguments; the
+        actor and timestamp are forced server-side and are never
+        client-supplied (C18.24/57).
         """
         note = (self.env.context.get('pb_reject_note') or '').strip()[:512]
         for run in self:
-            st = run.state or 'draft'
-            if st not in ('draft',) + PB_PENDING_STATES:
+            if run.state not in ('draft', 'approval_pending'):
                 raise UserError(_(
                     "“%(name)s” is already %(state)s — it can no longer be "
-                    "rejected.", name=run.name or '', state=st))
-            run._pb_require_tier('level0' if st == 'draft' else st)
-        # the legacy body writes 'cancel' — sanctioned, so it carries the sentinel
+                    "rejected.", name=run.name or '',
+                    state=_(PB_STAGE_NAME.get(run.state or '', run.state or ''))))
+            run.check_access('write')
+        for run in self:
+            request = run.approval_request_id
+            if request and request.state in ('pending', 'blocked'):
+                self.env['biz.approval.engine'].cancel(
+                    request.id, note or _('The pay run was rejected.'))
+        # the legacy body cancels every payslip and writes 'cancel' — sanctioned,
+        # so it carries the sentinel
         res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_cancel()
         self.write({'pb_reject_note': note or False,
                     'pb_reject_uid': self.env.uid,
@@ -655,224 +937,55 @@ class HrPayslipRun(models.Model):
         return res
 
     # ------------------------------------------------------------------
-    # Send back one stage (and the final approver's undo)
+    # The old ladder's three entry points, closed
     # ------------------------------------------------------------------
-    def _pb_undo_blocker(self):
-        """Why this finished run's approval can no longer be undone — or ''.
-
-        Un-approving is a safe correction right up to the moment something has
-        LEFT the building. Once employees have been emailed their payslips,
-        putting the run back into a pending state tells everyone a lie, so the
-        way out is Reject or a full reset to draft, not a quiet undo.
-        """
-        self.ensure_one()
-        if 'pb.payslip.delivery.batch' not in self.env:
-            return ''
-        try:
-            sent = self.env['pb.payslip.delivery.batch'].sudo().search_count(
-                [('run_id', '=', self.id), ('sent_count', '>', 0)])
-        except Exception as e:  # a partial install must never break the board
-            _logger.debug("pb_payruns: delivery lookup failed on run %s: %s", self.id, e)
-            return ''
-        if sent:
-            return _("its payslips have already been emailed to employees")
-        return ''
-
-    def _pb_walk_slips_back(self, target):
-        """Put this run's payslips back where stage ``target`` expects them.
-
-        Only ever moves a slip DOWN the chain: a stray draft slip on a run
-        returning to Officer review is left as it is rather than promoted, and
-        cancelled slips are never resurrected.
-        """
-        want = PB_SLIP_STATE.get(target, 'draft')
-        rank = _PB_SLIP_ORDER.index(want)
-        slips = self.mapped('slip_ids').filtered(
-            lambda s: s.state in _PB_SLIP_ORDER
-            and _PB_SLIP_ORDER.index(s.state) > rank)
-        if slips:
-            slips.write({'state': want})
-
-    def _pb_clear_sendback(self):
-        """Forget the send-back note once the run moves forward again.
-
-        The note answers "why is this run sitting here"; carrying it past the
-        stage it was returned to would turn it into stale trivia on a card that
-        has since been fixed and re-approved.
-        """
-        stale = self.filtered('pb_sendback_note')
-        if stale:
-            stale.write({'pb_sendback_note': False, 'pb_sendback_uid': False,
-                         'pb_sendback_date': False, 'pb_sendback_from': False})
-
-    def action_pb_send_back(self):
-        """Return the run to the stage before the one it is sitting in.
-
-        The reason rides the context (``pb_sendback_note``) exactly like the
-        reject note, because this is also a plain view button with no
-        arguments; the actor and timestamp are forced server-side and are never
-        client-supplied (C18.24/57).
-
-        Deliberately NOT a rejection: the payslips are walked back with the run
-        instead of being cancelled, so the officer opens the same slips, fixes
-        the numbers and resubmits.
-        """
-        note = (self.env.context.get('pb_sendback_note') or '').strip()[:512]
-        # Where "one stage back" points depends on which tiers this database
-        # uses: with no Officer tier, the stage before HR review is Draft.
-        send_back = self._pb_send_back_map()
-        # validate the WHOLE recordset before moving any of it
-        for run in self:
-            st = run.state or 'draft'
-            target = send_back.get(st) or PB_SEND_BACK.get(st)
-            if not target:
-                raise UserError(_(
-                    "“%(name)s” is at %(stage)s — there is no earlier stage to "
-                    "send it back to.", name=run.name or '',
-                    stage=_(PB_STAGE_NAME.get(st, st))))
-            if not run._pb_tier_ok(PB_SEND_BACK_TIER[st]):
-                raise AccessError(_(
-                    "“%(name)s” can only be sent back by the %(role)s tier — "
-                    "your user does not hold that role.", name=run.name or '',
-                    role=PB_TIER[PB_SEND_BACK_TIER[st]][1]))
-            if st == 'done':
-                blocker = run._pb_undo_blocker()
-                if blocker:
-                    raise UserError(_(
-                        "“%(name)s” can no longer be un-approved because "
-                        "%(why)s. Reject the run, or reset it to draft, if it "
-                        "really has to be done again.",
-                        name=run.name or '', why=blocker))
-        now = fields.Datetime.now()
-        for run in self:
-            came_from = run.state or 'draft'
-            target = send_back.get(came_from) or PB_SEND_BACK[came_from]
-            run._pb_walk_slips_back(target)
-            run._pb_chain_ctx().write({'state': target})
-            # `pb_sendback_from` is the stage the run actually left, read off
-            # the record — never a client-supplied context value.
-            run.write({'pb_sendback_note': note or False,
-                       'pb_sendback_uid': self.env.uid,
-                       'pb_sendback_date': now,
-                       'pb_sendback_from': came_from})
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
-
-    @api.depends_context('uid')
-    @api.depends('state')
-    def _compute_pb_perms(self):
-        officer, manager, final = self._pb_user_roles()
-        demo = self._pb_demo_user()
-        for run in self:
-            st = run.state
-            # a demo login's flags light up only on demo-world runs (L-1)
-            d = demo and run._pb_demo_reach()
-            off, man, fin = officer or d, manager or d, final or d
-            run.pb_can_submit = st == 'draft' and off
-            run.pb_can_approve_officer = st == 'level0' and off
-            run.pb_can_approve_hr = st == 'level1' and man
-            run.pb_can_approve_gm = st == 'level2' and fin
-            run.pb_can_reject = ((st == 'draft' and off)
-                                 or (st == 'level0' and off)
-                                 or (st == 'level1' and man)
-                                 or (st == 'level2' and fin))
-            # Same tiers as Reject, minus draft: there is no stage before it.
-            run.pb_can_send_back = ((st == 'level0' and off)
-                                    or (st == 'level1' and man)
-                                    or (st == 'level2' and fin))
-            run.pb_can_undo_approval = (st == 'done' and fin
-                                        and not run._pb_undo_blocker())
-            run.pb_is_done = st == 'done'
-
-    @api.depends_context('uid')
-    @api.depends('state')
-    def _compute_pb_awaiting_me(self):
-        officer, manager, final = self._pb_user_roles()
-        demo = self._pb_demo_user()
-        for run in self:
-            d = demo and run._pb_demo_reach()
-            run.pb_awaiting_me = ((run.state == 'level0' and (officer or d))
-                                  or (run.state == 'level1' and (manager or d))
-                                  or (run.state == 'level2' and (final or d)))
-
-    def _search_pb_awaiting_me(self, operator, value):
-        officer, manager, final = self._pb_user_roles()
-        states = []
-        if officer:
-            states.append('level0')
-        if manager:
-            states.append('level1')
-        if final:
-            states.append('level2')
-        match = [('state', 'in', states)] if states else []
-        if self._pb_demo_user() and 'is_demo' in self._fields:
-            demo_match = ['&', ('is_demo', '=', True),
-                          ('state', 'in', list(PB_PENDING_STATES))]
-            match = (['|'] + match + demo_match) if match else demo_match
-        if not match:
-            match = [('id', '=', 0)]
-        positive = (operator in ('=', '!=') and bool(value)) == (operator == '=')
-        return match if positive else (['!'] + match)
-
+    # They are DEFINED in `om_hr_payroll`, so they cannot be deleted from here
+    # — and a method that still exists and still writes `level1` is a live hole,
+    # not dead code: anything that has not been re-pointed (an old bookmark, a
+    # script, a module nobody upgraded) would move a run into a state that no
+    # longer exists. Each one now refuses, in the words that say where to go
+    # instead. `done_payslip_run` is the one with real callers, so it is
+    # re-pointed rather than refused.
     def done_payslip_run(self):
-        """Chain entry: draft → level0 (Payroll Officer review).
-
-        This is the ONLY correct draft→chain transition (Phase L: the cockpit's
-        submit seam used to call the level1 advance instead, which wrote level2
-        unconditionally and skipped HR).
-
-        The base method calls action_payslip_done() on every payslip, which — via
-        the accounting bridge — posts journal entries (account.move). That path is
-        only valid for STRUCTURE-based payroll whose salary rules carry GL
-        accounts. A run computed by the Formula Engine (calculation_method =
-        'formula') or any demo run has NO per-rule accounts, so posting either
-        does nothing useful or raises a multi-company account.account access error
-        ("…doesn't have 'read' access to Account"). For those accountless runs we
-        advance the workflow state only (journals are produced in the dedicated
-        Pay Salary step); traditional structure-based payroll keeps the standard
-        accounting flow untouched via super().
-        """
+        """Submitting, under the name the base module gave it."""
         for run in self:
-            if run.state != 'draft':
-                raise UserError(_(
-                    "“%(name)s” has already entered the approval chain "
-                    "(status: %(state)s).", name=run.name or '', state=run.state))
-        if not self._pb_tier_ok('level0'):
-            raise AccessError(_(
-                "Only a Payroll Officer (or above) can submit a pay run for "
-                "approval."))
-
-        def _accountless(run):
-            return getattr(run, 'is_demo', False) or bool(run.slip_ids) and all(
-                getattr(s, 'calculation_method', False) == 'formula' for s in run.slip_ids)
-        accountless = self.filtered(_accountless)
-        standard = self - accountless
-        # Payslips are confirmed ONCE here, at chain entry (unchanged); the new
-        # Officer tier moves only the run, so slips keep landing on 'level1'.
-        # Resubmitting IS the fix for a send-back, so the note stops applying
-        # the moment the run re-enters the chain.
-        self._pb_clear_sendback()
-        entry = self._pb_chain_entry()
-        if accountless:
-            accountless.slip_ids.filtered(lambda s: s.state == 'draft').write({'state': 'level1'})
-            accountless._pb_chain_ctx().write({'state': entry})
-        if standard:
-            # The legacy base cascades the slips then writes 'level1'
-            # unconditionally; we re-write the run to 'level0' straight after.
-            # Two writes on the run, ZERO edits to om_hr_payroll — and
-            # idempotent: 'level0' is the only state anyone ever observes.
-            #
-            # With the Officer tier switched off, 'level1' is already where the
-            # run belongs, so the second write is skipped rather than made and
-            # undone.
-            res = super(HrPayslipRun, standard._pb_chain_ctx()).done_payslip_run()
-            if entry != 'level1':
-                standard._pb_chain_ctx().write({'state': entry})
-            return res
+            run.action_approval_submit()
         return True
 
-    # ------------------------------------------------------------------
+    def action_payslip_run_level1_done(self):
+        raise UserError(_(
+            "Pay runs are no longer approved in fixed stages. This one follows "
+            "the approval route your business published — open it in Approvals "
+            "to make a decision."))
+
+    def action_payslip_run_level2_done(self):
+        raise UserError(_(
+            "Pay runs are no longer approved in fixed stages. This one follows "
+            "the approval route your business published — open it in Approvals "
+            "to make a decision."))
+
+    def draft_payslip_run(self):
+        """Take a finished run back to draft.
+
+        A separate decision from the approval itself (it is the `reopen`
+        process in the catalogue, delivered later), so for now it is what it
+        always was: available to whoever may edit the run, and it clears the
+        stamp so a resubmission is a fresh attempt.
+        """
+        for run in self:
+            run.check_access('write')
+            if run.state == 'approval_pending':
+                raise UserError(_(
+                    "“%s” is waiting for its approval. Reject it, or ask the "
+                    "approver to send it back.", run.name or ''))
+        res = super(HrPayslipRun, self._pb_chain_ctx()).draft_payslip_run()
+        self._pb_chain_ctx().write({'state': 'draft',
+                                    'pb_source_revision': False})
+        return res
+
+    # ==================================================================
     # Removing a run, and removing what it produced
-    # ------------------------------------------------------------------
+    # ==================================================================
     #: The two states a payslip may be thrown away in. Anything else has been
     #: approved by somebody and is a record of a decision, not a draft.
     _PB_DISPOSABLE_SLIP_STATES = ('draft', 'cancel')
@@ -890,17 +1003,13 @@ class HrPayslipRun(models.Model):
         It did not, and that is a trap rather than a nicety. `payslip_run_id`
         is a plain many2one, so deleting a batch left every payslip alive and
         unattached — and the Run Payroll wizard then ADOPTS this period's
-        loose drafts on purpose (`_adopt_loose_slips`), to stop a second
-        payroll being computed on top of one that already exists. The two
-        behaviours are individually reasonable and together they mean: delete
-        a run, build a new one, and the old numbers walk back in without being
-        recomputed. Seen on the reference tenant on 2026-08-28 — a run created
-        at 03:39 adopted 152 payslips computed two days earlier, and the only
-        trace was one line in the server log.
-
-        A payslip past draft is a different thing: somebody approved it. Those
-        stop the deletion rather than being swept up in it.
+        loose drafts on purpose, to stop a second payroll being computed on top
+        of one that already exists.
         """
+        if any(run.state == 'approval_pending' for run in self):
+            raise UserError(_(
+                "A pay run that is waiting for approval cannot be deleted. "
+                "Reject it first."))
         disposable, protected = self._pb_disposable_slips()
         if protected:
             raise UserError(_(
@@ -914,12 +1023,7 @@ class HrPayslipRun(models.Model):
         return super().unlink()
 
     def action_pb_delete_draft_payslips(self):
-        """Throw away this run's draft payslips and keep the run itself.
-
-        The way to start a period again without deleting the run: clear what
-        was computed, then Generate Payslips. Doing it by deleting the run
-        instead is what leaves the drafts loose for the next run to adopt.
-        """
+        """Throw away this run's draft payslips and keep the run itself."""
         self.ensure_one()
         disposable, protected = self._pb_disposable_slips()
         if protected:

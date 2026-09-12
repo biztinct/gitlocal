@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -31,6 +31,10 @@ configurations screen offers "Resume setup" on the card.
         'pb_formula_studio',
         'pb_import_kit',
         'pb_hub',
+        # The Connect step mounts ITS approvals panel — the same component the
+        # Matrix mounts — rather than drawing a second version of who signs a
+        # pay run off.
+        'pb_approval_config',
     ],
     'data': [
         'security/ir.model.access.csv',

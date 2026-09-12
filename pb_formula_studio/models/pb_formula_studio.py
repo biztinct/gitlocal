@@ -11946,6 +11946,13 @@ class PbFormulaStudio(models.AbstractModel):
             'meta': self._config_meta(c),
             'samples': samples,
             'results': results,
+            # The Approvals tab asks the approvals panel itself for everything
+            # it draws; all it needs from here is WHICH place to ask about.
+            'approvals': {
+                'scope_key': 'scheme:%s' % c.id,
+                'scope_label': c.name or '',
+                'company_id': (c.company_id or self.env.company).id,
+            },
         }
 
     @api.model

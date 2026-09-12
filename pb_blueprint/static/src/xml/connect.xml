@@ -136,9 +136,10 @@
           <p class="pbbp-cn-later" t-esc="c.later"/>
         </section>
 
-        <!-- Approvals: information, never a button. Pay runs already follow a
-             fixed chain and this step does not change it. -->
-        <section class="pbbp-cn-card is-info">
+        <!-- Approvals: the SAME panel the Matrix mounts, for this scheme. One
+             implementation, because a card here that disagreed with the Matrix
+             about who signs a pay run off would be worse than no card at all. -->
+        <section class="pbbp-cn-card">
           <header class="pbbp-cn-head">
             <span class="pbbp-cn-ic is-teal" t-out="ic('checkCheck', 20)"/>
             <div class="pbbp-cn-ttl">
@@ -149,19 +150,32 @@
           </header>
 
           <p class="pbbp-cn-lead" t-esc="approvalsText"/>
-          <p class="pbbp-cn-sub">Nothing to set up here, and nothing to skip.</p>
+          <p class="pbbp-cn-sub" t-esc="approvalsSub"/>
 
-          <div class="pbbp-cn-chain">
-            <t t-foreach="approvals.tiers" t-as="tier" t-key="tier.key">
-              <span class="pbbp-cn-tier" t-esc="tier.name"/>
-              <span class="pbbp-cn-arrow" t-if="!tier_last" t-out="ic('arrow', 12)"/>
-            </t>
+          <div class="pbbp-cn-approvals" t-if="approvals.available">
+            <ApprovalSchemePanel processKey="'payrun'"
+                                 scopeKey="approvals.scope_key"
+                                 scopeLabel="approvals.scope_label"
+                                 companyId="approvalsCompanyId"
+                                 embedded="true"/>
+            <!-- Shared · Scheme change. Read-only until the scheme-change
+                 adapter lands: saying what will be there is better than a
+                 control that cannot do anything yet. -->
+            <p class="pbbp-cn-sub pbbp-cn-schemechange">
+              <b>Shared · Scheme change</b>
+              Changes to the scheme itself follow the company's own route. Its
+              own panel arrives with the next release.
+            </p>
+          </div>
+          <div class="pbbp-cn-blocked" t-else="">
+            <span class="i" t-out="ic('info', 14)"/>
+            <p>Approvals are not set up on this server, so there is nothing to
+               choose here.</p>
           </div>
 
-          <div class="pbbp-cn-actions">
-            <button class="pbbp-cn-link" t-on-click="openHow">
-              <t t-out="ic('info', 13)"/> How approvals work today
-            </button>
+          <div class="pbbp-cn-gap" t-if="approvalsGap">
+            <span class="i" t-out="ic('alert', 14)"/>
+            <p t-esc="approvalsGap"/>
           </div>
 
           <p class="pbbp-cn-later" t-esc="approvalsLater"/>
@@ -183,34 +197,6 @@
       </section>
       </t>
 
-      <div class="pbim-modal-scrim" t-if="state.howOpen" t-on-click="closeHow">
-        <div class="pbim-modal is-narrow" tabindex="-1" t-ref="how"
-             t-on-click.stop="" t-on-keydown="onModalKey">
-          <div class="pbim-modal__head">
-            <div class="pbim-modal__ttl">How approvals work today</div>
-            <div class="pbim-modal__sp"/>
-            <button class="pbbp-cn-x" t-on-click="closeHow" title="Close"
-                    t-out="ic('x', 15)"/>
-          </div>
-          <div class="pbim-modal__body">
-            <ol class="pbbp-cn-steps">
-              <li t-foreach="approvals.tiers" t-as="tier" t-key="tier.key">
-                <b t-esc="tier.name"/>
-                <span t-esc="tier.what"/>
-              </li>
-            </ol>
-            <p class="pbim-note">
-              Every pay run goes through these three, in this order, whichever
-              configuration paid it. Approval rules that differ by configuration
-              are coming in a later release.
-            </p>
-          </div>
-          <div class="pbim-modal__foot">
-            <div class="pbim-modal__sp"/>
-            <button class="pbim-btn primary" t-on-click="closeHow">Got it</button>
-          </div>
-        </div>
-      </div>
     </div>
   </t>
 

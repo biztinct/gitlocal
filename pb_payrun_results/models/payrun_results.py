@@ -285,8 +285,7 @@ class PayrunResults(models.AbstractModel):
     _STATE_META = {
         'draft':  ('Draft', 'draft'),
         'verify': ('Waiting', 'review'),
-        'level1': ('HR Review', 'review'),
-        'level2': ('GM Review', 'review'),
+        'approval_pending': ('Waiting for approval', 'review'),
         'done':   ('Approved', 'done'),
         'close':  ('Closed', 'done'),
         'paid':   ('Paid', 'done'),

@@ -97,7 +97,7 @@ export class PbPayrunResults extends Component {
         return Object.values(m).sort((a, b) => b.n - a.n || String(a.label).localeCompare(String(b.label)));
     }
     get statusFacets() {
-        const order = ["draft", "verify", "level1", "level2", "done", "close", "paid"];
+        const order = ["draft", "verify", "approval_pending", "done", "close", "paid"];
         return this._facet("state", "state_label", "state_tone")
             .sort((a, b) => order.indexOf(a.v) - order.indexOf(b.v));
     }

@@ -42,6 +42,7 @@ import {
 // the full-screen board, pre-scoped to the scheme on screen. A link that hands
 // over a board hands over a return door with it (W5) — see `openMapping`.
 import { HubBackChip, hubBack, openHub, goBack } from "@pb_hub/js/hub_nav";
+import { ApprovalSchemePanel } from "@pb_approval_config/js/scheme_panel";
 import { _t } from "@web/core/l10n/translation";
 import { ROLES, roleMeta, roleIcon, roleLabel, roleHint } from "./mapping/mapping_roles";
 
@@ -172,7 +173,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
+    static components = { CfgCombo, GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop, ApprovalSchemePanel };
     static props = ["*"];
 
     setup() {
@@ -3326,6 +3327,9 @@ export class PbFormulaStudio extends Component {
         this.state.setDraft = Object.assign({}, d.values);
     }
     setSettingsTab(tab) { this.state.settingsTab = tab; }
+
+    /** Where the Approvals tab points the shared panel. */
+    get approvalScope() { return (this.state.settings || {}).approvals || {}; }
     toggleCfgAdv() { this.state.cfgAdvOpen = !this.state.cfgAdvOpen; }
     async generateSampleData() {
         const r = await this.orm.call("pb.formula.studio", "cfg_generate_sample_data", [this.state.config.id]);

@@ -4539,3 +4539,19 @@ msgid ""
 msgstr ""
 "·\n"
 "                  người gửi"
+
+#. module: pb_approval_config
+msgid "%s payslip"
+msgstr "%s phiếu lương"
+
+#. module: pb_approval_config
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_approval_config
+msgid "%s person"
+msgstr "%s người"
+
+#. module: pb_approval_config
+msgid "%s people"
+msgstr "%s người"

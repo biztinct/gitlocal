@@ -154,7 +154,8 @@ class PbIncentives(models.AbstractModel):
         """Pay runs an award can still be put into — and NOTHING else.
 
         A closed list is the safety rail expressed as a control: the dialog
-        cannot offer a run past level0, so nobody has to be told no.
+        cannot offer a run that has been sent in for approval, so nobody has to
+        be told no.
         """
         runs = self.env['hr.payslip.run'].sudo().search(
             [('state', 'in', list(FEEDABLE_RUN_STATES))],

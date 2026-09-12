@@ -20,8 +20,9 @@ both standalone client actions keep working.
 
 **There is no separate "needs you" dock, and that is a decision, not an
 omission.** The IA dossier's Option B drew a right-hand dock of the things
-waiting on you. Payobook already has that surface: `pb_approval` IS the queue,
-with its own lanes, its own counts and its own reject-with-a-reason discipline.
+waiting on you. Payobook already has that surface: the Approvals inbox IS the
+queue — every kind of request, with its own counts and its own recorded
+decisions.
 Building a dock beside it would have been a SECOND place a pending run is
 counted, and the two would disagree the first time either changed (the W62
 shape). The queue is a lens, and the lens is the dock.

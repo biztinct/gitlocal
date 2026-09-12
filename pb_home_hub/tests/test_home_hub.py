@@ -303,9 +303,11 @@ class TestEmbeddedLenses(TransactionCase):
     is a `t-if` on ONE element, which is what makes the standalone render
     provably unchanged."""
 
+    # `pb_approval` used to be the second one. It is retired: approvals are
+    # the inbox that ships with the approval engine, and that component is
+    # mounted here rather than being a second cockpit with an embedded mode.
     GUARDS = {
         ('pb_dashboard', 'pb_dashboard.xml'): 1,
-        ('pb_approval', 'approval.xml'): 1,
     }
 
     def test_every_embedded_guard_is_a_guard_and_not_a_rewrite(self):
@@ -316,12 +318,11 @@ class TestEmbeddedLenses(TransactionCase):
                 '%s: expected %s embedded guard(s)' % (fname, n))
 
     def test_the_suppressed_elements_are_identity_and_never_data(self):
-        """One is the Dashboard's company eyebrow, the other the Approval
-        hero's title block. Nothing carrying a NUMBER is guarded: an embedded
-        mode that removed a figure would be a fork, not a suppression."""
+        """The Dashboard's company eyebrow. Nothing carrying a NUMBER is
+        guarded: an embedded mode that removed a figure would be a fork, not a
+        suppression."""
         expected = {
             'pb_dashboard.xml': 'pbd-eyebrow',
-            'approval.xml': 'hero-l',
         }
         for module, fname in self.GUARDS:
             src = _read(ROOT, module, 'static', 'src', 'xml', fname)
@@ -337,9 +338,8 @@ class TestEmbeddedLenses(TransactionCase):
         only flows grows past the bottom of the workspace with nothing to
         scroll it — no error, and it reads as a page that ends early.
 
-        `.pba` is already `height: 100%; overflow: auto` standalone, so it needs
-        nothing. `.pbd-root` is `min-height: 100%` with no overflow at all, so
-        the embedded block gives it a real scrollport.
+        `.pbd-root` is `min-height: 100%` with no overflow at all, so the
+        embedded block gives it a real scrollport.
         """
         scss = _read(ROOT, 'pb_dashboard', 'static', 'src', 'scss',
                      'pb_dashboard.scss')
@@ -347,8 +347,6 @@ class TestEmbeddedLenses(TransactionCase):
         self.assertTrue(block, 'the Dashboard lost its embedded block')
         for decl in ('height: 100%', 'min-height: 0', 'overflow: auto'):
             self.assertIn(decl, block.group(1))
-        pba = _read(ROOT, 'pb_approval', 'static', 'src', 'scss', 'approval.scss')
-        self.assertIn('height: 100%; overflow: auto;', pba)
 
 
 @tagged('post_install', '-at_install')

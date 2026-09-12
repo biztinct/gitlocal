@@ -72,13 +72,10 @@ class TestPayHubPeriod(TransactionCase):
         self._run('draft')
         self.assertEqual(self._state()['stage'], 2)
 
-    def test_stage_3_is_any_of_the_three_approval_tiers(self):
-        for tier in ('level0', 'level1', 'level2'):
-            with self.subTest(tier=tier):
-                run = self._run(tier)
-                self.assertEqual(self._state()['stage'], 3,
-                                 "%s must read as 'in approval'" % tier)
-                run.unlink()
+    def test_stage_3_is_a_run_waiting_for_its_approval(self):
+        self._run('approval_pending')
+        self.assertEqual(self._state()['stage'], 3,
+                         "a run waiting for approval must read as 'in approval'")
 
     def test_stage_4_is_approved_but_undelivered(self):
         self._run('done')
@@ -148,7 +145,7 @@ class TestPayHubPeriod(TransactionCase):
         doc = self.Hub.stage_documentation()
         self.assertEqual(doc['total'], 5)
         self.assertEqual(doc['run_states'], {
-            'draft': 2, 'level0': 3, 'level1': 3, 'level2': 3, 'done': 4,
+            'draft': 2, 'approval_pending': 3, 'done': 4,
         })
         self.assertEqual(sorted(doc['stages']), [1, 2, 3, 4, 5])
 
@@ -158,9 +155,9 @@ class TestPayHubPeriod(TransactionCase):
                           "%s is in the mapping but not in the README" % state)
 
     def test_every_run_state_the_model_can_hold_is_mapped(self):
-        """The vocabulary is `om_hr_payroll` plus pb_payruns' `level0`. If a
-        future tier is added and nobody comes back here, the tracker would fall
-        through to its default and silently call a new tier "drafting"."""
+        """`pb_payruns` owns the vocabulary outright. If a future state is
+        added and nobody comes back here, the tracker would fall through to its
+        default and silently call it "drafting"."""
         known = set(dict(self.Run._fields['state'].selection or {}))
         mapped = set(self.Hub.stage_documentation()['run_states']) | {'cancel'}
         self.assertFalse(known - mapped,

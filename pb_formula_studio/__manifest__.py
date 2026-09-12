@@ -22,7 +22,11 @@
     # not the other. There is no cycle: pb_integrations does not depend on
     # this module.
     'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base',
-                'pb_hub', 'pb_import_kit', 'biz_doc_ocr', 'pb_integrations'],
+                'pb_hub', 'pb_import_kit', 'biz_doc_ocr', 'pb_integrations',
+                # The scheme's own settings carry an Approvals tab, and it
+                # mounts THE approvals panel rather than a second version
+                # of who signs a pay run off.
+                'pb_approval_config'],
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/pb_mapping_studio_action.xml',

@@ -127,8 +127,10 @@ LETTER_TYPE = 'incentive'
 
 #: A run may only be fed while it is still being built. Past this it is in
 #: somebody's approval queue and a new payslip line is a number that changed
-#: under an approver — the money rail this phase is most careful about.
-FEEDABLE_RUN_STATES = ('draft', 'level0')
+#: under an approver — the money rail this phase is most careful about. (Since
+#: pay runs moved onto the approval engine this is literally enforced too: the
+#: run's frozen pay-data stamp changes, and the approval is refused.)
+FEEDABLE_RUN_STATES = ('draft',)
 
 
 def counted(n, one, many):

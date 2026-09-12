@@ -7,6 +7,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { ApprovalSchemePanel } from "@pb_approval_config/js/scheme_panel";
 
 import { STEP_META } from "./blueprint_steps";
 import {
@@ -21,9 +22,10 @@ import {
  * exist**. This step does not rebuild the mapping screen or the payslip
  * designer — it opens them ON THIS DRAFT, with a way back, and then reports in
  * plain numbers what came of it ("12 of 19 inputs have a source", "31 of 38
- * components placed · 7 in the tray"). The third card is honest information: pay
- * runs already follow an approval chain, this step does not change it, and
- * saying so is better than a button that pretends.
+ * components placed · 7 in the tray"). The third card mounts the SAME approvals
+ * panel the Matrix uses, for this scheme: there is deliberately one
+ * implementation, because a card here that disagreed with the Matrix about who
+ * signs a pay run off would be worse than no card at all.
  *
  * Every task can be skipped and un-skipped, and skipping weakens nothing: the
  * card says where to find the same tool later, because the commonest fear at
@@ -31,6 +33,7 @@ import {
  */
 export class StepConnect extends Component {
     static template = "pb_blueprint.StepConnect";
+    static components = { ApprovalSchemePanel };
     static props = {
         configId: { type: [Number, Boolean] },
         configName: { type: String, optional: true },
@@ -56,7 +59,6 @@ export class StepConnect extends Component {
             data: null,
             busy: "",              // the task key a call is running for
             ring: this.props.highlight || "",
-            howOpen: false,        // "How approvals work today"
         });
 
         this._ringTimer = null;
@@ -198,15 +200,36 @@ export class StepConnect extends Component {
         ];
     }
 
-    get approvals() { return this.data.approvals || { tiers: [] }; }
+    get approvals() { return this.data.approvals || {}; }
 
-    get approvalsPill() { return statusPill("info"); }
-
-    get approvalsText() {
-        return _t("Pay runs already follow Officer → HR → Finance approval. Custom approval rules per configuration are coming in a later release.");
+    get approvalsPill() {
+        const shown = (this.data.status || {}).approvals || "not_started";
+        return statusPill(shown);
     }
 
+    /** The POC's own two sentences, in the POC's own order. */
+    get approvalsText() {
+        return _t("Choose the checks for this scheme.");
+    }
+
+    get approvalsSub() {
+        return _t("Finish can save a draft. Activating the scheme and submitting a pay run both need a complete approval route.");
+    }
+
+    /** What is still missing, said once, in the words the engine used. */
+    get approvalsGap() { return this.approvals.gap || ""; }
+
     get approvalsLater() { return manageLater("approvals"); }
+
+    /** The company id the panel asks about — the scheme's, never the top bar's. */
+    get approvalsCompanyId() {
+        return Number((this.data.config || {}).company_id || 0) || undefined;
+    }
+
+    /** The panel changed something, so the card's own pill has to be re-read. */
+    async onApprovalsChanged() {
+        await this.load();
+    }
 
     /** The identity strip: which company, and which configuration. */
     get identity() {
@@ -306,19 +329,6 @@ export class StepConnect extends Component {
               : _t("Nothing was left to skip."),
             { type: "info" });
         this.props.onContinue();
-    }
-
-    // ==================================================================
-    // "How approvals work today"
-    // ==================================================================
-    openHow() { this.state.howOpen = true; }
-    closeHow() { this.state.howOpen = false; }
-
-    onModalKey(ev) {
-        // Enter inside this panel belongs to the panel, not to the journey's
-        // "continue" (BP20); Escape closes it rather than reaching nothing.
-        if (ev.key === "Escape") { ev.stopPropagation(); this.closeHow(); }
-        if (ev.key === "Enter") { ev.stopPropagation(); }
     }
 
     onKeydown(ev) {

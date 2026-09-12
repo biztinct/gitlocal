@@ -227,8 +227,8 @@ class PbInsights(models.AbstractModel):
     # Run-state chips. Translated at read time (the dict is a module-level
     # constant, so `_()` here would freeze the language at import).
     _STATE_LABELS = {
-        'draft': 'Draft', 'level0': 'Officer', 'level1': 'HR',
-        'level2': 'Finance', 'done': 'Approved', 'cancel': 'Rejected',
+        'draft': 'Draft', 'approval_pending': 'Waiting for approval',
+        'done': 'Approved', 'cancel': 'Rejected',
     }
 
     def _run_point(self, run, employer=None):

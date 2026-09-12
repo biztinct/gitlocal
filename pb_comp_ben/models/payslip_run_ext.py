@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """The finance pack — what finance is handed the moment a run is approved.
 
-THE HOOK IS `action_payslip_run_level2_done`, NOT `done_payslip_run`.
+THE HOOK IS `_approval_apply`, THE ENGINE'S "carry it out".
 
-The handover named `done_payslip_run()` as "the done transition". The code says
-otherwise and the code wins: on this build `done_payslip_run` is the
-**draft → level0** entry (`pb_payruns/models/hr_payslip_run.py:550`, its own
-docstring says so), and the final Finance approval that writes 'done' is
-`action_payslip_run_level2_done` (`:472`). Hooking the wrong one would have
-built a pack on submission and marked awards paid before anybody approved them.
+It used to be `action_payslip_run_level2_done`, the last rung of the fixed
+Officer → HR → Finance ladder. There is no ladder now: a pay run follows
+whatever route the business published, which may have five steps or none, so
+there is no named method that means "the last approver said yes". What there is
+is the one moment the engine calls the run back to say the approval is complete
+and the change may happen — and that is where a finance pack belongs. Hooking
+the submission instead would build a pack and mark awards paid before anybody
+had approved anything.
 
 THE PACK NEVER BLOCKS THE APPROVAL. `super()` runs FIRST and its result is what
 is returned; everything after it is inside a try/except that ends in a note on
@@ -77,9 +79,9 @@ class HrPayslipRun(models.Model):
         _logger.info('pb_comp_ben: run %s — %s', self.id, body)
         return True
 
-    def action_payslip_run_level2_done(self):
-        """Finance approval → done, then the pack. ADDITIVE, in that order."""
-        res = super().action_payslip_run_level2_done()
+    def _approval_apply(self, request):
+        """Approved → done, then the pack. ADDITIVE, in that order."""
+        res = super()._approval_apply(request)
         for run in self:
             # Awards first, and outside the switch: this is the ledger catching
             # up with the money, not a document.

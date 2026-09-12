@@ -191,7 +191,7 @@ class HrFormulaConfigAnalytics(models.Model):
             ('company_id', '=', self.company_id.id),
             ('date_from', '>=', self.date_from),
             ('date_to', '<=', self.date_to),
-            ('state', 'in', ['done', 'level2'])
+            ('state', 'in', ['done', 'verify'])
         ]
         if config_id:
             domain.append(('formula_config_id', '=', config_id))

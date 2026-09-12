@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -696,3 +696,143 @@ msgstr "Nhân sự duyệt"
 #: code:addons/pb_payruns/static/src/js/pipeline_field.js:12
 msgid "Finance approval"
 msgstr "Tài chính phê duyệt"
+
+#. module: pb_payruns
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_payruns
+msgid "Pay run sent in for approval."
+msgstr "Kỳ lương đã được gửi đi phê duyệt."
+
+#. module: pb_payruns
+msgid "Open the approval"
+msgstr "Mở phê duyệt"
+
+#. module: pb_payruns
+msgid "Approvals are not available on this server."
+msgstr "Máy chủ này không có chức năng phê duyệt."
+
+#. module: pb_payruns
+msgid "Sent in for approval"
+msgstr "Đã gửi đi phê duyệt"
+
+#. module: pb_payruns
+msgid "Waiting for my decision"
+msgstr "Đang chờ tôi quyết định"
+
+#. module: pb_payruns
+msgid "Split Into Review Groups"
+msgstr "Tách thành các nhóm soát xét"
+
+#. module: pb_payruns
+msgid "Sent back because"
+msgstr "Bị trả lại vì"
+
+#. module: pb_payruns
+msgid "Sent back by"
+msgstr "Người trả lại"
+
+#. module: pb_payruns
+msgid "Sent back on"
+msgstr "Ngày trả lại"
+
+#. module: pb_payruns
+msgid "Prepared by"
+msgstr "Người lập"
+
+#. module: pb_payruns
+msgid "Pay data stamp"
+msgstr "Dấu dữ liệu lương"
+
+#. module: pb_payruns
+msgid "Pay run approval"
+msgstr "Phê duyệt kỳ lương"
+
+#. module: pb_payruns
+msgid "Split into review groups"
+msgstr "Tách thành các nhóm soát xét"
+
+#. module: pb_payruns
+msgid "A pay run's approval status can only change through Submit for approval, an approval decision, or Reject."
+msgstr "Trạng thái phê duyệt của kỳ lương chỉ thay đổi qua Gửi đi phê duyệt, một quyết định phê duyệt, hoặc Từ chối."
+
+#. module: pb_payruns
+msgid "This payslip belongs to a pay run that is waiting for approval, so it cannot be finished on its own. The whole run is finished once the approval is complete."
+msgstr "Phiếu lương này thuộc một kỳ lương đang chờ phê duyệt nên không thể hoàn tất riêng lẻ. Cả kỳ lương sẽ hoàn tất khi phê duyệt xong."
+
+#. module: pb_payruns
+msgid "There are no payslips in this pay run yet, so there is nothing to approve. Generate the payslips first."
+msgstr "Kỳ lương này chưa có phiếu lương nào nên không có gì để phê duyệt. Hãy tạo phiếu lương trước."
+
+#. module: pb_payruns
+msgid "There are no payslips in this pay run yet, so there is nothing to approve."
+msgstr "Kỳ lương này chưa có phiếu lương nào nên không có gì để phê duyệt."
+
+#. module: pb_payruns
+msgid "Only a pay run that is still a draft can be split."
+msgstr "Chỉ có thể tách một kỳ lương còn ở trạng thái nháp."
+
+#. module: pb_payruns
+msgid "Everybody in this pay run is paid by the same scheme in the same part of the business, so there is nothing to split."
+msgstr "Mọi người trong kỳ lương này đều được trả theo cùng một phương án lương và cùng một bộ phận nên không có gì để tách."
+
+#. module: pb_payruns
+msgid "The split was stopped because it would not have kept every payslip. Nothing was changed."
+msgstr "Việc tách đã bị dừng vì sẽ không giữ đủ mọi phiếu lương. Không có gì thay đổi."
+
+#. module: pb_payruns
+msgid "The split was stopped because the totals did not add back up. Nothing was changed."
+msgstr "Việc tách đã bị dừng vì các tổng số không khớp lại. Không có gì thay đổi."
+
+#. module: pb_payruns
+msgid "The split was stopped because the original pay run still has payslips in it. Nothing was changed."
+msgstr "Việc tách đã bị dừng vì kỳ lương gốc vẫn còn phiếu lương. Không có gì thay đổi."
+
+#. module: pb_payruns
+msgid "Pay runs are no longer approved in fixed stages. This one follows the approval route your business published — open it in Approvals to make a decision."
+msgstr "Kỳ lương không còn được phê duyệt theo các chặng cố định. Kỳ lương này đi theo lộ trình phê duyệt doanh nghiệp đã công bố — hãy mở trong Phê duyệt để ra quyết định."
+
+#. module: pb_payruns
+msgid "A pay run that is waiting for approval cannot be deleted. Reject it first."
+msgstr "Không thể xoá một kỳ lương đang chờ phê duyệt. Hãy từ chối nó trước."
+
+#. module: pb_payruns
+msgid "Total net pay"
+msgstr "Tổng thực nhận"
+
+#. module: pb_payruns
+msgid "Total gross pay"
+msgstr "Tổng lương gộp"
+
+#. module: pb_payruns
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_payruns
+msgid "Change against the last run"
+msgstr "Thay đổi so với kỳ trước"
+
+#. module: pb_payruns
+msgid "Contains overtime"
+msgstr "Có làm thêm giờ"
+
+#. module: pb_payruns
+msgid "Control report"
+msgstr "Báo cáo đối chiếu"
+
+#. module: pb_payruns
+msgid "Note on the changes"
+msgstr "Ghi chú về các thay đổi"
+
+#. module: pb_payruns
+msgid "Bank control total"
+msgstr "Tổng kiểm soát ngân hàng"
+
+#. module: pb_payruns
+msgid "Pay scheme"
+msgstr "Phương án lương"
+
+#. module: pb_payruns
+msgid "Pay run"
+msgstr "Kỳ lương"

@@ -29,25 +29,21 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
+// There is ONE action a card can take on the run itself now: send it in. What
+// happens next is a decision, and a decision is made where the request is —
+// in Approvals — never from a board button that would have to guess which step
+// it is answering.
 const NEXT_METHOD = {
-    submit: "done_payslip_run",
-    approve_officer: "action_payslip_run_level0_done",
-    approve_hr: "action_payslip_run_level1_done",
-    approve_gm: "action_payslip_run_level2_done",
+    submit: "action_approval_submit",
 };
 const NEXT_LABEL = {
-    submit: _t("Submit for review"),
-    approve_officer: _t("Approve (Officer)"),
-    approve_hr: _t("Approve (HR)"),
-    approve_gm: _t("Approve (Finance)"),
+    submit: _t("Submit for approval"),
+    decide: _t("Open the approval"),
 };
 // Whole sentences, one msgid each. Building "%s done" out of the button label
 // above would hand a translator two fragments and no way to reorder them (W80).
 const DONE_MSG = {
-    submit: _t("Pay run submitted for review."),
-    approve_officer: _t("Pay run approved by the Payroll Officer."),
-    approve_hr: _t("Pay run approved by HR."),
-    approve_gm: _t("Pay run approved by Finance."),
+    submit: _t("Pay run sent in for approval."),
 };
 
 export class PbPayruns extends Component {
@@ -62,8 +58,6 @@ export class PbPayruns extends Component {
             loaded: false,
             busy: 0,
             confirming: 0,          // run id whose Reject is awaiting confirmation
-            sendingBack: 0,         // run id whose Send back is open for a reason
-            sendBackNote: "",
             currency: "",
             currencyName: "",
             manyCurrencies: false,
@@ -198,40 +192,30 @@ export class PbPayruns extends Component {
         }
     }
     advance(b) {
+        if (b.next_action === "decide") { return this.openApprovals(); }
         const method = NEXT_METHOD[b.next_action];
         if (method) this._run(method, b.id, DONE_MSG[b.next_action]);
     }
 
+    /** The one door to a decision. Named as a plain string rather than
+     *  imported, so this board never depends on the module that owns it. */
+    async openApprovals() {
+        try {
+            await this.action.doAction(
+                "pb_approval_config.action_pb_approval_inbox");
+        } catch {
+            this.notification.add(
+                _t("Approvals are not available on this server."),
+                { type: "warning" });
+        }
+    }
+
     // ---- reject: an in-card confirm, never a native dialog ----
-    askReject(b) { this.state.sendingBack = 0; this.state.confirming = b.id; }
+    askReject(b) { this.state.confirming = b.id; }
     cancelReject() { this.state.confirming = 0; }
     confirmReject(b) {
         this.state.confirming = 0;
         this._run("action_payslip_run_cancel", b.id, _t("Pay run rejected"));
-    }
-
-    // ---- send back: the same in-card panel, plus an optional reason ----
-    // Rejecting kills the run; sending it back returns it one stage with its
-    // payslips intact, which is what an approver looking at a wrong number
-    // almost always wants. On a finished run the same panel is the final
-    // approver's undo.
-    askSendBack(b) {
-        this.state.confirming = 0;
-        this.state.sendingBack = b.id;
-        this.state.sendBackNote = "";
-    }
-    cancelSendBack() { this.state.sendingBack = 0; }
-    onSendBackNote(ev) { this.state.sendBackNote = ev.target.value; }
-    confirmSendBack(b) {
-        const note = (this.state.sendBackNote || "").trim();
-        this.state.sendingBack = 0;
-        const msg = b.state === "done"
-            ? _t("Approval undone — the run is back at %s.", b.send_back_label)
-            : _t("Pay run sent back to %s.", b.send_back_label);
-        this._run("action_pb_send_back", b.id, msg, { pb_sendback_note: note });
-    }
-    sendBackLabel(b) {
-        return b.state === "done" ? _t("Undo approval") : _t("Send back");
     }
 
     report(b) { this._run("action_open_payroll_report", b.id); }

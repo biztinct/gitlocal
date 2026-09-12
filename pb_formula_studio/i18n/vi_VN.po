@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2026-09-11 00:47+1000\n"
@@ -14722,3 +14722,11 @@ msgstr "pbfs-iw"
 #: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
 msgid "action_generate_and_close"
 msgstr "hành động_generate_and_close"
+
+#. module: pb_formula_studio
+msgid "Approval workflows"
+msgstr "Lộ trình phê duyệt"
+
+#. module: pb_formula_studio
+msgid "Choose the checks for this scheme. Activating the scheme and submitting a pay run both need a complete approval route."
+msgstr "Chọn các bước kiểm cho phương án lương này. Kích hoạt phương án lương và gửi kỳ lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."

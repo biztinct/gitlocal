@@ -24,10 +24,11 @@ STEPS = ('start', 'rules', 'connect', 'outputs', 'test', 'finish')
 
 #: The three tasks on the Connect step, and the words behind each pill.
 #:
-#: `mapping` and `payslip` are things a person does; `approvals` is information
-#: only (the owner's ruling of 2026-09-10 — pay runs already follow a fixed
-#: chain and a per-configuration approval rule is a later programme), so it has
-#: exactly one status for ever and no button.
+#: All three are things a person DOES now. `approvals` used to be information
+#: only — the ruling of 2026-09-10 was that pay runs followed one fixed chain
+#: and a per-configuration rule was a later programme. That programme landed:
+#: a pay run follows whatever route its company published, and a scheme may be
+#: given a route of its own, so this card sets something up like the other two.
 CONNECT_TASKS = ('mapping', 'payslip', 'approvals')
 
 #: not_started → in_progress → configured, with skipped reachable from any of
@@ -42,7 +43,8 @@ DEFAULT_OPTIONAL_STATUS = {
                 'snapshot': []},
     'payslip': {'status': 'not_started', 'opened_at': '', 'done_at': '',
                 'snapshot': [], 'snapshot_all': []},
-    'approvals': {'status': 'info'},
+    'approvals': {'status': 'not_started', 'opened_at': '', 'done_at': '',
+                  'snapshot': []},
 }
 
 
@@ -251,9 +253,11 @@ class PbFormulaBlueprint(models.Model):
                 continue
             entry = status[task]
             entry.update({k: v for k, v in value.items() if k in entry})
-            if entry.get('status') not in CONNECT_STATUSES and task != 'approvals':
+            if entry.get('status') not in CONNECT_STATUSES:
+                # A draft finished before approvals were configurable stored
+                # the word 'info' here. It means "nobody has looked at this",
+                # which is exactly what not_started means.
                 entry['status'] = 'not_started'
-        status['approvals']['status'] = 'info'
         return status
 
     def set_optional_status(self, status):

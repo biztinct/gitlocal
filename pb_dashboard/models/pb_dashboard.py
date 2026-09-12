@@ -264,7 +264,7 @@ class PbDashboard(models.AbstractModel):
             total = safe(lambda: P.search_count([('payslip_run_id', '=', run.id)]))
             done = safe(lambda: P.search_count([('payslip_run_id', '=', run.id), ('state', '=', 'done')]))
             pend = safe(lambda: P.search_count([('payslip_run_id', '=', run.id),
-                                                ('state', 'in', ['level1', 'level2'])]))
+                                                ('state', '=', 'verify')]))
             run_data = {
                 'name': run.name or '—',
                 'slips': total,
@@ -277,7 +277,7 @@ class PbDashboard(models.AbstractModel):
         # ---- Pending approvals ----
         pending = safe(lambda: env['payroll.analytics'].search_count([('state', '=', 'ready')]))
         if not pending:
-            pending = safe(lambda: env['hr.payslip'].search_count([('state', 'in', ['level1', 'level2'])]))
+            pending = safe(lambda: env['hr.payslip'].search_count([('state', '=', 'verify')]))
 
         # ---- Company KPIs, for the payroll month this board is ABOUT --------
         # Real payslip data, company-scoped, aggregated in SQL rather than read

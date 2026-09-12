@@ -4,9 +4,10 @@
     'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
     # 19.0.1.6.0 — W105: the hr.payslip.line read ACL that had to sit beside the
     # hr.payslip one, plus tests/test_payslip_line_access.py.
-    # 19.0.1.19.0 — the Officer-review tier is a per-database setting; a tenant
-    # may run Draft → HR review → Finance approval instead.
-    'version': '19.0.1.19.0',
+    # 19.0.2.0.0 — the three-tier ladder is gone. A pay run is approved by
+    # whatever route the business published for its scheme, its part of the
+    # business and its kind of run (biz_approval_workflow).
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -14,8 +15,12 @@
     # pb_import_kit is DECLARED rather than relied on transitively: both JS files
     # here import its `ic()` registry, and an implicit dependency is one uninstall
     # away from a bundle that cannot resolve a module path.
+    # biz_approval_workflow: the engine this run's approval is carried by.
+    # pb_scheme_map / pb_group: a route is chosen per pay scheme and per
+    # division, and those are the two modules that own those ideas.
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme',
-                'pb_hr_workforce', 'pb_import_kit'],
+                'pb_hr_workforce', 'pb_import_kit',
+                'biz_approval_workflow', 'pb_scheme_map', 'pb_group'],
     'data': [
         # Phase L: the approval tiers live on pb_* groups, but hr.payslip.run /
         # hr.payslip carry ACLs only for om_hr_payroll.group_hr_payroll_manager —
@@ -27,8 +32,8 @@
         'views/pb_payruns_action.xml',
         'views/hr_payslip_run_kanban.xml',
         'views/hr_payslip_run_form_enhance.xml',
-        'views/res_config_settings_views.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'assets': {
         'web.assets_backend': [
             'pb_payruns/static/src/scss/payruns.scss',

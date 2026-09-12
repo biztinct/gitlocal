@@ -89,7 +89,7 @@ from .comp_common import (
 _logger = logging.getLogger(__name__)
 
 #: Payslip states an award may still be added to. A 'done' slip is a paid slip.
-FEEDABLE_SLIP_STATES = ('draft', 'verify', 'level1', 'level2')
+FEEDABLE_SLIP_STATES = ('draft', 'verify')
 
 
 class PbOneoffFeed(models.AbstractModel):

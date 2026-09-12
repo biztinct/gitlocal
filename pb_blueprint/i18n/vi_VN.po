@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2026-09-11 00:47+1000\n"
@@ -8330,3 +8330,31 @@ msgstr "Đang lấy…"
 #: code:addons/pb_blueprint/models/blueprint_tests.py:0
 msgid "%(what)s was %(was)s when these numbers were agreed, and is %(now)s now."
 msgstr "%(what)s là %(was)s khi các con số này được thống nhất, và bây giờ là %(now)s."
+
+#. module: pb_blueprint
+msgid "Choose the checks for this scheme."
+msgstr "Chọn các bước kiểm cho phương án lương này."
+
+#. module: pb_blueprint
+msgid "Finish can save a draft. Activating the scheme and submitting a pay run both need a complete approval route."
+msgstr "Hoàn tất vẫn lưu được bản nháp. Nhưng kích hoạt phương án lương và gửi kỳ lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."
+
+#. module: pb_blueprint
+msgid "Manage later: Approvals → Matrix · every kind of request"
+msgstr "Quản lý sau: Phê duyệt → Ma trận · mọi loại yêu cầu"
+
+#. module: pb_blueprint
+msgid "Same as the rest of the company"
+msgstr "Giống phần còn lại của công ty"
+
+#. module: pb_blueprint
+msgid "Nobody has to approve a pay run on this scheme"
+msgstr "Không ai phải phê duyệt kỳ lương của phương án này"
+
+#. module: pb_blueprint
+msgid "Shared · Scheme change"
+msgstr "Dùng chung · Thay đổi phương án lương"
+
+#. module: pb_blueprint
+msgid "Approvals are finished when the route is complete and everybody it asks for has somebody in the seat, so there is nothing to mark here."
+msgstr "Phê duyệt hoàn tất khi lộ trình đầy đủ và mọi vị trí nó cần đều đã có người, nên ở đây không có gì để đánh dấu."

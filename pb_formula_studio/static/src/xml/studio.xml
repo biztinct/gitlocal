@@ -258,7 +258,7 @@
 
           <!-- tabs -->
           <div class="pbcfg-tabs">
-            <t t-foreach="[['setup','Setup'],['sources','Sources'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
+            <t t-foreach="[['setup','Setup'],['sources','Sources'],['approvals','Approvals'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
               <button t-attf-class="{{ state.settingsTab === tb[0] ? 'on' : '' }}" t-on-click="() => this.setSettingsTab(tb[0])" t-esc="tb[1]"/>
             </t>
           </div>
@@ -336,6 +336,23 @@
             </t>
 
             <!-- AUTOMATION -->
+            <!-- APPROVALS: who has to say yes before a pay run computed by
+                 this scheme is finished. The SAME panel the Matrix and the
+                 guided setup mount — one implementation, so a scheme's own
+                 settings can never disagree with the Matrix about it. -->
+            <t t-elif="state.settingsTab === 'approvals'">
+              <div class="pbcfg-grid">
+                <div class="ce-sec">
+                  <h4>Approval workflows</h4>
+                  <p class="ce-hint">Choose the checks for this scheme. Activating the scheme and submitting a pay run both need a complete approval route.</p>
+                  <ApprovalSchemePanel processKey="'payrun'"
+                                       scopeKey="approvalScope.scope_key || ''"
+                                       scopeLabel="approvalScope.scope_label || ''"
+                                       companyId="approvalScope.company_id"
+                                       embedded="true"/>
+                </div>
+              </div>
+            </t>
             <t t-elif="state.settingsTab === 'automation'">
               <div class="pbcfg-grid">
                 <div class="ce-sec">

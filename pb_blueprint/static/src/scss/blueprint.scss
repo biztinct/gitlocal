@@ -2180,33 +2180,28 @@ $bp-head-h: 64px;
     }
 
     // ---- approvals ---------------------------------------------------
-    .pbbp-cn-chain {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-    .pbbp-cn-tier {
-        display: inline-flex;
-        align-items: center;
-        background: #E6F4F1;
-        color: #0F766E;
-        border-radius: 8px;
-        padding: 4px 9px;
-        font-size: 11.5px;
-        font-weight: 800;
-    }
-    .pbbp-cn-arrow { color: var(--bp-muted); line-height: 0; }
-
-    .pbbp-cn-steps {
-        margin: 0 0 12px;
-        padding-left: 18px;
+    // The panel brings its own look (it is the kit's card, the same one the
+    // Matrix draws); what belongs here is only the room it sits in.
+    .pbbp-cn-approvals {
+        margin: 2px 0 10px;
         display: grid;
-        gap: 9px;
-
-        li { font-size: 13px; line-height: 1.5; }
+        gap: 8px;
+    }
+    .pbbp-cn-schemechange {
+        margin: 0;
         b { display: block; color: var(--bp-ink); font-weight: 800; }
-        span { color: var(--bp-muted); }
+    }
+    .pbbp-cn-gap {
+        display: flex;
+        gap: 8px;
+        background: #FFF7ED;
+        border: 1px solid #FED7AA;
+        border-radius: 10px;
+        padding: 10px 11px;
+        margin-bottom: 10px;
+
+        .i { color: #B45309; line-height: 0; padding-top: 1px; }
+        p { margin: 0; font-size: 11.5px; line-height: 1.5; color: #7C2D12; }
     }
 
     .pbbp-cn-x {

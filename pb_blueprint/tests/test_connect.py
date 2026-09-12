@@ -187,7 +187,8 @@ class TestConnect(TransactionCase):
 
         res = self.Studio.bp_readiness(config.id)
         self.assertEqual(res['status']['mapping'], 'not_started')
-        self.assertEqual(res['status']['approvals'], 'info')
+        self.assertIn(res['status']['approvals'],
+                      ('not_started', 'in_progress', 'configured'))
 
         # opened, and nothing connected yet
         res = self.Studio.bp_task_open(config.id, 'mapping')
@@ -263,22 +264,31 @@ class TestConnect(TransactionCase):
         self.assertEqual(status['mapping']['status'], 'not_started')
         self.assertEqual(status['payslip']['status'], 'not_started')
 
-    def test_approvals_cannot_be_set_or_skipped(self):
+    def test_approvals_can_be_opened_and_skipped_like_the_others(self):
+        """It used to refuse both: pay runs followed one fixed chain and there
+        was nothing to set up. There is now."""
         config = self._draft('b4-appr')
-        for method, args in (('bp_task_open', ('approvals',)),
-                             ('bp_task_set', ('approvals', 'skipped'))):
-            res = getattr(self.Studio, method)(config.id, *args)
-            self.assertFalse(res['ok'])
-            self.assertIn('already in place', res['reason'])
+        res = self.Studio.bp_task_open(config.id, 'approvals')
+        self.assertTrue(res['ok'])
+        res = self.Studio.bp_task_set(config.id, 'approvals', 'skipped')
+        self.assertTrue(res['ok'])
+        self.assertEqual(res['status']['approvals'], 'skipped')
 
-    def test_the_approvals_card_names_the_three_stages(self):
+    def test_approvals_cannot_be_ticked_done_by_hand(self):
+        """The pill is the engine's answer, never a remembered press."""
+        config = self._draft('b4-apprtick')
+        res = self.Studio.bp_task_set(config.id, 'approvals', 'configured')
+        self.assertFalse(res['ok'])
+        self.assertIn('nothing to mark', res['reason'])
+
+    def test_the_approvals_card_names_the_place_it_is_about(self):
         config = self._draft('b4-tiers')
         res = self.Studio.bp_readiness(config.id)
-        names = [t['name'] for t in res['approvals']['tiers']]
-        self.assertEqual(len(names), 3)
-        for name in names:
-            self.assertTrue(name.strip())
-        self.assertTrue(all(t['what'] for t in res['approvals']['tiers']))
+        card = res['approvals']
+        self.assertEqual(card['scope_key'], 'scheme:%s' % config.id)
+        self.assertTrue(card['scope_label'])
+        # and it never invents a ladder of its own any more
+        self.assertNotIn('tiers', card)
 
     # ==================================================================
     # 5 — an old draft's one-word statuses still read
@@ -295,6 +305,9 @@ class TestConnect(TransactionCase):
         status = blueprint.optional_status()
         self.assertEqual(status['mapping']['status'], 'configured')
         self.assertEqual(status['payslip']['status'], 'skipped')
+        # 'info' was the word for "approvals are not something you set up".
+        # They are now, and nobody has looked at this one.
+        self.assertEqual(status['approvals']['status'], 'not_started')
         self.assertEqual(status['mapping']['snapshot'], [])
         res = self.Studio.bp_readiness(config.id)
         self.assertTrue(res['ok'])

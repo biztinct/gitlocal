@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -290,3 +290,11 @@ msgstr "tổng thực nhận"
 #: code:addons/pb_approval/static/src/xml/approval.xml:0
 msgid "payslips"
 msgstr "phiếu lương"
+
+#. module: pb_approval
+msgid "Approvals have moved to Home. Open Home and choose Approvals."
+msgstr "Phê duyệt đã chuyển sang Trang chính. Hãy mở Trang chính và chọn Phê duyệt."
+
+#. module: pb_approval
+msgid "Opening Approvals…"
+msgstr "Đang mở Phê duyệt…"

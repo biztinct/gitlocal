@@ -28,10 +28,10 @@ TOTAL_STAGES = 5
 # THE HEURISTIC, in one place.
 #
 # A run's own stage comes from `hr.payslip.run.state`, whose vocabulary is
-#   draft · level0 · level1 · level2 · done · cancel
-# (`om_hr_payroll` ships draft/level1/level2/done/cancel; `pb_payruns` adds
-# level0, the Payroll Officer tier, via `selection_add` — see
-# `pb_payruns/models/hr_payslip_run.py`). Stage 5 is the only one that is NOT a
+#   draft · approval_pending · done · cancel
+# (`pb_payruns` replaces the base module's selection outright — the old
+# level0/level1/level2 ladder was retired when pay runs moved onto the approval
+# engine; see `pb_payruns/models/hr_payslip_run.py`). Stage 5 is the only one that is NOT a
 # run state: "delivered" is a `pb.payslip.delivery.batch` in state `done`
 # hanging off the run (`pb_pay_delivery/models/payslip_delivery.py`), because
 # `done` on a run means APPROVED and nothing more — a run can sit approved and
@@ -39,16 +39,14 @@ TOTAL_STAGES = 5
 # lying in the one direction that matters.
 _RUN_STAGE = {
     'draft': 2,
-    'level0': 3,
-    'level1': 3,
-    'level2': 3,
+    'approval_pending': 3,
     'done': 4,          # promoted to 5 when a delivery batch has completed
 }
 
 _STAGE_DOC = {
     1: 'Not started — no pay run covers this month yet',
     2: 'Drafting — a run exists and is still being computed / edited',
-    3: 'In approval — a run is sitting with the Officer, HR or Finance tier',
+    3: 'In approval — a run is waiting on whoever its published route names',
     4: 'Approved — every run is approved, none has been delivered yet',
     5: 'Delivered — payslips have been sent for every run of the period',
 }

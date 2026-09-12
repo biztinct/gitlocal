@@ -83,18 +83,25 @@
                     <span class="st"><span class="k">Net</span><span class="vv" t-esc="runMoney(b)"/></span>
                   </div>
                   <!-- t-if on the ROW, not only on its children: an empty flex
-                       box still costs its margin, so a card with neither a
-                       division nor a journal would carry 9px of nothing. -->
-                  <div class="pbr-card-tags" t-if="b.division_label or b.journal">
-                    <span t-if="b.division_label" class="pbr-tag" t-esc="b.division_label"/>
-                    <span t-if="b.journal" class="pbr-card-jnl" t-esc="b.journal"/>
+                       box still costs its margin, so a card with no division
+                       would carry 9px of nothing. -->
+                  <div class="pbr-card-tags" t-if="b.division_label">
+                    <span class="pbr-tag" t-esc="b.division_label"/>
                   </div>
-                  <!-- Why this run is sitting here. Only ever set while the run
-                       is waiting to be fixed: the note is cleared the moment it
-                       moves forward again. -->
-                  <div class="pbr-sentback" t-if="b.sendback_note">
-                    <span class="hd">Sent back<t t-if="b.sendback_from_label"> from <t t-esc="b.sendback_from_label"/></t><t t-if="b.sendback_by"> by <t t-esc="b.sendback_by"/></t></span>
-                    <span class="why" t-esc="b.sendback_note"/>
+                  <!-- Which route this run is on, and who it is with. Named
+                       people rather than a stage, because a stage is no longer
+                       who decides it. -->
+                  <div class="pbr-route" t-if="b.approval and b.approval.step">
+                    <span class="hd" t-esc="b.approval.step"/>
+                    <span class="who" t-if="b.approval.with">With <t t-esc="b.approval.with"/></span>
+                    <span class="why" t-if="b.approval.blocked" t-esc="b.approval.blocked"/>
+                  </div>
+                  <!-- Why this run came back. Only ever set while the run is
+                       waiting to be fixed: it is cleared the moment it is sent
+                       in again. -->
+                  <div class="pbr-sentback" t-if="b.return_note">
+                    <span class="hd">Sent back<t t-if="b.return_by"> by <t t-esc="b.return_by"/></t></span>
+                    <span class="why" t-esc="b.return_note"/>
                   </div>
                 </div>
 
@@ -109,36 +116,16 @@
                   </div>
                 </div>
 
-                <!-- Send back: the softer refusal. Same in-card shape as the
-                     reject confirm, plus a reason box — the reason is what the
-                     next person needs to act on, so it is asked for here rather
-                     than left to a follow-up message. -->
-                <div t-elif="state.sendingBack === b.id" class="pbr-confirm sendback">
-                  <div class="q" t-if="b.state === 'done'">
-                    Undo the approval of “<t t-esc="b.name"/>”? It goes back to <t t-esc="b.send_back_label"/> for you to decide again.
-                  </div>
-                  <div class="q" t-else="">
-                    Send “<t t-esc="b.name"/>” back to <t t-esc="b.send_back_label"/>? The payslips are kept as they are.
-                  </div>
-                  <textarea class="pbr-note" rows="2" t-on-input="onSendBackNote"
-                            placeholder="Reason (optional) — what needs fixing?"/>
-                  <div class="a">
-                    <button class="pbr-btn ghost" t-on-click="cancelSendBack">Keep it here</button>
-                    <button class="pbr-btn warn" t-on-click="() => this.confirmSendBack(b)"
-                            t-esc="sendBackLabel(b)"/>
-                  </div>
-                </div>
-
                 <div t-else="" class="pbr-card-foot">
                   <!-- context-aware primary action -->
                   <t t-if="b.next_action and b.can_act">
                     <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
-                    <button t-if="b.can_send_back" class="pbr-btn ghost" t-on-click="() => this.askSendBack(b)">Send back</button>
-                    <button class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
                   </t>
-                  <t t-elif="b.next_action and !b.can_act">
-                    <span class="pbr-await">Awaiting <t t-esc="b.stage_label"/></span>
+                  <t t-elif="b.state === 'approval_pending'">
+                    <span class="pbr-await" t-if="b.approval and b.approval.with">With <t t-esc="b.approval.with"/></span>
+                    <span class="pbr-await" t-else="">Waiting for approval</span>
                   </t>
+                  <button t-if="b.can_reject" class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
                   <!-- done: report / excel + Pay &amp; Deliver (bank file + payslips) + journals / payments -->
                   <t t-if="b.state === 'done'">
                     <button class="pbr-btn primary" t-on-click="() => this.payDeliver(b)">Pay &amp; Deliver</button>
@@ -146,9 +133,6 @@
                     <button class="pbr-btn ghost" t-on-click="() => this.excel(b)">Excel</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.journals(b)">Journals</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.payments(b)">Payments</button>
-                    <!-- The mistaken-click escape hatch. Finance only, and the
-                         server withdraws it once the payslips have gone out. -->
-                    <button t-if="b.can_send_back" class="pbr-btn ghost" t-on-click="() => this.askSendBack(b)">Undo approval</button>
                   </t>
                 </div>
               </div>
