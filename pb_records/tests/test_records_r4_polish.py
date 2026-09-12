@@ -52,6 +52,20 @@ class TestRecordsR4Polish(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+        # APPROVAL MATRIX P5 — THIS COMPANY HAS NOT ASKED FOR THAT CHECK.
+        #
+        # Records Desk changes now travel an approval route, and the default
+        # one is HR lead (plus Finance when bank details are involved). These
+        # cases are about what the desk WRITES, not about who agrees to it, so
+        # the fixture publishes the OTHER choice the product offers — "No
+        # approval needed" — rather than bypassing the gate (the ruling in
+        # ledger AM61). Note that this is not the same as having no route at
+        # all: the engine fails closed on that, so a company with no route
+        # cannot send anything in. The approval path is tested in
+        # `test_records_approval.py`.
+        cls.env['biz.approval.seed'].sudo().set_no_approval_needed(
+            cls.env.company, 'records')
         if openpyxl is None:
             raise unittest.SkipTest("openpyxl is not installed here")
         cls.Desk = cls.env['pb.records.desk']

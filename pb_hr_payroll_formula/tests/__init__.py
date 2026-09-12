@@ -149,3 +149,4 @@ from . import test_pay_period_source
 
 # Approval Matrix P4 — a change to how pay is worked out is signed off.
 from . import test_scheme_proposal
+from . import test_import_approval

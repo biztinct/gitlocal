@@ -17,9 +17,32 @@ and exactly one of everything exists afterwards.
 
 import logging
 
-from odoo import SUPERUSER_ID, api, models
+from odoo import SUPERUSER_ID, _, api, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
+#: What a "No approval needed" route is called on every screen that lists one.
+NO_APPROVAL_NAME = 'No approval needed'
+
+
+def fast_lane_definition():
+    """The published choice that nobody checks this before it happens."""
+    return {
+        'schema_version': 1,
+        'steps': [{'key': 'fast', 'kind': 'fast',
+                   'title': NO_APPROVAL_NAME, 'who': {},
+                   'min_amount': 0, 'condition': None}],
+        'tiers': {'enabled': False, 'fact': None},
+        'safeguards': {
+            'independent': False,
+            'self_exception': {'enabled': False},
+            'repeated': 'different',
+            'evidence': [],
+            'due': {'kind': 'none', 'days': 1, 'day': 15, 'calendar_id': None},
+            'late': {'remind_days': 1, 'escalate_days': 2, 'reassign': False},
+        },
+    }
 
 
 class BizApprovalSeed(models.AbstractModel):
@@ -155,3 +178,78 @@ class BizApprovalSeed(models.AbstractModel):
                 'note': binding_note or '',
             })
         return True
+
+    # ------------------------------------------------------- the fast lane
+    @api.model
+    def set_no_approval_needed(self, company, process_key, reason=None):
+        """Publish "No approval needed" for one process, company-wide.
+
+        THE BUSINESS DECIDES (the flexibility ruling). Every process may be set
+        to this, and doing so is not the same as having NO route: a company
+        with no route at all cannot send anything in, because the engine fails
+        closed rather than guessing. A fast lane is a published CHOICE — the
+        thing happens at once and a request records that it did, who asked, and
+        that nobody was required to check it.
+
+        The existing company-wide binding is ended rather than edited, so the
+        trail keeps what was in force before. Returns the new binding.
+        """
+        process = self.env['biz.approval.process']._by_key(process_key)
+        if not process:
+            raise UserError(_("That kind of request is not in the list yet."))
+        publisher = self.publisher_for(company)
+        Workflow = self.env['biz.approval.workflow'].sudo()
+        Version = self.env['biz.approval.workflow.version'].sudo()
+        Binding = self.env['biz.approval.binding'].sudo()
+
+        workflow = Workflow.search([
+            ('company_id', '=', company.id), ('process_id', '=', process.id),
+            ('name', '=', NO_APPROVAL_NAME)], limit=1)
+        if not workflow:
+            workflow = Workflow.create({
+                'name': NO_APPROVAL_NAME,
+                'company_id': company.id,
+                'process_id': process.id,
+                'owner_user_id': publisher.id,
+            })
+        version = workflow.version_ids.filtered(
+            lambda v: v.status == 'published')[:1]
+        if not version:
+            version = Version.create({
+                'workflow_id': workflow.id, 'revision': 1, 'status': 'draft',
+                'definition': fast_lane_definition(),
+            })
+            engine = self.env['biz.approval.engine'].with_user(
+                publisher).sudo()
+            checks = engine.validate_for_publish(version.id)
+            if checks['errors']:
+                raise UserError(_(
+                    "\"No approval needed\" could not be published for this."))
+            engine.publish(
+                version.id, version.draft_revision, None,
+                reason or 'Set to "No approval needed"',
+                [w['code'] for w in checks['warnings']])
+
+        Binding.search([
+            ('company_id', '=', company.id),
+            ('process_id', '=', process.id),
+            ('scope_key', '=', ''), ('active', '=', True),
+            ('workflow_id', '!=', workflow.id)]).write({'active': False})
+        binding = Binding.search([
+            ('company_id', '=', company.id),
+            ('process_id', '=', process.id),
+            ('scope_key', '=', ''), ('workflow_id', '=', workflow.id)], limit=1)
+        if binding:
+            binding.write({'active': True})
+            return binding
+        return Binding.create({
+            'company_id': company.id,
+            'process_id': process.id,
+            'scope_key': '',
+            'scope_label': company.name,
+            'kind_key': 'any',
+            'workflow_id': workflow.id,
+            'mode': 'follow',
+            'note': 'Nobody checks this before it happens. Every one is still '
+                    'recorded.',
+        })

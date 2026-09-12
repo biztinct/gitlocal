@@ -106,6 +106,20 @@ class TestRecordsR1OneTime(TransactionCase):
         cls.IrModel = cls.env['ir.model']
         cls.IrField = cls.env['ir.model.fields']
 
+        # APPROVAL MATRIX P5 — THIS COMPANY HAS NOT ASKED FOR THAT CHECK.
+        #
+        # `action_process` now asks before it writes, and the default routes
+        # for both pay-data rows have a real step in them. These cases are
+        # about what processing a file DOES, not about who agrees to it, so
+        # the fixture publishes the OTHER choice the product offers — "No
+        # approval needed" — rather than bypassing the gate (the ruling in
+        # ledger AM61). Note that this is not the same as having no route at
+        # all: the engine fails closed on that. The approval path is tested in
+        # `test_import_approval.py`.
+        for key in ('runonly', 'loads'):
+            cls.env['biz.approval.seed'].sudo().set_no_approval_needed(
+                cls.env.company, key)
+
     # ------------------------------------------------------------ fixtures
     def _field(self, model, name):
         return self.IrField.search(
