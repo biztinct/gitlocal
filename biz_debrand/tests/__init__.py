@@ -5,3 +5,4 @@ from . import test_no_odoo_in_ui
 from . import test_notification_seam
 from . import test_rewrite
 from . import test_translate_patch
+from . import test_unreachable_names

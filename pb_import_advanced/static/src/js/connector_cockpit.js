@@ -126,6 +126,16 @@ export class ConnectorCockpit extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    // ERRORS E4-5. Both of these used to be literals written INSIDE the
+    // template — one in a t-esc expression, one in a <code> body. The
+    // debranding walker enters neither (ER1: t- attributes are expressions,
+    // <code> is an opaque tag that quotes real syntax), so on a white-labelled
+    // customer's screen the Zoho set-up card was the last card still naming our
+    // product. Routed through _t() instead, which every seam does reach.
+    get brandHomeUrlHint() { return _t("Your Payobook URL"); }
+    get brandClientName() { return _t("Payobook"); }
+
     get d() { return this.state.detail || {}; }
     get feedOperations() { return FEED_OPERATIONS; }
     get feedDataTypes() { return FEED_DATA_TYPES; }

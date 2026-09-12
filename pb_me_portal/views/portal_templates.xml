@@ -83,11 +83,29 @@
     </svg>
   </template>
 
-  <!-- Shared ESS page hero (t-call with `hero_title` / `hero_sub` set) -->
+  <!-- Shared ESS page hero (t-call with `hero_title` / `hero_sub` set)
+
+       ERRORS E4-5. The eyebrow's default used to be the literal "My Payobook",
+       written INSIDE a t-esc expression — and the debranding walker must never
+       enter a t- attribute (ER1), because rewriting an expression would break
+       the render. So that one word was the last place on the employee portal
+       where a Rize employee was told they were looking at our product. A
+       literal in an expression cannot be fixed by a rule; it has to READ the
+       brand, which is what it does now: the configured brand first, then the
+       company's own name, which is a required field and so always answers.
+       No product name is written down here at all.
+
+       The last fallback is a NEUTRAL word, and it is reachable: `request` is
+       None when this template is rendered outside an HTTP request (a report, a
+       mail layout), and `None.env` would be a QWebException rather than a
+       missing eyebrow. A branding flourish must never be able to take a page
+       down. -->
   <template id="ess_hero" name="ESS hero">
     <div class="pbme-hero">
       <div>
-        <div class="pbme-eyebrow"><t t-esc="hero_eyebrow or 'My Payobook'"/></div>
+        <t t-set="pbme_brand"
+           t-value="request and (request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name') or request.env.company.name)"/>
+        <div class="pbme-eyebrow"><t t-esc="hero_eyebrow or (pbme_brand and ('My %s' % pbme_brand)) or 'My workspace'"/></div>
         <h1 class="pbme-h1"><t t-esc="hero_title"/></h1>
         <p t-if="hero_sub" class="pbme-hero-sub"><t t-esc="hero_sub"/></p>
       </div>

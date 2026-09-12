@@ -601,8 +601,8 @@
                     <span class="pbim-badge ok">Copy-ready</span>
                   </div>
                   <div class="pbcc-console-setup__row"><span>Client type</span><code>Server-based Applications</code></div>
-                  <div class="pbcc-console-setup__row"><span>Client name</span><code>Payobook</code></div>
-                  <div class="pbcc-console-setup__row"><span>Homepage URL</span><code t-esc="state.config.application_home_url or 'Your Payobook URL'"/><button t-if="state.config.application_home_url" t-on-click="() => this.copyText(state.config.application_home_url)" title="Copy homepage URL"><t t-out="ic('copy',13)"/></button></div>
+                  <div class="pbcc-console-setup__row"><span>Client name</span><code t-esc="brandClientName"/></div>
+                  <div class="pbcc-console-setup__row"><span>Homepage URL</span><code t-esc="state.config.application_home_url or brandHomeUrlHint"/><button t-if="state.config.application_home_url" t-on-click="() => this.copyText(state.config.application_home_url)" title="Copy homepage URL"><t t-out="ic('copy',13)"/></button></div>
                   <div class="pbcc-console-setup__row important"><span>Authorized redirect URI</span><code t-esc="state.config.oauth_redirect_uri or state.config.effective_redirect_uri"/><button t-on-click="() => this.copyText(state.config.oauth_redirect_uri or state.config.effective_redirect_uri)" title="Copy redirect URI"><t t-out="ic('copy',13)"/></button></div>
                   <p>After Zoho creates the client, save its Client ID and Client Secret in Payobook. The redirect URI must match character-for-character.</p>
                 </div>
