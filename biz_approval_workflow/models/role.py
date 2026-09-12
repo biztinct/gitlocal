@@ -22,7 +22,7 @@ class BizApprovalRole(models.Model):
         help='When an area has nobody, use the company-wide holder. Off means '
              'each area needs its own person — there is never a silent '
              'fallback to "anyone in HR".')
-    pool = fields.Boolean(
+    is_pool = fields.Boolean(
         string='A group of people',
         help='Several people hold this responsibility together; any one of '
              'them may decide, or all of them for a joint step.')

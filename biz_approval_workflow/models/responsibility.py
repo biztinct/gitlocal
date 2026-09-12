@@ -48,7 +48,7 @@ class BizApprovalResponsibility(models.Model):
         """Two single holders of the same seat at the same time is ambiguous,
         and an ambiguous seat is exactly what this engine must never have."""
         for rec in self:
-            if not rec.active or rec.role_id.pool:
+            if not rec.active or rec.role_id.is_pool:
                 continue
             others = self.sudo().search([
                 ('id', '!=', rec.id),
@@ -58,7 +58,7 @@ class BizApprovalResponsibility(models.Model):
                 ('active', '=', True),
             ])
             for other in others:
-                if other.role_id.pool:
+                if other.role_id.is_pool:
                     continue
                 if rec._overlaps(other):
                     raise ValidationError(_(

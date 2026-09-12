@@ -38,29 +38,29 @@ class TestAccess(ApprovalCase):
         self.decide(self.request, self.alice, 's1')
         decision = self.env['biz.approval.decision'].search(
             [('request_id', '=', self.request.id)], limit=1)
-        with self.assertRaises((UserError, AccessError)):
+        with self.assertRaises(UserError):
             decision.with_user(self.alice).write({'reason': 'actually no'})
-        with self.assertRaises((UserError, AccessError)):
+        with self.assertRaises(UserError):
             decision.with_user(self.alice).unlink()
 
     def test_t32_an_event_cannot_be_rewritten(self):
         event = self.env['biz.approval.event'].search(
             [('request_id', '=', self.request.id)], limit=1)
         self.assertTrue(event)
-        with self.assertRaises((UserError, AccessError)):
+        with self.assertRaises(UserError):
             event.with_user(self.alice).write({'summary': 'never happened'})
-        with self.assertRaises((UserError, AccessError)):
+        with self.assertRaises(UserError):
             event.with_user(self.alice).unlink()
 
     def test_t32_a_published_version_cannot_be_rewritten(self):
-        with self.assertRaises((UserError, AccessError)):
+        with self.assertRaises(UserError):
             self.version.with_user(self.alice).write(
                 {'definition': build([])})
 
     def test_t32_you_cannot_decide_a_seat_that_is_not_yours(self):
-        with self.assertRaises((AccessError, UserError)):
+        with self.assertRaises(AccessError):
             self.decide(self.request, self.bob, 's1')
-        with self.assertRaises((AccessError, UserError)):
+        with self.assertRaises(AccessError):
             self.decide(self.request, self.dave, 's1')
 
     def test_t32_publishing_needs_the_right_permission(self):

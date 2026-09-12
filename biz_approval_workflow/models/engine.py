@@ -355,7 +355,7 @@ class BizApprovalEngine(models.AbstractModel):
                                'arg': '%s|%s' % (role.key,
                                                  (keys or [''])[0])}]}
             via = _("%(role)s for %(where)s", role=role.name, where=via_label)
-            if role.pool:
+            if role.is_pool:
                 members = row.pool_user_ids or row.user_id
                 return self._people_payload(members.ids, via), None
             return self._people_payload(
@@ -580,7 +580,7 @@ class BizApprovalEngine(models.AbstractModel):
                 continue
             role = self.env['biz.approval.role'].sudo().search(
                 [('key', '=', who.get('role'))], limit=1)
-            if not role or role.pool:
+            if not role or role.is_pool:
                 continue
             holders = self.env['biz.approval.responsibility'].sudo().search([
                 ('company_id', '=', workflow.company_id.id),

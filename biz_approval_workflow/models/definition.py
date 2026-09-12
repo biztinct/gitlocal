@@ -243,7 +243,7 @@ def validate(definition, capabilities=None, env=None, role_info=None):
         role_info = {}
         if env is not None:
             for role in env['biz.approval.role'].sudo().search([]):
-                role_info[role.key] = {'name': role.name, 'pool': role.pool}
+                role_info[role.key] = {'name': role.name, 'pool': role.is_pool}
 
     raw = definition or {}
     if not isinstance(raw, dict):
