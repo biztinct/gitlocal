@@ -1626,6 +1626,30 @@ class PbPayrunWizard(models.AbstractModel):
             'one_time': once,
             'unmatched': unmatched,
             'unmatched_count': len(unmatched),
+            # APPROVAL MATRIX P5. `action_process` now ASKS. Where the business
+            # published a real route for pay data the file is loaded, checked
+            # and waiting — and no payslips exist yet. Saying "0 created"
+            # without saying why is the worst answer available, so the wizard
+            # is told which of the two happened.
+            **self._batch_route(batch),
+        }
+
+    def _batch_route(self, batch):
+        """Whether this file is waiting, and with whom.
+
+        Soft in both directions: a build whose pay-data files are not wired to
+        approvals at all has no `approval_request_id`, and the answer is simply
+        "not waiting".
+        """
+        request = getattr(batch, 'approval_request_id', False)
+        if not request or request.state in ('applied', 'cancelled'):
+            return {'pending': False, 'with_whom': '', 'request_id': 0}
+        return {
+            'pending': request.state in ('pending', 'blocked'),
+            'with_whom': batch._waiting_for()
+            if hasattr(batch, '_waiting_for') else '',
+            'request_id': request.id,
+            'block_reason': request.block_reason or '',
         }
 
     @api.model

@@ -44,3 +44,17 @@
         display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
         color: var(--pbim-muted); font-weight: 700; }
 }
+
+// P5 — the approval half of the hero state. A badge here carries a SENTENCE
+// ("Waiting for approval"), not a one-word status, so the kit's capitalize
+// would shout it (ledger AM24).
+.pbbc-badge--approval { text-transform: none; }
+.pbbc-with {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; color: var(--pbim-muted, #64748B);
+}
+.pbbc-blocked {
+    display: flex; align-items: center; gap: 8px;
+    color: #B42318;
+    font-size: 13px;
+}

@@ -830,6 +830,25 @@ export class PayrunWizard extends Component {
                 this.notif.add(sheet.error, { type: "danger" });
                 return;
             }
+            // APPROVAL MATRIX P5. The file loaded and passed its checks, and
+            // somebody has to say yes before it becomes payslips. Telling the
+            // person that here — rather than letting them reach a summary that
+            // says nothing was created — is the difference between a wait and
+            // a fault.
+            if (batch.pending) {
+                sheet.pending = true;
+                sheet.pendingWith = batch.with_whom || "";
+                sheet.requestId = batch.request_id || 0;
+                this.state.progress = null;
+                this.gotoKey("data");
+                this.notif.add(
+                    batch.with_whom
+                        ? _t("The pay data is with %s for approval. The payslips are made once it is approved.",
+                             batch.with_whom)
+                        : _t("The pay data is waiting for its approval. The payslips are made once it is approved."),
+                    { type: "success", sticky: true });
+                return;
+            }
         }
 
         const empIds = prep.emp_ids || [];

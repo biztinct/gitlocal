@@ -37,7 +37,23 @@
           </div>
           <div class="pbbc-hero-state">
             <span t-attf-class="pbim-badge {{ d.state }}"><span class="d"/><t t-esc="d.state_label"/></span>
+            <!-- P5 — a file that is waiting says so, names who has it, and
+                 offers the door. Waiting is never a dead end. -->
+            <span t-if="d.approval and d.approval.exists"
+                  class="pbim-badge pbbc-badge--approval"
+                  t-esc="d.approval.state_label"/>
+            <span t-if="d.approval and d.approval.with_whom" class="pbbc-with">
+              <t t-out="ic('user',12)"/> <t t-esc="d.approval.with_whom"/>
+            </span>
+            <button t-if="d.approval and d.approval.request_id"
+                    class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openRequest(d.approval.request_id)">
+              <t t-out="ic('external',13)"/> See the request
+            </button>
           </div>
+        </div>
+        <div t-if="d.approval and d.approval.block_reason" class="pbim-panel pbbc-blocked">
+          <t t-out="ic('alert',15)"/> <span t-esc="d.approval.block_reason"/>
         </div>
 
         <!-- progress rail -->

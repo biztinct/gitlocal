@@ -94,3 +94,8 @@ from . import integration_cron
 from . import scheme_proposal
 from . import scheme_gate
 from . import scheme_seed
+
+# Approval Matrix P5 — a file of pay data is signed before it becomes money.
+# AFTER `payroll_import_batch`: the gate overrides `action_process` and calls
+# `super()` when the approval is the one calling.
+from . import payroll_import_approval

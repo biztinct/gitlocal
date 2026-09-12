@@ -85,6 +85,17 @@ export class BatchCockpit extends Component {
             this.state.busy = false;
         }
     }
+    /** Take the person to the request their file is waiting in. */
+    openRequest(requestId) {
+        if (!requestId) { return; }
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_approval_inbox",
+            name: _t("Approvals"),
+            params: { request_id: requestId },
+        }).catch(() => null);
+    }
+
     runAction(method) {
         return this._run(this.orm.call(MODEL, "run_batch_action", [this.batchId, method]),
                          "Running…");

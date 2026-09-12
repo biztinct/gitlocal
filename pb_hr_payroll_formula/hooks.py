@@ -64,3 +64,6 @@ def rd49_schedule_monthly_fetch(env):
     # is idempotent so the order of the two never matters.
     from .models.scheme_seed import seed_all
     seed_all(env)
+    # Approval Matrix P5 — and the two pay-data routes, for the same reason.
+    from .models.payroll_import_approval import seed_all as seed_import
+    seed_import(env)

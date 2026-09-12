@@ -23,6 +23,8 @@ LINE_LABEL = {
 NEXT_ACTIONS = {
     'loaded':    [('action_match_employees', 'Match employees', 'users', 'primary')],
     'matched':   [('action_validate', 'Validate', 'check', 'primary')],
+    # P5 — the label is worked out per batch in `_available_actions`, because
+    # what this press costs depends on the route the business published.
     'validated': [('action_process', 'Commit import', 'play', 'primary')],
     'processing': [],
     'done':      [],
@@ -116,7 +118,42 @@ class PbImportBatchCockpit(models.AbstractModel):
             },
             'lines': lines,
             'next_actions': self._available_actions(b),
+            'approval': self._approval_payload(b),
             'error': None,
+        }
+
+    def _approval_payload(self, b):
+        """Where this file is in its approval, and who has it.
+
+        APPROVAL MATRIX P5 — "Commit import" now ASKS rather than writes, so
+        the cockpit has to be able to say what a press will cost and where a
+        press already made has got to. Soft throughout: a build whose pay-data
+        files are not wired to approvals answers "not applicable" and the
+        cockpit reads exactly as it did before.
+        """
+        request = getattr(b, 'approval_request_id', False)
+        if not request:
+            return {'exists': False, 'state': '', 'state_label': '',
+                    'with_whom': '', 'request_id': 0, 'route': []}
+        route = []
+        for step in request.step_ids.sorted('sequence'):
+            if not step.included or step.kind == 'fast':
+                continue
+            route.append({
+                'title': step.title,
+                'status': step.status,
+                'people': sorted({seat.acting_user_id.name or ''
+                                  for seat in step.seat_ids}),
+            })
+        return {
+            'exists': True,
+            'state': request.state,
+            'state_label': dict(
+                request._fields['state'].selection).get(request.state, ''),
+            'with_whom': b._waiting_for() if hasattr(b, '_waiting_for') else '',
+            'request_id': request.id,
+            'block_reason': request.block_reason or '',
+            'route': route,
         }
 
     def _available_actions(self, b):
@@ -130,11 +167,39 @@ class PbImportBatchCockpit(models.AbstractModel):
                              'label': 'Load file', 'icon': 'upload', 'kind': 'primary'})
         else:
             for (m, label, icon, kind) in NEXT_ACTIONS.get(b.state, []):
-                acts.append({'method': m, 'label': label, 'icon': icon, 'kind': kind})
+                if m == 'action_process':
+                    label = self._commit_label(b)
+                acts.append({'method': m, 'label': label, 'icon': icon,
+                             'kind': kind})
         if b.state not in ('done', 'cancelled', 'processing'):
             acts.append({'method': 'action_cancel', 'label': 'Cancel',
                          'icon': 'x', 'kind': 'danger'})
         return acts
+
+    def _commit_label(self, b):
+        """What the commit button says, so a press never surprises anybody.
+
+        Asked of the ENGINE rather than remembered: a route exists whether or
+        not anybody ticked a box.
+        """
+        if not hasattr(b, '_approval_process_key_for'):
+            return 'Commit import'
+        try:
+            context = b._approval_context()
+            resolved = self.env['biz.approval.engine'].sudo().resolve_binding(
+                context['company_id'], b._approval_process_key_for(),
+                context.get('scope_keys'), context.get('kind_key'))
+        except Exception:       # noqa: BLE001 — a label must never raise
+            return 'Commit import'
+        if resolved.get('error') or not resolved.get('version_id'):
+            return 'Commit import'
+        from odoo.addons.biz_approval_workflow.models import definition as D
+        version = self.env['biz.approval.workflow.version'].sudo().browse(
+            resolved['version_id'])
+        steps = [st for st in D.normalise(version.definition)['steps']
+                 if st['kind'] != 'notify']
+        fast = (not steps) or any(st['kind'] == 'fast' for st in steps)
+        return 'Commit import' if fast else 'Send for approval'
 
     # ------------------------------------------------------------------ actions
     @api.model
