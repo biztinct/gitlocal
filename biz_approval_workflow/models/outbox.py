@@ -84,10 +84,14 @@ class BizApprovalOutbox(models.Model):
         rows = self.sudo().search([('state', '=', 'queued')], limit=limit)
         for row in rows:
             try:
-                row._deliver()
+                # a savepoint per row: one message that cannot be sent must
+                # not poison the transaction the next nine are queued in
+                with self.env.cr.savepoint():
+                    row._deliver()
                 row.write({'state': 'sent', 'attempts': row.attempts + 1,
                            'last_error': False})
             except Exception as exc:  # noqa: BLE001 — one bad row must not
+                self.env.invalidate_all()
                 _logger.exception('biz.approval.outbox %s failed', row.id)
                 row.write({'state': 'failed' if row.attempts >= 4 else 'queued',
                            'attempts': row.attempts + 1,

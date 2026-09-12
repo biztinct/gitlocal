@@ -982,6 +982,9 @@ class BizApprovalEngine(models.AbstractModel):
         return found
 
     def _lock(self, request):
+        # raw SQL sees the table, not the ORM cache: push everything pending
+        # down first, or this can block on our own unwritten rows
+        self.env.flush_all()
         try:
             self.env.cr.execute(
                 'SELECT id FROM biz_approval_request WHERE id = %s '
@@ -1187,12 +1190,20 @@ class BizApprovalEngine(models.AbstractModel):
                 "to someone else."))
         if not (reason or '').strip():
             raise UserError(_("Say why you are moving this to someone else."))
-        seat = request.seat_ids.filtered(lambda s: s.key == seat_key)[:1]
-        if not seat or seat.status != 'open':
+        seat = request.seat_ids.filtered(
+            lambda s: s.key == seat_key and s.status == 'open')[:1]
+        if not seat:
             raise UserError(_("That seat is not waiting for anyone."))
         new_user = self.env['res.users'].browse(int(new_user_id)).exists()
         if not new_user or not new_user.active or new_user.share:
             raise UserError(_("That person cannot be asked to decide this."))
+        if request.company_id.id not in new_user.company_ids.ids:
+            raise UserError(_(
+                "%s does not work in the company this belongs to.",
+                new_user.name))
+        if new_user in seat.step_id.seat_ids.mapped('acting_user_id'):
+            raise UserError(_(
+                "%s is already on this step.", new_user.name))
         self._lock(request)
         old = seat.acting_user_id
         seat.write({'status': 'reassigned'})

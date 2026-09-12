@@ -1,0 +1,65 @@
+# Approval Matrix — conventions & gotcha ledger (AM-ledger)
+
+Every Approval Matrix phase handover references this file. Implementers **append** a numbered `AM<n>` entry whenever they hit a new gotcha or make a convention decision; never rewrite earlier entries.
+
+## Standing rules (verbatim from the owner, binding on every phase)
+
+- **Design bar:** "extreme WOW, intuitive, out-of-this-world, best in class" — hero moment, zero dead-ends, plain language, purposeful motion, bulk ergonomics; Lucide icons, never emoji; Chrome-MCP validation of every user-facing change.
+- **White-label:** the word "Odoo" must never appear in any user-visible string (labels, help, errors, toasts, emails, `.po` msgstr). Technical identifiers (`from odoo import`, xml ids, module names, log lines, comments) stay as they are.
+- **Flexibility ruling (12 Sep 2026):** the business decides. Any process may be set to "No approval needed". There are **no hard minimums** (not two people for money out, not an independence rule, not a coverage pass). The system **warns, offers options and records the publisher's confirmation** of each warning. Structural errors only (bad schema, unknown role, two bindings that tie at the same rank) block a publish.
+- **Clean replacement:** no payroll is live. Old engines (pay run `PB_TIER`, `officer_review` setting, `wfp.approval.step`, the two extra inboxes) are removed, not kept beside the new one. Every process ships a default workflow equal to today's route, so day one behaves the same.
+- **Nothing approves on its own:** escalation reminds, escalates, optionally reassigns to a configured backup. Never auto-approves. A fast lane is a *published choice*, not an escalation outcome.
+- **Fail closed at runtime:** no binding, a tie, a paused binding, a missing person, a revoked grant → submission/decision is refused with an actionable message. Never fall back to "all HR users", never pick the newest id.
+- **Configuring a person never grants access.** Eligibility = resolved seat AND active user AND the object's own access. The picker says "Needs permission" and links to Access.
+- **Server is the authority.** Every RPC re-checks access and scope; UI booleans are cosmetic. No `sudo()` to make a path work; `sudo()` only for reads the gate already allowed (audit console pattern).
+- **Commit per feature**, explicit staging, reviewer-focused message, end with `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`; never push.
+- **Report in plain technical prose**; owner-facing wording is Fable's job.
+
+## Module and dependency rules
+
+- `biz_approval_workflow` (engine) depends only on `biz_approval_chain, hr, mail`. It must NOT depend on `biz_access`, `pb_settings`, `pb_hub`, `pb_group`, any `pb_*`. Reason: `biz_access → pb_hub/pb_settings → om_hr_payroll/pb_hr_payroll_base` would cycle through `pb_hr_payroll_formula` once the scheme adapter exists.
+- `pb_approval_config` (UI) depends on `biz_approval_workflow, pb_hub, pb_settings, pb_sidebar, pb_import_kit, pb_group`. It must NOT depend on `pb_payruns`, `pb_home_hub`, `pb_mission`, `pb_approval`, `pb_team` (cycle via `pb_home_hub → pb_approval → pb_payruns`). Hubs depend on it, never the reverse.
+- Adapters live in the business module (`pb_payruns`, `pb_hr_payroll_formula`, `pb_records`, `pb_pay_delivery`, `pb_hr_workforce`, `biz_access`, …) and add `biz_approval_workflow` to their `depends`.
+- Division/scheme are Payobook concepts. The engine sees only opaque `scope_key` strings supplied by the adapter in precedence order (most specific first). Payobook adapters build them as `scheme:<id>|division:<id>`, `scheme:<id>`, `division:<id>`, `` (company).
+
+## Odoo 19 gotchas that apply here (verified in this repo)
+
+- `_sql_constraints` is silently ignored → use `_name_uniq = models.Constraint('unique(a,b)', 'message')` class attributes.
+- `res.users.groups_id` → `group_ids`; membership checks via `user.all_group_ids` / `has_group`.
+- `res.groups` has no `category_id`; define groups with `name` + `implied_ids` (+ `privilege_id` only if needed, and never `&`/`<` in a privilege name).
+- `ir.cron` has no `numbercall`/`doall`; `nextcall` computed in Python, not an eval expression; `post_init_hook` runs on install only → mirror in a migration for `-u`.
+- `hr.payslip.run` has NO `company_id` in this build → `getattr(run, 'company_id', False)`.
+- Recordsets do not keep instance attributes; pass state through context lists.
+- Private (`_`-prefixed) methods cannot be called over JSON-RPC.
+- Odoo 19 removed the `<report>` shortcut and search `<group expand string>`; write explicit records.
+- `safe_eval` has no `nocopy`. Never expose Python/SQL/domain evaluation to configuration; conditions are typed fact/operator/value only.
+- Tests: `@tagged('post_install', '-at_install')`, `TransactionCase`, users created with `group_ids: [(6,0,[...])]`, `with_context(no_reset_password=True)`.
+
+## Deploy contract (from CLAUDE.md, summarised)
+
+1. One addons dir on the live box: `/odoo/odoo-server/addons` (ssh alias `Payobook19v2`). `/odoo/custom/addons` is a guard FILE — never recreate.
+2. `sudo rm -rf /tmp/deployX && mkdir -p /tmp/deployX`, `rsync -az --exclude=__pycache__ --exclude='*.pyc' <modules> Payobook19v2:/tmp/deployX/`, then **per module** `sudo rsync -a --delete /tmp/deployX/<m>/ /odoo/odoo-server/addons/<m>/`. NEVER `--delete` with the addons root as destination.
+3. Never deploy vendored standard addons (`web`, `hr`, `hr_*`, `mail`, …).
+4. Stop the service; run the `-i/-u` in a detached unit with a sentinel (`systemd-run --collect --unit=x-install /bin/bash /tmp/x_run.sh`; script does `sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf -d <db> -i <new> -u <changed> --stop-after-init > /tmp/x.log 2>&1; echo EXIT=$? >> /tmp/x.log; touch /tmp/x.done`); poll the sentinel; grep `EXIT=` and `Traceback|CRITICAL|ERROR`; start the service; confirm `Registry loaded` and a page loads.
+5. Upgrade **every** database: `payobook`, `payobook_template`, and every tenant DB (`psql -l`; today at least `abm`, `acme`, `rize`). Tenant rule: tenants get everything the master gets except `pb_tenants`, `pb_demo`, `pb_demo_portal`, `pb_website`. Backup before installing on a tenant (`pg_dump -Fc`), install, verify.
+6. After JS/SCSS: `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` per DB **and** bump `web.assets.version` ir.config_parameter, then restart.
+7. Verify: hash each module tree both sides (skip `__pycache__`, `*.pyc`, `.DS_Store`); compare manifest version to `ir_module_module.latest_version` per DB (normalise the `19.0.` prefix).
+8. Tests on the server: scratch DB (`createdb -T payobook_template <db>` or fresh), `odoo-bin -c /etc/odoo-server.conf -d <db> -i <module> --test-enable --stop-after-init --http-port=8199 --gevent-port=8198 --log-level=test`, with the service running is fine on those ports. `--test-enable` only runs tests for modules it installs/updates.
+9. Never `pkill -f odoo-bin` in an ssh one-liner (self-matches). Kill leftover masters by PID. Never `systemctl daemon-reload` on the box.
+10. Remove any screenshots/PNGs you generate; keep other sessions' files.
+
+## Ledger entries
+
+- **AM1 (design, 12 Sep):** workflow definitions are stored as one versioned JSON document per revision (`definition` Json, `schema_version` int), validated by a server-side serializer. No child step tables for authoring; the published snapshot is the runtime truth. Rationale: the builder edits the whole route atomically, comparisons between revisions are whole-document, and the POC's route logic maps 1:1.
+- **AM2 (design, 12 Sep):** scope resolution is adapter-driven `scope_keys` in precedence order + `kind_key`. Exact `kind_key` beats `any` within a rank. Two effective bindings at the same rank and kind = publish-time error, runtime fail-closed.
+- **AM3 (design, 12 Sep):** the engine ships one real business object of its own, `biz.approval.generic.request` ("Other request": title, description, amount, currency, requester). It is the test fixture for every model-level acceptance case and a real feature (ask for a sign-off on anything).
+- **AM4 (design, 12 Sep):** warnings vs errors. `errors[]` block publish; `warnings[]` each carry a stable `code` and are stored on the published version as `confirmations` (code, text, user, stamp). Codes so far: `fast_lane`, `single_person`, `independence_off`, `coverage_not_run`, `coverage_gap:<scope>`, `no_backup:<step>`, `notify_only_route`, `money_single_person`.
+- **AM5 (P1 build, 12 Sep):** `who.mode = 'team'` carries its own bounded list — `{"mode": "team", "user_ids": [...], "label": "Vietnam payroll desk"}` — because P1 has no team object and the engine may not invent one. A pool `biz.approval.role` is the other way to express "any one of". If P2 adds a real team model, it must keep filling `user_ids` at publish time so the published snapshot stays self-contained (design §9: the snapshot is the runtime truth).
+- **AM6 (P1 build, 12 Sep):** the engine's public `resolve_binding(company_id, process_key, scope_keys, kind_key, at)` returns a **dict** (`binding_id`, `version_id`, `workflow_name`, `trace`, `error`), not the handover's 3-tuple: preview and the "Why this route?" panel must be able to SHOW a broken route rather than raise on it, and a recordset is not JSON. The internal `_resolve_binding` keeps the tuple with a 4th `error` element. Error codes: `no_route`, `ambiguous_route`, `paused`, `no_version`.
+- **AM7 (P1 build, 12 Sep):** every adapter ends its `scope_keys` with `''`, so a role with `fallback_to_company = False` would be unreachable. `biz.approval.responsibility.resolve` therefore **strips the trailing company rank** when the role forbids the fallback AND a narrower scope was asked for; `['']` on its own still resolves, because then the company IS the scope. Without this the "each area needs its own person" switch does nothing.
+- **AM8 (P1 build, 12 Sep):** `biz.approval.request.maker_uids` stays the frozen Json list, and is mirrored on create into a technical M2M `maker_user_ids`. A Json field cannot appear in a record-rule domain, and "the people who prepared it may see it" has to be a rule, not a method.
+- **AM9 (P1 build, 12 Sep):** the repeated-person rule is applied when the **seats are built at submission**, not at step activation. Principals are frozen at submission, so both moments give the same answer, and doing it at build time makes `preview` and the real request byte-identical — which is the promise "Try an example" makes.
+- **AM10 (P1 build, 12 Sep):** decisions and events refuse `write`/`unlink` for everyone, at model level. Consequence: `biz.approval.decision.company_id` is a PLAIN column the engine sets, never a stored related — a stored related rewrites itself when the source changes and would hit its own immutability guard. Same reason `biz.approval.workflow.version.write` has to allow `company_id`, `process_id`, `summary` and `route_labels` through on a published row: those are the ORM keeping its own bookkeeping, not an edit.
+- **AM11 (P1 build, 12 Sep):** outbox delivery is the 5-minute cron only; no `cr.postcommit` kick. A post-commit delivery needs a second cursor and would run outside a test transaction, so it cannot be tested and can double-send. Rows are still written in the same transaction as the event, so nothing is ever told about something that did not happen.
+- **AM12 (P1 build, 12 Sep):** `preview` and `coverage_scan` are gated by `group_approval_config`, not left open. Both resolve responsibilities across a whole company, so an open preview would be a people-directory read for anyone.
+- **AM13 (P1 build, 12 Sep) — DEPLOY BLOCKED:** the live box `Payobook19v2` (3.104.113.197) was unreachable for the whole P1 session — ssh timeout, port 22 closed, no HTTP on the apex either — and there is no local Odoo, postgres or container runtime on this machine. So §6 of the P1 handover (deploy, install on every DB, run T01–T34, Chrome check) did **not** run. What did run: the pure-Python half (`definition.py`) exercised standalone, 33 checks, 0 failures; plus an AST pass over the module confirming every `self._method`, every `env['model']`, every `create()` key and every ACL/record-rule reference resolves. **The first job of the next session is to deploy the three modules and run the suite before anything is built on top of it.**
