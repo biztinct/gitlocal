@@ -389,6 +389,27 @@ class PayrunApprovalCase(TransactionCase):
         with self.assertRaises(UserError):
             slip.action_payslip_done()
 
+    def test_r06e_nor_on_a_run_nobody_has_even_sent_in(self):
+        """The bank export pays every payslip in state `done`, so a DRAFT run
+        is the more dangerous half of this rail, not the safer one."""
+        run = self._run()
+        slip = self._slip(run, self.emp_a)
+        with self.assertRaises(UserError):
+            slip.action_payslip_done()
+        with self.assertRaises(UserError):
+            slip.action_payslip_level2_done()
+
+    def test_r06f_a_payslip_with_no_run_is_untouched(self):
+        contract = self.env['hr.contract'].search(
+            [('employee_id', '=', self.emp_a.id)], limit=1)
+        loose = self.env['hr.payslip'].create({
+            'employee_id': self.emp_a.id, 'name': 'AP loose',
+            'contract_id': contract.id,
+            'date_from': '2026-06-01', 'date_to': '2026-06-30',
+            'company_id': self.company.id})
+        loose.action_payslip_done()
+        self.assertNotEqual(loose.state, 'draft')
+
     def test_r06b_a_raw_state_write_is_refused(self):
         self._two_step_route()
         run = self._run()

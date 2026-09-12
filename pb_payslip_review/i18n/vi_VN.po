@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -196,3 +196,15 @@ msgstr "GM phê duyệt → Xong"
 #: code:addons/pb_payslip_review/static/src/js/payslip_review.js:66
 msgid "Action blocked"
 msgstr "Hành động bị chặn"
+
+#. module: pb_payslip_review
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_payslip_review
+msgid "Payslips are approved together, as a pay run. Send the pay run in for approval instead."
+msgstr "Các phiếu lương được phê duyệt cùng nhau, theo kỳ lương. Hãy gửi cả kỳ lương đi phê duyệt."
+
+#. module: pb_payslip_review
+msgid "This payslip is not part of a pay run, so there is nothing to approve here."
+msgstr "Phiếu lương này không thuộc kỳ lương nào nên ở đây không có gì để phê duyệt."
