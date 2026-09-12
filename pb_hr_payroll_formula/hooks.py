@@ -58,3 +58,9 @@ def rd49_schedule_monthly_fetch(env):
     incident, which aborted every module in the same upgrade.
     """
     env['hr.integration.connector']._rd49_schedule_first_run()
+    # Approval Matrix P4 — and, in the same hook, give every company the
+    # scheme-change route it is about to be held to. Its own hook rather than a
+    # second `post_init_hook` because a manifest has exactly one, and the seed
+    # is idempotent so the order of the two never matters.
+    from .models.scheme_seed import seed_all
+    seed_all(env)

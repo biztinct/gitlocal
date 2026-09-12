@@ -84,6 +84,25 @@ class HrPayslipFormula(models.Model):
         help="Computed values from formula engine"
     )
 
+    # Approval Matrix P4 — WHICH SEALED CONTENT COMPUTED THIS PAYSLIP.
+    #
+    # The evaluator reads the scheme's rules as they are at the moment it runs,
+    # and nothing recorded which version of those rules that was. So a run and
+    # a scheme change could pass each other in the night and nobody could
+    # answer, afterwards, which arithmetic produced a number. These two fields
+    # are that answer: the last sealed milestone, and the content hash of the
+    # rules the evaluator actually saw. The hash is the authority — a milestone
+    # is a label somebody chose, and content can move after one was sealed.
+    formula_milestone_id = fields.Many2one(
+        'hr.formula.config.milestone', string='Scheme content',
+        readonly=True, copy=False, ondelete='set null',
+        help="The sealed version of the pay scheme this payslip was computed "
+             "against.")
+    formula_content_hash = fields.Char(
+        string='Scheme content stamp', readonly=True, copy=False,
+        help="A stamp of the rules that computed this payslip. Two payslips "
+             "with the same stamp were worked out by exactly the same rules.")
+
     payslip_identifier_payload = fields.Text(
         string='Payslip Identifier Payload (JSON)',
         readonly=True,
@@ -103,6 +122,26 @@ class HrPayslipFormula(models.Model):
     # ==========================================
     # COMPUTED
     # ==========================================
+    def _pb_stamp_scheme_content(self, config):
+        """Record which sealed content this computation ran against.
+
+        Wrapped, because a stamp may never be the thing that stops a payroll
+        run: a scheme whose milestone table is empty, or whose hash cannot be
+        taken, still has to produce payslips.
+        """
+        self.ensure_one()
+        if not config:
+            return
+        try:
+            milestone = self.env['hr.formula.config.milestone'].sudo().search(
+                [('config_id', '=', config.id)],
+                order='milestone_date desc, id desc', limit=1)
+            self.formula_milestone_id = milestone.id or False
+            self.formula_content_hash = config.sudo()._content_hash()
+        except Exception:       # noqa: BLE001 — never take a run down
+            _logger.warning('pb_hr_payroll_formula: the scheme content stamp '
+                            'failed on payslip %s', self.id)
+
     @api.depends('formula_computation_log')
     def _compute_has_formula_errors(self):
         for record in self:
@@ -155,6 +194,8 @@ class HrPayslipFormula(models.Model):
                 input_values
             )
 
+            # Which sealed content produced these numbers.
+            payslip._pb_stamp_scheme_content(config)
             payslip.formula_computed_values = json.dumps(computed_values, indent=2)
             payslip.formula_computation_log = '\n'.join(computation_log)
             if 'report_visible_string_payload' in payslip._fields:
@@ -1078,6 +1119,8 @@ class HrPayslipFormula(models.Model):
                     rules,
                     input_values
                 )
+                # Which sealed content produced these numbers.
+                payslip._pb_stamp_scheme_content(config)
                 payslip.formula_computed_values = json.dumps(computed_values, indent=2)
                 payslip.formula_computation_log = '\n'.join(computation_log)
                 if 'report_visible_string_payload' in payslip._fields:

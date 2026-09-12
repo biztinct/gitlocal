@@ -45,6 +45,10 @@ License: LGPL-3
         'pb_hr_payroll_base',
         'web',
         'mail',
+        # Approval Matrix P4 — a change to a live pay scheme is a request like
+        # any other. The ENGINE only: the Matrix UI module would drag the hub,
+        # the rail and the import kit into every payroll install for nothing.
+        'biz_approval_workflow',
     ],
     'external_dependencies': {
         # 'formulas' is an OPTIONAL runtime dep — formula_engine/converter.py does

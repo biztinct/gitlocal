@@ -131,3 +131,7 @@ access_integration_endpoint_field_template_admin,hr.integration.endpoint.field.t
 access_formula_rule_source_user,hr.formula.rule.source.user,model_hr_formula_rule_source,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_formula_rule_source_manager,hr.formula.rule.source.manager,model_hr_formula_rule_source,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_formula_rule_source_admin,hr.formula.rule.source.admin,model_hr_formula_rule_source,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_scheme_proposal_user,pb.scheme.proposal.user,model_pb_scheme_proposal,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_scheme_proposal_manager,pb.scheme.proposal.manager,model_pb_scheme_proposal,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
+access_scheme_proposal_admin,pb.scheme.proposal.admin,model_pb_scheme_proposal,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_scheme_proposal_employee,pb.scheme.proposal.employee,model_pb_scheme_proposal,base.group_user,1,0,0,0

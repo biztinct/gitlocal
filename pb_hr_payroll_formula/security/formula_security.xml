@@ -114,5 +114,19 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
+        <!-- Approval Matrix P4 — a proposal to change a pay scheme.
+
+             Every internal user may READ one, because the route that approves
+             it can name anybody the business chose (a country director holds
+             no formula role), and the engine re-checks `check_access('read')`
+             on the record before it lets that person decide. It is narrowed to
+             their own company, and writing one still needs a formula role. -->
+        <record id="scheme_proposal_comp_rule" model="ir.rule">
+            <field name="name">Scheme change proposal: company</field>
+            <field name="model_id" ref="model_pb_scheme_proposal"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
     </data>
 </odoo>

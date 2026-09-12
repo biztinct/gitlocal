@@ -87,3 +87,10 @@ from . import formula_net_role
 
 # RD49 — fetch last month's data on a schedule, so a pay run never waits for it.
 from . import integration_cron
+
+# Approval Matrix P4 — a change to how pay is worked out is signed off.
+# `scheme_proposal` defines the record and the adapter; `scheme_gate` closes
+# the five doors that change a live scheme, so it must load after it.
+from . import scheme_proposal
+from . import scheme_gate
+from . import scheme_seed

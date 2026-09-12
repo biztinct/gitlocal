@@ -22,7 +22,6 @@ Three promises:
   of every formula, every fixed value and every tax band; the run stamps the key
   it ran against; a mismatch says so in amber on three different steps.
 """
-import hashlib
 import json
 import logging
 
@@ -79,31 +78,16 @@ class PbBlueprintTests(models.AbstractModel):
     def _evidence_hash(self, config):
         """A key for "these are the rules the checks were run against".
 
-        Everything that can change a number and nothing that cannot: each
-        component's code, what kind of column it is, its formula normalised the
-        way the engine normalises it, and its fixed value; then every tax band
-        table with its brackets. A name, a sequence or a payslip position moves
-        no money, so none of them belongs in here — a key that changes when
-        somebody renames a component is a key that cries stale for nothing.
+        ONE ANSWER, IN ONE PLACE. The body of this used to live here, and the
+        scheme-change proposal needs exactly the same number — "is the content
+        somebody approved still the content that is live?" is the same question
+        as "is what we last checked still what this configuration says?". Two
+        copies of a hash are two answers to one question, one of which will be
+        wrong after the first time somebody edits one of them. It now lives on
+        the configuration itself (`hr.formula.config._content_hash`) and this
+        calls it, so the blueprint's own callers are untouched.
         """
-        Rule = self.env['hr.formula.rule']
-        parts = []
-        for rule in config.rule_ids:
-            code = (rule.code or '').upper()
-            if not code:
-                continue
-            formula = Rule._normalize_excel_formula(rule.excel_formula or '') or ''
-            constant = round(float(rule.constant_value or 0.0), 6)
-            parts.append((code, rule.column_type or '', formula, constant))
-        tables = []
-        for table in config.rate_table_ids:
-            brackets = sorted((round(float(b.lower or 0.0), 6),
-                               round(float(b.rate or 0.0), 6))
-                              for b in table.line_ids)
-            tables.append(((table.code or '').upper(), brackets))
-        blob = json.dumps({'components': sorted(parts), 'tables': sorted(tables)},
-                          sort_keys=True, default=str)
-        return hashlib.sha256(blob.encode('utf-8')).hexdigest()
+        return config._content_hash()
 
     @api.model
     def bp_evidence(self, config_id):
