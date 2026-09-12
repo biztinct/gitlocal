@@ -20,7 +20,7 @@ Cycle 5. No menu and no `pb.sidebar.item`: the one door is a command-palette
 entry, plus a per-lens sub-entry each.
 
 **The gates are derived from what the model behind each lens actually grants**
-(W95), and the four answers are all different, which is why the rule exists:
+(W95), and the four answers are all different, which is why the rule exists::
 
     filings  pb.govt.report.wizard   the Government Reports group
     bank     pb.bank.change.request  every internal user (an employee files

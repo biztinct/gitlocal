@@ -13,6 +13,7 @@ manager-gated retention-days setting).
 
 Sources (each soft — an absent source is surfaced as "not installed", never a
 blank stream):
+
   * biz.audit.entry        — field changes (old→new), incl. the wage salary lens
   * biz.approval.step.log  — approval transitions (from→to)
   * pb.employee.bank.history — bank master changes (accounts MASKED)
