@@ -97,7 +97,10 @@
                 <separator/>
                 <filter name="f_late" string="Sent in after the cut-off"
                         domain="[('late_submission', '=', True)]"/>
-                <group expand="0" string="Group by">
+                <!-- A bare <group>: Odoo 19's search schema rejects `expand`
+                     and `string` here, and the whole view then fails to parse
+                     with a message about a `field` element (ledger). -->
+                <group>
                     <filter name="g_week" string="Week"
                             context="{'group_by': 'week_start'}"/>
                     <filter name="g_state" string="Status"

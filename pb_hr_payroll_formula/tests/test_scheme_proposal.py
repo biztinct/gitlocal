@@ -114,13 +114,28 @@ class SchemeProposalCase(TransactionCase):
             'name': name, 'code': code, 'country_code': 'VN',
             'company_id': self.company.id, 'state': state})
         self._clear_payrun_gap(config)
+        # `category_id` is NOT NULL on `hr.payslip.line`, so a component that
+        # appears on a payslip and has no category takes the whole computation
+        # down at INSERT time. Every fixture component carries one.
+        category = self._category()
         self.env['hr.formula.rule'].create({
             'config_id': config.id, 'name': 'Basic', 'code': 'SCBASIC',
-            'column_type': 'input', 'sequence': 10})
+            'column_type': 'input', 'sequence': 10,
+            'category_id': category.id})
         self.env['hr.formula.rule'].create({
             'config_id': config.id, 'name': 'Gross', 'code': 'SCGROSS',
-            'column_type': 'formula', 'excel_formula': '=A1', 'sequence': 20})
+            'column_type': 'formula', 'excel_formula': '=A1', 'sequence': 20,
+            'category_id': category.id})
         return config
+
+    def _category(self):
+        found = self.env['hr.salary.rule.category'].search(
+            [('code', '=', 'BASIC')], limit=1)
+        if not found:
+            found = self.env['hr.salary.rule.category'].search([], limit=1)
+        if not found:
+            self.skipTest('this database has no salary-rule categories')
+        return found
 
     def _hold(self, role_key, user):
         role = self.env['biz.approval.role'].search(

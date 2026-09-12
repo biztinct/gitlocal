@@ -98,12 +98,19 @@ class SchemeGateCase(TransactionCase):
             'name': name, 'code': code, 'country_code': 'VN',
             'company_id': self.company.id, 'state': state})
         self._clear_payrun_gap(config)
-        self.env['hr.formula.rule'].create({
+        # `category_id` is NOT NULL on `hr.payslip.line` — a component with no
+        # category takes a computation down at INSERT time.
+        category = self.env['hr.salary.rule.category'].search(
+            [('code', '=', 'BASIC')], limit=1) \
+            or self.env['hr.salary.rule.category'].search([], limit=1)
+        values = {'category_id': category.id} if category else {}
+        self.env['hr.formula.rule'].create(dict(values, **{
             'config_id': config.id, 'name': 'Basic', 'code': 'SGBASIC',
-            'column_type': 'input', 'sequence': 10})
-        self.env['hr.formula.rule'].create({
+            'column_type': 'input', 'sequence': 10}))
+        self.env['hr.formula.rule'].create(dict(values, **{
             'config_id': config.id, 'name': 'Gross', 'code': 'SGGROSS',
-            'column_type': 'formula', 'excel_formula': '=A1', 'sequence': 20})
+            'column_type': 'formula', 'excel_formula': '=A1',
+            'sequence': 20}))
         return config
 
     def _one_step_route(self):
