@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -472,3 +472,13 @@ msgstr "Chạy mà không cần bảng tính"
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
 msgid "Continue with this file"
 msgstr "Tiếp tục với tập tin này"
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/pb_payrun_wizard.py static/src/js/payrun_wizard.js
+msgid "The pay data is with %s for approval. The payslips are made once it is approved."
+msgstr "Dữ liệu lương đang ở chỗ %s để duyệt. Phiếu lương sẽ được tạo sau khi được phê duyệt."
+
+#: models/pb_payrun_wizard.py static/src/js/payrun_wizard.js
+msgid "The pay data is waiting for its approval. The payslips are made once it is approved."
+msgstr "Dữ liệu lương đang chờ phê duyệt. Phiếu lương sẽ được tạo sau khi được phê duyệt."
+

@@ -1,0 +1,120 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-13 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Arrivals · %s people"
+msgstr "Hồ sơ đến · %s người"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "1 person"
+msgstr "1 người"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "%s people"
+msgstr "%s người"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Details change"
+msgstr "Thay đổi thông tin"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Joining"
+msgstr "Vào làm"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Leaving"
+msgstr "Nghỉ việc"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Who is in this batch"
+msgstr "Những ai trong đợt này"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "These arrivals have already been sent in."
+msgstr "Các hồ sơ này đã được gửi đi rồi."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "There is nothing in this batch to approve."
+msgstr "Đợt này không có gì để phê duyệt."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Arrivals"
+msgstr "Hồ sơ đến"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "What would happen"
+msgstr "Điều sẽ xảy ra"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Showing the first %(shown)s of %(total)s."
+msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "People in this batch"
+msgstr "Số người trong đợt này"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Details changing"
+msgstr "Số hồ sơ đổi thông tin"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Would create sign-ins"
+msgstr "Sẽ tạo tài khoản đăng nhập"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Pushed to us"
+msgstr "Hệ thống kia gửi sang"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "From a file"
+msgstr "Từ một tệp"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Fetched by us"
+msgstr "Payobook tự lấy về"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Creates sign-ins"
+msgstr "Tạo tài khoản đăng nhập"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Yes"
+msgstr "Có"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Left alone — the record changed in the meantime"
+msgstr "Giữ nguyên — hồ sơ đã thay đổi trong lúc chờ"
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "%s was changed in Payobook after this arrival was sent for approval, so nothing was overwritten. Check the record and, if the change still applies, ask for it again."
+msgstr "%s đã được sửa trong Payobook sau khi hồ sơ này được gửi duyệt, nên không có gì bị ghi đè. Hãy kiểm tra hồ sơ và nếu thay đổi vẫn đúng thì gửi lại."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Somebody decided this should not happen."
+msgstr "Có người đã quyết định không thực hiện việc này."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "%s of them are waiting for approval before anything is changed."
+msgstr "%s trong số đó đang chờ phê duyệt trước khi có bất kỳ thay đổi nào."
+
+#: models/arrival_batch.py models/zoho_pipeline.py
+msgid "Arrivals from a connected system"
+msgstr "Hồ sơ đến từ hệ thống được kết nối"
+

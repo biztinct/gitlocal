@@ -1,0 +1,160 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-13 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "%s (the field or the person is gone)"
+msgstr "%s (trường dữ liệu hoặc người này không còn)"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "1 person"
+msgstr "1 người"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "%s people"
+msgstr "%s người"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "1 value"
+msgstr "1 giá trị"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "%s values"
+msgstr "%s giá trị"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Records change · %(people)s · %(values)s"
+msgstr "Thay đổi hồ sơ · %(people)s · %(values)s"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "What would change"
+msgstr "Những gì sẽ thay đổi"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "This change has already been carried out."
+msgstr "Thay đổi này đã được thực hiện rồi."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "This change has already been sent in."
+msgstr "Thay đổi này đã được gửi đi rồi."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "There is nothing in this change to approve."
+msgstr "Thay đổi này không có gì để phê duyệt."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Division"
+msgstr "Bộ phận"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Values"
+msgstr "Số giá trị"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Showing the first %(shown)s of %(total)s values."
+msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s giá trị."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Now"
+msgstr "Hiện tại"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Proposed"
+msgstr "Đề xuất"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid " and %s more"
+msgstr " và %s mục nữa"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Nothing was changed. Somebody else has already changed %(n)s of these values since this was proposed: %(names)s%(more)s. Send this back and propose it again against what is there now."
+msgstr "Không có gì được thay đổi. Người khác đã sửa %(n)s giá trị trong số này kể từ khi đề xuất được tạo: %(names)s%(more)s. Hãy trả lại và đề xuất lại dựa trên dữ liệu hiện có."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "These have been changed by somebody else since this was proposed, so nothing was written: %(names)s%(more)s."
+msgstr "Những mục này đã bị người khác sửa kể từ khi đề xuất được tạo, nên không có gì được ghi: %(names)s%(more)s."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "A reason was written down"
+msgstr "Đã ghi lý do"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "People affected"
+msgstr "Số người bị ảnh hưởng"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Values changed"
+msgstr "Số giá trị thay đổi"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Changes bank details"
+msgstr "Thay đổi thông tin ngân hàng"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Changes pay"
+msgstr "Thay đổi lương"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Where it came from"
+msgstr "Nguồn của thay đổi"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Typed on the desk"
+msgstr "Nhập trên màn hình Hồ sơ"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "From a file"
+msgstr "Từ một tệp"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Bank details"
+msgstr "Thông tin ngân hàng"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Yes"
+msgstr "Có"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Pay"
+msgstr "Lương"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Records Desk changes"
+msgstr "Thay đổi hồ sơ hàng loạt"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Sent for approval — %s"
+msgstr "Đã gửi duyệt — %s"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "waiting for its approver"
+msgstr "đang chờ người phê duyệt"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "The Approvals screen is not installed on this database."
+msgstr "Màn hình Phê duyệt chưa được cài trên cơ sở dữ liệu này."
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#: models/records_approval.py models/pb_records_desk.py static/src/js/records_desk.js
+msgid "with"
+msgstr "đang ở chỗ"
+

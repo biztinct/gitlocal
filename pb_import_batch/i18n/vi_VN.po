@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -195,3 +195,21 @@ msgstr "Cần chú ý"
 #: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:83
 msgid "Action failed."
 msgstr "Thao tác không thành công."
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+msgid "Send for approval"
+msgstr "Gửi đi duyệt"
+
+#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+msgid "Commit import"
+msgstr "Ghi dữ liệu vào hệ thống"
+
+#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+msgid "See the request"
+msgstr "Xem yêu cầu"
+

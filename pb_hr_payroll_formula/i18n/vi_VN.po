@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -14614,3 +14614,101 @@ msgid ""
 msgstr ""
 "⚠ (Các) hằng số %d có giá trị không phải số và được nhập dưới dạng 0 — đặt chúng theo "
 "cách thủ công: %s"
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/payroll_import_approval.py
+msgid "1 row"
+msgstr "1 dòng"
+
+#: models/payroll_import_approval.py
+msgid "%s rows"
+msgstr "%s dòng"
+
+#: models/payroll_import_approval.py
+msgid "What is in the file"
+msgstr "Nội dung của tệp"
+
+#: models/payroll_import_approval.py
+msgid "This file is already waiting to be approved, with %s."
+msgstr "Tệp này đang chờ phê duyệt, ở chỗ %s."
+
+#: models/payroll_import_approval.py
+msgid "Sent for approval"
+msgstr "Đã gửi duyệt"
+
+#: models/payroll_import_approval.py
+msgid "This pay data is now with %s."
+msgstr "Dữ liệu lương này hiện đang ở chỗ %s."
+
+#: models/payroll_import_approval.py
+msgid "Pay data"
+msgstr "Dữ liệu lương"
+
+#: models/payroll_import_approval.py
+msgid "Showing the first %(shown)s of %(total)s rows."
+msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s dòng."
+
+#: models/payroll_import_approval.py
+msgid "The file passed its checks"
+msgstr "Tệp đã qua kiểm tra"
+
+#: models/payroll_import_approval.py
+msgid "Rows in the file"
+msgstr "Số dòng trong tệp"
+
+#: models/payroll_import_approval.py
+msgid "People in the file"
+msgstr "Số người trong tệp"
+
+#: models/payroll_import_approval.py
+msgid "People it would create"
+msgstr "Số người sẽ được tạo mới"
+
+#: models/payroll_import_approval.py
+msgid "Take-home pay in the file"
+msgstr "Tổng lương thực nhận trong tệp"
+
+#: models/payroll_import_approval.py
+msgid "Used for this pay run only"
+msgstr "Chỉ dùng cho kỳ lương này"
+
+#: models/payroll_import_approval.py
+msgid "Creates payslips"
+msgstr "Tạo phiếu lương"
+
+#: models/payroll_import_approval.py
+msgid "This run only"
+msgstr "Chỉ kỳ lương này"
+
+#: models/payroll_import_approval.py
+msgid "Kept on the records"
+msgstr "Lưu vào hồ sơ"
+
+#: models/payroll_import_approval.py
+msgid "Rows with a problem"
+msgstr "Số dòng có vấn đề"
+
+#: models/payroll_import_approval.py
+msgid "its approver"
+msgstr "người phê duyệt"
+
+#: models/payroll_import_approval.py
+msgid "%s row(s) have a problem"
+msgstr "%s dòng có vấn đề"
+
+#: models/payroll_import_approval.py
+msgid "New person"
+msgstr "Người mới"
+
+#: models/payroll_import_approval.py
+msgid "Already on file"
+msgstr "Đã có hồ sơ"
+
+#: models/payroll_import_approval.py
+msgid "Past pay data loads"
+msgstr "Nạp dữ liệu lương kỳ trước"
+
+#: models/payroll_import_approval.py
+msgid "\"This run only\" pay data"
+msgstr "Dữ liệu lương “chỉ kỳ này”"
+

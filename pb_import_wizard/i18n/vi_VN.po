@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -328,3 +328,21 @@ msgstr "Đang chờ"
 #: code:addons/pb_import_wizard/static/src/js/import_wizard.js:149
 msgid "Step failed."
 msgstr "Bước không thành công."
+
+#. Approval Matrix Phase 5 — money out and pay data
+#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+msgid "Sent for approval"
+msgstr "Đã gửi duyệt"
+
+#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+msgid "The employees and payslips are made once it is approved."
+msgstr "Nhân viên và phiếu lương sẽ được tạo sau khi được phê duyệt."
+
+#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+msgid "waiting for its approver"
+msgstr "đang chờ người phê duyệt"
+
+#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+msgid "Send for approval"
+msgstr "Gửi đi duyệt"
+
