@@ -499,3 +499,68 @@ either seed `web_debranding.new_website` with the bare host, checking its other
 readers first, or collapse the two shapes in `biz_debrand/models/base.py`, which
 already post-processes the arch. Left alone here because it is outside E3 and
 the brand-parameter seeding has other consumers.
+
+## ER27 — scan an XML file with a PARSER; a regex finds hits that are not there
+
+E4-4/E4-5 needed a gate over "a product name written where no seam can reach
+it": inside a `t-` expression (ER1) or inside an opaque tag (`brand.py:326`).
+The first version found both with regular expressions and reported two
+offenders in `pb_tenants/tenants.xml` that do not exist. Two independent
+causes, both of which any hand-written XML matcher meets on this build:
+
+* **a self-closing opaque tag.** `<code t-esc="x"/>` has no closing tag, so
+  `<code[^>]*>(.*?)</code>` runs on to the NEXT `</code>` and reports
+  everything in between as one `<code>` body.
+* **an attribute containing `>`.** `t-on-click="() => this.copy(x)"` ends the
+  opening tag on the arrow, so the "body" starts mid-attribute.
+
+`xml.etree.ElementTree` costs nothing here (725 files, well under a second),
+answers both correctly, and is what Odoo itself does with these files. The same
+applies to the JS half and is why it was NOT written as a repo-wide scan: a
+hand-rolled lexer desynchronises on the first object literal inside a `${}`
+hole in `pb_learn/screens.js`. Assert JS behaviour on the funnels the strings
+were routed through, not on a lexer written for a test.
+
+**A gate that reports a hit that is not there gets switched off.** Give every
+gate a negative control containing the exact shapes that broke the last one —
+`test_02` in `biz_debrand/tests/test_unreachable_names.py` carries both.
+
+## ER28 — `_po_map` reads SINGLE-LINE `.po` entries only, and the catalogue is now wrapped
+
+Three tests in `pb_payroll_ai_insights` fail on `rztest` and have nothing to do
+with whatever you are changing:
+
+| Test | |
+|---|---|
+| `test_data_access … test_06_every_sentence_a_refusal_can_print_ships_in_vietnamese` | |
+| `test_egress … test_04d_the_voice_copy_ships_in_vietnamese_too` | |
+| `test_egress … test_04e_the_consent_copy_names_what_actually_leaves` | |
+
+All three read the catalogue through `_po_map`, whose docstring says
+*"single-line entries — which is how ours are written"*:
+
+```python
+pat = re.compile(r'^msgid ("(?:[^"\\]|\\.)*")\nmsgstr ("(?:[^"\\]|\\.)*")$', re.M)
+```
+
+They are no longer how ours are written. Commit `e0fd9c052`
+(*fix(i18n): expose code translations to Odoo runtime*) re-exported
+`i18n/vi_VN.po` AFTER the tests were written (`0f7e8fc87`), and gettext wrapped
+the long entries over several `"…"` continuation lines. The pattern matches
+none of them, so the helper reports a translated string as missing.
+
+The Vietnamese is present and correct — `grep` the msgid in the `.po` before
+believing the test. Measured 2026-09-12 (E4); left alone because it is another
+phase's suite and the fix is to the helper, not to any translation.
+
+## ER29 — `session_info()` cannot be called without a bound request
+
+`self.env['ir.http'].session_info()` raises `RuntimeError: object is not bound`
+in a `TransactionCase` on this build: a dozen addons extend it
+(`pb_tenancy`, `biz_deroute`, `spreadsheet`, `mail`, `bus`, `web_tour`,
+`google_recaptcha`, `partner_autocomplete`…) and one of them reads `request`.
+
+So anything in `session_info` that deserves a test has to be a method of its
+own. E4-2 moved the browser-tab name chain out into
+`biz_theme.ir_http._biz_app_name()` for exactly this reason — a chain that ends
+in a fallback needs a test of the fallback, and the fallback was the bug.

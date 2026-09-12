@@ -4,6 +4,7 @@ from . import alert_rules
 from . import feature_rules
 from . import billing_rules
 from . import support_rules
+from . import brand_rules
 from . import tenant
 from . import feature
 from . import plan

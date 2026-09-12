@@ -189,6 +189,12 @@ from .billing_rules import (
     SERVING_STATES, T_ACCESS, T_ACCESS_TEXT, T_PLAN_NAME, T_RECOVERY,
     T_SEAT_LIMIT, T_TRIAL_ENDS,
 )
+# ERRORS E4-1. What a customer's product is CALLED, decided as a pure function
+# for the same reason the features and the plan are: the answer is worked out
+# here and written to a database no test can follow it into.
+from .brand_rules import (
+    BRAND_KEYS, LEVELS, LEVEL_LABELS, normal_level, website_name_should_change,
+)
 
 #: The module a customer's database needs before the platform can say anything
 #: to it. Not on the never-list (rail R2) — it is a part of the product, and it
@@ -898,6 +904,25 @@ class PbTenants(models.AbstractModel):
                 env['ir.cron'].sudo().browse(ids).exists().write({'active': True})
                 icp.set_param('pb_tenants.template_active_crons', '')
                 say('Scheduled jobs re-enabled (%d crons).' % len(ids))
+            # ERRORS E4-1. WHAT THE PRODUCT IS CALLED for this customer, in
+            # the same step that gives them their name and their currency —
+            # and the gap this phase closed. Until now provisioning wrote a
+            # URL, a company, a country and a currency and never once wrote a
+            # brand parameter, so every customer silently inherited the golden
+            # template's brand and kept it until somebody noticed.
+            #
+            # It cannot be allowed to abort the step: a customer whose database
+            # exists and works but reads the wrong name is a five-second fix
+            # from the cockpit, while a failed `configure` leaves them with no
+            # usable database at all.
+            try:
+                self._apply_brand_to(env, tenant, say)
+                tenant.sudo().write({'brand_pushed_at': fields.Datetime.now()})
+            except Exception:                           # noqa: BLE001
+                _logger.warning("pb_tenants: could not brand %s", slug,
+                                exc_info=True)
+                say('Branding could not be applied — their Brand tab has a '
+                    'button that sends it again.', 'warn')
             # FLEET P4. Which parts of the product this new customer gets —
             # the catalogue's defaults, written in the same step that gives
             # them their name and their currency. Inside this env, not through
@@ -948,6 +973,60 @@ class PbTenants(models.AbstractModel):
                 say('The plan could not be written to their database — their '
                     'Plan tab has a button that sends it again.', 'warn')
         return {}
+
+    # ================================================ ERRORS E4-1, branding
+    def _master_brand(self):
+        """What THIS platform calls itself — read, never written down.
+
+        The cockpit only ever runs on the master database, so its own brand
+        parameters are the master product's. Reading them keeps `pb_tenants`
+        honest if the platform is ever itself rebranded, and means the name
+        appears in no source file here.
+        """
+        icp = self.env['ir.config_parameter'].sudo()
+        return (icp.get_param('biz_debrand.brand_name') or '').strip(), \
+               (icp.get_param('biz_debrand.brand_website') or '').strip()
+
+    def _apply_brand_to(self, env, tenant, say):
+        """Write one customer's branding into their own registry.
+
+        THE DANGEROUS METHOD THAT IS NOT CALLED HERE, AND WHY. biz_debrand
+        ships `_biz_debrand_apply_brand`, its own Save handler. It does more
+        than set parameters: it rewrites every `website` record's name AND
+        replaces its favicon with the module's own generic icon. Calling it on
+        a customer would erase the very branding this feature exists to give
+        them. So the parameters are set directly — which is exactly how `rize`
+        and the golden template were set by hand on 2026-09-12, and what this
+        method now does by itself, every time, for everybody.
+
+        Every key in BRAND_KEYS is written on every call, including the ones a
+        level does not want (as ''), so that CHANGING a level is complete and
+        reversible: nothing is left behind carrying the previous level's answer.
+        The colour is the one exception — an empty colour means "leave whatever
+        they have", because a colour is a design decision somebody makes, not
+        something a price tier should invent.
+        """
+        master_brand, master_website = self._master_brand()
+        values = tenant.brand_values(master_brand=master_brand,
+                                     master_website=master_website)
+        icp = env['ir.config_parameter'].sudo()
+        for key in BRAND_KEYS:
+            value = values.get(key, '')
+            if key == 'biz_debrand.theme_color' and not value:
+                continue
+            icp.set_param(key, value)
+        # The public site's own name, which is what a visitor reads in a
+        # browser tab. Only where the customer has their own brand; at the
+        # default level the template's value is already right.
+        if website_name_should_change(tenant.brand_level):
+            name = values['biz_debrand.brand_name']
+            if 'website' in env:
+                sites = env['website'].sudo().search([])
+                if sites:
+                    sites.write({'name': name})
+        title, blurb = tenant.brand_summary(master_brand=master_brand)
+        say('Branding applied: %s. %s' % (title, blurb))
+        return values
 
     def _step_admin(self, tenant, say):
         slug = tenant.slug
@@ -2357,6 +2436,131 @@ class PbTenants(models.AbstractModel):
                 'last_check': d.last_check and d.last_check.isoformat(sep=' ', timespec='minutes') or None,
             } for d in t.domain_ids],
         }
+
+    # =========================================== ERRORS E4-1, the Brand tab
+    @api.model
+    def tenant_brand(self, tenant_id):
+        """Everything the Brand tab draws, including what they ACTUALLY have.
+
+        Two answers, deliberately kept apart on the screen:
+
+          * what this cockpit INTENDS — the level on the customer's record and
+            the parameters it computes from it;
+          * what their database CARRIES right now, read from their own registry.
+
+        They can differ, and the difference is the whole value of the screen:
+        a customer provisioned before this phase existed, or one somebody edited
+        by hand, shows as "not applied yet" instead of quietly looking correct.
+        Reading their registry is rail R1 — it happens because a person opened
+        this tab.
+        """
+        self._require_admin()
+        t = self.env['pb.tenant'].sudo().browse(int(tenant_id)).exists()
+        if not t:
+            raise UserError(_('Tenant not found.'))
+        master_brand, master_website = self._master_brand()
+        wanted = t.brand_values(master_brand=master_brand,
+                                master_website=master_website)
+        title, blurb = t.brand_summary(master_brand=master_brand)
+        live, reachable = {}, False
+        try:
+            with self._tenant_env(t.slug) as env:
+                icp = env['ir.config_parameter'].sudo()
+                live = {k: (icp.get_param(k) or '') for k in BRAND_KEYS}
+                reachable = True
+        except Exception:                               # noqa: BLE001
+            _logger.warning("pb_tenants: could not read the brand on %s",
+                            t.slug, exc_info=True)
+        # A colour the operator has not chosen is not a difference — the level
+        # deliberately leaves whatever the database has.
+        drift = [
+            {'key': k, 'wanted': wanted.get(k, ''), 'live': live.get(k, '')}
+            for k in BRAND_KEYS
+            if reachable
+            and not (k == 'biz_debrand.theme_color' and not wanted.get(k))
+            and (live.get(k, '') or '') != (wanted.get(k, '') or '')
+        ]
+        return {
+            'id': t.id,
+            'name': t.name,
+            'level': normal_level(t.brand_level),
+            'level_title': title,
+            'level_blurb': blurb,
+            'levels': [
+                {'key': key,
+                 'title': LEVEL_LABELS[key][0],
+                 'blurb': LEVEL_LABELS[key][1] % {
+                     'master': master_brand or 'the product',
+                     'brand': (t.brand_name or '').strip() or t.name,
+                 },
+                 'paid': key == 'white'}
+                for key in LEVELS
+            ],
+            'brand_name': t.brand_name or '',
+            'brand_name_effective': wanted['biz_debrand.brand_name'],
+            'brand_website': t.brand_website or '',
+            'brand_website_effective': wanted['biz_debrand.brand_website'],
+            'brand_color': t.brand_color or '',
+            'default_url': t.brand_default_url(),
+            'master_brand': master_brand,
+            'pushed_at': t.brand_pushed_at
+            and t.brand_pushed_at.isoformat(sep=' ', timespec='minutes') or None,
+            'reachable': reachable,
+            'in_step': reachable and not drift,
+            'drift': drift,
+            'wanted': [{'key': k, 'value': wanted.get(k, '')} for k in BRAND_KEYS],
+        }
+
+    @api.model
+    def tenant_set_brand(self, tenant_id, values):
+        """Save the choice AND send it, in that order, as one action.
+
+        Saving without sending would leave the cockpit claiming something the
+        customer's database does not do — the exact failure this phase exists
+        to remove. If the send fails the record still carries the intent, the
+        tab says so, and "Send again" is one click.
+        """
+        self._require_admin()
+        t = self.env['pb.tenant'].sudo().browse(int(tenant_id)).exists()
+        if not t:
+            raise UserError(_('Tenant not found.'))
+        values = values or {}
+        level = normal_level(values.get('level') or t.brand_level)
+        colour = (values.get('brand_color') or '').strip()
+        if colour and not re.fullmatch(r'#[0-9A-Fa-f]{6}', colour):
+            raise UserError(_(
+                'A colour must look like #1565C0 — six hexadecimal digits '
+                'after a hash.'))
+        t.write({
+            'brand_level': level,
+            'brand_name': (values.get('brand_name') or '').strip(),
+            'brand_website': (values.get('brand_website') or '').strip(),
+            'brand_color': colour,
+        })
+        return self.tenant_push_brand(t.id)
+
+    @api.model
+    def tenant_push_brand(self, tenant_id):
+        """Send the customer's branding to their own database, now."""
+        self._require_admin()
+        t = self.env['pb.tenant'].sudo().browse(int(tenant_id)).exists()
+        if not t:
+            raise UserError(_('Tenant not found.'))
+        log = []
+
+        def say(line, level='info'):
+            log.append({'line': line, 'level': level})
+
+        try:
+            with self._tenant_env(t.slug) as env:
+                self._apply_brand_to(env, t, say)
+            t.write({'brand_pushed_at': fields.Datetime.now()})
+            ok = True
+        except Exception as e:                          # noqa: BLE001
+            _logger.exception("pb_tenants: brand push failed for %s", t.slug)
+            say('Their database could not be reached: %s' % (e or ''), 'error')
+            ok = False
+        return {'ok': ok, 'log': log, 'data': self.tenant_brand(t.id)}
 
     def _tenant_features_brief(self, tenant):
         """One customer's switches in one sentence, for the Overview row."""

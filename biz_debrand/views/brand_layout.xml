@@ -21,6 +21,14 @@
                  seams that rewrite SOURCE text rewrite that name too. -->
             <meta name="biz-brand-product"
                   t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.product_name')"/>
+            <!-- ERRORS E4-1. Who built the platform, when the customer is on
+                 the "powered by" level and has agreed to say so. Empty on both
+                 other levels, which is what makes this a middle tier rather
+                 than a switch: the default customer is not credited to anybody
+                 because the product IS ours, and a fully white-labelled one
+                 has paid for the credit to be absent. -->
+            <meta name="biz-brand-powered-by"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.powered_by')"/>
         </xpath>
     </template>
 </odoo>

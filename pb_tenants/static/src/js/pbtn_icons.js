@@ -41,6 +41,10 @@ export const TIC = {
     // here would be a second copy to keep in step (rule W2). A switch is the
     // platform's own vocabulary and belongs on the platform's own screen.
     toggle: '<rect width="20" height="12" x="2" y="6" rx="6"/><circle cx="16" cy="12" r="3"/>',
+    // ERRORS E4-1 — whose name a customer's people read. One new glyph, same
+    // rule as the switch above: the shared kit already carries everything else
+    // the Brand tab draws (`sparkles`, `checkCircle`, `refresh`, `eye`).
+    palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
 };
 
 export function tic(n, s = 16) {

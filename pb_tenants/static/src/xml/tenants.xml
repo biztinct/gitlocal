@@ -1637,11 +1637,170 @@
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'overview' ? 'on' : '' }}" t-on-click="() => this.openTab('overview')">Overview</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'updates' ? 'on' : '' }}" t-on-click="() => this.openTab('updates')">Updates</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'plan' ? 'on' : '' }}" t-on-click="() => this.openTab('plan')">Plan</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'brand' ? 'on' : '' }}" t-on-click="() => this.openTab('brand')">Brand</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'backups' ? 'on' : '' }}" t-on-click="() => this.openTab('backups')">Backups</button>
           <button t-attf-class="pbim-segbtn {{ state.det.tab === 'domains' ? 'on' : '' }}" t-on-click="() => this.openTab('domains')">Domains</button>
           <button t-attf-class="pbim-segbtn tnx-danger-tab {{ state.det.tab === 'danger' ? 'on' : '' }}" t-on-click="() => this.openTab('danger')">Danger zone</button>
         </div>
 
+
+        <!-- ================================ brand ===============================
+             ERRORS E4-1. What this customer's people call the product.
+
+             IT IS A PRICE LIST BEFORE IT IS A SETTING, so it is drawn as one:
+             three cards in the order they are sold, the paid one marked, and
+             under each the sentence that says what the customer will actually
+             SEE — not which parameter it writes. The person on this screen is
+             selling, not configuring.
+
+             AND IT SHOWS TWO ANSWERS, NEVER ONE. What we intend, and what
+             their database carries right now. They can differ — a customer
+             provisioned before this existed has never been told anything — and
+             a screen that hid that difference would be the same bug this phase
+             was opened to fix. -->
+        <div t-if="state.det.tab === 'brand'">
+          <div t-if="!state.brand.d" class="pbim-busy"><div class="pbim-spin"/><span>Reading what they are shown…</span></div>
+          <t t-else="">
+            <t t-set="b" t-value="state.brand.d"/>
+
+            <!-- the standing, said in one line -->
+            <div t-attf-class="pbim-card tnx-brandhead {{ b.reachable ? (b.in_step ? 'ok' : 'drift') : 'unknown' }}">
+              <span class="tnx-brandhead-ic">
+                <t t-if="!b.reachable" t-out="ic('alert',20)"/>
+                <t t-elif="b.in_step" t-out="ic('checkCircle',20)"/>
+                <t t-else="" t-out="ic('refresh',20)"/>
+              </span>
+              <div class="tnx-brandhead-tx">
+                <b t-if="!b.reachable">Their database could not be read</b>
+                <b t-elif="b.in_step">Their people see <t t-esc="b.brand_name_effective"/></b>
+                <b t-else="">Their database has not been told yet</b>
+                <span t-if="!b.reachable">
+                  So there is no way to know what they are being shown. Their
+                  choice below is saved either way, and Send again will apply it
+                  once they are back.
+                </span>
+                <span t-elif="b.in_step">
+                  <t t-esc="b.level_blurb"/>
+                </span>
+                <span t-else="">
+                  <t t-esc="b.drift.length"/> setting(s) on their database do not match
+                  the choice below. Nothing is broken — they are simply still
+                  showing what they were given before.
+                </span>
+              </div>
+              <span class="pplw-sp"/>
+              <button class="pbim-btn outline" t-att-disabled="state.brand.busy"
+                      t-on-click="pushBrand">
+                <t t-out="ic('send',14)"/> Send again
+              </button>
+            </div>
+
+            <div class="tnx-brandgrid">
+              <!-- the choice -->
+              <div class="pbim-card tnx-brandcard">
+                <h4><t t-out="ic('palette',15)"/> What they see it called</h4>
+                <p class="pbim-note">Choose one. It changes the name in their
+                   browser tab, on their sign-in page, in their menus and in the
+                   e-mails their people receive. Their own company name on
+                   payslips and reports is never touched by this.</p>
+                <div class="tnx-brandpick">
+                  <button t-foreach="b.levels" t-as="lv" t-key="lv.key"
+                          t-attf-class="tnx-brandopt {{ state.brand.level === lv.key ? 'on' : '' }}"
+                          t-att-disabled="state.brand.busy"
+                          t-on-click="() => this.chooseBrandLevel(lv.key)">
+                    <span class="tnx-brandopt-tick"><t t-out="ic('check',13)"/></span>
+                    <b t-esc="lv.title"/>
+                    <small t-esc="lv.blurb"/>
+                    <span t-if="lv.paid" class="pbim-badge warn tnx-brandopt-paid">Paid upgrade</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- what a person will actually meet -->
+              <div class="pbim-card tnx-brandcard">
+                <h4><t t-out="ic('eye',15)"/> What they will see</h4>
+                <p class="pbim-note">A drawing of their browser and their
+                   sign-in page with this choice applied.</p>
+                <div class="tnx-brandprev">
+                  <div class="tnx-brandprev-chrome">
+                    <i/><i/><i/>
+                    <span class="tnx-brandprev-tab">
+                      <b t-esc="previewBrand"/>
+                    </span>
+                  </div>
+                  <div class="tnx-brandprev-body">
+                    <div class="tnx-brandprev-mark"
+                         t-attf-style="background:{{ state.brand.color || b.brand_color || '#1565C0' }}">
+                      <t t-esc="previewInitial"/>
+                    </div>
+                    <b t-esc="previewBrand"/>
+                    <span>Sign in to continue</span>
+                    <em t-if="state.brand.level === 'powered'">Powered by <t t-esc="b.master_brand"/></em>
+                  </div>
+                </div>
+                <p class="pbim-note tnx-brandprev-note">
+                  Their address: <b t-esc="previewWebsite"/>
+                </p>
+              </div>
+
+              <!-- the two optional details -->
+              <div class="pbim-card tnx-brandcard">
+                <h4><t t-out="ic('settings',15)"/> Their name and address</h4>
+                <p class="pbim-note">Both are optional. Leave them empty and we
+                   use their company name and their own subdomain, which is what
+                   nearly every customer wants.</p>
+                <div class="tnx-brandrow">
+                  <label>Name their people see</label>
+                  <input type="text" class="pbim-input" t-model="state.brand.name"
+                         t-att-placeholder="b.name"
+                         t-att-disabled="state.brand.level === 'product'"/>
+                </div>
+                <div class="tnx-brandrow">
+                  <label>Their web address</label>
+                  <input type="text" class="pbim-input" t-model="state.brand.website"
+                         t-att-placeholder="b.default_url"
+                         t-att-disabled="state.brand.level === 'product'"/>
+                </div>
+                <div class="tnx-brandrow">
+                  <label>Accent colour</label>
+                  <span class="tnx-brandswatch"
+                        t-attf-style="background:{{ state.brand.color || '#1565C0' }}"/>
+                  <input type="text" class="pbim-input tnx-brandhex"
+                         t-model="state.brand.color" placeholder="leave empty to keep theirs"/>
+                </div>
+                <p t-if="state.brand.level === 'product'" class="pbim-note">
+                  These two are only used when a customer has their own brand.
+                </p>
+                <button class="pbim-btn primary" t-att-disabled="state.brand.busy"
+                        t-on-click="saveBrand">
+                  <t t-out="ic('save',13)"/> Save and send to their database
+                </button>
+                <div t-if="b.pushed_at" class="pbim-note tnx-pushed">
+                  Their database was last told about this on <t t-esc="b.pushed_at"/>.
+                </div>
+                <div t-else="" class="pbim-note tnx-pushed">
+                  Their database has never been told. Pressing the button above
+                  is the whole fix.
+                </div>
+              </div>
+            </div>
+
+            <!-- what is actually different, for whoever asks -->
+            <div t-if="b.drift.length" class="pbim-card tnx-branddrift">
+              <h4><t t-out="ic('list',15)"/> What does not match yet</h4>
+              <table class="tnx-drifttbl">
+                <thead><tr><th>Setting</th><th>They have</th><th>They should have</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="b.drift" t-as="row" t-key="row.key">
+                    <td><code t-esc="row.key"/></td>
+                    <td><t t-esc="row.live or '—'"/></td>
+                    <td><b t-esc="row.wanted or '—'"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </t>
+        </div>
 
         <!-- ================================ plan ================================
              FLEET P5. One customer's standing, in one place: what they pay for,

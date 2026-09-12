@@ -2,6 +2,7 @@
 from odoo import api, fields, models
 
 from .billing_rules import trial_phase
+from .brand_rules import LEVEL_PRODUCT, brand_params, level_summary
 
 
 class PbTenant(models.Model):
@@ -127,6 +128,36 @@ class PbTenant(models.Model):
     #: opening their registry.
     access_pushed_at = fields.Datetime()
 
+    # ERRORS E4-1 — how much of their own brand this customer gets.
+    #
+    # It is a PRICE LIST before it is a setting: `product` is what everybody
+    # gets, `white` is the paid upgrade. It defaults to `product` and the
+    # default is load-bearing — a customer who has bought nothing extra must
+    # never come out of provisioning half white-labelled. `brand_rules.py`
+    # holds what each level means and every parameter it writes.
+    brand_level = fields.Selection([
+        ('product', 'Our product'),
+        ('powered', 'Their brand, powered by us'),
+        ('white', 'Their brand only'),
+    ], default=LEVEL_PRODUCT, required=True, index=True,
+        help="What this customer's people see the product called.")
+    #: The name their people read. Empty means their company name, which is
+    #: what almost every customer wants and saves the operator typing it twice.
+    brand_name = fields.Char(
+        help="The name their people see. Empty means their own company name.")
+    #: Their public address. Empty means their subdomain, which always exists.
+    brand_website = fields.Char(
+        help="Their own web address. Empty means their subdomain on this "
+             "platform.")
+    brand_color = fields.Char(
+        help="Their accent colour as a hex value. Empty leaves whatever their "
+             "database already has — a colour is a design decision, not "
+             "something a plan should invent.")
+    #: When their database was last told any of this. Empty means NEVER, and
+    #: the screen shows that difference rather than hiding it — same rule as
+    #: `features_pushed_at`.
+    brand_pushed_at = fields.Datetime()
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')
@@ -141,6 +172,40 @@ class PbTenant(models.Model):
         """The address an invoice is sent to. Never empty by accident."""
         self.ensure_one()
         return (self.billing_email or '').strip() or (self.admin_email or '').strip()
+
+    # ------------------------------------------------- ERRORS E4-1, branding
+    def brand_values(self, master_brand=None, master_website=None):
+        """The parameters this customer's database should carry, right now.
+
+        A thin read over the pure rules: the RECORDS are resolved here, the
+        DECISION is made in `brand_rules.brand_params`, which is where it can
+        be tested without a database and without another registry.
+        """
+        self.ensure_one()
+        return brand_params(
+            self.brand_level,
+            (self.brand_name or '').strip() or self.name,
+            (self.brand_website or '').strip() or self.brand_default_url(),
+            master_brand=master_brand,
+            master_website=master_website,
+            theme_color=self.brand_color,
+        )
+
+    def brand_default_url(self):
+        """Their subdomain — the address every customer has from day one."""
+        self.ensure_one()
+        base = (self.env['ir.config_parameter'].sudo()
+                .get_param('pb_tenants.base_domain', 'payobook.com'))
+        return 'https://%s.%s' % (self.slug, base)
+
+    def brand_summary(self, master_brand=None):
+        """Title plus the one sentence the cockpit shows under the choice."""
+        self.ensure_one()
+        return level_summary(
+            self.brand_level,
+            (self.brand_name or '').strip() or self.name,
+            master_brand=master_brand,
+        )
 
     _sql_constraints = [
         ('slug_unique', 'unique(slug)', 'A tenant with this subdomain already exists.'),

@@ -76,6 +76,8 @@ export class PbTenants extends Component {
             bill: this._freshBill(),
             // FLEET P5. One customer's plan, standing and invoice history.
             plan: this._freshPlanTab(),
+            // E4-1. What this customer's people call the product.
+            brand: this._freshBrandTab(),
             // FLEET P6. Whether we may open this customer's data, and every
             // time we have.
             sup: this._freshSup(),
@@ -2015,6 +2017,103 @@ export class PbTenants extends Component {
         }
     }
 
+    // =================================== ERRORS E4-1, one customer's branding
+    //
+    // The tab holds the FORM's state (what the operator is typing) separately
+    // from `d`, the answer the server gave. That is what lets the preview
+    // update as they choose, and what makes "Save" a deliberate act rather
+    // than a side effect of clicking a card.
+    _freshBrandTab() {
+        return { d: null, busy: "", level: "product", name: "", website: "",
+                 color: "" };
+    }
+
+    async loadBrandTab() {
+        const b = this.state.brand;
+        b.busy = "load";
+        try {
+            b.d = await this.orm.silent.call("pb.tenants", "tenant_brand",
+                                             [this.state.det.id]);
+            b.level = b.d.level;
+            b.name = b.d.brand_name || "";
+            b.website = b.d.brand_website || "";
+            b.color = b.d.brand_color || "";
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("This customer's branding could not be read.")),
+                           { type: "danger" });
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    chooseBrandLevel(level) { this.state.brand.level = level; }
+
+    /** The name the preview draws — the choice, not what is saved. */
+    get previewBrand() {
+        const b = this.state.brand;
+        if (!b.d) { return ""; }
+        if (b.level === "product") { return b.d.master_brand; }
+        return (b.name || "").trim() || b.d.name;
+    }
+
+    get previewWebsite() {
+        const b = this.state.brand;
+        if (!b.d) { return ""; }
+        if (b.level === "product") { return b.d.default_url; }
+        return (b.website || "").trim() || b.d.default_url;
+    }
+
+    get previewInitial() {
+        return (this.previewBrand || "?").trim().slice(0, 1).toUpperCase();
+    }
+
+    async _brandCall(method, args, busy, okMsg) {
+        const b = this.state.brand;
+        b.busy = busy;
+        try {
+            const r = await this.orm.call("pb.tenants", method, args);
+            if (r && r.data) {
+                b.d = r.data;
+                b.level = r.data.level;
+                b.name = r.data.brand_name || "";
+                b.website = r.data.brand_website || "";
+                b.color = r.data.brand_color || "";
+            }
+            // The saved choice is kept whether or not their database could be
+            // reached, so the two outcomes are two different messages rather
+            // than one hopeful one.
+            if (r && r.ok === false) {
+                this.notif.add(
+                    _t("Saved, but their database could not be reached — press Send again when it is back."),
+                    { type: "warning" });
+            } else if (okMsg) {
+                this.notif.add(okMsg, { type: "success" });
+            }
+            return r;
+        } catch (e) {
+            this.notif.add(this.errText(e, _t("That did not work.")),
+                           { type: "danger" });
+            return null;
+        } finally {
+            b.busy = "";
+        }
+    }
+
+    saveBrand() {
+        const b = this.state.brand;
+        return this._brandCall("tenant_set_brand",
+                               [this.state.det.id,
+                                { level: b.level, brand_name: b.name,
+                                  brand_website: b.website, brand_color: b.color }],
+                               "save",
+                               _t("Saved, and their database has been told."));
+    }
+
+    pushBrand() {
+        return this._brandCall("tenant_push_brand", [this.state.det.id], "push",
+                               _t("Sent. Their people will see it on their next page."));
+    }
+
     // ==================================================== one customer's plan
     _freshPlanTab() {
         return { d: null, busy: "", confirm: "", reason: "", days: 30,
@@ -2124,6 +2223,7 @@ export class PbTenants extends Component {
         this.state.det = { id, tab: "overview", d: null, busy: "", confirm: "", newDomain: "", restoreMsg: null, syncOpen: false };
         this.state.upd = { d: null, busy: "", openTask: null };
         this.state.plan = this._freshPlanTab();
+        this.state.brand = this._freshBrandTab();
         this.state.sup = this._freshSup();
         this.state.view = "detail";
         this.state.det.d = await this.orm.silent.call("pb.tenants", "get_tenant", [id]);
@@ -2145,6 +2245,10 @@ export class PbTenants extends Component {
         this.state.det.tab = tab;
         if (tab === "updates" && !this.state.upd.d) { await this.loadUpdates(); }
         if (tab === "plan" && !this.state.plan.d) { await this.loadPlanTab(); }
+        // E4-1. Reads the customer's OWN registry to answer "what are they
+        // being shown right now", so it is asked when the tab is opened rather
+        // than on every fleet load.
+        if (tab === "brand" && !this.state.brand.d) { await this.loadBrandTab(); }
         // FLEET P6. The support record lives on the Overview, beside the row
         // that offers the button — asked for when that tab is opened rather
         // than on every fleet load, because it is two queries on ANOTHER

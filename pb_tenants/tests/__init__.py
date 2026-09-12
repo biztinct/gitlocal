@@ -23,3 +23,5 @@ from . import test_billing_rules
 from . import test_billing
 # FLEET P6 — support access from the platform's side.
 from . import test_support
+# ERRORS E4-1 — how much of their own brand each customer gets.
+from . import test_brand_rules
