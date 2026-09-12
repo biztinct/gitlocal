@@ -8358,3 +8358,11 @@ msgstr "Dùng chung · Thay đổi phương án lương"
 #. module: pb_blueprint
 msgid "Approvals are finished when the route is complete and everybody it asks for has somebody in the seat, so there is nothing to mark here."
 msgstr "Phê duyệt hoàn tất khi lộ trình đầy đủ và mọi vị trí nó cần đều đã có người, nên ở đây không có gì để đánh dấu."
+
+#. module: pb_blueprint
+msgid "Approvals are not set up on this app, so there is nothing to choose here."
+msgstr "Ứng dụng này chưa thiết lập phê duyệt nên ở đây không có gì để chọn."
+
+#. module: pb_blueprint
+msgid "Somebody else looks after approvals on this account. This scheme will follow whatever they have set for pay runs."
+msgstr "Người khác phụ trách phê duyệt trên tài khoản này. Phương án lương này sẽ theo những gì họ đã thiết lập cho kỳ lương."

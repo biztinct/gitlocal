@@ -169,8 +169,7 @@
           </div>
           <div class="pbbp-cn-blocked" t-else="">
             <span class="i" t-out="ic('info', 14)"/>
-            <p>Approvals are not set up on this server, so there is nothing to
-               choose here.</p>
+            <p t-esc="approvals.blocked"/>
           </div>
 
           <div class="pbbp-cn-gap" t-if="approvalsGap">

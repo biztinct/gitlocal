@@ -369,8 +369,11 @@ class PbBlueprintConnect(models.AbstractModel):
         """
         blank = {'available': False, 'selection': '', 'status': 'not_started',
                  'workflow': '', 'route_labels': [], 'summary': '',
-                 'source': '', 'coverage': '', 'gap': '',
-                 'scope_key': '', 'scope_label': config.name or ''}
+                 'source': '', 'coverage': '', 'gap': '', 'blocked': _(
+                     "Approvals are not set up on this app, so there is "
+                     "nothing to choose here."),
+                 'scope_key': 'scheme:%s' % config.id,
+                 'scope_label': config.name or ''}
         Matrix = self.env.get('pb.approval.matrix')
         if Matrix is None:
             return blank
@@ -378,6 +381,14 @@ class PbBlueprintConnect(models.AbstractModel):
         scope_key = 'scheme:%s' % config.id
         try:
             panel = Matrix.get_scheme_panel('payrun', scope_key, company.id)
+        except AccessError:
+            # NOT the same thing as "there is nothing here". Setting approvals
+            # up is somebody else's job on this account, and saying so is the
+            # difference between a locked door and a broken one.
+            blank['blocked'] = _(
+                "Somebody else looks after approvals on this account. This "
+                "scheme will follow whatever they have set for pay runs.")
+            return blank
         except Exception as exc:        # noqa: BLE001 — never take the step down
             _logger.info("Guided setup: the approvals panel is unavailable: %s",
                          exc)
@@ -410,6 +421,7 @@ class PbBlueprintConnect(models.AbstractModel):
             'scope_key': scope_key,
             'scope_label': panel.get('scope_label') or config.name or '',
             'can_config': bool(panel.get('can_config')),
+            'blocked': '',
         }
 
     # ==================================================================
