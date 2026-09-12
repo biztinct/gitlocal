@@ -128,6 +128,7 @@ VIA_LABELS = {
     'contract_field': 'read straight off a contract field',
     'worked_days': 'taken from a worked-days line',
     'overtime_request': 'from the employee\'s approved overtime',
+    'timesheet_packet': 'from the approved timesheet for that week',
     'business_trip': 'from the employee\'s approved business trip',
     'constant': 'it is a fixed value',
     'pay_period': 'the dates of this pay run answered it',

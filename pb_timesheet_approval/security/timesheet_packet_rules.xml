@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A WEEK.
+
+         The engine re-checks `check_access('read')` on the record before it
+         lets anybody decide a step, so a route that names a line manager is
+         only real if that manager can READ the week. Most line managers hold
+         no HR role at all, which is why the narrow rule below exists: their
+         own week, and the weeks of the people who report to them.
+
+         Rules attached to different groups are OR-ed, so the wide rule does
+         not have to repeat the narrow one — an HR officer sees the company,
+         a plain manager sees their own people, and both come out of the same
+         two records.
+         ================================================================== -->
+
+    <record id="rule_packet_company" model="ir.rule">
+        <field name="name">Weekly timesheet: company</field>
+        <field name="model_id" ref="model_pb_timesheet_packet"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_packet_own" model="ir.rule">
+        <field name="name">Weekly timesheet: mine and my team's</field>
+        <field name="model_id" ref="model_pb_timesheet_packet"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('employee_id.user_id', '=', user.id),
+            ('employee_id.parent_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_packet_workforce" model="ir.rule">
+        <field name="name">Weekly timesheet: the whole workforce</field>
+        <field name="model_id" ref="model_pb_timesheet_packet"/>
+        <field name="groups" eval="[
+            (4, ref('hr_attendance.group_hr_attendance_officer')),
+            (4, ref('hr_attendance.group_hr_attendance_manager')),
+            (4, ref('hr.group_hr_user')),
+            (4, ref('pb_hr_payroll_base.group_payroll_base_officer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

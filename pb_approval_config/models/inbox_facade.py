@@ -286,6 +286,7 @@ class PbApprovalInbox(models.AbstractModel):
 
         payload.update({
             'facts': self._facts(request),
+            'detail': self._detail(request),
             'evidence': self._evidence(request),
             'steps': [self._step_payload(request, s)
                       for s in request.step_ids.sorted('sequence')],
@@ -323,8 +324,31 @@ class PbApprovalInbox(models.AbstractModel):
             'cancel': _('withdrew it'),
         }.get(action, action or '')
 
+    def _record_of(self, request):
+        """The business record, or an empty recordset. Never raises.
+
+        `sudo()` because this is used only to ASK the adapter how to phrase a
+        number the reader is already allowed to see (the record rules on the
+        request itself decided that); nothing here is a grant.
+        """
+        model = request.res_model
+        if not (model and model in self.env and request.res_id):
+            return None
+        record = self.env[model].sudo().browse(request.res_id).exists()
+        return record or None
+
     def _card_count(self, request):
-        """The one number that says how big this request is, in plain words."""
+        """The one number that says how big this request is, in plain words.
+
+        The adapter gets the first word: hours, litres and headcount are not
+        things this file can be taught one process at a time.
+        """
+        record = self._record_of(request)
+        if record is not None and hasattr(record, '_approval_card_count'):
+            said = self._safe(
+                lambda: record._approval_card_count(request), default='')
+            if said:
+                return said
         facts = request.facts or {}
 
         def _value(key):
@@ -407,6 +431,45 @@ class PbApprovalInbox(models.AbstractModel):
                 'value': '{:,.0f}'.format(float(request.amount)),
                 'unit': request.currency_id.name or ''})
         return rows
+
+    def _detail(self, request):
+        """The optional small table an adapter offers under the facts.
+
+        Shape-checked here rather than trusted: the drawer draws whatever comes
+        back, and a malformed payload from a future adapter must degrade to
+        "nothing more to show" rather than to a blank screen.
+        """
+        record = self._record_of(request)
+        if record is None or not hasattr(record, '_approval_detail'):
+            return None
+        payload = self._safe(lambda: record._approval_detail(request),
+                             default=None)
+        if not isinstance(payload, dict) or not payload.get('rows'):
+            return None
+        rows = []
+        for row in payload['rows'][:40]:
+            if not isinstance(row, dict):
+                continue
+            rows.append({
+                'head': _clip(str(row.get('head') or ''), 40),
+                'sub': _clip(str(row.get('sub') or ''), 40),
+                'cells': [_clip(str(cell or ''), 40)
+                          for cell in (row.get('cells') or [])[:6]],
+                'tone': 'off' if row.get('tone') == 'off' else 'on',
+            })
+        if not rows:
+            return None
+        return {
+            'title': _clip(str(payload.get('title') or ''), 120),
+            'columns': [_clip(str(column or ''), 40)
+                        for column in (payload.get('columns') or [])[:6]],
+            'rows': rows,
+            'chips': [{'label': _clip(str(chip.get('label') or ''), 60),
+                       'value': _clip(str(chip.get('value') or ''), 40)}
+                      for chip in (payload.get('chips') or [])[:8]
+                      if isinstance(chip, dict)],
+            'note': _clip(str(payload.get('note') or ''), 240),
+        }
 
     def _evidence(self, request):
         """What the route asked to be attached, and whether it is."""

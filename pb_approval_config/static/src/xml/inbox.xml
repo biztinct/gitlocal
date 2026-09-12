@@ -327,6 +327,40 @@
             </div>
           </div>
 
+          <!-- An adapter may offer ONE small table under the facts. The shape
+               is generic (heading, columns, rows, chips), so this markup never
+               learns what a week or a run is. -->
+          <div t-if="request.detail">
+            <div class="pbam-k" t-esc="request.detail.title"/>
+            <div class="pbam-detail-wrap">
+              <table class="pbam-detail">
+                <thead>
+                  <tr>
+                    <th/>
+                    <th t-foreach="request.detail.columns" t-as="col" t-key="col_index" t-esc="col"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="request.detail.rows" t-as="dr" t-key="dr_index"
+                      t-att-class="dr.tone === 'off' ? 'pbam-dr-off' : ''">
+                    <th>
+                      <span class="pbam-dr-h" t-esc="dr.head"/>
+                      <span class="pbam-dr-s" t-esc="dr.sub"/>
+                    </th>
+                    <td t-foreach="dr.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-if="request.detail.chips.length" class="pbam-detail-chips">
+              <span t-foreach="request.detail.chips" t-as="ch" t-key="ch_index"
+                    class="pbim-badge pbam-muted">
+                <t t-esc="ch.label"/>: <b t-esc="ch.value"/>
+              </span>
+            </div>
+            <div t-if="request.detail.note" class="pbam-ms" t-esc="request.detail.note"/>
+          </div>
+
           <div t-if="request.evidence.length">
             <div class="pbam-k">What has to be attached</div>
             <div class="pbam-evid">

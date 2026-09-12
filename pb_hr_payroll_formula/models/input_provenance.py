@@ -68,6 +68,12 @@ VIAS = (
     # wrong screen.
     'overtime_request',
     'business_trip',
+    # The approved WEEK, rather than the live overtime records. Same reasoning
+    # and the same `src`: it is the employee's own recorded hours, and `via` is
+    # what says which record answered — "the week of 7 Sep, as it was signed
+    # off" is a different sentence from "their overtime as it stands today",
+    # and a reader who could not tell them apart would go to the wrong screen.
+    'timesheet_packet',
     'constant',           # it is a fixed value
     'pay_period',         # the run's own dates answered it
     # The three adjustments, as the reason a code EXISTS at all. An adjustment that

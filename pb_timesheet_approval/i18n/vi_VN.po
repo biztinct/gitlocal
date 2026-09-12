@@ -1,0 +1,216 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_timesheet_approval
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-13 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_timesheet_approval
+msgid "Weekly timesheets"
+msgstr "Bảng chấm công theo tuần"
+
+#. module: pb_timesheet_approval
+msgid "Weekly timesheet"
+msgstr "Bảng chấm công tuần"
+
+#. module: pb_timesheet_approval
+msgid "Payroll reads approved timesheets"
+msgstr "Bảng lương đọc bảng chấm công đã được duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Block the run until every week is approved"
+msgstr "Chặn kỳ lương cho đến khi mọi tuần được duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Not sent in"
+msgstr "Chưa gửi đi"
+
+#. module: pb_timesheet_approval
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_timesheet_approval
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_timesheet_approval
+msgid "Waiting for %s"
+msgstr "Đang chờ %s"
+
+#. module: pb_timesheet_approval
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_timesheet_approval
+msgid "Week beginning"
+msgstr "Tuần bắt đầu"
+
+#. module: pb_timesheet_approval
+msgid "Week ending"
+msgstr "Tuần kết thúc"
+
+#. module: pb_timesheet_approval
+msgid "Worked hours"
+msgstr "Giờ làm việc"
+
+#. module: pb_timesheet_approval
+msgid "Overtime hours"
+msgstr "Giờ làm thêm"
+
+#. module: pb_timesheet_approval
+msgid "Total hours"
+msgstr "Tổng số giờ"
+
+#. module: pb_timesheet_approval
+msgid "Days worked"
+msgstr "Số ngày làm việc"
+
+#. module: pb_timesheet_approval
+msgid "Bonus hours"
+msgstr "Giờ thưởng"
+
+#. module: pb_timesheet_approval
+msgid "Hours on the schedule"
+msgstr "Giờ theo lịch làm việc"
+
+#. module: pb_timesheet_approval
+msgid "Difference from the working schedule"
+msgstr "Chênh lệch so với lịch làm việc"
+
+#. module: pb_timesheet_approval
+msgid "Sent in after the cut-off"
+msgstr "Gửi sau hạn chốt"
+
+#. module: pb_timesheet_approval
+msgid "Contains overtime"
+msgstr "Có làm thêm giờ"
+
+#. module: pb_timesheet_approval
+msgid "A week of hours"
+msgstr "Một tuần công"
+
+#. module: pb_timesheet_approval
+msgid "Part of the business"
+msgstr "Bộ phận của doanh nghiệp"
+
+#. module: pb_timesheet_approval
+msgid "Day by day"
+msgstr "Theo từng ngày"
+
+#. module: pb_timesheet_approval
+msgid "Worked"
+msgstr "Đã làm"
+
+#. module: pb_timesheet_approval
+msgid "Overtime"
+msgstr "Làm thêm giờ"
+
+#. module: pb_timesheet_approval
+msgid "Weekday overtime"
+msgstr "Làm thêm ngày thường"
+
+#. module: pb_timesheet_approval
+msgid "Weekend overtime"
+msgstr "Làm thêm cuối tuần"
+
+#. module: pb_timesheet_approval
+msgid "Public-holiday overtime"
+msgstr "Làm thêm ngày lễ"
+
+#. module: pb_timesheet_approval
+msgid "Night overtime"
+msgstr "Làm thêm ban đêm"
+
+#. module: pb_timesheet_approval
+msgid "Send this week in for approval"
+msgstr "Gửi tuần này đi duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Open in Approvals"
+msgstr "Mở trong Phê duyệt"
+
+#. module: pb_timesheet_approval
+msgid "Sent in for approval."
+msgstr "Đã gửi đi duyệt."
+
+#. module: pb_timesheet_approval
+msgid "The week could not be sent in."
+msgstr "Không thể gửi tuần này đi."
+
+#. module: pb_timesheet_approval
+msgid "%s week(s) sent in for approval."
+msgstr "Đã gửi %s tuần đi duyệt."
+
+#. module: pb_timesheet_approval
+msgid "Every week on screen has already been sent in."
+msgstr "Mọi tuần trên màn hình đều đã được gửi đi."
+
+#. module: pb_timesheet_approval
+msgid "This week has not been sent in yet."
+msgstr "Tuần này chưa được gửi đi."
+
+#. module: pb_timesheet_approval
+msgid "h"
+msgstr "giờ"
+
+#. module: pb_timesheet_approval
+msgid "%s h"
+msgstr "%s giờ"
+
+#. module: pb_timesheet_approval
+msgid "%(total)s h incl. %(ot)s h overtime"
+msgstr "%(total)s giờ, gồm %(ot)s giờ làm thêm"
+
+#. module: pb_timesheet_approval
+msgid "Adding a punch"
+msgstr "Thêm một lần chấm công"
+
+#. module: pb_timesheet_approval
+msgid "Editing this punch"
+msgstr "Sửa lần chấm công này"
+
+#. module: pb_timesheet_approval
+msgid "Deleting this punch"
+msgstr "Xoá lần chấm công này"
+
+#. module: pb_timesheet_approval
+msgid "Adding overtime"
+msgstr "Thêm giờ làm thêm"
+
+#. module: pb_timesheet_approval
+msgid "Changing overtime"
+msgstr "Sửa giờ làm thêm"
+
+#. module: pb_timesheet_approval
+msgid "Deleting overtime"
+msgstr "Xoá giờ làm thêm"
+
+#. module: pb_timesheet_approval
+msgid "Their manager"
+msgstr "Quản lý trực tiếp"
+
+#. module: pb_timesheet_approval
+msgid "HR lead"
+msgstr "Trưởng bộ phận nhân sự"
+
+#. module: pb_timesheet_approval
+msgid "Approvals"
+msgstr "Phê duyệt"

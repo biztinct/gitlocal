@@ -95,6 +95,26 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         """Raise a UserError for a domain reason this cannot be sent in."""
         return True
 
+    def _approval_card_count(self, request):
+        """How big this request is, in the units the THING is counted in.
+
+        A pay run is a number of payslips; a week is a number of hours. An
+        inbox that had to know which is which would be an inbox that learns a
+        new process every phase, so it asks the adapter and falls back to
+        counting the facts it recognises.
+        """
+        return ''
+
+    def _approval_detail(self, request):
+        """An optional small table the request drawer draws under the facts.
+
+        Deliberately SHAPE-ONLY, so the drawer learns nothing about any
+        particular process: ``{'title', 'columns': [str], 'rows': [{'head',
+        'sub', 'cells': [str], 'tone'}], 'chips': [{'label', 'value'}],
+        'note'}``. Return ``None`` for "there is nothing more to show".
+        """
+        return None
+
     def _approval_freeze(self, request):
         """Lock whatever must not move while the approval is open."""
         return True

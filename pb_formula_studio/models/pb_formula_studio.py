@@ -6868,6 +6868,7 @@ class PbFormulaStudio(models.AbstractModel):
         'worked_days': 'wired',
         'overtime_request': 'wired',
         'business_trip': 'wired',
+        'timesheet_packet': 'wired',
         'binding_empty': 'fallback',
         'fallback': 'fallback',
         'employee_mapping': 'fallback',

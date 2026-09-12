@@ -151,6 +151,32 @@
         font-size: 11.5px; font-weight: 700; color: var(--pbim-muted);
     }
 
+    // ------------------------------------------- the adapter's own table
+    // Wide content scrolls INSIDE its own box; the drawer never scrolls
+    // sideways.
+    .pbam-detail-wrap { margin-top: 8px; overflow-x: auto; }
+    .pbam-detail {
+        width: 100%; border-collapse: collapse; font-size: 12.5px;
+        font-variant-numeric: tabular-nums;
+        th, td {
+            padding: 7px 10px; text-align: right; white-space: nowrap;
+            border-bottom: 1px solid var(--pbim-line);
+        }
+        thead th {
+            font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--pbim-muted);
+        }
+        tbody th { text-align: left; font-weight: 700; }
+        tbody td { font-weight: 700; }
+        .pbam-dr-h { display: block; }
+        .pbam-dr-s { display: block; font-size: 10.5px; font-weight: 600;
+                     color: var(--pbim-muted); }
+        .pbam-dr-off th, .pbam-dr-off td { color: var(--pbim-muted); }
+    }
+    .pbam-detail-chips {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+    }
+
     // ----------------------------------------------------- the evidence
     .pbam-evid { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
     .pbam-evrow2 {
