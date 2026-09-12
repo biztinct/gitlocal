@@ -18,7 +18,6 @@
                 <field name="date_start"/>
                 <field name="date_end"/>
                 <field name="credit_note"/>
-                <field name="journal_id"/>
                 <field name="pb_employee_count"/>
                 <field name="pb_total_net"/>
                 <field name="pb_currency_id"/>
@@ -50,7 +49,6 @@
                                     <span class="v"><field name="pb_total_net" widget="monetary"/></span>
                                 </div>
                             </div>
-                            <div class="pbk-jnl" t-if="!record.pb_division_label.raw_value and record.journal_id.raw_value"><field name="journal_id"/></div>
                             <div class="pbk-sentback" t-if="record.pb_sendback_note.raw_value">
                                 <span class="hd">Sent back</span>
                                 <span class="why"><field name="pb_sendback_note"/></span>
@@ -91,14 +89,13 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
-                <field name="journal_id"/>
                 <filter name="awaiting_me" string="Awaiting my approval" domain="[('pb_awaiting_me','=',True)]"/>
                 <filter name="current_period" string="Current period"
                         domain="[('date_start','&lt;=',context_today()),('date_end','&gt;=',context_today())]"/>
                 <separator/>
                 <filter name="gb_state" string="Stage" context="{'group_by':'state'}"/>
                 <filter name="gb_month" string="Period" context="{'group_by':'date_start:month'}"/>
-                <filter name="gb_journal" string="Journal" context="{'group_by':'journal_id'}"/>
+                <filter name="gb_division" string="Division" context="{'group_by':'pb_division_label'}"/>
             </search>
         </field>
     </record>
