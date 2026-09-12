@@ -250,8 +250,8 @@ class PbZohoPipeline(models.AbstractModel):
             rec = row.get('rec') or {}
             employee = self.env['hr.employee'].sudo().browse(
                 int(row.get('employee_id') or 0)).exists()
-            if employee and row.get('employee_stamp') and \
-                    str(employee.write_date) != row['employee_stamp']:
+            if employee and row.get('employee_stamp') is not None and \
+                    self._employee_stamp(employee) != row['employee_stamp']:
                 summary['skipped'] += 1
                 self._log_row(
                     rec, batch.source, company, state='review',
@@ -282,6 +282,41 @@ class PbZohoPipeline(models.AbstractModel):
                               action=_('Could not be applied'),
                               error=str(err))
         return summary
+
+    def _employee_stamp(self, employee, rec=None, company=None):
+        """What this person's record SAYS, in every field an arrival can write.
+
+        NOT `write_date`. Two reasons, and the second is the one that bites:
+        a write_date moves for a reason that has nothing to do with this
+        arrival (somebody opened the record and fixed a phone number), and
+        inside one transaction it does not move at all — Postgres `now()` is
+        the transaction clock (ledger AM62), so a stamp taken and compared in
+        the same request would always equal itself and the rail would be
+        decoration.
+
+        Comparing the VALUES answers the question actually being asked: has
+        anybody changed what this arrival is about since it was written down?
+        """
+        if not employee or len(employee) != 1:
+            return {}
+        # THE WHOLE WHITELIST, not just the keys this particular payload
+        # carries. Asking `_employee_values` would be the obvious thing and is
+        # wrong twice over: it CREATES a department when the payload names one
+        # it has not seen (so a "read-only" stamp would write to the database,
+        # twice), and it would narrow the question to the fields this push
+        # happens to mention — when what an approver is agreeing to is that
+        # this person's record still looks the way it did.
+        out = {}
+        for key in sorted(set(_WHITELIST) | set(_IDENTITY)):
+            field = employee._fields.get(key)
+            if field is None:
+                continue
+            current = employee[key]
+            if field.type == 'many2one':
+                current = current.id if current else False
+            out[key] = current if isinstance(
+                current, (bool, int, float, str)) else str(current or '')
+        return out
 
     def _log_rejected_rows(self, batch, reason):
         """A turned-down batch is recorded row by row, never simply dropped."""
@@ -344,9 +379,10 @@ class PbZohoPipeline(models.AbstractModel):
                           action=_('Unknown instruction'))
             return
         if collector is not None and rule.action in DEFERRED_ACTIONS:
-            # WRITTEN DOWN, NOT CARRIED OUT. The stamp is the employee's own
-            # `write_date` as it is right now: at apply time a record that has
-            # moved since is skipped rather than overwritten.
+            # WRITTEN DOWN, NOT CARRIED OUT. The stamp is what the person's
+            # record SAYS RIGHT NOW in the very fields this arrival would
+            # write: at apply time a record that has moved since is skipped
+            # rather than overwritten.
             collector.append({
                 'rec': {k: v for k, v in rec.items() if k != '_raw'},
                 'action': rule.action,
@@ -355,8 +391,7 @@ class PbZohoPipeline(models.AbstractModel):
                 'status': status or '',
                 'event_id': event_id or '',
                 'employee_id': employee.id if len(employee) == 1 else 0,
-                'employee_stamp': str(employee.write_date)
-                if len(employee) == 1 else '',
+                'employee_stamp': self._employee_stamp(employee),
                 'person_name': rec.get('name') or '',
                 'employee_number': rec.get('employee_number') or '',
                 # The one fact a route most wants: does this let a stranger
