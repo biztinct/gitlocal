@@ -174,6 +174,40 @@ class BizApprovalEngine(models.AbstractModel):
             'error': error,
         }
 
+    # ============================================================ the words
+    def _naming(self, definition):
+        """Role and person names for one definition, for the label helpers."""
+        roles = {r.key: r.name
+                 for r in self.env['biz.approval.role'].sudo().search([])}
+        user_ids = []
+        for step in D.normalise(definition)['steps']:
+            user_ids += (step.get('who') or {}).get('user_ids') or []
+        names = {}
+        if user_ids:
+            for user in self.env['res.users'].sudo().browse(
+                    list(set(user_ids))).exists():
+                names[user.id] = user.name
+        return roles, names
+
+    @api.model
+    def summary(self, definition):
+        """One readable line for a definition the caller is still editing.
+
+        The builder writes the same sentence in the browser so it can answer
+        on every keystroke; this is the authority the two are reconciled
+        against when a draft is saved.
+        """
+        self._require_config()
+        roles, names = self._naming(definition)
+        return D.sentence(definition, roles, names)
+
+    @api.model
+    def route_labels(self, definition):
+        """The short chips a Matrix row shows for a definition."""
+        self._require_config()
+        roles, names = self._naming(definition)
+        return D.route_labels(definition, roles, names)
+
     # ================================================================ preview
     @api.model
     def preview(self, version_or_definition, example_ctx):

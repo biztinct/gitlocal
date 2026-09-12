@@ -76,6 +76,21 @@ class BizApprovalAdapterMixin(models.AbstractModel):
             "%s must say what happens once it is approved." % self._name)
 
     # ----------------------------------------------------- may override
+    @api.model
+    def _approval_scope_options(self, company):
+        """The narrowings a workflow for this kind of record may be given.
+
+        Returns a list of LEVELS, each ``{'level': key, 'label': str,
+        'options': [{'key': scope fragment, 'label': str}]}``. A configuration
+        screen joins the chosen fragments, most specific level first, into the
+        one opaque ``scope_key`` a binding carries; the engine still never
+        parses it (ledger AM2).
+
+        The default is an empty list: a model that has said nothing offers
+        only whatever the configuration module adds for every process.
+        """
+        return []
+
     def _approval_validate(self):
         """Raise a UserError for a domain reason this cannot be sent in."""
         return True

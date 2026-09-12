@@ -276,6 +276,24 @@ export const IC = {
     // was already here and carries the source mapping.
     layoutList:   '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7M14 9h7M14 15h7M14 20h7"/>',
     checkCheck:   '<path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/>',
+
+    // APPROVAL MATRIX P2 — the nine glyphs the approval surfaces need and the
+    // kit had not got. `workflow` is Lucide's two-box-and-a-path: a route with
+    // steps, which is the whole subject of the Matrix. `circleDot` is the step
+    // that is open right now on a timeline; `flag` marks a decision taken under
+    // an exception; `repeat` is a backup standing in for somebody; `ban` is the
+    // "nothing is ever approved automatically" rule; `minus` is an attachment
+    // that is not required for this one; `paperclip` is one that is; `bell` is
+    // a step that only tells people; `xCircle` is a route that cannot be used.
+    workflow:     '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>',
+    bell:         '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+    paperclip:    '<path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"/>',
+    flag:         '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+    repeat:       '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+    circleDot:    '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>',
+    ban:          '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+    minus:        '<path d="M5 12h14"/>',
+    xCircle:      '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>',
 };
 
 /**

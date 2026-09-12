@@ -34,7 +34,7 @@ Nothing here ever approves on its own: escalation reminds, escalates and — onl
 when configured — reassigns to a named backup. A route with no steps is a
 published choice ("no approval needed"), never an escalation outcome.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
