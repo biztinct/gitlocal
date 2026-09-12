@@ -159,6 +159,10 @@ export class ImportWizard extends Component {
     toValidate() {
         return this._run("do_validate", [this.state.summary.batch_id], "Validating rows…", 3);
     }
+    /** What the commit button says, so a press never surprises anybody. */
+    get commitLabel() {
+        return this.state.summary?.commit_label || "Commit import";
+    }
     commit() {
         return this._run("do_process", [this.state.summary.batch_id], "Committing — creating employees & payslips…", 4);
     }

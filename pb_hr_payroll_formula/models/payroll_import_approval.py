@@ -342,8 +342,15 @@ def _loads_definition():
              'who': {'mode': 'role', 'role': 'payroll_mgr',
                      'scope': 'company'},
              'min_amount': 0, 'condition': None},
+            # SCOPE 'company', NOT 'area'. A pay-data file belongs to a pay
+            # SCHEME, so its scope keys are scheme keys — and the HR lead is
+            # held per part of the BUSINESS, never per scheme. Asked at 'area'
+            # the responsibility would be looked up under "scheme:7", nobody
+            # would hold it (the role forbids the company fall-back — ledger
+            # AM7), and every pay-data file would block on a seat that cannot
+            # exist.
             {'key': 's2', 'kind': 'approve', 'title': 'HR lead',
-             'who': {'mode': 'role', 'role': 'hr_lead', 'scope': 'area'},
+             'who': {'mode': 'role', 'role': 'hr_lead', 'scope': 'company'},
              'min_amount': 0, 'condition': None},
         ],
         'tiers': {'enabled': False, 'fact': None},

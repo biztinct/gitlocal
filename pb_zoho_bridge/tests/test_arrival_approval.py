@@ -31,6 +31,11 @@ class TestArrivalApproval(TransactionCase):
             'name': 'AA HR Lead', 'login': 'aa_hr_lead',
             'group_ids': [(6, 0, [g_user.id, g_hr.id])]})
         cls._fill_role('hr_lead', cls.hr_lead)
+        # THE ROUTE, EXPLICITLY — `post_init_hook` runs on install only and a
+        # test database is usually reached by an upgrade. Idempotent, and it
+        # is also what repoints the catalogue row at `pb.zoho.arrival.batch`
+        # (the data file is noupdate — ledger AM45).
+        cls.Batch._approval_seed_default(cls.env.company)
 
         cls.employee = cls.env['hr.employee'].create({
             'name': 'AA Person', 'company_id': cls.company.id,

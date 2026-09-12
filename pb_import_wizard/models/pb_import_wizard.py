@@ -102,7 +102,39 @@ class PbImportWizard(models.AbstractModel):
             'created_payslips': len(b.created_payslip_ids),
             'payslip_run_id': b.payslip_run_id.id or False,
             'payslip_run_name': b.payslip_run_id.name or '',
+            # APPROVAL MATRIX P5 — committing a file now ASKS. A summary that
+            # only counted what was created would read as "nothing happened" on
+            # a file that is perfectly fine and simply waiting for somebody.
+            **self._approval_summary(b),
             'error': None,
+        }
+
+    def _approval_summary(self, batch):
+        summary = {'commit_label': self._commit_label(batch)}
+        summary.update(self._approval_state(batch))
+        return summary
+
+    def _commit_label(self, batch):
+        """Asked of the ENGINE, every read: a route exists whether or not
+        anybody ticked a box, and the button has to say what the press costs."""
+        Cockpit = self.env.get('pb.import.batch.cockpit')
+        if Cockpit is not None and hasattr(Cockpit, '_commit_label'):
+            try:
+                return Cockpit._commit_label(batch)
+            except Exception:   # noqa: BLE001 — a label must never raise
+                pass
+        return 'Commit import'
+
+    def _approval_state(self, batch):
+        request = getattr(batch, 'approval_request_id', False)
+        if not request or request.state in ('applied', 'cancelled'):
+            return {'pending': False, 'with_whom': '', 'request_id': 0}
+        return {
+            'pending': request.state in ('pending', 'blocked'),
+            'with_whom': (batch._waiting_for()
+                          if hasattr(batch, '_waiting_for') else ''),
+            'request_id': request.id,
+            'block_reason': request.block_reason or '',
         }
 
     # ---------------- Step 1 → 2: create + load + match ----------------

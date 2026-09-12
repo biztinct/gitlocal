@@ -205,12 +205,23 @@ class PbRecordsApply(models.Model):
 
     @api.model
     def _approval_coverage_scopes(self, company):
+        """Every part of the business a bulk change can happen in.
+
+        `pb.division` HAS NO `company_id`. Which companies a division belongs
+        to is worked out from its department links and lives in a computed,
+        non-stored `company_ids` — so it cannot be searched on, and a domain
+        that tries raises `Invalid field pb.division.company_id`. The
+        configuration module's own division picker reads the same way: search
+        them all, then filter in Python (`matrix_facade._capabilities`).
+        """
         rows = []
         Division = self.env.get('pb.division')
         if Division is not None:
-            for division in Division.sudo().search(
-                    [('company_id', '=', company.id)], limit=200,
-                    order='name'):
+            for division in Division.sudo().search([], limit=200,
+                                                   order='name'):
+                companies = division.company_ids
+                if companies and company not in companies:
+                    continue
                 rows.append({
                     'scope_key': 'division:%s' % division.id,
                     'scope_keys': ['division:%s' % division.id, ''],

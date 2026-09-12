@@ -13,6 +13,8 @@ from datetime import date
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import TransactionCase, tagged
 
+from odoo.addons.pb_pay_delivery.models.approval_seed import seed_all
+
 
 @tagged('post_install', '-at_install')
 class TestMoneyOutApprovals(TransactionCase):
@@ -46,6 +48,13 @@ class TestMoneyOutApprovals(TransactionCase):
         cls._fill_role('payroll_mgr', cls.officer)
         cls._fill_role('finance', cls.finance)
         cls._fill_role('director', cls.director)
+        # THE ROUTES, EXPLICITLY. `post_init_hook` runs on install only, and a
+        # test database is USUALLY reached by an upgrade — so a suite that
+        # assumed the hook had run would pass or fail depending on how the
+        # database was built. The seed is idempotent; the migration lays the
+        # same routes on a real upgrade. Roles are filled FIRST, because the
+        # whole-coverage check runs at publish time.
+        seed_all(cls.env)
 
         cls.calendar = (cls.company.resource_calendar_id
                         or cls.env['resource.calendar'].search([], limit=1))
@@ -54,7 +63,7 @@ class TestMoneyOutApprovals(TransactionCase):
         cls.net_rule = cls.env.ref('om_hr_payroll.hr_rule_net')
         cls.net_cat = cls.env.ref('om_hr_payroll.NET')
 
-        cls.run = cls.env['hr.payslip.run'].create({
+        cls.payrun = cls.env['hr.payslip.run'].create({
             'name': 'ZZ Money Out June',
             'date_start': date(2026, 6, 1), 'date_end': date(2026, 6, 30)})
         cls.emp_a = cls._employee('MO Alpha', '123456789012')
@@ -64,7 +73,7 @@ class TestMoneyOutApprovals(TransactionCase):
         # The bank file can only be prepared from an APPROVED pay run, and the
         # pay-run state machine is sealed (Phase 3) — this is the sanctioned
         # way in, and the same one the adapter itself uses.
-        cls._finish_run(cls.run)
+        cls._finish_run(cls.payrun)
 
     # ------------------------------------------------------------- fixtures
     @classmethod
@@ -104,7 +113,7 @@ class TestMoneyOutApprovals(TransactionCase):
             'type_id': cls.ctype.id})
         slip = cls.env['hr.payslip'].create({
             'employee_id': emp.id, 'contract_id': contract.id,
-            'payslip_run_id': cls.run.id,
+            'payslip_run_id': cls.payrun.id,
             'date_from': date(2026, 6, 1), 'date_to': date(2026, 6, 30)})
         cls.env['hr.payslip.line'].create({
             'slip_id': slip.id, 'salary_rule_id': cls.net_rule.id,
@@ -115,12 +124,43 @@ class TestMoneyOutApprovals(TransactionCase):
         return slip
 
     @classmethod
-    def _finish_run(cls, run):
+    def _finish_run(cls, run):  # noqa: A003 — `run` is the argument, not a test
         """Put the run in `done` without going round the pay-run route."""
         if hasattr(run, '_pb_chain_ctx'):
             run._pb_chain_ctx().write({'state': 'done'})
         else:
             run.sudo().write({'state': 'done'})
+
+    def _publish_route(self, process_key, definition):
+        """Put one real route in force for this company, ending whatever was.
+
+        The same three writes the Matrix makes when somebody publishes: a
+        workflow, a published version, and a binding that is the only active
+        one for that process at the company level.
+        """
+        process = self.env['biz.approval.process'].sudo()._by_key(process_key)
+        workflow = self.env['biz.approval.workflow'].sudo().create({
+            'name': 'MO route for %s' % process_key,
+            'company_id': self.company.id,
+            'process_id': process.id,
+            'owner_user_id': self.env.uid})
+        version = self.env['biz.approval.workflow.version'].sudo().create({
+            'workflow_id': workflow.id, 'revision': 1, 'status': 'draft',
+            'definition': definition})
+        engine = self.Engine.sudo()
+        checks = engine.validate_for_publish(version.id)
+        self.assertFalse(checks['errors'], checks['errors'])
+        engine.publish(version.id, version.draft_revision, None, 'test',
+                       [w['code'] for w in checks['warnings']])
+        Binding = self.env['biz.approval.binding'].sudo()
+        Binding.search([('company_id', '=', self.company.id),
+                        ('process_id', '=', process.id),
+                        ('scope_key', '=', ''),
+                        ('active', '=', True)]).write({'active': False})
+        return Binding.create({
+            'company_id': self.company.id, 'process_id': process.id,
+            'scope_key': '', 'scope_label': self.company.name,
+            'kind_key': 'any', 'workflow_id': workflow.id, 'mode': 'follow'})
 
     def _approve_all(self, record):
         """Walk a request to the end, as whoever each open seat names."""
@@ -143,7 +183,7 @@ class TestMoneyOutApprovals(TransactionCase):
     def test_m01_prepare_submit_download(self):
         """A file is a record, its hash is checked, and only the approved
         bytes come out."""
-        bank_file = self.BankFile.prepare(self.run, 'vietcombank')
+        bank_file = self.BankFile.prepare(self.payrun, 'vietcombank')
         self.assertTrue(bank_file.attachment_id)
         self.assertEqual(len(bank_file.file_hash), 64)
         self.assertEqual(bank_file.row_count, 2)
@@ -176,12 +216,12 @@ class TestMoneyOutApprovals(TransactionCase):
 
     # ============================================================ M02
     def test_m02_regenerating_supersedes_and_withdraws(self):
-        first = self.BankFile.prepare(self.run, 'vietcombank')
+        first = self.BankFile.prepare(self.payrun, 'vietcombank')
         self.Engine.submit(first)
         self.assertEqual(first.state, 'pending')
         first_request = first.approval_request_id
 
-        second = self.BankFile.prepare(self.run, 'bidv')
+        second = self.BankFile.prepare(self.payrun, 'bidv')
         first.invalidate_recordset()
         first_request.invalidate_recordset()
         self.assertEqual(first.state, 'superseded')
@@ -195,7 +235,7 @@ class TestMoneyOutApprovals(TransactionCase):
     # ============================================================ M03
     def test_m03_release_needs_an_approved_file_and_pays_everybody(self):
         # no approved file yet → the release cannot even be prepared
-        pending = self.BankFile.prepare(self.run, 'vietcombank')
+        pending = self.BankFile.prepare(self.payrun, 'vietcombank')
         self.Engine.submit(pending)
         with self.assertRaises(UserError):
             self.Release.prepare(pending)
@@ -223,13 +263,13 @@ class TestMoneyOutApprovals(TransactionCase):
                          'a release must be signed by two different people')
 
         self.assertEqual(release.state, 'released')
-        self.run.invalidate_recordset()
+        self.payrun.invalidate_recordset()
         for slip in (self.slip_a, self.slip_b):
             slip.invalidate_recordset()
             self.assertTrue(slip.pb_paid_on)
             self.assertEqual(slip.pb_paid_ref, 'REF-123')
             self.assertTrue(slip.pb_paid)
-        self.assertTrue(self.run.pb_paid)
+        self.assertTrue(self.payrun.pb_paid)
 
         # a second apply changes nothing
         stamp = self.slip_a.pb_paid_on
@@ -248,28 +288,25 @@ class TestMoneyOutApprovals(TransactionCase):
         self.assertFalse(self.company.pb_post_payroll_journal,
                          'posting to the books must be off by default')
         journals = self.env['pb.payroll.journal'].search(
-            [('run_id', '=', self.run.id)])
+            [('run_id', '=', self.payrun.id)])
         self.assertFalse(journals)
 
         # prepare() is the whole lane and it is silent, never raising, when
         # the accounting bridge is absent (it cannot install here — AM17)
-        made = self.env['pb.payroll.journal'].prepare(self.run)
+        made = self.env['pb.payroll.journal'].prepare(self.payrun)
         from odoo.addons.pb_pay_delivery.models.payroll_journal import (
             accounting_installed)
         if not accounting_installed(self.env):
             self.assertFalse(made)
 
     # ============================================================ M05
-    def test_m05_payslips_go_at_once_under_the_published_fast_lane(self):
-        """The default route for a send-out is "No approval needed" — so the
-        press still sends, and a request records that it did."""
-        batch = self.env['pb.payslip.delivery.batch'].create(
-            {'run_id': self.run.id})
+    def test_m05_payslips_go_at_once_unless_the_business_says_otherwise(self):
+        """The shipped default for a send-out is "No approval needed", so the
+        press still sends. Publish a real route and the same press waits."""
         resolved = self.Engine.sudo().resolve_binding(
             self.company.id, 'payslips', [''], 'any')
         self.assertFalse(resolved.get('error'),
                          'every company must have a send-out route on day one')
-
         from odoo.addons.biz_approval_workflow.models import definition as D
         version = self.env['biz.approval.workflow.version'].sudo().browse(
             resolved['version_id'])
@@ -277,15 +314,33 @@ class TestMoneyOutApprovals(TransactionCase):
         self.assertTrue(any(s['kind'] == 'fast' for s in steps),
                         'the shipped send-out default is the fast lane')
 
-        # and a real route makes the same press wait instead
-        self.Seed.set_no_approval_needed(self.company, 'payslips')
-        self.assertTrue(True)
+        # now the business asks somebody to look first
+        self._publish_route('payslips', {
+            'schema_version': 1,
+            'steps': [{'key': 's1', 'kind': 'approve', 'title': 'Finance',
+                       'who': {'mode': 'role', 'role': 'finance',
+                               'scope': 'company'},
+                       'min_amount': 0, 'condition': None}],
+            'tiers': {'enabled': False, 'fact': None},
+            'safeguards': D.default_safeguards(),
+        })
+        batch = self.env['pb.payslip.delivery.batch'].create(
+            {'run_id': self.payrun.id})
+        batch.action_send()
+        batch.invalidate_recordset()
+        self.assertEqual(batch.state, 'pending',
+                         'the send-out went out without its approval')
+        self.assertEqual(batch.approval_request_id.state, 'pending')
+        self.assertFalse(batch.line_ids, 'a payslip left before it was signed')
+        # and a second press says who is holding it rather than sending
+        with self.assertRaises(UserError):
+            batch.action_send()
 
     # ============================================================ M10
     def test_m10_the_final_approver_needs_the_pay_role(self):
         """Safety rail 5: an approval is permission to make THIS change, never
         a way to act through somebody else's rights."""
-        bank_file = self.BankFile.prepare(self.run, 'vietcombank')
+        bank_file = self.BankFile.prepare(self.payrun, 'vietcombank')
         self.Engine.submit(bank_file)
         request = bank_file.approval_request_id
 
@@ -341,7 +396,7 @@ class TestMoneyOutApprovals(TransactionCase):
         """Ledger AM25: an adapter must never put the SHAPE of a fact in the
         slot that holds its unit, or the drawer prints "No bool"."""
         from odoo.addons.biz_approval_workflow.models import definition as D
-        bank_file = self.BankFile.prepare(self.run, 'vietcombank')
+        bank_file = self.BankFile.prepare(self.payrun, 'vietcombank')
         for model_ctx in (bank_file._approval_context(),):
             for key, fact in model_ctx['facts'].items():
                 self.assertNotIn(fact.get('unit') or '', D.FACT_TYPES,

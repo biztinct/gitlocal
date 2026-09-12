@@ -600,6 +600,12 @@ class HrIntegrationConnector(models.Model):
         try:
             batch.action_load_from_data_store()
             batch.action_match_employees()
+            # APPROVAL MATRIX P5 — deliberately NOT sentinel-wrapped. A
+            # scheduled fetch that writes what people are paid is pay data
+            # like any other, and a business that wants somebody to look at it
+            # gets exactly that: the batch is loaded, checked and waiting, and
+            # the cron's own result line says so. Under a fast lane it
+            # processes on the spot, as it always did.
             batch.action_process()
         except Exception as exc:            # noqa: BLE001
             self.cron_writeback_last_result = _(

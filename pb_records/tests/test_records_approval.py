@@ -34,6 +34,13 @@ class TestRecordsApproval(TransactionCase):
             'group_ids': [(6, 0, [g_user.id, g_hr.id])]})
         cls._fill_role('hr_lead', cls.hr_lead)
         cls._fill_role('finance', cls.finance)
+        # THE ROUTE, EXPLICITLY. `post_init_hook` runs on install only, and a
+        # test database is usually reached by an upgrade — so a suite that
+        # assumed the hook had run would pass or fail depending on how the
+        # database was built. Idempotent; the migration lays the same route on
+        # a real upgrade. Roles are filled FIRST: the whole-coverage check runs
+        # at publish time.
+        cls.env['pb.records.apply']._approval_seed_default(cls.env.company)
 
         cls.cfg = cls._config()
         cls.employee = cls.env['hr.employee'].create({

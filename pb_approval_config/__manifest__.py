@@ -38,7 +38,7 @@ WHAT IT NEVER DOES
   route that checks nothing is a published choice, said out loud on the Matrix
   row, and every use of it is still recorded.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

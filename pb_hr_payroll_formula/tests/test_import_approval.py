@@ -39,6 +39,9 @@ class TestImportApproval(TransactionCase):
             'group_ids': [(6, 0, [g_user.id, g_formula.id])]})
         cls._fill_role('payroll_mgr', cls.payroll_mgr)
         cls._fill_role('hr_lead', cls.hr_lead)
+        # THE TWO ROUTES, EXPLICITLY — `post_init_hook` runs on install only
+        # and a test database is usually reached by an upgrade. Idempotent.
+        cls.Batch._approval_seed_default(cls.env.company)
 
         cls.cfg = cls.env['hr.formula.config'].create({
             'name': 'IA Scheme', 'code': 'IASCHEME',

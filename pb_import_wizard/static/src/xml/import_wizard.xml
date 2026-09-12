@@ -145,12 +145,25 @@
 
           <!-- STEP 4: COMMIT / DONE -->
           <t t-if="state.step === 4 and !state.loading and state.summary">
-            <div class="iw-done">
+            <!-- A file that is WAITING is not a file that failed, and not a
+                 file that finished. Saying "Import complete · 0 rows" over one
+                 is the worst answer available. -->
+            <div t-if="state.summary.pending" class="iw-done">
+              <div class="iw-done-ic"><t t-out="ic('clock',30)"/></div>
+              <h3>Sent for approval</h3>
+              <p class="iw-muted">
+                <t t-esc="state.summary.name"/> ·
+                <t t-if="state.summary.with_whom">with <t t-esc="state.summary.with_whom"/></t>
+                <t t-else="">waiting for its approver</t>
+              </p>
+              <p class="iw-muted">The employees and payslips are made once it is approved.</p>
+            </div>
+            <div t-else="" class="iw-done">
               <div class="iw-done-ic"><t t-out="ic('check',30)"/></div>
               <h3>Import complete</h3>
               <p class="iw-muted"><t t-esc="state.summary.name"/> · <t t-esc="state.summary.processed"/> rows processed</p>
             </div>
-            <div class="iw-outcomes" data-coach="iw-outcome">
+            <div t-if="!state.summary.pending" class="iw-outcomes" data-coach="iw-outcome">
               <div class="iw-outcome"><span class="ic"><t t-out="ic('users',18)"/></span><span class="n" t-esc="state.summary.created_employees"/><span class="l">Employees created</span></div>
               <div class="iw-outcome"><span class="ic"><t t-out="ic('receipt',18)"/></span><span class="n" t-esc="state.summary.created_payslips"/><span class="l">Payslips created</span></div>
               <button t-if="state.summary.payslip_run_id" class="iw-outcome link" t-on-click="openRun"><span class="ic"><t t-out="ic('file',18)"/></span><span class="rn" t-esc="state.summary.payslip_run_name"/><span class="l">Open payslip run →</span></button>
@@ -165,7 +178,7 @@
           <div class="iw-sp"/>
           <button t-if="state.step === 1" class="iw-btn primary" t-att-disabled="!canLoad || state.loading" t-on-click="toReview">Load &amp; match <t t-out="ic('arrow',15)"/></button>
           <button t-if="state.step === 2" class="iw-btn primary" t-att-disabled="state.loading" t-on-click="toValidate">Validate <t t-out="ic('arrow',15)"/></button>
-          <button t-if="state.step === 3" class="iw-btn primary" data-coach="iw-commit" t-att-disabled="state.loading" t-on-click="commit">Commit import <t t-out="ic('arrow',15)"/></button>
+          <button t-if="state.step === 3" class="iw-btn primary" data-coach="iw-commit" t-att-disabled="state.loading" t-on-click="commit"><t t-esc="commitLabel"/> <t t-out="ic('arrow',15)"/></button>
           <button t-if="state.step === 4" class="iw-btn ghost" t-on-click="openBatch">Open batch</button>
           <button t-if="state.step === 4" class="iw-btn primary" t-on-click="close">Done</button>
         </div>

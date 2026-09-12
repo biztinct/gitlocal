@@ -408,7 +408,16 @@ class PbOneoffFeed(models.AbstractModel):
         # find the person) are already done.
         batch.write({'state': 'matched'})
         batch.action_validate()
-        batch.action_process()
+        # APPROVAL MATRIX P5 — this batch is not a file somebody uploaded. It
+        # is an award that has ALREADY been approved, being written into the
+        # run it was queued for, and the run has its own route in front of it.
+        # Sending it round the pay-data route as well would ask two different
+        # people to agree to the same money twice, which is how an approval
+        # queue stops being read. The sentinel says "the approval is the one
+        # calling".
+        from odoo.addons.pb_hr_payroll_formula.models.payroll_import_approval \
+            import apply_context
+        apply_context(batch).action_process()
         return batch
 
     def _employee_total(self, run, incentive, batchmates):
