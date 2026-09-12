@@ -788,13 +788,26 @@
                 <span t-if="h.source === 'undo'" class="rd-tag">Undo</span>
                 <span t-if="h.source === 'import'" class="rd-tag">From a file</span>
                 <span t-if="h.undone" class="rd-tag amber">Already undone</span>
+                <!-- A change that has not happened yet wears its own word, so
+                     nobody reads this list as a list of things that did. -->
+                <span t-if="!h.applied and h.state !== 'applied'"
+                      t-attf-class="rd-tag {{ h.pending ? 'amber' : '' }}"
+                      t-esc="h.state_label"/>
               </div>
               <div class="rd-hist-sub">
                 <t t-esc="h.user"/><t t-if="h.scheme"> · <t t-esc="h.scheme"/></t>
+                <t t-if="h.pending and h.with_whom"> · with <t t-esc="h.with_whom"/></t>
               </div>
               <div t-if="h.note" class="rd-hist-note" t-esc="h.note"/>
-              <button type="button" class="pbim-btn outline pbim-btn-sm"
-                      t-att-disabled="h.undone" t-on-click="() => this.undoApply(h.id)">
+              <div t-if="h.block_note" class="rd-hist-note" t-esc="h.block_note"/>
+              <button type="button" t-if="h.pending" class="pbim-btn outline pbim-btn-sm"
+                      t-on-click="() => this.openRequest(h.request_id)">
+                <t t-out="ic('external',13)"/>
+                See the request
+              </button>
+              <button type="button" t-else="" class="pbim-btn outline pbim-btn-sm"
+                      t-att-disabled="h.undone or !h.applied"
+                      t-on-click="() => this.undoApply(h.id)">
                 <t t-out="ic('rotate',13)"/>
                 <t t-if="h.undone">Already undone</t><t t-else="">Undo</t>
               </button>
@@ -804,9 +817,17 @@
 
         <!-- ======================================================= toast -->
         <div t-if="state.toast" class="rd-toast">
-          <span class="ic"><t t-out="ic('checkCircle',17)"/></span>
+          <span class="ic">
+            <t t-if="state.toast.pending" t-out="ic('clock',17)"/>
+            <t t-else="" t-out="ic('checkCircle',17)"/>
+          </span>
           <span class="tx" t-esc="state.toast.text"/>
-          <button type="button" t-on-click="() => this.undoApply(state.toast.applyId)">Undo</button>
+          <!-- A change that is WAITING has nothing to undo yet; what it has is
+               a door to whoever is holding it. -->
+          <button type="button" t-if="state.toast.pending and state.toast.requestId"
+                  t-on-click="() => this.openRequest(state.toast.requestId)">See the request</button>
+          <button type="button" t-if="!state.toast.pending"
+                  t-on-click="() => this.undoApply(state.toast.applyId)">Undo</button>
           <button type="button" class="x" t-on-click="() => this.state.toast = null">
             <t t-out="ic('x',14)"/>
           </button>

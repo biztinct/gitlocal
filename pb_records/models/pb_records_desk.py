@@ -1280,36 +1280,78 @@ class PbRecordsDesk(models.AbstractModel):
             return value
         return str(value)
 
+    #: Field keys that mean "what this person is paid". A route that wants
+    #: Finance to look at pay changes and nothing else conditions on
+    #: `touches_salary`, and the desk has to be able to answer that before
+    #: anybody has looked at the plan.
+    SALARY_TOKENS = ('wage', 'salary', 'basic', 'gross', 'net', 'pay')
+
     @api.model
-    def apply_changes(self, config_id=0, changes=None, note='', source='desk'):
-        """Write the `ok` half of `changes`, and file the audit trail for it.
+    def _plan_rows(self, plan):
+        """The plan as JSON, carrying the value every field holds RIGHT NOW.
 
-        `source` says where the values came from — the grid (`desk`) or a
-        dropped file (`import`, R3). It is a LABEL on the audit row and nothing
-        else: an import takes this exact path, with this exact whitelist, this
-        exact company scoping and this exact per-value log, because a second
-        write path is a second set of rails to keep in step.
+        This snapshot is what makes "somebody else changed it in between" an
+        answerable question at approval time. It holds the card ID and the
+        person, never a recordset — a plan has to survive a week in a column.
         """
-        self._check_read()
-        source = source if source in ('desk', 'import') else 'desk'
-        items, plan, counts = self._evaluate(config_id, changes or [])
-        if not plan:
-            return {'ok': True, 'apply_id': 0, 'written': 0, 'people': 0,
-                    'items': items, 'counts': counts,
-                    'refused': [i for i in items if i['status'] == 'refused'],
-                    'skipped_same': counts['same']}
+        rows = []
+        for step in plan:
+            if step.get('bank'):
+                for entry in step['entries']:
+                    rows.append({
+                        'emp_id': step['employee'].id,
+                        'emp_name': step['employee'].display_name or '',
+                        'field_id': entry['card']['id'],
+                        'field_label': entry['card']['label'],
+                        'old': self._jsonable(entry['old']),
+                        'old_label': entry['old_label'] or '',
+                        'new_label': entry['new_label'] or '',
+                    })
+                continue
+            rows.append({
+                'emp_id': step['employee'].id,
+                'emp_name': step['employee'].display_name or '',
+                'field_id': step['card']['id'],
+                'field_label': step['card']['label'],
+                'old': self._jsonable(step['old']),
+                'old_label': step['old_label'] or '',
+                'new_label': step['new_label'] or '',
+            })
+        return rows
 
+    @api.model
+    def _plan_moved_since(self, apply_rec):
+        """Names of the values somebody else has changed since the proposal.
+
+        All-or-nothing is deliberate. A bulk change half applied is worse than
+        one not applied at all: nobody can tell by looking which half landed,
+        and the person who proposed it has to work out what to re-propose.
+        """
+        cards = self._cards(apply_rec.config_id.id or 0)
+        probe = self._probe(apply_rec.config_id.id or 0)
+        moved = []
+        for row in apply_rec.plan():
+            card = cards.get(row.get('field_id'))
+            employee = self.env[EMP].sudo().browse(
+                int(row.get('emp_id') or 0)).exists()
+            if not card or not employee:
+                moved.append(_("%s (the field or the person is gone)")
+                             % (row.get('emp_name') or ''))
+                continue
+            contract = probe._get_latest_contract(employee) or self.env[CON]
+            current = self._read_cell(probe, card, employee, contract)
+            if not self._same(card, current['v'], row.get('old')):
+                moved.append('%s · %s' % (row.get('emp_name') or '',
+                                          card['label']))
+        return moved
+
+    @api.model
+    def _write_plan(self, apply_rec):
+        """Carry out a proposal. Returns (written, people, refused)."""
+        config_id = apply_rec.config_id.id or 0
+        _items, plan, _counts = self._evaluate(config_id,
+                                               apply_rec.requested())
         probe = self._probe(config_id)
-        configs = self._configs(config_id)
-        apply_rec = self.env['pb.records.apply'].sudo().create({
-            'name': '/',
-            'note': (note or '').strip() or False,
-            'source': source,
-            'config_id': configs[:1].id if config_id else False,
-            'count_people': 0, 'count_values': 0,
-        })
-        apply_rec.name = 'RD%05d' % apply_rec.id
-
         written, people, late_refusals = 0, set(), []
         for step in plan:
             if step.get('bank'):
@@ -1322,7 +1364,7 @@ class PbRecordsDesk(models.AbstractModel):
                 written += len(step['entries'])
                 people.add(step['employee'].id)
                 continue
-            value, why = self._write_cell(probe, step, apply_rec)
+            _value, why = self._write_cell(probe, step, apply_rec)
             if why:
                 late_refusals.append({'emp_id': step['employee'].id,
                                       'field_id': step['card']['id'],
@@ -1330,13 +1372,99 @@ class PbRecordsDesk(models.AbstractModel):
                 continue
             written += 1
             people.add(step['employee'].id)
+        return written, people, late_refusals
 
-        apply_rec.write({'count_values': written, 'count_people': len(people)})
-        refused = [i for i in items if i['status'] == 'refused'] + late_refusals
-        return {'ok': True, 'apply_id': apply_rec.id, 'written': written,
-                'people': len(people), 'items': items, 'counts': counts,
-                'refused': refused, 'skipped_same': counts['same'],
-                'reference': apply_rec.name}
+    @api.model
+    def _plan_touches(self, rows):
+        """(bank, salary) — the two facts a route nearly always asks about."""
+        bank = any(str(r.get('field_id') or '')[:1] == 'b' for r in rows)
+        salary = False
+        for row in rows:
+            haystack = '%s %s' % (row.get('field_id') or '',
+                                  row.get('field_label') or '')
+            haystack = haystack.lower()
+            if any(token in haystack for token in self.SALARY_TOKENS):
+                salary = True
+                break
+        return bank, salary
+
+    @api.model
+    def apply_changes(self, config_id=0, changes=None, note='', source='desk'):
+        """Evaluate, write the plan down, and ask.
+
+        `source` says where the values came from — the grid (`desk`) or a
+        dropped file (`import`, R3). It is a LABEL on the proposal and nothing
+        else: an import takes this exact path, with this exact whitelist, this
+        exact company scoping and this exact per-value log, because a second
+        write path is a second set of rails to keep in step.
+
+        Nothing is written here. The engine decides: where the business
+        published "No approval needed" it applies in the same breath and the
+        answer looks exactly as it always did, plus a reference; where a real
+        route is published the answer says who it is with.
+        """
+        self._check_read()
+        source = source if source in ('desk', 'import') else 'desk'
+        items, plan, counts = self._evaluate(config_id, changes or [])
+        if not plan:
+            return {'ok': True, 'apply_id': 0, 'written': 0, 'people': 0,
+                    'items': items, 'counts': counts, 'pending': False,
+                    'refused': [i for i in items if i['status'] == 'refused'],
+                    'skipped_same': counts['same']}
+
+        configs = self._configs(config_id)
+        rows = self._plan_rows(plan)
+        touches_bank, touches_salary = self._plan_touches(rows)
+        apply_rec = self.env['pb.records.apply'].sudo().create({
+            'name': '/',
+            'note': (note or '').strip() or False,
+            'source': source,
+            'config_id': configs[:1].id if config_id else False,
+            'count_people': 0, 'count_values': 0,
+            'plan_json': json.dumps(rows),
+            'changes_json': json.dumps(changes or []),
+            'people_count': len({r['emp_id'] for r in rows}),
+            'values_count': len(rows),
+            'touches_bank': touches_bank,
+            'touches_salary': touches_salary,
+            'company_id': self.env.company.id,
+        })
+        apply_rec.name = 'RD%05d' % apply_rec.id
+
+        payload = self.env['biz.approval.engine'].submit(apply_rec)
+        apply_rec.invalidate_recordset()
+        refused = [i for i in items if i['status'] == 'refused']
+        answer = {
+            'ok': True, 'apply_id': apply_rec.id,
+            'written': apply_rec.count_values, 'people': apply_rec.count_people,
+            'items': items, 'counts': counts, 'refused': refused,
+            'skipped_same': counts['same'], 'reference': apply_rec.name,
+            'pending': not apply_rec.applied,
+            'request_id': (payload or {}).get('id') or 0,
+            'state': apply_rec.state,
+            'with_whom': apply_rec._waiting_for(),
+            'route': self._route_labels(apply_rec),
+            'block_note': apply_rec.block_note or '',
+        }
+        return answer
+
+    @api.model
+    def _route_labels(self, apply_rec):
+        """The steps this proposal has to pass, in order, with their people."""
+        request = apply_rec.approval_request_id
+        if not request:
+            return []
+        out = []
+        for step in request.step_ids.sorted('sequence'):
+            if not step.included or step.kind == 'fast':
+                continue
+            out.append({
+                'title': step.title,
+                'status': step.status,
+                'people': sorted({seat.acting_user_id.name or ''
+                                  for seat in step.seat_ids}),
+            })
+        return out
 
     # =================================================================
     # Undo
@@ -1353,11 +1481,18 @@ class PbRecordsDesk(models.AbstractModel):
         config_id = source.config_id.id or 0
         cards = self._cards(config_id)
         probe = self._probe(config_id)
+        # AN UNDO IS NOT A PROPOSAL. It puts back values this trail says were
+        # there before, and every one of them was already approved on the way
+        # in. Putting a route in front of "put it back the way it was" would
+        # make a mistake harder to correct than to make.
         undo_rec = self.env['pb.records.apply'].sudo().create({
             'name': '/', 'source': 'undo',
             'config_id': source.config_id.id or False,
             'note': _("Undo of %s") % source.name,
             'count_people': 0, 'count_values': 0,
+            'applied': True, 'state': 'applied',
+            'applied_at': fields.Datetime.now(),
+            'company_id': self.env.company.id,
         })
         undo_rec.name = 'RD%05d' % undo_rec.id
 
@@ -1453,8 +1588,19 @@ class PbRecordsDesk(models.AbstractModel):
                 'note': rec.note or '',
                 'source': rec.source,
                 'scheme': rec.config_id.display_name or '',
-                'count_people': rec.count_people,
-                'count_values': rec.count_values,
+                'count_people': rec.count_people or rec.people_count,
+                'count_values': rec.count_values or rec.values_count,
                 'undone': rec.undone,
+                # A proposal that has not been carried out yet belongs in
+                # History too — it is the only screen that can tell somebody
+                # where the change they made this morning actually is.
+                'state': rec.state,
+                'state_label': dict(
+                    rec._fields['state'].selection).get(rec.state, ''),
+                'applied': rec.applied,
+                'pending': rec.state == 'pending',
+                'with_whom': rec._waiting_for(),
+                'request_id': rec.approval_request_id.id,
+                'block_note': rec.block_note or '',
             })
         return {'applies': out}

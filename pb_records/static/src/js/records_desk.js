@@ -587,6 +587,9 @@ export class PbRecordsDesk extends Component {
 
         // The refused ones STAY staged, so the grid still shows the work that is
         // not finished. Everything written is dropped from the staged set.
+        // A proposal that is WAITING owns every value in it, so the grid lets
+        // all of them go: leaving them staged is an invitation to propose the
+        // same change twice. Only the ones the server refused outright stay.
         const stillBad = new Set((result.refused || [])
             .map((r) => `${r.emp_id}|${r.field_id}`));
         const dirty = {};
@@ -597,18 +600,56 @@ export class PbRecordsDesk extends Component {
         this.grid.undoStack = [];
         this.grid.redoStack = [];
 
-        this.state.toast = {
-            text: this.n(result.written, "Updated 1 value", "Updated %s values")
-                  + " " + this.n(result.people, "on 1 person", "on %s people"),
-            applyId: result.apply_id,
-        };
+        this._applyToast(result);
+        await this.reloadKeepingPlace();
+        this.runPreview();
+    }
+
+    /**
+     * What a person is told after Apply.
+     *
+     * Two answers, because there are two outcomes and pretending otherwise is
+     * how somebody comes back tomorrow to a value they believe they changed.
+     * Where the business published "No approval needed" this reads exactly as
+     * it always did. Where a route applies it names who has it, and offers the
+     * door to the request.
+     */
+    _applyToast(result) {
+        if (result.pending) {
+            const names = (result.route || [])
+                .map((s) => s.title).join(" → ");
+            this.state.toast = {
+                text: _t("Sent for approval — %s", result.with_whom
+                         || names || _t("waiting for its approver")),
+                applyId: result.apply_id,
+                requestId: result.request_id,
+                pending: true,
+            };
+        } else {
+            this.state.toast = {
+                text: this.n(result.written, "Updated 1 value", "Updated %s values")
+                      + " " + this.n(result.people, "on 1 person", "on %s people"),
+                applyId: result.apply_id,
+            };
+        }
         setTimeout(() => {
             if (this.state.toast && this.state.toast.applyId === result.apply_id) {
                 this.state.toast = null;
             }
         }, 10000);
-        await this.reloadKeepingPlace();
-        this.runPreview();
+    }
+
+    /** Take the person to the request their change is waiting in. */
+    openRequest(requestId) {
+        if (!requestId) { return; }
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_approval_inbox",
+            name: _t("Approvals"),
+            params: { request_id: requestId },
+        }).catch(() => this.notif.add(
+            _t("The Approvals screen is not installed on this database."),
+            { type: "warning" }));
     }
 
     async reloadKeepingPlace() {
@@ -951,16 +992,7 @@ export class PbRecordsDesk extends Component {
         this.state.applying = false;
         this.state.note = "";
         f.open = false;
-        this.state.toast = {
-            text: this.n(result.written, "Updated 1 value", "Updated %s values")
-                  + " " + this.n(result.people, "on 1 person", "on %s people"),
-            applyId: result.apply_id,
-        };
-        setTimeout(() => {
-            if (this.state.toast && this.state.toast.applyId === result.apply_id) {
-                this.state.toast = null;
-            }
-        }, 10000);
+        this._applyToast(result);
         await this.reloadKeepingPlace();
     }
 
