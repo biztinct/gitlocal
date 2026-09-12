@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.9.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -28,6 +28,14 @@ configurations screen offers "Resume setup" on the card.
     'depends': [
         'web',
         'pb_hr_payroll_formula',
+        # The "Vietnam · Complete" starter this module ships is certified
+        # against Vietnam statutory pack 2026.1, and pb_pack_vn is the module
+        # that ships that pack. Without this dependency a fresh database seeds
+        # the starter from the 2025 baseline instead, the certification the
+        # post-install hook runs misses its expected figures, and the install
+        # is blocked (the pack was merely installed by hand on the long-lived
+        # servers, which is why this never showed there).
+        'pb_pack_vn',
         'pb_formula_studio',
         'pb_import_kit',
         'pb_hub',

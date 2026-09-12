@@ -387,6 +387,13 @@ class HrFormulaConfigTemplate(models.Model):
         published baseline so a thin override pack (e.g. relief-only) still
         resolves the full statutory set. This keeps a pinned suite reproducible
         even after newer packs publish.
+
+        A pin that matches NO pack is an error, never a silent fall-back to the
+        published baseline: the baseline is a *different* year's statute, so the
+        seeded config would compute with last year's relief/rates and the only
+        symptom would be arithmetic that misses the suite's expected figures by
+        an unexplained amount (fresh-database install of a template whose pack
+        module is not installed — the 2026.1 case).
         """
         Pack = self.env['hr.formula.legislation.pack'].sudo()
         today = fields.Date.context_today(self)
@@ -416,6 +423,13 @@ class HrFormulaConfigTemplate(models.Model):
 
         if pack_version:
             pinned = Pack.search(base_domain + [('version', '=', pack_version)])
+            if not pinned:
+                raise ValidationError(_(
+                    "No %(country)s statutory pack version %(version)s is "
+                    "available, so the figures for that year cannot be used. "
+                    "Install the %(country)s country pack (it carries that "
+                    "statutory set) and try again.",
+                    country=country_code, version=pack_version))
             _apply(pinned)
         return result
 
