@@ -8366,3 +8366,7 @@ msgstr "Ứng dụng này chưa thiết lập phê duyệt nên ở đây không
 #. module: pb_blueprint
 msgid "Somebody else looks after approvals on this account. This scheme will follow whatever they have set for pay runs."
 msgstr "Người khác phụ trách phê duyệt trên tài khoản này. Phương án lương này sẽ theo những gì họ đã thiết lập cho kỳ lương."
+
+#. module: pb_blueprint
+msgid "System"
+msgstr "Hệ thống"

@@ -232,17 +232,39 @@ class TestConnect(TransactionCase):
         self.assertEqual(res['status']['mapping'], 'not_started')
 
     def test_skip_the_rest_only_touches_what_nobody_started(self):
+        """Approvals is in the list now, and that is the change.
+
+        It used to be excluded by name, because pay runs followed one fixed
+        chain and there was nothing to skip. There is now — a scheme may be
+        given a route of its own — so it is an ordinary optional task and
+        "skip the rest" reaches it like the other two.
+        """
         config = self._draft('b4-skiprest')
         self.Studio.bp_task_open(config.id, 'mapping')      # in_progress
         res = self.Studio.bp_skip_rest(config.id)
-        self.assertEqual(res['skipped'], ['payslip'])
+        self.assertEqual(sorted(res['skipped']), ['approvals', 'payslip'])
         self.assertEqual(res['status']['mapping'], 'in_progress')
         self.assertEqual(res['status']['payslip'], 'skipped')
+        self.assertEqual(res['status']['approvals'], 'skipped')
 
         # a second press has nothing left to do, and says nothing happened
         again = self.Studio.bp_skip_rest(config.id)
         self.assertEqual(again['skipped'], [])
         self.assertEqual(again['status']['payslip'], 'skipped')
+        self.assertEqual(again['status']['approvals'], 'skipped')
+
+    def test_skip_the_rest_leaves_an_approvals_task_somebody_opened(self):
+        """The promise is "only what nobody started", and approvals is not an
+        exception to it: a person who walked into the card and came back out
+        has touched it, and a bulk action must not undo that."""
+        config = self._draft('b4-skipappr')
+        self.Studio.bp_task_open(config.id, 'approvals')
+        res = self.Studio.bp_skip_rest(config.id)
+        self.assertNotIn('approvals', res['skipped'])
+        blueprint = self.env['pb.formula.blueprint'].search(
+            [('config_id', '=', config.id)], limit=1)
+        self.assertEqual(
+            blueprint.optional_status()['approvals']['status'], 'in_progress')
 
     # ==================================================================
     # 4 — done is earned

@@ -26,7 +26,7 @@ import hashlib
 import json
 import logging
 
-from odoo import _, api, fields, models
+from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import AccessError
 
 try:                                    # pragma: no cover - import guard
@@ -113,6 +113,28 @@ class PbBlueprintTests(models.AbstractModel):
             return err
         return self._evidence_payload(config, blueprint)
 
+    @api.model
+    def _run_by_name(self, user):
+        """Who last ran the checks, in a word a payroll manager may read.
+
+        "Last checked Tuesday by OdooBot" tells that reader nothing, and it
+        puts the vendor's name on a page the white-label rule says it may never
+        reach. The background account that runs an install or a scheduled job
+        is not a person, so it is not named as one: it is the system, and that
+        is both the honest description and a sentence that needs no other
+        module to be installed to come out right.
+
+        Deliberately NOT a debranding rule of its own. `biz_debrand` renames
+        that account's partner on a real database and this returns the same
+        word either way; what this adds is that a scratch database, an install
+        hook or a cron cannot leak the raw login through this payload.
+        """
+        if not user:
+            return ''
+        if user.id == SUPERUSER_ID or user._is_superuser():
+            return _("System")
+        return user.name or ''
+
     def _evidence_payload(self, config, blueprint):
         current = self._evidence_hash(config)
         stamped = (blueprint.tests_hash or '') if blueprint else ''
@@ -127,7 +149,8 @@ class PbBlueprintTests(models.AbstractModel):
             'pending': blueprint.tests_pending if blueprint else 0,
             'run_at': (fields.Datetime.to_string(blueprint.tests_run_at)
                        if blueprint and blueprint.tests_run_at else ''),
-            'run_by': (blueprint.tests_run_by.name or '') if blueprint else '',
+            'run_by': self._run_by_name(blueprint.tests_run_by)
+            if blueprint else '',
             'stored': bool(blueprint),
         }
 
