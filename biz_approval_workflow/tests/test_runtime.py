@@ -52,7 +52,7 @@ class TestRuntime(ApprovalCase):
         record = self.ask()
         request = self.reload(self.submit(record)['id'])
         self.assertEqual(request.state, 'applied')
-        record.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(record.state, 'done')
         applied = self.env['biz.approval.event'].search([
             ('request_id', '=', request.id), ('kind', '=', 'applied')])
@@ -70,7 +70,7 @@ class TestRuntime(ApprovalCase):
         with self.assertRaises(UserError) as caught:
             self.decide(request, self.preparer, 's1')
         self.assertIn('approve', str(caught.exception).lower())
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'pending')
 
     # ------------------------------------------------------------- T16/T17
@@ -131,7 +131,7 @@ class TestRuntime(ApprovalCase):
         self.decide(request, self.preparer, 's1',
                     reason='Only person here this week',
                     exception_grant_id=grant.id)
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'applied')
         decision = request.decision_ids.filtered(
             lambda d: d.action == 'approve')
@@ -155,7 +155,7 @@ class TestRuntime(ApprovalCase):
         self.assertEqual(len(request.seat_ids), 2)
 
         self.decide(request, self.alice, 's1', idempotency_key='a1')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'pending')
         self.assertEqual(request.step_ids.filtered('included').status,
                          'active')
@@ -165,7 +165,7 @@ class TestRuntime(ApprovalCase):
         self.assertIn('already', str(caught.exception).lower())
 
         self.decide(request, self.bob, 's1', idempotency_key='b1')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'applied')
 
     # ------------------------------------------------------------------ T19
@@ -204,7 +204,7 @@ class TestRuntime(ApprovalCase):
         request = self.reload(self.submit(self.ask())['id'])
         self.assertEqual(len(request.seat_ids), 2)
         self.decide(request, self.alice, 's1')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'applied')
         self.assertFalse(request.seat_ids.filtered(
             lambda s: s.status == 'open'))
@@ -218,8 +218,8 @@ class TestRuntime(ApprovalCase):
         request = self.reload(self.submit(record)['id'])
         self.decide(request, self.alice, 's1', action='return',
                     reason='Please add the figures')
-        request.invalidate_recordset()
-        record.invalidate_recordset()
+        self.env.invalidate_all()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'returned')
         self.assertEqual(record.state, 'returned')
         self.assertEqual(request.return_note, 'Please add the figures')
@@ -238,7 +238,7 @@ class TestRuntime(ApprovalCase):
         request = self.reload(self.submit(record)['id'])
         self.decide(request, self.alice, 's1', action='reject',
                     reason='Not this year')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'rejected')
         self.assertEqual(len(request.decision_ids), 1)
         with self.assertRaises(UserError):
@@ -252,7 +252,7 @@ class TestRuntime(ApprovalCase):
         self.bind(flow)
         request = self.reload(self.submit(self.ask())['id'])
         self.decide(request, self.alice, 's1')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         first = request.decision_ids.filtered(lambda d: d.step_key == 's1')
         self.assertEqual(len(first), 1)
 
@@ -263,12 +263,12 @@ class TestRuntime(ApprovalCase):
                 request.id, seat.key, self.carol.id, '')
         self.engine.with_user(self.admin_user).reassign(
             request.id, seat.key, self.carol.id, 'Bob is away')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(seat.status, 'reassigned')
         self.assertEqual(first.exists().user_id, self.alice)
 
         self.decide(request, self.carol, 's2')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'applied')
 
     # ------------------------------------------------------------------ T28
@@ -282,15 +282,15 @@ class TestRuntime(ApprovalCase):
         with patch.object(model, '_approval_apply',
                           side_effect=UserError('The other system said no.')):
             self.decide(request, self.alice, 's1')
-        request.invalidate_recordset()
-        record.invalidate_recordset()
+        self.env.invalidate_all()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'approved')
         self.assertIn('other system', request.block_reason)
         self.assertNotEqual(record.state, 'done')
 
         self.engine.with_user(self.admin_user).retry_apply(request.id)
-        request.invalidate_recordset()
-        record.invalidate_recordset()
+        self.env.invalidate_all()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'applied')
         self.assertEqual(record.state, 'done')
         self.assertFalse(request.block_reason)
@@ -304,8 +304,8 @@ class TestRuntime(ApprovalCase):
         request = self.reload(self.submit(record)['id'])
         record.sudo().write({'name': 'Buy thirty laptops'})
         self.decide(request, self.alice, 's1')
-        request.invalidate_recordset()
-        record.invalidate_recordset()
+        self.env.invalidate_all()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'approved')
         self.assertTrue(request.block_reason)
         self.assertNotEqual(record.state, 'done')
@@ -336,7 +336,7 @@ class TestRuntime(ApprovalCase):
         self.assertEqual(reminders.user_id, self.alice)
         self.assertEqual(len(escalations), 1)
         self.assertEqual(escalations.user_id, self.admin_user)
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'pending',
                          'being late must never approve anything')
 
@@ -354,7 +354,7 @@ class TestRuntime(ApprovalCase):
         step.sudo().write(
             {'due_at': fields.Datetime.now() - timedelta(days=5)})
         self.engine.escalate_cron()
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         open_seats = request.seat_ids.filtered(lambda s: s.status == 'open')
         self.assertEqual(open_seats.acting_user_id, self.carol)
         self.assertEqual(request.state, 'pending')
@@ -370,7 +370,7 @@ class TestRuntime(ApprovalCase):
         self.assertEqual(len(queued), 1)
         Outbox._cron_deliver()
         Outbox._cron_deliver()
-        queued.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(queued.state, 'sent')
         self.assertEqual(
             len(Outbox.search([('request_id', '=', request.id),
@@ -388,7 +388,7 @@ class TestRuntime(ApprovalCase):
 
         self.hold(self.role_approver, self.bob, scope_key='area:retail')
         self.engine.repair(request.id)
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'pending')
         self.assertEqual(request.seat_ids.acting_user_id, self.bob)
 
@@ -401,5 +401,5 @@ class TestRuntime(ApprovalCase):
             self.engine.with_user(self.bob).cancel(request.id, 'nope')
         self.engine.with_user(self.preparer).cancel(request.id, 'Changed my '
                                                                 'mind')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.state, 'cancelled')

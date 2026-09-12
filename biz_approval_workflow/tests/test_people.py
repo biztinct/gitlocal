@@ -87,7 +87,7 @@ class TestPeople(ApprovalCase):
         self.assertIn('covered', seat.resolved_via.lower())
 
         self.decide(request, self.carol, 's1')
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         decision = request.decision_ids.filtered(
             lambda d: d.action == 'approve')
         self.assertEqual(decision.user_id, self.carol)

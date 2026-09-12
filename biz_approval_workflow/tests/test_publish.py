@@ -39,7 +39,7 @@ class TestPublish(ApprovalCase):
 
         self.engine.publish(version.id, version.draft_revision, None,
                             'confirmed', codes)
-        version.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(version.status, 'published')
         stored = {c['code'] for c in version.confirmations}
         self.assertEqual(stored, set(codes))
@@ -56,7 +56,7 @@ class TestPublish(ApprovalCase):
                                             role_step('s2', 'reviewer')])})
         with self.assertRaises(UserError):
             self.engine.publish(version.id, stale, None, 'stale', codes)
-        version.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(version.status, 'draft')
 
     # ------------------------------------------------------------------ T30
@@ -78,12 +78,12 @@ class TestPublish(ApprovalCase):
         self.assertEqual(second.definition['steps'][0]['key'], 's1')
         second.write({'definition': build([people_step('s2', [self.carol.id])])})
         self.publish(second)
-        version.invalidate_recordset()
-        flow.invalidate_recordset()
+        self.env.invalidate_all()
+        self.env.invalidate_all()
         self.assertEqual(version.status, 'superseded')
         self.assertEqual(flow.published_version_id, second)
 
-        request.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(request.version_id, version,
                          'a request under way keeps the version it was given')
         self.assertEqual(request.step_ids.filtered('included')[0].key, 's1')
