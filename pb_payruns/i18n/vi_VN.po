@@ -836,3 +836,15 @@ msgstr "Phương án lương"
 #. module: pb_payruns
 msgid "Pay run"
 msgstr "Kỳ lương"
+
+#. module: pb_payruns
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_payruns
+msgid "Not sent in yet. Submit for approval sends it to whoever your business has chosen for this pay scheme."
+msgstr "Chưa gửi đi. Nút Gửi đi phê duyệt sẽ chuyển kỳ lương này tới những người doanh nghiệp đã chọn cho phương án lương này."
+
+#. module: pb_payruns
+msgid "Nobody checks it"
+msgstr "Không ai kiểm"

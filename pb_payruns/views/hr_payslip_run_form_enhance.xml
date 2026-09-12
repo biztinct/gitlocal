@@ -64,6 +64,11 @@
             </xpath>
 
             <xpath expr="//sheet/group" position="after">
+                <!-- Who has to say yes, and who it is with right now. One
+                     sentence, because that is what the question is. -->
+                <div class="alert alert-info pb-payrun-route" role="status">
+                    <field name="pb_approval_line" nolabel="1" readonly="1"/>
+                </div>
                 <!-- Why this run came back. Written when an approver sends it
                      back and cleared the moment it is sent in again, so it
                      always reads as "this is what has to be fixed", never as

@@ -155,6 +155,45 @@ class HrPayslipRun(models.Model):
     pb_source_revision = fields.Char(
         string='Pay data stamp', readonly=True, copy=False)
 
+    # The route, in one line, on the run's own screen. A Char and not a set of
+    # fields because it is a SENTENCE — who has to say yes, and who it is with
+    # right now — and a form that split that across three labelled boxes would
+    # be making the reader assemble it.
+    pb_approval_line = fields.Char(
+        string='Approval', compute='_compute_pb_approval_line')
+
+    @api.depends('state')
+    def _compute_pb_approval_line(self):
+        for run in self:
+            request = run.approval_request_id
+            if not request:
+                run.pb_approval_line = _(
+                    "Not sent in yet. Submit for approval sends it to whoever "
+                    "your business has chosen for this pay scheme.")
+                continue
+            version = request.version_id
+            route = ' → '.join(version.route_labels or []) or _('Nobody checks it')
+            if request.state == 'blocked':
+                run.pb_approval_line = _(
+                    "%(route)s — stuck: %(why)s", route=route,
+                    why=request.block_reason or '')
+                continue
+            step = request.step_ids.filtered(
+                lambda s: s.key == request.current_step_key)[:1]
+            if step:
+                people = ', '.join(sorted(set(
+                    step.seat_ids.filtered(lambda s: s.status == 'open')
+                    .mapped('acting_user_id.name'))))
+                run.pb_approval_line = _(
+                    "%(route)s — now with %(who)s for “%(step)s”",
+                    route=route, who=people or _('nobody yet'),
+                    step=step.title or '')
+                continue
+            run.pb_approval_line = _(
+                "%(route)s — %(state)s", route=route,
+                state=dict(request._fields['state'].selection).get(
+                    request.state, request.state))
+
     @api.model
     def _pb_group_expand_state(self, values, domain):
         return list(PB_BOARD_STATES)
@@ -926,7 +965,13 @@ class HrPayslipRun(models.Model):
         for run in self:
             request = run.approval_request_id
             if request and request.state in ('pending', 'blocked'):
-                self.env['biz.approval.engine'].cancel(
+                # sudo, and the authority is the line above: whoever may edit
+                # this run may reject it, and rejecting it has to withdraw the
+                # request that is open on it. The engine's own `cancel` asks
+                # "are you the person who sent it in?", which is the right
+                # question for somebody withdrawing their own request and the
+                # wrong one here.
+                self.env['biz.approval.engine'].sudo().cancel(
                     request.id, note or _('The pay run was rejected.'))
         # the legacy body cancels every payslip and writes 'cancel' — sanctioned,
         # so it carries the sentinel
