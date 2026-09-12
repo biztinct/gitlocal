@@ -47,3 +47,6 @@ from . import test_rd46_person_preview
 # RD47 — two display faults: a real earning drawn as a deduction (substring
 # matching, again), and a formula payslip that could not be saved at all.
 from . import test_rd47_group_and_required
+
+# Approval Matrix P4 — merge, release and roll-back go through a proposal.
+from . import test_scheme_gate

@@ -146,3 +146,6 @@ from . import test_bracket_lint
 # about the run, and nothing used to fill it in, so every yearly payment
 # compared its month against a default of 1 and paid nobody.
 from . import test_pay_period_source
+
+# Approval Matrix P4 — a change to how pay is worked out is signed off.
+from . import test_scheme_proposal
