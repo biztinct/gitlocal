@@ -112,6 +112,10 @@ for _our_key, _spellings in _ALIASES.items():
         _ALIAS_INDEX[_squash(_s)] = _our_key
 
 
+#: The three rule decisions that WRITE. Everything else happens on arrival.
+from .arrival_batch import DEFERRED_ACTIONS      # noqa: E402
+
+
 class PbZohoPipeline(models.AbstractModel):
     _name = 'pb.zoho.pipeline'
     _description = 'Arrival Pipeline'
@@ -177,17 +181,24 @@ class PbZohoPipeline(models.AbstractModel):
         """
         summary = {'received': 0, 'created': 0, 'updated': 0, 'skipped': 0,
                    'review': 0, 'errors': 0, 'onboarding': 0, 'offboarding': 0,
-                   'ignored': 0, 'logins': 0}
+                   'ignored': 0, 'logins': 0, 'waiting': 0}
         company = self.env['res.company'].sudo().browse(company_id) \
             if company_id else self.env.company
         if not company or not company.exists():
             company = self.env.company
+        # APPROVAL MATRIX P5. The rules still decide; the three decisions that
+        # WRITE are written down here instead of carried out, and go to the
+        # route as one batch. `ignore` and `review` are executed as they always
+        # were: neither changes a record, and a row put aside for somebody to
+        # look at is already waiting for a person.
+        collector = [] if self._arrivals_are_approved() else None
         for raw in (records or []):
             summary['received'] += 1
             rec = self._normalise(raw)
             try:
                 with self.env.cr.savepoint():
-                    self._process_one(rec, source, company, summary)
+                    self._process_one(rec, source, company, summary,
+                                      collector=collector)
             except Exception as err:     # noqa: BLE001 - one record, one grave
                 _logger.exception('pb_zoho_bridge: record failed')
                 summary['errors'] += 1
@@ -197,11 +208,93 @@ class PbZohoPipeline(models.AbstractModel):
                 self._log_row(rec, source, company, state='error',
                               action=_('Could not be applied'),
                               error=str(err))
+        if collector:
+            batch = self.env['pb.zoho.arrival.batch'].collect(
+                collector, source, company)
+            summary['waiting'] = len(collector) \
+                if batch and batch.state == 'pending' else 0
+            summary['batch_id'] = batch.id if batch else 0
+            # A fast lane applies in the same breath, and `_apply_rows` has
+            # already added the real counts to its own summary; what is left
+            # here is only what is genuinely still waiting.
         _logger.info('pb_zoho_bridge: %s', summary)
         return summary
 
+    @api.model
+    def _arrivals_are_approved(self):
+        """Is this model wired to the approval engine on this database?
+
+        Asked once per push. It is not asking whether a ROUTE is published —
+        the engine answers that, and a fast lane is a published choice that
+        still writes the batch. It is asking whether the engine is installed
+        at all, so a build without it behaves exactly as it did.
+        """
+        return 'pb.zoho.arrival.batch' in self.env
+
+    # ==================================================== carrying them out
+    def _apply_rows(self, batch):
+        """Execute an approved batch, row by row, against the people as they
+        are TODAY.
+
+        A person whose record has moved since the arrival was written down is
+        SKIPPED with a note rather than overwritten: "HR's own answer wins" is
+        the rule every arrival in this product already follows, and an approval
+        given a week ago is not a licence to undo a correction made yesterday.
+        """
+        summary = {'received': 0, 'created': 0, 'updated': 0, 'skipped': 0,
+                   'review': 0, 'errors': 0, 'onboarding': 0,
+                   'offboarding': 0, 'ignored': 0, 'logins': 0}
+        company = batch.company_id
+        for row in batch.rows():
+            summary['received'] += 1
+            rec = row.get('rec') or {}
+            employee = self.env['hr.employee'].sudo().browse(
+                int(row.get('employee_id') or 0)).exists()
+            if employee and row.get('employee_stamp') and \
+                    str(employee.write_date) != row['employee_stamp']:
+                summary['skipped'] += 1
+                self._log_row(
+                    rec, batch.source, company, state='review',
+                    event_id=row.get('event_id') or False, employee=employee,
+                    action=_('Left alone — the record changed in the meantime'),
+                    error=_("%s was changed in Payobook after this arrival was "
+                            "sent for approval, so nothing was overwritten. "
+                            "Check the record and, if the change still "
+                            "applies, ask for it again.",
+                            employee.name or ''))
+                continue
+            rule = self.env['pb.zoho.event.rule'].sudo().browse(
+                int(row.get('rule_id') or 0)).exists()
+            handler = getattr(self, '_do_%s' % (row.get('action') or ''), None)
+            if handler is None:
+                summary['errors'] += 1
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    handler(rec, batch.source, company, summary, employee,
+                            rule, row.get('trigger') or False,
+                            row.get('status') or False,
+                            row.get('event_id') or False)
+            except Exception as err:    # noqa: BLE001 — one row, one grave
+                _logger.exception('pb_zoho_bridge: approved row failed')
+                summary['errors'] += 1
+                self._log_row(rec, batch.source, company, state='error',
+                              action=_('Could not be applied'),
+                              error=str(err))
+        return summary
+
+    def _log_rejected_rows(self, batch, reason):
+        """A turned-down batch is recorded row by row, never simply dropped."""
+        for row in batch.rows():
+            self._log_row(
+                row.get('rec') or {}, batch.source, batch.company_id,
+                state='review', event_id=row.get('event_id') or False,
+                action=_('Turned down'),
+                error=reason or _('Somebody decided this should not happen.'))
+        return True
+
     # ==================================================== one record
-    def _process_one(self, rec, source, company, summary):
+    def _process_one(self, rec, source, company, summary, collector=None):
         Inbox = self.env['pb.zoho.inbox'].sudo()
         event_id = rec.get('event_id') or Inbox.fingerprint(
             {k: v for k, v in rec.items() if k != '_raw'})
@@ -249,6 +342,28 @@ class PbZohoPipeline(models.AbstractModel):
                           event_id=event_id, employee=employee, rule=rule,
                           trigger=trigger, status=status,
                           action=_('Unknown instruction'))
+            return
+        if collector is not None and rule.action in DEFERRED_ACTIONS:
+            # WRITTEN DOWN, NOT CARRIED OUT. The stamp is the employee's own
+            # `write_date` as it is right now: at apply time a record that has
+            # moved since is skipped rather than overwritten.
+            collector.append({
+                'rec': {k: v for k, v in rec.items() if k != '_raw'},
+                'action': rule.action,
+                'rule_id': rule.id,
+                'trigger': trigger or '',
+                'status': status or '',
+                'event_id': event_id or '',
+                'employee_id': employee.id if len(employee) == 1 else 0,
+                'employee_stamp': str(employee.write_date)
+                if len(employee) == 1 else '',
+                'person_name': rec.get('name') or '',
+                'employee_number': rec.get('employee_number') or '',
+                # The one fact a route most wants: does this let a stranger
+                # into the system?
+                'creates_login': bool(
+                    rule.action == 'onboard' and not employee),
+            })
             return
         handler(rec, source, company, summary, employee, rule, trigger, status,
                 event_id)

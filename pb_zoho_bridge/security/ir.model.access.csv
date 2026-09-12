@@ -12,3 +12,8 @@ access_pb_zoho_inbox_system,arrival system,model_pb_zoho_inbox,base.group_system
 access_pb_zoho_upload_wizard_integration,joiner file upload integration,model_pb_zoho_upload_wizard,pb_hr_payroll_base.group_payroll_integration_user,1,1,1,1
 access_pb_zoho_upload_wizard_lifecycle_manager,joiner file upload lifecycle manager,model_pb_zoho_upload_wizard,pb_lifecycle.group_lifecycle_manager,1,1,1,1
 access_pb_zoho_upload_wizard_system,joiner file upload system,model_pb_zoho_upload_wizard,base.group_system,1,1,1,1
+access_pb_zoho_arrival_batch_integration,arrivals batch integration,model_pb_zoho_arrival_batch,pb_hr_payroll_base.group_payroll_integration_user,1,0,0,0
+access_pb_zoho_arrival_batch_lifecycle_user,arrivals batch lifecycle user,model_pb_zoho_arrival_batch,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_zoho_arrival_batch_lifecycle_manager,arrivals batch lifecycle manager,model_pb_zoho_arrival_batch,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_zoho_arrival_batch_seat,arrivals batch anyone asked to decide,model_pb_zoho_arrival_batch,base.group_user,1,0,0,0
+access_pb_zoho_arrival_batch_system,arrivals batch system,model_pb_zoho_arrival_batch,base.group_system,1,1,1,1

@@ -43,7 +43,7 @@ it is NOT sent then. `send_credentials()` is a separate act, which the joining-d
 step of their journey performs. An account that exists in silence is useful; an
 account announced three weeks early is a support ticket.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -56,10 +56,12 @@ account announced three weeks early is a support ticket.
         'pb_hr_payroll_base',       # the integration user group
         'pb_hr_payroll_formula',    # connectors, the webhook_ingest hook, the raw store
         'pb_lifecycle',             # the journey engine an arrival starts
+        'biz_approval_workflow',    # an arrival waits for a person (P5)
     ],
     'data': [
         'security/pb_zoho_bridge_security.xml',
         'security/ir.model.access.csv',
+        'security/arrival_batch_rules.xml',
         'data/mail_template_data.xml',
         'data/event_rule_data.xml',
         'views/event_rule_views.xml',

@@ -31,6 +31,11 @@ CONNECTOR_NAME = 'Zoho People — inbound'
 def post_init_hook(env):
     _ensure_inbound_connector(env)
     _ensure_defaults(env)
+    # Approval Matrix P5 — and the route every arrival is now held to. Its own
+    # call rather than a second `post_init_hook` because a manifest has exactly
+    # one, and the seed is idempotent so the order never matters.
+    from .models.arrival_batch import seed_all
+    seed_all(env)
 
 
 def _ensure_defaults(env):

@@ -262,6 +262,13 @@ class PbZohoUploadWizard(models.TransientModel):
             **{k: summary.get(k, 0) for k in
                ('received', 'created', 'updated', 'onboarding', 'offboarding',
                 'review', 'skipped', 'errors')})
+        # APPROVAL MATRIX P5 — the rows that WRITE now wait for a person. A
+        # note that only counted what happened would read as "nothing
+        # happened" on a file that is perfectly fine and simply waiting.
+        if summary.get('waiting'):
+            note += ' ' + _(
+                "%s of them are waiting for approval before anything is "
+                "changed.", summary['waiting'])
         _logger.info('pb_zoho_bridge: file upload — %s', summary)
         self.write({'result_note': note})
         return {
