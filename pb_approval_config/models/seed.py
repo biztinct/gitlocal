@@ -91,6 +91,14 @@ def seed_company(env, company):
         _logger.info('approval seed: the engine catalogue is not loaded yet')
         return False
 
+    # WHO THE TRAIL SAYS DID THIS. Everything below is written during an
+    # install, when the acting user is the platform's own background account —
+    # so an unqualified publish writes "<that account> published Other
+    # request" onto a screen a customer reads, under a name that is not the
+    # product's. The company's own administrator is the honest answer and the
+    # only person this module can know about, so the publish is made as them.
+    publisher = _admin_for(env, company)
+
     Workflow = env['biz.approval.workflow'].sudo()
     Version = env['biz.approval.workflow.version'].sudo()
     Binding = env['biz.approval.binding'].sudo()
@@ -104,7 +112,7 @@ def seed_company(env, company):
             'name': GENERIC_WORKFLOW_NAME,
             'company_id': company.id,
             'process_id': process.id,
-            'owner_user_id': _admin_for(env, company).id,
+            'owner_user_id': publisher.id,
         })
     version = workflow.version_ids.filtered(
         lambda v: v.status == 'published').sorted('revision')[-1:]
@@ -118,9 +126,18 @@ def seed_company(env, company):
                 'status': 'draft',
                 'definition': _generic_definition(),
             })
-        # publish it as the installing user, confirming whatever the engine
-        # says about a one-person route: that IS the choice being made here.
-        engine = env['biz.approval.engine'].sudo()
+        # Published as the company's administrator, confirming whatever the
+        # engine says about a one-person route: that IS the choice being made
+        # here, and it is theirs rather than a background account's.
+        #
+        # `with_user(...).sudo()` and not one or the other. A company created a
+        # moment ago has NO members yet — not even an administrator — so the
+        # company record rule would refuse that person their own default route
+        # and the seed would leave the company unable to ask for anything.
+        # `sudo()` lifts the rule without changing who `env.uid` is, so the
+        # trail still says the administrator's name rather than a background
+        # account's.
+        engine = env['biz.approval.engine'].with_user(publisher).sudo()
         checks = engine.validate_for_publish(version.id)
         if checks['errors']:
             _logger.warning('approval seed: default route refused: %s',
@@ -164,7 +181,7 @@ def seed_company(env, company):
             'role_id': role.id,
             'scope_key': '',
             'scope_label': company.name,
-            'user_id': _admin_for(env, company).id,
+            'user_id': publisher.id,
             'date_from': fields.Date.context_today(env['res.company']),
             'note': 'Chosen when approvals were switched on. Change it in '
                     'People & backups.',

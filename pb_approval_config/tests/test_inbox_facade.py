@@ -238,6 +238,28 @@ class TestInboxFacade(MatrixCase):
         # the record cannot move under the signature: it is frozen at pending
         self.assertEqual(record.state, 'pending')
 
+    def test_no_fact_shows_the_reader_the_machinery(self):
+        """Found in the browser walk: a yes/no answer read "No bool", because
+        an adapter puts the SHAPE of a fact in the same slot as its unit, and
+        a kind read "any", because the frozen fact holds the key rather than
+        the words somebody chose."""
+        made = self.ask()
+        drawer = self.Inbox.with_user(self.fin).with_company(
+            self.company).get_request(made['request_id'])
+        by_key = {fact['key']: fact for fact in drawer['facts']}
+
+        self.assertIn('urgent', by_key)
+        self.assertEqual(by_key['urgent']['unit'], '',
+                         'the shape of a fact is being shown as its unit')
+        self.assertIn(by_key['urgent']['value'], ('No', 'Yes'))
+
+        self.assertIn('kind', by_key)
+        self.assertEqual(by_key['kind']['value'], 'Any kind',
+                         'the kind is shown as its key rather than its words')
+
+        # a real unit still survives, because it is a word a person reads
+        self.assertEqual(by_key['amount']['unit'], self.currency.name)
+
     def test_a_stuck_request_carries_its_own_repair(self):
         self.env['biz.approval.responsibility'].sudo().search([
             ('company_id', '=', self.company.id),

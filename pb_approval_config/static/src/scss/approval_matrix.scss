@@ -47,7 +47,16 @@
     .pbam-ms-bad { color: var(--pbim-rose); }
 
     // ------------------------------------------------------------ badges
+    //
+    // THE KIT CAPITALIZES EVERY WORD, AND EVERY BADGE HERE IS A SENTENCE.
+    // `.pbim-badge` sets `text-transform: capitalize`, which is right for a
+    // one-word status and wrong for everything on these screens: it turns
+    // "3 things to confirm" into "3 Thing(S) To Confirm" and "not connected
+    // yet" into "Not Connected Yet". Seen in the browser walk. The words are
+    // already written in the case they should be read in, so the transform is
+    // turned off rather than fought with per badge.
     .pbim-badge {
+        text-transform: none;
         &.pbam-ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
         &.pbam-info { background: var(--pbim-soft); color: var(--pbim-primary); }
         &.pbam-warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }

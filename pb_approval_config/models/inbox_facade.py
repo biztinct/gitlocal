@@ -319,15 +319,22 @@ class PbApprovalInbox(models.AbstractModel):
 
     def _facts(self, request):
         """The facts, exactly as they were frozen — never as they are today."""
-        labels = {}
+        labels, choices = {}, {}
         process = request.process_id
         model = process.model_name
+        caps = {}
         if model and model in self.env \
                 and getattr(self.env[model], '_approval_process_key', None):
             caps = self._safe(
-                lambda: self.env[model]._approval_capabilities(), default={})
+                lambda: self.env[model]._approval_capabilities(),
+                default={}) or {}
             labels = {key: (spec or {}).get('label') or key
-                      for key, spec in ((caps or {}).get('facts') or {}).items()}
+                      for key, spec in (caps.get('facts') or {}).items()}
+            # the kinds an adapter declares are key-and-label pairs, and the
+            # frozen fact holds the KEY. Nobody should have to read one.
+            choices = {row.get('key'): row.get('label')
+                       for row in (caps.get('kinds') or [])
+                       if isinstance(row, dict)}
         rows = []
         for key, raw in (request.facts or {}).items():
             value = raw.get('value') if isinstance(raw, dict) else raw
@@ -338,6 +345,13 @@ class PbApprovalInbox(models.AbstractModel):
                 shown = '{:,.2f}'.format(float(value)).rstrip('0').rstrip('.')
             else:
                 shown = str(value if value is not None else '')
+                shown = choices.get(shown, shown)
+            # A UNIT IS A WORD, NOT A TYPE. Adapters put the shape of a fact in
+            # the same slot as its unit ('bool', 'decimal'), and a screen that
+            # prints "No bool" beside a yes/no answer is showing the reader the
+            # machinery. Only a real unit survives.
+            if (unit or '').lower() in D.FACT_TYPES:
+                unit = ''
             rows.append({'key': key, 'label': labels.get(key, key),
                          'value': shown, 'unit': unit or ''})
         if request.amount:

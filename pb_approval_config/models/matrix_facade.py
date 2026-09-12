@@ -723,6 +723,13 @@ class PbApprovalMatrix(models.AbstractModel):
         for row in held:
             by_seat['%s|%s' % (row.role_key, row.scope_key or '')] = row
 
+        # WHICH EMPTY SEATS ACTUALLY STOP SOMETHING. Every responsibility in
+        # the catalogue starts with nobody in it, and most of them are never
+        # asked for: calling all nine a gap would be noise nobody could act on.
+        # A gap is an empty seat a real route NEEDS — so the roles named by a
+        # workflow in this company are looked up first, and only those count.
+        needed = self._roles_in_use(company)
+
         rows, gaps = [], []
         for role in roles:
             cells = []
@@ -734,6 +741,12 @@ class PbApprovalMatrix(models.AbstractModel):
                 elif not scope['key']:
                     cell['state'] = 'empty'
                     cell['text'] = _('Nobody for the whole company yet')
+                    # An empty company-wide seat stops a request exactly as
+                    # hard as an empty divisional one; it is only worth saying
+                    # so when a route asks for it.
+                    if role.key in needed:
+                        gaps.append({'role_key': role.key, 'role': role.name,
+                                     'scope_key': '', 'scope': company.name})
                 elif role.fallback_to_company:
                     company_seat = by_seat.get('%s|' % role.key)
                     cell['state'] = 'inherited'
@@ -769,6 +782,26 @@ class PbApprovalMatrix(models.AbstractModel):
             'delegations': self.list_delegations(company.id),
             'can_config': True,
         }
+
+    def _roles_in_use(self, company):
+        """Every responsibility a route in this company actually names.
+
+        Read from the DEFINITION documents rather than from a stored link,
+        because a step's "who" is part of the document and there is no other
+        truth about it. Drafts count: somebody halfway through building a
+        route wants to know about the seat it will need before they publish.
+        """
+        keys = set()
+        versions = self.env['biz.approval.workflow.version'].sudo().search([
+            ('company_id', '=', company.id),
+            ('status', 'in', ('draft', 'published')),
+        ], limit=MAX_ROWS)
+        for version in versions:
+            for step in D.decision_steps(version.definition):
+                who = step.get('who') or {}
+                if who.get('mode') == 'role' and who.get('role'):
+                    keys.add(who['role'])
+        return keys
 
     def _seat_payload(self, seat, company):
         cover = self._safe(

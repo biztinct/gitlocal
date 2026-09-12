@@ -59,6 +59,20 @@ class TestSeed(MatrixCase):
         self.assertFalse(answer['error'], answer['error'])
         self.assertTrue(answer['version_id'])
 
+    def test_u12_the_trail_names_a_person_and_not_a_background_account(self):
+        """Found in the browser walk: History read "<the platform's own
+        background account> published Other request version 1", which is a
+        vendor name on a screen a customer reads. The seed now publishes as
+        the company's own administrator."""
+        event = self.env['biz.approval.event'].sudo().search([
+            ('kind', '=', 'published'),
+            ('company_id', '=', self.company.id)], limit=1, order='id')
+        self.assertTrue(event, 'the default route was published silently')
+        self.assertNotEqual(
+            event.user_id.id, 1,
+            'the trail credits the background account rather than a person')
+        self.assertIn(event.user_id.name, event.summary)
+
     def test_the_payobook_responsibilities_are_all_there(self):
         keys = set(self.env['biz.approval.role'].sudo().search([]).mapped('key'))
         for key in ('hr_lead', 'finance', 'payroll_mgr', 'director',

@@ -297,6 +297,39 @@ class TestMatrixFacade(MatrixCase):
         self.assertEqual(cell['state'], 'held')
         self.assertEqual(cell['name'], self.hr.name)
 
+    def test_u08_an_empty_seat_a_route_needs_is_a_gap_even_company_wide(self):
+        """Found in the browser walk: a company with no divisions showed
+        "every seat has somebody in it" while the seat its only published
+        route needed was empty. A company-wide seat with nobody stops a
+        request exactly as hard as a divisional one.
+
+        And the other half: an empty seat NO route asks for is not a gap.
+        Every responsibility in the catalogue starts empty, and calling all
+        nine a problem would be noise nobody could act on.
+        """
+        matrix = self.as_admin('pb.approval.matrix')
+        made = matrix.create_workflow('blank', 'generic')
+        opened = matrix.get_workflow(made['workflow_id'])
+        definition = dict(opened['draft']['definition'], steps=[{
+            'key': 's1', 'kind': 'approve', 'title': 'Finance approval',
+            'who': {'mode': 'role', 'role': 'finance', 'scope': 'company'},
+            'min_amount': 0, 'condition': None,
+        }])
+        matrix.save_draft(opened['draft']['version_id'],
+                          opened['draft']['draft_revision'], definition, {})
+
+        grid = matrix.get_people(self.company.id)
+        gaps = {gap['role_key'] for gap in grid['gaps']}
+        self.assertIn('finance', gaps,
+                      'an empty seat the route needs is not reported')
+        self.assertNotIn('director', gaps,
+                         'a seat no route asks for is reported as a problem')
+
+        matrix.set_responsibility(self.company.id, 'finance', '', self.fin.id)
+        after = matrix.get_people(self.company.id)
+        self.assertNotIn('finance',
+                         {gap['role_key'] for gap in after['gaps']})
+
     def test_u08_clearing_a_seat_leaves_it_empty_rather_than_wrong(self):
         matrix = self.as_admin('pb.approval.matrix')
         matrix.set_responsibility(self.company.id, 'finance', '', self.fin.id)
