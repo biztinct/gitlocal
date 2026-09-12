@@ -20,6 +20,9 @@ from odoo.exceptions import AccessError, UserError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
 from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
+# Approval Matrix P4 — the key the five doors into a live pay scheme check.
+from odoo.addons.pb_hr_payroll_formula.models.scheme_proposal import (
+    KIND_NAME as SCHEME_KIND_NAME, apply_context as _scheme_apply)
 
 _logger = logging.getLogger(__name__)
 
@@ -2971,6 +2974,8 @@ class PbFormulaStudio(models.AbstractModel):
         config = self._pick_config(config_id)
         if not config:
             return {'ok': False}
+        # Approval Matrix P4 — sealing a release publishes what a scheme pays.
+        config._require_proposal('release')
         last = self._last_milestone(config)
         from_hwm = self._ms_hwm(last)
         changes = self._changes_between_ver(config, from_hwm, None)
@@ -3098,6 +3103,9 @@ class PbFormulaStudio(models.AbstractModel):
         if not rel.exists():
             return {'ok': False}
         config = rel.config_id
+        # Approval Matrix P4 — undoing a release changes what people are paid
+        # just as much as making one did.
+        config._require_proposal('rollback')
         guard = self._rollback_guard(rel)
         from_hwm = self._ms_hwm(rel.from_milestone_id)
         changes = self._changes_between_ver(config, from_hwm, None)
@@ -3192,6 +3200,140 @@ class PbFormulaStudio(models.AbstractModel):
         })
         tests = self._run_tests_after_save(config)
         return {'ok': True, 'restored': len(seen), 'release_id': audit.id, 'tests': tests}
+
+    # ==================================================================
+    # Approval Matrix P4 — proposing a change instead of pressing it
+    # ==================================================================
+    # The five doors above open only from an approved proposal's apply. These
+    # three methods are how a person gets there: what the route says, a press
+    # that makes the proposal and sends it in, and the list the header chip
+    # reads. Everything they do is done through the proposal model and the
+    # engine, which gate themselves — nothing here is the thing that permits an
+    # act.
+    @api.model
+    def scheme_route(self, config_id):
+        """What the business published for changing THIS scheme."""
+        config = self.env['hr.formula.config'].browse(int(config_id or 0))
+        if not config.exists():
+            return {'ok': False}
+        try:
+            mode, version = config._scheme_route()
+        except UserError as exc:
+            return {'ok': True, 'mode': 'broken',
+                    'msg': exc.args[0] if exc.args else ''}
+        labels = list(version.route_labels or []) if version else []
+        return {
+            'ok': True,
+            'mode': mode,
+            'workflow': version.workflow_id.name if version else '',
+            'route': labels,
+            'msg': {
+                'steps': _("Changes here go to %s.", ' → '.join(labels))
+                if labels else _("Changes here are approved before they happen."),
+                'fast': _("Your business chose that changes here need no "
+                          "approval. Every one is still recorded."),
+                'open': _("No approval is set up for scheme changes yet, so "
+                          "changes happen straight away and are recorded."),
+            }.get(mode, ''),
+        }
+
+    def _scheme_diff_rows(self, config, kind, branch=None, release=None):
+        """What this proposal is asking to change, in the diff's own shape."""
+        if kind == 'merge' and branch:
+            return self._branch_diff_rows(branch)['changed']
+        if kind == 'release':
+            return self._changes_between_ver(
+                config, self._ms_hwm(self._last_milestone(config)), None)
+        if kind == 'rollback' and release:
+            return self._changes_between_ver(
+                config, self._ms_hwm(release.from_milestone_id), None)
+        if kind == 'activate':
+            # Nothing has changed since a milestone — the whole scheme is what
+            # is being put live, so the components themselves are the change.
+            rows = []
+            for rule in config.rule_ids[:40]:
+                rows.append({'code': rule.code or '', 'name': rule.name or '',
+                             'old_formula': '',
+                             'cur_formula': rule.excel_formula or (
+                                 '%s' % (rule.constant_value or ''))})
+            return rows
+        return []
+
+    @api.model
+    def scheme_propose(self, config_id, kind, branch_id=None, release_id=None,
+                       note=None):
+        """Make the proposal and send it in. One press, one record."""
+        if not self._can_edit():
+            return {'ok': False,
+                    'msg': _("You do not have permission to change pay "
+                             "schemes.")}
+        config = self.env['hr.formula.config'].browse(int(config_id or 0))
+        if not config.exists():
+            return {'ok': False, 'msg': _("That pay scheme no longer exists.")}
+        if kind not in SCHEME_KIND_NAME:
+            return {'ok': False, 'msg': _("That is not a change this can ask "
+                                          "for.")}
+        branch = self.env['hr.formula.config'].browse(int(branch_id or 0)) \
+            if branch_id else self.env['hr.formula.config']
+        release = self.env['hr.formula.release'].browse(int(release_id or 0)) \
+            if release_id else self.env['hr.formula.release']
+        diff = self._scheme_diff_rows(config, kind, branch or None,
+                                      release or None)
+        # `run_sample_tests` answers in COUNTS (total / passed / failed). The
+        # proposal's own fact is a yes-or-no, so the counts are kept under
+        # their own names and the verdict is added beside them — overwriting
+        # `passed` with a boolean would throw away the number a reader wants.
+        raw = dict(self._run_tests_after_save(branch or config) or {})
+        total = int(raw.get('total') or 0)
+        passed = int(raw.get('passed') or 0)
+        failed = int(raw.get('failed') or 0)
+        tests = dict(raw)
+        tests.update({
+            'run': total,
+            'verdict': bool(total and not failed),
+            'summary': _("%(ok)s of %(total)s checks passed",
+                         ok=passed, total=total),
+        })
+        try:
+            proposal = self.env['pb.scheme.proposal'].propose(
+                config, kind, branch=branch or None, release=release or None,
+                note=note, diff=diff, tests=tests)
+            proposal.action_submit()
+        except (UserError, AccessError) as exc:
+            return {'ok': False,
+                    'msg': exc.args[0] if exc.args else _("It could not be "
+                                                          "sent in.")}
+        proposal.invalidate_recordset()
+        return {
+            'ok': True,
+            'proposal_id': proposal.id,
+            'request_id': proposal.approval_request_id.id,
+            'state': proposal.state,
+            'applied': proposal.state == 'applied',
+            'msg': (_("Carried out — nobody had to check it, and that is "
+                      "recorded.") if proposal.state == 'applied'
+                    else _("Sent in for approval.")),
+        }
+
+    @api.model
+    def scheme_proposals(self, config_id, limit=6):
+        """The recent proposals on this scheme, for the header chip."""
+        config = self.env['hr.formula.config'].browse(int(config_id or 0))
+        if not config.exists():
+            return {'ok': False, 'rows': []}
+        rows = self.env['pb.scheme.proposal'].search(
+            [('config_id', '=', config.id)], limit=min(int(limit or 6), 20))
+        return {'ok': True, 'rows': [{
+            'id': row.id,
+            'kind': row.kind,
+            'kind_label': _(SCHEME_KIND_NAME.get(row.kind, row.kind or '')),
+            'state': row.state,
+            'state_label': dict(
+                row._fields['state'].selection).get(row.state, ''),
+            'request_id': row.approval_request_id.id,
+            'when': fields.Datetime.to_string(row.create_date) or '',
+            'note': row.note or '',
+        } for row in rows]}
 
     # ==================================================================
     # W97 — Period comparison (read-only chunked aggregation of two payruns)
@@ -3832,6 +3974,10 @@ class PbFormulaStudio(models.AbstractModel):
         if branch.branch_state == 'merged':
             return {'ok': False, 'msg': _("This branch has already been merged.")}
         parent = branch.parent_branch_id
+        # Approval Matrix P4 — merging a branch is a change to a live scheme.
+        # The gate opens only from an approved proposal's apply (or where the
+        # business published no check); everywhere else it names the way in.
+        parent._require_proposal('merge')
         d = self._branch_diff_rows(branch)
         if not d['changed']:
             return {'ok': False, 'reason': 'no_changes',
@@ -3854,8 +4000,13 @@ class PbFormulaStudio(models.AbstractModel):
                 prule.python_formula = prule._convert_excel_to_python(prule.excel_formula, column_map)
             merged += 1
         branch.branch_state = 'merged'
-        rel = self.release_approve(parent.id, (narrative or '').strip()
-                                   or _("Merged branch “%s” — %s component(s)") % (branch.name, merged))
+        # The release this merge seals rides the merge's own permission: it was
+        # gated one moment ago, on the same scheme, by the same act. Without the
+        # sentinel a company with a real route would see the merge approved and
+        # the release inside it refused.
+        rel = _scheme_apply(self).release_approve(
+            parent.id, (narrative or '').strip()
+            or _("Merged branch “%s” — %s component(s)") % (branch.name, merged))
         return {'ok': True, 'merged': merged,
                 'skipped_added': len(d['added']), 'skipped_removed': len(d['removed']),
                 'conflicts': sum(1 for r in d['changed'] if r['conflict']),

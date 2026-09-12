@@ -188,6 +188,9 @@ export class PbFormulaStudio extends Component {
             loaded: false,
             empty: false,
             canEdit: true,
+            // Approval Matrix P4 — what the business published for changing
+            // this scheme; null until the first load answers.
+            schemeRoute: null,
             view: "cards",
             config: {},
             configs: [],
@@ -722,6 +725,14 @@ export class PbFormulaStudio extends Component {
             this.state.peopleOpen = false;   // COLROLES — a new structure opens quiet
         }
         this.state.config = d.config;
+        // Approval Matrix P4 — what the business published for changing THIS
+        // scheme, so the buttons can say what pressing them will actually do.
+        // Never awaited into the critical path: a studio that would not open
+        // because the approval set-up could not be read would be a worse
+        // screen than one whose buttons read "Activate" for a second.
+        this.orm.call("pb.formula.studio", "scheme_route", [d.config.id])
+            .then((route) => { this.state.schemeRoute = route || null; })
+            .catch(() => { this.state.schemeRoute = null; });
         this.state.components = d.components;
         this.state.samples = d.samples;
         this.state.scenarios = d.scenarios || [];
@@ -1966,10 +1977,9 @@ export class PbFormulaStudio extends Component {
         if (this.state.releaseBusy) return;
         this.state.releaseBusy = true;
         try {
-            const r = await this.orm.call("pb.formula.studio", "release_approve",
-                [this.state.config.id, this.state.releaseNarrative]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not sign off the release"), { type: "warning" }); return; }
-            this.notif.add(_t("Release sealed · %(count)s components", { count: r.change_count }), { type: "success" });
+            const r = await this._schemePropose("release",
+                { note: this.state.releaseNarrative });
+            if (!r) { return; }
             await this._loadReleasePreview();
             await this._loadReleaseList();
             this.state.releaseTab = "history";
@@ -2055,12 +2065,12 @@ export class PbFormulaStudio extends Component {
         if (this.state.rollbackApplying) return;
         this.state.rollbackApplying = true;
         try {
-            const r = await this.orm.call("pb.formula.studio", "rollback_apply", [d.release.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Rollback failed"), { type: "danger" }); return; }
-            this.notif.add(_t("Rolled back · %(count)s components restored", { count: r.restored }), { type: "success" });
+            const r = await this._schemePropose("rollback",
+                { release_id: d.release.id });
+            if (!r) { return; }
             this.closeRollback();
-            await this.load(this.state.config.id);   // formulas/constants changed everywhere
-            this._applyTests(r.tests);
+            // Only a change that actually happened moves the formulas on screen.
+            if (r.applied) { await this.load(this.state.config.id); }
             await this._loadReleasePreview();
             await this._loadReleaseList();
         } catch (e) {
@@ -2267,11 +2277,8 @@ export class PbFormulaStudio extends Component {
         if (this.state.branchBusy) return;
         this.state.branchBusy = true;
         try {
-            const r = await this.orm.call("pb.formula.studio", "branch_merge", [b.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Merge failed"), { type: "warning" }); return; }
-            let msg = `Merged ${r.merged} change${r.merged === 1 ? "" : "s"} into ${r.parent_name}`;
-            if (r.conflicts) msg += ` · ${r.conflicts} conflict${r.conflicts === 1 ? "" : "s"} (branch won)`;
-            this.notif.add(msg, { type: "success" });
+            const r = await this._schemePropose("merge", { branch_id: b.id });
+            if (!r) { return; }
             this.state.branchExpandId = null; this.state.branchDiff = null;
             await this._loadBranches();
         } catch (e) { this.notif.add(_t("Merge failed"), { type: "danger" }); }
@@ -4076,6 +4083,39 @@ export class PbFormulaStudio extends Component {
         if (this.state.settings) this.state.setDraft = Object.assign({}, this.state.settings.values);
         this.state.settingsError = "";
     }
+    // ---- Approval Matrix P4: a change to a live scheme is proposed ----
+    /** Does a change to this scheme have to be agreed before it happens? */
+    get schemeNeedsApproval() {
+        return !!(this.state.schemeRoute && this.state.schemeRoute.mode === "steps");
+    }
+    /** The button's word: what pressing it does, not what it is about. */
+    schemeVerb(direct) {
+        return this.schemeNeedsApproval ? _t("Propose for approval") : direct;
+    }
+    get schemeRouteLine() {
+        return (this.state.schemeRoute && this.state.schemeRoute.msg) || "";
+    }
+
+    /**
+     * One press, one record. The server decides what happens next: where the
+     * business published a real route the change goes to the people on it and
+     * this returns `applied:false`; where it published "no approval needed",
+     * or nothing at all, the change happens now and is still written down.
+     * Every caller below reloads only when something actually changed.
+     */
+    async _schemePropose(kind, opts = {}) {
+        const r = await this.orm.call("pb.formula.studio", "scheme_propose",
+            [this.state.config.id, kind, opts.branch_id || false,
+             opts.release_id || false, opts.note || ""]);
+        if (!r || !r.ok) {
+            this.notif.add((r && r.msg) || _t("That change could not be sent in."),
+                { type: "warning" });
+            return null;
+        }
+        this.notif.add(r.msg, { type: "success" });
+        return r;
+    }
+
     async _cfgLifecycle(method, okMsg) {
         const r = await this.orm.call("pb.formula.studio", method, [this.state.config.id]);
         if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Action blocked"), { type: "warning" }); }
@@ -4086,9 +4126,16 @@ export class PbFormulaStudio extends Component {
     }
     startTesting() { return this._cfgLifecycle("cfg_start_testing", "Testing started"); }
     validateCfg() { return this._cfgLifecycle("cfg_validate", "Validated"); }
-    activateCfg() { return this._cfgLifecycle("cfg_activate", "Activated"); }
+    async activateCfg() {
+        const r = await this._schemePropose("activate");
+        if (r) { await this.load(this.state.config.id); }
+    }
     setDraftCfg() { return this._cfgLifecycle("cfg_set_draft", "Back to draft"); }
-    archiveCfg() { if (!window.confirm("Archive this configuration?")) return; return this._cfgLifecycle("cfg_archive", "Archived"); }
+    async archiveCfg() {
+        if (!window.confirm(_t("Retire this pay scheme?"))) { return; }
+        const r = await this._schemePropose("archive");
+        if (r) { await this.load(this.state.config.id); }
+    }
     regenerateFormulas() { return this._cfgLifecycle("cfg_regenerate_formulas", "Formulas regenerated"); }
     generateSamples() { return this._cfgLifecycle("cfg_generate_sample_data", "Sample data generated"); }
     runTestsCfg() { return this._cfgLifecycle("cfg_run_tests", "Tests run"); }

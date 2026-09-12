@@ -237,14 +237,17 @@
           <div class="pbcfg-actions">
             <button t-if="cfgState === 'draft'" class="pbfs-btn primary" t-on-click="startTesting">Start Testing</button>
             <button t-if="cfgState === 'testing'" class="pbfs-btn primary" t-on-click="validateCfg">Validate</button>
-            <button t-if="cfgState === 'validated'" class="pbfs-btn primary" t-on-click="activateCfg">Activate</button>
+            <button t-if="cfgState === 'validated'" class="pbfs-btn primary" t-on-click="activateCfg"
+                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Activate')"/></button>
             <button t-if="state.settings.status.rule_count" class="pbfs-btn soft" data-coach="fs-simulate" t-on-click="openSimulate" title="Preview this config against last period's real payslips before activating">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Simulate
             </button>
             <button t-if="cfgState !== 'draft'" class="pbfs-btn ghost" t-on-click="setDraftCfg">Set to Draft</button>
             <button t-if="!state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="importExcelCfg">Import from Excel</button>
             <button t-if="state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="regenerateFormulas">Regenerate Formulas</button>
-            <button t-if="cfgState !== 'archived'" class="pbfs-btn danger" t-on-click="archiveCfg">Archive</button>
+            <button t-if="cfgState !== 'archived'" class="pbfs-btn danger" t-on-click="archiveCfg"
+                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Retire')"/></button>
+            <div t-if="schemeRouteLine" class="pbfs-hint" t-esc="schemeRouteLine"/>
           </div>
           <!-- alerts -->
           <div t-if="state.settings.status.has_errors and state.settings.status.error_details" class="ed-errbox" t-esc="state.settings.status.error_details"/>
@@ -2819,7 +2822,7 @@
 
                   <div class="rl-actions" t-if="state.releaseData.can_edit">
                     <button class="pbfs-btn primary" t-att-disabled="state.releaseBusy" t-on-click="approveRelease">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="m9 12 2 2 4-4"/></svg>Sign off &amp; seal release
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="m9 12 2 2 4-4"/></svg><t t-esc="schemeVerb('Sign off &amp; seal release')"/>
                     </button>
                   </div>
                 </t>
@@ -2949,8 +2952,8 @@
                   <label>Type <b t-esc="state.rollbackData.release.name"/> to confirm</label>
                   <input type="text" class="rb-confirm-in" t-att-value="state.rollbackConfirm" t-on-input="onRollbackConfirm" placeholder="Release name"/>
                   <button class="pbfs-btn danger-solid" t-att-disabled="!rollbackConfirmOk or state.rollbackApplying" t-on-click="applyRollback">
-                    <t t-if="state.rollbackApplying">Rolling back…</t>
-                    <t t-else="">Roll back now</t>
+                    <t t-if="state.rollbackApplying">Working…</t>
+                    <t t-else="" t-esc="schemeVerb('Roll back now')"/>
                   </button>
                 </div>
               </t>
@@ -3372,7 +3375,8 @@
                         <button class="pbfs-btn soft sm" t-on-click="() => this.openBranchConfig(b)">Open branch</button>
                         <button t-if="state.branchData.can_edit and b.branch_state === 'open' and state.branchDiff.changed.length" class="pbfs-btn primary sm" t-att-disabled="state.branchBusy" t-on-click="() => this.mergeBranch(b)">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
-                          Merge into <t t-esc="state.branchDiff.parent.name"/>
+                          <t t-if="schemeNeedsApproval">Propose merge into <t t-esc="state.branchDiff.parent.name"/></t>
+                          <t t-else="">Merge into <t t-esc="state.branchDiff.parent.name"/></t>
                         </button>
                         <button t-if="state.branchData.can_edit and b.branch_state === 'open'" class="pbfs-btn ghost sm danger" t-on-click="() => this.discardBranch(b)">Discard</button>
                       </div>
