@@ -69,14 +69,19 @@ export class AiInsightChat extends Component {
         // "the user closed it" and "a recording left the browser".
         this._discarded = false;
 
+        // ERRORS E4-4. The starter questions a person actually clicks. They
+        // were bare literals: untranslated in Vietnamese, and — for the third
+        // one — offering a Rize employee a tour of a product they have never
+        // heard of. `_t` is both fixes; `String(...)` keeps them primitives so
+        // the template and the send path treat them as ordinary text.
         this.suggestions = [
-            "How do I run payroll?",
-            "What is a formula config?",
-            "Show me around Payobook",
-            "Show me salary distribution by department",
-            "What is the total headcount?",
-            "Compare department payroll costs",
-        ];
+            _t("How do I run payroll?"),
+            _t("What is a formula config?"),
+            _t("Show me around Payobook"),
+            _t("Show me salary distribution by department"),
+            _t("What is the total headcount?"),
+            _t("Compare department payroll costs"),
+        ].map(String);
 
         onMounted(() => {
             this._loadHistory();

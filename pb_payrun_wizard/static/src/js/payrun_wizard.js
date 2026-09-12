@@ -102,11 +102,21 @@ export function splitExceptions(exceptions, unmatched) {
     return { missing, rest };
 }
 
-/** The heading over the block — a sentence, with the count inside it. */
+/** The heading over the block — a sentence, with the count inside it.
+ *
+ * ERRORS E4-4. Both halves used to be bare literals, so no translation and no
+ * debranding seam ever saw them and a Rize payroll officer was told somebody
+ * "is not in Payobook yet". `_t` fixes both at once: it is how the string
+ * reaches the catalogue in Vietnamese AND how it reaches the rewrite that puts
+ * the customer's own brand in it. The count stays an interpolated ARGUMENT, so
+ * the rule that a `_t` template is rewritten and its arguments are not still
+ * holds. `String(...)` because callers compare the result to a plain string.
+ */
 export function notInPayobookHeading(count) {
-    return count === 1
-        ? "1 person in the file is not in Payobook yet — they were listed, not paid"
-        : `${count} people in the file are not in Payobook yet — they were listed, not paid`;
+    return String(count === 1
+        ? _t("1 person in the file is not in Payobook yet — they were listed, not paid")
+        : _t("%(count)s people in the file are not in Payobook yet — they were listed, not paid",
+             { count }));
 }
 
 /**

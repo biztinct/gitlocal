@@ -2080,7 +2080,12 @@ export class LearnJourney extends Component {
     }
 
     get brandLabel() {
-        return this.state.ready ? T("brand") : "Payobook";
+        // ERRORS E4-4. The second half is what the header shows for the one
+        // frame before the content bundle arrives, and it was a bare literal —
+        // so on a white-labelled customer the Learn header opened with OUR
+        // name and then corrected itself. `tx` routes it through `_t`, which
+        // every debranding seam reaches.
+        return this.state.ready ? T("brand") : tx("Payobook");
     }
 
     get learnLabel() {

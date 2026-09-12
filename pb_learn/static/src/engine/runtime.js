@@ -33,6 +33,7 @@
    tests/test_assets.py enforces both, because this is exactly the kind of
    thing that comes straight back the next time someone writes a sentence.
    ========================================================================== */
+import { _t } from "@web/core/l10n/translation";
 
 export const RT = {
     lang: "en",          // "en" | "vi" — switchable live, never a page reload
@@ -58,7 +59,23 @@ function interpolate(o, escapeTokens) {
     if (o === null || o === undefined) {
         return "";
     }
-    const s = typeof o === "string" ? o : (o[RT.lang] || o.en || "");
+    // ERRORS E4-4. Every lesson string in this module is built by hand into a
+    // template literal and never passes through `_t()`, so none of the
+    // debranding seams has ever seen one — which is why a Rize learner was
+    // still being taught about "Payobook". This is the one funnel they all
+    // share, so routing the SOURCE string through `_t()` here covers all ~400
+    // call sites at once, in both languages, instead of editing them.
+    //
+    // AND IT HAS TO BE HERE, BEFORE THE TOKENS GO IN (ER23). The {{token}}
+    // values below are rows a tenant administrator TYPED — a company name, a
+    // division. Running a name-rewriting rule over those would rename the
+    // customer's own data inside their own lesson. Above this line the string
+    // is authored in this repo; below it, it is not.
+    //
+    // `String(...)` because `_t` returns a TranslatedString object and every
+    // caller here expects a primitive — `.indexOf` and `.replace` are used on
+    // the result straight away.
+    const s = String(_t(typeof o === "string" ? o : (o[RT.lang] || o.en || "")));
     if (s.indexOf("{{") === -1) {
         return s;
     }

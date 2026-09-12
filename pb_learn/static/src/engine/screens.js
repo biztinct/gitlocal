@@ -1312,8 +1312,13 @@ export function shellHTML(screen, opts) {
 
     return `
     <div class="lrn-shell">
-        <aside class="lrn-sb" data-coach="rep-nav" aria-label="Payobook navigation">
-            <div class="lrn-brand"><span class="lrn-mark">${ic("zap")}</span><span>Payobook</span></div>
+        <aside class="lrn-sb" data-coach="rep-nav" aria-label="${esc(tx(B("Payobook navigation", "Điều hướng Payobook")))}">
+            <!-- ERRORS E4-4. The replica's own brand mark. It is a DRAWING of
+                 the product the learner is about to use, so it has to carry
+                 whatever that product is called for them — routed through tx()
+                 (and so through _t and the debranding seams) rather than
+                 written down. -->
+            <div class="lrn-brand"><span class="lrn-mark">${ic("zap")}</span><span>${esc(tx("Payobook"))}</span></div>
             <div class="lrn-catch"><b>Hoa Sen Retail Co.</b>${esc(tx(B("Vietnam", "Việt Nam")))}</div>
             ${secs}
             <div class="lrn-foot">${esc(tx(B("Practice data · not your company", "Dữ liệu thực hành · không phải công ty của bạn")))}</div>

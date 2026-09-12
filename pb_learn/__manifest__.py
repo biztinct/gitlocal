@@ -12,7 +12,7 @@
     # screen IDENTITY. The nineteen stations name the hub that reaches them
     # instead of saying "not in your menu", and _capability stops refusing
     # every screen to everybody but a super admin.
-    'version': '19.0.13.0.0',
+    'version': '19.0.13.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
