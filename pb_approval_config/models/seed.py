@@ -186,7 +186,40 @@ def seed_company(env, company):
             'note': 'Chosen when approvals were switched on. Change it in '
                     'People & backups.',
         })
+
+    seed_adapters(env, company)
     return True
+
+
+def seed_adapters(env, company):
+    """Let every business object that has a default route of its own lay it.
+
+    WHY THIS IS A DUCK-TYPED LOOP AND NOT A LIST OF MODULES. A pay run's
+    default route lives in `pb_payruns`, which this module must not depend on
+    (the hubs depend on the configuration module, never the other way round).
+    But which module installs FIRST is not something either of them chooses: if
+    `pb_payruns` goes in before the process catalogue exists, its own hook finds
+    no `payrun` row and correctly does nothing — and nothing would ever come
+    back for it. So the catalogue's own seed asks, at the end, whether any model
+    in the registry has a default route waiting to be laid.
+
+    Every one of them is idempotent, which is what makes calling them from both
+    ends safe.
+    """
+    laid = 0
+    for name in list(env.registry.models):
+        model = env[name]
+        if not getattr(model, '_approval_process_key', None):
+            continue
+        if not hasattr(model, '_approval_seed_default'):
+            continue
+        try:
+            if model._approval_seed_default(company):
+                laid += 1
+        except Exception:  # noqa: BLE001 — one adapter must not stop the rest
+            _logger.exception('approval seed: %s has no default route for %s',
+                              name, company.name)
+    return laid
 
 
 def seed_all(env):

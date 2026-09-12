@@ -6,7 +6,7 @@
     # model, the payroll.analytics JSON/state contract, the level2
     # auto-generation hook, the approval workflow, menus and security are
     # BYTE-UNTOUCHED.
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Advanced Payroll Analytics, Approval Dashboard & Bank Export',
     'description': """

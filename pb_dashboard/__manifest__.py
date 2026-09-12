@@ -5,7 +5,7 @@
     # LOOK P4. The home page names the payroll month its figures are about and
     # offers a strip to change it. Python and assets both change; a code change
     # with no version bump is invisible to the deploy-time version-diff gate.
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

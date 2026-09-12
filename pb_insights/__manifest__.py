@@ -34,7 +34,7 @@ tier. All assets are local — no CDN, no external chart library.
     # with the caller's rights behind W105/W111's rules; the three sudos left
     # are people/workforce reads, narrowed to their own line and explained
     # there.
-    'version': '19.0.5.1.0',
+    'version': '19.0.5.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

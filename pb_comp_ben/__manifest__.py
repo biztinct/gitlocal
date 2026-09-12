@@ -48,7 +48,7 @@ behind payroll groups a pay-package reader need not hold.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
