@@ -3140,6 +3140,7 @@ msgstr "Không đọc được luồng phê duyệt đó."
 msgid "That workflow no longer exists."
 msgstr "Luồng phê duyệt đó không còn tồn tại."
 
+#. module: pb_approval_config
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "The %s already under way keep the people and steps they were given."
 msgstr ""
