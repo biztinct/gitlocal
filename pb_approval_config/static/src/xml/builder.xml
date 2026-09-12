@@ -483,7 +483,7 @@
               <p>
                 New requests follow this route from now on.
                 <t t-if="state.published.in_progress">
-                  The <t t-esc="state.published.in_progress"/> already under way keep the people and steps they were given.
+                  <t t-esc="publishedNote"/>
                 </t>
               </p>
               <div class="pbam-success-doors">

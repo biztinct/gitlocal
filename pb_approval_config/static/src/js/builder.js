@@ -705,6 +705,22 @@ export class ApprovalBuilder extends Component {
         return this.outstanding.length === 0;
     }
 
+    /**
+     * What happens to the requests that were already in flight.
+     *
+     * ONE STRING WITH A PLACEHOLDER, not a sentence built around an
+     * interpolation in the template. A template that writes "The" before a
+     * number and the rest of the clause after it hands the translator the
+     * word "The" on its own, which cannot be translated and cannot be
+     * reordered into a language that puts the count somewhere else.
+     */
+    get publishedNote() {
+        const count = (this.state.published || {}).in_progress || 0;
+        return _t(
+            "The %s already under way keep the people and steps they were given.",
+            count);
+    }
+
     async publish() {
         const publication = this.state.publication || {};
         try {
