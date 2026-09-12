@@ -1,0 +1,976 @@
+// =====================================================================
+//  The Approval Matrix and its builder — .pbam-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page pbam". Nothing here declares a colour of its own,
+//  so this screen re-tints with the rest of the app and cannot drift into
+//  a second palette.
+//
+//  The things this file owns that the kit does not:
+//
+//    1. THE MATRIX TABLE. Area headers inside one table body, a route drawn
+//       as chips with arrows between them, and a whole row that is a click
+//       target. It scrolls inside its OWN box, because `.pbim-tablewrap`
+//       clips and a narrow hub canvas would otherwise lose the last column.
+//    2. THE STEP LADDER. Numbered cards joined by a drawn line, where the
+//       line is a BORDER on a pseudo-element rather than an SVG path — a
+//       border reflows when a card grows, a path does not.
+//    3. THE EXAMPLE PANEL. A sticky right-hand column that stops being
+//       sticky the moment there is no room for two columns.
+//    4. THE DRAWERS. `position: fixed`, so they resolve against the viewport
+//       and not against the hub canvas they are mounted inside.
+//
+//  Every animation lives inside a `prefers-reduced-motion: no-preference`
+//  block, so a machine asked for calm gets the finished screen on the first
+//  frame with nothing to recover from.
+// =====================================================================
+
+.pbim.pbam,
+.pbim.pbam-inbox {
+
+    // ------------------------------------------------------- shared bits
+    .pbam-wrap { display: flex; flex-direction: column; gap: 18px; }
+
+    .pbam-hero-actions {
+        margin-left: auto; display: flex; gap: 8px; align-items: center;
+        flex-wrap: wrap; justify-content: flex-end;
+    }
+
+    .pbam-sp { flex: 1; }
+
+    .pbam-k {
+        font-size: 11px; font-weight: 800; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pbam-mt { font-weight: 700; font-size: 13px; color: var(--pbim-ink); }
+    .pbam-ms { font-size: 12px; color: var(--pbim-muted); margin-top: 2px; }
+    .pbam-ms-bad { color: var(--pbim-rose); }
+
+    // ------------------------------------------------------------ badges
+    .pbim-badge {
+        &.pbam-ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &.pbam-info { background: var(--pbim-soft); color: var(--pbim-primary); }
+        &.pbam-warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+        &.pbam-err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+        &.pbam-muted { background: var(--pbim-slate-soft); color: var(--pbim-muted); }
+        &.pbam-blue { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+        &.pbam-badge-lg { font-size: 12px; padding: 6px 12px; }
+    }
+    .pbam-dot {
+        width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+    }
+
+    // --------------------------------------------------------------- tabs
+    .pbam-tabs {
+        display: flex; gap: 2px; border-bottom: 2px solid var(--pbim-line);
+    }
+    .pbam-tab {
+        display: flex; align-items: center; gap: 7px; padding: 9px 16px;
+        font-size: 13px; font-weight: 700; color: var(--pbim-muted);
+        background: none; border: 0; border-bottom: 2px solid transparent;
+        margin-bottom: -2px; border-radius: 9px 9px 0 0; cursor: pointer;
+
+        &:hover { color: var(--pbim-ink); background: var(--pbim-line-2); }
+        &.is-on {
+            color: var(--pbim-primary-hover);
+            border-bottom-color: var(--pbim-primary);
+            background: var(--pbim-soft);
+        }
+    }
+    .pbam-count {
+        background: var(--pbim-soft); color: var(--pbim-primary);
+        border-radius: 999px; padding: 1px 7px; font-size: 10.5px;
+        font-weight: 800;
+    }
+
+    // ------------------------------------------------------ the attention
+    .pbam-attn {
+        display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+        border-radius: 12px; font-size: 13.5px; font-weight: 700;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+
+        &.pbam-attn-rose {
+            background: var(--pbim-rose-soft); color: var(--pbim-rose);
+        }
+        &.pbam-attn-green {
+            background: var(--pbim-green-soft); color: var(--pbim-green);
+        }
+        &.pbam-attn-info {
+            background: var(--pbim-soft); color: var(--pbim-primary);
+        }
+    }
+
+    // -------------------------------------------------------- the filters
+    .pbam-filters {
+        display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .pbam-search {
+        display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+        min-width: 260px; flex: 1; max-width: 520px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 999px; color: var(--pbim-muted);
+
+        input {
+            border: 0; outline: 0; background: transparent; flex: 1;
+            font-size: 13.5px; color: var(--pbim-ink); min-width: 0;
+        }
+    }
+    .pbam-c { opacity: .65; margin-left: 4px; }
+
+    // -------------------------------------------------------- the presets
+    .pbam-preset-grid {
+        display: grid; gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+    .pbam-preset {
+        display: flex; flex-direction: column; gap: 8px; padding: 16px;
+        text-align: left; cursor: pointer;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r);
+
+        &:hover {
+            border-color: var(--pbim-primary); box-shadow: var(--pbim-sh);
+        }
+    }
+    .pbam-preset-t { font-weight: 800; font-size: 14px; }
+    .pbam-preset-s { font-size: 12.5px; color: var(--pbim-muted); }
+    .pbam-preset-r {
+        display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+        font-size: 12px; font-weight: 700; color: var(--pbim-primary);
+    }
+
+    // ---------------------------------------------------------- the table
+    .pbam-tablewrap {
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        background: var(--pbim-surface); overflow: hidden;
+    }
+    .pbam-tablex { overflow-x: auto; }
+    .pbam-table,
+    .pbam-resp {
+        width: 100%; border-collapse: collapse; min-width: 820px;
+
+        th {
+            font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .08em; color: var(--pbim-muted);
+            background: var(--pbim-bg); text-align: left; padding: 10px 14px;
+        }
+        td {
+            padding: 11px 14px; border-top: 1px solid var(--pbim-line);
+            vertical-align: middle;
+        }
+    }
+    .pbam-col-name { width: 42%; }
+    .pbam-col-role { width: 26%; }
+
+    .pbam-area td {
+        background: var(--pbim-line-2); padding: 8px 14px;
+        font-size: 11px; font-weight: 800; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--pbim-text);
+
+        span { display: inline-flex; align-items: center; gap: 7px; }
+    }
+    .pbam-area-n {
+        margin-left: 6px; font-weight: 600; letter-spacing: 0;
+        text-transform: none; color: var(--pbim-muted);
+    }
+
+    .pbam-row {
+        cursor: pointer;
+        &:hover td { background: var(--pbim-soft); }
+    }
+    .pbam-pn {
+        font-weight: 800; font-size: 13.5px; display: flex;
+        align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .pbam-fl {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 10.5px; font-weight: 800; padding: 2px 8px;
+        border-radius: 999px;
+        color: var(--pbim-green); background: var(--pbim-green-soft);
+
+        &.pbam-fl-quiet {
+            color: var(--pbim-muted); background: var(--pbim-slate-soft);
+        }
+    }
+    .pbam-route {
+        display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+        font-size: 12.5px; color: var(--pbim-text); margin-top: 3px;
+    }
+    .pbam-ar { color: var(--pbim-muted); display: inline-flex; }
+    .pbam-applies { font-size: 13px; font-weight: 600; }
+    .pbam-applies-s {
+        font-size: 11.5px; color: var(--pbim-muted); font-weight: 500;
+        margin-top: 1px;
+    }
+    .pbam-ver {
+        font-variant-numeric: tabular-nums; font-size: 12px;
+        color: var(--pbim-muted);
+    }
+    .pbam-chev {
+        width: 74px; text-align: right; color: var(--pbim-muted);
+        white-space: nowrap;
+    }
+    .pbam-iconbtn {
+        background: none; border: 0; padding: 5px; border-radius: 7px;
+        color: var(--pbim-muted); cursor: pointer;
+
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+        &:disabled { opacity: .3; cursor: not-allowed; }
+    }
+    .pbam-foot { margin: 0; }
+
+    // ------------------------------------------------------- empty states
+    .pbam-empty { text-align: center; }
+    .pbam-empty-ic {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 56px; height: 56px; border-radius: 16px; margin-bottom: 10px;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+    }
+    .pbam-busy-sm { padding: 14px 0; }
+
+    // =================================================== the builder
+    .pbam-builder { display: flex; flex-direction: column; gap: 18px; }
+
+    .pbam-bhead {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .pbam-bname {
+        font-size: 23px; font-weight: 800; letter-spacing: -.02em;
+        margin: 0; color: var(--pbim-ink); outline: none;
+
+        &:focus { box-shadow: 0 0 0 3px var(--pbim-ring); border-radius: 6px; }
+    }
+    .pbam-saved {
+        margin-left: auto; display: flex; align-items: center; gap: 6px;
+        font-size: 12.5px; color: var(--pbim-muted);
+    }
+
+    .pbam-progress {
+        display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    }
+    .pbam-pstep {
+        display: flex; align-items: center; gap: 9px; padding: 4px 0;
+        font-size: 13px; font-weight: 700; color: var(--pbim-muted);
+        background: none; border: 0; cursor: pointer;
+
+        i {
+            width: 26px; height: 26px; border-radius: 50%;
+            border: 2px solid var(--pbim-line); background: var(--pbim-surface);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 11.5px; font-weight: 800; font-style: normal;
+        }
+        &.is-on {
+            color: var(--pbim-primary);
+            i {
+                background: var(--pbim-primary);
+                border-color: var(--pbim-primary); color: var(--pbim-surface);
+                box-shadow: 0 0 0 4px var(--pbim-ring);
+            }
+        }
+        &.is-done i {
+            background: var(--pbim-green); border-color: var(--pbim-green);
+            color: var(--pbim-surface);
+        }
+    }
+    .pbam-bar { width: 30px; height: 2px; background: var(--pbim-line); }
+
+    .pbam-bgrid {
+        display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px;
+        align-items: start;
+    }
+    .pbam-bcol {
+        display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    }
+    .pbam-bfoot {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding-top: 6px; flex-wrap: wrap;
+    }
+
+    // ------------------------------------------------------- the sentence
+    .pbam-sentence {
+        margin: 0; padding: 14px 18px; border-radius: 12px;
+        background: var(--pbim-soft); color: var(--pbim-ink);
+        font-size: 15.5px; line-height: 1.6; font-weight: 500;
+    }
+    .pbam-subm {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 0 4px; font-size: 13px;
+    }
+
+    // -------------------------------------------------------- step cards
+    .pbam-steps { display: flex; flex-direction: column; }
+    .pbam-stepw {
+        display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px;
+        position: relative; padding-bottom: 12px;
+
+        // the drawn line between cards: a BORDER, so it reflows with them
+        &::before {
+            content: ""; position: absolute; left: 15px; top: 30px; bottom: 0;
+            width: 2px; background: var(--pbim-line);
+        }
+        &:last-child::before { display: none; }
+    }
+    .pbam-num {
+        width: 30px; height: 30px; border-radius: 50%; position: relative;
+        z-index: 1; display: flex; align-items: center; justify-content: center;
+        font-size: 12.5px; font-weight: 800;
+        background: var(--pbim-primary); color: var(--pbim-surface);
+
+        &.pbam-num-n {
+            background: var(--pbim-slate-soft); color: var(--pbim-muted);
+        }
+        &.pbam-num-fast {
+            background: var(--pbim-green-soft); color: var(--pbim-green);
+        }
+    }
+    .pbam-step {
+        display: flex; flex-direction: column; gap: 10px; padding: 14px 16px;
+        min-width: 0;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+
+        &:hover { border-color: var(--pbim-primary-light); }
+        &.pbam-step-notify {
+            border-style: dashed; background: var(--pbim-line-2);
+        }
+        &.pbam-step-fast {
+            border-color: var(--pbim-green); background: var(--pbim-green-soft);
+        }
+    }
+    .pbam-sh { display: flex; align-items: flex-start; gap: 10px; }
+    .pbam-st {
+        font-size: 16px; font-weight: 800; letter-spacing: -.01em;
+        outline: none;
+
+        &:focus { box-shadow: 0 0 0 3px var(--pbim-ring); border-radius: 6px; }
+    }
+    .pbam-kind {
+        font-size: 11px; font-weight: 700; color: var(--pbim-muted);
+        margin-top: 1px;
+    }
+    .pbam-acts {
+        margin-left: auto; display: flex; gap: 2px;
+
+        button {
+            background: none; border: 0; padding: 5px; border-radius: 7px;
+            color: var(--pbim-muted); cursor: pointer;
+
+            &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+            &:disabled { opacity: .3; cursor: not-allowed; }
+        }
+    }
+    .pbam-who {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .pbam-chip-act {
+        cursor: pointer; border: 0;
+        &:hover { background: var(--pbim-soft2); }
+    }
+    .pbam-chip-plain {
+        background: var(--pbim-line-2); color: var(--pbim-text);
+    }
+    .pbam-resolved {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        font-size: 13px; color: var(--pbim-text);
+    }
+    .pbam-seats { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbam-cond {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        padding: 8px 10px; border-radius: 9px; font-size: 12.5px;
+        background: var(--pbim-line-2);
+    }
+
+    // ------------------------------------------------------- add a step
+    .pbam-addrow {
+        display: flex; align-items: center; gap: 10px; position: relative;
+        padding-left: 48px; flex-wrap: wrap;
+    }
+    .pbam-addmenu {
+        position: absolute; left: 48px; top: 44px; z-index: 15;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 6px;
+        min-width: 520px; max-width: calc(100vw - 80px);
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 12px; box-shadow: var(--pbim-sh-lg);
+
+        button {
+            display: flex; align-items: flex-start; gap: 10px; padding: 10px;
+            border-radius: 9px; text-align: left; background: none; border: 0;
+            cursor: pointer;
+
+            &:hover { background: var(--pbim-soft); }
+        }
+        .pbam-mt, .pbam-ms { display: block; }
+    }
+    .pbam-icsq {
+        width: 30px; height: 30px; flex: none; border-radius: 9px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+
+        &.pbam-icsq-rose {
+            background: var(--pbim-rose-soft); color: var(--pbim-rose);
+        }
+        &.pbam-icsq-amber {
+            background: var(--pbim-amber-soft); color: var(--pbim-amber);
+        }
+    }
+
+    // -------------------------------------------------- route by amount
+    .pbam-tiers {
+        display: flex; flex-direction: column; gap: 10px; padding: 14px 16px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r);
+    }
+    .pbam-th {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .pbam-ladder { display: flex; gap: 6px; align-items: stretch; }
+    .pbam-band {
+        flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
+        display: flex; flex-direction: column; gap: 4px;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-line);
+
+        &.is-hit {
+            outline: 2px solid var(--pbim-primary); outline-offset: 1px;
+        }
+    }
+    .pbam-band-a {
+        font-size: 11px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pbam-band-r {
+        display: flex; flex-wrap: wrap; gap: 3px; align-items: center;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-ink);
+    }
+
+    // ------------------------------------------------------ safeguards
+    .pbam-sggrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .pbam-sg {
+        display: flex; flex-direction: column; gap: 12px; padding: 16px 18px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+
+        h3 {
+            display: flex; align-items: center; gap: 8px; margin: 0;
+            font-size: 16px; font-weight: 800;
+        }
+    }
+    .pbam-row {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .pbam-opt { display: flex; flex-direction: column; gap: 8px; }
+    .pbam-radio {
+        display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 10px; cursor: pointer;
+
+        i {
+            width: 18px; height: 18px; border-radius: 50%; flex: none;
+            border: 2px solid var(--pbim-line); margin-top: 1px;
+            position: relative;
+        }
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+
+            i {
+                border-color: var(--pbim-primary);
+                &::after {
+                    content: ""; position: absolute; inset: 3px;
+                    border-radius: 50%; background: var(--pbim-primary);
+                }
+            }
+        }
+        .pbam-mt, .pbam-ms { display: block; }
+    }
+    .pbam-switch {
+        display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+        font-size: 13px; font-weight: 600;
+
+        i {
+            width: 36px; height: 20px; border-radius: 999px; flex: none;
+            background: var(--pbim-line); position: relative;
+
+            &::after {
+                content: ""; position: absolute; top: 2px; left: 2px;
+                width: 16px; height: 16px; border-radius: 50%;
+                background: var(--pbim-surface);
+            }
+        }
+        &.is-on i {
+            background: var(--pbim-primary);
+            &::after { transform: translateX(16px); }
+        }
+    }
+    .pbam-ladder2 {
+        display: flex; flex-direction: column; gap: 6px; font-size: 13px;
+    }
+    .pbam-l {
+        display: grid; grid-template-columns: 130px 1fr; gap: 10px;
+        align-items: center;
+    }
+    .pbam-evrow {
+        display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 8px;
+        align-items: center;
+    }
+
+    // --------------------------------------------------- form primitives
+    .pbam-form2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pbam-wide { grid-column: 1 / -1; }
+    .pbam-field {
+        display: flex; flex-direction: column; gap: 5px; min-width: 0;
+
+        label {
+            font-size: 11px; font-weight: 800; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--pbim-muted);
+        }
+    }
+    .pbam-input {
+        width: 100%; padding: 9px 12px; font-size: 13.5px; min-width: 0;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 10px; color: var(--pbim-ink);
+
+        &:focus {
+            outline: 0; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+        &:disabled { background: var(--pbim-line-2); color: var(--pbim-muted); }
+        &.pbam-input-sm {
+            width: auto; max-width: 100%; padding: 5px 9px; font-size: 12.5px;
+            border-radius: 7px;
+        }
+    }
+    .pbam-textarea { min-height: 96px; resize: vertical; }
+    .pbam-btn-wide { width: 100%; justify-content: center; padding: 12px; }
+
+    .pbam-cb {
+        width: 18px; height: 18px; border-radius: 5px; flex: none;
+        border: 2px solid var(--pbim-line); display: inline-flex;
+        align-items: center; justify-content: center;
+        color: var(--pbim-surface); cursor: pointer;
+
+        &.is-on {
+            background: var(--pbim-primary); border-color: var(--pbim-primary);
+        }
+    }
+    .pbam-checkrow {
+        display: flex; align-items: flex-start; gap: 10px; padding: 8px 0;
+        border-top: 1px solid var(--pbim-line-2); font-size: 12.5px;
+        cursor: pointer;
+
+        &:first-child { border-top: 0; }
+        &.is-on .pbam-cb {
+            background: var(--pbim-primary); border-color: var(--pbim-primary);
+        }
+    }
+    .pbam-confirms { display: flex; flex-direction: column; gap: 2px; }
+
+    // ------------------------------------------------------- the example
+    .pbam-ex {
+        display: flex; flex-direction: column; gap: 12px; padding: 18px;
+        min-width: 0;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh);
+        position: sticky; top: 12px;
+
+        .pbam-exh {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px;
+
+            h2 { margin: 0; font-size: 16px; font-weight: 800; }
+        }
+    }
+    .pbam-res { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pbam-exsteps { display: flex; flex-direction: column; gap: 8px; }
+    .pbam-exstep {
+        display: grid; grid-template-columns: 22px 1fr; gap: 10px;
+        padding: 10px 12px; border: 1px solid var(--pbim-line);
+        border-radius: 12px;
+
+        &.pbam-exstep-skip { opacity: .6; border-style: dashed; }
+        &.pbam-exstep-bad {
+            border-color: var(--pbim-rose); background: var(--pbim-rose-soft);
+        }
+        &.pbam-exstep-warn {
+            border-color: var(--pbim-amber); background: var(--pbim-amber-soft);
+        }
+    }
+    .pbam-exn {
+        width: 22px; height: 22px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-size: 11px;
+        font-weight: 800;
+        background: var(--pbim-slate-soft); color: var(--pbim-text);
+    }
+    .pbam-exp {
+        display: flex; align-items: center; gap: 8px; margin-top: 5px;
+        flex-wrap: wrap;
+    }
+    .pbam-why {
+        font-size: 11.5px; color: var(--pbim-muted); margin-top: 3px;
+        display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    }
+    .pbam-issue {
+        display: flex; flex-direction: column; gap: 8px; padding: 12px 14px;
+        border-radius: 12px;
+
+        &.pbam-issue-err { background: var(--pbim-rose-soft); }
+        &.pbam-issue-warn { background: var(--pbim-amber-soft); }
+    }
+    .pbam-issue-t {
+        display: flex; align-items: center; gap: 7px; font-weight: 800;
+        font-size: 13px;
+    }
+    .pbam-issue-s { font-size: 12.5px; color: var(--pbim-text); }
+    .pbam-issue-a { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbam-issues { display: flex; flex-direction: column; gap: 8px; }
+
+    .pbam-why-details {
+        border-top: 1px solid var(--pbim-line); padding-top: 10px;
+
+        summary {
+            cursor: pointer; font-weight: 800; font-size: 13px;
+            color: var(--pbim-primary); list-style: none;
+            display: flex; align-items: center; gap: 6px;
+
+            &::-webkit-details-marker { display: none; }
+        }
+        ol {
+            margin: 8px 0 0; padding-left: 18px; font-size: 12.5px;
+            color: var(--pbim-text); display: flex; flex-direction: column;
+            gap: 4px;
+
+            li.is-win { color: var(--pbim-green); font-weight: 700; }
+        }
+    }
+
+    // ---------------------------------------------------------- coverage
+    .pbam-cov { display: flex; flex-direction: column; gap: 10px; }
+    .pbam-covrow {
+        display: grid; grid-template-columns: 1fr auto; gap: 10px;
+        align-items: center; padding: 10px 14px; border-radius: 12px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+    }
+
+    // --------------------------------------------------- review, publish
+    .pbam-diff { display: flex; flex-direction: column; gap: 10px; }
+    .pbam-diffrow {
+        display: grid; grid-template-columns: auto 1fr; gap: 12px;
+        align-items: start; padding: 12px 14px; border-radius: 12px;
+        border: 1px solid var(--pbim-line);
+    }
+    .pbam-aff { display: flex; flex-direction: column; gap: 6px; }
+    .pbam-affrow {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px;
+        font-weight: 600; background: var(--pbim-line-2);
+    }
+    .pbam-kv {
+        display: grid; grid-template-columns: 140px 1fr; gap: 6px 14px;
+        font-size: 13px; margin: 0;
+
+        dt { color: var(--pbim-muted); font-weight: 600; }
+        dd { margin: 0; font-weight: 600; }
+    }
+    .pbam-success {
+        display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+        padding: 22px; border-radius: var(--pbim-r-lg);
+        background: var(--pbim-green-soft); border: 1px solid var(--pbim-green);
+
+        h2 {
+            display: flex; align-items: center; gap: 8px; margin: 0;
+            font-size: 18px; font-weight: 800; color: var(--pbim-green);
+        }
+        p { margin: 0; }
+    }
+    .pbam-success-doors {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+    }
+
+    // ------------------------------------------------------ people, avatars
+    .pbam-person {
+        display: inline-flex; align-items: center; gap: 8px; min-width: 0;
+    }
+    .pbam-av {
+        width: 30px; height: 30px; border-radius: 50%; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 10.5px; font-weight: 800;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+
+        &.pbam-av-sm { width: 22px; height: 22px; font-size: 8.5px; }
+    }
+    .pbam-pname {
+        font-weight: 700; font-size: 13px; display: inline-flex;
+        align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .pbam-pvia {
+        display: block; font-size: 11.5px; color: var(--pbim-muted);
+    }
+
+    // ---------------------------------------------------- people & backups
+    .pbam-people,
+    .pbam-history { display: flex; flex-direction: column; gap: 18px; }
+
+    .pbam-role .pbam-ms { font-weight: 500; }
+    .pbam-resp td { vertical-align: top; }
+    .pbam-cell { display: flex; flex-direction: column; gap: 5px; }
+    .pbam-bk {
+        display: flex; align-items: center; gap: 4px; font-size: 11.5px;
+        color: var(--pbim-muted);
+
+        &.pbam-bk-quiet { opacity: .7; }
+    }
+    .pbam-inh {
+        font-size: 11.5px; color: var(--pbim-muted); font-style: italic;
+    }
+    .pbam-cellacts { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pbam-heldrow {
+        display: flex; align-items: center; gap: 10px; padding: 7px 0;
+        border-top: 1px solid var(--pbim-line-2); font-size: 12.5px;
+        flex-wrap: wrap;
+    }
+    .pbam-heldwhere { min-width: 130px; color: var(--pbim-muted); }
+
+    .pbam-deleg { display: flex; flex-direction: column; gap: 8px; }
+    .pbam-delrow {
+        display: grid; grid-template-columns: auto 1fr auto; gap: 14px;
+        align-items: center; padding: 12px 14px; border-radius: 12px;
+        border: 1px solid var(--pbim-line);
+    }
+    .pbam-delacts {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    // -------------------------------------------------------- the history
+    .pbam-hist { display: flex; flex-direction: column; }
+    .pbam-hrow {
+        display: grid; grid-template-columns: 165px 24px 1fr; gap: 12px;
+        align-items: start; padding: 12px 0; font-size: 13px;
+        border-top: 1px solid var(--pbim-line-2);
+
+        &:first-child { border-top: 0; }
+    }
+    .pbam-when { color: var(--pbim-muted); font-size: 12.5px; }
+
+    // ========================================== drawers, scrims, modals
+    .pbam-scrim {
+        position: fixed; inset: 0; z-index: 1040;
+        background: var(--pbim-primary-dark); opacity: .34;
+    }
+    .pbam-drawer {
+        position: fixed; top: 0; right: 0; bottom: 0; z-index: 1041;
+        width: 560px; max-width: 96vw; display: flex; flex-direction: column;
+        background: var(--pbim-surface); box-shadow: var(--pbim-sh-lg);
+
+        &.pbam-drawer-wide { width: 640px; }
+    }
+    .pbam-dh {
+        display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px;
+        border-bottom: 1px solid var(--pbim-line);
+
+        h2 {
+            margin: 0; font-size: 19px; font-weight: 800;
+            letter-spacing: -.01em;
+        }
+        p { margin: 3px 0 0; }
+    }
+    .pbam-x {
+        margin-left: auto; padding: 6px; border-radius: 8px; border: 0;
+        background: none; color: var(--pbim-muted); cursor: pointer;
+
+        &:hover { background: var(--pbim-line-2); color: var(--pbim-ink); }
+    }
+    .pbam-db {
+        flex: 1; overflow-y: auto; padding: 18px 20px; display: flex;
+        flex-direction: column; gap: 16px;
+
+        // the example panel is never sticky inside a drawer
+        .pbam-ex { position: static; }
+    }
+    .pbam-df {
+        padding: 14px 20px; border-top: 1px solid var(--pbim-line);
+        display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;
+        background: var(--pbim-surface); align-items: center;
+    }
+    .pbam-waitnote { margin-right: auto; }
+
+    .pbam-pickcards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pbam-pick {
+        display: flex; flex-direction: column; gap: 6px; padding: 12px 14px;
+        text-align: left; cursor: pointer;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        background: var(--pbim-surface);
+
+        &:hover { border-color: var(--pbim-primary); }
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+
+            .pbam-pick-h i {
+                background: var(--pbim-primary);
+                border-color: var(--pbim-primary);
+            }
+        }
+    }
+    .pbam-pick-h {
+        display: flex; align-items: center; gap: 8px; font-weight: 800;
+        font-size: 13.5px;
+
+        i {
+            width: 18px; height: 18px; border-radius: 50%; flex: none;
+            border: 2px solid var(--pbim-line); display: inline-flex;
+            align-items: center; justify-content: center;
+            color: var(--pbim-surface);
+        }
+    }
+    .pbam-goesto {
+        display: flex; flex-direction: column; gap: 10px; padding: 14px;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        background: var(--pbim-line-2);
+    }
+    .pbam-plist {
+        display: flex; flex-direction: column; gap: 6px; max-height: 320px;
+        overflow-y: auto;
+    }
+    .pbam-prow {
+        display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        cursor: pointer;
+
+        &:hover { background: var(--pbim-line-2); }
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+        }
+        .pbam-cb { margin-left: auto; }
+    }
+
+    .pbam-modal {
+        position: fixed; inset: 0; z-index: 1060; display: flex;
+        align-items: center; justify-content: center; padding: 20px;
+        background: var(--pbim-primary-dark);
+    }
+    .pbam-modalbox {
+        display: flex; flex-direction: column; gap: 14px; padding: 22px 24px;
+        width: 620px; max-width: 100%; max-height: 90vh; overflow: auto;
+        background: var(--pbim-surface); border-radius: var(--pbim-r-lg);
+        box-shadow: var(--pbim-sh-lg);
+
+        h2 { margin: 0; font-size: 20px; font-weight: 800; }
+    }
+    .pbam-mf { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+
+    // ---------------------------------------------------------- the notes
+    .pbim-note.pbam-note,
+    .pbim-note.pbam-note-amber,
+    .pbim-note.pbam-note-rose {
+        display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px;
+        border-radius: 9px; font-size: 12.5px;
+        background: var(--pbim-soft); color: var(--pbim-text);
+    }
+    .pbim-note.pbam-note-amber {
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+    }
+    .pbim-note.pbam-note-rose {
+        background: var(--pbim-rose-soft); color: var(--pbim-rose);
+    }
+
+    // ============================================ where it applies
+    .pbam-scheme { display: flex; flex-direction: column; gap: 14px; }
+    .pbam-aprow {
+        display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px;
+        align-items: start;
+    }
+    .pbam-ap-h {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .pbam-ap-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pbam-ap-wf { font-size: 14.5px; font-weight: 700; margin-top: 6px; }
+    .pbam-ap-rt {
+        display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+        font-size: 13px; color: var(--pbim-text); margin-top: 3px;
+    }
+    .pbam-ap-src { font-size: 12px; color: var(--pbim-muted); margin-top: 4px; }
+    .pbam-ap-act { display: flex; gap: 8px; }
+    .pbam-exc { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .pbam-excrow {
+        display: grid; grid-template-columns: 130px 1fr; gap: 10px;
+        align-items: center; padding: 9px 12px; border-radius: 10px;
+        font-size: 13px; background: var(--pbim-line-2);
+    }
+    .pbam-excd { font-weight: 800; }
+    .pbam-changegrid {
+        display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px;
+        align-items: start; padding: 6px 0 4px;
+    }
+    .pbam-choices { display: flex; flex-direction: column; gap: 10px; }
+    .pbam-choice {
+        display: grid; grid-template-columns: 22px 1fr; gap: 12px;
+        padding: 14px 16px; cursor: pointer;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 12px;
+
+        i {
+            width: 20px; height: 20px; border-radius: 50%; margin-top: 1px;
+            border: 2px solid var(--pbim-line); position: relative;
+        }
+        &.is-on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+
+            i {
+                border-color: var(--pbim-primary);
+                &::after {
+                    content: ""; position: absolute; inset: 3px;
+                    border-radius: 50%; background: var(--pbim-primary);
+                }
+            }
+        }
+    }
+    .pbam-choice-t { display: block; font-weight: 800; font-size: 15px; }
+    .pbam-choice-s {
+        display: block; font-size: 12.5px; color: var(--pbim-muted);
+        margin-top: 2px;
+    }
+    .pbam-choice-w { display: flex; margin-top: 10px; }
+    .pbam-choice-pick { display: block; margin-top: 10px; }
+}
+
+// =====================================================================
+//  Responsive. Below 1100px there is no room for two columns, so the
+//  example panel moves under the thing it explains and stops sticking.
+// =====================================================================
+@media (max-width: 1100px) {
+    .pbim.pbam,
+    .pbim.pbam-inbox {
+        .pbam-bgrid,
+        .pbam-changegrid { grid-template-columns: 1fr; }
+        .pbam-ex { position: static; }
+        .pbam-sggrid { grid-template-columns: 1fr; }
+        .pbam-addmenu { min-width: 0; grid-template-columns: 1fr; left: 0; }
+    }
+}
+
+@media (max-width: 760px) {
+    .pbim.pbam,
+    .pbim.pbam-inbox {
+        .pbam-form2,
+        .pbam-pickcards { grid-template-columns: 1fr; }
+        .pbam-ladder { flex-direction: column; }
+        .pbam-drawer { width: 100vw; max-width: 100vw; }
+        .pbam-stepw { grid-template-columns: 28px minmax(0, 1fr); }
+        .pbam-addrow { padding-left: 0; }
+        .pbam-addmenu { left: 0; }
+        .pbam-hrow { grid-template-columns: 1fr; }
+        .pbam-evrow { grid-template-columns: auto 1fr; }
+        .pbam-aprow { grid-template-columns: 1fr; }
+        .pbam-excrow { grid-template-columns: 1fr; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbim.pbam,
+    .pbim.pbam-inbox {
+        .pbam-step,
+        .pbam-preset,
+        .pbam-pick,
+        .pbam-choice { transition: border-color .14s, box-shadow .14s; }
+        .pbam-switch i,
+        .pbam-switch i::after { transition: background .14s, transform .14s; }
+        .pbam-tab { transition: background .14s, color .14s; }
+    }
+}

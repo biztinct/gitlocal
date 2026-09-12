@@ -1,0 +1,218 @@
+// =====================================================================
+//  The one Approvals inbox — .pbam-inbox
+//
+//  Everything shared with the Matrix (badges, drawers, avatars, notes,
+//  form primitives) lives in approval_matrix.scss under a selector that
+//  covers BOTH roots, so a card looks the same wherever it is drawn. This
+//  file owns only what is the inbox's own:
+//
+//    1. THE CARD. Icon, the whole story in the middle, money and the due
+//       date on the right. A card that is MINE wears a ring rather than a
+//       different colour, so the meaning survives for somebody who cannot
+//       tell the tones apart.
+//    2. THE ROUTE DOTS. Where a request is, drawn as dots joined by lines,
+//       with the word beside every dot — colour is never the only message.
+//    3. THE REQUEST TIMELINE. The same idea, vertical, inside the drawer.
+//
+//  It is mounted as a LENS as well as a page, so the root carries
+//  `pbim-page` only when it is standing on its own: inside the Home hub the
+//  shell already owns the page padding, and a second helping of it would
+//  put the cards a centimetre in from everything above them.
+// =====================================================================
+
+.pbim.pbam-inbox {
+
+    // --------------------------------------------------- the action strip
+    .pbam-embedded-actions {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    .pbam-moneyline {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 10px 14px; border-radius: 10px; font-size: 13px;
+        font-weight: 600;
+        background: var(--pbim-line-2); color: var(--pbim-text);
+    }
+
+    // --------------------------------------------------------- the cards
+    .pbam-reqs { display: flex; flex-direction: column; gap: 10px; }
+
+    .pbam-req {
+        display: grid; grid-template-columns: 40px minmax(0, 1fr) auto;
+        gap: 14px; align-items: start; padding: 14px 16px; cursor: pointer;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+
+        &:hover { border-color: var(--pbim-primary-light); }
+
+        // MINE is a ring, not a colour: the meaning has to survive for
+        // somebody who cannot tell the tones apart.
+        &.is-mine {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+        &.is-dim { opacity: .72; }
+    }
+    .pbam-reqmain { min-width: 0; }
+    .pbam-reqt {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        font-size: 15px; font-weight: 800; letter-spacing: -.01em;
+    }
+    .pbam-reqs2 {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        font-size: 12.5px; color: var(--pbim-muted); margin-top: 2px;
+    }
+    .pbam-facts {
+        display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+        font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbam-f {
+        display: flex; align-items: center; gap: 5px; min-width: 0;
+
+        b { color: var(--pbim-ink); }
+        &.pbam-f-bad { color: var(--pbim-rose); }
+    }
+    .pbam-reqright {
+        display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+        text-align: right;
+    }
+    .pbam-amt {
+        font-size: 16px; font-weight: 800; letter-spacing: -.01em;
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    .pbam-due {
+        display: flex; align-items: center; gap: 5px; white-space: nowrap;
+        font-size: 12px; color: var(--pbim-muted);
+
+        &.is-late { color: var(--pbim-rose); font-weight: 700; }
+    }
+
+    // ---------------------------------------------------- the route dots
+    .pbam-rt {
+        display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    .pbam-rdot {
+        display: flex; align-items: center; gap: 6px; font-size: 11.5px;
+        font-weight: 700; color: var(--pbim-muted);
+
+        i {
+            width: 10px; height: 10px; border-radius: 50%; flex: none;
+            background: var(--pbim-line);
+        }
+        &.pbam-rdot-done {
+            color: var(--pbim-green);
+            i { background: var(--pbim-green); }
+        }
+        &.pbam-rdot-current {
+            color: var(--pbim-primary);
+            i {
+                background: var(--pbim-primary);
+                box-shadow: 0 0 0 3px var(--pbim-ring);
+            }
+        }
+        &.pbam-rdot-bad {
+            color: var(--pbim-rose);
+            i { background: var(--pbim-rose); }
+        }
+        &.pbam-rdot-skipped { opacity: .55; }
+    }
+    .pbam-rline {
+        width: 22px; height: 2px; margin: 0 6px; background: var(--pbim-line);
+    }
+
+    // ------------------------------------------------- the frozen facts
+    .pbam-factgrid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        margin-top: 8px;
+    }
+    .pbam-fact {
+        padding: 10px 12px; border-radius: 10px; background: var(--pbim-line-2);
+    }
+    .pbam-fact-k {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pbam-fact-v {
+        font-size: 15px; font-weight: 800; margin-top: 2px;
+        letter-spacing: -.01em; font-variant-numeric: tabular-nums;
+        display: flex; align-items: baseline; gap: 5px; flex-wrap: wrap;
+    }
+    .pbam-fact-u {
+        font-size: 11.5px; font-weight: 700; color: var(--pbim-muted);
+    }
+
+    // ----------------------------------------------------- the evidence
+    .pbam-evid { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .pbam-evrow2 {
+        display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        font-size: 13px; color: var(--pbim-muted);
+
+        .pbim-badge { margin-left: auto; }
+    }
+
+    // ----------------------------------------------------- the timeline
+    .pbam-tl { display: flex; flex-direction: column; margin-top: 8px; }
+    .pbam-tlrow {
+        display: grid; grid-template-columns: 26px 1fr; gap: 12px;
+        padding-bottom: 14px; position: relative;
+
+        // the joining line is a pseudo-element, so it reflows with the rows
+        &::before {
+            content: ""; position: absolute; left: 12px; top: 26px; bottom: 0;
+            width: 2px; background: var(--pbim-line);
+        }
+        &:last-child::before { display: none; }
+
+        &.pbam-tl-done .pbam-tldot {
+            background: var(--pbim-green); color: var(--pbim-surface);
+        }
+        &.pbam-tl-current .pbam-tldot {
+            background: var(--pbim-primary); color: var(--pbim-surface);
+            box-shadow: 0 0 0 4px var(--pbim-ring);
+        }
+        &.pbam-tl-bad .pbam-tldot {
+            background: var(--pbim-rose); color: var(--pbim-surface);
+        }
+        &.pbam-tl-skipped { opacity: .6; }
+    }
+    .pbam-tldot {
+        width: 26px; height: 26px; border-radius: 50%; position: relative;
+        z-index: 1; display: flex; align-items: center; justify-content: center;
+        font-size: 11.5px; font-weight: 800;
+        background: var(--pbim-slate-soft); color: var(--pbim-muted);
+    }
+    .pbam-by {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-top: 4px;
+    }
+
+    // ---------------------------------------------------- the decisions
+    .pbam-decisions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .pbam-drow {
+        display: grid; grid-template-columns: auto 1fr; gap: 10px;
+        align-items: start; padding: 9px 12px; border-radius: 10px;
+        background: var(--pbim-line-2);
+    }
+}
+
+// =====================================================================
+//  Responsive. At 760px the card becomes one column, the icon steps out of
+//  the way, and the money moves under the story rather than beside it.
+// =====================================================================
+@media (max-width: 760px) {
+    .pbim.pbam-inbox {
+        .pbam-req { grid-template-columns: 1fr; }
+        .pbam-req .pbam-icsq { display: none; }
+        .pbam-reqright { align-items: flex-start; text-align: left; }
+        .pbam-factgrid { grid-template-columns: 1fr; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbim.pbam-inbox {
+        .pbam-req { transition: transform .14s, box-shadow .14s, border-color .14s; }
+        .pbam-req:hover { transform: translateY(-1px); }
+    }
+}
