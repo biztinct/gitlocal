@@ -121,8 +121,11 @@ everything.
    form, an overtime entry — refuses with *"…the week of 07 Sep for <name> has
    been approved. Ask for it to be sent back if it has to change."*
 5. **A scheme's settings → lifecycle buttons.** Where a scheme-change route is
-   published they read **Propose for approval** (and *Propose merge into …* on
-   a branch), with one quiet line under them saying where the change goes.
+   published each one names its own change — *Propose putting it live*,
+   *Propose retiring it*, *Propose the release*, *Propose the roll-back*, and
+   *Propose merge into …* on a branch — with one quiet line under the row
+   saying where the change goes ("Changes here go to Scheme owner → Payroll
+   manager → Country director").
 6. **Edit a formula on a LIVE scheme.** Refused: *"… is live, so what it pays
    cannot be changed here. Create a branch, make the change there, then propose
    it."* Branch it, change it there, press **Propose merge** — the proposal
