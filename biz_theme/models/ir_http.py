@@ -66,6 +66,27 @@ from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
+#: The last resort for the browser-tab name, and the ONLY thing this chain is
+#: allowed to end on.
+#:
+#: ERRORS E4-2. It used to end on the platform vendor's own name, which meant
+#: the one branding rule this whole suite exists to enforce — never show a user
+#: the vendor — was broken by a default value. It is not enough that the
+#: earlier steps almost always answer: a fallback is exactly the code path
+#: nobody watches.
+#:
+#: It is a NEUTRAL WORD on purpose. ``biz_theme`` is the reusable,
+#: product-neutral half of this platform (see ``biz_debrand/README.md``), so it
+#: may not carry the name of the product built on top of it either: writing
+#: "Payobook" here would put OUR name in a white-labelled tenant's browser tab
+#: the moment their own brand went missing — the same bug pointing the other
+#: way. The chain below already resolves the brand, the debrand suite's keys
+#: and the company name before it ever gets here, and ``res.company.name`` is
+#: required, so in practice this is unreachable. Mirrored character for
+#: character by ``biz_title_service.js``; ``tests/test_brand_fallback.py``
+#: fails if the two ever drift.
+NEUTRAL_APP_NAME = "Workspace"
+
 #: ir.config_parameter that stands the rail down. Anything other than these
 #: words leaves it armed — a mistyped value must never open developer mode.
 _RAIL_OFF = ('off', '0', 'false', 'no')
@@ -213,6 +234,34 @@ class IrHttp(models.AbstractModel):
         return info
 
     # ==================================================== the runtime payload
+    @api.model
+    def _biz_app_name(self):
+        """The name that goes in the browser tab, and the ONE chain that decides it.
+
+        Same resolution as the backend favicon/title template
+        (webclient_templates.xml): an explicit ``biz_theme.app_name`` knob
+        wins, then the debrand suite's keys if installed, then the current
+        company name, then :data:`NEUTRAL_APP_NAME`. The core JS title service
+        hard-codes the vendor's name as its empty-title fallback and runs AFTER
+        the server-rendered ``<title>``, so ``biz_title_service.js`` reads this
+        to keep the tab branded.
+
+        A method of its own rather than four lines inside ``session_info``
+        because ``session_info`` cannot be called without a bound request — on
+        this build a dozen addons extend it and one of them reads ``request``
+        — so the chain was untestable where it stood. ERRORS E4-2 put the
+        vendor's name at the end of it, which is precisely the kind of thing a
+        test has to be able to ask about.
+        """
+        icp = self.env["ir.config_parameter"].sudo()
+        return (
+            icp.get_param("biz_theme.app_name")
+            or icp.get_param("biz_debrand.brand_name")
+            or icp.get_param("web_debranding.new_title")
+            or (self.env.company.name if self.env.company else None)
+            or NEUTRAL_APP_NAME
+        )
+
     def session_info(self):
         """Expose biz_theme runtime flags to the web client.
 
@@ -231,20 +280,7 @@ class IrHttp(models.AbstractModel):
             icp.get_param("pb_theme.vu_form_engine", "on"),
         )
         info["biz_theme_version"] = icp.get_param("biz_theme.theme_version", "0")
-        # Brand/app name for the browser-tab title. Same resolution chain as the
-        # backend favicon/title template (webclient_templates.xml): an explicit
-        # `biz_theme.app_name` knob wins, then the debrand suite's keys if
-        # installed, then the current company name, then "Odoo". The core JS
-        # title service hard-codes "Odoo" as its empty-title fallback and runs
-        # AFTER the server-rendered <title>, so biz_title_service.js reads this
-        # to keep the tab branded.
-        info["biz_app_name"] = (
-            icp.get_param("biz_theme.app_name")
-            or icp.get_param("biz_debrand.brand_name")
-            or icp.get_param("web_debranding.new_title")
-            or (self.env.company.name if self.env.company else None)
-            or "Odoo"
-        )
+        info["biz_app_name"] = self._biz_app_name()
         # Menu-driven sidebar: comma-separated root-menu xml_ids for which the
         # zero-config BizSidebar renders (empty = feature off).
         info["biz_menu_sidebar_apps"] = [

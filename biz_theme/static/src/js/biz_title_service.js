@@ -4,18 +4,27 @@ import { session } from "@web/session";
 /**
  * Branded browser-tab title.
  *
- * The stock `title` service (web/core/browser/title_service.js) hard-codes
- * `|| "Odoo"` as the fallback when no title parts are set, and it runs AFTER
- * our server-rendered <title>, so it clobbers the debranded title on every
- * backend page. This is a drop-in replacement (registered with {force:true})
- * that swaps that single fallback for the resolved app name — injected by
- * biz_theme's ir_http.session_info() as `biz_app_name`
- * (biz_theme.app_name param → debrand keys → company name → "Odoo").
+ * The stock `title` service (web/core/browser/title_service.js) hard-codes the
+ * platform vendor's own name as the fallback when no title parts are set, and
+ * it runs AFTER our server-rendered <title>, so it clobbers the debranded
+ * title on every backend page. This is a drop-in replacement (registered with
+ * {force:true}) that swaps that single fallback for the resolved app name —
+ * injected by biz_theme's ir_http.session_info() as `biz_app_name`
+ * (biz_theme.app_name param → debrand keys → company name → NEUTRAL_APP_NAME).
+ *
+ * ERRORS E4-2. This file's OWN fallback used to be the vendor's name too, for
+ * the case where session_info has not run. It is now the same neutral word the
+ * server chain ends on — never the vendor's, and never the product's either,
+ * because biz_theme is the reusable half and a white-labelled tenant must not
+ * meet our name here. The literal below is pinned to
+ * biz_theme/models/ir_http.py's NEUTRAL_APP_NAME by
+ * biz_theme/tests/test_brand_fallback.py.
  *
  * Everything else is a verbatim copy of the core service so behaviour
  * (counters, " - " joined parts, action names) is unchanged.
  */
-const brandName = () => session.biz_app_name || "Odoo";
+const NEUTRAL_APP_NAME = "Workspace";
+const brandName = () => session.biz_app_name || NEUTRAL_APP_NAME;
 
 export const bizTitleService = {
     start() {
@@ -60,8 +69,8 @@ export const bizTitleService = {
             }
         }
 
-        // Seed the branded default immediately, so the tab never flashes "Odoo"
-        // before the first action sets its own part.
+        // Seed the branded default immediately, so the tab never flashes the
+        // vendor's name before the first action sets its own part.
         updateTitle();
 
         return {

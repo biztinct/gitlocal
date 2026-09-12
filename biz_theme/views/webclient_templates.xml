@@ -32,12 +32,20 @@
             <!-- Tab title: an explicit `biz_theme.app_name` knob wins; otherwise
                  honour the debrand suite's own keys if installed; otherwise fall
                  back to the current company name (already per-company branded);
-                 finally the product name — never the platform's (C7 WP-1: the
-                 tab title is a string an end user reads). Configure at
-                 Settings → Technical → System
-                 Parameters (key `biz_theme.app_name`). -->
+                 finally a NEUTRAL word (C7 WP-1: the tab title is a string an
+                 end user reads). Configure at Settings → Technical → System
+                 Parameters (key `biz_theme.app_name`).
+
+                 ERRORS E4-2. The last step used to be this platform's own
+                 product name, which is the mirror of the vendor bug: biz_theme
+                 is the REUSABLE half, so hard-coding "Payobook" here would put
+                 our name in a white-labelled tenant's browser tab the moment
+                 their own brand went missing. It must end on the same neutral
+                 word the session chain does — biz_theme/models/ir_http.py's
+                 NEUTRAL_APP_NAME, which tests/test_brand_fallback.py pins this
+                 literal to. -->
             <t t-set="title"
-               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Payobook'"/>
+               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Workspace'"/>
         </xpath>
     </template>
 
