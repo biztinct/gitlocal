@@ -26,7 +26,9 @@ def _route(steps):
         'safeguards': {
             'independent': False,
             'self_exception': {'enabled': False},
-            'repeated': 'allow',
+            # 'different' and 'reason' are the only two the schema knows;
+            # every step here is decided by a different person anyway.
+            'repeated': 'different',
             'evidence': [],
             'due': {'kind': 'none', 'days': 1, 'day': 15, 'calendar_id': None},
             'late': {'remind_days': 1, 'escalate_days': 2, 'reassign': False},
@@ -488,10 +490,15 @@ class PayrunApprovalCase(TransactionCase):
                             'payroll_analytics.py')
         if not os.path.exists(path):
             self.skipTest('the analytics module is not in this checkout')
-        code = open(path, encoding='utf-8').read()
-        self.assertNotIn('runs_to_finalize.sudo()', code,
+        # Comments stripped first: the block that was removed is DESCRIBED in
+        # a comment where it used to be, and a check that could not tell the
+        # two apart would fail on the explanation of its own fix.
+        code = '\n'.join(
+            line for line in open(path, encoding='utf-8').read().splitlines()
+            if not line.lstrip().startswith('#'))
+        self.assertNotIn('runs_to_finalize', code,
                          'the analytics screen must not finish a pay run')
-        self.assertNotIn('.sudo().action_payslip_run_level2_done', code)
+        self.assertNotIn('action_payslip_run_level2_done', code)
 
     # =================================================================== R11
     def test_r11_the_seeded_route_is_the_one_the_company_had(self):
