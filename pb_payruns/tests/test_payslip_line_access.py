@@ -254,8 +254,31 @@ class TestPayslipLineAccess(TransactionCase):
         self._assert_lines_track_slips(self.u_integration, self.employees)
 
     def test_06_a_plain_employee_sees_only_its_own_lines(self):
-        """The no-payslip-access probe. A plain internal user holds no payroll
-        group at all: one payslip, two lines, and nothing of the other four."""
+        """The no-payslip-access probe. A plain internal user holds one
+        payslip, two lines, and nothing of the other four.
+
+        THE CASE NEEDS A MODULE THIS ONE DOES NOT DEPEND ON, and it never said
+        so. A plain internal user can reach `hr.payslip` through exactly one
+        access row in the whole repository —
+        `pb_me_portal/security/ir.model.access.csv:9`, `base.group_user`, read
+        only — and `pb_me_portal` is not in this module's dependency closure.
+        Without it the search is refused at model level, before any record rule
+        is consulted, and the case fails for a reason that has nothing to do
+        with the mirroring it is testing. It passed on the live databases only
+        because the ESS module happens to be installed there.
+
+        So the precondition is checked and named. It is checked as the ACCESS
+        ROW rather than as the module, because the row is the actual thing the
+        case needs: a database that granted it some other way still runs this.
+        """
+        if not self.env['ir.model.access'].sudo().search_count([
+                ('model_id.model', '=', 'hr.payslip'),
+                ('group_id', '=', self.env.ref('base.group_user').id),
+                ('perm_read', '=', True)]):
+            self.skipTest(
+                "no access row lets a plain internal user read a payslip on "
+                "this database (pb_me_portal is not installed), so there is "
+                "nothing for the line rules to mirror")
         self._assert_lines_track_slips(self.u_plain, self.e_plain)
         _, lines = self._readable(self.u_plain)
         foreign = set(self.lines_of[self.e_other.id].ids)
