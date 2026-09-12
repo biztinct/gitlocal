@@ -238,7 +238,7 @@
             <button t-if="cfgState === 'draft'" class="pbfs-btn primary" t-on-click="startTesting">Start Testing</button>
             <button t-if="cfgState === 'testing'" class="pbfs-btn primary" t-on-click="validateCfg">Validate</button>
             <button t-if="cfgState === 'validated'" class="pbfs-btn primary" t-on-click="activateCfg"
-                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Activate')"/></button>
+                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Activate', 'Propose putting it live')"/></button>
             <button t-if="state.settings.status.rule_count" class="pbfs-btn soft" data-coach="fs-simulate" t-on-click="openSimulate" title="Preview this config against last period's real payslips before activating">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Simulate
             </button>
@@ -246,7 +246,7 @@
             <button t-if="!state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="importExcelCfg">Import from Excel</button>
             <button t-if="state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="regenerateFormulas">Regenerate Formulas</button>
             <button t-if="cfgState !== 'archived'" class="pbfs-btn danger" t-on-click="archiveCfg"
-                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Retire')"/></button>
+                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Retire', 'Propose retiring it')"/></button>
             <div t-if="schemeRouteLine" class="pbfs-hint" t-esc="schemeRouteLine"/>
           </div>
           <!-- alerts -->
@@ -2822,7 +2822,7 @@
 
                   <div class="rl-actions" t-if="state.releaseData.can_edit">
                     <button class="pbfs-btn primary" t-att-disabled="state.releaseBusy" t-on-click="approveRelease">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="m9 12 2 2 4-4"/></svg><t t-esc="schemeVerb('Sign off &amp; seal release')"/>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="m9 12 2 2 4-4"/></svg><t t-esc="schemeVerb('Sign off &amp; seal release', 'Propose the release')"/>
                     </button>
                   </div>
                 </t>
@@ -2953,7 +2953,7 @@
                   <input type="text" class="rb-confirm-in" t-att-value="state.rollbackConfirm" t-on-input="onRollbackConfirm" placeholder="Release name"/>
                   <button class="pbfs-btn danger-solid" t-att-disabled="!rollbackConfirmOk or state.rollbackApplying" t-on-click="applyRollback">
                     <t t-if="state.rollbackApplying">Working…</t>
-                    <t t-else="" t-esc="schemeVerb('Roll back now')"/>
+                    <t t-else="" t-esc="schemeVerb('Roll back now', 'Propose the roll-back')"/>
                   </button>
                 </div>
               </t>

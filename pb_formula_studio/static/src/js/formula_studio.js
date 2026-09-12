@@ -4088,9 +4088,14 @@ export class PbFormulaStudio extends Component {
     get schemeNeedsApproval() {
         return !!(this.state.schemeRoute && this.state.schemeRoute.mode === "steps");
     }
-    /** The button's word: what pressing it does, not what it is about. */
-    schemeVerb(direct) {
-        return this.schemeNeedsApproval ? _t("Propose for approval") : direct;
+    /** The button's word: what pressing it does, not what it is about.
+     *  `propose` is the SPECIFIC wording for this button — four buttons that
+     *  all read "Propose for approval" tell the reader what the press costs
+     *  and not what it does, and the retire button is the one that makes that
+     *  dangerous. */
+    schemeVerb(direct, propose) {
+        if (!this.schemeNeedsApproval) { return direct; }
+        return propose || _t("Propose for approval");
     }
     get schemeRouteLine() {
         return (this.state.schemeRoute && this.state.schemeRoute.msg) || "";
