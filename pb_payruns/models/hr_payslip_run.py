@@ -544,8 +544,13 @@ class HrPayslipRun(models.Model):
             return {}
         role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
         bucket = self._pb_bucket_sql(role_aware)
-        self.env['hr.payslip.line'].flush_model(['slip_id', 'category_id',
-                                                 'total'])
+        # Flush EVERY column the bucket reads: this is raw SQL, so anything
+        # still in the ORM's write buffer is invisible to it — and the stamp
+        # being taken in the same transaction as the write is the normal case.
+        columns = ['slip_id', 'category_id', 'total']
+        if role_aware:
+            columns.append('pay_role')
+        self.env['hr.payslip.line'].flush_model(columns)
         self.env.cr.execute("""
             SELECT pl.slip_id, """ + bucket + """ AS bucket,
                    COALESCE(SUM(pl.total), 0)
