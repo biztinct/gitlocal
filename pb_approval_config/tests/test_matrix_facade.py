@@ -322,7 +322,12 @@ class TestMatrixFacade(MatrixCase):
         gaps = {gap['role_key'] for gap in grid['gaps']}
         self.assertIn('finance', gaps,
                       'an empty seat the route needs is not reported')
-        self.assertNotIn('director', gaps,
+        # `access` and NOT `director`: Phase 5 published a payment-release
+        # route that names the country director company-wide, so that seat is
+        # now one a route really does ask for and reporting it empty is
+        # correct. The half of the promise this line is testing needs a
+        # responsibility NO seeded route names, and the Access team is one.
+        self.assertNotIn('access', gaps,
                          'a seat no route asks for is reported as a problem')
 
         matrix.set_responsibility(self.company.id, 'finance', '', self.fin.id)

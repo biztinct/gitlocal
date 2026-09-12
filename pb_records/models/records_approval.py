@@ -65,6 +65,12 @@ class PbRecordsApply(models.Model):
     ], default='draft', required=True, index=True, readonly=True, copy=False)
     block_note = fields.Text(string='Why it could not be carried out',
                              readonly=True, copy=False)
+    #: The rows the WRITE itself refused — a contract component already kept as
+    #: text, a badge id somebody else holds. They are found only while writing,
+    #: so they cannot be in the plan; they are kept here because the desk's
+    #: answer has always listed them and a proposal must not swallow them.
+    refused_json = fields.Text(string='Refused while writing (JSON)',
+                               readonly=True, copy=False)
 
     #: A seat is also a read (ledger AM60).
     seat_user_ids = fields.Many2many(
@@ -88,6 +94,15 @@ class PbRecordsApply(models.Model):
         self.ensure_one()
         try:
             rows = json.loads(self.plan_json or '[]')
+        except (TypeError, ValueError):
+            return []
+        return rows if isinstance(rows, list) else []
+
+    def late_refusals(self):
+        """What the write itself refused, in the desk's own shape."""
+        self.ensure_one()
+        try:
+            rows = json.loads(self.refused_json or '[]')
         except (TypeError, ValueError):
             return []
         return rows if isinstance(rows, list) else []
@@ -318,6 +333,7 @@ class PbRecordsApply(models.Model):
             'state': 'applied',
             'count_values': written,
             'count_people': len(people),
+            'refused_json': json.dumps(refused),
             'block_note': '; '.join(r['why'] for r in refused)[:1024] or False,
         })
         return True

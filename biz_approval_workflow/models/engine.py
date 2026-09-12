@@ -796,6 +796,14 @@ class BizApprovalEngine(models.AbstractModel):
             'idempotency_key': idempotency_key or False,
         })
         record._approval_freeze(request)
+        # `approval_request_id` is computed with `@api.depends()` — no
+        # dependencies at all, deliberately, so it is worked out on every read
+        # and can never disagree with the record. The price is that nothing
+        # invalidates it: a caller that read it BEFORE submitting (every
+        # adapter's door does, to refuse a second press) has False in the cache
+        # and would still have False afterwards. One invalidation here, rather
+        # than one in every adapter and one forgotten.
+        record.invalidate_recordset(['approval_request_id', 'approval_state'])
         blocked = self._build_steps(request, d, ctx, record)
         active = request.step_ids.filtered(
             lambda s: s.included and s.kind != 'notify')

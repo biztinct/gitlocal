@@ -1433,7 +1433,14 @@ class PbRecordsDesk(models.AbstractModel):
 
         payload = self.env['biz.approval.engine'].submit(apply_rec)
         apply_rec.invalidate_recordset()
-        refused = [i for i in items if i['status'] == 'refused']
+        # THE WRITE'S OWN REFUSALS COME BACK TOO. Some rows can only be refused
+        # while they are being written — a contract component already kept as
+        # text, a badge id somebody else holds — and the desk's answer has
+        # always listed them beside the ones the evaluation refused. Under a
+        # fast lane the write happened inside the submit above, so they are
+        # read back off the proposal rather than lost in it.
+        refused = [i for i in items if i['status'] == 'refused'] \
+            + apply_rec.late_refusals()
         answer = {
             'ok': True, 'apply_id': apply_rec.id,
             'written': apply_rec.count_values, 'people': apply_rec.count_people,

@@ -6,9 +6,18 @@
 default route. Phase 5 added five such models, and a database that had this
 module installed before them never asked.
 
-Running it from HERE as well as from each adapter's own migration is the same
-belt-and-braces the module was built with: which module an upgrade happens to
-touch first is not something either end chooses, and every seed is idempotent.
+AN `end-` SCRIPT, AND THAT IS THE WHOLE POINT. A `post-` script runs while THIS
+module is being loaded — and every adapter module depends on this one, so at
+that moment `pb.records.apply`, `pb.zoho.arrival.batch` and the rest are not in
+the registry yet and the loop silently finds nothing. `end-` scripts run after
+every module in the graph has been loaded (`odoo/modules/loading.py`, STEP
+3.5), which is the first moment the question "which models have a default route
+waiting to be laid?" has its real answer.
+
+It is belt-and-braces beside each adapter's own migration, not a replacement:
+which module an upgrade happens to touch is not something either end chooses,
+and a database where only ONE of them is upgraded still converges. Every seed
+is idempotent, so running both changes nothing.
 """
 import logging
 
