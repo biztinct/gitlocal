@@ -33,7 +33,7 @@ The engine is Phase H's biz_audit_trail — this module SURFACES and consolidate
 it adds no logging. If a wanted event does not yet exist, that is a hand-back
 note, not a write hook here.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -41,6 +41,7 @@ note, not a write hook here.
     'depends': [
         'biz_audit_trail',
         'biz_approval_chain',
+        'biz_approval_workflow',
         'pb_bank_ocr',
         'pb_sidebar',
         'pb_import_kit',

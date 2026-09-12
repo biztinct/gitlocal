@@ -55,13 +55,15 @@ _ROSE_DEFAULT = 25.0
 _SOURCE_META = {
     'field':    {'label': 'Field change', 'icon': 'fileText',   'color': 'indigo'},
     'approval': {'label': 'Approval',     'icon': 'checkCircle', 'color': 'violet'},
+    'workflow': {'label': 'Approval workflow', 'icon': 'workflow', 'color': 'violet'},
     'bank':     {'label': 'Bank master',  'icon': 'landmark',    'color': 'teal'},
     'export':   {'label': 'Bank export',  'icon': 'download',    'color': 'slate'},
     'delivery': {'label': 'Payslip sent', 'icon': 'mail',        'color': 'green'},
     'login':    {'label': 'Login',        'icon': 'logIn',       'color': 'cyan'},
 }
 # Display / filter order.
-_SOURCE_ORDER = ['field', 'approval', 'bank', 'export', 'delivery', 'login']
+_SOURCE_ORDER = ['field', 'approval', 'workflow', 'bank', 'export',
+                 'delivery', 'login']
 
 
 class PbAuditConsole(models.AbstractModel):
@@ -146,6 +148,7 @@ class PbAuditConsole(models.AbstractModel):
         model = {
             'field': 'biz.audit.entry',
             'approval': 'biz.approval.step.log',
+            'workflow': 'biz.approval.event',
             'bank': 'pb.employee.bank.history',
             'export': 'bank.export.log',
             'delivery': 'pb.payslip.delivery',
@@ -227,6 +230,43 @@ class PbAuditConsole(models.AbstractModel):
                 'approval', l.id, l.stamp, l.user_id, title,
                 self._state_label(l.from_state), self._state_label(l.to_state),
                 l.res_model, l.res_id, employee=emp))
+        return rows
+
+    def _fetch_workflow(self, filters, limit):
+        """The configurable approval engine's own trail (biz.approval.event).
+
+        Same domain handling as _fetch_approval. The engine already writes its
+        summary in plain words ("Nithya approved HR lead review on …"), so the
+        console shows that and does not try to re-say it; old/new carry the
+        kind of event and the request's own status.
+        """
+        if 'biz.approval.event' not in self.env:
+            return []
+        df, dt = self._dt_bounds(filters)
+        dom = []
+        if df:
+            dom.append(('stamp', '>=', df))
+        if dt:
+            dom.append(('stamp', '<=', dt))
+        if self._actor_filter(filters):
+            dom.append(('user_id', '=', self._actor_filter(filters)))
+        if self._model_filter(filters):
+            dom.append(('res_model', '=', self._model_filter(filters)))
+        if self._emp_filter(filters):  # an approval event has no employee
+            return []
+        events = self.env['biz.approval.event'].sudo().search(
+            dom, order='stamp desc, id desc', limit=limit)
+        kinds = dict(self.env['biz.approval.event']._fields['kind'].selection)
+        rows = []
+        for e in events:
+            state = e.request_id.state or ''
+            state_label = dict(
+                self.env['biz.approval.request']._fields['state'].selection
+            ).get(state, state)
+            rows.append(self._row(
+                'workflow', e.id, e.stamp, e.user_id, e.summary,
+                kinds.get(e.kind, e.kind), state_label,
+                e.res_model, e.res_id, employee=None))
         return rows
 
     def _fetch_bank(self, filters, limit):
@@ -343,6 +383,7 @@ class PbAuditConsole(models.AbstractModel):
     _FETCHERS = {
         'field': '_fetch_field',
         'approval': '_fetch_approval',
+        'workflow': '_fetch_workflow',
         'bank': '_fetch_bank',
         'export': '_fetch_export',
         'delivery': '_fetch_delivery',
@@ -661,6 +702,7 @@ class PbAuditConsole(models.AbstractModel):
         return {
             'field': ('biz.audit.entry', 'stamp'),
             'approval': ('biz.approval.step.log', 'stamp'),
+            'workflow': ('biz.approval.event', 'stamp'),
             'bank': ('pb.employee.bank.history', 'changed_at'),
             'export': ('bank.export.log', 'export_date'),
             'delivery': ('pb.payslip.delivery', 'create_date'),
