@@ -13,7 +13,8 @@
 7. **Scheme Settings**: an "Approval workflows" panel (same component) on the formula configuration settings screen.
 8. **Default workflow seed** for `payrun` per company: "Officer → HR → Finance" preset published as the company default (roles `payroll_mgr` → `hr_lead` (division) → `finance`), plus a migration that assigns today's group holders to those roles (officer group → `payroll_mgr`, HR manager group → `hr_lead` at company scope, final approver group → `finance`) so day one routes to the same people. Existing draft runs stay draft; no run is mid-chain (verify with a count and stop if any).
 9. Inbox cards for pay runs (icon `zap`, amount, payslip count, run kind) and the run's own screen showing the route and a "Submit for approval" primary action; kanban/board/pipeline widgets read `approval_state`.
-10. VI `.po`, tests, Chrome validation (local), deploy checklist.
+10. Fix the latent fresh-install break (ledger AM16): the kanban view lists `credit_note`/`journal_id` from `om_hr_payroll_account`, which `pb_payruns` does not depend on. Either declare the dependency or drop the fields from the new board; a fresh `runtests.sh pb_payruns` (without `EXTRA`) must pass.
+11. VI `.po`, tests, Chrome validation (local), deploy checklist.
 
 **Non-goals:** timesheets, scheme-change proposals (P4); money-out and pay data adapters (P5); chain-mixin consumers (P5).
 
