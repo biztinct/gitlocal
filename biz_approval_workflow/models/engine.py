@@ -860,6 +860,14 @@ class BizApprovalEngine(models.AbstractModel):
                 'include_reason': reason,
                 'status': 'pending' if included else 'skipped',
             })
+            if kind == 'notify' and included:
+                # A "tell someone" step really does tell them. It creates no
+                # seat and waits for nobody — but a step that says the HR lead
+                # will hear about this and then tells nobody is a sentence on a
+                # screen that is not true.
+                self._notify_step(request, step, ctx, company, on_date,
+                                  record, row)
+                continue
             if not included or kind in ('notify', 'fast'):
                 continue
             index += 1
@@ -887,6 +895,31 @@ class BizApprovalEngine(models.AbstractModel):
                 })
             previous += [p['user_id'] for p in people]
         return block_reason
+
+    def _notify_step(self, request, step, ctx, company, on_date, record, row):
+        """Tell the people a "tell someone" step names, and move on.
+
+        Never blocks: a notify step whose responsibility nobody holds is worth
+        a log line, not a stuck request — nothing is waiting on it.
+        """
+        who = step.get('who') or {}
+        if who.get('mode') == 'preparer' or not who.get('mode'):
+            uids = [ctx.get('submitter_uid')]
+        else:
+            people, issue = self._resolve_step_people(
+                step, ctx, company, on_date, record=record)
+            if issue and issue['level'] == 'block':
+                row.write({'status': 'skipped',
+                           'include_reason': issue['msg']})
+                return False
+            uids = [p['user_id'] for p in people]
+        for uid in [u for u in uids if u]:
+            self.env['biz.approval.outbox']._queue(
+                'notified', self.env['res.users'].sudo().browse(uid), request,
+                payload={'step_title': step.get('title') or ''},
+                dedupe='notified-%s-%s-%s' % (request.id, step['key'], uid))
+        row.write({'status': 'done', 'decided_at': fields.Datetime.now()})
+        return True
 
     # ------------------------------------------------------- step activation
     def _activate_next(self, request):
@@ -1201,6 +1234,13 @@ class BizApprovalEngine(models.AbstractModel):
         request.write({'state': 'rejected', 'return_note': reason or '',
                        'closed_at': fields.Datetime.now(),
                        'current_step_key': False})
+        # The record has to hear "no" as well as "change it": without this a
+        # turned-down record reads "waiting for approval" for ever.
+        try:
+            record._approval_reject(request, reason or '')
+        except Exception:   # noqa: BLE001 — the decision itself always stands
+            _logger.exception('approval: %s could not record its rejection',
+                              record)
         self.env['biz.approval.event']._log(
             'rejected', _("\"%(what)s\" was turned down: %(why)s",
                           what=request.title,

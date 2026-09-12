@@ -46,13 +46,22 @@ class BizApprovalProcess(models.Model):
         'unique(key)',
         'Another process already uses that identifier.')
 
-    @api.depends('model_name')
+    @api.depends('model_name', 'key')
     def _compute_connected(self):
+        """Wired up means: the model this row names really does answer for THIS
+        row's key. A model can serve more than one (`_approval_process_keys`),
+        which is how "this run only" and "past pay data" are two rows over one
+        pay-data file and still both honest."""
         for rec in self:
             model = rec.model_name
-            rec.connected = bool(
-                model and model in self.env
-                and getattr(self.env[model], '_approval_process_key', None))
+            adapter = self.env[model] if model and model in self.env else None
+            declared = getattr(adapter, '_approval_process_key', None) \
+                if adapter is not None else None
+            served = set(getattr(adapter, '_approval_process_keys', ()) or ()) \
+                if adapter is not None else set()
+            if declared:
+                served.add(declared)
+            rec.connected = bool(declared) and rec.key in served
 
     @api.depends('workflow_ids')
     def _compute_workflow_count(self):

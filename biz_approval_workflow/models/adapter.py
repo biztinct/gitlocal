@@ -23,6 +23,16 @@ class BizApprovalAdapterMixin(models.AbstractModel):
     # the biz.approval.process.key this model is approved under
     _approval_process_key = None
 
+    #: Every catalogue key this model can serve, when ONE model answers to more
+    #: than one process. A pay-data file is the case that forced it: the same
+    #: `hr.payroll.import.batch` is "this run only" when the figures are used
+    #: once and "past pay data" when they are kept, and a business that wants
+    #: one checked and the other waved through must be able to say so. The
+    #: class attribute is the STATIC declaration (the catalogue reads it to know
+    #: the row is wired up); `_approval_process_key_for` is the per-record
+    #: answer. A model with a single key leaves both alone.
+    _approval_process_keys = ()
+
     approval_request_id = fields.Many2one(
         'biz.approval.request', string='Approval', compute='_compute_approval',
         compute_sudo=True)
@@ -123,6 +133,16 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         """Make the record editable again after it was sent back."""
         return True
 
+    def _approval_reject(self, request, reason):
+        """Turned down for good. Say so on the record.
+
+        Separate from `_approval_return` because the two are different answers:
+        sent back means "change it and ask again", turned down means "no". A
+        record left reading "waiting for approval" after somebody said no is a
+        screen that lies.
+        """
+        return True
+
     def _approval_manager_uids(self):
         """Users behind "their manager" — the subjects' own managers."""
         self.ensure_one()
@@ -157,12 +177,22 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         raw = json.dumps(values, sort_keys=True, default=str)
         return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:32]
 
+    def _approval_process_key_for(self):
+        """Which catalogue row THIS record is approved under.
+
+        The default is the class attribute, which is the whole answer for a
+        model that serves one process. A model that serves several overrides
+        this and lists them all in `_approval_process_keys`.
+        """
+        self.ensure_one()
+        return self._approval_process_key
+
     def _approval_process(self):
         self.ensure_one()
-        if not self._approval_process_key:
+        key = self._approval_process_key_for()
+        if not key:
             raise UserError(_("This kind of record cannot be approved yet."))
-        process = self.env['biz.approval.process']._by_key(
-            self._approval_process_key)
+        process = self.env['biz.approval.process']._by_key(key)
         if not process:
             raise UserError(_(
                 "This kind of record is not set up for approvals yet."))

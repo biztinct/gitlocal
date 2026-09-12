@@ -14,4 +14,5 @@ from . import event
 from . import outbox
 from . import adapter
 from . import engine
+from . import seed_helper
 from . import generic_request

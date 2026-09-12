@@ -24,6 +24,7 @@ KINDS = [
     ('rejected', 'Turned down'),
     ('exception_used', 'An exception was used'),
     ('covering', 'You are covering for someone'),
+    ('notified', 'For your information'),
 ]
 
 
@@ -38,6 +39,7 @@ def _subject_for(kind, title):
         'rejected': _("Turned down: %s", title),
         'exception_used': _("An exception was used: %s", title),
         'covering': _("You are covering an approval: %s", title),
+        'notified': _("For your information: %s", title),
     }.get(kind, _("Approval: %s", title))
 
 
@@ -143,6 +145,10 @@ class BizApprovalOutbox(models.Model):
                            "using an exception you allowed."))
         elif self.kind == 'covering':
             lines.append(_("You are covering this for someone else."))
+        elif self.kind == 'notified':
+            # A "tell someone" step is not a decision and never asks for one.
+            lines.append(_("This is for your information. Nothing is waiting "
+                           "for you."))
         if payload.get('step_title'):
             lines.append(_("Step: %s", payload['step_title']))
         if payload.get('reason'):
