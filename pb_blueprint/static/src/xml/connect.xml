@@ -158,14 +158,18 @@
                                  scopeLabel="approvals.scope_label"
                                  companyId="approvalsCompanyId"
                                  embedded="true"/>
-            <!-- Shared · Scheme change. Read-only until the scheme-change
-                 adapter lands: saying what will be there is better than a
-                 control that cannot do anything yet. -->
+            <!-- Shared · Scheme change. The real binding now, not a promise
+                 about one: the same panel, asked about the scheme-change
+                 process, so this card and the Matrix can never disagree. -->
             <p class="pbbp-cn-sub pbbp-cn-schemechange">
               <b>Shared · Scheme change</b>
-              Changes to the scheme itself follow the company's own route. Its
-              own panel arrives with the next release.
+              Who has to agree before the way pay is worked out is changed.
             </p>
+            <ApprovalSchemePanel processKey="'scheme'"
+                                 scopeKey="approvals.scope_key"
+                                 scopeLabel="approvals.scope_label"
+                                 companyId="approvalsCompanyId"
+                                 embedded="true"/>
           </div>
           <div class="pbbp-cn-blocked" t-else="">
             <span class="i" t-out="ic('info', 14)"/>
