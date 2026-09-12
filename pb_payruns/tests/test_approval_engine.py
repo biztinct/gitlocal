@@ -157,9 +157,14 @@ class PayrunApprovalCase(TransactionCase):
         than on anything the case is about."""
         values = {'name': name, 'code': code,
                   'company_id': self.company.id}
-        if 'country_code' in Config._fields:
-            values['country_code'] = (
-                self.company.country_id.code or 'VN')
+        field = Config._fields.get('country_code')
+        if field is not None:
+            # A Selection of the countries the engine supports — and the test
+            # database's own company is in none of them, so the company's
+            # country is the wrong place to read this from.
+            allowed = [key for key, _label
+                       in (field.get_description(self.env)['selection'] or [])]
+            values['country_code'] = 'VN' if 'VN' in allowed else allowed[0]
         values.update(extra)
         return Config.create(values)
 
