@@ -31,7 +31,13 @@ COLUMN_SOURCES = [
 
 
 class PbBankFileLayout(models.Model):
+    # A layout decides what the bank is TOLD — which column carries the account
+    # number, which carries the amount. Changing one is as consequential as
+    # changing the file, and it is the one money-out surface Phase 5 leaves
+    # without a request. So every change is written to the platform trail
+    # instead (`data/audit_rules.xml` names the fields).
     _name = 'pb.bank.file.layout'
+    _inherit = ['biz.audit.mixin']
     _description = 'Bank Transfer File Layout'
     _order = 'name'
 
@@ -74,6 +80,7 @@ class PbBankFileLayout(models.Model):
 
 class PbBankFileColumn(models.Model):
     _name = 'pb.bank.file.column'
+    _inherit = ['biz.audit.mixin']
     _description = 'Bank Transfer File Column'
     _order = 'layout_id, sequence, id'
 

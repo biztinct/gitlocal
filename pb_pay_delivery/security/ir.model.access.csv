@@ -13,3 +13,16 @@ access_delivery_line_mgr,pb.payslip.delivery mgr,model_pb_payslip_delivery,om_hr
 access_delivery_line_system,pb.payslip.delivery system,model_pb_payslip_delivery,base.group_system,1,1,1,1
 access_vn_bank_export_wizard_user,vietnam.bank.export.wizard user,pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard,base.group_user,1,1,1,0
 access_vn_bank_export_wizard_system,vietnam.bank.export.wizard system,pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard,base.group_system,1,1,1,1
+access_bank_file_hr,pb.bank.file hr,model_pb_bank_file,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_bank_file_mgr,pb.bank.file mgr,model_pb_bank_file,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_bank_file_seat,pb.bank.file anyone asked to decide,model_pb_bank_file,base.group_user,1,0,0,0
+access_bank_file_system,pb.bank.file system,model_pb_bank_file,base.group_system,1,1,1,1
+access_payment_release_hr,pb.payment.release hr,model_pb_payment_release,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_payment_release_mgr,pb.payment.release mgr,model_pb_payment_release,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_payment_release_seat,pb.payment.release anyone asked to decide,model_pb_payment_release,base.group_user,1,0,0,0
+access_payment_release_system,pb.payment.release system,model_pb_payment_release,base.group_system,1,1,1,1
+access_payroll_journal_hr,pb.payroll.journal hr,model_pb_payroll_journal,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_payroll_journal_mgr,pb.payroll.journal mgr,model_pb_payroll_journal,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_payroll_journal_seat,pb.payroll.journal anyone asked to decide,model_pb_payroll_journal,base.group_user,1,0,0,0
+access_payroll_journal_system,pb.payroll.journal system,model_pb_payroll_journal,base.group_system,1,1,1,1
+access_delivery_batch_seat,pb.payslip.delivery.batch anyone asked to decide,model_pb_payslip_delivery_batch,base.group_user,1,0,0,0

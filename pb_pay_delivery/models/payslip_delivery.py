@@ -36,8 +36,15 @@ except ImportError:  # pragma: no cover - live venv ships PyPDF2 2.12.1
 
 class PbPayslipDeliveryBatch(models.Model):
     _name = 'pb.payslip.delivery.batch'
+    _inherit = ['biz.approval.adapter.mixin', 'pb.money.approval.mixin']
     _description = 'Payslip Delivery Batch'
     _order = 'create_date desc'
+
+    #: The catalogue key this model is approved under. The default route is
+    #: the fast lane — a payslip is the employee's own document and most
+    #: businesses do not check it twice — but it IS a route, so a business
+    #: that wants somebody to look first can say so without a code change.
+    _approval_process_key = 'payslips'
 
     name = fields.Char(default=lambda self: _('Delivery'), required=True)
     run_id = fields.Many2one('hr.payslip.run', string='Pay Run',
@@ -45,13 +52,24 @@ class PbPayslipDeliveryBatch(models.Model):
     company_id = fields.Many2one(
         'res.company', default=lambda self: self.env.company, index=True)
     state = fields.Selection(
-        [('draft', 'Draft'), ('sending', 'Sending'), ('done', 'Done')],
+        [('draft', 'Draft'), ('pending', 'Waiting for approval'),
+         ('returned', 'Sent back'), ('rejected', 'Turned down'),
+         ('sending', 'Sending'), ('done', 'Done')],
         default='draft', required=True)
+    force_all = fields.Boolean(
+        string='Send to everybody again', copy=False,
+        help="What the person asked for when this was sent in. Kept on the "
+             "record so an approval carries out the send that was requested, "
+             "not a different one.")
     line_ids = fields.One2many(
         'pb.payslip.delivery', 'batch_id', string='Deliveries')
     sent_count = fields.Integer(compute='_compute_counts', store=True)
     failed_count = fields.Integer(compute='_compute_counts', store=True)
     skipped_count = fields.Integer(compute='_compute_counts', store=True)
+    #: A seat is also a read (ledger AM60).
+    seat_user_ids = fields.Many2many(
+        'res.users', 'pb_delivery_batch_seat_rel', 'batch_id', 'user_id',
+        string='Asked to decide', copy=False)
 
     @api.depends('line_ids.state')
     def _compute_counts(self):
@@ -142,10 +160,35 @@ class PbPayslipDeliveryBatch(models.Model):
 
     # ------------------------------------------------------------- send
     def action_send(self, force_all=False):
+        """Ask for the send-out, then let the answer carry it out.
+
+        The default route for "Payslip send-out" is the fast lane, so the
+        usual press still sends immediately — and now writes a request saying
+        so. A business that publishes a real route gets the batch waiting
+        instead, and the send happens from `_approval_apply`.
+
+        Resending failures after an approved send is NOT a new send-out: the
+        same people are getting the same document, and the ones that failed
+        never left the building. That path goes straight through.
+        """
+        self.ensure_one()
+        self._check_pay_access()
+        request = self.approval_request_id
+        if request and request.state == 'applied' and not force_all:
+            return self._do_send(force_all=False)
+        if self.state == 'pending':
+            raise UserError(_(
+                "These payslips are already waiting to be approved, with %s.",
+                self._waiting_for() or _('their approver')))
+        self.write({'force_all': bool(force_all)})
+        self.env['biz.approval.engine'].submit(self)
+        return True
+
+    def _do_send(self, force_all=False):
         """Send/queue payslips for every Done slip of the run.
 
         Idempotent: an already-'sent' line is skipped unless force_all. Per-slip
-        savepoint isolates failures. Returns the refreshed cockpit payload."""
+        savepoint isolates failures."""
         self.ensure_one()
         self._check_pay_access()
 
@@ -218,6 +261,102 @@ class PbPayslipDeliveryBatch(models.Model):
         """Resend only failed lines (idempotent over 'sent')."""
         self.ensure_one()
         return self.action_send(force_all=False)
+
+    # ==================================================================
+    # Adapter — what an approval of a send-out is about
+    # ==================================================================
+    def _approval_validate(self):
+        self.ensure_one()
+        if not self.run_id.slip_ids.filtered(lambda s: s.state == 'done'):
+            raise UserError(_(
+                "No confirmed payslips in this pay run to deliver."))
+        return True
+
+    def _approval_context(self):
+        self.ensure_one()
+        run = self.run_id
+        company = self.company_id or self.env.company
+        scope_keys, scope_label = self.scope_of_run(run)
+        slips = run.sudo().slip_ids.filtered(lambda s: s.state == 'done')
+        paid = bool(slips) and all(
+            getattr(slip, 'pb_paid_on', False) for slip in slips)
+        return {
+            'company_id': company.id,
+            'title': _("Payslips · %s", run.name or ''),
+            'scope_keys': scope_keys,
+            'scope_label': scope_label,
+            'kind_key': 'any',
+            'facts': {
+                'slip_count': {'value': len(slips), 'unit': ''},
+                'run_paid': {'value': paid, 'unit': ''},
+            },
+            'amount': 0.0,
+            'currency_id': company.currency_id.id,
+            'maker_uids': self.run_makers(run),
+            'submitter_uid': self.env.uid,
+            'subject_uids': sorted(
+                set(slips.mapped('employee_id.user_id').ids)),
+            'source_revision': self._approval_revision_of(
+                sorted(slips.ids) + [bool(self.force_all)]),
+            'evidence': [
+                {'key': 'run_paid', 'name': _('The money has been sent'),
+                 'ok': paid, 'note': ''},
+            ],
+        }
+
+    @api.model
+    def _approval_capabilities(self):
+        return {
+            'facts': {
+                'slip_count': {'type': 'int', 'label': _('Payslips')},
+                'run_paid': {'type': 'bool',
+                             'label': _('The money has been sent')},
+            },
+            'kinds': [],
+            'evidence': [{'key': 'run_paid',
+                          'label': _('The money has been sent')}],
+            'scope_levels': [_('Pay scheme'), _('Division')],
+            'manager_mode': False,
+        }
+
+    @api.model
+    def _approval_scope_options(self, company):
+        return self.env['pb.bank.file']._approval_scope_options(company)
+
+    @api.model
+    def _approval_coverage_scopes(self, company):
+        return self.env['pb.bank.file']._approval_coverage_scopes(company)
+
+    def _approval_card_count(self, request):
+        self.ensure_one()
+        count = len(self.run_id.slip_ids.filtered(lambda s: s.state == 'done'))
+        if count == 1:
+            return _("1 payslip")
+        return _("%s payslips", count)
+
+    def _approval_freeze(self, request):
+        self.ensure_one()
+        self.sudo().write({'state': 'pending'})
+        return True
+
+    def _approval_return(self, request, reason):
+        self.ensure_one()
+        self.sudo().write({'state': 'returned'})
+        return True
+
+    def _approval_reject(self, request, reason):
+        self.ensure_one()
+        self.sudo().write({'state': 'rejected'})
+        return True
+
+    def _approval_apply(self, request):
+        self.ensure_one()
+        self.require_pay(_('the payslip send-out'))
+        self._do_send(force_all=bool(self.force_all))
+        self.audit(self, 'state', _('Payslips sent'), '',
+                   _("%(sent)s sent, %(failed)s failed",
+                     sent=self.sent_count, failed=self.failed_count))
+        return True
 
 
 class PbPayslipDelivery(models.Model):

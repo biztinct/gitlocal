@@ -14,6 +14,7 @@ Chars are READ; nothing here writes them.
 
 import base64
 import csv
+import hashlib
 import io
 import logging
 
@@ -279,6 +280,10 @@ class VietnamBankExportWizard(models.TransientModel):
             'excluded': excluded,
             'total_amount': total_amount,
             'byte_size': len(data),
+            # Taken HERE, over the bytes themselves, so the stamp belongs to
+            # the file rather than to anything written about it afterwards.
+            # `pb.bank.file` re-takes it from the attachment on every check.
+            'file_hash': hashlib.sha256(data).hexdigest(),
         }
 
     def _soft_log_export(self, result):

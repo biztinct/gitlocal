@@ -83,13 +83,14 @@ class HrPayslipRun(models.Model):
         """Approved → done, then the pack. ADDITIVE, in that order."""
         res = super()._approval_apply(request)
         for run in self:
-            # Awards first, and outside the switch: this is the ledger catching
-            # up with the money, not a document.
-            try:
-                self.env['pb.oneoff.feed'].mark_paid_for_run(run.id)
-            except Exception:               # noqa: BLE001
-                _logger.exception(
-                    'pb_comp_ben: could not mark awards paid for run %s', run.id)
+            # AWARDS ARE NOT MARKED PAID HERE ANY MORE (Phase 5). Approving a
+            # pay run says the numbers are right; it does not say the money
+            # left the building. The award's own word for that is `paid`, and
+            # the honest moment for it is the approved payment release, which
+            # is where `pb.oneoff.feed.mark_paid_for_run` is called from now
+            # (`pb_pay_delivery/models/payment_release.py`). A company that
+            # never records a release never marks awards paid — which is true,
+            # and better than a word that means nothing.
             if not flag(self.env, P_FINANCE_PACK):
                 continue
             try:

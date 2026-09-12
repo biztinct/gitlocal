@@ -294,4 +294,89 @@
         .s { font-size: 13px; margin-top: 4px; }
         &.small { padding: 22px 14px; .t { font-size: 14px; } }
     }
+
+    // ================================================================
+    // PHASE 5 — every lane says where it is, who it is with, and the door.
+    // One vocabulary of chips and step pips for all three, so a person who
+    // learns the bank-file card can read the release card without looking.
+    // ================================================================
+    .pbpd-card {
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        padding: 16px;
+        margin-bottom: 14px;
+        display: flex; flex-direction: column; gap: 12px;
+
+        .card-h {
+            display: flex; align-items: center; gap: 9px;
+            .ico { color: var(--pbim-primary, #5A4BB0); display: inline-flex; }
+            .ttl { font-weight: 800; font-size: 14.5px; }
+        }
+    }
+
+    .pbpd-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 999px;
+        font-size: 11.5px; font-weight: 700;
+        // a chip here carries a SENTENCE ("Waiting for approval"), not a
+        // one-word status, so the kit's capitalize would shout it (ledger AM24)
+        text-transform: none;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        &.ok { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.wait { background: #FFF4E0; color: #A96A00; }
+        &.warn { background: #FFF4E0; color: #A96A00; }
+        &.bad { background: #FDE8E8; color: #B42318; }
+        &.muted { background: var(--pbim-bg, #F5F6FA); color: var(--pbim-muted, #64748B); }
+    }
+
+    .pbpd-route {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        .who {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 12.5px; color: var(--pbim-muted, #64748B);
+        }
+    }
+    .pbpd-link {
+        display: inline-flex; align-items: center; gap: 5px;
+        border: 0; background: none; padding: 0;
+        color: var(--pbim-primary, #5A4BB0);
+        font-size: 12.5px; font-weight: 700; cursor: pointer;
+        &:hover { text-decoration: underline; }
+    }
+    .pbpd-block {
+        display: flex; align-items: flex-start; gap: 8px;
+        padding: 9px 11px; border-radius: 10px;
+        background: #FDE8E8; color: #B42318; font-size: 12.5px;
+    }
+    .pbpd-note { font-size: 12px; color: var(--pbim-muted, #64748B); }
+
+    .pbpd-steps {
+        display: flex; flex-wrap: wrap; gap: 8px;
+        .st {
+            padding: 6px 10px; border-radius: 10px;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            background: var(--pbim-bg, #F5F6FA);
+            font-size: 12px; line-height: 1.35;
+            .t { display: block; font-weight: 700; }
+            .p { display: block; color: var(--pbim-muted, #64748B); }
+            &.ok { background: var(--pbim-green-soft, #E3F2E9); border-color: transparent; }
+            &.wait { background: #FFF4E0; border-color: transparent; }
+            &.bad { background: #FDE8E8; border-color: transparent; }
+            &.muted { opacity: .55; }
+        }
+    }
+
+    .pbpd-warn {
+        display: flex; align-items: flex-start; gap: 11px;
+        margin: 0 34px 16px;
+        padding: 13px 15px;
+        border-radius: var(--pbim-r, 14px);
+        background: #FFF4E0;
+        color: #7A4B00;
+        svg { color: #A96A00; flex: none; margin-top: 1px; }
+        .t { font-weight: 800; font-size: 13.5px; }
+        .s { font-size: 12.5px; margin-top: 2px; }
+    }
 }

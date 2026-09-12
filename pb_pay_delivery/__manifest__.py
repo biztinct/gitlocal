@@ -29,7 +29,7 @@ these bespoke launchers (C18.42a — a legacy form smart-button is not the WOW
 surface). The delivery_batch_ids One2many exists for data integrity/back-
 reference only, not to drive a stat button.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -41,14 +41,20 @@ reference only, not to drive a stat button.
         'pb_bank_ocr',
         'pb_import_kit',
         'pb_sidebar',
+        'biz_approval_workflow',
+        'biz_audit_trail',
+        'pb_approval_config',
     ],
     'data': [
         'security/pb_pay_delivery_security.xml',
         'security/ir.model.access.csv',
+        'security/money_out_rules.xml',
         'data/bank_file_layouts.xml',
         'data/mail_template.xml',
         'views/pb_pay_delivery_action.xml',
         'data/pb_sidebar.xml',
+        'data/audit_rules.xml',
+        'views/money_out_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -57,6 +63,7 @@ reference only, not to drive a stat button.
             'pb_pay_delivery/static/src/xml/pb_pay_delivery.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
