@@ -419,6 +419,17 @@ class PbBankFile(models.Model):
         """The one door out. Refuses anything but the approved bytes."""
         self.ensure_one()
         self.require_pay(_('the bank file'))
+        # A REPLACED FILE WAS APPROVED — it just is not the one to pay from
+        # any more, and telling its reader it "has not been approved yet" sends
+        # them to look for an approver who signed it weeks ago.
+        if self.state == 'superseded':
+            raise UserError(_(
+                "A newer bank file has replaced this one. Download that one "
+                "instead."))
+        if self.state == 'rejected':
+            raise UserError(_(
+                "This bank file was turned down, so it cannot be downloaded. "
+                "Prepare it again."))
         if self.state != 'approved' or not self.approved_hash:
             raise UserError(_(
                 "This file has not been approved yet, so it cannot be "

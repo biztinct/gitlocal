@@ -444,7 +444,12 @@ class PbApprovalInbox(models.AbstractModel):
             return None
         payload = self._safe(lambda: record._approval_detail(request),
                              default=None)
-        if not isinstance(payload, dict) or not payload.get('rows'):
+        # ROWS OR CHIPS. A detail with neither is nothing to show; a detail
+        # with chips and no rows is a real answer — "everybody in this pay run
+        # is in the file", with the bank and the filename beside it — and
+        # dropping it left the drawer silent on exactly the reassuring case.
+        if not isinstance(payload, dict) \
+                or not (payload.get('rows') or payload.get('chips')):
             return None
         rows = []
         for row in payload['rows'][:40]:
@@ -457,17 +462,18 @@ class PbApprovalInbox(models.AbstractModel):
                           for cell in (row.get('cells') or [])[:6]],
                 'tone': 'off' if row.get('tone') == 'off' else 'on',
             })
-        if not rows:
+        chips = [{'label': _clip(str(chip.get('label') or ''), 60),
+                  'value': _clip(str(chip.get('value') or ''), 40)}
+                 for chip in (payload.get('chips') or [])[:8]
+                 if isinstance(chip, dict)]
+        if not rows and not chips:
             return None
         return {
             'title': _clip(str(payload.get('title') or ''), 120),
             'columns': [_clip(str(column or ''), 40)
                         for column in (payload.get('columns') or [])[:6]],
             'rows': rows,
-            'chips': [{'label': _clip(str(chip.get('label') or ''), 60),
-                       'value': _clip(str(chip.get('value') or ''), 40)}
-                      for chip in (payload.get('chips') or [])[:8]
-                      if isinstance(chip, dict)],
+            'chips': chips,
             'note': _clip(str(payload.get('note') or ''), 240),
         }
 

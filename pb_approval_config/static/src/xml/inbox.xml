@@ -332,7 +332,7 @@
                learns what a week or a run is. -->
           <div t-if="request.detail">
             <div class="pbam-k" t-esc="request.detail.title"/>
-            <div class="pbam-detail-wrap">
+            <div t-if="request.detail.rows.length" class="pbam-detail-wrap">
               <table class="pbam-detail">
                 <thead>
                   <tr>

@@ -281,6 +281,40 @@ class TestMoneyOutApprovals(TransactionCase):
         with self.assertRaises(UserError):
             self.Release.prepare(pending)
 
+    def test_m03b_a_file_edited_after_approval_cannot_be_released(self):
+        """Safety rail 2, found on the browser walk: the release checked the
+        bank file's STATE and not its bytes, so a file edited between its
+        approval and its release would have gone out as if nothing had
+        happened — at the last door before the money is gone."""
+        bank_file = self.BankFile.prepare(self.payrun, 'vietcombank')
+        self.Engine.submit(bank_file)
+        self._approve_all(bank_file)
+        release = self.Release.prepare(bank_file, bank_reference='REF-TAMPER')
+
+        bank_file.attachment_id.sudo().write({
+            'datas': base64.b64encode(b'edited after approval')})
+        bank_file.invalidate_recordset()
+
+        with self.assertRaises(UserError):
+            release._approval_apply(release.approval_request_id)
+        self.slip_a.invalidate_recordset()
+        self.assertFalse(self.slip_a.pb_paid_on,
+                         'money was released against a file nobody approved')
+
+    def test_m02b_a_replaced_file_says_it_was_replaced(self):
+        """A superseded file HAS been approved — it is simply not the one to
+        pay from any more. Telling its reader it "has not been approved yet"
+        sends them looking for an approver who signed it weeks ago."""
+        first = self.BankFile.prepare(self.payrun, 'vietcombank')
+        self.Engine.submit(first)
+        self._approve_all(first)
+        self.BankFile.prepare(self.payrun, 'bidv')
+        first.invalidate_recordset()
+        self.assertEqual(first.state, 'superseded')
+        with self.assertRaises(UserError) as caught:
+            first.action_download()
+        self.assertIn('replaced', str(caught.exception))
+
     # ============================================================ M04
     def test_m04_journal_is_off_until_a_company_asks_for_it(self):
         """Without accounting, or with the switch off, there is no journal

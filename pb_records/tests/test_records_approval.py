@@ -227,6 +227,20 @@ class TestRecordsApproval(TransactionCase):
         self.assertFalse(undo_rec.approval_request_id,
                          'an undo never asks')
 
+    def test_m06d_the_headline_survives_the_number_being_one(self):
+        """Found on the browser walk: the queue read "1 people · 1 values"."""
+        field_id = self._field_id()
+        result = self.Desk.apply_changes(
+            self.cfg.id,
+            [{'emp_id': self.employee.id, 'field_id': field_id,
+              'value': 'One of each'}], note='M06d')
+        apply_rec = self.Apply.browse(result['apply_id'])
+        headline = apply_rec._headline()
+        self.assertIn('1 person', headline)
+        self.assertIn('1 value', headline)
+        self.assertNotIn('1 people', headline)
+        self.assertNotIn('1 values', headline)
+
     def test_m07c_the_catalogue_row_points_at_the_proposal(self):
         row = self.env['biz.approval.process'].sudo()._by_key('records')
         self.assertEqual(row.model_name, 'pb.records.apply')

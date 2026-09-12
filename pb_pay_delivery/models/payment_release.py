@@ -274,6 +274,17 @@ class PbPaymentRelease(models.Model):
             raise UserError(_(
                 "The bank file behind this release is no longer the approved "
                 "one, so the money cannot be marked as sent."))
+        # THE HASH AGAIN, HERE (safety rail 2). The file's STATE says somebody
+        # approved it; only the hash says the bytes are still the ones they
+        # approved. Found on the browser walk: the release checked the state
+        # alone, so a file edited between its approval and its release would
+        # have been released as if nothing had happened — and the release is
+        # the last door before the money is gone.
+        if self.bank_file_id._live_hash() != self.bank_file_id.approved_hash:
+            raise UserError(_(
+                "The bank file has changed since it was approved, so this "
+                "release no longer covers it. Prepare the file again and have "
+                "it approved before releasing the money."))
         stamp = fields.Datetime.now()
         reference = (self.bank_reference or '')[:64]
         slips = self.run_id.sudo().slip_ids.filtered(

@@ -156,6 +156,21 @@ class PbRecordsApply(models.Model):
             found.add(division.id if division else 0)
         return sorted(d for d in found if d)
 
+    def _headline(self):
+        """What this change is, in words that survive the number being one.
+
+        Found on the browser walk: the title read "Records change · 1 people ·
+        1 values". A queue is read at a glance and bad grammar in it is read as
+        a bug in the numbers.
+        """
+        self.ensure_one()
+        people = (_("1 person") if self.people_count == 1
+                  else _("%s people", self.people_count))
+        values = (_("1 value") if self.values_count == 1
+                  else _("%s values", self.values_count))
+        return _("Records change · %(people)s · %(values)s",
+                 people=people, values=values)
+
     def _approval_context(self):
         self.ensure_one()
         company = self.company_id or self.env.company
@@ -178,8 +193,7 @@ class PbRecordsApply(models.Model):
         }
         return {
             'company_id': company.id,
-            'title': _("Records change · %(n)s people · %(v)s values",
-                       n=self.people_count, v=self.values_count),
+            'title': self._headline(),
             'scope_keys': scope_keys,
             'scope_label': scope_label,
             'kind_key': self.source or 'desk',
