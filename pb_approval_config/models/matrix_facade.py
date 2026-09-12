@@ -92,14 +92,20 @@ def _preset_rows():
              manager('s1', _('Manager review')),
              role('s2', 'hr_lead', _('HR approval'), scope='area'),
          ])},
+        # A JOINT STEP NEEDS TWO PEOPLE TO BE A JOINT STEP AT ALL, and a
+        # preset cannot know who they are. Naming a responsibility held by a
+        # GROUP is the only shape that is complete the moment it is created:
+        # the reader chooses the signatories once, in People & backups, and
+        # every route that needs them follows. A preset that started with an
+        # empty list would open the builder already showing errors.
         {'key': 'joint',
          'title': _('Joint sign-off'),
-         'sub': _('Named people must all approve. For bank files and money '
-                  'leaving the company.'),
-         'route': [_('Everyone named must approve')],
+         'sub': _('Everybody on the bank mandate has to approve. For bank '
+                  'files and money leaving the company.'),
+         'route': [_('Everybody on the bank mandate')],
          'definition': wrap([{
              'key': 's1', 'kind': 'joint', 'title': _('Joint sign-off'),
-             'who': {'mode': 'people', 'user_ids': [], 'all': True},
+             'who': {'mode': 'role', 'role': 'signatory', 'scope': 'company'},
              'min_amount': 0, 'condition': None,
          }])},
         {'key': 'tiers',

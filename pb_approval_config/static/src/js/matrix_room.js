@@ -80,7 +80,7 @@ export class PbApprovalMatrix extends Component {
             presetsOpen: false,
             presetFor: "",
             builderFor: 0,
-            peopleFocus: null,
+            peopleFocus: {},
             scopeFor: null,
             importOpen: false,
         });
@@ -184,7 +184,7 @@ export class PbApprovalMatrix extends Component {
     setTab(key) {
         this.state.tab = key;
         this.state.builderFor = 0;
-        if (key !== "people") { this.state.peopleFocus = null; }
+        if (key !== "people") { this.state.peopleFocus = {}; }
     }
 
     setArea(key) { this.state.area = key; }
@@ -263,8 +263,10 @@ export class PbApprovalMatrix extends Component {
     openPeople(roleKey, scopeKey) {
         this.state.builderFor = 0;
         this.state.tab = "people";
+        // An OBJECT and never null: a typed optional prop still rejects null,
+        // which is a hard validation error in dev mode (W35).
         this.state.peopleFocus = roleKey
-            ? { role_key: roleKey, scope_key: scopeKey || "" } : null;
+            ? { role_key: roleKey, scope_key: scopeKey || "" } : {};
     }
 }
 

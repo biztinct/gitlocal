@@ -284,9 +284,14 @@ class TestApprovalStaticContract(TransactionCase):
             ElementTree.parse(path)
             src = _read(path)
             for hit in re.finditer(r't-[\w-]+="([^"]*)"', src):
-                for name in ('String(', 'Number(', 'JSON.', 'Object.',
-                             'Array.', 'parseInt(', 'parseFloat(', 'Math.'):
-                    if name in hit.group(1):
+                # A WORD BOUNDARY, not a substring. `stepNumber(st)` is a
+                # method on the component and contains "Number("; the thing
+                # being looked for is the GLOBAL `Number(`, and only a
+                # boundary can tell the two apart.
+                for name in (r'String\(', r'Number\(', r'JSON\.', r'Object\.',
+                             r'Array\.', r'parseInt\(', r'parseFloat\(',
+                             r'Math\.'):
+                    if re.search(r'(?<![\w.])' + name, hit.group(1)):
                         bad.append('%s: %s' % (os.path.basename(path),
                                                hit.group(1)))
         self.assertFalse(bad, 'JS globals in a template expression: %s' % bad)
@@ -399,8 +404,23 @@ class TestApprovalStaticContract(TransactionCase):
 
     def test_no_facade_reaches_for_the_top_bars_company(self):
         """`self.env.company` follows whatever is ticked in the top bar, which
-        is nobody's decision about this screen. Write paths use the user's."""
+        is nobody's decision about this screen. Write paths use the user's.
+
+        Parsed rather than grepped: the rule is worth EXPLAINING in a
+        docstring beside the code that keeps it, and a grep cannot tell the
+        explanation from the offence.
+        """
+        bad = []
         for name in ('matrix_facade.py', 'inbox_facade.py', 'seed.py'):
-            src = _read(HERE, 'models', name)
-            self.assertNotIn('self.env.company', src,
-                             '%s reads the top bar instead of the user' % name)
+            tree = ast.parse(_read(HERE, 'models', name))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Attribute) \
+                        or node.attr != 'company':
+                    continue
+                env = node.value
+                if isinstance(env, ast.Attribute) and env.attr == 'env' \
+                        and isinstance(env.value, ast.Name) \
+                        and env.value.id == 'self':
+                    bad.append('%s:%s' % (name, node.lineno))
+        self.assertFalse(bad, 'the top bar is read instead of the user: %s'
+                         % bad)
