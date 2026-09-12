@@ -171,8 +171,9 @@ class PbSchemeProposal(models.Model):
                 slips = len(run.slip_ids)
         except Exception:       # noqa: BLE001 — a fact must never raise
             slips = 0
-        passed = bool((tests or {}).get('passed')) or (
-            (tests or {}).get('failed') == 0 and (tests or {}).get('run'))
+        # `verdict` is the yes-or-no the caller worked out; the raw counts sit
+        # beside it and are what the drawer prints.
+        passed = bool((tests or {}).get('verdict'))
         self.sudo().write({
             'rules_changed': len(diff or []),
             'touches_tax': touches_tax,
