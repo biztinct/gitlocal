@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 import logging
-from odoo import api, models
+from odoo import _, api, models
 
 _logger = logging.getLogger(__name__)
 
 PALETTE = ["#6D28D9", "#0EA5E9", "#059669", "#DB2777", "#F59E0B", "#4F46E5", "#EF4444",
            "#0891B2", "#7C3AED", "#16A34A"]
 
-# state -> (advance method, label of the action that moves it forward)
-NEXT = {
-    'draft':  ('action_payslip_done', 'Submit for HR review'),
-    'level1': ('action_payslip_level1_done', 'HR approve → GM'),
-    'level2': ('action_payslip_level2_done', 'GM approve → Done'),
-}
+# A PAYSLIP IN A PAY RUN IS NOT APPROVED ON ITS OWN ANY MORE.
+#
+# This cockpit used to walk one payslip up a ladder of its own — Submit, HR
+# approve, GM approve — beside the run's ladder, and the two had nothing to do
+# with each other. The bank export pays every payslip in state `done`, so that
+# was a way to get one person's money out of a run nobody had sent in.
+#
+# The run is the unit of approval. What is left here is reviewing: reading the
+# numbers, comparing them, and flagging what looks wrong. The model refuses the
+# rest, in its own words, and this map is empty so the screen never offers a
+# button the server will not honour.
+NEXT = {}
 
 
 class PbPayslipReview(models.AbstractModel):
@@ -152,14 +158,17 @@ class PbPayslipReview(models.AbstractModel):
 
     @api.model
     def advance_state(self, slip_id):
+        """Kept so an old client cannot silently do nothing, and says why.
+
+        The RPC name survives because a browser that has not reloaded still
+        knows it; what it does now is explain, once, where the decision moved
+        to.
+        """
         s = self.env['hr.payslip'].browse(slip_id)
-        st = s.state
-        info = NEXT.get(st)
-        if info:
-            method, _label = info
-            try:
-                getattr(s, method)()
-            except Exception as e:
-                _logger.warning("Payslip review advance failed (%s): %s", st, e)
-                return {'ok': False, 'state': s.state, 'msg': 'Action blocked'}
-        return {'ok': True, 'state': s.state}
+        if s.exists() and s.payslip_run_id:
+            return {'ok': False, 'state': s.state, 'msg': _(
+                "Payslips are approved together, as a pay run. Send the pay "
+                "run in for approval instead.")}
+        return {'ok': False, 'state': s.state if s.exists() else False,
+                'msg': _("This payslip is not part of a pay run, so there is "
+                         "nothing to approve here.")}

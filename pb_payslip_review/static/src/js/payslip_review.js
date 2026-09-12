@@ -5,12 +5,20 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 
-const STATE_LABEL = { draft: _t("Draft"), verify: _t("Waiting"), level1: _t("HR Manager pending"),
-                      level2: _t("GM pending"), done: _t("Done"), cancel: _t("Rejected") };
-const STATE_CLASS = { draft: "s-draft", verify: "s-draft", level1: "s-amber",
-                      level2: "s-indigo", done: "s-green", cancel: "s-red" };
-const NEXT_LABEL = { draft: _t("Submit for HR review"), level1: _t("HR approve → GM"), level2: _t("GM approve → Done") };
-const STATUS_FLOW = [["draft", _t("Draft")], ["level1", _t("HR Manager pending")], ["level2", _t("GM pending")], ["done", _t("Done")]];
+// A PAYSLIP IN A PAY RUN IS NOT APPROVED ON ITS OWN. The three-rung slip
+// ladder this screen used to drive ran beside the run's own approval and had
+// nothing to do with it — and the bank export pays every payslip in state
+// `done`, so it was a way to get one person's money out of a run nobody had
+// sent in. What is left here is reviewing: reading the numbers and flagging
+// what looks wrong. `level1`/`level2` stay in the LABEL map only so a payslip
+// written before this change still reads as something rather than as a key.
+const STATE_LABEL = { draft: _t("Draft"), verify: _t("Waiting for approval"),
+                      level1: _t("Waiting for approval"), level2: _t("Waiting for approval"),
+                      done: _t("Done"), cancel: _t("Rejected") };
+const STATE_CLASS = { draft: "s-draft", verify: "s-amber", level1: "s-amber",
+                      level2: "s-amber", done: "s-green", cancel: "s-red" };
+const NEXT_LABEL = {};
+const STATUS_FLOW = [["draft", _t("Draft")], ["verify", _t("Waiting for approval")], ["done", _t("Done")]];
 
 export class PayslipReview extends Component {
     static template = "pb_payslip_review.PayslipReview";
@@ -42,6 +50,13 @@ export class PayslipReview extends Component {
         const f = this.state.filter;
         if (f === "all") return this.state.slips;
         if (f === "flag") return this.state.slips.filter(s => s.flag);
+        // "Waiting for approval" is one chip over three stored words: a payslip
+        // written before the run's approval replaced the slip ladder still says
+        // level1 or level2, and it is waiting for exactly the same thing.
+        if (f === "verify") {
+            return this.state.slips.filter(
+                (s) => ["verify", "level1", "level2"].includes(s.state));
+        }
         return this.state.slips.filter(s => s.state === f);
     }
     setFilter(f) { this.state.filter = f; }

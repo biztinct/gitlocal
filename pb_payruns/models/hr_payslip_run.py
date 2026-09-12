@@ -88,23 +88,41 @@ class HrPayslip(models.Model):
     # the SQL roll-ups seq-scan the payslip table as volume grows.
     payslip_run_id = fields.Many2one(index=True)
 
-    def action_payslip_done(self):
-        """A payslip may not be finished behind its own run's back.
+    def _pb_guard_run_slip(self):
+        """A payslip that belongs to a pay run is finished BY that run.
 
-        Safety rail 3: the run is what the approval is about, so confirming one
-        of its payslips while that approval is still open would put money in a
-        bank file nobody signed off.
+        Safety rail 3, and it is not only about a run that is already waiting.
+        The bank export pays every payslip in state `done`, so a screen that
+        pushed one slip of a DRAFT run to done would let money out of a run
+        nobody had even sent in — which is the whole thing the approval exists
+        to stop. A payslip with no run (somebody's one-off) is untouched.
         """
-        sanctioned = self.env.context.get(_PB_CHAIN_KEY) is _PB_CHAIN_TOKEN
-        blocked = self.filtered(
+        if self.env.context.get(_PB_CHAIN_KEY) is _PB_CHAIN_TOKEN:
+            return
+        # A run that is already `done` has had its approval; a refund or an
+        # adjustment slip made off it afterwards is the caller's own business
+        # and this guard has nothing to say about it.
+        held = self.filtered(
             lambda s: s.payslip_run_id
-            and s.payslip_run_id.state == 'approval_pending')
-        if blocked and not sanctioned:
-            raise UserError(_(
-                "This payslip belongs to a pay run that is waiting for "
-                "approval, so it cannot be finished on its own. The whole run "
-                "is finished once the approval is complete."))
+            and s.payslip_run_id.state in ('draft', 'approval_pending'))
+        if not held:
+            return
+        raise UserError(_(
+            "This payslip belongs to a pay run, so it cannot be finished on "
+            "its own. Send the pay run in for approval — every payslip in it "
+            "is finished together, once the approval is complete."))
+
+    def action_payslip_done(self):
+        self._pb_guard_run_slip()
         return super().action_payslip_done()
+
+    def action_payslip_level1_done(self):
+        self._pb_guard_run_slip()
+        return super().action_payslip_level1_done()
+
+    def action_payslip_level2_done(self):
+        self._pb_guard_run_slip()
+        return super().action_payslip_level2_done()
 
 
 class HrPayslipLine(models.Model):

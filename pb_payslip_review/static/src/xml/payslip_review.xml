@@ -35,8 +35,7 @@
             <div class="psr-chips" data-coach="ps-chips">
                 <button t-attf-class="psr-chip #{state.filter==='all'?'on':''}" t-on-click="() => this.setFilter('all')">All</button>
                 <button t-attf-class="psr-chip #{state.filter==='flag'?'on':''}" t-on-click="() => this.setFilter('flag')">Need review</button>
-                <button t-attf-class="psr-chip #{state.filter==='level1'?'on':''}" t-on-click="() => this.setFilter('level1')">HR pending</button>
-                <button t-attf-class="psr-chip #{state.filter==='level2'?'on':''}" t-on-click="() => this.setFilter('level2')">GM pending</button>
+                <button t-attf-class="psr-chip #{state.filter==='verify'?'on':''}" t-on-click="() => this.setFilter('verify')">Waiting for approval</button>
                 <button t-attf-class="psr-chip #{state.filter==='done'?'on':''}" t-on-click="() => this.setFilter('done')">Done</button>
             </div>
 
