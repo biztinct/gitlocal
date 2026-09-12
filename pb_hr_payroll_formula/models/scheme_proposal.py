@@ -436,12 +436,20 @@ class PbSchemeProposal(models.Model):
         # touch.
         self.config_id.check_access('write')
         result = apply_context(self)._perform()
+        release_id = (result or {}).get('release_id') or False
         self.sudo().write({
             'state': 'applied',
             'applied_at': fields.Datetime.now(),
-            'applied_release_id': (result or {}).get('release_id') or False,
+            'applied_release_id': release_id,
             'apply_note': ((result or {}).get('msg') or '')[:512] or False,
         })
+        if release_id:
+            # BOTH WAYS ROUND. The proposal naming its release is the trail
+            # forwards; the release naming its proposal is the one somebody
+            # reading the release history actually needs — "who agreed to
+            # this?" is asked of the release, not of the request.
+            self.env['hr.formula.release'].sudo().browse(release_id).write(
+                {'proposal_id': self.id, 'state': 'approved'})
         return True
 
     def _perform(self):

@@ -196,6 +196,10 @@ class SchemeGateCase(TransactionCase):
         self.assertEqual(branch.branch_state, 'merged')
         self.assertTrue(proposal.applied_release_id,
                         'the merge sealed no release')
+        # and the release names the proposal that produced it — "who agreed to
+        # this?" is asked of the release, not of the request.
+        self.assertEqual(proposal.applied_release_id.proposal_id, proposal)
+        self.assertEqual(proposal.applied_release_id.state, 'approved')
 
     def test_s06_a_branch_that_moved_after_approval_is_refused(self):
         self._one_step_route()

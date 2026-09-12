@@ -409,3 +409,6 @@ class SchemeProposalCase(TransactionCase):
             'name': 'SC release', 'config_id': config.id})
         self.assertEqual(release.state, 'approved')
         self.assertFalse(release.proposal_id)
+        proposal = self.Proposal.propose(config, 'release')
+        release.proposal_id = proposal.id
+        self.assertEqual(release.proposal_id, proposal)
