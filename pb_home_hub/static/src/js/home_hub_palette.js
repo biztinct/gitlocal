@@ -47,6 +47,10 @@ palette.add("homehub", {
 const LENSES = [
     { id: "homehub_pulse", label: _t("Pulse"), icon: "activity",
       action: { xmlid: HUB_XMLID, lens: "pulse" }, requires: HUB_TAG },
+    // APPROVAL MATRIX P2 — the gate is now empty, because the lens is the ONE
+    // inbox rather than the pay-run board and every internal user is a decider
+    // of something. It is still read from the lens rather than restated, so the
+    // row and the lens can never drift into "sees it, cannot use it".
     { id: "homehub_approvals", label: _t("Approvals"), icon: "inbox",
       groups: APPROVAL_GATE, requires: HUB_TAG,
       action: { xmlid: HUB_XMLID, lens: "approvals" } },

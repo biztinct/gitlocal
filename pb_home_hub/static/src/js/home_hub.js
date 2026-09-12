@@ -47,16 +47,27 @@ import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
 
 import { PbDashboard } from "@pb_dashboard/js/pb_dashboard";
-import { PbApproval } from "@pb_approval/js/approval";
+import { PbInbox } from "@pb_approval_config/js/inbox";
 
-/** `pb.approval._APPROVAL_GROUPS`, verbatim. The test reads the tuple back. */
-export const APPROVAL_GATE = [
-    "pb_hr_payroll_base.group_payroll_base_officer",
-    "pb_hr_payroll_base.group_payroll_base_manager",
-    "pb_hr_payroll_base.group_payroll_final_approver",
-    "pb_hr_payroll_base.group_payroll_super_admin",
-    "pb_demo.group_payobook_demo",
-];
+/**
+ * THE APPROVALS LENS IS UNGATED, AND THAT IS THE INBOX'S OWN ANSWER.
+ *
+ * It used to be the pay-run board, which only a payroll officer could read, so
+ * the lens carried `pb.approval._APPROVAL_GROUPS` verbatim. The lens is now the
+ * ONE inbox: every process, and every person who is ever asked to decide
+ * anything — a line manager approving a timesheet, somebody signing off a trip.
+ * Gating it on payroll permissions would hide the screen from most of the people
+ * it was built for.
+ *
+ * Nothing is given away by that. `pb.approval.inbox` never widens what a person
+ * may see: the engine's record rules narrow every read to the requests they sent
+ * in, prepared, or hold a seat on, so an ungated lens on an empty inbox says
+ * "nothing is waiting for you" and shows nothing at all.
+ *
+ * Kept as an export because `home_hub_palette.js` imports it for the ⌘K row,
+ * which follows the lens exactly.
+ */
+export const APPROVAL_GATE = [];
 
 /**
  * Which Pay Run lens the tracker's click should land on, per stage.
@@ -119,7 +130,7 @@ export class PbHomeHub extends Component {
                 { key: "pulse", icon: "activity", label: _t("Pulse"),
                   Component: PbDashboard, wantsArrival: true },
                 { key: "approvals", icon: "inbox", label: _t("Approvals"),
-                  Component: PbApproval, groups: APPROVAL_GATE },
+                  Component: PbInbox, groups: APPROVAL_GATE },
                 // Bolted-on lenses sit after the two this hub ships — what
                 // needs you first, everything else after.
                 ...this.extraLenses(),

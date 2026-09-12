@@ -46,7 +46,7 @@ one accent (W1/W2/W3). No model, no ACL, no RPC of its own.
         'pb_payhub',                # `pb.pay.hub` (the tracker) + the Pay Run hub
         # the two surfaces this hub mounts as lenses
         'pb_dashboard',
-        'pb_approval',
+        'pb_approval_config',       # the one Approvals inbox
     ],
     'data': [
         'views/pb_home_hub_action.xml',

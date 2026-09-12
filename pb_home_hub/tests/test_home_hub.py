@@ -75,24 +75,23 @@ class TestHomeHubGates(TransactionCase):
         super().setUpClass()
         cls.SRC = _hub('static', 'src', 'js', 'home_hub.js')
 
-    def test_the_approvals_gate_is_the_facades_own_tuple_verbatim(self):
-        """`pb.approval._require_access()` is the ACL for this lens.
+    def test_the_approvals_lens_is_ungated_and_the_inbox_narrows_itself(self):
+        """APPROVAL MATRIX P2 — the lens is the ONE inbox now, not the pay-run
+        board, so it is deliberately open to every internal user.
 
-        `pb.approval` is an AbstractModel with no `ir.model.access` of its own —
-        the enforcement is `_APPROVAL_GROUPS`, so that tuple is what the gate has
-        to be. Reading it back out of the Python rather than restating it here is
-        what stops the hub and the facade drifting into "sees it, cannot use it".
+        The old lens carried `pb.approval._APPROVAL_GROUPS` verbatim because
+        only a payroll officer could read a pay-run queue. The inbox is every
+        process and every person ever asked to decide anything, and gating it on
+        payroll permissions would hide it from most of the people it is for.
+        Nothing is given away: `biz.approval.request`'s record rules narrow every
+        read to the requests a person sent in, prepared or holds a seat on, so an
+        ungated lens on an empty inbox shows nothing at all.
         """
-        py = _read(ROOT, 'pb_approval', 'models', 'pb_approval.py')
-        tup = re.search(r'_APPROVAL_GROUPS = \((.*?)\)', py, re.S)
-        self.assertTrue(tup, 'pb_approval lost its _APPROVAL_GROUPS tuple')
-        facade = set(re.findall(r"'([^']+)'", tup.group(1)))
-        declared = set(_js_list(self.SRC, 'APPROVAL_GATE'))
+        declared = _js_list(self.SRC, 'APPROVAL_GATE')
         self.assertEqual(
-            declared, facade,
-            'the Approvals lens gate and pb.approval._APPROVAL_GROUPS disagree; '
-            'lens-only=%s facade-only=%s'
-            % (declared - facade, facade - declared))
+            declared, [],
+            'the Approvals lens must stay ungated: the inbox narrows itself '
+            'server-side, and a gate here only hides it from deciders')
 
     def test_every_gate_group_exists_on_this_database(self):
         """Group resolution FAILS OPEN, so a typo is invisible at runtime in
@@ -195,13 +194,14 @@ class TestHomeHubStatic(TransactionCase):
 
     def test_the_hub_mounts_the_real_components_and_forks_neither(self):
         src = _hub('static', 'src', 'js', 'home_hub.js')
-        for spec in ('@pb_dashboard/js/pb_dashboard', '@pb_approval/js/approval'):
+        for spec in ('@pb_dashboard/js/pb_dashboard',
+                     '@pb_approval_config/js/inbox'):
             self.assertIn('from "%s"' % spec, src)
 
     def test_both_lens_components_are_exported_and_still_register(self):
         expected = {
             'pb_dashboard': ('pb_dashboard.js', 'PbDashboard', 'pb_dashboard'),
-            'pb_approval': ('approval.js', 'PbApproval', 'pb_approval'),
+            'pb_approval_config': ('inbox.js', 'PbInbox', 'pb_approval_inbox'),
         }
         for module, (fname, cls, tag) in expected.items():
             src = _read(ROOT, module, 'static', 'src', 'js', fname)

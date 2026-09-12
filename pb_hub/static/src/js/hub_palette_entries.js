@@ -101,9 +101,17 @@ const ENTRIES = [
     // ------------------------------------------------------------ everyday
     { id: "dashboard", label: _t("Dashboard"), sublabel: _t("Overview"), icon: "home",
       action: { tag: "pb_dashboard" } },
+    // APPROVAL MATRIX P2 — this row used to open the pay-run approval board,
+    // which only a payroll officer could read. It now lands on the ONE inbox,
+    // as the Approvals lens of Home, and carries NO gate: the inbox is every
+    // process and every person ever asked to decide anything, and it narrows
+    // itself server-side, so a gate here would only hide it from deciders.
+    // The xmlid is named as a plain string — the palette resolves a door lazily
+    // and simply omits a row whose module is not installed — so `pb_hub` still
+    // depends on nothing above it.
     { id: "approvals", label: _t("Approvals"), sublabel: _t("Overview"), icon: "inbox",
-      action: { tag: "pb_approval" },
-      groups: [OFFICER, MANAGER, FINAL_APPROVER, SUPER] },
+      action: { xmlid: "pb_home_hub.action_pb_home_hub", lens: "approvals" },
+      requires: "pb_home_hub", groups: [] },
 
     // ------------------------------------------------------------- pay run
     { id: "payrun_wizard", label: _t("Run Payroll"), sublabel: _t("Pay Run"), icon: "zap",
