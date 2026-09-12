@@ -77,10 +77,43 @@ class SchemeProposalCase(TransactionCase):
             self.skipTest('the approval catalogue is not installed here')
 
     # ------------------------------------------------------------ fixtures
+    def _clear_payrun_gap(self, config):
+        """Fill in the PAY-RUN route for this scheme.
+
+        `pb_payruns` refuses to activate a scheme whose pay runs could not be
+        approved (ledger AM35). That is a different phase's rail and a true
+        one — but these cases are about the scheme-CHANGE route, so the pay-run
+        one is simply filled in rather than worked around. Harmless where
+        `pb_payruns` is not installed.
+        """
+        process = self.env['biz.approval.process']._by_key('payrun')
+        if not process:
+            return
+        Role = self.env['biz.approval.role'].sudo()
+        Responsibility = self.env['biz.approval.responsibility'].sudo()
+        for key in ('payroll_mgr', 'hr_lead', 'finance', 'director',
+                    'scheme_owner', 'approver'):
+            role = Role.search([('key', '=', key)], limit=1)
+            if not role:
+                continue
+            for scope in ('', 'scheme:%s' % config.id):
+                held = Responsibility.search([
+                    ('company_id', '=', self.company.id),
+                    ('role_id', '=', role.id), ('scope_key', '=', scope),
+                    ('active', '=', True)], limit=1)
+                if held:
+                    continue
+                Responsibility.create({
+                    'company_id': self.company.id, 'role_id': role.id,
+                    'scope_key': scope,
+                    'scope_label': scope or self.company.name,
+                    'user_id': self.env.user.id})
+
     def _config(self, name='SC probe', code='SCPROBE', state='draft'):
         config = self.env['hr.formula.config'].create({
             'name': name, 'code': code, 'country_code': 'VN',
             'company_id': self.company.id, 'state': state})
+        self._clear_payrun_gap(config)
         self.env['hr.formula.rule'].create({
             'config_id': config.id, 'name': 'Basic', 'code': 'SCBASIC',
             'column_type': 'input', 'sequence': 10})

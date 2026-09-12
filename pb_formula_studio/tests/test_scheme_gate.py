@@ -41,13 +41,22 @@ class SchemeGateCase(TransactionCase):
         cls.Studio = cls.env['pb.formula.studio']
         cls.process = cls.env['biz.approval.process']._by_key('scheme')
         cls.company = cls.env.company
+        # The person who approves a scheme change CARRIES IT OUT, as
+        # themselves, and the apply re-checks their own rights on the scheme
+        # (safety rail 7). An approver with no scheme rights is a real and
+        # deliberate refusal — it is just not what these cases are about.
+        groups = [cls.env.ref('base.group_user').id]
+        manager = cls.env.ref('pb_hr_payroll_formula.group_formula_manager',
+                              raise_if_not_found=False)
+        if manager:
+            groups.append(manager.id)
         cls.approver = cls.env['res.users'].with_context(
             no_reset_password=True).create({
                 'name': 'Ada Approver', 'login': 'sg_approver',
                 'email': 'sg_approver@example.com',
                 'company_id': cls.company.id,
                 'company_ids': [(6, 0, [cls.company.id])],
-                'group_ids': [(6, 0, [cls.env.ref('base.group_user').id])],
+                'group_ids': [(6, 0, groups)],
             })
 
     def setUp(self):
@@ -56,10 +65,39 @@ class SchemeGateCase(TransactionCase):
             self.skipTest('the approval catalogue is not installed here')
 
     # ------------------------------------------------------------ fixtures
+    def _clear_payrun_gap(self, config):
+        """`pb_payruns` refuses to activate a scheme whose PAY RUNS could not
+        be approved (ledger AM35) — a different rail, and a true one. These
+        cases are about the scheme-change route, so the pay-run one is filled
+        in rather than worked around."""
+        process = self.env['biz.approval.process']._by_key('payrun')
+        if not process:
+            return
+        Role = self.env['biz.approval.role'].sudo()
+        Responsibility = self.env['biz.approval.responsibility'].sudo()
+        for key in ('payroll_mgr', 'hr_lead', 'finance', 'director',
+                    'scheme_owner', 'approver'):
+            role = Role.search([('key', '=', key)], limit=1)
+            if not role:
+                continue
+            for scope in ('', 'scheme:%s' % config.id):
+                held = Responsibility.search([
+                    ('company_id', '=', self.company.id),
+                    ('role_id', '=', role.id), ('scope_key', '=', scope),
+                    ('active', '=', True)], limit=1)
+                if held:
+                    continue
+                Responsibility.create({
+                    'company_id': self.company.id, 'role_id': role.id,
+                    'scope_key': scope,
+                    'scope_label': scope or self.company.name,
+                    'user_id': self.env.user.id})
+
     def _config(self, name, code, state='active'):
         config = self.env['hr.formula.config'].create({
             'name': name, 'code': code, 'country_code': 'VN',
             'company_id': self.company.id, 'state': state})
+        self._clear_payrun_gap(config)
         self.env['hr.formula.rule'].create({
             'config_id': config.id, 'name': 'Basic', 'code': 'SGBASIC',
             'column_type': 'input', 'sequence': 10})
