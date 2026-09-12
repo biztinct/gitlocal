@@ -392,15 +392,10 @@ class TimesheetPacketCase(TransactionCase):
             'employee_id': self.worker.id, 'week_start': self.monday,
             'company_id': self.company.id})
         self.assertTrue(packet.id)
-        slip = self.env['hr.payslip'].sudo().new({
-            'employee_id': self.worker.id,
-            'date_from': self.monday,
-            'date_to': self.monday + timedelta(days=6),
-            'company_id': self.company.id,
-        })
         config = self._fake_config(['REGHRS'])
         if config is None:
             self.skipTest('the formula engine is not installed here')
+        slip = self._slip(config)
         values = slip._get_formula_input_values(config, provenance={})
         self.assertNotIn('REGHRS', values)
 
@@ -409,12 +404,7 @@ class TimesheetPacketCase(TransactionCase):
         config = self._fake_config(['REGHRS', 'WORKDAYS', 'OTHRS150'])
         if config is None:
             self.skipTest('the formula engine is not installed here')
-        slip = self.env['hr.payslip'].sudo().new({
-            'employee_id': self.worker.id,
-            'date_from': self.monday,
-            'date_to': self.monday + timedelta(days=6),
-            'company_id': self.company.id,
-        })
+        slip = self._slip(config)
         provenance = {}
         values = slip._get_formula_input_values(config, provenance=provenance)
         self.assertEqual(values['REGHRS'], 40.0)
@@ -423,6 +413,25 @@ class TimesheetPacketCase(TransactionCase):
         self.assertEqual(provenance['REGHRS']['via'], 'timesheet_packet')
         self.assertIn('week of', provenance['REGHRS']['key'])
         self.assertEqual(packet.state, 'approved')
+
+    def _slip(self, config):
+        """A real payslip for the week, so the whole input chain runs."""
+        contract = self.env['hr.contract'].sudo().search(
+            [('employee_id', '=', self.worker.id)], limit=1)
+        if not contract:
+            contract = self.env['hr.contract'].sudo().create({
+                'name': 'TS contract', 'employee_id': self.worker.id,
+                'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+                'company_id': self.company.id})
+        return self.env['hr.payslip'].sudo().create({
+            'employee_id': self.worker.id, 'name': 'TS slip',
+            'contract_id': contract.id,
+            'date_from': self.monday,
+            'date_to': self.monday + timedelta(days=6),
+            'company_id': self.company.id,
+            'calculation_method': 'formula',
+            'formula_config_id': config.id,
+        })
 
     def _fake_config(self, codes):
         """A pay scheme declaring exactly these input codes, and nothing else."""
