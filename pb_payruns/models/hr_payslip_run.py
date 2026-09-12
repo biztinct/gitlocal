@@ -432,9 +432,18 @@ class HrPayslipRun(models.Model):
 
     @api.model
     def _pb_runs_awaiting(self, uid):
+        """Runs waiting on a seat this person holds RIGHT NOW.
+
+        `step_id.status = 'active'` is the whole of it. Every seat on every
+        included step is created open at submission, so without that clause a
+        run three steps away from Finance already appeared in the Finance
+        approver's queue — and a queue that shows work nobody can do yet is a
+        queue people stop reading.
+        """
         Seat = self.env['biz.approval.request.seat'].sudo()
         seats = Seat.search([
             ('acting_user_id', '=', uid), ('status', '=', 'open'),
+            ('step_id.status', '=', 'active'),
             ('request_id.res_model', '=', 'hr.payslip.run'),
             ('request_id.state', 'in', ('pending', 'blocked')),
         ])

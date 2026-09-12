@@ -151,6 +151,18 @@ class PayrunApprovalCase(TransactionCase):
         })
         return slip
 
+    def _config(self, Config, name, code, **extra):
+        """A pay scheme. `country_code` is required on this model, and a
+        fixture that leaves it out fails on the database constraint rather
+        than on anything the case is about."""
+        values = {'name': name, 'code': code,
+                  'company_id': self.company.id}
+        if 'country_code' in Config._fields:
+            values['country_code'] = (
+                self.company.country_id.code or 'VN')
+        values.update(extra)
+        return Config.create(values)
+
     def _hold(self, role_key, user, scope_key=''):
         role = self.env['biz.approval.role'].search(
             [('key', '=', role_key)], limit=1)
@@ -249,12 +261,8 @@ class PayrunApprovalCase(TransactionCase):
             self.skipTest('the formula engine is not installed here')
         self._two_step_route()
         Config = self.env['hr.formula.config']
-        retail = Config.create({'name': 'AP Retail scheme',
-                                'code': 'APRETAIL',
-                                'company_id': self.company.id})
-        factory = Config.create({'name': 'AP Factory scheme',
-                                 'code': 'APFACTORY',
-                                 'company_id': self.company.id})
+        retail = self._config(Config, 'AP Retail scheme', 'APRETAIL')
+        factory = self._config(Config, 'AP Factory scheme', 'APFACTORY')
         run = self._run()
         self._slip(run, self.emp_a, net=1000.0, config=retail)
         self._slip(run, self.emp_b, net=2000.0, config=factory)
@@ -467,9 +475,8 @@ class PayrunApprovalCase(TransactionCase):
         self._bind(_route([_step('s1', 'finance', 'Final settlement only')]),
                    kind_key='full_final', name='AP final settlement')
 
-        config = self.env['hr.formula.config'].create({
-            'name': 'AP leavers', 'code': 'APLEAVE',
-            'company_id': self.company.id, 'cycle_type': 'full_final'})
+        config = self._config(self.env['hr.formula.config'], 'AP leavers',
+                              'APLEAVE', cycle_type='full_final')
         run = self._run()
         self._slip(run, self.emp_a, config=config)
         if 'pb_formula_config_id' in run._fields:
