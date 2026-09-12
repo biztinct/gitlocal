@@ -164,6 +164,46 @@ def website_host(website):
     return host or "example.com"
 
 
+# ---------------------------------------------------------------------------
+# ERRORS E4-6 — repairing a URL another layer has already broken
+# ---------------------------------------------------------------------------
+# ``web_debranding.debrand_links`` (models/ir_translation.py:27) is
+#
+#     re.sub(r"\bodoo.com\b", new_website, source)
+#
+# and ``new_website`` is a FULL URL (``https://payobook.com``), not a host. So
+# every vendor link in an arch comes out with two schemes in it:
+#
+#     https://www.odoo.com/pricing   ->  https://www.https://payobook.com/pricing
+#     href="https://apps.odoo.com/…" ->  https://apps.https://rize.payobook.com/…
+#
+# which is not a naming bug at all — it is a dead link on a settings screen.
+# Both of web_debranding's entry points run inside our own ``super()`` calls
+# (``base.get_view`` and ``ir.ui.view.get_combined_arch``), so by the time any
+# biz_debrand seam sees the string the damage is already done and the repair
+# belongs here, in the one rewrite every seam shares. web_debranding itself is
+# gutted and OPL-1 and is never edited (ER20/ER26).
+#
+# The rule is "a URL prefix immediately followed by another complete URL", so
+# it drops the dead prefix and keeps the real address. A URL that legitimately
+# carries another one — ``?next=https://…`` — is not matched, because the
+# character class stops at ``/`` and ``?``.
+NESTED_URL_RE = re.compile(r"\bhttps?://[\w.\-]*(?=https?://)", re.IGNORECASE)
+
+
+def repair_nested_url(text):
+    """Drop the dead prefix a full-URL substitution left in front of a URL.
+
+    Cheap-exits on the ``://`` that any such damage must contain, so it costs a
+    substring scan on the overwhelming majority of strings. Returns ``text``
+    unchanged (same object) when there is nothing to repair.
+    """
+    if not text or not isinstance(text, str) or text.count("://") < 2:
+        return text
+    out = NESTED_URL_RE.sub("", text)
+    return out if out != text else text
+
+
 def debrand_url(url, website):
     """Repoint vendor URLs at the brand's own site.
 
@@ -171,6 +211,10 @@ def debrand_url(url, website):
     ``/odoo/action-1`` (a working backend route) and ``odoocdn.com`` asset URLs
     survive untouched while a visitable ``https://odoo.com`` link does not.
     """
+    # E4-6 first, and OUTSIDE the vendor pre-filter: a link web_debranding has
+    # already mangled no longer contains the vendor's name at all, so the
+    # pre-filter below would return early and leave it broken.
+    url = repair_nested_url(url)
     if not url or not isinstance(url, str) or not HAS_ODOO_RE.search(url):
         return url
     host = website_host(website)
@@ -192,9 +236,16 @@ def debrand_text(text, brand, website, product=None):
     """
     if not text or not isinstance(text, str):
         return text
+    # E4-6, and it has to happen BEFORE the pre-filter: a link web_debranding
+    # has already mangled carries no vendor name any more, so the pre-filter
+    # would return early and leave a dead URL on the screen. This is the shape
+    # that reaches a PROSE attribute — `placeholder="https://www.odoo.com"` —
+    # rather than a URL one; debrand_url covers the other half.
+    repaired = repair_nested_url(text)
     rules = product_rules(product, brand) if product else None
-    if not (rules[0] if rules else HAS_ODOO_RE).search(text):
-        return text
+    if not (rules[0] if rules else HAS_ODOO_RE).search(repaired):
+        return repaired
+    text = repaired
     host = website_host(website)
     doc_url = (website or DEFAULT_WEBSITE).rstrip("/") + "/documentation/"
     out = text

@@ -87,6 +87,24 @@ const PHRASES = [
     ],
 ];
 
+// ERRORS E4-6. A URL another layer has already broken: `web_debranding`
+// substitutes a FULL URL (`https://payobook.com`) where a bare HOST belongs, so
+// `https://www.odoo.com/pricing` comes out as
+// `https://www.https://payobook.com/pricing` — a dead link, not a naming bug.
+// The rule is "a URL prefix immediately followed by another complete URL": drop
+// the dead prefix, keep the real address. A URL that legitimately carries
+// another one (`?next=https://…`) is not matched, because the character class
+// stops at `/` and `?`. Mirrors NESTED_URL_RE / repair_nested_url in
+// models/brand.py.
+const NESTED_URL = /\bhttps?:\/\/[\w.\-]*(?=https?:\/\/)/gi;
+
+function bizRepairNestedUrl(text) {
+    if (!text || typeof text !== "string" || text.split("://").length < 3) {
+        return text;
+    }
+    return text.replace(NESTED_URL, "");
+}
+
 // The product rule — ERRORS E3-2. OUR OWN name, shown to a tenant as if it
 // were theirs ("Welcome to Payobook" on a Rize employee's screen). Mirrors
 // product_rules() in models/brand.py, including the four shapes that must
@@ -127,11 +145,14 @@ function bizRewrite(text, cfg) {
     if (!text || typeof text !== "string") {
         return text;
     }
+    // E4-6, BEFORE the pre-filter: a mangled link no longer carries the
+    // vendor's name, so the pre-filter would return early and leave it broken.
+    const repaired = bizRepairNestedUrl(text);
     const rules = cfg.product ? bizProductRules(cfg) : null;
-    if (!(rules ? rules.has : HAS_ODOO).test(text)) {
-        return text;
+    if (!(rules ? rules.has : HAS_ODOO).test(repaired)) {
+        return repaired;
     }
-    let out = text;
+    let out = repaired;
     for (const [pattern, replacement] of PHRASES) {
         out = out.replace(pattern, replacement);
     }
@@ -159,6 +180,8 @@ function bizRewrite(text, cfg) {
  * @returns {string}
  */
 function bizRewriteUrl(url, cfg) {
+    // E4-6 first, and outside the pre-filter — see bizRewrite.
+    url = bizRepairNestedUrl(url);
     if (!url || typeof url !== "string" || !HAS_ODOO.test(url)) {
         return url;
     }
@@ -175,10 +198,15 @@ function readBrand() {
     let name = DEFAULT_BRAND;
     let website = DEFAULT_WEBSITE;
     let product = "";
+    let poweredBy = "";
     try {
         const nameMeta = document.querySelector('meta[name="biz-brand"]');
         const siteMeta = document.querySelector('meta[name="biz-brand-website"]');
         const productMeta = document.querySelector('meta[name="biz-brand-product"]');
+        const poweredMeta = document.querySelector('meta[name="biz-brand-powered-by"]');
+        if (poweredMeta && poweredMeta.content) {
+            poweredBy = poweredMeta.content;
+        }
         if (nameMeta && nameMeta.content) {
             name = nameMeta.content;
         }
@@ -191,7 +219,7 @@ function readBrand() {
     } catch {
         // Keep the defaults; branding must never break the page.
     }
-    return { name, website, product };
+    return { name, website, product, poweredBy };
 }
 
 const brand = readBrand();
@@ -231,6 +259,58 @@ export function debrandDataText(text) {
  */
 export function debrandUrl(url) {
     return bizRewriteUrl(url, SOURCE_CFG);
+}
+
+// ---------------------------------------------------------------------------
+// ERRORS E4-1 — the "powered by" credit, on the page it belongs on
+//
+// The middle branding level gives a customer their own name on everything their
+// people see AND says who built the platform. That credit is drawn here rather
+// than by a view inherit, and the reason is measured: on this build `website`
+// REPLACES the whole body of `web.login_layout` (verified on rize, 2026-09-11),
+// so an inherit aimed at the stock footer would find no such node and take the
+// sign-in page down on every database. A node that is not there cannot be
+// xpath'd; a node that is not there simply gets no credit line.
+//
+// Deliberately narrow: the sign-in page only, one element, appended once, the
+// whole thing inside a try/catch. A branding flourish must never be able to
+// stop somebody signing in.
+// ---------------------------------------------------------------------------
+function renderPoweredBy() {
+    try {
+        if (!brand.poweredBy) {
+            return; // every other level, which is almost every customer
+        }
+        const form =
+            document.querySelector(".oe_login_form") ||
+            document.querySelector(".oe_website_login_container") ||
+            document.querySelector("form.oe_signup_form");
+        if (!form || document.querySelector(".biz-powered-by")) {
+            return;
+        }
+        const credit = document.createElement("p");
+        credit.className = "biz-powered-by";
+        // The one line on the page that must NOT be rewritten: it is a
+        // statement about who built the platform, not a name that leaked onto
+        // a tenant's screen. Same reasoning as the hatch in the tree walkers
+        // (ER24) — and, being built here, after every seam has run, it is out
+        // of their reach anyway. The attribute says so to the next reader.
+        credit.setAttribute("data-biz-brand", "keep");
+        credit.style.cssText =
+            "margin:18px 0 0;text-align:center;font-size:12px;opacity:.65";
+        credit.textContent = `Powered by ${brand.poweredBy}`;
+        (form.closest(".card-body") || form.parentNode || form).appendChild(credit);
+    } catch (error) {
+        console.warn("biz_debrand: powered-by credit skipped", error);
+    }
+}
+
+if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderPoweredBy, { once: true });
+    } else {
+        renderPoweredBy();
+    }
 }
 
 // ---------------------------------------------------------------------------

@@ -88,6 +88,28 @@ VISIBLE = [
      "50,000+ companies run Payobook to grow their businesses."),
 ]
 
+# ERRORS E4-6 — links `web_debranding` has already broken, and their repair.
+# Every one of these was measured in a live arch: it substitutes a FULL URL
+# where a bare host belongs, so the result carries two schemes and goes nowhere.
+MANGLED_URLS = [
+    ("https://https://payobook.com/pricing", "https://payobook.com/pricing"),
+    ("https://www.https://payobook.com", "https://payobook.com"),
+    ("https://apps.https://rize.payobook.com/apps/modules",
+     "https://rize.payobook.com/apps/modules"),
+    ('placeholder="https://www.https://payobook.com"',
+     'placeholder="https://payobook.com"'),
+]
+
+# The repair must not touch a URL that legitimately carries another one — a
+# redirect parameter, a fragment. The character class stopping at `/` and `?` is
+# what holds this, so these are the negative control for it.
+NESTED_URL_UNTOUCHED = [
+    "https://payobook.com/docs",
+    "https://example.com/go?next=https://payobook.com",
+    "https://example.com/#https://payobook.com",
+    "See https://payobook.com and https://rize.payobook.com",
+]
+
 # Anything here that changes is a bug that breaks running code.
 UNTOUCHED = [
     "odoo.define('x')",
@@ -163,6 +185,38 @@ class TestRewriteRules(TransactionCase):
         # Callers rely on identity to detect "nothing changed" and skip a write.
         source = "nothing to see here"
         self.assertIs(debrand_text(source, BRAND, WEBSITE), source)
+
+    def test_a_link_broken_by_the_other_layer_is_repaired(self):
+        """ERRORS E4-6 — not a naming bug: a dead link on a settings screen.
+
+        `web_debranding.debrand_links` substitutes a FULL URL where a bare host
+        belongs, and it runs inside our own `super()` call, so every biz_debrand
+        seam receives the damage already done. The repair runs BEFORE the vendor
+        pre-filter on purpose: by then the string carries no vendor name at all,
+        so a pre-filter that returned early would leave it broken for ever.
+        """
+        for source, expected in MANGLED_URLS:
+            self.assertEqual(
+                debrand_text(source, BRAND, WEBSITE), expected, source)
+            self.assertEqual(
+                debrand_url(source, WEBSITE), expected, source)
+            # …and on a tenant, where the product rule is live, unchanged: a
+            # repaired host is a HOST and the product rule must not see it.
+            self.assertEqual(
+                debrand_text(source, TENANT_BRAND, TENANT_WEBSITE, PRODUCT),
+                expected,
+                source,
+            )
+
+    def test_a_url_carrying_another_url_is_left_alone(self):
+        for url in NESTED_URL_UNTOUCHED:
+            self.assertEqual(debrand_url(url, WEBSITE), url, url)
+            self.assertEqual(debrand_text(url, BRAND, WEBSITE), url, url)
+
+    def test_the_repair_is_idempotent(self):
+        for source, expected in MANGLED_URLS:
+            once = debrand_text(source, BRAND, WEBSITE)
+            self.assertEqual(debrand_text(once, BRAND, WEBSITE), expected, source)
 
 
 @tagged("post_install", "-at_install")
@@ -456,7 +510,14 @@ console.log(JSON.stringify(cases.map((t) => bizRewrite(t, live))));
         }
 
     def test_13_the_vendor_rules_agree(self):
-        cases = [s for s, _e in VISIBLE] + UNTOUCHED
+        cases = (
+            [s for s, _e in VISIBLE]
+            + UNTOUCHED
+            # E4-6 lives inside the shared rewrite, so it is pinned across the
+            # wire like every other rule.
+            + [s for s, _e in MANGLED_URLS]
+            + NESTED_URL_UNTOUCHED
+        )
         js = self._run_js(cases, self._cfg(BRAND, WEBSITE, ""))
         py = [debrand_text(c, BRAND, WEBSITE) for c in cases]
         for case, a, b in zip(cases, py, js):

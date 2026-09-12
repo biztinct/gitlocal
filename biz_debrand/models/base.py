@@ -41,7 +41,7 @@ from lxml import etree
 
 from odoo import models
 
-from .brand import debrand_tree, prefilter_for, source_brand
+from .brand import debrand_tree, prefilter_for, repair_nested_url, source_brand
 
 _logger = logging.getLogger(__name__)
 
@@ -57,6 +57,27 @@ class Base(models.AbstractModel):
         try:
             # An arch is SOURCE, so the product rule applies here (E3-2).
             brand, website, product = source_brand(self.env)
+            # ERRORS E4-6, and it has to happen on the WHOLE ARCH STRING, here,
+            # BEFORE the pre-filter. Measured on `payobook` 2026-09-12: by the
+            # time web_debranding has turned `https://www.odoo.com` into
+            # `https://www.https://payobook.com`, the arch no longer contains
+            # the vendor's name at all — so the pre-filter below answers "there
+            # is nothing to do", returns, and the walker that would have
+            # repaired the link never runs. Two dead links survived on
+            # `payobook` for exactly that reason while `rize` was already clean
+            # (its product rule makes the pre-filter match). A repair that only
+            # works on white-labelled customers is not a repair.
+            #
+            # Safe on every position, including the ones the walker refuses to
+            # enter: this rule matches only a URL prefix immediately followed by
+            # a second complete URL, which is not valid anywhere — not in a
+            # `t-` expression, not in a <code> sample. There is nothing it can
+            # match that was not already broken.
+            repaired = repair_nested_url(arch)
+            if repaired is not arch:
+                arch = repaired
+                result = dict(result)
+                result["arch"] = arch
             if not prefilter_for(brand, product).search(arch):
                 return result
             tree = etree.fromstring(arch)
