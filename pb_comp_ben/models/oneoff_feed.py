@@ -71,6 +71,11 @@ THE PUBLIC API (P8 — the recognition programme calls this)
     pb.oneoff.feed.feed_period(month, company_id=False, run_id=False)
     pb.oneoff.feed.mark_paid_for_run(run_id)
 
+APPROVAL MATRIX P5 — `mark_paid_for_run` is called from the APPROVED PAYMENT
+RELEASE (`pb_pay_delivery/models/payment_release.py`), not from the pay run's
+own approval. Approving a run says the numbers are right; it does not say the
+money left the building, and `paid` is a word about the bank.
+
 `source` is carried on `pb.incentive.source` ('manual' | 'rnr'); P8 creates its
 awards with `source='rnr'` and hands their ids to `queue_for_run`. The feed does
 not care which they are — it is the ledger that records where they came from.
@@ -464,7 +469,11 @@ class PbOneoffFeed(models.AbstractModel):
     # ------------------------------------------------------------- the payout
     @api.model
     def mark_paid_for_run(self, run_id):
-        """Everything queued into this run is now paid. Called on final approval."""
+        """Everything queued into this run is now paid.
+
+        Called when an approved PAYMENT RELEASE is carried out — the moment the
+        money actually goes — and not when the pay run is approved (P5).
+        """
         run = self._run(run_id)
         if not run:
             return 0
