@@ -493,12 +493,28 @@ class HrPayslipRun(models.Model):
         honest way to pick between them.
         """
         self.ensure_one()
+        # WHERE THIS RUN BELONGS IS NOT A PERMISSION QUESTION.
+        #
+        # Working it out means reading the pay scheme, the employees' teams and
+        # the division those teams sit in — and a payroll officer who may open
+        # this run and send it in is not necessarily allowed to open a SCHEME
+        # (that is the Formula Manager's job). Read as the acting user, the
+        # first press of "Submit for approval" was refused with "You don't have
+        # access to this yet · Formula Engine/Formula Manager", which is a
+        # true sentence about the wrong question.
+        #
+        # sudo() here reads three things to decide which published route
+        # applies. It grants nothing: the gate is `submit`'s own
+        # `record.check_access('write')`, and every seat, every decision and
+        # every later read still runs as the real person.
+        this = self.sudo()
         Division = self.env.get('pb.division')
         by_department = {}
         groups = {}
-        slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
-        run_config = getattr(self, 'pb_formula_config_id', False)
-        on_date = self.date_end or self.date_start or fields.Date.context_today(self)
+        slips = this.slip_ids.filtered(lambda s: s.state != 'cancel')
+        run_config = getattr(this, 'pb_formula_config_id', False)
+        on_date = this.date_end or this.date_start \
+            or fields.Date.context_today(self)
         for slip in slips:
             config = slip.formula_config_id or run_config
             department = slip.employee_id.department_id
@@ -542,9 +558,15 @@ class HrPayslipRun(models.Model):
         return keys
 
     def _pb_kind_key(self):
-        """What kind of run this is, in the scheme map's own vocabulary."""
-        config = getattr(self, 'pb_formula_config_id', False) \
-            or self.slip_ids[:1].formula_config_id
+        """What kind of run this is, in the scheme map's own vocabulary.
+
+        sudo for the same reason `_pb_review_groups` uses it: the cycle type
+        lives on the pay scheme, and reading it is how the route is chosen, not
+        something the reader is being given.
+        """
+        this = self.sudo()
+        config = getattr(this, 'pb_formula_config_id', False) \
+            or this.slip_ids[:1].formula_config_id
         return (getattr(config, 'cycle_type', False) or 'any') if config else 'any'
 
     def _pb_slip_money(self, slips):
@@ -661,6 +683,9 @@ class HrPayslipRun(models.Model):
                                   'unit': ''},
         }
 
+        # Same rail: who prepared this and who it is about are facts the route
+        # is chosen on, not records the submitter is being handed.
+        slips = slips.sudo()
         makers = set(slips.mapped('create_uid').ids)
         if self.pb_prepared_uid:
             makers.add(self.pb_prepared_uid.id)
