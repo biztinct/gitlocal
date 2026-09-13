@@ -4556,3 +4556,45 @@ msgstr "%s người"
 #. module: pb_approval_config
 msgid "%s people"
 msgstr "%s người"
+
+# =====================================================================
+#  Approval Matrix phase 6 — whose queue is being looked at, and the
+#  queue the Workforce dock now reads from the same place.
+# =====================================================================
+
+#. module: pb_approval_config
+#. odoo-javascript
+msgid "Mine"
+msgstr "Của tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+msgid "My team"
+msgstr "Nhóm của tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+msgid "Everyone"
+msgstr "Tất cả mọi người"
+
+#. module: pb_approval_config
+msgid "Everything I am part of"
+msgstr "Mọi việc tôi có liên quan"
+
+#. module: pb_approval_config
+msgid "The whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_approval_config
+msgid ""
+"Only somebody who looks after approvals can see every request in the company."
+msgstr ""
+"Chỉ người phụ trách phê duyệt mới xem được mọi yêu cầu trong công ty."
+
+#. module: pb_approval_config
+msgid "This is no longer waiting for a decision."
+msgstr "Việc này không còn chờ quyết định nữa."
+
+#. module: pb_approval_config
+msgid "No step is waiting for a decision on this."
+msgstr "Không có bước nào đang chờ quyết định cho việc này."

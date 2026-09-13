@@ -304,3 +304,13 @@ msgstr "h /"
 #: code:addons/pb_team/models/pb_team.py:0
 msgid "purpose"
 msgstr "mục đích"
+
+# =====================================================================
+#  Approval Matrix phase 6 — the cockpit is retired; this is the door it
+#  left behind.
+# =====================================================================
+
+#. module: pb_team
+#. odoo-javascript
+msgid "Taking you to Approvals…"
+msgstr "Đang chuyển bạn tới mục Phê duyệt…"

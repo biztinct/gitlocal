@@ -922,3 +922,13 @@ msgstr ""
 #: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
 msgid "Δ"
 msgstr "Δ"
+
+# =====================================================================
+#  Approval Matrix phase 6 — the dock carries every kind of request now,
+#  not only the four it used to know by name.
+# =====================================================================
+
+#. module: pb_mission
+#. odoo-javascript
+msgid "Other requests"
+msgstr "Yêu cầu khác"

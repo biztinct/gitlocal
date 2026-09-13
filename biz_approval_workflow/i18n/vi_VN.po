@@ -34,3 +34,59 @@ msgstr "Để bạn biết: %s"
 msgid "This is for your information. Nothing is waiting for you."
 msgstr "Đây là thông tin để bạn biết. Không có gì đang chờ bạn."
 
+
+# =====================================================================
+#  Approval Matrix phase 6 — the shim that puts the eleven old approval
+#  ladders on this engine. Every string here is one a person meets on a
+#  form they already knew.
+# =====================================================================
+
+#. module: biz_approval_workflow
+msgid "This has already been sent in."
+msgstr "Việc này đã được gửi đi rồi."
+
+#. module: biz_approval_workflow
+msgid "This one is closed, so it cannot be sent in."
+msgstr "Việc này đã đóng nên không gửi đi được."
+
+#. module: biz_approval_workflow
+msgid "You are not allowed to send this in."
+msgstr "Bạn không được phép gửi việc này đi."
+
+#. module: biz_approval_workflow
+msgid ""
+"This has not been sent in for approval, so there is nothing to decide yet."
+msgstr ""
+"Việc này chưa được gửi đi phê duyệt nên chưa có gì để quyết định."
+
+#. module: biz_approval_workflow
+msgid "No step is waiting for a decision on this one."
+msgstr "Không có bước nào đang chờ quyết định cho việc này."
+
+#. module: biz_approval_workflow
+msgid "Sent in"
+msgstr "Đã gửi"
+
+#. module: biz_approval_workflow
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: biz_approval_workflow
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: biz_approval_workflow
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: biz_approval_workflow
+msgid "Withdrawn from the record itself: %s"
+msgstr "Đã rút lại từ chính hồ sơ: %s"
+
+#. module: biz_approval_workflow
+msgid "Asked to decide"
+msgstr "Được hỏi ý kiến"
+
+#. module: biz_approval_workflow
+msgid "Part of the business"
+msgstr "Bộ phận của doanh nghiệp"

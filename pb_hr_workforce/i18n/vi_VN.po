@@ -2287,3 +2287,23 @@ msgstr "- bộ lọc hẹp"
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:330
 msgid "%(h)s h past the monthly ceiling of %(cap)s h. The excess is"
 msgstr "%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần dư thừa là"
+
+# =====================================================================
+#  Approval Matrix phase 6 — overtime on the one engine.
+# =====================================================================
+
+#. module: pb_hr_workforce
+msgid "Hours asked for"
+msgstr "Số giờ đề nghị"
+
+#. module: pb_hr_workforce
+msgid "Overtime already had this year"
+msgstr "Số giờ tăng ca đã dùng trong năm"
+
+#. module: pb_hr_workforce
+msgid "Past what the law allows"
+msgstr "Vượt mức pháp luật cho phép"
+
+#. module: pb_hr_workforce
+msgid "The overtime"
+msgstr "Giờ tăng ca"

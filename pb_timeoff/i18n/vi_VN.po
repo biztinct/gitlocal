@@ -361,3 +361,36 @@ msgstr "một phần (giới hạn quét)"
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 msgid "pending approvals"
 msgstr "chờ phê duyệt"
+
+# =====================================================================
+#  Approval Matrix phase 6 — time off asks the same way everything else
+#  does, and says so in the same words.
+# =====================================================================
+
+#. module: pb_timeoff
+msgid "Only time off that is waiting for approval can be sent in."
+msgstr "Chỉ đơn nghỉ đang chờ duyệt mới gửi đi được."
+
+#. module: pb_timeoff
+msgid "Sent back: %s"
+msgstr "Đã trả lại: %s"
+
+#. module: pb_timeoff
+msgid "How many days"
+msgstr "Bao nhiêu ngày"
+
+#. module: pb_timeoff
+msgid "Kind of time off"
+msgstr "Loại nghỉ phép"
+
+#. module: pb_timeoff
+msgid "Unpaid"
+msgstr "Không lương"
+
+#. module: pb_timeoff
+msgid "Falls in a month whose pay is already being worked out"
+msgstr "Rơi vào tháng lương đang được tính"
+
+#. module: pb_timeoff
+msgid "The time off"
+msgstr "Kỳ nghỉ"
