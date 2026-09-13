@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="0">
+
+    <!-- ==================================================================
+         WHO MAY READ A SUPPORT SESSION.
+
+         Until now: administrators, and nobody else. That was right when the
+         row was only ever read on the customer's own support screen. A
+         support session is now something somebody is ASKED to agree to, and
+         the engine re-checks that a decider can read the record before it
+         accepts their decision — so the person the route names has to be able
+         to see the thing they are agreeing to, and nobody else does.
+
+         The administrator's rule is here as well and says (1, '=', 1) on
+         purpose: a rule written for `base.group_user` applies to an
+         administrator too, because they are one, and without this line the
+         support screen would go blank for the very people it was built for.
+         ================================================================== -->
+
+    <record id="support_rule_seat" model="ir.rule">
+        <field name="name">Support access: the people a route asked to decide it</field>
+        <field name="model_id" ref="model_pb_support_access"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="support_rule_admin" model="ir.rule">
+        <field name="name">Support access: an administrator sees every session</field>
+        <field name="model_id" ref="model_pb_support_access"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+</data>
+</odoo>

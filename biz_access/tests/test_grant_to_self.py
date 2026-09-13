@@ -25,11 +25,35 @@ from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
+def _wave_role_changes_through(env):
+    """Publish "No approval needed" for role changes, for these cases only.
+
+    PHASE 6 made giving somebody a role something that can be ASKED for: where
+    a company publishes a route, the press makes a request and the board says
+    who is holding it. These cases are about what the board DOES — the bundle
+    arithmetic, the audit row, the refusals — so the company they run in
+    publishes the choice every company is allowed to make: nobody checks this
+    before it happens, and every one is still recorded as a request.
+
+    The phase's own suite (`test_access_request.py`) is where the asking is
+    tested.
+    """
+    Seed = env.get('biz.approval.seed')
+    if Seed is None:
+        return False
+    try:
+        Seed.sudo().set_no_approval_needed(env.company, 'roles')
+        return True
+    except Exception:       # noqa: BLE001 — the catalogue may not be here
+        return False
+
+
 @tagged('post_install', '-at_install')
 class TestGrantToSelf(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        _wave_role_changes_through(self.env)
         stamp = str(fields.Datetime.now()).replace(' ', '').replace(':', '')
         self.group = self.env['res.groups'].create(
             {'name': 'ZZ Self grant %s' % stamp})

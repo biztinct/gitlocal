@@ -32,6 +32,18 @@ class MatrixCase(TransactionCase):
         # rule below hides the fixtures from the fixture builder
         cls.env.user.write({'company_ids': [(4, cls.company.id)],
                             'company_id': cls.company.id})
+        # A COMPANY WHOSE SEATS ARE STILL EMPTY, WHICH IS WHAT THESE CASES ARE
+        # ABOUT. Phase 6 gives a new company a first holder for every
+        # responsibility its default routes name, taken from whoever holds the
+        # group that job used to be done by — and where nobody does, the
+        # administrator. That is right for a real company and wrong for a suite
+        # whose subject is filling a seat for the first time and finding the
+        # gaps before it is filled. The engine's own "Approver" seat is left
+        # exactly as the seed made it: the default "Other request" route uses
+        # it, and one case here is about that seed.
+        cls.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', cls.company.id),
+            ('role_id', '!=', cls.role_approver.id)]).write({'active': False})
 
         cls.boss = cls._user('am_boss', 'Bea Boss', groups=[
             'base.group_user',
@@ -61,6 +73,18 @@ class MatrixCase(TransactionCase):
         return self.env[model].with_user(self.boss).with_company(self.company)
 
     def hold(self, role, user, scope_key='', backup=None):
+        """Name a person for a seat — replacing whoever is there.
+
+        One seat, one holder at a time, is the engine's rule. A product
+        installed beside it may already have named somebody when the company
+        was created, so naming a person here ENDS what was there rather than
+        colliding with it. That is what the screen does too.
+        """
+        self.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', self.company.id),
+            ('role_id', '=', role.id),
+            ('scope_key', '=', scope_key or ''),
+            ('active', '=', True)]).write({'active': False})
         return self.env['biz.approval.responsibility'].create({
             'company_id': self.company.id,
             'role_id': role.id,

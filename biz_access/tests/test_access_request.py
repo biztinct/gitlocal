@@ -40,8 +40,8 @@ class TestAccessRequest(TransactionCase):
         cls.ability_group = cls.env['res.groups'].create(
             {'name': 'P6 access ability group'})
         cls.ability = cls.env['pb.role.ability'].create({
-            'name': 'P6 ability', 'group_ids': [(6, 0,
-                                                 [cls.ability_group.id])]})
+            'name': 'P6 ability', 'technical_key': 'p6_ability',
+            'group_ids': [(6, 0, [cls.ability_group.id])]})
         cls.profile = cls.env['pb.role.profile'].create({
             'name': 'P6 role', 'ability_ids': [(6, 0, [cls.ability.id])]})
 

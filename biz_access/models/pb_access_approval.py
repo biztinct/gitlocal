@@ -65,7 +65,19 @@ class PbAccessApproval(models.AbstractModel):
         if record.state == 'applied':
             # a published "No approval needed" route: it happened, and it is
             # still written down as a request
-            return {'ok': True, 'message': _("Done, and recorded.")}
+            return {'ok': True,
+                    'message': record.done_note or _("Done, and recorded.")}
+        # A FAST LANE THAT COULD NOT BE CARRIED OUT MUST STILL SAY NO TO THE
+        # PERSON WHO PRESSED. On "No approval needed" the engine applies the
+        # change inside the very same call — and if the board refuses it (they
+        # already hold the role, every permission in it belongs to another
+        # role they hold, the hand-over would leave nobody covering) the
+        # engine records the reason and returns quietly. Quietly is a lie:
+        # this press used to answer with that exact sentence, and it still
+        # does. Raising also unwinds the request that was written a moment
+        # ago, which is right — nothing happened.
+        if request and request.state == 'approved' and request.block_reason:
+            raise UserError(request.block_reason)
         return {
             'ok': True,
             'pending': True,

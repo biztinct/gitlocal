@@ -27,10 +27,14 @@ class TestOvertimeApproval(TransactionCase):
         Users = cls.env['res.users'].with_context(no_reset_password=True)
         internal = cls.env.ref('base.group_user')
         officer = cls.env.ref('hr_attendance.group_hr_attendance_officer')
+        # The week grid's bulk approve has always been the attendance
+        # MANAGER's door (`_require_manager`), and phase 6 did not change that
+        # — it only changed what happens behind it.
+        manager = cls.env.ref('hr_attendance.group_hr_attendance_manager')
 
         cls.boss_user = Users.create({
             'name': 'OT Boss', 'login': 'p6_ot_boss',
-            'group_ids': [(6, 0, [internal.id, officer.id])]})
+            'group_ids': [(6, 0, [internal.id, officer.id, manager.id])]})
         cls.staff_user = Users.create({
             'name': 'OT Asker', 'login': 'p6_ot_staff',
             'group_ids': [(6, 0, [internal.id])]})

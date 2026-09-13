@@ -45,9 +45,32 @@ class TestTimeoff(TransactionCase):
             'name': 'Leave Emp', 'company_id': cls.company.id,
             'resource_calendar_id': cls.cal.id if cls.cal else False})
 
-        # a weekday-anchored future window for the queue leaves
-        anchor = date(2026, 8, 12)
+        # A weekday-anchored FUTURE window for the queue leaves, worked out
+        # from today rather than written down. It used to be a fixed date in
+        # August 2026, which stopped being the future in August 2026: an
+        # allocation starts the day it is made, so a leave in the past is a
+        # leave with no allocation covering it, and `test_05` failed with
+        # "You do not have any allocation for this time off type" for a reason
+        # that had nothing to do with the balance arithmetic it was testing.
+        anchor = date.today() + timedelta(days=7)
         cls.mon = anchor - timedelta(days=anchor.weekday())
+
+        # PHASE 6: time off travels a published route now, and this suite's
+        # own officer is the person that route asks. The seed names whoever
+        # held the officer group when the company was made — which, for a
+        # company made a line ago, is nobody. Name the person these cases act
+        # as, so `act()` is deciding a step that is really theirs.
+        role = cls.env['biz.approval.role'].sudo().search(
+            [('key', '=', 'hr_lead')], limit=1)
+        if role:
+            cls.env['biz.approval.responsibility'].sudo().search([
+                ('company_id', '=', cls.company.id),
+                ('role_id', '=', role.id)]).write({'active': False})
+            cls.env['biz.approval.responsibility'].sudo().create({
+                'company_id': cls.company.id, 'role_id': role.id,
+                'scope_key': '', 'scope_label': cls.company.name,
+                'user_id': cls.env.user.id,
+            })
 
     def _confirm_leave(self, emp=None, dfrom=None, dto=None, ltype=None):
         return self.Leave.create({

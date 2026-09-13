@@ -48,7 +48,7 @@ class TestAssetApproval(TransactionCase):
                                 'parent_id': cls.boss.id,
                                 'company_id': cls.company.id})
         cls.category = cls.env['pb.asset.category'].create(
-            {'name': 'P6 Laptop'})
+            {'name': 'P6 Laptop', 'code': 'P6LT'})
 
         # The route this phase ships, laid explicitly: a suite must never
         # depend on which migration happened to run on the database it is

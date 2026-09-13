@@ -44,6 +44,26 @@ def _row(now, token='tok', **over):
 
 # =============================================================================
 @tagged('post_install', '-at_install')
+
+def _wave_support_through(env):
+    """Publish "No approval needed" for support access, for these cases only.
+
+    PHASE 6 made a support session something the customer AGREES to: issuing a
+    link raises a request on their own approvals screen and the link cannot be
+    spent until it is approved. These cases are about the door, the clock and
+    the switch — not about the agreement, which has its own suite — so the
+    company they run in publishes the choice every company is allowed to make:
+    nobody checks this before it happens, and every one is still recorded.
+    """
+    Seed = env.get('biz.approval.seed')
+    if Seed is None:
+        return False
+    try:
+        Seed.sudo().set_no_approval_needed(env.company, 'support')
+        return True
+    except Exception:       # noqa: BLE001 — the catalogue may not be here
+        return False
+
 class TestSupportTokenRules(TransactionCase):
     """T1 — the decision, on its own, with nothing else running."""
 
@@ -114,6 +134,7 @@ class TestSupportLogin(TransactionCase):
         self.icp.set_param(P_RECOVERY, RECOVERY)
         self.icp.set_param(P_SUPPORT_ALLOWED, '1')
         self.Row = self.env['pb.support.access'].sudo()
+        _wave_support_through(self.env)
         self.recovery = self.env['res.users'].sudo().search(
             [('login', '=', RECOVERY)], limit=1)
         if not self.recovery:
@@ -352,6 +373,7 @@ class TestSupportRoutes(HttpCase):
         self.icp.set_param(P_RECOVERY, RECOVERY)
         self.icp.set_param(P_SUPPORT_ALLOWED, '1')
         self.Row = self.env['pb.support.access'].sudo()
+        _wave_support_through(self.env)
         self.recovery = self.env['res.users'].sudo().search(
             [('login', '=', RECOVERY)], limit=1)
         if not self.recovery:

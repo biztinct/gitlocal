@@ -86,6 +86,17 @@ class PbApprovalInbox(models.AbstractModel):
     def _company(self):
         return self.env.user.company_id
 
+    @api.model
+    def _my_company_ids(self):
+        """The companies this PERSON works in — never the top bar's.
+
+        A wider queue is read under `sudo()`, so the company boundary has to
+        be written into the domain by hand; taking it from the top bar would
+        mean the answer changed when somebody ticked a box, which is exactly
+        what the static contract here forbids.
+        """
+        return self.env.user.company_ids.ids or [self.env.user.company_id.id]
+
     # ---------------------------------------------------------- whose queue
     @api.model
     def _my_team_user_ids(self):
@@ -131,16 +142,14 @@ class PbApprovalInbox(models.AbstractModel):
                 return Request, [('id', '=', 0)]
             return Request.sudo(), [
                 ('subject_user_ids', 'in', team),
-                ('company_id', 'in', self.env.companies.ids
-                 or [self.env.company.id])]
+                ('company_id', 'in', self._my_company_ids())]
         if scope == 'org':
             if not self._can_org():
                 raise AccessError(_(
                     "Only somebody who looks after approvals can see every "
                     "request in the company."))
             return Request.sudo(), [
-                ('company_id', 'in', self.env.companies.ids
-                 or [self.env.company.id])]
+                ('company_id', 'in', self._my_company_ids())]
         return Request, []
 
     # ============================================================ the cards

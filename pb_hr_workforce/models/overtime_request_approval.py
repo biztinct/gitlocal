@@ -46,6 +46,13 @@ class OvertimeRequestApproval(models.Model):
 
     _approval_process_key = OVERTIME_PROCESS_KEY
 
+    #: A SEAT IS ALSO A READ (ledger AM60). Reading somebody else's overtime
+    #: needs the attendance manager role; the first step of the default route
+    #: is their line manager, who usually has nothing of the sort.
+    seat_user_ids = fields.Many2many(
+        'res.users', 'hr_overtime_request_seat_rel', 'request_id', 'user_id',
+        string='Asked to decide', copy=False)
+
     # ------------------------------------------------------------ managed?
     def _ot_engine_managed(self):
         self.ensure_one()
@@ -371,3 +378,26 @@ def seed_all(env):
             _logger.exception('pb_hr_workforce: %s has no overtime route',
                               company.name)
     return done
+
+
+class BizApprovalRequestSeatOvertime(models.Model):
+    """A seat on an overtime request is also a permission to read it (AM60)."""
+    _inherit = 'biz.approval.request.seat'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        seats = super().create(vals_list)
+        for seat in seats:
+            request = seat.step_id.request_id
+            if request.res_model != 'hr.overtime.request' \
+                    or not request.res_id:
+                continue
+            row = self.env['hr.overtime.request'].sudo().browse(
+                request.res_id).exists()
+            people = {seat.acting_user_id.id, seat.user_id.id}
+            people.discard(False)
+            if row and people:
+                row.with_context(
+                    **{ENGINE_APPLY: True}).write({
+                        'seat_user_ids': [(4, uid) for uid in sorted(people)]})
+        return seats

@@ -23,8 +23,8 @@ approved on their behalf by a background account (safety rail 5).
 
 import logging
 
-from odoo import _, api, models
-from odoo.exceptions import UserError
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.biz_approval_workflow.models.chain_shim import (
     manager_step, role_step, route,
@@ -54,12 +54,16 @@ class HrLeaveApproval(models.Model):
 
     _approval_process_key = LEAVE_PROCESS_KEY
 
-    # NO "a seat is also a read" column here, and that is deliberate:
-    # hr_holidays already gives the person who approves somebody's leave the
-    # Time off responsible role the moment they are named as their leave
-    # manager, and that role carries its own read of their requests. Adding a
-    # second door to the same room is how a security model stops being
-    # readable.
+    #: A SEAT IS ALSO A READ (ledger AM60). The time-off module already lets
+    #: a leave manager read their own people's requests, which covers the
+    #: manager step — but a route may name anybody as the HR lead, and the
+    #: engine re-checks that a decider can READ the record before it accepts a
+    #: decision. Without this a perfectly reasonable HR lead would meet an ORM
+    #: refusal instead of a step. A record rule is a domain and cannot reach an
+    #: answer that has no column.
+    seat_user_ids = fields.Many2many(
+        'res.users', 'hr_leave_approval_seat_rel', 'leave_id', 'user_id',
+        string='Asked to decide', copy=False)
 
     # ==================================================================
     # Is this company running leave through the engine?
@@ -256,18 +260,27 @@ class HrLeaveApproval(models.Model):
         self.ensure_one()
         if self.state in ('validate', 'refuse', 'cancel'):
             return True
-        if not (self.env.su or self.env.user.has_group(OFFICER_GROUP)
-                or self.env.user._is_admin()):
-            raise UserError(_(
-                "This time off is approved, but %s is not allowed to record "
-                "time off. Ask somebody who looks after approvals to move "
-                "this step to a person who is, or give them the Time off "
-                "role.", self.env.user.name))
+        # WHO MAY RECORD TIME OFF IS THE TIME-OFF MODULE'S OWN QUESTION, and
+        # it has a better answer than any group check written here: the
+        # officer tier, AND the person the employee's record names as their
+        # leave manager, who usually holds no officer group at all. Asking it
+        # by trying is the only way to get that answer; what this adds is the
+        # sentence the person reads when it says no, because "You cannot
+        # approve this leave" on a screen they never opened is not one.
         leave = self.with_context(**{ENGINE_APPLY: True})
-        if leave.state == 'confirm':
-            leave.action_approve(check_state=False)
-        if leave.state == 'validate1':
-            leave.action_approve(check_state=True)
+        try:
+            if leave.state == 'confirm':
+                leave.action_approve(check_state=False)
+            if leave.state == 'validate1':
+                leave.action_approve(check_state=True)
+        except (UserError, AccessError) as exc:
+            raise UserError(_(
+                "This time off is approved, but %(who)s is not allowed to "
+                "record it (%(why)s). Ask somebody who looks after approvals "
+                "to move this step to a person who is, or give them the Time "
+                "off role.",
+                who=self.env.user.name,
+                why=(exc.args and exc.args[0]) or ''))
         return True
 
     def _approval_reject(self, request, reason):
@@ -396,3 +409,24 @@ def seed_all(env):
             _logger.exception('pb_timeoff: %s has no time-off route',
                               company.name)
     return done
+
+
+class BizApprovalRequestSeatLeave(models.Model):
+    """A seat on a leave is also a permission to read that leave (AM60)."""
+    _inherit = 'biz.approval.request.seat'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        seats = super().create(vals_list)
+        for seat in seats:
+            request = seat.step_id.request_id
+            if request.res_model != 'hr.leave' or not request.res_id:
+                continue
+            leave = self.env['hr.leave'].sudo().browse(
+                request.res_id).exists()
+            people = {seat.acting_user_id.id, seat.user_id.id}
+            people.discard(False)
+            if leave and people:
+                leave.with_context(**{ENGINE_APPLY: True}).write({
+                    'seat_user_ids': [(4, uid) for uid in sorted(people)]})
+        return seats

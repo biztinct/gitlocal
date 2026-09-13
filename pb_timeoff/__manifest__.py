@@ -35,6 +35,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
         'pb_import_kit',
     ],
     'data': [
+        'security/pb_timeoff_security.xml',
         'views/pb_timeoff_action.xml',
         'data/pb_sidebar.xml',
     ],

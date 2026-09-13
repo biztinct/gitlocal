@@ -89,6 +89,10 @@ class PbAccessRequest(models.Model):
     state = fields.Selection(STATES, default='draft', required=True,
                              index=True, readonly=True, copy=False)
     block_note = fields.Text(readonly=True, copy=False)
+    #: What the board itself said when the change was finally made. Kept so
+    #: that a press on a "No approval needed" route answers with the same
+    #: sentence it always did ("X now has Y") rather than a flat "done".
+    done_note = fields.Char(readonly=True, copy=False)
     #: A seat is also a read (ledger AM60).
     seat_user_ids = fields.Many2many(
         'res.users', 'pb_access_request_seat_rel', 'request_id', 'user_id',
@@ -222,14 +226,16 @@ class PbAccessRequest(models.Model):
         data = self.instruction()
         Access = self.env['pb.access'].with_context(**{ENGINE_APPLY: True})
         if self.kind == 'grant':
-            Access.grant(data.get('profile_id'), data.get('user_id'),
-                         data.get('reason'))
+            answer = Access.grant(data.get('profile_id'), data.get('user_id'),
+                                  data.get('reason'))
         elif self.kind == 'remove':
-            Access.remove(data.get('profile_id'), data.get('user_id'),
-                          data.get('reason'))
+            answer = Access.remove(data.get('profile_id'),
+                                   data.get('user_id'), data.get('reason'))
         else:
-            Access.delegate(data.get('vals') or {})
-        self.sudo().write({'state': 'applied', 'block_note': False})
+            answer = Access.delegate(data.get('vals') or {})
+        self.sudo().write({
+            'state': 'applied', 'block_note': False,
+            'done_note': (answer or {}).get('message') or False})
         return True
 
     # ------------------------------------------------------------- the seed

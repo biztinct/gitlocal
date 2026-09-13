@@ -36,6 +36,11 @@ class TestLeaveApproval(TransactionCase):
         cls.staff_user = Users.create({
             'name': 'Leave Asker', 'login': 'p6_leave_staff',
             'group_ids': [(6, 0, [internal.id])]})
+        # somebody a route can name who is not allowed to record time off at
+        # all: not an officer, and nobody's leave manager
+        cls.plain_user = Users.create({
+            'name': 'Leave Bystander', 'login': 'p6_leave_plain',
+            'group_ids': [(6, 0, [internal.id])]})
 
         Emp = cls.env['hr.employee']
         cls.boss = Emp.create({'name': 'Leave Boss',
@@ -66,7 +71,12 @@ class TestLeaveApproval(TransactionCase):
         })
 
     def _leave(self, leave_type, days=1):
-        start = date.today() + timedelta(days=14)
+        # a MONDAY next week: a leave has to fall on days the calendar says
+        # are worked, or the time-off module refuses it before any route sees
+        # it — and a fixed date in a test is a date that stops being the
+        # future
+        anchor = date.today() + timedelta(days=7)
+        start = anchor - timedelta(days=anchor.weekday())
         return self.env['hr.leave'].with_user(self.staff_user).create({
             'holiday_status_id': leave_type.id,
             'employee_id': self.staff.id,
@@ -128,18 +138,33 @@ class TestLeaveApproval(TransactionCase):
         self.assertFalse(leave.approval_request_id,
                          'and nothing is asked of anybody')
 
-    def test_q05f_an_approver_without_the_time_off_role_is_told_by_name(self):
-        """Safety rail 4: the last approver records the leave AS THEMSELVES."""
-        leave = self._leave(self._type('manager'))
+    def test_q05f_an_approver_who_may_not_record_leave_is_told_by_name(self):
+        """Safety rail 4: the last approver records the leave AS THEMSELVES.
+
+        The person this route names is neither an officer nor anybody's leave
+        manager, so the time-off module itself refuses them — and the request
+        keeps the decision while saying, by name, why it could not be carried
+        out. (A line manager IS allowed by the time-off module, which is why
+        the manager cases above go through: the answer to "may this person
+        record time off" is that module's, not a group check written here.)
+        """
+        role = self.env['biz.approval.role'].search(
+            [('key', '=', 'hr_lead')], limit=1)
+        self.env['biz.approval.responsibility'].search([
+            ('company_id', '=', self.company.id),
+            ('role_id', '=', role.id)]).write({'user_id': self.plain_user.id})
+
+        leave = self._leave(self._type('hr'))
         request = leave.approval_request_id
-        # the manager holds no holidays group at all
-        self.assertFalse(self.boss_user.has_group(
-            'hr_holidays.group_hr_holidays_user'))
-        leave.with_user(self.boss_user).action_approve()
+        step = request.step_ids.filtered(lambda s: s.status == 'active')
+        self.assertEqual(step.seat_ids.acting_user_id, self.plain_user)
+
+        self.env['biz.approval.engine'].with_user(self.plain_user).decide(
+            request.id, step.key, 'approve')
         request.invalidate_recordset()
         self.assertEqual(request.state, 'approved',
                          'the decision stands…')
-        self.assertIn(self.boss_user.name, request.block_reason or '',
+        self.assertIn(self.plain_user.name, request.block_reason or '',
                       '…and the reason it could not be carried out names them')
         leave.invalidate_recordset()
         self.assertNotEqual(leave.state, 'validate')

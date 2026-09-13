@@ -37,6 +37,15 @@ class PbSupportAccessApproval(models.Model):
 
     _approval_process_key = SUPPORT_PROCESS_KEY
 
+    #: A SEAT IS ALSO A READ (ledger AM60). Only an administrator could read
+    #: this table, and the person a route asks to agree to a support session
+    #: is whoever the business named — the engine re-checks that a decider can
+    #: read the record, so without this the one decision that matters most
+    #: would be refused by the ORM.
+    seat_user_ids = fields.Many2many(
+        'res.users', 'pb_support_access_seat_rel', 'access_id', 'user_id',
+        string='Asked to decide', copy=False)
+
     approved_at = fields.Datetime(
         readonly=True, copy=False,
         help='When the customer agreed to this session. A link cannot be '
@@ -203,3 +212,24 @@ def seed_all(env):
             _logger.exception('pb_tenancy: %s has no support-access route',
                               company.name)
     return done
+
+
+class BizApprovalRequestSeatSupport(models.Model):
+    """A seat on a support session is also a permission to read it (AM60)."""
+    _inherit = 'biz.approval.request.seat'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        seats = super().create(vals_list)
+        for seat in seats:
+            request = seat.step_id.request_id
+            if request.res_model != 'pb.support.access' or not request.res_id:
+                continue
+            row = self.env['pb.support.access'].sudo().browse(
+                request.res_id).exists()
+            people = {seat.acting_user_id.id, seat.user_id.id}
+            people.discard(False)
+            if row and people:
+                row.write({
+                    'seat_user_ids': [(4, uid) for uid in sorted(people)]})
+        return seats

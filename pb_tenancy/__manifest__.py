@@ -35,6 +35,7 @@
         # FLEET P6. The one table on a customer's database that only the
         # platform writes and only the customer's administrator reads.
         'security/ir.model.access.csv',
+        'security/pb_tenancy_security.xml',
         'data/pb_sidebar_features.xml',
         # FLEET P5. The page a paused customer's people meet. Standalone
         # markup with no login form on it — see the file.
