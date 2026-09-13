@@ -79,6 +79,25 @@ class ApprovalCase(TransactionCase):
         cls.role_approver = cls.env.ref('biz_approval_workflow.role_approver')
         cls.company = cls.env['res.company'].create({'name': 'AW Alpha'})
         cls.other_company = cls.env['res.company'].create({'name': 'AW Beta'})
+        # A COMPANY THAT HAS NOT BEEN SET UP YET, WHICH IS WHAT THESE CASES
+        # ARE ABOUT.
+        #
+        # These fixtures are older than the product around them. A product
+        # INSTALLED BESIDE this engine gives every company a published default
+        # route and a first responsibility the moment it is created — that is
+        # what `pb_approval_config`'s seed is for, and it is right: nobody
+        # should meet a company that cannot approve anything. But every case
+        # below builds its own route and then binds it, and "this company
+        # already has a route for that" is exactly the tie the engine refuses;
+        # while a seeded company-wide responsibility fills in the very gaps
+        # the coverage cases exist to find.
+        #
+        # So the two fixture companies are put back to the state the suite has
+        # always assumed. Ending rather than deleting, because that is what a
+        # business does with a route it no longer wants, and it is what the
+        # engine is built to read.
+        for company in (cls.company, cls.other_company):
+            cls._clear_seeded(company)
         cls.currency = cls.company.currency_id
         # the test env's own user must be allowed into both, or every company
         # rule below would simply hide the fixtures from the fixture builder
@@ -97,6 +116,19 @@ class ApprovalCase(TransactionCase):
             'aw_admin', 'Amy Admin',
             groups=['base.group_user',
                     'biz_approval_workflow.group_approval_admin'])
+
+    @classmethod
+    def _clear_seeded(cls, company):
+        """End every route and responsibility a product seeded for a company.
+
+        Not a delete: a binding that is `active = False` is a route that was
+        ended, which is a state the engine understands and a business really
+        produces. Deleting would also take the trail of it with it.
+        """
+        cls.env['biz.approval.binding'].sudo().search([
+            ('company_id', '=', company.id)]).write({'active': False})
+        cls.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', company.id)]).write({'active': False})
 
     @classmethod
     def _user(cls, login, name, company=None, groups=('base.group_user',)):

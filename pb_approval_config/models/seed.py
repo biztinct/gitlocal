@@ -188,7 +188,12 @@ def seed_company(env, company):
         # `sudo()` lifts the rule without changing who `env.uid` is, so the
         # trail still says the administrator's name rather than a background
         # account's.
-        engine = env['biz.approval.engine'].with_user(publisher).sudo()
+        # The whole-coverage scan is a publisher's question, not an install
+        # hook's: it resolves every step against every place the process
+        # happens, and this runs once per company per module. Skipped here and
+        # recorded as skipped — the seed confirms every warning anyway.
+        engine = env['biz.approval.engine'].with_user(publisher).sudo(
+        ).with_context(approval_skip_coverage=True)
         checks = engine.validate_for_publish(version.id)
         if checks['errors']:
             _logger.warning('approval seed: default route refused: %s',

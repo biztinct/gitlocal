@@ -588,8 +588,19 @@ class BizApprovalEngine(models.AbstractModel):
                                  "request as this one. End or narrow one of "
                                  "them first.", clash[0].workflow_id.name)})
 
-        # whole coverage: every place this process happens needs its people
-        coverage = self.coverage_scan(version.id)
+        # whole coverage: every place this process happens needs its people.
+        #
+        # SKIPPED WHILE A DEFAULT ROUTE IS BEING LAID, and only then. The scan
+        # asks every adapter for every place its process happens and resolves
+        # every step against each of them — which is the right question for a
+        # person about to publish, and the wrong one fifteen times over for an
+        # install hook that confirms every warning anyway. Making a company
+        # used to take half a minute of pure arithmetic nobody would ever
+        # read. The publisher's own press still runs it; the seed records that
+        # it did not, with the code that has always meant exactly that.
+        coverage = ({'ran': False, 'rows': []}
+                    if self.env.context.get('approval_skip_coverage')
+                    else self.coverage_scan(version.id))
         if coverage.get('ran'):
             for row in coverage['rows']:
                 for issue in row['issues']:

@@ -205,7 +205,13 @@ class BizApprovalSeed(models.AbstractModel):
             # refuse that person their own default route, while sudo() lifts the
             # rule WITHOUT changing env.uid — so the trail keeps the honest name
             # rather than a background account's (ledger AM26).
-            engine = self.env['biz.approval.engine'].with_user(publisher).sudo()
+            # `approval_skip_coverage`: the whole-coverage scan is a
+            # publisher's question, and this is an install hook laying a
+            # default fifteen times per company. It confirms every warning it
+            # is given anyway, so running the scan only made a company take
+            # half a minute to create.
+            engine = self.env['biz.approval.engine'].with_user(
+                publisher).sudo().with_context(approval_skip_coverage=True)
             checks = engine.validate_for_publish(version.id)
             if checks['errors']:
                 _logger.warning('approval seed: the default "%s" route was '
@@ -275,7 +281,7 @@ class BizApprovalSeed(models.AbstractModel):
                 'definition': fast_lane_definition(),
             })
             engine = self.env['biz.approval.engine'].with_user(
-                publisher).sudo()
+                publisher).sudo().with_context(approval_skip_coverage=True)
             checks = engine.validate_for_publish(version.id)
             if checks['errors']:
                 raise UserError(_(
