@@ -20,7 +20,7 @@ the sealed write happen inside `_approval_apply`.
 
 import logging
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.biz_approval_workflow.models.chain_shim import (
@@ -35,6 +35,9 @@ OVERTIME_PROCESS_KEY = 'overtime'
 ENGINE_APPLY = 'pb_ot_engine_apply'
 
 OFFICER_GROUP = 'hr_attendance.group_hr_attendance_officer'
+
+#: Hours compare to two places; anything smaller is float noise.
+HOURS_EPS = 0.01
 
 
 class OvertimeRequestApproval(models.Model):
@@ -178,6 +181,65 @@ class OvertimeRequestApproval(models.Model):
     def _approval_manager_uids(self):
         self.ensure_one()
         return self.employee_id.sudo().parent_id.user_id.ids
+
+    # ------------------------------------------------- the "nothing to think
+    #                                                    about here" verdict
+    def _approval_batch_safe(self, request):
+        """May this one be swept up by "approve everything easy"?
+
+        Moved here from the Workforce team screen when that screen was
+        retired, unchanged in what it promises: three conditions, all of which
+        must hold, and any doubt resolves to NO.
+
+        1. **the figures are still the ones the grid entered** — the weekly
+           grid writes the same number to planned and actual, so a row where
+           they have since diverged was edited by a person, and a person's
+           edit is exactly what a batch must not sweep up;
+        2. **there is headroom under the ceiling** — the monthly and yearly
+           caps, read through the grid's own arithmetic so this can never
+           drift from what the ceiling rail shows;
+        3. **the day is not locked** — approving overtime onto a closed week
+           is refused anyway, and offering it would be a button that can only
+           produce an error.
+
+        FAIL CLOSED: if any of the three reads is unavailable, nothing is easy.
+        """
+        self.ensure_one()
+        if self.state != 'submitted':
+            return False
+        entered = self.actual_hours or 0.0
+        planned = self.planned_hours or 0.0
+        if entered <= 0 or abs(entered - planned) > HOURS_EPS:
+            return False
+        try:
+            ceilings = self.env['hr.attendance.weekentry'].sudo()._ot_ceilings(
+                self.employee_id.ids, fields.Date.context_today(self))
+        except Exception:       # noqa: BLE001 — unreadable means not easy
+            _logger.debug('pb_hr_workforce: the overtime ceilings could not '
+                          'be read, so nothing is easy', exc_info=True)
+            return False
+        company_id = self.company_id.id if 'company_id' in self._fields \
+            and self.company_id else self.employee_id.sudo().company_id.id
+        if 'pb.wf.lock' in self.env and self.date:
+            try:
+                locked = self.env['pb.wf.lock']._locked_pairs(
+                    [company_id], [self.date])
+            except Exception:   # noqa: BLE001 — unreadable means not easy
+                _logger.debug('pb_hr_workforce: the lock state could not be '
+                              'read, so nothing is easy', exc_info=True)
+                return False
+            if (company_id, self.date) in (locked or set()):
+                return False
+        ceiling = (ceilings or {}).get(self.employee_id.id)
+        if not ceiling:
+            return False
+        if ceiling.get('cap_month') \
+                and ceiling['mtd'] > ceiling['cap_month'] + HOURS_EPS:
+            return False
+        if ceiling.get('cap_year') \
+                and ceiling['ytd'] > ceiling['cap_year'] + HOURS_EPS:
+            return False
+        return True
 
     def _approval_card_count(self, request):
         self.ensure_one()

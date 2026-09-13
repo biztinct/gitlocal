@@ -28,6 +28,7 @@ _logger = logging.getLogger(__name__)
 def post_init_hook(env):
     _ensure_types(env)
     _backfill_types(env)
+    _seed_approval_routes(env)
 
 
 def _ensure_types(env):
@@ -52,3 +53,18 @@ def _backfill_types(env):
             counts.get('looked_at', 0), counts.get('intern', 0),
             counts.get('contractor', 0), counts.get('other', 0)))
     return counts
+
+
+# ---------------------------------------------------------------- approvals
+# A fresh install runs no migration, so this is where a brand-new database
+# gets its default approval route. Idempotent, and deliberately never fatal:
+# a module that cannot be installed because a route could not be laid is a
+# worse outcome than a route somebody lays later (ledger AM70/AM75).
+def _seed_approval_routes(env):
+    import logging
+    logger = logging.getLogger(__name__)
+    try:
+        from .models.contract_extension_approval import seed_all
+        seed_all(env)
+    except Exception:       # noqa: BLE001
+        logger.exception('the default approval route could not be laid')

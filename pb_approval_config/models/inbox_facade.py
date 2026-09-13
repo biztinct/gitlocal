@@ -32,6 +32,21 @@ MAX_TEXT = 2000
 #: The four tabs, and nothing else is accepted.
 TABS = ('mine', 'all', 'returned', 'done')
 
+#: WHOSE QUEUE IS BEING ASKED FOR.
+#:  * 'me'   — everything I may see (the record rules decide, as always);
+#:  * 'team' — everything waiting about somebody who works for me, whether or
+#:             not I am the one who has to decide it. This is the Workforce
+#:             screen a manager used to have, and it is a READ: deciding still
+#:             goes through the engine, which re-checks the seat every time;
+#:  * 'org'  — everything in the companies I work in, for the people whose job
+#:             is to keep approvals moving.
+SCOPES = ('me', 'team', 'org')
+
+#: Who may ask for the whole organisation's queue.
+ORG_GROUPS = ('biz_approval_workflow.group_approval_config',
+              'hr.group_hr_manager',
+              'om_hr_payroll.group_hr_payroll_manager')
+
 #: How long a reason has to be before it is worth writing down. An exception is
 #: a sentence somebody will read in an audit a year later; a send-back only has
 #: to say what to change.
@@ -71,15 +86,72 @@ class PbApprovalInbox(models.AbstractModel):
     def _company(self):
         return self.env.user.company_id
 
+    # ---------------------------------------------------------- whose queue
+    @api.model
+    def _my_team_user_ids(self):
+        """Everybody who works for me, however far down.
+
+        Worked out from the employee tree — the same answer the Workforce
+        team screen gave, kept when that screen was retired. `child_of` walks
+        the whole branch, so a manager of managers sees their whole area.
+        """
+        employees = self.env['hr.employee'].sudo().search(
+            [('user_id', '=', self.env.uid)])
+        if not employees:
+            return []
+        team = self.env['hr.employee'].sudo().search(
+            [('id', 'child_of', employees.ids), ('id', 'not in',
+                                                 employees.ids)])
+        return sorted(set(team.mapped('user_id').ids))
+
+    @api.model
+    def _can_org(self):
+        user = self.env.user
+        if self.env.su or user._is_admin():
+            return True
+        for xmlid in ORG_GROUPS:
+            if self._safe(lambda x=xmlid: user.has_group(x), default=False):
+                return True
+        return False
+
+    @api.model
+    def _scoped(self, scope):
+        """(model to search with, extra domain) for one scope.
+
+        A wider scope is a READ of what this person's own people are doing,
+        collected the way the audit console collects (gated first, then
+        `sudo()`), and never a permission: every decision still goes through
+        `biz.approval.engine.decide`, which re-checks the seat, the account
+        and the record's own access.
+        """
+        Request = self.env['biz.approval.request']
+        if scope == 'team':
+            team = self._my_team_user_ids()
+            if not team:
+                return Request, [('id', '=', 0)]
+            return Request.sudo(), [
+                ('subject_user_ids', 'in', team),
+                ('company_id', 'in', self.env.companies.ids
+                 or [self.env.company.id])]
+        if scope == 'org':
+            if not self._can_org():
+                raise AccessError(_(
+                    "Only somebody who looks after approvals can see every "
+                    "request in the company."))
+            return Request.sudo(), [
+                ('company_id', 'in', self.env.companies.ids
+                 or [self.env.company.id])]
+        return Request, []
+
     # ============================================================ the cards
     @api.model
-    def list_requests(self, tab='mine', filters=None, cursor=None):
+    def list_requests(self, tab='mine', filters=None, cursor=None,
+                      scope='me'):
         """Everything this person may see, in the four piles they think in."""
         tab = tab if tab in TABS else 'mine'
+        scope = scope if scope in SCOPES else 'me'
         filters = filters or {}
-        Request = self.env['biz.approval.request']
-
-        domain = []
+        Request, domain = self._scoped(scope)
         if tab == 'returned':
             domain.append(('state', '=', 'returned'))
         elif tab == 'done':
@@ -112,10 +184,14 @@ class PbApprovalInbox(models.AbstractModel):
 
         return {
             'tab': tab,
+            'scope': scope,
+            'scope_label': self._scope_label(scope),
             'cards': cards,
-            'counts': self._counts(),
+            'counts': self._counts(scope),
             'areas': self._areas(),
             'can_config': self._can_config(),
+            'can_org': self._can_org(),
+            'has_team': bool(self._my_team_user_ids()),
             'me': {'id': self.env.uid, 'name': self.env.user.name},
             'covering_for': self._covering_for(),
             'covered_by': self._covered_by(),
@@ -123,18 +199,27 @@ class PbApprovalInbox(models.AbstractModel):
             'cursor': cards[-1]['id'] if len(rows) == MAX_CARDS else 0,
         }
 
-    def _counts(self):
+    def _scope_label(self, scope):
+        return {
+            'me': _('Everything I am part of'),
+            'team': _('My team'),
+            'org': _('The whole company'),
+        }.get(scope, '')
+
+    def _counts(self, scope='me'):
         """The number on each tab. Four cheap searches, not four page loads."""
-        Request = self.env['biz.approval.request']
-        open_domain = [('state', 'in', ('pending', 'blocked'))]
-        mine = Request.search(
-            open_domain + [('seat_ids.acting_user_id', '=', self.env.uid)],
+        Request, base = self._scoped(scope)
+        open_domain = base + [('state', 'in', ('pending', 'blocked'))]
+        mine = self.env['biz.approval.request'].search(
+            [('state', 'in', ('pending', 'blocked')),
+             ('seat_ids.acting_user_id', '=', self.env.uid)],
             limit=MAX_CARDS)
         return {
             'mine': sum(1 for r in mine if self._is_mine(r)),
             'all': Request.search_count(open_domain),
-            'returned': Request.search_count([('state', '=', 'returned')]),
-            'done': Request.search_count([
+            'returned': Request.search_count(
+                base + [('state', '=', 'returned')]),
+            'done': Request.search_count(base + [
                 ('state', 'in', ('approved', 'applied', 'rejected',
                                  'cancelled'))]),
         }
@@ -274,10 +359,27 @@ class PbApprovalInbox(models.AbstractModel):
 
     # ========================================================== one request
     @api.model
-    def get_request(self, request_id):
-        """The whole drawer: frozen facts, evidence, the route and my options."""
+    def _readable(self, request_id, scope='me'):
+        """The request, read as myself — or, in a wider queue, as the reader
+        of my own people's business. Never a permission to decide."""
         request = self.env['biz.approval.request'].browse(int(request_id))
-        request.check_access('read')
+        scope = scope if scope in SCOPES else 'me'
+        if scope == 'me':
+            request.check_access('read')
+            return request
+        Request, domain = self._scoped(scope)
+        found = Request.search(domain + [('id', '=', request.id)], limit=1)
+        if not found:
+            # not in the wider queue either: answer the ordinary way, so the
+            # refusal is the ORM's own and says the same thing it always did
+            request.check_access('read')
+            return request
+        return found
+
+    @api.model
+    def get_request(self, request_id, scope='me'):
+        """The whole drawer: frozen facts, evidence, the route and my options."""
+        request = self._readable(request_id, scope)
         if not request.exists():
             raise UserError(_("That request no longer exists."))
         payload = self._card(request)
@@ -618,6 +720,136 @@ class PbApprovalInbox(models.AbstractModel):
         request.check_access('read')
         self._engine().cancel(request.id, _clip(reason))
         return self.get_request(request.id)
+
+    # ==================================================================
+    # THE AMBIENT DOCK
+    #
+    # The Workforce workspace carries a dock down the side: everything
+    # waiting, oldest first, approvable where it is. It used to read a queue
+    # of its own that knew four kinds of request by name and could disagree
+    # with the inbox about any of them. It reads this instead — the same
+    # requests, the same seats, the same engine — so it now shows EVERY kind
+    # of request and can never be out of step with the screen beside it.
+    #
+    # The shape is the dock's, kept exactly, so the dock did not have to be
+    # rewritten to gain eleven more kinds of request.
+    # ==================================================================
+    #: Which of the dock's four identities a process wears. Anything else is
+    #: "other" — the point of the phase is that the dock stopped being a list
+    #: of four things somebody remembered to add.
+    DOCK_SOURCES = {
+        'overtime': 'ot',
+        'trip': 'trip',
+        'correction': 'correction',
+        'leave': 'leave',
+    }
+    DOCK_CAP = 20
+
+    @api.model
+    def get_team_data(self, recursive=True, scope='team', queues_only=True):
+        """Everything waiting, for the dock. A read, and only a read."""
+        scope = 'org' if (scope == 'org' and self._can_org()) else 'team'
+        Request, domain = self._scoped(scope)
+        open_domain = domain + [('state', 'in', ('pending', 'blocked'))]
+        rows = Request.search(open_domain, order='submitted_at, id',
+                              limit=self.DOCK_CAP * 5)
+        items, counts, seen = [], {}, {}
+        for request in rows:
+            source = self.DOCK_SOURCES.get(request.process_id.key, 'other')
+            counts[source] = counts.get(source, 0) + 1
+            seen[source] = seen.get(source, 0) + 1
+            if seen[source] > self.DOCK_CAP:
+                continue
+            items.append(self._dock_item(request, source))
+        total = Request.search_count(open_domain)
+        return {
+            'has_team': bool(self._my_team_user_ids()),
+            'is_hr': self._can_org(),
+            'can_org': self._can_org(),
+            'scope': scope,
+            'queues': {
+                'items': items,
+                'counts': counts,
+                'total': total,
+                'has_more': {key: value > self.DOCK_CAP
+                             for key, value in counts.items()},
+            },
+        }
+
+    def _dock_item(self, request, source):
+        record = self._record_of(request)
+        mine = self._is_mine(request)
+        employee = self.env['hr.employee']
+        for uid in (request.subject_uids or []):
+            employee = self.env['hr.employee'].sudo().search(
+                [('user_id', '=', uid)], limit=1)
+            if employee:
+                break
+        age = 0
+        if request.submitted_at:
+            age = max(0, (fields.Datetime.now() - request.submitted_at).days)
+        return {
+            'model': request.res_model,
+            'res_id': request.res_id,
+            'request_id': request.id,
+            'source': source,
+            'title': request.title or request.process_id.name or '',
+            'subtitle': request.process_id.name or '',
+            'when': fields.Datetime.to_string(request.submitted_at) or '',
+            'when_iso': fields.Datetime.to_string(request.submitted_at) or '',
+            'employee': {
+                'id': employee.id,
+                'name': employee.name or request.submitter_uid.name or '',
+                'avatar_url': '/web/image/hr.employee/%s/avatar_128'
+                              % employee.id if employee else '',
+                'department': employee.department_id.name if employee else '',
+            },
+            'age': age,
+            'can_approve': mine,
+            'can_refuse': mine,
+            # The engine keeps the reason with the decision, for every kind of
+            # request. The old queue had to say which four of them stored one.
+            'takes_note': True,
+            'is_clean': bool(
+                mine and record is not None
+                and self._safe(lambda: record._approval_batch_safe(request),
+                               default=False)),
+        }
+
+    @api.model
+    def act(self, model, res_id, action, note=False):
+        """The dock's one verb, answered by the engine.
+
+        Deliberately the same signature the retired Workforce queue had, so
+        the dock keeps its optimistic removal, its note box and its batch
+        press. Nothing here decides anything: `decide` re-checks the seat, the
+        account, the record's own access and the independence rule.
+        """
+        if action not in ('approve', 'refuse'):
+            raise UserError(_("That is not something you can do here."))
+        request = self.env['biz.approval.request'].sudo().search([
+            ('res_model', '=', model), ('res_id', '=', int(res_id)),
+            ('state', 'in', ('pending', 'blocked')),
+        ], order='attempt desc, id desc', limit=1)
+        if not request:
+            raise UserError(_("This is no longer waiting for a decision."))
+        step = request.step_ids.filtered(
+            lambda s: s.status == 'active').sorted('sequence')[:1]
+        if not step:
+            raise UserError(_("No step is waiting for a decision on this."))
+        self.decide(request.id, step.key,
+                    'approve' if action == 'approve' else 'reject',
+                    note or (_("Refused") if action == 'refuse' else ''))
+        request.invalidate_recordset()
+        # APPROVED IS NOT THE SAME AS DONE. A guard on the record itself — a
+        # locked week, a ceiling, a permission the last approver has not got —
+        # leaves the request approved and uncarried-out, with the reason on it.
+        # A queue that reported that as a success would take the row off the
+        # screen and leave the thing undone.
+        blocked = request.block_reason if request.state == 'approved' else ''
+        return {'ok': not blocked, 'error': blocked or '',
+                'model': model, 'res_id': int(res_id),
+                'state': request.state}
 
     # ------------------------------------------------- ask for a sign-off
     @api.model

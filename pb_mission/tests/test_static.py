@@ -42,7 +42,7 @@ _LENSES = [
     ('timeoff', 'PbTimeoff'),
     ('overtime', 'PbOtDesk'),
     ('trips', 'PbTrips'),
-    ('approvals', 'PbTeamCockpit'),
+    ('approvals', 'PbInbox'),
     ('close', 'PbCloseLens'),
 ]
 
@@ -320,10 +320,11 @@ class TestMissionStaticGates(TransactionCase):
 
         P3a could state this as "no RPC at all". The dock is a real queue, so
         P3b has to state the rule it was actually protecting: no new model, no
-        new endpoint, nothing here to gate, test or migrate. `pb.team` is the
-        Team Approvals cockpit's own facade — same method, same gates, same
-        `act()` door — and `hr.employee` is read for the palette's typeahead
-        exactly as the shared context bar already reads it.
+        new endpoint, nothing here to gate, test or migrate. `pb.approval.inbox` is the
+        Approvals inbox's own facade — the same method, the same gates and the
+        same `act()` door the retired Team Approvals cockpit used, now answered
+        by the approval engine — and `hr.employee` is read for the palette's
+        typeahead exactly as the shared context bar already reads it.
         """
         module = get_module_path('pb_mission')
         self.assertFalse(
@@ -336,7 +337,8 @@ class TestMissionStaticGates(TransactionCase):
         # `pb.close` is P4's own facade, in pb_close — it is a facade that
         # exists BEFORE the shell calls it, with its own model, ACLs and tests,
         # which is the property this gate is actually protecting.
-        allowed = {'pb.team', 'hr.employee', 'pb.time.hub', 'pb.close'}
+        allowed = {'pb.approval.inbox', 'hr.employee', 'pb.time.hub',
+                   'pb.close'}
         called = set()
         for path in _walk('pb_mission', ('.js',), skip_tests=True):
             with open(path, encoding='utf-8') as fh:
@@ -722,11 +724,14 @@ class TestMissionStaticGates(TransactionCase):
         self.assertIn('notePlaceholder(it)', self._dock_xml(),
                       'the placeholder must say which kind of note this is')
 
-        facade = _read('pb_team', 'models', 'pb_team.py')
-        self.assertIn('def _takes_note(model):', facade,
-                      'the flag must be derived from the act whitelist itself')
-        self.assertEqual(facade.count("'takes_note': _takes_note("), 4,
-                         'every queue source must declare it')
+        # The flag used to be derived from a whitelist of four models, two of
+        # which threw the note away. Every kind of request keeps its reason
+        # with the decision now, so the server says so once, for all of them —
+        # and the dock's control stops being the thing that has to know.
+        facade = _read('pb_approval_config', 'models', 'inbox_facade.py')
+        self.assertIn("'takes_note': True", facade,
+                      'the queue must still tell the dock whether a note is '
+                      'kept')
 
     # ================================================ P4 T6 — the Close lens
     def test_the_close_lens_never_writes_from_a_lifecycle_hook(self):

@@ -72,6 +72,12 @@ class BizApprovalRequest(models.Model):
     submitter_uid = fields.Many2one('res.users', string='Sent in by',
                                     index=True)
     subject_uids = fields.Json(default=list)
+    subject_user_ids = fields.Many2many(
+        'res.users', 'biz_approval_request_subject_rel', 'request_id',
+        'user_id', string='About',
+        help='The same people as the frozen list, kept as a link so a '
+             'manager\'s own queue can be searched for. A Json list cannot be '
+             'searched and cannot appear in a rule.')
     binding_id = fields.Many2one('biz.approval.binding', ondelete='set null')
     version_id = fields.Many2one('biz.approval.workflow.version',
                                  ondelete='restrict', index=True)

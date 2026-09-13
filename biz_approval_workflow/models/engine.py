@@ -788,6 +788,8 @@ class BizApprovalEngine(models.AbstractModel):
             'maker_user_ids': [(6, 0, maker_uids)],
             'submitter_uid': ctx.get('submitter_uid') or self.env.uid,
             'subject_uids': list(ctx.get('subject_uids') or []),
+            'subject_user_ids': [(6, 0, [u for u in
+                                         (ctx.get('subject_uids') or []) if u])],
             'binding_id': binding.id,
             'version_id': version.id,
             'state': 'pending',

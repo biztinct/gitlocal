@@ -59,6 +59,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 `pb_onboarding` or `pb_hr_fullandfinal` beyond additive `_inherit` extensions
 declared inside this module, so a plain install is the whole deployment.
 """,
+    'post_init_hook': 'post_init_hook',
     'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',

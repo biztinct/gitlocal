@@ -39,6 +39,12 @@ export class PbInbox extends Component {
     static props = {
         embedded: { type: Boolean, optional: true },
         action: { type: Object, optional: true },
+        // WHOSE QUEUE THIS IS. "me" is everything I am part of; "team" is
+        // everything waiting about somebody who works for me — the Workforce
+        // screen a manager used to have, now the same inbox as everything
+        // else. A scope is a way of LOOKING, never a permission: the decide
+        // buttons come from the seat, which the server re-checks every time.
+        scope: { type: String, optional: true },
         "*": true,
     };
 
@@ -60,6 +66,7 @@ export class PbInbox extends Component {
             loading: true,
             failed: "",
             tab: "mine",
+            scope: this.props.scope || "me",
             data: null,
             area: "",
             due: "",
@@ -98,7 +105,8 @@ export class PbInbox extends Component {
                 [this.state.tab,
                  { area: this.state.area || false,
                    due: this.state.due || false },
-                 false]);
+                 false,
+                 this.state.scope]);
         } catch (error) {
             this.state.failed = (error.data && error.data.message)
                 || _t("Your approvals could not be read.");
@@ -156,6 +164,25 @@ export class PbInbox extends Component {
         this.state.tab = key;
         this.state.openId = 0;
         await this.load();
+    }
+
+    async setScope(key) {
+        if (this.state.scope === key) { return; }
+        this.state.scope = key;
+        this.state.openId = 0;
+        await this.load();
+    }
+
+    get scopes() {
+        const data = this.data;
+        const rows = [{ key: "me", label: _t("Mine") }];
+        if (data.has_team || this.state.scope === "team") {
+            rows.push({ key: "team", label: _t("My team") });
+        }
+        if (data.can_org || this.state.scope === "org") {
+            rows.push({ key: "org", label: _t("Everyone") });
+        }
+        return rows.length > 1 ? rows : [];
     }
 
     async setArea(key) {

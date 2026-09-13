@@ -6,8 +6,11 @@ without reading them, so every condition gets its own case AND its own negative
 case. The verdict is conservative by construction: three conditions, all of
 which must hold, and any read the server could not make resolves to NOT clean.
 
-The batch itself is exercised through `pb.team.act` — the same door the dock
-uses, as the real user — so what is proved here is what the button does.
+The batch itself is exercised through `pb.approval.inbox.act` — the same door
+the dock uses, as the real user — so what is proved here is what the button
+does. (It used to be `pb.team.act`; that queue is retired, and the verdict it
+used to make now belongs to the overtime adapter, which is the module that
+knows what an overtime ceiling is.)
 """
 
 from datetime import timedelta
@@ -25,14 +28,14 @@ class TestCleanBatch(CloseCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # pb_team and pb_close do not depend on each other in either direction:
-        # the lock check inside `_ot_clean_map` is a soft `in self.env` hook, so
-        # each module is installable alone. This suite is about the SEAM, so it
-        # is the one thing here that has to say "not applicable" rather than
-        # fail when only one half is present.
-        if 'pb.team' not in cls.env:
-            cls.skipTest(cls, 'pb_team is not installed on this database')
-        cls.Team = cls.env['pb.team']
+        # The approvals inbox and pb_close do not depend on each other in
+        # either direction: the lock check inside the clean verdict is a soft
+        # `in self.env` hook, so each module is installable alone. This suite
+        # is about the SEAM, so it is the one thing here that has to say "not
+        # applicable" rather than fail when only one half is present.
+        if 'pb.approval.inbox' not in cls.env:
+            cls.skipTest(cls, 'the approvals inbox is not installed here')
+        cls.Team = cls.env['pb.approval.inbox']
         # A manager who has a REPORT, so the team-scoped queue is non-empty and
         # `act`'s team-scope check has something true to find.
         cls.boss = cls._mk_user('p4_batch_boss', [
@@ -58,7 +61,20 @@ class TestCleanBatch(CloseCase):
         return req
 
     def _verdict(self, recs):
-        return self.Team.sudo()._ot_clean_map(recs)
+        """{id: True} for the rows the overtime adapter calls easy.
+
+        The verdict moved onto the record itself when the team queue was
+        retired: the module that knows what a ceiling is is the one that owns
+        the promise.
+        """
+        out = {}
+        for rec in recs:
+            try:
+                if rec.sudo()._approval_batch_safe(False):
+                    out[rec.id] = True
+            except Exception:       # noqa: BLE001 — unreadable means not easy
+                return {}
+        return out
 
     # ==================================================================
     #  the truth table

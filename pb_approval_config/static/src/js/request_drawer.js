@@ -38,6 +38,7 @@ export class RequestDrawer extends Component {
     static template = "pb_approval_config.RequestDrawer";
     static props = {
         requestId: { type: Number },
+        scope: { type: String, optional: true },
         onClose: { type: Function },
         onChanged: { type: Function, optional: true },
         onOpenMatrix: { type: Function, optional: true },
@@ -68,7 +69,8 @@ export class RequestDrawer extends Component {
         this.state.failed = "";
         try {
             this.state.request = await this.orm.call(
-                "pb.approval.inbox", "get_request", [this.props.requestId]);
+                "pb.approval.inbox", "get_request",
+                [this.props.requestId, this.props.scope || "me"]);
         } catch (error) {
             this.state.failed = (error.data && error.data.message)
                 || _t("This request could not be opened.");

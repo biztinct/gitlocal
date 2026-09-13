@@ -83,6 +83,14 @@
             background: var(--pbim-green-soft, #E3F2E9);
             color: var(--pbim-green, #2E7D4F);
         }
+        // Everything the dock did not used to carry: equipment, a bank
+        // account, a rise, a resignation. Slate on purpose — it is the tone
+        // the shell already uses for "a thing without an identity of its own",
+        // and inventing a fifth colour would say these are a family.
+        &--other {
+            background: var(--pbim-slate-soft, #EEF1F5);
+            color: var(--pbim-slate, #64748B);
+        }
     }
 
     // ------------------------------------------------------------- header
@@ -274,7 +282,8 @@
             background: var(--pbim-green-soft, #E3F2E9);
             color: var(--pbim-green, #2E7D4F);
         }
-        &--slate {
+        &--slate,
+        &--other {
             background: var(--pbim-slate-soft, #EEF1F5);
             color: var(--pbim-slate, #64748B);
         }

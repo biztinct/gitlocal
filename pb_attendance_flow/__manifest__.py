@@ -38,6 +38,7 @@ ritual uses to separate a clean employee-day from one that needs a human. It is
 deliberately a second dimension beside grace, not a re-use of it — grace decides
 who was late, tolerance decides what payroll may see unreviewed.
 """,
+    'post_init_hook': 'post_init_hook',
     'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',

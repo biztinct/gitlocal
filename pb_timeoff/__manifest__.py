@@ -21,6 +21,7 @@ USER (C18.17); there is no sudo anywhere in the module.
 HR/officer gated (hr_holidays.group_hr_holidays_user | hr.group_hr_manager |
 om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
 """,
+    'post_init_hook': 'post_init_hook',
     'version': '19.0.1.3.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',

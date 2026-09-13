@@ -53,7 +53,12 @@ import { PbTimeHub } from "@pb_time_hub/js/time_hub";
 import { PbTimeoff } from "@pb_timeoff/js/pb_timeoff";
 import { PbOtDesk } from "@pb_hr_workforce/js/pb_ot_desk";
 import { PbTrips } from "@pb_business_trip/js/pb_trips";
-import { PbTeamCockpit } from "@pb_team/js/pb_team";
+// W17 is about reuse, and the Approvals lens is now the same inbox every
+// other part of the product uses — one screen, every kind of request, mounted
+// here with its scope set to "my team". `pb_team`'s own cockpit is retired:
+// two approval queues that could disagree with each other were the reason the
+// Approval Matrix programme exists.
+import { PbInbox } from "@pb_approval_config/js/inbox";
 import { PbCloseLens } from "@pb_mission/js/pb_close_lens";
 
 const LENS_KEY = "pbms.lens.v1";
@@ -197,7 +202,7 @@ export class PbMission extends Component {
     static template = "pb_mission.PbMission";
     static components = {
         WfContextBar, WfDock, WfDrawer, WfPersonWeek,
-        PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
+        PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbInbox,
         PbCloseLens, HubBackChip, HubFeatureOff,
     };
     static props = { action: { type: Object, optional: true }, "*": true };

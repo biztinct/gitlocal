@@ -41,3 +41,11 @@ def post_init_hook(env_or_cr, registry=None):
         _logger.info('pb_pay: %s position row(s) built', made)
     except Exception:       # noqa: BLE001
         _logger.exception('pb_pay: the first position pass could not run')
+    # A fresh install runs no migration, so this is where a brand-new database
+    # gets the pay-change and pay-review routes. Idempotent (ledger AM70/AM75).
+    try:
+        from .models.pb_pay_approval import seed_all
+        seed_all(env)
+    except Exception:       # noqa: BLE001
+        _logger.exception('pb_pay: the default approval routes could not be '
+                          'laid')

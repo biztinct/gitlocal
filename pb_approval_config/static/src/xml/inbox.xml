@@ -73,6 +73,19 @@
             </span>
           </div>
 
+          <!-- ==== whose queue: mine, my team's, everyone's ==== -->
+          <div t-if="scopes.length" class="pbam-scopes">
+            <button t-foreach="scopes" t-as="sc" t-key="sc.key"
+                    class="pbam-scope" t-att-class="{ 'is-on': state.scope === sc.key }"
+                    t-on-click="() => this.setScope(sc.key)">
+              <t t-out="ic(sc.key === 'me' ? 'user' : sc.key === 'team' ? 'users' : 'building', 13)"/>
+              <span t-esc="sc.label"/>
+            </button>
+            <span t-if="state.scope !== 'me'" class="pbam-scope-note">
+              Watching, not deciding — a request is yours to decide only when a step names you.
+            </span>
+          </div>
+
           <div class="pbam-tabs">
             <button t-foreach="tabs" t-as="tb" t-key="tb.key"
                     class="pbam-tab" t-att-class="{ 'is-on': state.tab === tb.key }"
@@ -189,6 +202,7 @@
       <t t-if="state.openId">
         <div class="pbam-scrim" t-on-click="() => this.close()"/>
         <RequestDrawer requestId="state.openId"
+                       scope="state.scope"
                        onClose="() => this.close()"
                        onChanged="() => this.refresh()"
                        onOpenMatrix="() => this.openMatrix()"/>

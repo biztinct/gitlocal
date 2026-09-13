@@ -127,7 +127,7 @@
           </div>
 
           <div class="pbms-lens" t-if="state.lens === 'approvals'">
-            <PbTeamCockpit t-key="'lens-approvals'" embedded="true"/>
+            <PbInbox t-key="'lens-approvals'" embedded="true" scope="'team'"/>
           </div>
 
           <!-- P4's Close lens. Unlike the seven above it is not an embedded

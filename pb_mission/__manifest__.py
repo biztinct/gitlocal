@@ -34,9 +34,9 @@ P3b adds the ambient layer on top of that shell:
 
   * the **Needs-you dock** — a 268px right column, mounted once beside every
     lens, showing everything awaiting this user across FOUR models with inline
-    approve and refuse-with-a-required-note. It reads `pb.team.get_team_data`
+    approve and refuse-with-a-required-note. It reads `pb.approval.inbox.get_team_data`
     (the queue the Team Approvals cockpit has always built) and every mutation
-    rides `pb.team.act`, i.e. the target model's own gated method as the real
+    rides `pb.approval.inbox.act`, i.e. the target model's own gated method as the real
     user. Mount hooks and the 60-second poll READ; only click handlers write
     (W21/W21.1). Collapses to a 44px badge strip, remembered in localStorage.
   * a **hovercard** on each card, built from data already in the payload — no
@@ -60,7 +60,7 @@ P4 turns the engine on inside the same shell:
     Gated to the attendance/payroll MANAGER tiers, matching the locks it sets.
   * the dock's **clean batch** — OT items the server has certified as clean
     (requested hours match the grid, ceiling headroom is there, the day is not
-    locked) get a footer that approves all of them through `pb.team.act`,
+    locked) get a footer that approves all of them through `pb.approval.inbox.act`,
     sequentially, as the real user.
 
 Still non-goals: employee shift acknowledgment and the shift-end pulse, both
@@ -75,7 +75,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # 19.0.1.6.0 — IA Cycle 6: the workspace accepts `pb_cmd` on ARRIVAL, so a
     # foreign cockpit can deep link to a lens's own sub-view (Insights' bonus
     # tile → the Overtime desk's bonus review) instead of only to the lens.
-    'version': '19.0.1.8.1',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -89,7 +89,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
         'pb_timeoff',           # Time Off lens
         'pb_hr_workforce',      # Overtime lens
         'pb_business_trip',     # Trips lens
-        'pb_team',              # Approvals lens
+        'pb_approval_config',   # Approvals lens: the one inbox, scoped to my team
         'pb_close',             # P4: pb.close / pb.wf.lock behind the Close lens
         'pb_sidebar',           # the single rail entry that replaces seven
         # IA Cycle 6: the shared back chip. A cockpit that deep-links INTO this

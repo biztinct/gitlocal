@@ -37,7 +37,10 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
-const MODEL = "pb.team";
+// The dock reads the one approvals inbox. It used to read a queue of its own
+// that knew four kinds of request by name; the same request can now only be
+// described one way, so the dock and the screen beside it can never disagree.
+const MODEL = "pb.approval.inbox";
 const DOCK_KEY = "pbwf.dock.v1";
 const POLL_MS = 60000;
 /** Below this the canvas cannot spare 268px, so the dock starts as a strip. */
@@ -55,6 +58,10 @@ const SOURCES = [
     { key: "trip", icon: "plane", tone: "trip", label: _t("Trips") },
     { key: "correction", icon: "fileText", tone: "correction", label: _t("Attendance") },
     { key: "leave", icon: "umbrella", tone: "leave", label: _t("Time off") },
+    // Everything else people ask for — equipment, a trip advance, a bank
+    // account, a rise, a resignation. The dock stopped being a list of four
+    // things somebody had to remember to add to.
+    { key: "other", icon: "inbox", tone: "other", label: _t("Other requests") },
 ];
 const SOURCE_BY_KEY = Object.fromEntries(SOURCES.map((s) => [s.key, s]));
 

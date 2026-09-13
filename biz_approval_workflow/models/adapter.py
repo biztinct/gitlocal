@@ -129,6 +129,18 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         """Lock whatever must not move while the approval is open."""
         return True
 
+    def _approval_batch_safe(self, request):
+        """Is this one safe to sweep up in a "approve everything easy" press?
+
+        A batch button is a PROMISE that somebody checked. Only the adapter
+        knows what checking means for its own kind of record — headroom under
+        a legal ceiling, a day nobody has locked, figures nobody has edited by
+        hand since — so the default is no. Anything that cannot be read
+        resolves to no as well: a promise made on data we could not read is
+        worse than no button.
+        """
+        return False
+
     def _approval_advance(self, request):
         """One step was decided and the request is still open.
 

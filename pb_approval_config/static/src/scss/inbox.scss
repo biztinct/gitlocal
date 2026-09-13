@@ -22,6 +22,35 @@
 
 .pbim.pbam-inbox {
 
+    // ------------------------------------------------------ whose queue
+    //  A pill switch above the tabs: mine, my team's, everyone's. It only
+    //  appears when there is more than one answer for this person, so an
+    //  employee with nobody under them never sees a control that would tell
+    //  them the same thing twice. The note beside it is the whole promise:
+    //  looking at a wider queue is not being given anything to decide.
+    .pbam-scopes {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    .pbam-scope {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 12px; border-radius: 999px; cursor: pointer;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-muted);
+        background: var(--pbim-line-2); border: 1px solid transparent;
+        transition: background .14s, color .14s, border-color .14s;
+
+        &:hover { color: var(--pbim-ink); }
+        &.is-on {
+            color: var(--pbim-primary-hover); background: var(--pbim-soft);
+            border-color: var(--pbim-primary);
+        }
+        svg { flex: 0 0 auto; }
+    }
+    .pbam-scope-note {
+        font-size: 11.5px; font-weight: 600; color: var(--pbim-muted);
+        margin-left: 4px;
+    }
+
     // --------------------------------------------------- the action strip
     .pbam-embedded-actions {
         display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
