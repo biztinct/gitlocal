@@ -321,3 +321,13 @@ def post_init_hook(env):
     if not isinstance(env, api.Environment):        # pragma: no cover
         env = api.Environment(env, SUPERUSER_ID, {})
     ensure_catalogue(env)
+    # A fresh install runs no migration, so this is where a brand-new database
+    # gets the role-change route. Idempotent, and never fatal — a module that
+    # will not install because a route could not be laid is a worse outcome
+    # than a route somebody lays a moment later (ledger AM70/AM75).
+    try:
+        from .models.pb_access_request import seed_all
+        seed_all(env)
+    except Exception:       # noqa: BLE001
+        _logger.exception('biz_access: the role-change route could not be '
+                          'laid')

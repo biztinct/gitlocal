@@ -5,7 +5,8 @@
     'name': 'Payobook Platform Link',
     'summary': "Tells this database which Payobook release it is on, shows notices "
                "from the platform, and lists what changed in each update.",
-    'version': '19.0.1.4.0',
+    'post_init_hook': 'post_init_hook',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -24,7 +25,9 @@
     # `hr.employee.create` to hold a plan's employee limit, and a module that
     # extends a model should say so. It adds nothing to the graph.
     'depends': ['web', 'pb_import_kit', 'pb_hub', 'pb_settings', 'pb_sidebar',
-                'hr'],
+                'hr',
+                # support access is the customer's decision, so it is asked for
+                'biz_approval_workflow'],
     # ONE data file, and it seeds no records of its own: it calls a method that
     # tells five existing menu entries which part of the product they belong
     # to. Still no scheduled job, still no rail item of its own.

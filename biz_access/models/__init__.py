@@ -6,3 +6,5 @@ from . import pb_sidebar_item_ext
 from . import pb_access_delegation
 from . import pb_access_facade
 from . import access_export
+from . import pb_access_request
+from . import pb_access_approval

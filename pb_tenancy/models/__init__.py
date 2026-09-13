@@ -6,4 +6,5 @@ from . import hr_employee
 from . import ir_http
 # FLEET P6 — support access, its record, and the login seam it comes through.
 from . import support
+from . import support_approval
 from . import res_users

@@ -237,6 +237,36 @@ export class PbAccessBoard extends Component {
         }
     }
 
+    /**
+     * The door on the "sent for approval" toast.
+     *
+     * The approvals inbox where the product has one, and the request's own
+     * form where it has not. This module is generic and may not DEPEND on
+     * that inbox — but it may recognise one when it meets it, and sending
+     * somebody to a raw form when a real screen exists would be the worse
+     * half of that rule.
+     */
+    async openRequest(requestId) {
+        // Where the product HAS an approvals inbox, that is where a person
+        // expects to answer this — so try it first, by name, and fall back to
+        // the request's own form where there is none. This module must not
+        // depend on that inbox, but it may know it when it meets one.
+        try {
+            await this.action.doAction(
+                "pb_approval_config.action_pb_approval_inbox");
+            return;
+        } catch {
+            // no inbox on this database — the request's own form it is
+        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "biz.approval.request",
+            res_id: requestId,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+
     async reload() {
         this.state.loaded = false;
         // Everything opened out was read BEFORE whatever just happened, so it
@@ -1016,7 +1046,20 @@ export class PbAccessBoard extends Component {
                 [g.profile.id, this.state.grantTarget.id,
                  this.state.grantReason]);
             this.state.granting = null;
-            this.notif.add(res.message, { type: "success", sticky: true });
+            // A ROUTE MAY HAVE TAKEN IT INSTEAD OF THE BOARD. Where role
+            // changes are approved, nothing has been written yet and saying
+            // "done" would be a lie — the toast names who is holding it, and
+            // its door opens the request itself.
+            this.notif.add(res.message, {
+                type: res.pending ? "info" : "success",
+                sticky: true,
+                buttons: res.pending && res.request_id
+                    ? [{
+                        name: _t("See the request"),
+                        onClick: () => this.openRequest(res.request_id),
+                    }]
+                    : undefined,
+            });
             await this.reload();
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be done.")),

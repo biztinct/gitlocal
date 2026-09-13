@@ -118,5 +118,30 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- ==================================================================
+         AN ACCESS REQUEST IS SEEN BY THE PEOPLE IT IS ABOUT.
+
+         Whoever asked, whoever it is for, whoever it is handed to — and
+         whoever a published route has asked to decide it, because the engine
+         re-checks that a decider can read the record before it accepts a
+         decision, and a route may name somebody who holds no access
+         permission at all (ledger AM60). READ only; the access team's own
+         rule below carries the rest.
+         ================================================================== -->
+
+    <record id="rule_access_request_mine" model="ir.rule">
+        <field name="name">Access request: mine, about me, or asked of me</field>
+        <field name="model_id" ref="model_pb_access_request"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', '|', ('requested_by', '=', user.id), ('target_user_id', '=', user.id), ('delegate_user_id', '=', user.id), ('seat_user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_access_request_team" model="ir.rule">
+        <field name="name">Access request: the access team sees all of them</field>
+        <field name="model_id" ref="model_pb_access_request"/>
+        <field name="groups" eval="[(4, ref('group_access_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
 </data>
 </odoo>

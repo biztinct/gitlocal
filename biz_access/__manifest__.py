@@ -87,13 +87,14 @@ opinion whatsoever about what an application's roles should be.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Administration',
     'license': 'LGPL-3',
     'author': 'Biztinct',
     'website': 'https://www.biztinct.com',
     'depends': [
         'base',
+        'biz_approval_workflow',   # role changes can be asked for, not only done
         'hr',                   # the People lens draws colleagues, not logins
         'mail',                 # the hand-over's own thread and its two mails
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set

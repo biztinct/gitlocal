@@ -111,6 +111,12 @@ REFUSAL_TEXT = {
     'used': _("This support link has already been used."),
     'expired': _("This support link has expired."),
     'off': _("Support access is switched off for this company."),
+    # A STATE THAT CANNOT DO A THING NEEDS ITS OWN SENTENCE (ledger AM78).
+    # This link is real, it is in date and nobody has used it — it is simply
+    # not agreed yet, and telling its holder it "has expired" would send them
+    # to ask for another one that would do exactly the same thing.
+    'not_approved': _("This support link has not been approved yet. The "
+                      "person who looks after this account has been asked."),
 }
 
 
