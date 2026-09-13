@@ -81,3 +81,16 @@ Local: `runtests.sh` for `biz_approval_workflow`, each consumer module (`pb_asse
 
 ## 6. Report back
 Per P2 §8 plus: the final intermediate-state map you implemented per model, the list of legacy tests you had to adapt and why, and the shim's exact activation rule.
+
+## 7. Addendum after Phase 5 (13 Sep) — read before starting
+- Ledger runs AM1–AM82. P5's report is the last message of agent "Build Approval Matrix Phase 5"; `APPROVAL_MATRIX_P5_DEPLOY.md` lists its modules. Clone P5's adapters (`pb_pay_delivery/models/bank_file.py`, `pb_records/models/records_approval.py`, `pb_zoho_bridge/models/arrival_batch.py`, `pb_hr_payroll_formula/models/payroll_import_approval.py`).
+- **Seeds are laid by migrations, not `post_init_hook`** (AM70): every module with an adapter ships a migration that calls its `_approval_seed_default`, and `pb_approval_config` relays through an `end-` script (AM75) so adapters from modules that depend on it are seen. Do the same for every P6 module; bump manifests.
+- **"No route" ≠ "no approval needed"** (AM73): submit refuses when no binding is published; a fast lane is a published route. Tests that submit must seed/publish first in `setUpClass`.
+- **`approval_request_id` never self-invalidates** (AM74): `engine.submit` invalidates it now; do not read it before submit in a new adapter without that.
+- **N-of-M over a pool / joint over two roles is not expressible** (AM71): a step has one `who`; two signatures = two sequential steps. If P6 needs "any two of the pool", add the engine capability first (small, additive, bump `biz_approval_workflow`) and note it in the ledger.
+- **Role scope `'area'` is looked up under the request's scope keys** (AM80): a role that forbids company fall-back must be scoped where the request's scope keys can hold it; for chain consumers use `division:<id>` and roles with `fallback_to_company=True`, or scope `'company'`.
+- **`pb.division` has no `company_id`** (AM72): filter divisions in Python by `company_ids`.
+- "Has this moved since proposed?" is answered by comparing values, never `write_date` (AM76). An override after `super().action_process()` must check that anything was processed (AM81).
+- Generic adapter hooks `_approval_card_count(request)` / `_approval_detail(request)` (P4) — a detail with chips and no rows must still draw (AM79). A superseded record must not reuse the "not yet approved" message (AM78).
+- Not P6 scope but known: `pb_comp_ben` finance pack `_pb_bank_file` (flag off) still builds a bank file outside any request; the engine's ~60 P1 refusal strings have no Vietnamese yet (P7); the RD54 refresh cron submits as whoever runs it.
+- Test harness: end turn with `RUN-TESTS: <module> [EXTRA=…]` / `RUN-SERVER: <db>`; one suite at a time (AM43); the 8090 server must not hold the DB being re-run (AM69); for a whole-chain walk DB the harness owner clones `am_tpl` and runs `-u biz_approval_workflow`.
