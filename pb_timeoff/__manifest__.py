@@ -21,12 +21,13 @@ USER (C18.17); there is no sudo anywhere in the module.
 HR/officer gated (hr_holidays.group_hr_holidays_user | hr.group_hr_manager |
 om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
+        'biz_approval_workflow',   # the configurable route its ladder now runs on
         'hr_holidays',
         'om_hr_payroll',   # hr.leave.type.code, payroll-manager group
         'pb_sidebar',

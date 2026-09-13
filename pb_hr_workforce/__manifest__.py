@@ -1,6 +1,6 @@
 {
     'name': 'Workforce Management',
-    'version': '19.0.4.15.0',
+    'version': '19.0.4.16.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -17,6 +17,7 @@ Workforce Management — Deputy & Rippling-Style HR Tools
     'author': 'Payobook',
     'website': 'https://payobook.com',
     'depends': [
+        'biz_approval_workflow',   # the configurable route its ladder now runs on
         'hr_attendance',
         'hr_holidays',
         'hr_work_entry',
