@@ -76,6 +76,15 @@ class PbContractExtensionApproval(models.Model):
             return self.approver_user_id.ids
         return super()._approval_manager_uids()
 
+    def _chain_revision_values(self):
+        """How long, and for whom. A month added after somebody agreed is a
+        different agreement."""
+        self.ensure_one()
+        return {'employee': self.employee_id.id,
+                'months': self.months or 0,
+                'contract': self.contract_id.id,
+                'ends': str(self.new_date_end or '')}
+
     def _approval_detail(self, request):
         self.ensure_one()
         chips = [

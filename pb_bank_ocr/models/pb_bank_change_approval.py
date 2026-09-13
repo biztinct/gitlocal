@@ -71,6 +71,25 @@ class PbBankChangeRequestApproval(models.Model):
                           'label': _('The account number looks right')},
         }
 
+    def _chain_revision_values(self):
+        """The account is the thing being agreed, so the account is stamped.
+
+        If a digit of it changes after the HR lead has said yes, the approval
+        no longer covers what would be written to the employee's record — and
+        this is the one door in the product where that means pay going to a
+        different bank account.
+        """
+        self.ensure_one()
+        return {
+            'employee': self.employee_id.id,
+            'bank': self.x_bank_name or '',
+            'branch': self.x_bank_branch or '',
+            'holder': self.x_account_name or '',
+            'number': self.x_account_number or '',
+            'iban': self.x_iban or '',
+            'swift': self.x_swift or '',
+        }
+
     def _approval_detail(self, request):
         """What is there now, and what it would become."""
         self.ensure_one()

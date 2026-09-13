@@ -196,6 +196,17 @@ class PbPayReviewApproval(models.Model):
                 {'key': 'division', 'label': _('One division')},
                 {'key': 'scheme', 'label': _('One payroll scheme')}]
 
+    def _chain_revision_values(self):
+        """The budget, and every row proposed against it."""
+        self.ensure_one()
+        return {
+            'budget': float(self.budget_amount or 0.0),
+            'rows': sorted(
+                (line.employee_id.id,
+                 float(getattr(line, 'new_wage', 0.0) or 0.0))
+                for line in self.line_ids),
+        }
+
     def _approval_card_count(self, request):
         self.ensure_one()
         return _("1 person") if self.people == 1 else _("%s people",

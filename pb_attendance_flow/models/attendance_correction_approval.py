@@ -126,6 +126,18 @@ class HrAttendanceCorrectionApproval(models.Model):
         return {'title': _('The fix'), 'columns': [], 'rows': [],
                 'chips': chips, 'note': (self.reason or '')[:240]}
 
+    def _chain_revision_values(self):
+        """The times are the thing being agreed."""
+        self.ensure_one()
+        return {
+            'employee': self.employee_id.id,
+            'day': str(self.date or ''),
+            'kind': self.correction_type or '',
+            'punch': self.attendance_id.id,
+            'check_in': str(self.new_check_in or ''),
+            'check_out': str(self.new_check_out or ''),
+        }
+
     # ------------------------------------------------------- the one button
     def action_approve(self):
         """One press = one decision on the live route (or the old ladder)."""

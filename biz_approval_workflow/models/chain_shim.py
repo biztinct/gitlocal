@@ -280,14 +280,24 @@ class BizApprovalChainShim(models.AbstractModel):
     def _chain_revision_values(self):
         """What an approver is signing for.
 
-        Never `write_date` and never anything the freeze itself moves — the
-        status above all (ledger AM32, AM46, AM76).
+        The money, the person and the date: three things that cannot change
+        underneath an approval without the approval being about something
+        else. Deliberately NOT the facts — several of them are true of the
+        world rather than of the record (how much overtime somebody has had
+        this year, whether a spare laptop is still in the cupboard), and a
+        stamp over those would refuse to carry out a perfectly good approval
+        because somebody else's request was approved first.
+
+        A consumer whose OWN values are the thing being agreed — a bank
+        account, a corrected punch, a new set of details — overrides this and
+        stamps them. Never `write_date`, and never anything the freeze itself
+        moves: the status above all (ledger AM32, AM46, AM76, AM87).
         """
         self.ensure_one()
         amount, _currency = self._chain_amount()
         return {'amount': amount,
-                'facts': {key: (value or {}).get('value')
-                          for key, value in (self._chain_facts() or {}).items()}}
+                'employee': self._chain_employee().id,
+                'date': str(self._chain_date())}
 
     # ------------------------------------------------------------- the scope
     def _chain_scopes(self):
@@ -639,7 +649,9 @@ class BizApprovalChainShim(models.AbstractModel):
         `env.uid` is, so the trail keeps their name.
         """
         self.ensure_one()
-        label = dict(self._fields['state'].selection or []).get(now, now)
+        selection = self._fields['state'].selection
+        label = dict(selection).get(now, now) \
+            if isinstance(selection, (list, tuple)) else now
         try:
             self.env['biz.approval.engine'].sudo().cancel(
                 request.id, _("Withdrawn from the record itself: %s", label))

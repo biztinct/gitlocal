@@ -88,6 +88,14 @@ class PbProfileChangeRequestApproval(models.Model):
         return [{'key': 'contact', 'label': _('Contact details only')},
                 {'key': 'other', 'label': _('Something else')}]
 
+    def _chain_revision_values(self):
+        """The proposed values are the thing being agreed."""
+        self.ensure_one()
+        return {'employee': self.employee_id.id,
+                'values': {field: self[field] or ''
+                           for field in CONTACT_FIELDS
+                           if field in self._fields}}
+
     def _approval_detail(self, request):
         self.ensure_one()
         labels = {
