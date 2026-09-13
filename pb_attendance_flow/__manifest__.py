@@ -38,7 +38,7 @@ ritual uses to separate a clean employee-day from one that needs a human. It is
 deliberately a second dimension beside grace, not a re-use of it — grace decides
 who was late, tolerance decides what payroll may see unreviewed.
 """,
-    'version': '19.0.1.0.7',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -46,6 +46,7 @@ who was late, tolerance decides what payroll may see unreviewed.
     'depends': [
         'pb_hr_workforce',      # hr.shift.planning, hr.attendance rail, weekentry
         'biz_approval_chain',   # the generic state machine + stepper
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_sidebar',
         'pb_import_kit',
         'pb_wf_kit',            # wf_context (embedded lens binds to the shared week)

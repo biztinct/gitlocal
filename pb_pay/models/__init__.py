@@ -15,3 +15,4 @@ from . import pb_pay_change
 from . import pb_pay_reviews
 from . import pb_pay_migrate
 from . import pb_pay_retire
+from . import pb_pay_approval

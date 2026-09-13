@@ -17,7 +17,7 @@ finance-tier approval writes the four vietnam_bank_* fields, via a
 context-flagged path, in one transaction, with a history row. A direct edit on
 the employee logs a 'manual' history row.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'post_init_hook': '_add_finance_reviewer_groups',
     'license': 'LGPL-3',
@@ -26,6 +26,7 @@ the employee logs a 'manual' history row.
     'depends': [
         'biz_doc_ocr',
         'biz_approval_chain',
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hr_payroll_vietnam',
         'pb_sidebar',
         'pb_import_kit',

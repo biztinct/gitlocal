@@ -46,7 +46,7 @@ THE TWO SEAMS INTO THE PHASES AROUND IT.
 Nothing here modifies `pb_people` or `pb_people_hub`: the lens arrives through
 their soft registry, which is what lets the dependency run one way only.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -63,6 +63,7 @@ their soft registry, which is what lets the dependency run one way only.
         'pb_lifecycle',         # the journey a leaver's asset steps join
         'pb_zoho_bridge',       # the leaver hook the connected system fires
         'biz_approval_chain',   # the chain an asset request rides
+        'biz_approval_workflow',   # the route its ladder now runs on
     ],
     'data': [
         'security/pb_assets_security.xml',

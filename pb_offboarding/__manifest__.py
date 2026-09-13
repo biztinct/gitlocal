@@ -59,7 +59,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 `pb_onboarding` or `pb_hr_fullandfinal` beyond additive `_inherit` extensions
 declared inside this module, so a plain install is the whole deployment.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -80,6 +80,7 @@ declared inside this module, so a plain install is the whole deployment.
         'pb_onboarding',
         'pb_me_portal',         # the .pbme portal kit the page reuses
         'biz_approval_chain',   # the approval ladder
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hr_fullandfinal',   # the settlement the gate stands in front of
     ],
     'data': [

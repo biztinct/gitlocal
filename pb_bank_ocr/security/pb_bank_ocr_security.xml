@@ -47,4 +47,28 @@
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="perm_read" eval="True"/>
     </record>
+
+    <!-- ==================================================================
+         A SEAT IS ALSO A READ (approval matrix, ledger AM60).
+
+         A published route may ask somebody to decide this who has no reason
+         to hold any group — a line manager, a named responsibility holder.
+         The engine re-checks that the decider can READ the record before it
+         accepts a decision, so without this the route would hand out a seat
+         the ORM then refuses. A record rule is a domain and cannot reach an
+         answer that has no column, so the people asked are kept on the record
+         itself and this reads them. READ ONLY: being asked to decide
+         something has never been permission to change it.
+         ================================================================== -->
+    <record id="bcr_rule_seat" model="ir.rule">
+        <field name="name">Bank account change: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_bank_change_request"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
 </odoo>

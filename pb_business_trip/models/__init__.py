@@ -5,3 +5,4 @@ from . import pb_trips_cockpit
 from . import attendance_timecard_trip
 from . import attendance_weekentry_trip
 from . import workforce_dashboard_trip
+from . import pb_business_trip_approval

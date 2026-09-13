@@ -94,6 +94,54 @@ def register_chain(model_name, process_key, submit_state, driven,
     return spec
 
 
+def manager_step(title, key='mgr', condition=None, kind='approve'):
+    """A step decided by the manager of the person it is about."""
+    return {'key': key, 'kind': kind, 'title': title,
+            'who': {'mode': 'manager'}, 'min_amount': 0,
+            'condition': condition}
+
+
+def role_step(title, role, key=None, scope='company', condition=None,
+              kind='approve'):
+    """A step decided by whoever holds one responsibility.
+
+    ``scope='company'`` by default and on purpose: a responsibility looked up
+    under 'area' is looked up under the REQUEST's own scope keys (ledger
+    AM80), so a company-wide holder does not cover a division and every
+    request would block on a seat nobody has been given yet. A business that
+    wants one person per part of the business changes the step to 'area' and
+    names them — which is a choice it makes, not one it inherits.
+    """
+    return {'key': key or role, 'kind': kind, 'title': title,
+            'who': {'mode': 'role', 'role': role, 'scope': scope},
+            'min_amount': 0, 'condition': condition}
+
+
+def route(*steps, independent=True, due_days=2, reassign=False):
+    """A whole definition document from a list of steps.
+
+    Every default route this phase ships has the same safeguards — the person
+    who asked cannot approve their own, the same person is not asked twice in
+    a row, and a step is chased after two working days — so they are written
+    once here rather than eleven times, where they would drift.
+    """
+    return {
+        'schema_version': 1,
+        'steps': [dict(step) for step in steps],
+        'tiers': {'enabled': False, 'fact': None},
+        'safeguards': {
+            'independent': independent,
+            'self_exception': {'enabled': False},
+            'repeated': 'different',
+            'evidence': [],
+            'due': {'kind': 'working_days', 'days': due_days, 'day': 15,
+                    'calendar_id': None},
+            'late': {'remind_days': 1, 'escalate_days': 2,
+                     'reassign': reassign},
+        },
+    }
+
+
 def register_scope_resolver(fn):
     if fn not in SCOPE_RESOLVERS:
         SCOPE_RESOLVERS.append(fn)

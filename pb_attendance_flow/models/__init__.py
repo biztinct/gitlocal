@@ -7,3 +7,4 @@ from . import shift_planning
 from . import attendance_exception
 from . import attendance_correction
 from . import attendance_cockpit
+from . import attendance_correction_approval

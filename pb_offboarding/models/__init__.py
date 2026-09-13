@@ -9,3 +9,4 @@ from . import offboarding_automation
 from . import full_final_guard
 from . import zoho_pipeline_ext
 from . import pb_exits
+from . import resignation_approval

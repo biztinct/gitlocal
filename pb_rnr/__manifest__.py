@@ -52,7 +52,7 @@ else gets it.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji anywhere — including in the emails.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -63,6 +63,7 @@ one accent. No emoji anywhere — including in the emails.
         'mail',
         'portal',               # /my/recognition
         'biz_approval_chain',   # the nomination's two-step ladder
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hub',               # the global command palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_home_hub',          # the hub the wall bolts onto

@@ -67,7 +67,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.3.3.1',
+    'version': '19.0.3.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -79,6 +79,7 @@ WHAT IT DOES NOT CHANGE
         'portal',                  # the self-service page "Your pay, explained"
         'om_hr_payroll',           # hr.contract, where the wage lives
         'biz_approval_chain',      # the shared four-tier approval state machine
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_group',                # the group, divisions and the one conversion
         'pb_hub',                  # the global palette + the shared back chip
         'pb_import_kit',           # pbim tokens/primitives + the shared ic() set

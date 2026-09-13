@@ -26,7 +26,7 @@ self-service pieces the stock portal lacked:
 Every route re-resolves the employee from the session user (C18.26); no route
 accepts an employee_id for own-data pages (safety rail 3).
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -35,6 +35,7 @@ accepts an employee_id for own-data pages (safety rail 3).
         'om_hr_payroll',        # payslip portal + HR payroll groups
         'pb_employee_vault',    # the document vault (self-upload target) + audit trail
         'biz_approval_chain',   # the approval-chain mixin the request rides
+        'biz_approval_workflow',   # the route its ladder now runs on
         'portal',
         'pb_import_kit',        # shared pbim design tokens
     ],

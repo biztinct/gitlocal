@@ -9,3 +9,4 @@ from . import benefit
 from . import payslip_run_ext
 from . import pb_paycal
 from . import pb_incentives
+from . import incentive_approval

@@ -50,7 +50,7 @@ existing contract's end date or rewrites its wage. The old contract ends on its
 own date and the platform's nightly job closes it; the new one starts the day
 after, as a draft, so a person reads it before it starts.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -61,6 +61,7 @@ after, as a draft, so a person reads it before it starts.
         'mail',
         'om_hr_payroll',        # `hr.contract` with its type_id / struct_id
         'biz_approval_chain',   # the extension's approval, trail and guard
+        'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',         # the journey engine, letters, the hub + registry
