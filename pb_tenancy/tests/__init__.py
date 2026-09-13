@@ -7,3 +7,4 @@ from . import test_features
 from . import test_standing
 # FLEET P6 — support access, the door and the trail.
 from . import test_support
+from . import test_support_approval

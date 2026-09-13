@@ -5,3 +5,4 @@ from . import test_seed
 from . import test_matrix_facade
 from . import test_inbox_facade
 from . import test_vietnamese
+from . import test_inbox_scopes

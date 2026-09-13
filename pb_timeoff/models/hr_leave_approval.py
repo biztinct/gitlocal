@@ -241,6 +241,16 @@ class HrLeaveApproval(models.Model):
         return {'title': _('The time off'), 'columns': [], 'rows': [],
                 'chips': chips, 'note': (self.name or '')[:240]}
 
+    def _approval_validate(self):
+        """The last moment before a request exists."""
+        self.ensure_one()
+        if self.state != 'confirm':
+            raise UserError(_(
+                "Only time off that is waiting for approval can be sent in."))
+        if self._leave_open_request():
+            raise UserError(_("This has already been sent in."))
+        return True
+
     def _approval_apply(self, request):
         """The last approver approves the leave, as themselves."""
         self.ensure_one()

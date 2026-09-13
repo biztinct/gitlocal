@@ -1,3 +1,2 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
-from . import test_timeoff
-from . import test_leave_approval
+from . import test_asset_approval

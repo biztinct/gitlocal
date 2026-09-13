@@ -121,10 +121,10 @@ class OvertimeRequestApproval(models.Model):
             'scope_keys': [row['key'] for row in scopes] + [''],
             'scope_label': (scopes[0]['label'] if scopes
                             else company.name) or company.name,
-            'kind_key': self.ot_type or 'any',
+            'kind_key': self.overtime_type or 'any',
             'facts': {
                 'hours': {'value': float(hours), 'unit': _('hours')},
-                'ot_type': {'value': self.ot_type or '', 'unit': ''},
+                'ot_type': {'value': self.overtime_type or '', 'unit': ''},
                 'year_to_date_hours': {'value': self._ot_year_hours(),
                                        'unit': _('hours')},
                 'over_ceiling': {'value': self._ot_over_ceiling(), 'unit': ''},
@@ -136,7 +136,7 @@ class OvertimeRequestApproval(models.Model):
             'subject_uids': employee.user_id.ids,
             'source_revision': self._approval_revision_of({
                 'hours': float(hours), 'date': str(self.date or ''),
-                'type': self.ot_type or ''}),
+                'type': self.overtime_type or ''}),
             'evidence': [],
         }
 
