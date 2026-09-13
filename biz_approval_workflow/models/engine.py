@@ -1210,7 +1210,32 @@ class BizApprovalEngine(models.AbstractModel):
                 {'status': 'closed'})
         step.write({'status': 'done', 'decided_at': fields.Datetime.now()})
         self._activate_next(request)
+        self._tell_record_it_moved(request)
         return self._request_payload(request)
+
+    def _tell_record_it_moved(self, request):
+        """A decision that did not finish the request still moved it.
+
+        The record hears about the end of a route through `_approval_apply`
+        and about a refusal through `_approval_reject`; without this it hears
+        nothing about the middle, and a business object with its own status
+        ladder (every `biz.approval.chain.mixin` consumer) would sit at
+        "sent in" until the very last approver. Deliberately swallowed: a
+        consumer that cannot follow its own route must never be able to undo a
+        decision a person really made.
+        """
+        if request.state not in _OPEN_STATES:
+            return False
+        record = request._record()
+        if not record or not hasattr(record, '_approval_advance'):
+            return False
+        try:
+            record._approval_advance(request)
+        except Exception:   # noqa: BLE001 — the decision itself always stands
+            _logger.exception('approval: %s could not follow its own route',
+                              record)
+            return False
+        return True
 
     def _do_return(self, request, step, seat, reason, record):
         seat.write({'status': 'returned'})

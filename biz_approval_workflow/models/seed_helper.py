@@ -17,7 +17,7 @@ and exactly one of everything exists afterwards.
 
 import logging
 
-from odoo import SUPERUSER_ID, _, api, models
+from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -93,6 +93,61 @@ class BizApprovalSeed(models.AbstractModel):
                 return False
             found[key] = role
         return found
+
+    # ------------------------------------------------------- the first people
+    @api.model
+    def fill_role_from_group(self, company, role_key, group_xmlids,
+                             note=None):
+        """Give a responsibility its first holder, from who does the job today.
+
+        A default route that names a responsibility nobody holds is a route
+        every request blocks on, and a company switching approvals on has no
+        reason to expect that. The people who hold the group the old ladder
+        checked ARE the people doing the job, so the first of them becomes the
+        holder and the second the backup — a named person, never a group
+        (the engine never falls back to "anybody in that group").
+
+        Does nothing when the responsibility is already filled: this runs from
+        an install, a migration and a company created later, and the business
+        may since have chosen somebody else.
+        """
+        role = self.env['biz.approval.role'].sudo().search(
+            [('key', '=', role_key)], limit=1)
+        if not role:
+            return False
+        Responsibility = self.env['biz.approval.responsibility'].sudo()
+        held = Responsibility.search([
+            ('company_id', '=', company.id), ('role_id', '=', role.id),
+            ('scope_key', '=', ''), ('active', '=', True)], limit=1)
+        if held:
+            return held
+        users = self.env['res.users'].sudo().browse()
+        for xmlid in ([group_xmlids] if isinstance(group_xmlids, str)
+                      else list(group_xmlids or ())):
+            group = self.env.ref(xmlid, raise_if_not_found=False)
+            if not group:
+                continue
+            users |= group.sudo().all_user_ids.filtered(
+                lambda u: u.active and not u.share
+                and u.id != SUPERUSER_ID
+                and company.id in u.company_ids.ids)
+        users = users.sorted('id')
+        if not users:
+            users = self.publisher_for(company)
+        if not users:
+            return False
+        return Responsibility.create({
+            'company_id': company.id,
+            'role_id': role.id,
+            'scope_key': '',
+            'scope_label': company.name,
+            'user_id': users[0].id,
+            'backup_user_id': users[1].id if len(users) > 1 else False,
+            'date_from': fields.Date.context_today(self),
+            'note': note or 'Taken from whoever did this job before '
+                            'approvals were switched on. Change it in People '
+                            '& backups.',
+        })
 
     # --------------------------------------------------------------- the lay
     @api.model

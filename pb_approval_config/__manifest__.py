@@ -38,7 +38,7 @@ WHAT IT NEVER DOES
   route that checks nothing is a published choice, said out loud on the Matrix
   row, and every use of it is still recorded.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -55,7 +55,9 @@ WHAT IT NEVER DOES
     ],
     'data': [
         'data/roles.xml',
+        'data/roles_p6.xml',
         'data/processes.xml',
+        'data/processes_p6.xml',
         'views/actions.xml',
     ],
     'assets': {

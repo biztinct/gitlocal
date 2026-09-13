@@ -129,6 +129,21 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         """Lock whatever must not move while the approval is open."""
         return True
 
+    def _approval_advance(self, request):
+        """One step was decided and the request is still open.
+
+        The record's own status usually has to move with the route — a request
+        that has passed its first approver is not in the same place it was
+        when it was sent in, and a form that still says "waiting for the line
+        manager" after the line manager said yes is a screen that lies. The
+        engine calls this after every decision that does NOT finish the
+        request; `_approval_apply` is still the only thing called when it does.
+
+        Never raises out: a consumer that cannot follow the route must not be
+        able to undo a decision somebody really made.
+        """
+        return True
+
     def _approval_return(self, request, reason):
         """Make the record editable again after it was sent back."""
         return True

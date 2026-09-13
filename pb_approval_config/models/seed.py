@@ -27,7 +27,58 @@ import logging
 
 from odoo import SUPERUSER_ID, _, api, fields, models
 
+from odoo.addons.biz_approval_workflow.models.chain_shim import (
+    register_scope_catalogue, register_scope_resolver,
+)
+
 _logger = logging.getLogger(__name__)
+
+
+# ======================================================================
+# WHICH PART OF THE BUSINESS A REQUEST IS ABOUT
+#
+# The engine never parses a scope key (ledger AM2), so it cannot know that
+# Payobook divides a company into divisions — and it must not, or it stops
+# being able to run in a product that has never heard of one. It holds a hook
+# instead; this is the Payobook answer to it, registered at import time.
+#
+# `pb.division` HAS NO `company_id` (ledger AM72): which companies a division
+# belongs to is computed from its department links, so it cannot be searched
+# on. Search them all and filter in Python, exactly as the Matrix's own
+# division picker does.
+# ======================================================================
+def _division_scope(env, employee, on_date):
+    """The division the person this request is about works in."""
+    Division = env.get('pb.division')
+    if Division is None or not employee:
+        return []
+    department = employee.sudo().department_id
+    if not department:
+        return []
+    division = Division.sudo().division_for(department, on_date)
+    if not division:
+        return []
+    return [{'key': 'division:%s' % division.id,
+             'label': division.name or ''}]
+
+
+def _division_catalogue(env, company):
+    """Every division a request of this kind could come from."""
+    Division = env.get('pb.division')
+    if Division is None:
+        return []
+    rows = []
+    for division in Division.sudo().search([], limit=200, order='name'):
+        companies = division.company_ids
+        if companies and company not in companies:
+            continue
+        rows.append({'key': 'division:%s' % division.id,
+                     'label': division.name or '', 'headcount': 0})
+    return rows
+
+
+register_scope_resolver(_division_scope)
+register_scope_catalogue(_division_catalogue)
 
 #: The workflow every company gets, in the definition document's own shape.
 GENERIC_WORKFLOW_NAME = 'Other request'
