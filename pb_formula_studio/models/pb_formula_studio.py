@@ -23,6 +23,10 @@ from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
 # Approval Matrix P4 — the key the five doors into a live pay scheme check.
 from odoo.addons.pb_hr_payroll_formula.models.scheme_proposal import (
     KIND_NAME as SCHEME_KIND_NAME, apply_context as _scheme_apply)
+from odoo.addons.pb_hr_payroll_formula.models.statutory_approval import (
+    STATUTORY_WRITE as _STATUTORY_WRITE)
+from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
+    SCHEMEMAP_WRITE as _SCHEMEMAP_WRITE)
 
 _logger = logging.getLogger(__name__)
 
@@ -3799,6 +3803,33 @@ class PbFormulaStudio(models.AbstractModel):
         else:
             return {'ok': False, 'msg': _("No target configuration given.")}
         targets = targets.exists()
+        # A pack rewrites a statutory constant in every scheme it touches, so
+        # it travels the statutory route unless the business has published
+        # "No approval needed". `_STATUTORY_WRITE` is the approved apply
+        # calling back in.
+        if not self.env.context.get(_STATUTORY_WRITE) \
+                and 'pb.statutory.proposal' in self.env:
+            proposal = self.env['pb.statutory.proposal'].propose(
+                'pack_apply',
+                _("Apply %(name)s %(version)s to %(n)s pay scheme(s)",
+                  name=pack.name or '', version=pack.version or '',
+                  n=len(targets)),
+                payload={'pack_id': pack.id, 'config_ids': targets.ids},
+                facts={'rows_changed': {'value': sum(
+                           len([r for r in self._legis_eval(pack, c)
+                                if r['matched'] and r['changed']])
+                           for c in targets), 'unit': ''},
+                       'effective_date': {
+                           'value': str(pack.effective_date or ''), 'unit': ''},
+                       'configs_affected': {'value': len(targets), 'unit': ''}},
+                target=pack,
+            )
+            answer = proposal.answer()
+            if not answer.get('applied'):
+                return dict(answer, ok=True, pending=True,
+                            results=[], total_changed=0, configs_touched=0)
+            return dict(answer.get('result') or {}, ok=True,
+                        reference=answer.get('reference'))
         Milestone = self.env['hr.formula.config.milestone'].sudo()
         App = self.env['hr.formula.legislation.application']
         results = []
@@ -8657,6 +8688,21 @@ class PbFormulaStudio(models.AbstractModel):
         cfg = self.env['hr.formula.config'].browse(self._as_id(target_config_id))
         if not (dept.exists() and cfg.exists()):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        # Who a scheme pays is a decision (P7). Where a route is published the
+        # wiring is proposed; where it is not, this writes exactly as it did.
+        if not self.env.context.get(_SCHEMEMAP_WRITE) \
+                and 'pb.schememap.proposal' in self.env:
+            return self.env['pb.schememap.proposal'].propose(
+                'map_create',
+                _("Pay %(team)s with %(scheme)s",
+                  team=dept.name or '', scheme=cfg.name or ''),
+                payload={'args': [config_id, context_id, dept.id, cfg.id]},
+                facts={'employees_moved': {'value': self.env[
+                           'hr.employee'].sudo().search_count(
+                               [('department_id', '=', dept.id)]), 'unit': ''},
+                       'schemes': {'value': 1, 'unit': ''}},
+                target=cfg,
+            ).answer()
         if cfg.company_id and dept.company_id and cfg.company_id != dept.company_id:
             return {'ok': False, 'msg': _(
                 "%(scheme)s belongs to another company, so it cannot pay "
@@ -8680,8 +8726,20 @@ class PbFormulaStudio(models.AbstractModel):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         a = self.env['hr.formula.scheme.assignment'].browse(self._as_id(assignment_id))
-        if a.exists():
-            a.unlink()
+        if not a.exists():
+            return {'ok': True}
+        if not self.env.context.get(_SCHEMEMAP_WRITE) \
+                and 'pb.schememap.proposal' in self.env:
+            return self.env['pb.schememap.proposal'].propose(
+                'map_delete',
+                _("Stop paying %s with this scheme", a.display_name or ''),
+                payload={'args': [a.id]},
+                snapshot={'exists': True, 'config_id': a.config_id.id},
+                facts={'employees_moved': {'value': 0, 'unit': ''},
+                       'schemes': {'value': 1, 'unit': ''}},
+                target=a,
+            ).answer()
+        a.unlink()
         return {'ok': True}
 
     # ------------------------------------------------------------------
@@ -11743,6 +11801,30 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("Another table already uses the code %s.") % code}
         vals = {'code': code, 'name': (payload.get('name') or code).strip(),
                 'note': (payload.get('note') or '').strip(), 'config_id': config.id}
+        # A rate table IS a tax band set. Where a statutory route is published
+        # it is proposed; where it is not, this writes exactly as it did.
+        if not self.env.context.get(_STATUTORY_WRITE) \
+                and 'pb.statutory.proposal' in self.env:
+            proposal = self.env['pb.statutory.proposal'].propose(
+                'rate_table_save',
+                _("Rate table %(code)s · %(scheme)s",
+                  code=code, scheme=config.name or ''),
+                payload={'config_id': config.id, 'table': payload,
+                         'table_id': table.id or 0},
+                snapshot=({'code': table.code or '',
+                           'brackets': len(table.line_ids)} if table else {}),
+                facts={'rows_changed': {
+                           'value': len(payload.get('brackets') or []),
+                           'unit': ''},
+                       'effective_date': {'value': '', 'unit': ''},
+                       'configs_affected': {'value': 1, 'unit': ''}},
+                target=table or config,
+            )
+            answer = proposal.answer()
+            if not answer.get('applied'):
+                return dict(answer, ok=True, pending=True, table=None)
+            return dict(answer.get('result') or {}, ok=True,
+                        reference=answer.get('reference'))
         if table:
             table.write(vals)
         else:
@@ -11768,8 +11850,23 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("This table is used by %s formula(s): %s. "
                                           "Remove the BRACKET references first.")
                     % (len(used), ', '.join(used.mapped('column_letter')))}
-        if t.exists():
-            t.unlink()
+        if not t.exists():
+            return {'ok': True}
+        if not self.env.context.get(_STATUTORY_WRITE) \
+                and 'pb.statutory.proposal' in self.env:
+            proposal = self.env['pb.statutory.proposal'].propose(
+                'rate_table_delete',
+                _("Delete rate table %s", t.code or ''),
+                payload={'table_id': t.id},
+                snapshot={'code': t.code or '', 'brackets': len(t.line_ids)},
+                facts={'rows_changed': {'value': len(t.line_ids), 'unit': ''},
+                       'effective_date': {'value': '', 'unit': ''},
+                       'configs_affected': {'value': 1, 'unit': ''}},
+                target=t,
+            )
+            answer = proposal.answer()
+            return dict(answer, ok=True, pending=not answer.get('applied'))
+        t.unlink()
         return {'ok': True}
 
     @api.model

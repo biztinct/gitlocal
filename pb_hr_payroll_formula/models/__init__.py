@@ -99,3 +99,14 @@ from . import scheme_seed
 # AFTER `payroll_import_batch`: the gate overrides `action_process` and calls
 # `super()` when the approval is the one calling.
 from . import payroll_import_approval
+
+# Approval Matrix P7 — the doors whose press IS the change.
+# Four proposal records live here because a catalogue row names ONE model and
+# this is the only module every caller of them depends on: statutory (the
+# cockpit wizards, the country tables, the studio's packs and rate tables),
+# mappings (the connector and its field maps), the scheme map (the board and
+# the studio) and demo data (two modules that do not know about each other).
+from . import statutory_approval
+from . import mapping_approval
+from . import schememap_approval
+from . import demo_approval

@@ -33,6 +33,10 @@ import time
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
+    SCHEMEMAP_WRITE,
+)
+
 from .formula_scheme_assignment import CYCLE_SELECTION, CYCLE_WORDS
 
 _logger = logging.getLogger(__name__)
@@ -422,6 +426,24 @@ class PbSchemeBoard(models.AbstractModel):
         }
         values['department_id' if kind == 'department' else 'division_id'] = \
             segment_id
+        if self._map_held():
+            answer = self.env['pb.schememap.proposal'].propose(
+                'attach',
+                _("Pay %(who)s with %(scheme)s",
+                  who=self._segment_words(kind, segment_id),
+                  scheme=config.name or ''),
+                payload={'segment': segment, 'config_id': config.id,
+                         'cycle_type': values['cycle_type'],
+                         'company_id': company_id},
+                facts={'employees_moved': {
+                           'value': self._segment_headcount(kind, segment_id),
+                           'unit': ''},
+                       'schemes': {'value': 1, 'unit': ''}},
+                target=config,
+            ).answer()
+            board = self.get_board(company_id, 'any')
+            board['proposal'] = answer
+            return board
         self.env['hr.formula.scheme.assignment'].sudo().create(values)
         return self.get_board(company_id, 'any')
 
@@ -432,6 +454,19 @@ class PbSchemeBoard(models.AbstractModel):
         row = self.env['hr.formula.scheme.assignment'].sudo().browse(
             int(assignment_id or 0)).exists()
         company = company_id or (row.company_id.id if row else None)
+        if row and self._map_held():
+            answer = self.env['pb.schememap.proposal'].propose(
+                'detach',
+                _("Stop paying %s with this scheme", row.display_name or ''),
+                payload={'assignment_id': row.id, 'company_id': company},
+                snapshot={'exists': True, 'config_id': row.config_id.id},
+                facts={'employees_moved': {'value': 0, 'unit': ''},
+                       'schemes': {'value': 1, 'unit': ''}},
+                target=row,
+            ).answer()
+            board = self.get_board(company, 'any')
+            board['proposal'] = answer
+            return board
         if row:
             row.unlink()
         return self.get_board(company, 'any')
@@ -447,9 +482,49 @@ class PbSchemeBoard(models.AbstractModel):
     @api.model
     def accept_draft(self, rows, company_id=None):
         self._require_write()
+        if self._map_held():
+            answer = self.env['pb.schememap.proposal'].propose(
+                'accept_draft',
+                _("Accept the drafted map · %s row(s)", len(rows or [])),
+                payload={'rows': rows or [], 'company_id': company_id},
+                facts={'employees_moved': {'value': len(rows or []),
+                                           'unit': ''},
+                       'schemes': {'value': len({
+                           r.get('config_id') for r in (rows or [])
+                           if isinstance(r, dict)}), 'unit': ''}},
+            ).answer()
+            answer['board'] = self.get_board(company_id, 'any')
+            return answer
         result = self.env['pb.scheme.map'].sudo().accept_draft(rows)
         result['board'] = self.get_board(company_id, 'any')
         return result
+
+    # ------------------------------------------------ is anybody checking?
+    @api.model
+    def _map_held(self):
+        """True when this company has asked for scheme moves to be approved.
+
+        The approved apply calls straight back in here, so the flag has to be
+        read off the context as well as off the registry.
+        """
+        if self.env.context.get(SCHEMEMAP_WRITE):
+            return False
+        return 'pb.schememap.proposal' in self.env
+
+    @api.model
+    def _segment_words(self, kind, segment_id):
+        model = 'hr.department' if kind == 'department' else 'pb.division'
+        if model not in self.env:
+            return ''
+        record = self.env[model].sudo().browse(int(segment_id or 0)).exists()
+        return record.display_name or '' if record else ''
+
+    @api.model
+    def _segment_headcount(self, kind, segment_id):
+        if kind != 'department':
+            return 0
+        return self.env['hr.employee'].sudo().search_count(
+            [('department_id', '=', int(segment_id or 0))])
 
     @api.model
     def recompute(self, company_id=None):

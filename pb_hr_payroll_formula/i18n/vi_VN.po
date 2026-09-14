@@ -14712,3 +14712,204 @@ msgstr "Nạp dữ liệu lương kỳ trước"
 msgid "\"This run only\" pay data"
 msgstr "Dữ liệu lương “chỉ kỳ này”"
 
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_hr_payroll_formula
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_hr_payroll_formula
+msgid "A demo database"
+msgstr "Là cơ sở dữ liệu minh hoạ"
+
+#. module: pb_hr_payroll_formula
+msgid "A legislation pack is published with the Publish button, so that somebody agrees to it first."
+msgstr "Gói quy định được công bố bằng nút Công bố, để có người đồng ý trước."
+
+#. module: pb_hr_payroll_formula
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_hr_payroll_formula
+msgid "Fetch schedule · %s"
+msgstr "Lịch lấy dữ liệu · %s"
+
+#. module: pb_hr_payroll_formula
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_hr_payroll_formula
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_hr_payroll_formula
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_hr_payroll_formula
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_hr_payroll_formula
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_hr_payroll_formula
+msgid "Mappings changed"
+msgstr "Số ánh xạ thay đổi"
+
+#. module: pb_hr_payroll_formula
+msgid "Mappings switched on"
+msgstr "Số ánh xạ được bật"
+
+#. module: pb_hr_payroll_formula
+msgid "Pay schemes affected"
+msgstr "Số phương án lương bị ảnh hưởng"
+
+#. module: pb_hr_payroll_formula
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_hr_payroll_formula
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_hr_payroll_formula
+msgid "People moved"
+msgstr "Số người chuyển"
+
+#. module: pb_hr_payroll_formula
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_hr_payroll_formula
+msgid "Point %s at a component"
+msgstr "Trỏ %s tới một thành phần"
+
+#. module: pb_hr_payroll_formula
+msgid "Publish %(name)s %(version)s"
+msgstr "Công bố %(name)s %(version)s"
+
+#. module: pb_hr_payroll_formula
+msgid "Read the field list · %s"
+msgstr "Đọc danh sách trường · %s"
+
+#. module: pb_hr_payroll_formula
+msgid "Records"
+msgstr "Số bản ghi"
+
+#. module: pb_hr_payroll_formula
+msgid "Repair %s severed mapping(s)"
+msgstr "Sửa %s ánh xạ bị đứt"
+
+#. module: pb_hr_payroll_formula
+msgid "Rows changed"
+msgstr "Số dòng thay đổi"
+
+#. module: pb_hr_payroll_formula
+msgid "Schedule changed"
+msgstr "Lịch đã thay đổi"
+
+#. module: pb_hr_payroll_formula
+msgid "Schemes involved"
+msgstr "Số phương án liên quan"
+
+#. module: pb_hr_payroll_formula
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_hr_payroll_formula
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_hr_payroll_formula
+msgid "Switch on %(n)s mapping(s) · %(who)s"
+msgstr "Bật %(n)s ánh xạ · %(who)s"
+
+#. module: pb_hr_payroll_formula
+msgid "Takes effect"
+msgstr "Có hiệu lực từ"
+
+#. module: pb_hr_payroll_formula
+msgid "That adjustment no longer exists."
+msgstr "Khoản điều chỉnh đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That connection no longer exists."
+msgstr "Kết nối đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That demo world no longer exists."
+msgstr "Bộ dữ liệu minh hoạ đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That insurance policy no longer exists."
+msgstr "Chính sách bảo hiểm đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That legislation pack no longer exists."
+msgstr "Gói quy định đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That mapping no longer exists."
+msgstr "Ánh xạ đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That tax band no longer exists."
+msgstr "Bậc thuế đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "That tax table no longer exists."
+msgstr "Bảng thuế đó không còn tồn tại."
+
+#. module: pb_hr_payroll_formula
+msgid "The board that answers this is not installed any more."
+msgstr "Màn hình trả lời việc này không còn được cài đặt."
+
+#. module: pb_hr_payroll_formula
+msgid "The demo world builder is not installed any more."
+msgstr "Trình tạo dữ liệu minh hoạ không còn được cài đặt."
+
+#. module: pb_hr_payroll_formula
+msgid "The field list was read."
+msgstr "Đã đọc danh sách trường."
+
+#. module: pb_hr_payroll_formula
+msgid "The legislation pack could not be applied."
+msgstr "Không áp dụng được gói quy định."
+
+#. module: pb_hr_payroll_formula
+msgid "The rate table could not be deleted."
+msgstr "Không xoá được bảng tỷ lệ."
+
+#. module: pb_hr_payroll_formula
+msgid "The rate table could not be saved."
+msgstr "Không lưu được bảng tỷ lệ."
+
+#. module: pb_hr_payroll_formula
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_hr_payroll_formula
+msgid "This pack is already published."
+msgstr "Gói này đã được công bố."
+
+#. module: pb_hr_payroll_formula
+msgid "This part of the payroll is not installed on this database any more, so the change cannot be carried out."
+msgstr "Phần này của hệ thống lương không còn được cài trên cơ sở dữ liệu này, nên không thực hiện được thay đổi."
+
+#. module: pb_hr_payroll_formula
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_hr_payroll_formula
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_hr_payroll_formula
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -598,3 +598,96 @@ msgstr "Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất là"
 #: code:addons/pb_statutory/static/src/js/statutory_wizards.js:75
 msgid "Failed."
 msgstr "Không thành công."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_statutory
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_statutory
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_statutory
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_statutory
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_statutory
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_statutory
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_statutory
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_statutory
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_statutory
+msgid "New insurance policy · %s"
+msgstr "Chính sách bảo hiểm mới · %s"
+
+#. module: pb_statutory
+msgid "New tax table · %s"
+msgstr "Bảng thuế mới · %s"
+
+#. module: pb_statutory
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_statutory
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_statutory
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_statutory
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_statutory
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_statutory
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_statutory
+msgid "Statutory rates and tax tables are set by payroll managers. Ask somebody who looks after payroll to do this, or to give you the payroll manager permission."
+msgstr "Tỷ lệ theo luật và bảng thuế do trưởng bộ phận tiền lương thiết lập. Hãy nhờ người phụ trách tiền lương làm việc này, hoặc cấp cho bạn quyền trưởng bộ phận tiền lương."
+
+#. module: pb_statutory
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_statutory
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_statutory
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_statutory
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_statutory
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

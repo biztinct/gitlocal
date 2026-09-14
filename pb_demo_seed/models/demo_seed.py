@@ -25,6 +25,10 @@ and undo it. A second tenant is a second profile.
 import logging
 
 from odoo import _, api, fields, models
+
+from odoo.addons.pb_hr_payroll_formula.models.demo_approval import (
+    DEMO_WRITE, is_demo_db,
+)
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -134,8 +138,45 @@ class PbDemoSeed(models.Model):
             raise UserError(_(
                 "This demo data is already loaded. Remove it first if you want "
                 "to build it again."))
+        held = self._demo_proposal('load')
+        if held is not None:
+            return held
         report = self.load_demo()
         return self._notify(_("Demo data loaded"), report)
+
+    # ------------------------------------------------------------------
+    #  Is this a database demo data belongs on?
+    # ------------------------------------------------------------------
+    def _demo_proposal(self, kind):
+        """Write the press down and ask, unless this is a demo database.
+
+        Returns a notification to show, or None for "carry on as before".
+        """
+        self.ensure_one()
+        if self.env.context.get(DEMO_WRITE) \
+                or 'pb.demo.proposal' not in self.env:
+            return None
+        if is_demo_db(self.env):
+            return None
+        answer = self.env['pb.demo.proposal'].propose(
+            kind,
+            _("%(what)s · %(name)s",
+              what=_('Load demo data') if kind == 'load'
+              else _('Remove demo data'), name=self.name or ''),
+            payload={'seed_id': self.id},
+            snapshot={'state': self.state},
+            facts={'records': {'value': self.record_count, 'unit': ''},
+                   'is_demo_db': {'value': False, 'unit': ''}},
+            target=self,
+        ).answer()
+        if answer.get('applied'):
+            return None
+        return self._notify(
+            _("Sent for approval"),
+            _("This is not a demo database, so somebody has to agree to it "
+              "first. It is with %s.",
+              answer.get('with_whom') or _('your approver')),
+            kind='warning')
 
     def load_demo(self):
         """Build the world. Returns a short human summary."""
@@ -188,6 +229,9 @@ class PbDemoSeed(models.Model):
         self.ensure_one()
         if self.state != 'loaded':
             raise UserError(_("There is no demo data loaded to remove."))
+        held = self._demo_proposal('remove')
+        if held is not None:
+            return held
         removed, blocked = self.remove_demo()
         if blocked:
             return self._notify(

@@ -27,7 +27,13 @@ This cycle is READ-PATH ONLY on those four tables: the grid and the drawer, and
 no edit UI. Records stay editable through their existing native forms.
 """
 import logging
-from odoo import api, models
+
+from odoo import _, api, models
+from odoo.exceptions import AccessError
+
+from odoo.addons.pb_hr_payroll_formula.models.statutory_approval import (
+    STATUTORY_GROUP,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -759,7 +765,25 @@ class PbStatutoryWizard(models.AbstractModel):
         }
 
     @api.model
+    def _require_manager(self):
+        """Statutory rates are a payroll manager's to set.
+
+        This wizard shipped with no permission check of any kind: anybody who
+        could open the cockpit could create the insurance policy that decides
+        what every employee in the country pays. The rule is the one every
+        other payroll surface already had; only the check is new.
+        """
+        user = self.env.user
+        if user._is_superuser() or user.has_group(STATUTORY_GROUP):
+            return True
+        raise AccessError(_(
+            "Statutory rates and tax tables are set by payroll managers. Ask "
+            "somebody who looks after payroll to do this, or to give you the "
+            "payroll manager permission."))
+
+    @api.model
     def create_policy(self, vals):
+        self._require_manager()
         if 'vietnam.insurance.policy' not in self.env:
             return {'error': 'Insurance policy model not installed.'}
         if not (vals.get('name') or '').strip() or not (vals.get('code') or '').strip():
@@ -772,14 +796,26 @@ class PbStatutoryWizard(models.AbstractModel):
                   'ui_employer_rate', 'ui_employee_rate', 'ui_max_salary_ceiling'):
             if vals.get(k) not in (None, ''):
                 cvals[k] = float(vals[k])
-        try:
-            p = self.env['vietnam.insurance.policy'].create(cvals)
-        except Exception as e:
-            return {'error': str(getattr(e, 'name', None) or e) or 'Could not create policy.'}
-        return {'policy_id': p.id, 'name': p.name, 'error': None}
+        proposal = self.env['pb.statutory.proposal'].propose(
+            'policy_create',
+            _("New insurance policy · %s", cvals['name']),
+            payload={'values': cvals},
+            facts={'rows_changed': {'value': 1, 'unit': ''},
+                   'effective_date': {
+                       'value': str(cvals.get('effective_date') or ''),
+                       'unit': ''},
+                   'configs_affected': {'value': 0, 'unit': ''}},
+        )
+        answer = proposal.answer()
+        result = answer.get('result') or {}
+        answer.update({'error': answer.get('block_note') or None,
+                       'policy_id': result.get('policy_id') or 0,
+                       'name': result.get('name') or cvals['name']})
+        return answer
 
     @api.model
     def create_tax_table(self, vals):
+        self._require_manager()
         if 'vietnam.tax.table' not in self.env:
             return {'error': 'Tax table model not installed.'}
         if not (vals.get('name') or '').strip() or not (vals.get('code') or '').strip():
@@ -790,10 +826,19 @@ class PbStatutoryWizard(models.AbstractModel):
             cvals['personal_deduction'] = float(vals['personal_deduction'])
         if vals.get('dependent_deduction') not in (None, ''):
             cvals['dependent_deduction'] = float(vals['dependent_deduction'])
-        try:
-            t = self.env['vietnam.tax.table'].create(cvals)
-            if vals.get('gen_slabs') and hasattr(t, 'action_create_default_slabs'):
-                t.action_create_default_slabs()
-        except Exception as e:
-            return {'error': str(getattr(e, 'name', None) or e) or 'Could not create tax table.'}
-        return {'tax_id': t.id, 'name': t.name, 'slabs': len(t.slab_ids), 'error': None}
+        proposal = self.env['pb.statutory.proposal'].propose(
+            'tax_table_create',
+            _("New tax table · %s", cvals['name']),
+            payload={'values': cvals, 'gen_slabs': bool(vals.get('gen_slabs'))},
+            facts={'rows_changed': {'value': 1, 'unit': ''},
+                   'effective_date': {'value': str(cvals['tax_year'] or ''),
+                                      'unit': ''},
+                   'configs_affected': {'value': 0, 'unit': ''}},
+        )
+        answer = proposal.answer()
+        result = answer.get('result') or {}
+        answer.update({'error': answer.get('block_note') or None,
+                       'tax_id': result.get('tax_id') or 0,
+                       'name': result.get('name') or cvals['name'],
+                       'slabs': result.get('slabs') or 0})
+        return answer

@@ -14730,3 +14730,96 @@ msgstr "Lộ trình phê duyệt"
 #. module: pb_formula_studio
 msgid "Choose the checks for this scheme. Activating the scheme and submitting a pay run both need a complete approval route."
 msgstr "Chọn các bước kiểm cho phương án lương này. Kích hoạt phương án lương và gửi kỳ lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_formula_studio
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_formula_studio
+msgid "Apply %(name)s %(version)s to %(n)s pay scheme(s)"
+msgstr "Áp dụng %(name)s %(version)s cho %(n)s phương án lương"
+
+#. module: pb_formula_studio
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_formula_studio
+msgid "Delete rate table %s"
+msgstr "Xoá bảng tỷ lệ %s"
+
+#. module: pb_formula_studio
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_formula_studio
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_formula_studio
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_formula_studio
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_formula_studio
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_formula_studio
+msgid "Pay %(team)s with %(scheme)s"
+msgstr "Trả lương %(team)s theo %(scheme)s"
+
+#. module: pb_formula_studio
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_formula_studio
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_formula_studio
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_formula_studio
+msgid "Rate table %(code)s · %(scheme)s"
+msgstr "Bảng tỷ lệ %(code)s · %(scheme)s"
+
+#. module: pb_formula_studio
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_formula_studio
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_formula_studio
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_formula_studio
+msgid "Stop paying %s with this scheme"
+msgstr "Ngừng trả lương %s theo phương án này"
+
+#. module: pb_formula_studio
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_formula_studio
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_formula_studio
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_formula_studio
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

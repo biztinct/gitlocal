@@ -13,6 +13,11 @@ Entry points (UI button or `odoo shell`):
 import logging
 import re
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
+
+from odoo.addons.pb_hr_payroll_formula.models.demo_approval import (
+    DEMO_WRITE, is_demo_db,
+)
 
 from . import demo_catalog as cat
 
@@ -312,6 +317,25 @@ class PbDemoGenerator(models.TransientModel):
         return True
 
     def action_generate_all(self):
+        # A demo world is tens of thousands of records. On a demo or template
+        # database that is the point; anywhere else somebody has to agree
+        # to it first (P7).
+        if not self.env.context.get(DEMO_WRITE) \
+                and 'pb.demo.proposal' in self.env \
+                and not is_demo_db(self.env):
+            answer = self.env['pb.demo.proposal'].propose(
+                'generate',
+                _("Generate the full demo world"),
+                payload={},
+                facts={'records': {'value': 0, 'unit': ''},
+                       'is_demo_db': {'value': False, 'unit': ''}},
+            ).answer()
+            if not answer.get('applied'):
+                raise UserError(_(
+                    "This is not a demo database, so the demo world is not "
+                    "built until somebody agrees to it. It is with %s.",
+                    answer.get('with_whom') or _('your approver')))
+            return True
         self = self.with_context(**self._GEN_CTX)
         self.action_build_foundation()
         self.generate_employees()      # demo_employees.py

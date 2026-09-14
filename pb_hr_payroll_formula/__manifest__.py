@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.130.0',
+    'version': '19.0.1.131.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
@@ -62,6 +62,7 @@ License: LGPL-3
         'security/formula_security.xml',
         'security/ir.model.access.csv',
         'security/import_approval_rules.xml',
+        'security/p7_proposal_rules.xml',
 
         # Data
         'data/formula_functions_data.xml',

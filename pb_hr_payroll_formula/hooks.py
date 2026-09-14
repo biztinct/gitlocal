@@ -67,3 +67,12 @@ def rd49_schedule_monthly_fetch(env):
     # Approval Matrix P5 — and the two pay-data routes, for the same reason.
     from .models.payroll_import_approval import seed_all as seed_import
     seed_import(env)
+    # Approval Matrix P7 — and the four proposal routes this module now owns.
+    from .models.statutory_approval import seed_all as seed_statutory
+    from .models.mapping_approval import seed_all as seed_mappings
+    from .models.schememap_approval import seed_all as seed_schememap
+    from .models.demo_approval import seed_all as seed_demo
+    seed_statutory(env)
+    seed_mappings(env)
+    seed_schememap(env)
+    seed_demo(env)

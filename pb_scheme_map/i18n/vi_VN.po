@@ -1011,3 +1011,96 @@ msgstr "Kéo bộ phận này thả vào một phương án lương ở bên ph�
 #: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "Drop here to take %(scheme)s off %(segment)s"
 msgstr "Thả vào đây để gỡ %(scheme)s khỏi %(segment)s"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_scheme_map
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_scheme_map
+msgid "Accept the drafted map · %s row(s)"
+msgstr "Chấp nhận bản đồ dự thảo · %s dòng"
+
+#. module: pb_scheme_map
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_scheme_map
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_scheme_map
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_scheme_map
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_scheme_map
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_scheme_map
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_scheme_map
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_scheme_map
+msgid "Pay %(who)s with %(scheme)s"
+msgstr "Trả lương %(who)s theo %(scheme)s"
+
+#. module: pb_scheme_map
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_scheme_map
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_scheme_map
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_scheme_map
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_scheme_map
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_scheme_map
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_scheme_map
+msgid "Stop paying %s with this scheme"
+msgstr "Ngừng trả lương %s theo phương án này"
+
+#. module: pb_scheme_map
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_scheme_map
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_scheme_map
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_scheme_map
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_scheme_map
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

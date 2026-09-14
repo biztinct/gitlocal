@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -3539,3 +3539,100 @@ msgstr "Ốm đau/Thai sản - Sickness and maternity benefits report"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
 msgid "📊 Government Reports"
 msgstr "📊 Báo cáo Chính phủ"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_hr_payroll_vietnam
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Applying an insurance adjustment is a payroll manager's decision. Ask somebody who looks after payroll to do this."
+msgstr "Áp dụng điều chỉnh bảo hiểm là quyết định của trưởng bộ phận tiền lương. Hãy nhờ người phụ trách tiền lương làm việc này."
+
+#. module: pb_hr_payroll_vietnam
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_hr_payroll_vietnam
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_hr_payroll_vietnam
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Insurance adjustment · %s"
+msgstr "Điều chỉnh bảo hiểm · %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Rebuild the tax bands · %s"
+msgstr "Dựng lại các bậc thuế · %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_hr_payroll_vietnam
+msgid "The tax bands were rebuilt."
+msgstr "Các bậc thuế đã được dựng lại."
+
+#. module: pb_hr_payroll_vietnam
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_hr_payroll_vietnam
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_hr_payroll_vietnam
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

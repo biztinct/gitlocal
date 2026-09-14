@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -652,3 +652,92 @@ msgstr "Thông tin chi tiết về lực lượng lao động và tiền lương
 #: model:ir.actions.client,name:pb_demo.action_pb_demo_analytics
 msgid "Workforce Analytics"
 msgstr "Phân tích lực lượng lao động"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_demo
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_demo
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_demo
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_demo
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_demo
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_demo
+msgid "Generate the full demo world"
+msgstr "Tạo toàn bộ dữ liệu minh hoạ"
+
+#. module: pb_demo
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_demo
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_demo
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_demo
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_demo
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_demo
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_demo
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_demo
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_demo
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_demo
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_demo
+msgid "This is not a demo database, so the demo world is not built until somebody agrees to it. It is with %s."
+msgstr "Đây không phải cơ sở dữ liệu minh hoạ, nên dữ liệu minh hoạ chỉ được tạo khi có người đồng ý. Việc này đang ở chỗ %s."
+
+#. module: pb_demo
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_demo
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_demo
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_demo
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
