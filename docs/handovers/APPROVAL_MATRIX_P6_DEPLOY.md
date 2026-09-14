@@ -205,3 +205,21 @@ To stop a route being in force WITHOUT rolling back, set that process to
 did before the phase — a press writes at once — and every use is still
 recorded as a request. That is a published choice, not a bypass, and it is the
 answer to "we are not ready for this yet" for all fifteen.
+
+## 7. Walk record (15 Sep, local `am_walk6` = `am_tpl` + `-u all`, Fable)
+
+All seven checks of §5 pass. People: Thao Staff (asset user) reports to Minh Manager; Unpaid leave set to manager-approved for the walk.
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Workforce → Approvals | The one inbox scoped to "My team", the "Watching, not deciding" line, all kinds in the dock |
+| 2 | Ask for a laptop → Send | Stepper: "Sent in · Thao Staff", "Their manager · Minh Manager", "Equipment team · Administrator" |
+| 3 | Manager approves from the inbox | Record "Manager approved"; request `pending`; step `mgr` done, `equipment` active |
+| 4 | Cancel half way | "Withdrawn from the record itself: Cancelled"; request `cancelled`, equipment step skipped, seats closed |
+| 5 | Book a day off (manager-approved type) | In the manager's inbox beside the laptop; HR-lead step skipped; approve → leave `validate`, request `applied` |
+| 6 | Access → give Minh a role | Toast "Sent for approval — Administrator · See the request"; nothing written; `pb.access.request` pending. A role with no permission is refused with its own sentence |
+| 7 | `/odoo/action-pb_team` | Lands on the Workforce Approvals lens |
+
+Fixed during the walk: the dock printed a raw UTC stamp (commit "the approvals dock shows the time the way the inbox does", AM103). Left for P7 polish: the record stepper's own stamp (old chain widget) and the record's "Sent in" line use the raw UTC form; the dock's team/organisation split files a request waiting on *you* under "Other requests" when the person it is about does not report to you.
+
+Suites after the close-out fixes (all `EXTRA=biz_approval_workflow` unless noted): engine 48, config 78, assets 10, timeoff 13, workforce 42, biz_access 124, tenancy 106, mission 54 (`EXTRA=pb_approval_config,pb_team`), pay runs 60 — all green.
