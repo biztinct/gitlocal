@@ -29,8 +29,16 @@ class TestTimeoff(TransactionCase):
         cls.company = cls.env['res.company'].create({'name': 'K Timeoff Co'})
         cls.cal = cls.company.resource_calendar_id or cls.env.ref(
             'resource.resource_calendar_std', raise_if_not_found=False)
+        # THE OFFICER THESE CASES ACT AS IS THE ADMINISTRATOR, NOT THE TEST
+        # ENVIRONMENT'S OWN USER. That one is the platform's background account,
+        # which is not active — and a route refuses a decision from an account
+        # that is no longer in use, whoever it is (ledger AM102). Leaves are
+        # still filed as the background account, so the person deciding them
+        # is never the person who sent them in.
+        cls.officer = cls.env.ref('base.user_admin')
+        cls.officer.write({'company_ids': [(4, cls.company.id)]})
         # pin the facade to this company (env.companies drives the C18.11 scope)
-        cls.TO = cls.env['pb.timeoff'].with_context(
+        cls.TO = cls.env['pb.timeoff'].with_user(cls.officer).with_context(
             allowed_company_ids=[cls.company.id]).with_company(cls.company)
 
         cls.unpaid = cls.env['hr.leave.type'].create({
@@ -69,7 +77,7 @@ class TestTimeoff(TransactionCase):
             cls.env['biz.approval.responsibility'].sudo().create({
                 'company_id': cls.company.id, 'role_id': role.id,
                 'scope_key': '', 'scope_label': cls.company.name,
-                'user_id': cls.env.user.id,
+                'user_id': cls.officer.id,
             })
 
     def _confirm_leave(self, emp=None, dfrom=None, dto=None, ltype=None):
@@ -166,7 +174,7 @@ class TestTimeoff(TransactionCase):
         for _ in range(2):
             if taken.state == 'validate':
                 break
-            taken.action_approve()
+            taken.with_user(self.officer).action_approve()
         taken_days = taken.number_of_days
         data = self.TO._balances(0)
         type_ids = [t['id'] for t in data['types']]
