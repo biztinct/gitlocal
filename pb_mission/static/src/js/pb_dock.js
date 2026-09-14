@@ -36,6 +36,10 @@ import {
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+// The same "Tue 15 Sept, 07:20" the inbox card shows, in the reader's own
+// time. The server hands the dock a plain UTC stamp; printing it as it comes
+// put "2026-09-14 21:20:04" on the dock beside a card that said "07:20".
+import { when } from "@pb_approval_config/js/sentence";
 
 // The dock reads the one approvals inbox. It used to read a queue of its own
 // that knew four kinds of request by name; the same request can now only be
@@ -77,6 +81,7 @@ export class WfDock extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.when = when;
 
         this.state = useState({
             loading: true,
