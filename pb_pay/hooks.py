@@ -49,3 +49,9 @@ def post_init_hook(env_or_cr, registry=None):
     except Exception:       # noqa: BLE001
         _logger.exception('pb_pay: the default approval routes could not be '
                           'laid')
+    # Approval Matrix P7 — and the pay-band route, for the same reason.
+    try:
+        from .models.bands_approval import seed_all as seed_bands
+        seed_bands(env)
+    except Exception:       # noqa: BLE001
+        _logger.exception('pb_pay: the pay band route could not be laid')

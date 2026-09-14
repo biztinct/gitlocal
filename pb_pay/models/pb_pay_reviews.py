@@ -23,6 +23,8 @@ from collections import defaultdict
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from .bands_approval import BANDS_WRITE
+
 from .pb_pay_guidance import POSITION_BANDS, scale_words
 from .pb_pay_review import GROUP_CEO, GROUP_FINANCE, GROUP_MANAGER
 
@@ -463,6 +465,10 @@ class PbPayReviews(models.AbstractModel):
     @api.model
     def make_default_guidance(self):
         self._require_write()
+        held = self._guidance_propose(
+            'guidance_default', _("Start a guidance grid"), payload={})
+        if held is not None:
+            return held
         grid = self.env['pb.pay.guidance'].make_default(self.env.company)
         settings = self.env['pb.pay.settings'].for_company(self.env.company)
         if not settings.guidance_id:
@@ -476,8 +482,40 @@ class PbPayReviews(models.AbstractModel):
             int(cell_id or 0)).exists()
         if not cell:
             raise UserError(_("That square is not there any more."))
+        held = self._guidance_propose(
+            'guidance_cell',
+            _("Guidance · %s", cell.display_name or ''),
+            payload={'cell_id': cell.id, 'pct': float(pct or 0.0)},
+            snapshot={'pct': cell.pct}, target=cell)
+        if held is not None:
+            return held
         cell.write({'pct': float(pct or 0.0)})
         return cell.guidance_id.grid()
+
+    # =================================================== is anybody checking?
+    @api.model
+    def _guidance_propose(self, kind, title, payload, snapshot=None,
+                          target=None):
+        """The guidance grid is a pay band by another name (P7).
+
+        None means "carry on and write" — which is what a company that has
+        published "No approval needed" gets, press for press.
+        """
+        if self.env.context.get(BANDS_WRITE) \
+                or 'pb.bands.proposal' not in self.env:
+            return None
+        answer = self.env['pb.bands.proposal'].propose(
+            kind, title, payload=payload, snapshot=snapshot or {},
+            facts={'bands_changed': {'value': 1, 'unit': ''},
+                   'max_move_pct': {'value': 0.0, 'unit': '%'},
+                   'employees_affected': {'value': 0, 'unit': ''}},
+            target=target).answer()
+        if answer.get('applied'):
+            return None
+        return dict(answer, ok=True, pending=True, cells=[], rows=[],
+                    sentence=_("Sent for approval — %s",
+                               answer.get('with_whom')
+                               or _('your approver')))
 
     # ============================================================ the writes
     @api.model

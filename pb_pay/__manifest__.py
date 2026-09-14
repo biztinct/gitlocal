@@ -67,7 +67,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.3.4.0',
+    'version': '19.0.3.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -91,6 +91,7 @@ WHAT IT DOES NOT CHANGE
     'data': [
         'security/pb_pay_security.xml',
         'security/ir.model.access.csv',
+        'security/bands_approval_rules.xml',
         'data/ir_cron.xml',
         'views/pb_pay_views.xml',
         'views/pb_pay_review_views.xml',

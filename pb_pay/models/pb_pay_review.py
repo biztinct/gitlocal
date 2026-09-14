@@ -40,6 +40,8 @@ from collections import defaultdict
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+from .bands_approval import BANDS_WRITE
+
 
 _logger = logging.getLogger(__name__)
 
@@ -118,6 +120,44 @@ class PbPayReviewLimit(models.Model):
                 raise ValidationError(_(
                     "A limit belongs either to one review or to a company's "
                     "pay settings."))
+
+    #: The company-wide limits are what every review starts with, so loosening
+    #: one is a change to what the whole business allows — the pay-band route
+    #: covers it (P7). A limit that belongs to ONE review is that review's own
+    #: business and is left alone.
+    _LIMIT_HELD_FIELDS = ('value', 'enforcement', 'kind')
+
+    def write(self, vals):
+        held = [f for f in (vals or {}) if f in self._LIMIT_HELD_FIELDS]
+        company_wide = self.filtered(
+            lambda limit: limit.settings_id and not limit.review_id)
+        if not held or not company_wide \
+                or self.env.context.get(BANDS_WRITE) \
+                or 'pb.bands.proposal' not in self.env:
+            return super().write(vals)
+        Proposal = self.env['pb.bands.proposal']
+        if Proposal.route_mode(company=self.env.company,
+                               kind_key='limit') != 'route':
+            return super().write(vals)
+        values = {f: vals[f] for f in held}
+        for limit in company_wide:
+            Proposal.propose(
+                'limit',
+                _("Pay review limit · %s", limit.sentence()),
+                payload={'values': values},
+                snapshot={f: limit[f] for f in sorted(values)},
+                facts={'bands_changed': {'value': 1, 'unit': ''},
+                       'max_move_pct': {'value': 0.0, 'unit': '%'},
+                       'employees_affected': {'value': 0, 'unit': ''}},
+                target=limit)
+        rest = self - company_wide
+        remaining = {k: v for k, v in (vals or {}).items() if k not in values}
+        result = True
+        if rest:
+            result = super(PbPayReviewLimit, rest).write(vals)
+        if remaining and company_wide:
+            result = super(PbPayReviewLimit, company_wide).write(remaining)
+        return result
 
     def money(self):
         self.ensure_one()

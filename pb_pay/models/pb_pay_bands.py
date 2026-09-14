@@ -35,6 +35,8 @@ from collections import defaultdict
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from .bands_approval import BANDS_WRITE
+
 from .pb_pay_band import COUNTRIES, COUNTRY_CURRENCY, MAX_LEVEL
 
 _logger = logging.getLogger(__name__)
@@ -1040,13 +1042,69 @@ class PbPayBands(models.AbstractModel):
             'saved': False,
         }
         if not dry_run:
+            # The gate belonged here and was not here: the dry run reads, the
+            # let-go WRITES, and only the write branch ever asked.
             self._require_write()
+            held = self._bands_propose(
+                'move_edge',
+                _("Move the %(side)s edge of %(band)s",
+                  side=_('lowest') if side == 'min' else _('highest'),
+                  band=band.display_name or ''),
+                payload={'band_id': band.id, 'side': side, 'amount': amount},
+                snapshot={'min': band.min_amount, 'mid': band.mid_amount,
+                          'max': band.max_amount},
+                facts=self._band_facts(band, low, high, len(rows)),
+                target=band)
+            if held is not None:
+                answer.update(held)
+                return answer
             band.write({'min_amount': low, 'mid_amount': mid,
                         'max_amount': high})
             self.env['pb.pay.position'].sudo().recompute_all(
                 self._companies().ids)
             answer['saved'] = True
         return answer
+
+    # =================================================== is anybody checking?
+    @api.model
+    def _bands_propose(self, kind, title, payload, snapshot=None, facts=None,
+                       target=None):
+        """Write the change down and ask. None means "carry on and write".
+
+        The approved apply calls straight back into these methods, so the flag
+        it sets is what tells them apart.
+        """
+        if self.env.context.get(BANDS_WRITE) \
+                or 'pb.bands.proposal' not in self.env:
+            return None
+        answer = self.env['pb.bands.proposal'].propose(
+            kind, title, payload=payload, snapshot=snapshot or {},
+            facts=facts or {}, target=target).answer()
+        if answer.get('applied'):
+            return None
+        return {'ok': True, 'saved': False, 'pending': True,
+                'reference': answer.get('reference'),
+                'with_whom': answer.get('with_whom'),
+                'route': answer.get('route'),
+                'sentence': _("Sent for approval — %s",
+                              answer.get('with_whom') or _('your approver'))}
+
+    @api.model
+    def _band_facts(self, band, low=None, high=None, people=0):
+        """The three things a route about pay bands wants to know."""
+        was_low = band.min_amount if band else 0.0
+        was_high = band.max_amount if band else 0.0
+        moves = []
+        if low is not None and was_low:
+            moves.append(abs(low - was_low) / was_low * 100.0)
+        if high is not None and was_high:
+            moves.append(abs(high - was_high) / was_high * 100.0)
+        return {
+            'bands_changed': {'value': 1, 'unit': ''},
+            'max_move_pct': {'value': round(max(moves or [0.0]), 2),
+                             'unit': '%'},
+            'employees_affected': {'value': int(people or 0), 'unit': ''},
+        }
 
     @api.model
     def set_band_range(self, band_id, minimum, middle, maximum):
@@ -1055,6 +1113,17 @@ class PbPayBands(models.AbstractModel):
         band = self.env['pb.pay.band'].sudo().browse(int(band_id)).exists()
         if not band:
             raise UserError(_("That band no longer exists."))
+        held = self._bands_propose(
+            'set_range',
+            _("Put %s back where it was", band.display_name or ''),
+            payload={'band_id': band.id, 'min': float(minimum),
+                     'mid': float(middle), 'max': float(maximum)},
+            snapshot={'min': band.min_amount, 'mid': band.mid_amount,
+                      'max': band.max_amount},
+            facts=self._band_facts(band, float(minimum), float(maximum)),
+            target=band)
+        if held is not None:
+            return held
         band.write({'min_amount': float(minimum), 'mid_amount': float(middle),
                     'max_amount': float(maximum)})
         self.env['pb.pay.position'].sudo().recompute_all(self._companies().ids)
@@ -1379,6 +1448,16 @@ class PbPayBands(models.AbstractModel):
         """Write the suggested bands, families and job links for real."""
         self._require_write()
         proposals = list(proposals or [])[:MAX_IMPORT]
+        held = self._bands_propose(
+            'accept_suggestion',
+            _("Accept %s suggested band(s)", len(proposals)),
+            payload={'proposals': proposals},
+            facts={'bands_changed': {'value': len(proposals), 'unit': ''},
+                   'max_move_pct': {'value': 0.0, 'unit': '%'},
+                   'employees_affected': {'value': 0, 'unit': ''}})
+        if held is not None:
+            return dict(held, made={'families': 0, 'bands': 0, 'jobs': 0,
+                                    'skipped': []})
         Family = self.env['pb.pay.family'].sudo()
         Band = self.env['pb.pay.band'].sudo()
         Link = self.env['pb.pay.band.job'].sudo()
@@ -1549,6 +1628,16 @@ class PbPayBands(models.AbstractModel):
         if dry_run or not good:
             return answer
         self._require_write()
+        held = self._bands_propose(
+            'import',
+            _("Import %s band(s) from a spreadsheet", len(good)),
+            payload={'rows': good},
+            facts={'bands_changed': {'value': len(good), 'unit': ''},
+                   'max_move_pct': {'value': 0.0, 'unit': '%'},
+                   'employees_affected': {'value': 0, 'unit': ''}})
+        if held is not None:
+            answer.update(held)
+            return answer
         answer['made'] = self._write_import(good)
         self.env['pb.pay.position'].sudo().recompute_all(
             self._companies().ids)
@@ -1602,10 +1691,24 @@ class PbPayBands(models.AbstractModel):
             if key in values:
                 clean[key] = values[key]
         Band = self.env['pb.pay.band'].sudo()
-        if band_id:
-            band = Band.browse(band_id).exists()
-            if not band:
-                raise UserError(_("That band no longer exists."))
+        existing = Band.browse(band_id).exists() if band_id else Band
+        if band_id and not existing:
+            raise UserError(_("That band no longer exists."))
+        held = self._bands_propose(
+            'save_band',
+            _("Save the band %s", existing.display_name or clean.get('level')
+              or _('new band')),
+            payload={'values': dict(clean, id=band_id)},
+            snapshot=({'min': existing.min_amount, 'mid': existing.mid_amount,
+                       'max': existing.max_amount} if existing else {}),
+            facts=self._band_facts(existing,
+                                   clean.get('min_amount'),
+                                   clean.get('max_amount')),
+            target=existing or None)
+        if held is not None:
+            return held
+        if existing:
+            band = existing
             band.write(clean)
         else:
             band = Band.create(clean)
@@ -1615,6 +1718,17 @@ class PbPayBands(models.AbstractModel):
     @api.model
     def link_job(self, band_id, job_id):
         self._require_write()
+        band = self.env['pb.pay.band'].sudo().browse(int(band_id)).exists()
+        job = self.env['hr.job'].sudo().browse(int(job_id)).exists()
+        held = self._bands_propose(
+            'link_job',
+            _("Pay %(job)s from %(band)s", job=job.display_name or '',
+              band=band.display_name or ''),
+            payload={'band_id': int(band_id), 'job_id': int(job_id)},
+            facts=self._band_facts(band),
+            target=band or None)
+        if held is not None:
+            return held
         link = self.env['pb.pay.band.job'].sudo().create({
             'band_id': int(band_id), 'job_id': int(job_id)})
         self.env['pb.pay.position'].sudo().recompute_all(self._companies().ids)
@@ -1623,6 +1737,15 @@ class PbPayBands(models.AbstractModel):
     @api.model
     def unlink_job(self, link_id):
         self._require_write()
+        link = self.env['pb.pay.band.job'].sudo().browse(int(link_id)).exists()
+        held = self._bands_propose(
+            'unlink_job',
+            _("Take %s out of its band", link.display_name or ''),
+            payload={'link_id': int(link_id)},
+            facts=self._band_facts(link.band_id if link else None),
+            target=link or None)
+        if held is not None:
+            return held
         self.env['pb.pay.band.job'].sudo().browse(int(link_id)).unlink()
         self.env['pb.pay.position'].sudo().recompute_all(self._companies().ids)
         return {'ok': True}

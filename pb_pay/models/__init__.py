@@ -16,3 +16,5 @@ from . import pb_pay_reviews
 from . import pb_pay_migrate
 from . import pb_pay_retire
 from . import pb_pay_approval
+# Approval Matrix P7 — a pay band is a decision too.
+from . import bands_approval

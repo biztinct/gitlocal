@@ -45,3 +45,7 @@ access_pb_pay_change_manager,pay change manager,model_pb_pay_change,pb_pay.group
 access_pb_pay_change_finance,pay change finance,model_pb_pay_change,pb_pay.group_pay_finance,1,1,0,0
 access_pb_pay_change_ceo,pay change sign off,model_pb_pay_change,pb_pay.group_pay_ceo,1,1,0,0
 access_pb_pay_change_system,pay change system,model_pb_pay_change,base.group_system,1,1,1,1
+access_pb_bands_proposal_manager,pay band proposal manager,model_pb_bands_proposal,pb_pay.group_pay_manager,1,1,1,0
+access_pb_bands_proposal_viewer,pay band proposal read,model_pb_bands_proposal,pb_pay.group_pay_viewer,1,0,0,0
+access_pb_bands_proposal_system,pay band proposal system,model_pb_bands_proposal,base.group_system,1,1,1,1
+access_pb_bands_proposal_seat,pay band proposal anyone asked to decide,model_pb_bands_proposal,base.group_user,1,0,0,0

@@ -5741,3 +5741,144 @@ msgstr "“%(score)s” không phải là điểm đánh giá."
 #: code:addons/pb_pay/models/pb_pay_settings.py:0
 msgid "“Your pay, explained” is switched off for this company."
 msgstr "“Lương của bạn, giải thích rõ” đang tắt cho công ty này."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_pay
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_pay
+msgid "Accept %s suggested band(s)"
+msgstr "Chấp nhận %s dải lương đề xuất"
+
+#. module: pb_pay
+msgid "Bands changed"
+msgstr "Số dải lương thay đổi"
+
+#. module: pb_pay
+msgid "Biggest move (%)"
+msgstr "Mức dịch lớn nhất (%)"
+
+#. module: pb_pay
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_pay
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_pay
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_pay
+msgid "Guidance · %s"
+msgstr "Hướng dẫn · %s"
+
+#. module: pb_pay
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_pay
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_pay
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_pay
+msgid "Import %s band(s) from a spreadsheet"
+msgstr "Nhập %s dải lương từ bảng tính"
+
+#. module: pb_pay
+msgid "Move the %(side)s edge of %(band)s"
+msgstr "Dịch mốc %(side)s của %(band)s"
+
+#. module: pb_pay
+msgid "Pay %(job)s from %(band)s"
+msgstr "Trả lương %(job)s theo %(band)s"
+
+#. module: pb_pay
+msgid "Pay review limit · %s"
+msgstr "Hạn mức đợt xét lương · %s"
+
+#. module: pb_pay
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_pay
+msgid "People in those bands"
+msgstr "Số người trong các dải lương đó"
+
+#. module: pb_pay
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_pay
+msgid "Put %s back where it was"
+msgstr "Đưa %s về như cũ"
+
+#. module: pb_pay
+msgid "Save the band %s"
+msgstr "Lưu dải lương %s"
+
+#. module: pb_pay
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_pay
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_pay
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_pay
+msgid "Start a guidance grid"
+msgstr "Tạo bảng hướng dẫn"
+
+#. module: pb_pay
+msgid "Take %s out of its band"
+msgstr "Đưa %s ra khỏi dải lương"
+
+#. module: pb_pay
+msgid "That limit no longer exists."
+msgstr "Hạn mức đó không còn tồn tại."
+
+#. module: pb_pay
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_pay
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_pay
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_pay
+msgid "highest"
+msgstr "cao nhất"
+
+#. module: pb_pay
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_pay
+msgid "lowest"
+msgstr "thấp nhất"
+
+#. module: pb_pay
+msgid "new band"
+msgstr "dải lương mới"
+
+#. module: pb_pay
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
