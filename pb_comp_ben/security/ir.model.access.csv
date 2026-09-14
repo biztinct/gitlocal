@@ -21,3 +21,6 @@ access_cb_letter_head,Award letter head,pb_lifecycle.model_pb_hr_letter,pb_comp_
 access_cb_letter_template_user,Letter template read,pb_lifecycle.model_pb_letter_template,pb_comp_ben.group_comp_user,1,0,0,0
 access_cb_approval_log_user,Award approval trail,biz_approval_chain.model_biz_approval_step_log,pb_comp_ben.group_comp_user,1,0,1,0
 access_cb_approval_log_head,Award approval trail head,biz_approval_chain.model_biz_approval_step_log,pb_comp_ben.group_comp_head,1,0,1,0
+access_pb_month_proposal_payroll,reopen month proposal payroll,model_pb_month_proposal,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_pb_month_proposal_system,reopen month proposal system,model_pb_month_proposal,base.group_system,1,1,1,1
+access_pb_month_proposal_seat,reopen month proposal anyone asked to decide,model_pb_month_proposal,base.group_user,1,0,0,0

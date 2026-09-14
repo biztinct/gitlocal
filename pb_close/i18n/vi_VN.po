@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -622,3 +622,92 @@ msgid ""
 msgstr ""
 "Bạn không thể bỏ cờ khi tham dự của chính mình - đó là ký tên vào phiếu lương đầu vào "
 "của chính bạn."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_close
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_close
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_close
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_close
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_close
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_close
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_close
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_close
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_close
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_close
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_close
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_close
+msgid "Reopen %s closed day(s)"
+msgstr "Mở lại %s ngày đã chốt"
+
+#. module: pb_close
+msgid "Reopening a closed day needs a reason — it is the only account anyone reviewing this payroll will have of why the week was taken back."
+msgstr "Mở lại một ngày đã chốt cần có lý do — đó là căn cứ duy nhất để người rà soát bảng lương hiểu vì sao tuần đó bị lấy lại."
+
+#. module: pb_close
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_close
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_close
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_close
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_close
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_close
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_close
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_close
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

@@ -21,6 +21,8 @@ import logging
 from datetime import date, timedelta
 
 from odoo import _, api, fields, models
+
+from .month_approval import propose_reopen
 from odoo.exceptions import UserError
 
 from .comp_common import GROUP_HEAD, GROUP_USER, P_REMINDERS, flag
@@ -106,8 +108,14 @@ class PbPayrollCalendar(models.Model):
             rec.message_post(body=_("This month is closed to changes."))
         return True
 
-    def action_reopen(self):
+    def action_reopen(self, reason=''):
+        """Take a closed month back. Somebody else has to agree (P7)."""
         for rec in self:
+            held = propose_reopen(rec, reason)
+            if held is not None and not held.get('applied'):
+                continue
+            if held is not None:
+                continue        # the approved reopen already ran
             rec.state = 'upcoming'
         return True
 

@@ -54,6 +54,8 @@ import pytz
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
+from .unlock_approval import propose_unlock
+
 _logger = logging.getLogger(__name__)
 
 # The context key, and the ONLY key this module reads for a bypass.
@@ -335,6 +337,13 @@ class PbWfLock(models.Model):
             [('company_id', '=', company_id), ('date', '=', day)], limit=1)
         if not rec or rec.state != 'locked':
             return False
+        held = propose_unlock(self.env, [day.isoformat()], reason)
+        if held is not None and not held.get('applied'):
+            return False
+        if held is not None and held.get('applied'):
+            # The approved reopen has already run through this method with the
+            # flag on; nothing left to do.
+            return rec.id
         rec.sudo().write({'state': 'open', 'reason': reason})
         rec._post_lock_note('unlock')
         return rec.id

@@ -14,6 +14,8 @@ import logging
 from datetime import date
 
 from odoo import _, api, models
+
+from .month_approval import propose_reopen
 from odoo.exceptions import AccessError
 
 from .comp_common import (
@@ -141,12 +143,21 @@ class PbPaycal(models.AbstractModel):
             company_id=self.env.company.id, months=months, offsets=offsets)
 
     @api.model
-    def set_state(self, calendar_id, state):
+    def set_state(self, calendar_id, state, reason=''):
+        """Close or reopen. Only one of the two is a decision (P7)."""
         self._require_write()
         cal = self.env['pb.payroll.calendar'].browse(int(calendar_id)).exists()
         if not cal:
             return False
-        return cal.action_close() if state == 'closed' else cal.action_reopen()
+        if state == 'closed':
+            return cal.action_close()
+        held = propose_reopen(cal, reason)
+        if held is not None:
+            if not held.get('applied'):
+                return dict(held, pending=True)
+            return dict(held.get('result') or {},
+                        reference=held.get('reference'))
+        return cal.action_reopen(reason)
 
     @api.model
     def save_month(self, calendar_id, vals):

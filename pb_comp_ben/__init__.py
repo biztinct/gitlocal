@@ -12,3 +12,6 @@ from . import controllers
 def post_init_hook(env):
     from .models.incentive_approval import seed_all
     seed_all(env)
+    # P7 — and the "reopen a pay month" route.
+    from .models.month_approval import seed_all as seed_month
+    seed_month(env)

@@ -65,6 +65,8 @@ import pytz
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
+from .unlock_approval import propose_unlock
+
 _logger = logging.getLogger(__name__)
 
 # Who may READ the board. The attendance officer tier (the manager group
@@ -861,8 +863,21 @@ class PbClose(models.AbstractModel):
 
     @api.model
     def unlock_days(self, days, reason):
-        """Reopen — the reason is required, and it is recorded (W42)."""
-        self._require_officer()
+        """Reopen — the reason is required, and it is recorded (W42).
+
+        The gate is the LOCK MODEL's, not this cockpit's: reopening a day has
+        always needed an attendance or payroll manager there, and asking only
+        for an officer here made the bulk door the cheaper way to the wider
+        right (P7).
+        """
+        self.env['pb.wf.lock']._pb_check_manage()
+        dates = [fields.Date.to_date(d).isoformat() for d in (days or [])]
+        held = propose_unlock(self.env, dates, reason)
+        if held is not None:
+            if not held.get('applied'):
+                return dict(held, unlocked=[], pending=True)
+            return dict(held.get('result') or {'unlocked': dates},
+                        reference=held.get('reference'))
         done = []
         for d in (days or []):
             if self.env['pb.wf.lock'].unlock_day(

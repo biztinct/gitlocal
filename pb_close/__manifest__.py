@@ -38,7 +38,7 @@ field (stale by construction: a stored compute over now(), no cron, and
 `actual_check_*` never written by production code). Everything is derived live,
 the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -53,6 +53,8 @@ the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
         # not available — the model has to exist. The advisory itself is still
         # incapable of affecting a run (see models/payrun_wizard.py).
         'pb_payrun_wizard',
+        # P7: reopening a closed day is a decision.
+        'biz_approval_workflow',
         # soft-hooks (resolved via `in self.env`, never a hard dependency):
         #   pb.ot.ceiling      — the clean-batch headroom test
         #   hr.leave           — leave-day exclusion in the classifier
@@ -60,8 +62,10 @@ the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/unlock_approval_rules.xml',
         'views/wf_lock_views.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
