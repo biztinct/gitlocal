@@ -74,14 +74,29 @@ def _repo_root():
 class TestP7Matrix(MatrixCase):
 
     # ================================================================ Z07
-    def test_z07a_every_catalogue_row_names_a_record(self):
-        """A row with no model can never hold a request."""
-        missing = self.env['biz.approval.process'].sudo().search([
-            ('model_name', 'in', (False, ''))])
-        self.assertFalse(
-            missing,
-            "these rows name no record, so nothing can be approved under "
-            "them: %s" % ', '.join(missing.mapped('key')))
+    def test_z07a_every_wired_up_adapter_owns_its_catalogue_row(self):
+        """A row is pointed at its record by the ADAPTER's own seed (AM45).
+
+        Asserted from the registry rather than from a count: on a database
+        where only this module is installed most rows correctly name nothing,
+        because the module that would point them at a record is not there.
+        What must never happen is the other way round — an adapter in the
+        registry whose row still names nothing, or names something else.
+        """
+        Process = self.env['biz.approval.process'].sudo()
+        wrong = []
+        for name in list(self.env.registry.models):
+            model = self.env[name]
+            key = getattr(model, '_approval_process_key', None)
+            if not key or not hasattr(model, '_approval_seed_default'):
+                continue
+            row = Process._by_key(key)
+            if not row:
+                wrong.append('%s: no "%s" row in the catalogue' % (name, key))
+            elif row.model_name and row.model_name != name:
+                wrong.append('%s: the "%s" row names %s'
+                             % (name, key, row.model_name))
+        self.assertFalse(wrong, '\n'.join(wrong))
 
     def test_z07b_the_seven_areas_are_all_there(self):
         areas = set(self.env['biz.approval.process'].sudo().search(

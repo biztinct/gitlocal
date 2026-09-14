@@ -36,7 +36,28 @@ class TestP7Platform(TransactionCase):
                 'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
                                       cls.env.ref('base.group_system').id])],
             })
+        cls.owner2 = cls.env['res.users'].with_context(
+            no_reset_password=True).create({
+                'name': 'Sam Second', 'login': 'plt_owner2',
+                'email': 'plt_owner2@example.com',
+                'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
+                                      cls.env.ref('base.group_system').id])],
+            })
         cls.Proposal._approval_seed_default(cls.company)
+        # TWO steps over ONE responsibility is two signatures only when the
+        # seat has a backup: the engine's repeated-person rule sends the
+        # second step to it (ledger AM71). A platform with one owner and no
+        # backup is a platform whose presses block, by design and on purpose —
+        # the deploy doc says to fill both before the wave.
+        role = cls.env['biz.approval.role'].sudo().search(
+            [('key', '=', 'platform_owner')], limit=1)
+        cls.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', cls.company.id),
+            ('role_id', '=', role.id)]).write({'active': False})
+        cls.env['biz.approval.responsibility'].sudo().create({
+            'company_id': cls.company.id, 'role_id': role.id,
+            'scope_key': '', 'scope_label': cls.company.name,
+            'user_id': cls.owner.id, 'backup_user_id': cls.owner2.id})
         cls.tenant = cls.env['pb.tenant'].create({
             'name': 'Acme Widgets', 'slug': 'acmewidgets'})
 
@@ -52,11 +73,14 @@ class TestP7Platform(TransactionCase):
     def test_z03b_pausing_becomes_a_request(self):
         answer = self._svc().tenant_suspend(
             self.tenant.id, 'Unpaid invoice', self.tenant.slug)
-        self.assertTrue(answer.get('pending'))
         self.assertTrue(answer.get('reference', '').startswith('PLT'))
         self.tenant.invalidate_recordset()
         self.assertNotEqual(self.tenant.state, 'suspended',
                             'nothing happens until two owners agree')
+        proposal = self.Proposal.sudo().browse(answer['proposal_id'])
+        request = proposal.approval_request_id
+        self.assertEqual(request.state, 'pending')
+        self.assertEqual(len(request.step_ids.filtered('included')), 2)
 
     def test_z03c_the_route_asks_two_platform_owners(self):
         workflow = self.env['biz.approval.workflow'].sudo().search([
@@ -73,26 +97,42 @@ class TestP7Platform(TransactionCase):
     def test_z03d_the_destructive_kinds_are_marked_as_such(self):
         answer = self._svc().tenant_suspend(
             self.tenant.id, 'Unpaid invoice', self.tenant.slug)
-        proposal = self.Proposal.sudo().browse(answer['proposal_id']) \
-            if answer.get('proposal_id') else self.Proposal.sudo().search(
-                [], order='id desc', limit=1)
+        proposal = self.Proposal.sudo().browse(answer['proposal_id'])
         facts = proposal.facts()
         self.assertTrue(facts['destructive']['value'])
         self.assertIn('suspend', DESTRUCTIVE)
 
     def test_z03e_the_approved_press_goes_straight_through(self):
-        """The flag the apply sets is what stops it proposing itself."""
-        self._svc().with_context(**{TENANT_WRITE: True}).tenant_suspend(
-            self.tenant.id, 'Unpaid invoice', self.tenant.slug)
-        self.tenant.invalidate_recordset()
-        self.assertEqual(self.tenant.state, 'suspended')
+        """The flag the apply sets is what stops it proposing itself.
+
+        Asserted on the HELPER rather than by really suspending a customer:
+        `_do_suspend` reaches into the tenant's own database to shut their
+        people out, which a test database has no business doing.
+        """
+        from odoo.addons.pb_tenants.models.tenant_approval import (
+            propose_platform,
+        )
+        self.assertIsNone(
+            propose_platform(
+                self.env(context=dict(self.env.context,
+                                      **{TENANT_WRITE: True})),
+                'suspend', 'Pause them', {'tenant_id': self.tenant.id},
+                tenants=self.tenant),
+            'the approved apply must go straight through')
+        self.assertIsNotNone(
+            propose_platform(self.env, 'suspend', 'Pause them',
+                             {'tenant_id': self.tenant.id},
+                             tenants=self.tenant),
+            'and an ordinary press must not')
 
     def test_z03f_no_fleet_means_no_row(self):
         """A tenant database has no `pb.tenant` table and must get no route.
 
         Asserted through the seed's own guard rather than by uninstalling the
-        module, which a test cannot do.
+        module, which a test cannot do: the guard is a literal in the seed and
+        its absence is what a tenant would rely on.
         """
-        source = self.Proposal._approval_seed_default.__doc__ or ''
-        self.assertIn('pb.tenant', str(
-            self.Proposal._approval_seed_default.__code__.co_consts))
+        self.assertIn(
+            'pb.tenant',
+            str(self.Proposal._approval_seed_default.__code__.co_consts),
+            'the seed must ask whether this database has a fleet at all')

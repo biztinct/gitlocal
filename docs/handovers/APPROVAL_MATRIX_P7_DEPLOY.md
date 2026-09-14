@@ -189,11 +189,28 @@ everything.
    No `model_name` may be null. Then open the Matrix: every one of the
    thirty-nine rows must read as protected rather than "Not connected yet".
 
-6. **Fill the two new seats.** **Finance controller** signs the second half of
-   every exchange-rate and budget change; **Platform owner** is the pair of
-   people who may pause or close a customer. Both are seeded from
-   `base.group_system` holders where nothing better was found, which is a
-   starting point and not an answer.
+6. **Fill the two new seats — and the platform one needs a BACKUP.**
+   **Finance controller** signs the second half of every exchange-rate and
+   budget change; **Platform owner** is the pair of people who may pause or
+   close a customer.
+
+   The platform route is two steps over ONE responsibility, which is two
+   signatures only because the engine's repeated-person rule sends the second
+   step to the seat's BACKUP (ledger AM71). **A Platform owner seat with no
+   backup blocks every platform press**, by design and fail-closed. Name both
+   before the wave:
+   ```sql
+   SELECT c.name, u.login AS holder, b.login AS backup
+   FROM biz_approval_responsibility x
+   JOIN biz_approval_role r ON r.id = x.role_id AND r.key = 'platform_owner'
+   JOIN res_company c ON c.id = x.company_id
+   LEFT JOIN res_users u ON u.id = x.user_id
+   LEFT JOIN res_users b ON b.id = x.backup_user_id
+   WHERE x.active;
+   ```
+   `backup` must not be null. A platform that is not ready for two signatures
+   sets the process to **"No approval needed"** instead — that is the
+   published choice, and it still records every use.
 
 7. **The people a route names must be able to do the thing.** The last
    approver carries it out AS THEMSELVES (safety rail 5, ledger AM54). Each

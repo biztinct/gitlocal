@@ -173,6 +173,7 @@ def pending_answer(answer, what):
     return {
         'ok': True,
         'pending': True,
+        'proposal_id': answer.get('proposal_id'),
         'reference': answer.get('reference'),
         'request_id': answer.get('request_id'),
         'with_whom': answer.get('with_whom'),
