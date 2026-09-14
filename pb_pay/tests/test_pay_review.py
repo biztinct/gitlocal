@@ -91,7 +91,78 @@ class TestPayReview(TransactionCase):
                               sex='male')
         cls.Position.recompute_all([cls.company.id])
 
+        # ===============================================================
+        # THE LADDER IS A ROUTE NOW, AND THE ROUTE NAMES PEOPLE.
+        #
+        # Phase 6 put pay reviews on the approval engine: `action_submit`,
+        # `action_hr_approve` and the two after it drive
+        # `biz.approval.engine.decide`, which asks whether THIS person holds
+        # the seat the step names. A suite that drove all four rungs as one
+        # test user was asserting the ladder of a product that no longer
+        # exists — and it was never run in that phase, so nobody found out.
+        #
+        # The remedy is AM100's first half: seat the people the ladder
+        # already meant, and act as them. The gate is not weakened anywhere.
+        #
+        # The FOURTH person matters as much as the three. The route's
+        # independence rail refuses somebody their own approval, so the
+        # review is sent in by a preparer who decides none of it — which is
+        # what a pay review really looks like.
+        cls.preparer = cls._staff_user(
+            'p6b.preparer@example.com', ['base.group_user'])
+        cls.hr_lead = cls._staff_user(
+            'p6b.lead@example.com',
+            ['base.group_user', 'pb_pay.group_pay_manager'])
+        cls.fin_lead = cls._staff_user(
+            'p6b.finlead@example.com',
+            ['base.group_user', 'pb_pay.group_pay_finance'])
+        cls.ceo_lead = cls._staff_user(
+            'p6b.ceolead@example.com',
+            ['base.group_user', 'pb_pay.group_pay_ceo'])
+        cls._seat('hr_lead', cls.hr_lead)
+        cls._seat('finance', cls.fin_lead)
+        cls._seat('director', cls.ceo_lead)
+
     # ------------------------------------------------------------ helpers
+    @classmethod
+    def _staff_user(cls, login, groups):
+        return cls.env['res.users'].with_context(
+            no_reset_password=True).create({
+                'name': login, 'login': login,
+                'company_id': cls.company.id,
+                'company_ids': [(6, 0, [cls.company.id])],
+                'group_ids': [(6, 0, [cls.env.ref(g).id for g in groups])],
+            })
+
+    @classmethod
+    def _seat(cls, role_key, user):
+        """Name a person for one seat, ending whoever was there.
+
+        One seat, one holder at a time, is the engine's rule; a company
+        created a moment ago already has somebody in every seat its default
+        routes name, so this ENDS rather than collides.
+        """
+        role = cls.env['biz.approval.role'].sudo().search(
+            [('key', '=', role_key)], limit=1)
+        if not role:
+            return False
+        cls.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', cls.company.id),
+            ('role_id', '=', role.id), ('scope_key', '=', ''),
+            ('active', '=', True)]).write({'active': False})
+        return cls.env['biz.approval.responsibility'].sudo().create({
+            'company_id': cls.company.id, 'role_id': role.id,
+            'scope_key': '', 'scope_label': cls.company.name,
+            'user_id': user.id})
+
+    def _walk_the_ladder(self, review):
+        """Send it in and take it all the way up, as the four real people."""
+        review.with_user(self.preparer).action_submit()
+        review.with_user(self.hr_lead).action_hr_approve()
+        review.with_user(self.fin_lead).action_finance_approve()
+        review.with_user(self.ceo_lead).action_ceo_approve()
+        return review
+
     @classmethod
     def _person(cls, name, wage, sex='female', months=40, manager=None):
         employee = cls.env['hr.employee'].create({
@@ -296,27 +367,30 @@ class TestPayReview(TransactionCase):
         return user
 
     def test_t04_each_step_is_gated_on_its_own_role(self):
-        review = self._review()
-        hr = self._staff('p6b.hr@example.com',
-                         ['base.group_user', 'pb_pay.group_pay_manager'])
-        finance = self._staff('p6b.finance@example.com',
-                              ['base.group_user', 'pb_pay.group_pay_finance'])
-        boss = self._staff('p6b.ceo@example.com',
-                           ['base.group_user', 'pb_pay.group_pay_ceo'])
+        """Each rung is decided by the person who holds THAT seat.
 
-        review.with_user(hr).action_submit()
+        The case used to send the review in as the HR lead and then have the
+        same person approve their own first rung. The route refuses that — a
+        person who prepared or sent something in cannot also approve it —
+        which is a promise the product now makes and this case would
+        otherwise have asserted the opposite of. It is sent in by a preparer
+        instead, which is what really happens.
+        """
+        review = self._review()
+
+        review.with_user(self.preparer).action_submit()
         self.assertEqual(review.state, 'proposed')
         with self.assertRaises(AccessError):
-            review.with_user(finance).action_hr_approve()
-        review.with_user(hr).action_hr_approve()
+            review.with_user(self.fin_lead).action_hr_approve()
+        review.with_user(self.hr_lead).action_hr_approve()
         self.assertEqual(review.state, 'hr_review')
         with self.assertRaises(AccessError):
-            review.with_user(hr).action_finance_approve()
-        review.with_user(finance).action_finance_approve()
+            review.with_user(self.hr_lead).action_finance_approve()
+        review.with_user(self.fin_lead).action_finance_approve()
         self.assertEqual(review.state, 'finance')
         with self.assertRaises(AccessError):
-            review.with_user(finance).action_ceo_approve()
-        review.with_user(boss).action_ceo_approve()
+            review.with_user(self.fin_lead).action_ceo_approve()
+        review.with_user(self.ceo_lead).action_ceo_approve()
         self.assertEqual(review.state, 'approved')
 
         trail = review.get_approval_trail()
@@ -325,8 +399,11 @@ class TestPayReview(TransactionCase):
 
     def test_t04_a_review_can_be_sent_back_with_a_reason(self):
         review = self._review()
-        review.action_submit()
-        review.action_send_back(note='The Retail numbers look wrong.')
+        # Sending a review BACK is a decision on the live step, so it is made
+        # by the person who holds it — not by whoever happens to be looking.
+        review.with_user(self.preparer).action_submit()
+        review.with_user(self.hr_lead).action_send_back(
+            note='The Retail numbers look wrong.')
         self.assertEqual(review.state, 'draft')
         trail = review.get_approval_trail()
         self.assertIn('Retail', trail[-1]['note'])
@@ -583,11 +660,7 @@ class TestPayReview(TransactionCase):
         for line in review.line_ids:
             line.set_proposal(pct=5.0)
         review.recompute_chips()
-        review.action_submit()
-        review.action_hr_approve()
-        review.action_finance_approve()
-        review.action_ceo_approve()
-        return review
+        return self._walk_the_ladder(review)
 
     def test_t06_the_preview_is_exactly_what_the_write_does(self):
         review = self._approved()
@@ -707,11 +780,15 @@ class TestPayReview(TransactionCase):
             'reason': 'A counter-offer.',
         })
         was = change.contract_id.wage
-        change.action_submit()
-        change.action_hr_approve()
-        change.action_next_after_hr()
+        # The same four people as a pay review: a pay change travels the same
+        # route, and the person who asks for one never signs it off.
+        change.with_user(self.preparer).action_submit()
+        change.with_user(self.hr_lead).action_hr_approve()
+        change.with_user(self.hr_lead).action_next_after_hr()
         if change.state == 'finance':
-            change.action_ceo_approve()
+            change.with_user(self.fin_lead).action_finance_approve()
+        if change.state != 'approved':
+            change.with_user(self.ceo_lead).action_ceo_approve()
         self.assertEqual(change.state, 'approved')
         change.action_apply()
         self.assertEqual(change.state, 'applied')

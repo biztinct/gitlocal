@@ -26,6 +26,17 @@ class TestSc2SyncSchedule(TransactionCase):
         cls.Connector = cls.env['hr.integration.connector']
         # A known clock for every assertion in this file.
         cls.env.company.partner_id.tz = 'Asia/Ho_Chi_Minh'
+        # THIS SUITE IS ABOUT THE CLOCK, NOT ABOUT APPROVALS (ledger AM100).
+        # Phase 7 puts a fetch schedule on a route, because WHEN next month's
+        # pay data arrives is a decision — so a plain `write` of a schedule
+        # field is proposed rather than written wherever a business has asked
+        # for that. These cases are about what the schedule MEANS once it is
+        # set, so the company publishes the choice every company is allowed to
+        # make: nobody checks this one. The gate is not weakened and the door
+        # is still the door.
+        cls.env['biz.approval.seed'].set_no_approval_needed(
+            cls.env.company, 'mappings',
+            reason='SC-2 suite: these cases are about the clock')
 
     def _connector(self, name='SC2', **vals):
         return self.Connector.create(dict(

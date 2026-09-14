@@ -65,6 +65,23 @@ class TestPayBands(TransactionCase):
         })
         cls.Link.create({'band_id': cls.band.id, 'job_id': cls.job.id})
 
+        # THIS SUITE IS ABOUT BAND MATHS, NOT ABOUT APPROVALS (ledger AM100).
+        # Phase 7 puts a band edge on a route, because moving one changes what
+        # a whole family of people should be paid. These cases are about what
+        # a move COSTS and what it writes, so the company publishes the choice
+        # every company is allowed to make — nobody checks this one — and the
+        # doors then behave exactly as they did, press for press, with every
+        # use still recorded as a request. The gate is not weakened and the
+        # route is still resolved.
+        for key in ('bands',):
+            cls.env['biz.approval.seed'].set_no_approval_needed(
+                cls.env.company, key,
+                reason='Pay bands suite: these cases are about the maths')
+            if cls.company != cls.env.company:
+                cls.env['biz.approval.seed'].set_no_approval_needed(
+                    cls.company, key,
+                    reason='Pay bands suite: these cases are about the maths')
+
     # ------------------------------------------------------------ helpers
     @classmethod
     def _person(cls, name, wage, job=None, sex='female', months=48,
