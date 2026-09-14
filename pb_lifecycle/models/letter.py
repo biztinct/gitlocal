@@ -267,18 +267,52 @@ class PbHrLetter(models.Model):
             raise UserError(_("The letter email is not set up yet."))
         if not self.env.context.get(LETTER_WRITE) \
                 and 'biz.approval.engine' in self.env:
-            held = self.env['biz.approval.request']
+            waiting = []
             for rec in self:
                 if rec.state == 'sent':
                     continue
                 if rec.state == 'draft':
                     rec.action_generate()
-                request = self.env['biz.approval.engine'].submit(rec)
-                if request and not rec.approval_request_id.state == 'applied':
-                    held |= rec.approval_request_id
-            if held:
-                return {'pending': True, 'requests': held.ids}
-            return len(self)
+                self.env['biz.approval.engine'].submit(rec)
+                rec.invalidate_recordset(['approval_request_id',
+                                          'approval_state'])
+                if rec.state != 'sent':
+                    waiting.append(rec._letter_waiting_for()
+                                   or _('your approver'))
+            if not waiting:
+                return len(self)
+            # A BUTTON'S RETURN VALUE IS AN ACTION. A bare dict that is not
+            # one is refused by the client as "invalid action", so the answer
+            # a person sees has to be a real notification.
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'message': _("Sent for approval — %s",
+                                 ', '.join(sorted(set(waiting)))),
+                    'type': 'info',
+                },
+            }
+        return self._action_send_now()
+
+    def _letter_waiting_for(self):
+        """Whose desk this letter is on right now, in names."""
+        self.ensure_one()
+        request = self.approval_request_id
+        if not request:
+            return ''
+        step = request.step_ids.filtered(
+            lambda s: s.key == request.current_step_key)[:1]
+        return ', '.join(sorted({seat.acting_user_id.name or ''
+                                 for seat in step.seat_ids
+                                 if seat.status == 'open'}))
+
+    def _action_send_now(self):
+        """The real send. Only `_approval_apply` and a fast lane reach it."""
+        template = self.env.ref('pb_lifecycle.mail_template_letter_delivery',
+                                raise_if_not_found=False)
+        if not template:
+            raise UserError(_("The letter email is not set up yet."))
         sent = 0
         for rec in self:
             if rec.state == 'draft':

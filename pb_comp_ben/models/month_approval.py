@@ -112,10 +112,14 @@ def propose_reopen(calendar, reason=''):
         return None
     reason = (reason or '').strip()
     if not reason:
+        # A dead end is worse than a refusal, so this says where to go: the
+        # form's own button has nowhere to type a reason, and the pay
+        # calendar screen asks for one.
         raise UserError(_(
             "Reopening a closed month needs a reason — it is the only "
             "account anybody reviewing this payroll will have of why the "
-            "month was taken back."))
+            "month was taken back. Reopen it from the Pay calendar screen, "
+            "which asks for one."))
     Slip = env.get('hr.payslip')
     runs = 0
     if Slip is not None and calendar.pay_date:
