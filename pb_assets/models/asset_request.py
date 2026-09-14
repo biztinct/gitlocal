@@ -184,7 +184,11 @@ class PbAssetRequest(models.Model):
 
     @api.model
     def _country_for(self, employee_id):
-        employee = self.env['hr.employee'].browse(
+        # sudo: the asker is an ordinary user, and the only thing wanted here
+        # is which company's country the person belongs to. Reading the
+        # employee as the asker prefetches every restricted field on the
+        # record and is refused for anyone outside HR.
+        employee = self.env['hr.employee'].sudo().browse(
             int(employee_id or 0)).exists()
         if not employee:
             return False

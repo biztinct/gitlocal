@@ -28,6 +28,7 @@ class TestAssetApproval(TransactionCase):
         internal = cls.env.ref('base.group_user')
         hr_user = cls.env.ref('hr.group_hr_user')
         equip = cls.env.ref('pb_assets.group_assets_manager')
+        asker = cls.env.ref('pb_assets.group_assets_user')
 
         cls.boss_user = Users.create({
             'name': 'Asset Boss', 'login': 'p6_asset_boss',
@@ -37,7 +38,9 @@ class TestAssetApproval(TransactionCase):
             'group_ids': [(6, 0, [internal.id, equip.id])]})
         cls.staff_user = Users.create({
             'name': 'Asset Asker', 'login': 'p6_asset_staff',
-            'group_ids': [(6, 0, [internal.id])]})
+            # the asset board is how a request is raised, and that board is
+            # the asset user's: an internal user alone may only read their own
+            'group_ids': [(6, 0, [internal.id, asker.id])]})
 
         Emp = cls.env['hr.employee']
         cls.boss = Emp.create({'name': 'Asset Boss',
