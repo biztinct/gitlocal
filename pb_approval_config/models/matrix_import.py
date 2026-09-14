@@ -341,19 +341,35 @@ class PbApprovalMatrixImport(models.AbstractModel):
             raise UserError(_("That file could not be read."))
         if not raw:
             raise UserError(_("That file is empty."))
+        # TWO READERS, AND THE SECOND IS NOT A BACKSTOP FOR A MISSING MODULE
+        # ALONE. The payroll engine's reader detects a header row, which is
+        # what this sheet needs — but it detects the one IT would want, and on
+        # a workbook whose approvals tab opens with a title and a note it can
+        # land on the wrong row. So the answer is checked: a read that does not
+        # produce a "Transaction / Object" column is not an answer, and the
+        # plain read of the same sheet is tried instead.
+        attempts = []
         headers, rows = self._read_with_connector(raw)
-        if headers is None:
-            headers, rows = self._read_with_openpyxl(raw)
-        if headers is None:
+        if headers is not None:
+            attempts.append((headers, rows))
+        headers, rows = self._read_with_openpyxl(raw)
+        if headers is not None:
+            attempts.append((headers, rows))
+        if not attempts:
             raise UserError(_(
                 "This workbook has no sheet called \"%s\". Rename the tab and "
                 "try again — everything else about the file is fine.",
                 SHEET_NAME))
-        mapping = {}
-        for index, head in enumerate(headers):
-            key = HEADER_SYNONYMS.get(squeeze(head))
-            if key and key not in mapping:
-                mapping[key] = index
+        mapping, headers, rows = {}, [], []
+        for candidate_headers, candidate_rows in attempts:
+            found = {}
+            for index, head in enumerate(candidate_headers):
+                key = HEADER_SYNONYMS.get(squeeze(head))
+                if key and key not in found:
+                    found[key] = index
+            if 'object' in found:
+                mapping, headers, rows = found, candidate_headers, candidate_rows
+                break
         if 'object' not in mapping:
             raise UserError(_(
                 "That sheet has no \"Transaction / Object\" column, so there "
@@ -385,8 +401,15 @@ class PbApprovalMatrixImport(models.AbstractModel):
             if not real:
                 return None, []
             sheet = connector.load_sheet_with_detection(real)
-            return (list(sheet.get('headers') or []),
-                    [list(r) for r in (sheet.get('data') or [])])
+            # Its shape is its own: `headers` is a list of DICTS carrying a
+            # `value`, and `data_rows` is a list of dicts keyed BY that value
+            # — not the list-of-lists this reads. Flattened here rather than
+            # anywhere else, because this is the only place that knows both.
+            names = [str(h.get('value') or '')
+                     for h in (sheet.get('headers') or [])]
+            rows = [[row.get(name) for name in names]
+                    for row in (sheet.get('data_rows') or [])]
+            return names, rows
         except Exception:       # noqa: BLE001 — fall back rather than fail
             _logger.info('approval import: the payroll reader could not open '
                          'this workbook; falling back to a plain read',
