@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -568,3 +568,136 @@ msgstr "Unused Leave / Phép chưa dùng"
 #: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__c_leave
 msgid "Unused leave"
 msgstr "nghỉ phép không sử dụng"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_hr_fullandfinal
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_hr_fullandfinal
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_hr_fullandfinal
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_hr_fullandfinal
+msgid "Final settlement · %s"
+msgstr "Thanh toán cuối cùng · %s"
+
+#. module: pb_hr_fullandfinal
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_hr_fullandfinal
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_hr_fullandfinal
+msgid "From a file"
+msgstr "Từ một tệp"
+
+#. module: pb_hr_fullandfinal
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_hr_fullandfinal
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_hr_fullandfinal
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_hr_fullandfinal
+msgid "Last day"
+msgstr "Ngày làm việc cuối"
+
+#. module: pb_hr_fullandfinal
+msgid "Net payable"
+msgstr "Thực trả"
+
+#. module: pb_hr_fullandfinal
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_hr_fullandfinal
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_hr_fullandfinal
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_hr_fullandfinal
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_hr_fullandfinal
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_hr_fullandfinal
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_hr_fullandfinal
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement has already been approved."
+msgstr "Khoản thanh toán này đã được duyệt."
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement has already been sent in."
+msgstr "Khoản thanh toán này đã được gửi đi."
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement has not been sent for approval yet."
+msgstr "Khoản thanh toán này chưa được gửi phê duyệt."
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement is still with %s for approval, so it cannot be printed yet."
+msgstr "Khoản thanh toán này vẫn đang chờ %s phê duyệt nên chưa in được."
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement was sent back to be worked out again, so what is on it now is nobody's decision. Send it in again once it is right."
+msgstr "Khoản thanh toán này đã bị trả lại để tính lại, nên nội dung hiện tại chưa được ai quyết định. Hãy gửi lại khi đã đúng."
+
+#. module: pb_hr_fullandfinal
+msgid "This settlement was turned down, so there is nothing to print."
+msgstr "Khoản thanh toán này đã bị từ chối nên không có gì để in."
+
+#. module: pb_hr_fullandfinal
+msgid "What it comes to"
+msgstr "Tổng cộng là bao nhiêu"
+
+#. module: pb_hr_fullandfinal
+msgid "What they are owed"
+msgstr "Số tiền còn nợ họ"
+
+#. module: pb_hr_fullandfinal
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_hr_fullandfinal
+msgid "Worked out here"
+msgstr "Được tính tại đây"
+
+#. module: pb_hr_fullandfinal
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_hr_fullandfinal
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_hr_fullandfinal
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
