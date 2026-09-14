@@ -23,6 +23,8 @@ from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
+from .approval_lane import no_approval_needed
+
 from odoo.addons.pb_tenants.models.billing_rules import SERVING_STATES
 
 
@@ -32,6 +34,7 @@ class BillingCase(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        no_approval_needed(self.env)
         self.svc = self.env['pb.tenants']
         Tenant = self.env['pb.tenant'].sudo()
         # F28 — stand the real fleet down for the length of the transaction.

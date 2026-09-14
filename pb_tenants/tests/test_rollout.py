@@ -19,6 +19,8 @@ from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
+from .approval_lane import no_approval_needed
+
 from odoo.addons.pb_tenants.models import rollout_service
 from odoo.addons.pb_tenants.models.service import PbTenants
 
@@ -35,6 +37,7 @@ class TestRollout(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        no_approval_needed(self.env)
         self.svc = self.env['pb.tenants']
         self.cls = type(self.svc)
         self.rel = self.env['pb.release'].sudo().create({

@@ -16,6 +16,8 @@ from unittest.mock import patch
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
+from .approval_lane import no_approval_needed
+
 from odoo.addons.pb_tenants.models.feature_rules import T_FEATURES
 
 
@@ -24,6 +26,7 @@ class TestFeatures(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        no_approval_needed(self.env)
         self.svc = self.env['pb.tenants']
         self.cls = type(self.svc)
         # F28. Stand the real fleet down INSIDE the transaction, which is
