@@ -30,7 +30,7 @@ Two properties of that facade are worth knowing before reading it:
 Coverage is a SERVER answer: a country whose module is not installed here keeps
 the old modal, and the board asks rather than assuming.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -38,8 +38,14 @@ the old modal, and the board asks rather than assuming.
     # pb_hr_govt provides the VN report wizard + XLSX exporters we launch.
     # pb_hub provides the arrival protocol (`pb_back`) and the back chip the
     # flow and the board both render.
-    'depends': ['web', 'pb_import_kit', 'pb_hr_govt', 'pb_hub'],
+    # pb_hr_payroll_base carries the payroll roles this module had never
+    # checked; biz_approval_workflow carries the proposal a filing is now
+    # produced from.
+    'depends': ['web', 'pb_import_kit', 'pb_hr_govt', 'pb_hub',
+                'pb_hr_payroll_base', 'biz_approval_workflow'],
     'data': [
+        'security/ir.model.access.csv',
+        'security/filing_approval_rules.xml',
         'views/pb_govt_reports_action.xml',
         'views/pb_filing_flow_action.xml',
     ],
@@ -53,6 +59,7 @@ the old modal, and the board asks rather than assuming.
             'pb_govt_reports/static/src/xml/filing_flow.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -50,7 +50,7 @@ refused through the modal.
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -69,6 +69,12 @@ _GENERATE = {
 # A defence in depth over the table above, asserted in the tests as well: no
 # adapter may ever name a method that sounds like it leaves the building.
 _ONLY_GENERATE = ('mail', 'send', 'submit', 'post', 'transmit', 'email', 'sign')
+
+# The permission producing a filing has always needed and never checked.
+# Either of the two: a manager holds the officer role by implication on
+# most databases, but not on every one of them.
+_FILING_GROUPS = ('pb_hr_payroll_base.group_payroll_base_officer',
+                  'pb_hr_payroll_base.group_payroll_base_manager')
 
 # Per country: the wizard model, the field that carries WHICH filing, the field
 # holding the period, and the writable field set. An allow-list, not a
@@ -397,24 +403,31 @@ class PbFilingFlow(models.AbstractModel):
         return w
 
     @api.model
-    def generate(self, wizard_id, country, filing_key, vals):
-        """Step 3. Write the allow-list, press the wizard's OWN button, keep
-        whatever it produced.
+    def _require_officer(self):
+        """Producing a filing is a payroll officer's job.
 
-        A CLICK handler's method: it writes and it creates an attachment, and
-        neither of those may ever be reachable from a mount hook (W21/W41). The
-        client blocks the button while one is in flight, which is what makes a
-        double click one artifact set rather than two — a uniqueness guard
-        cannot fix a concurrency problem (W21.1).
+        This module shipped with NO permission check of any kind: whoever could
+        reach the board could produce a file addressed to a tax authority. The
+        rule is not new — it is the one every other payroll surface has always
+        had — it was simply never written down here.
         """
-        spec = self._adapter(country)
-        w = self._wizard(spec, wizard_id)
-        self._assert_key(spec, w, filing_key)
-        clean = self._clean(self.env[spec['model']],
-                            self._writable(spec, filing_key), vals)
-        if clean:
-            w.write(clean)
+        user = self.env.user
+        if user._is_superuser() or any(
+                user.has_group(x) for x in _FILING_GROUPS):
+            return True
+        raise AccessError(_(
+            "Statutory filings are produced by payroll. Ask somebody who "
+            "looks after payroll to do this, or to give you the payroll "
+            "officer permission."))
 
+    @api.model
+    def _press(self, w, country, filing_key):
+        """Press the wizard's OWN generate button. The one place that does.
+
+        Split out of `generate` so the approved filing is produced by exactly
+        the same code as an unapproved one used to be — a second press path
+        would be a second set of rails to keep in step.
+        """
         method = _GENERATE[(country or '').upper()]
         # Belt and braces over a constant table: if a future adapter names a
         # method that sounds like it leaves the building, this refuses rather
@@ -431,7 +444,7 @@ class PbFilingFlow(models.AbstractModel):
         # report when the company has no external layout — which would arrive
         # here as an act_window and read as "the button did nothing".
         try:
-            outcome = button()
+            return button()
         except UserError:
             raise
         except Exception as e:                       # pylint: disable=broad-except
@@ -440,15 +453,64 @@ class PbFilingFlow(models.AbstractModel):
             raise UserError(_("This filing could not be generated: %s",
                               str(getattr(e, 'name', None) or e)))
 
-        artifacts, message = self._materialise(w, outcome)
-        return {
+    @api.model
+    def generate(self, wizard_id, country, filing_key, vals):
+        """Step 3. Write the allow-list down and ask for the file.
+
+        A CLICK handler's method: it writes and it creates an attachment, and
+        neither of those may ever be reachable from a mount hook (W21/W41). The
+        client blocks the button while one is in flight, which is what makes a
+        double click one artifact set rather than two — a uniqueness guard
+        cannot fix a concurrency problem (W21.1).
+
+        The wizard is a transient and cannot survive an approval, so what is
+        written down is the country, the filing and the values — and the file
+        is produced from those, by the approver, when the route says yes. Under
+        a published "No approval needed" route that happens inside this call
+        and the answer is the one this screen has always had.
+        """
+        self._require_officer()
+        spec = self._adapter(country)
+        w = self._wizard(spec, wizard_id)
+        self._assert_key(spec, w, filing_key)
+        clean = self._clean(self.env[spec['model']],
+                            self._writable(spec, filing_key), vals)
+        if clean:
+            w.write(clean)
+
+        country = (country or '').upper()
+        period = self._period_words(spec, w)
+        proposal = self.env['pb.filing.proposal'].propose(
+            'filing',
+            _("%(filing)s · %(country)s · %(period)s",
+              filing=filing_key or _('Filing'), country=country,
+              period=period or _('this period')),
+            payload={'country': country, 'filing_key': filing_key,
+                     'values': self._values(
+                         w, sorted(self._writable(spec, filing_key)))},
+            facts={'country': {'value': country, 'unit': ''},
+                   'filing_key': {'value': filing_key or '', 'unit': ''},
+                   'period': {'value': period, 'unit': ''}},
+            scope_label=self.env.company.name,
+        )
+        answer = proposal.answer()
+        result = answer.get('result') or {}
+        answer.update({
             'wizard_id': w.id,
-            'country': (country or '').upper(),
+            'country': country,
             'filing_key': filing_key,
-            'artifacts': artifacts,
-            'message': message,
-            'done': True,
-        }
+            'artifacts': result.get('artifacts') or [],
+            'message': result.get('message') or '',
+            'done': bool(answer.get('applied')),
+        })
+        return answer
+
+    @api.model
+    def _period_words(self, spec, w):
+        """The period this filing covers, as the screen shows it."""
+        if spec['period'] == 'range':
+            return '%s → %s' % (w.date_from or '', w.date_to or '')
+        return str(getattr(w, 'submission_period', '') or '')
 
     @api.model
     def _materialise(self, w, outcome):
