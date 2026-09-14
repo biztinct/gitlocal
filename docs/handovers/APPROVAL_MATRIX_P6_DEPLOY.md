@@ -31,6 +31,7 @@ this is only the payload.
 | `biz_access` | 19.0.1.3.0 | `-u` | role grants can be asked for |
 | `pb_tenancy` | 19.0.1.5.0 | `-u` | support access is the customer's decision |
 | `pb_close` | unchanged code | — | only its clean-batch TEST changed |
+| `pb_payruns` | 19.0.2.0.0 (unchanged) | files + restart | one Python change only: its responsibility seeder no longer re-seats a seat the business has ended (ledger AM101). No data, no views — the `-u` cascade above already covers it |
 
 **One `-u` does most of it.** Every module above depends, directly or through
 the chain, on `biz_approval_workflow`, so `-u biz_approval_workflow` cascades.
