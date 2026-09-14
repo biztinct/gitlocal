@@ -57,17 +57,29 @@ STATES = [
 ]
 
 
+#: What `json.dumps` can hold without help. Anything else is written down as
+#: the words a person would read — which is also what makes a stored snapshot
+#: and a re-read one COMPARABLE: a date read back off the world is a `date`
+#: object, and the one in the proposal came through JSON as a string, so
+#: without this every date would look as if somebody had moved it.
+_JSONABLE = (str, int, float, bool)
+
+
 def _plain(value):
     """A value in a form a human reads and a hash can be taken of."""
+    if isinstance(value, bool):
+        return value
     if isinstance(value, float) and value == int(value):
         return int(value)
     if isinstance(value, (list, tuple)):
         return [_plain(v) for v in value]
     if isinstance(value, dict):
         return {str(k): _plain(v) for k, v in sorted(value.items())}
-    if value is None:
+    if value is None or value is False:
         return ''
-    return value
+    if isinstance(value, _JSONABLE):
+        return value
+    return str(value)
 
 
 class BizApprovalProposalMixin(models.AbstractModel):
@@ -224,9 +236,10 @@ class BizApprovalProposalMixin(models.AbstractModel):
         record = self.sudo().create({
             'kind': kind,
             'title_text': (title or '')[:200],
-            'payload_json': json.dumps(_plain(payload or {}), sort_keys=True),
+            'payload_json': json.dumps(_plain(payload or {}),
+                                       sort_keys=True, default=str),
             'snapshot_json': json.dumps(_plain(snapshot or {}),
-                                        sort_keys=True),
+                                        sort_keys=True, default=str),
             'facts_json': json.dumps(facts or {}, default=str),
             'scope_json': json.dumps([str(k) for k in (scope_keys or [''])]),
             'subject_json': json.dumps(
