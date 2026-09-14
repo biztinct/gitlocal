@@ -80,9 +80,65 @@
         <!-- ========================================== the matrix -->
         <t t-if="state.tab === 'matrix'">
 
-          <div t-if="state.importOpen" class="pbim-note pbam-note">
-            <t t-out="ic('info',14)"/>
-            <span>A setup workbook can fill this in for you: its approvals sheet becomes drafts, one per process, for this company only. People stay suggestions until a real account is chosen for each one. That door is being built; until it opens, a preset below is the quickest start.</span>
+          <div t-if="state.importOpen" class="pbim-panel pbam-import">
+            <div class="pbim-panel-h">
+              <div>
+                <h2 class="pbim-h2">Bring in the approval matrix you already wrote</h2>
+                <p class="pbim-sub">Pick the setup workbook. Its "Approval Matrix" sheet becomes one draft route per row, for this company. Nothing is published, and a name in the spreadsheet stays a suggestion until you choose the account it means.</p>
+              </div>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.toggleImport()">
+                <t t-out="ic('x',14)"/> <span>Close</span>
+              </button>
+            </div>
+
+            <div class="pbam-import-pick">
+              <label class="pbim-btn primary">
+                <t t-out="ic('upload',15)"/>
+                <span t-if="!state.importBusy">Choose the workbook</span>
+                <span t-if="state.importBusy">Reading it…</span>
+                <input type="file" accept=".xlsx,.xlsm" class="pbam-file"
+                       t-on-change="(ev) => this.onImportFile(ev)"/>
+              </label>
+              <span class="pbim-sub">Only the sheet named "Approval Matrix" is read.</span>
+            </div>
+
+            <t t-if="state.importResult">
+              <p class="pbam-import-said" t-esc="state.importResult.sentence"/>
+
+              <div class="pbam-import-rows">
+                <div t-foreach="importRows" t-as="rw" t-key="rw_index"
+                     class="pbam-import-row">
+                  <div class="pbam-import-what">
+                    <span class="pbam-import-obj" t-esc="rw.object"/>
+                    <span t-if="!rw.recognised" class="pbim-badge pbam-warn">Filed under Other request</span>
+                  </div>
+                  <div class="pbam-import-route">
+                    <t t-foreach="rw.steps" t-as="st" t-key="st_index">
+                      <span t-if="st_index" class="pbam-ar"><t t-out="ic('arrowRight',11)"/></span>
+                      <span t-esc="st.label"/>
+                    </t>
+                    <span t-if="!rw.steps.length" class="pbim-sub">Nobody checks it</span>
+                  </div>
+                  <div t-if="rw.threshold_note" class="pbim-sub" t-esc="rw.threshold_note"/>
+                  <div t-foreach="rw.warnings" t-as="wn" t-key="wn_index"
+                       class="pbam-import-warn">
+                    <t t-out="ic('alert',13)"/> <span t-esc="wn"/>
+                  </div>
+                </div>
+              </div>
+
+              <div t-if="importPeople.length" class="pbam-import-people">
+                <h3 class="pbim-h3">Who are these people?</h3>
+                <p class="pbim-sub">The workbook names them; the app will not guess which account each one is. Choose one and they hold that responsibility from then on.</p>
+                <div t-foreach="importPeople" t-as="pp" t-key="pp.id"
+                     class="pbam-import-person">
+                  <span class="pbam-import-name" t-esc="pp.name_text"/>
+                  <span class="pbim-sub" t-esc="pp.role_label"/>
+                  <span class="pbim-badge">Proposed from the spreadsheet · choose the account</span>
+                </div>
+                <p class="pbim-sub">Open <b>People &amp; backups</b> to pick each account.</p>
+              </div>
+            </t>
           </div>
 
           <div t-if="state.presetsOpen" class="pbim-panel pbam-presets">

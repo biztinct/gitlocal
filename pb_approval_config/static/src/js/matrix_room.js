@@ -83,6 +83,8 @@ export class PbApprovalMatrix extends Component {
             peopleFocus: {},
             scopeFor: null,
             importOpen: false,
+            importBusy: false,
+            importResult: null,
         });
 
         this.onEscape = this.onEscape.bind(this);
@@ -207,7 +209,82 @@ export class PbApprovalMatrix extends Component {
         this.state.presetsOpen = !this.state.presetsOpen;
     }
 
-    toggleImport() { this.state.importOpen = !this.state.importOpen; }
+    toggleImport() {
+        this.state.importOpen = !this.state.importOpen;
+        if (!this.state.importOpen) { this.state.importResult = null; }
+    }
+
+    // ================================================== the spreadsheet door
+    /**
+     * Read the approvals sheet of a setup workbook into DRAFT routes.
+     *
+     * Nothing is published and no account is ever guessed from a name: every
+     * person in the workbook comes back as a suggestion somebody has to point
+     * at a real login before it means anything.
+     */
+    async onImportFile(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) { return; }
+        this.state.importBusy = true;
+        this.state.importResult = null;
+        try {
+            const content = await this.readAsBase64(file);
+            const result = await this.orm.call(
+                "pb.approval.matrix.import", "run", [content]);
+            this.state.importResult = result;
+            this.notif.add(result.sentence, { type: "success" });
+            await this.load();
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                    || _t("That workbook could not be read."),
+                { type: "danger" });
+        } finally {
+            this.state.importBusy = false;
+            ev.target.value = "";
+        }
+    }
+
+    readAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const raw = String(reader.result || "");
+                resolve(raw.slice(raw.indexOf(",") + 1));
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /** Give one suggested name a real account. */
+    async resolvePerson(person, userId) {
+        if (!userId) { return; }
+        try {
+            await this.orm.call("pb.approval.matrix.import", "resolve_person",
+                                [person.id, userId]);
+            person.state = "resolved";
+            this.notif.add(_t("%s now holds that responsibility.",
+                              person.name_text), { type: "success" });
+            await this.load();
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                    || _t("That person could not be given the responsibility."),
+                { type: "danger" });
+        }
+    }
+
+    get importPeople() {
+        const result = this.state.importResult;
+        return ((result && result.people) || []).filter(
+            (p) => p.state === "proposed");
+    }
+
+    get importRows() {
+        const result = this.state.importResult;
+        return (result && result.made) || [];
+    }
 
     /** Open a row: its builder if it has a route, the starting points if not. */
     async openRow(row) {

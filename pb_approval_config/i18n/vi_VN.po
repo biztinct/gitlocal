@@ -4598,3 +4598,120 @@ msgstr "Việc này không còn chờ quyết định nữa."
 #. module: pb_approval_config
 msgid "No step is waiting for a decision on this."
 msgstr "Không có bước nào đang chờ quyết định cho việc này."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_approval_config
+msgid "\"%(who)s\" in the %(column)s column is not a responsibility this app knows, so that step was left out."
+msgstr "“%(who)s” ở cột %(column)s không phải là trách nhiệm mà ứng dụng biết, nên bước đó đã được bỏ qua."
+
+#. module: pb_approval_config
+msgid "%(drafts)s draft route(s) made from %(rows)s row(s). Nothing is in force until somebody publishes it."
+msgstr "Đã tạo %(drafts)s lộ trình nháp từ %(rows)s dòng. Chưa có gì có hiệu lực cho đến khi được công bố."
+
+#. module: pb_approval_config
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_approval_config
+msgid "%s (from the spreadsheet)"
+msgstr "%s (từ bảng tính)"
+
+#. module: pb_approval_config
+msgid "Final approver"
+msgstr "Người duyệt cuối"
+
+#. module: pb_approval_config
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_approval_config
+msgid "From the approval matrix spreadsheet: %s"
+msgstr "Từ bảng tính ma trận phê duyệt: %s"
+
+#. module: pb_approval_config
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_approval_config
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_approval_config
+msgid "Pick somebody with an account."
+msgstr "Hãy chọn một người có tài khoản."
+
+#. module: pb_approval_config
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_approval_config
+msgid "Proposed from the spreadsheet · choose the account"
+msgstr "Đề xuất từ bảng tính · hãy chọn tài khoản"
+
+#. module: pb_approval_config
+msgid "Reviewer"
+msgstr "Người rà soát"
+
+#. module: pb_approval_config
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_approval_config
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_approval_config
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_approval_config
+msgid "Spreadsheets cannot be read on this server yet. Ask whoever looks after it to add the spreadsheet reader."
+msgstr "Máy chủ này chưa đọc được bảng tính. Hãy nhờ người phụ trách bổ sung trình đọc bảng tính."
+
+#. module: pb_approval_config
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_approval_config
+msgid "That file is empty."
+msgstr "Tệp đó rỗng."
+
+#. module: pb_approval_config
+msgid "That file is not a spreadsheet this app can read. Save it as an .xlsx and try again."
+msgstr "Tệp đó không phải bảng tính mà ứng dụng đọc được. Hãy lưu dưới dạng .xlsx rồi thử lại."
+
+#. module: pb_approval_config
+msgid "That proposed person is no longer here."
+msgstr "Người được đề xuất đó không còn ở đây."
+
+#. module: pb_approval_config
+msgid "That sheet has no \"Transaction / Object\" column, so there is no way to tell what each row is about."
+msgstr "Trang tính đó không có cột “Transaction / Object”, nên không thể biết mỗi dòng nói về việc gì."
+
+#. module: pb_approval_config
+msgid "The spreadsheet says: %s. Limits are set where the process itself is configured, never as a condition invented from this text."
+msgstr "Bảng tính ghi: %s. Hạn mức được đặt ở nơi cấu hình chính quy trình đó, không bao giờ là điều kiện suy ra từ dòng chữ này."
+
+#. module: pb_approval_config
+msgid "The turnaround \"%s\" could not be read as a number of days, so no chase-up date was set."
+msgstr "Không đọc được thời hạn “%s” thành số ngày, nên chưa đặt ngày nhắc."
+
+#. module: pb_approval_config
+msgid "There is no place in the list for this yet."
+msgstr "Danh sách chưa có mục cho việc này."
+
+#. module: pb_approval_config
+msgid "This workbook has no sheet called \"%s\". Rename the tab and try again — everything else about the file is fine."
+msgstr "Sổ tính này không có trang tên “%s”. Hãy đổi tên thẻ rồi thử lại — mọi thứ khác của tệp đều ổn."
+
+#. module: pb_approval_config
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_approval_config
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
