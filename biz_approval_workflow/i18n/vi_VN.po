@@ -90,3 +90,750 @@ msgstr "Được hỏi ý kiến"
 #. module: biz_approval_workflow
 msgid "Part of the business"
 msgstr "Bộ phận của doanh nghiệp"
+
+
+# =====================================================================
+#  Approval Matrix phases 1 and 7 — every refusal, every event line and
+#  every word the proposal records put on a screen. The P1 engine strings
+#  had no Vietnamese at all until this phase (handover P7 item 18).
+# =====================================================================
+
+#. module: biz_approval_workflow
+msgid "This kind of record cannot be approved yet."
+msgstr "Loại hồ sơ này chưa thể phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "This kind of record is not set up for approvals yet."
+msgstr "Loại hồ sơ này chưa được thiết lập để phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "The thing this request is about is no longer part of this app."
+msgstr "Đối tượng của yêu cầu này không còn thuộc ứng dụng nữa."
+
+#. module: biz_approval_workflow
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: biz_approval_workflow
+msgid "Nothing is checked yet."
+msgstr "Chưa có bước kiểm tra nào."
+
+#. module: biz_approval_workflow
+msgid "This version is in use and cannot be changed. Start a new draft instead — requests already under way keep the version they started on."
+msgstr "Phiên bản này đang được dùng nên không sửa được. Hãy tạo bản nháp mới — các yêu cầu đang chạy vẫn giữ phiên bản lúc bắt đầu."
+
+#. module: biz_approval_workflow
+msgid "This version has been replaced and is kept as a record. It cannot be changed."
+msgstr "Phiên bản này đã bị thay thế và được giữ lại làm hồ sơ. Không thể sửa."
+
+#. module: biz_approval_workflow
+msgid "A version that has been in use is part of the record and cannot be deleted."
+msgstr "Phiên bản đã từng được dùng là một phần của hồ sơ và không thể xoá."
+
+#. module: biz_approval_workflow
+msgid "Choose which version this should stay on."
+msgstr "Hãy chọn phiên bản mà mục này sẽ giữ nguyên."
+
+#. module: biz_approval_workflow
+msgid "That version belongs to a different workflow."
+msgstr "Phiên bản đó thuộc về một quy trình khác."
+
+#. module: biz_approval_workflow
+msgid "This workflow belongs to another company."
+msgstr "Quy trình này thuộc về công ty khác."
+
+#. module: biz_approval_workflow
+msgid "\"%(name)s\" already covers exactly this place and kind of request over the same dates. A request cannot have two routes."
+msgstr "“%(name)s” đã bao trùm đúng bộ phận và loại yêu cầu này trong cùng khoảng thời gian. Một yêu cầu không thể có hai lộ trình."
+
+#. module: biz_approval_workflow
+msgid "Illegal approval transition: %s → %s."
+msgstr "Chuyển trạng thái phê duyệt không hợp lệ: %s → %s."
+
+#. module: biz_approval_workflow
+msgid "This has not been sent in for approval, so there is nothing to decide yet."
+msgstr "Việc này chưa được gửi đi phê duyệt nên chưa có gì để quyết định."
+
+#. module: biz_approval_workflow
+msgid "A decision is a record of what someone did. It cannot be changed — send the request back or move it to someone else instead."
+msgstr "Một quyết định là hồ sơ ghi lại việc ai đó đã làm. Không thể sửa — hãy trả lại yêu cầu hoặc chuyển cho người khác."
+
+#. module: biz_approval_workflow
+msgid "A decision is a record of what someone did. It cannot be deleted."
+msgstr "Một quyết định là hồ sơ ghi lại việc ai đó đã làm. Không thể xoá."
+
+#. module: biz_approval_workflow
+msgid "A hand-over is part of the record of who decided what. Stop it instead of deleting it."
+msgstr "Việc bàn giao là một phần hồ sơ ghi lại ai đã quyết định điều gì. Hãy dừng nó thay vì xoá."
+
+#. module: biz_approval_workflow
+msgid "%(a)s no longer covers for %(b)s"
+msgstr "%(a)s không còn đảm nhiệm thay cho %(b)s"
+
+#. module: biz_approval_workflow
+msgid "A person cannot cover for themselves."
+msgstr "Một người không thể đảm nhiệm thay cho chính mình."
+
+#. module: biz_approval_workflow
+msgid "The hand-over ends before it starts."
+msgstr "Việc bàn giao kết thúc trước khi bắt đầu."
+
+#. module: biz_approval_workflow
+msgid "%(name)s is already part of another hand-over over the same dates. A hand-over cannot be passed on again."
+msgstr "%(name)s đã nằm trong một lượt bàn giao khác trong cùng khoảng thời gian. Không thể bàn giao tiếp."
+
+#. module: biz_approval_workflow
+msgid "The record of what happened cannot be changed."
+msgstr "Nhật ký những gì đã xảy ra không thể sửa."
+
+#. module: biz_approval_workflow
+msgid "The record of what happened cannot be deleted."
+msgstr "Nhật ký những gì đã xảy ra không thể xoá."
+
+#. module: biz_approval_workflow
+msgid "An approval exception was stopped: %s"
+msgstr "Một ngoại lệ phê duyệt đã bị dừng: %s"
+
+#. module: biz_approval_workflow
+msgid "You are not allowed to set up approval workflows."
+msgstr "Bạn không được phép thiết lập quy trình phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "You are not allowed to publish an approval workflow."
+msgstr "Bạn không được phép công bố quy trình phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "You are not allowed to try this again."
+msgstr "Bạn không được phép thử lại việc này."
+
+#. module: biz_approval_workflow
+msgid "That is not something you can do here."
+msgstr "Bạn không thể làm việc đó ở đây."
+
+#. module: biz_approval_workflow
+msgid "Only someone who looks after this workflow can move a step to someone else."
+msgstr "Chỉ người phụ trách quy trình này mới có thể chuyển một bước cho người khác."
+
+#. module: biz_approval_workflow
+msgid "Only the person who sent this in can withdraw it."
+msgstr "Chỉ người đã gửi mới có thể rút lại."
+
+#. module: biz_approval_workflow
+msgid "Your account is no longer in use."
+msgstr "Tài khoản của bạn không còn được sử dụng."
+
+#. module: biz_approval_workflow
+msgid "You cannot see that company."
+msgstr "Bạn không xem được công ty đó."
+
+#. module: biz_approval_workflow
+msgid "Included: the amount is %s or more."
+msgstr "Có áp dụng: số tiền từ %s trở lên."
+
+#. module: biz_approval_workflow
+msgid "Included: %s."
+msgstr "Có áp dụng: %s."
+
+#. module: biz_approval_workflow
+msgid "Not needed: the amount is under %s."
+msgstr "Không cần: số tiền dưới %s."
+
+#. module: biz_approval_workflow
+msgid "Not needed: %s."
+msgstr "Không cần: %s."
+
+#. module: biz_approval_workflow
+msgid "%(role)s for %(where)s"
+msgstr "%(role)s của %(where)s"
+
+#. module: biz_approval_workflow
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: biz_approval_workflow
+msgid "Their manager's manager"
+msgstr "Quản lý cấp trên của quản lý họ"
+
+#. module: biz_approval_workflow
+msgid "Named in this workflow"
+msgstr "Được nêu tên trong quy trình này"
+
+#. module: biz_approval_workflow
+msgid "One of %s"
+msgstr "Một trong %s"
+
+#. module: biz_approval_workflow
+msgid "Route"
+msgstr "Lộ trình"
+
+#. module: biz_approval_workflow
+msgid "Sent this in"
+msgstr "Người gửi"
+
+#. module: biz_approval_workflow
+msgid "the whole company"
+msgstr "toàn công ty"
+
+#. module: biz_approval_workflow
+msgid "the team"
+msgstr "nhóm"
+
+#. module: biz_approval_workflow
+msgid "this part of the business"
+msgstr "bộ phận này của doanh nghiệp"
+
+#. module: biz_approval_workflow
+msgid "Choose a person"
+msgstr "Chọn một người"
+
+#. module: biz_approval_workflow
+msgid "Open the employee record"
+msgstr "Mở hồ sơ nhân viên"
+
+#. module: biz_approval_workflow
+msgid "Someone else"
+msgstr "Người khác"
+
+#. module: biz_approval_workflow
+msgid "%(who)s published \"%(name)s\" version %(rev)s"
+msgstr "%(who)s đã công bố “%(name)s” phiên bản %(rev)s"
+
+#. module: biz_approval_workflow
+msgid "%(who)s sent \"%(what)s\" in for approval"
+msgstr "%(who)s đã gửi “%(what)s” đi phê duyệt"
+
+#. module: biz_approval_workflow
+msgid "\"%(step)s\" is waiting for a decision on \"%(what)s\""
+msgstr "“%(step)s” đang chờ quyết định về “%(what)s”"
+
+#. module: biz_approval_workflow
+msgid "\"%s\" was carried out"
+msgstr "“%s” đã được thực hiện"
+
+#. module: biz_approval_workflow
+msgid "%(who)s %(did)s \"%(step)s\" on \"%(what)s\""
+msgstr "%(who)s đã %(did)s “%(step)s” của “%(what)s”"
+
+#. module: biz_approval_workflow
+msgid "\"%(what)s\" was sent back: %(why)s"
+msgstr "“%(what)s” đã bị trả lại: %(why)s"
+
+#. module: biz_approval_workflow
+msgid "\"%(what)s\" was turned down: %(why)s"
+msgstr "“%(what)s” đã bị từ chối: %(why)s"
+
+#. module: biz_approval_workflow
+msgid "\"%(step)s\" on \"%(what)s\" moved from %(a)s to %(b)s"
+msgstr "“%(step)s” của “%(what)s” đã chuyển từ %(a)s sang %(b)s"
+
+#. module: biz_approval_workflow
+msgid "\"%s\" was withdrawn"
+msgstr "“%s” đã được rút lại"
+
+#. module: biz_approval_workflow
+msgid "\"%s\" can go ahead again"
+msgstr "“%s” có thể tiếp tục"
+
+#. module: biz_approval_workflow
+msgid "\"%(what)s\" cannot go ahead: %(why)s"
+msgstr "“%(what)s” không thể tiếp tục: %(why)s"
+
+#. module: biz_approval_workflow
+msgid "%(who)s approved \"%(step)s\" on \"%(what)s\" using an exception"
+msgstr "%(who)s đã duyệt “%(step)s” của “%(what)s” bằng một ngoại lệ"
+
+#. module: biz_approval_workflow
+msgid "Moved here by %s"
+msgstr "Được %s chuyển sang đây"
+
+#. module: biz_approval_workflow
+msgid "\"%(step)s\" on \"%(what)s\" was passed to %(who)s because it was late"
+msgstr "“%(step)s” của “%(what)s” đã chuyển cho %(who)s vì quá hạn"
+
+#. module: biz_approval_workflow
+msgid "A reminder went out for \"%(step)s\" on \"%(what)s\""
+msgstr "Đã gửi nhắc nhở cho “%(step)s” của “%(what)s”"
+
+#. module: biz_approval_workflow
+msgid "\"%(step)s\" on \"%(what)s\" is overdue and was passed up"
+msgstr "“%(step)s” của “%(what)s” đã quá hạn và được chuyển lên trên"
+
+#. module: biz_approval_workflow
+msgid "\"%(what)s\" was approved but could not be carried out: %(why)s"
+msgstr "“%(what)s” đã được duyệt nhưng không thực hiện được: %(why)s"
+
+#. module: biz_approval_workflow
+msgid "Nothing was given to send in for approval."
+msgstr "Không có gì được đưa vào để gửi phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "More than one route applies here."
+msgstr "Có nhiều hơn một lộ trình áp dụng ở đây."
+
+#. module: biz_approval_workflow
+msgid "This is the route used."
+msgstr "Đây là lộ trình được dùng."
+
+#. module: biz_approval_workflow
+msgid "Only another kind of request is covered here."
+msgstr "Ở đây chỉ có loại yêu cầu khác được bao phủ."
+
+#. module: biz_approval_workflow
+msgid "That company no longer exists."
+msgstr "Công ty đó không còn tồn tại."
+
+#. module: biz_approval_workflow
+msgid "Applied as soon as it is sent in, and recorded."
+msgstr "Được thực hiện ngay khi gửi, và được ghi lại."
+
+#. module: biz_approval_workflow
+msgid "That version of the workflow no longer exists."
+msgstr "Phiên bản đó của quy trình không còn tồn tại."
+
+#. module: biz_approval_workflow
+msgid "This step does not say who decides it."
+msgstr "Bước này không nêu ai là người quyết định."
+
+#. module: biz_approval_workflow
+msgid "%(name)s %(why)s and cannot also decide this step while the independence rule is on."
+msgstr "%(name)s %(why)s nên không thể đồng thời quyết định bước này khi quy tắc độc lập đang bật."
+
+#. module: biz_approval_workflow
+msgid "Backup for %s (they already decided an earlier step)"
+msgstr "Người dự phòng cho %s (họ đã quyết định một bước trước đó)"
+
+#. module: biz_approval_workflow
+msgid "%s already decides an earlier step and has no backup, so they would be asked twice."
+msgstr "%s đã quyết định một bước trước đó và không có người dự phòng, nên sẽ bị hỏi hai lần."
+
+#. module: biz_approval_workflow
+msgid "Only a draft can be published."
+msgstr "Chỉ bản nháp mới có thể được công bố."
+
+#. module: biz_approval_workflow
+msgid "This workflow changed while you were looking at it. Open it again to see the latest before publishing."
+msgstr "Quy trình này đã thay đổi trong lúc bạn đang xem. Hãy mở lại để xem bản mới nhất trước khi công bố."
+
+#. module: biz_approval_workflow
+msgid "This cannot be published yet: %s"
+msgstr "Chưa thể công bố: %s"
+
+#. module: biz_approval_workflow
+msgid "Please confirm these before publishing: %s"
+msgstr "Hãy xác nhận những điểm sau trước khi công bố: %s"
+
+#. module: biz_approval_workflow
+msgid "This is not waiting to be carried out."
+msgstr "Việc này không đang chờ được thực hiện."
+
+#. module: biz_approval_workflow
+msgid "That request no longer exists."
+msgstr "Yêu cầu đó không còn tồn tại."
+
+#. module: biz_approval_workflow
+msgid "This request changed while you were looking at it. Reload to see the latest."
+msgstr "Yêu cầu này đã thay đổi trong lúc bạn đang xem. Hãy tải lại để xem bản mới nhất."
+
+#. module: biz_approval_workflow
+msgid "This request is already finished, so it cannot be decided again."
+msgstr "Yêu cầu này đã kết thúc nên không thể quyết định lại."
+
+#. module: biz_approval_workflow
+msgid "That step is not waiting for a decision."
+msgstr "Bước đó không đang chờ quyết định."
+
+#. module: biz_approval_workflow
+msgid "This step is not waiting for you."
+msgstr "Bước này không chờ bạn."
+
+#. module: biz_approval_workflow
+msgid "Say why you are moving this to someone else."
+msgstr "Hãy nêu lý do bạn chuyển việc này cho người khác."
+
+#. module: biz_approval_workflow
+msgid "That seat is not waiting for anyone."
+msgstr "Vị trí đó không chờ ai cả."
+
+#. module: biz_approval_workflow
+msgid "That person cannot be asked to decide this."
+msgstr "Không thể nhờ người đó quyết định việc này."
+
+#. module: biz_approval_workflow
+msgid "%s does not work in the company this belongs to."
+msgstr "%s không làm việc ở công ty mà việc này thuộc về."
+
+#. module: biz_approval_workflow
+msgid "%s is already on this step."
+msgstr "%s đã có mặt ở bước này."
+
+#. module: biz_approval_workflow
+msgid "This is already finished."
+msgstr "Việc này đã kết thúc."
+
+#. module: biz_approval_workflow
+msgid "This request is not stuck."
+msgstr "Yêu cầu này không bị kẹt."
+
+#. module: biz_approval_workflow
+msgid "No route set here."
+msgstr "Chưa đặt lộ trình ở đây."
+
+#. module: biz_approval_workflow
+msgid "There is no approval set up for this yet. Someone who looks after approvals needs to choose one before this can be sent in."
+msgstr "Chưa có phê duyệt nào được thiết lập cho việc này. Người phụ trách phê duyệt cần chọn một lộ trình trước khi có thể gửi đi."
+
+#. module: biz_approval_workflow
+msgid "Approvals for this are paused, so nothing new can be sent in. \"%s\" says why and how to start them again."
+msgstr "Phê duyệt cho việc này đang tạm dừng nên không gửi mới được. “%s” cho biết lý do và cách bật lại."
+
+#. module: biz_approval_workflow
+msgid "\"%s\" has not been published yet, so it cannot be used."
+msgstr "“%s” chưa được công bố nên không dùng được."
+
+#. module: biz_approval_workflow
+msgid "Nobody checks this before it happens. That is your choice; every one is still recorded."
+msgstr "Không ai kiểm tra trước khi việc này xảy ra. Đó là lựa chọn của bạn; mọi lần dùng vẫn được ghi lại."
+
+#. module: biz_approval_workflow
+msgid "This is about several people with different managers, so more than one person would be asked."
+msgstr "Việc này liên quan đến nhiều người có quản lý khác nhau, nên sẽ có nhiều hơn một người được hỏi."
+
+#. module: biz_approval_workflow
+msgid "sent this in"
+msgstr "đã gửi việc này"
+
+#. module: biz_approval_workflow
+msgid "prepared this"
+msgstr "đã chuẩn bị việc này"
+
+#. module: biz_approval_workflow
+msgid "this is about them"
+msgstr "việc này liên quan đến họ"
+
+#. module: biz_approval_workflow
+msgid "%(name)s %(why)s. With a written reason they may still decide, and it is marked in the trail."
+msgstr "%(name)s %(why)s. Nếu có lý do viết ra, họ vẫn có thể quyết định và điều đó được đánh dấu trong nhật ký."
+
+#. module: biz_approval_workflow
+msgid "Turn the independence rule off"
+msgstr "Tắt quy tắc độc lập"
+
+#. module: biz_approval_workflow
+msgid "%s already decides an earlier step, so this one goes to their backup."
+msgstr "%s đã quyết định một bước trước đó, nên bước này chuyển cho người dự phòng của họ."
+
+#. module: biz_approval_workflow
+msgid "Money leaves the company on this one and only one person signs it off. Two people are the usual safeguard."
+msgstr "Tiền ra khỏi công ty ở việc này mà chỉ có một người ký duyệt. Thông lệ an toàn là hai người."
+
+#. module: biz_approval_workflow
+msgid "The whole-coverage check could not run for this kind of request, so one good example is all there is to go on."
+msgstr "Không chạy được kiểm tra bao phủ toàn bộ cho loại yêu cầu này, nên chỉ có một ví dụ để dựa vào."
+
+#. module: biz_approval_workflow
+msgid "That kind of record is not part of this app."
+msgstr "Loại hồ sơ đó không thuộc ứng dụng này."
+
+#. module: biz_approval_workflow
+msgid "That record no longer exists."
+msgstr "Hồ sơ đó không còn tồn tại."
+
+#. module: biz_approval_workflow
+msgid "The change could not be carried out. Nothing was half-done; it can be tried again."
+msgstr "Không thực hiện được thay đổi. Không có gì bị làm dở; có thể thử lại."
+
+#. module: biz_approval_workflow
+msgid "Someone else is deciding this right now. Give it a moment and try again."
+msgstr "Người khác đang quyết định việc này. Hãy chờ một lát rồi thử lại."
+
+#. module: biz_approval_workflow
+msgid "You have already given your answer on this step."
+msgstr "Bạn đã trả lời ở bước này rồi."
+
+#. module: biz_approval_workflow
+msgid "You are no longer covering this seat, so you cannot decide it. Someone who looks after approvals can move it to you."
+msgstr "Bạn không còn đảm nhiệm vị trí này nên không thể quyết định. Người phụ trách phê duyệt có thể chuyển việc này cho bạn."
+
+#. module: biz_approval_workflow
+msgid "Backup, because this was late"
+msgstr "Người dự phòng, vì việc này quá hạn"
+
+#. module: biz_approval_workflow
+msgid "Late: passed to the backup, as set up."
+msgstr "Quá hạn: đã chuyển cho người dự phòng theo thiết lập."
+
+#. module: biz_approval_workflow
+msgid "Two approval routes apply to this at the same time, so the app cannot tell which to use. Someone who looks after approvals needs to end or narrow one of them."
+msgstr "Có hai lộ trình phê duyệt cùng áp dụng nên ứng dụng không biết dùng lộ trình nào. Người phụ trách phê duyệt cần kết thúc hoặc thu hẹp một trong hai."
+
+#. module: biz_approval_workflow
+msgid "No step applies to this example, so it would be applied immediately and recorded."
+msgstr "Không có bước nào áp dụng cho ví dụ này, nên việc sẽ được thực hiện ngay và ghi lại."
+
+#. module: biz_approval_workflow
+msgid "This step uses a responsibility that no longer exists."
+msgstr "Bước này dùng một trách nhiệm không còn tồn tại."
+
+#. module: biz_approval_workflow
+msgid "Nobody holds \"%(role)s\" for %(where)s yet."
+msgstr "Chưa ai giữ vai trò “%(role)s” cho %(where)s."
+
+#. module: biz_approval_workflow
+msgid "No manager is recorded for the people this is about, so nobody can be asked."
+msgstr "Không có quản lý nào được ghi nhận cho những người liên quan, nên không thể hỏi ai."
+
+#. module: biz_approval_workflow
+msgid "This step names nobody."
+msgstr "Bước này không nêu tên ai."
+
+#. module: biz_approval_workflow
+msgid "Someone named on this step no longer has an account in use."
+msgstr "Một người được nêu ở bước này không còn tài khoản đang dùng."
+
+#. module: biz_approval_workflow
+msgid "Use the backup instead"
+msgstr "Dùng người dự phòng thay thế"
+
+#. module: biz_approval_workflow
+msgid "Name a backup"
+msgstr "Chỉ định người dự phòng"
+
+#. module: biz_approval_workflow
+msgid "\"%s\" covers the same place and kind of request as this one. End or narrow one of them first."
+msgstr "“%s” bao phủ cùng bộ phận và loại yêu cầu như mục này. Hãy kết thúc hoặc thu hẹp một trong hai trước."
+
+#. module: biz_approval_workflow
+msgid "\"%s\" has nobody named as a backup, so a holiday will hold it up."
+msgstr "“%s” chưa có người dự phòng, nên một kỳ nghỉ sẽ làm việc này ách lại."
+
+#. module: biz_approval_workflow
+msgid "Nobody could be found to decide \"%s\"."
+msgstr "Không tìm được ai để quyết định “%s”."
+
+#. module: biz_approval_workflow
+msgid "%(via)s · covered by %(who)s"
+msgstr "%(via)s · do %(who)s đảm nhiệm"
+
+#. module: biz_approval_workflow
+msgid "This changed after it was sent in, so the approval no longer covers it. Send it back and ask for it again."
+msgstr "Việc này đã thay đổi sau khi gửi đi, nên phê duyệt không còn bao phủ nữa. Hãy trả lại và gửi xin duyệt lại."
+
+#. module: biz_approval_workflow
+msgid "You were part of preparing or sending this in, so you cannot also approve it. Ask someone else, or ask for an exception."
+msgstr "Bạn đã tham gia chuẩn bị hoặc gửi việc này nên không thể tự duyệt. Hãy nhờ người khác, hoặc xin một ngoại lệ."
+
+#. module: biz_approval_workflow
+msgid "Write why you are approving something you were part of. It is kept with the decision."
+msgstr "Hãy viết lý do bạn duyệt việc mà chính bạn có tham gia. Lý do được lưu cùng quyết định."
+
+#. module: biz_approval_workflow
+msgid "no reason given"
+msgstr "không nêu lý do"
+
+#. module: biz_approval_workflow
+msgid "%(where)s: %(what)s Requests from there will be stuck until someone is named."
+msgstr "%(where)s: %(what)s Yêu cầu từ đó sẽ bị kẹt cho đến khi có người được chỉ định."
+
+#. module: biz_approval_workflow
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: biz_approval_workflow
+msgid "sent back"
+msgstr "đã trả lại"
+
+#. module: biz_approval_workflow
+msgid "turned down"
+msgstr "đã từ chối"
+
+#. module: biz_approval_workflow
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: biz_approval_workflow
+msgid "This has already been sent in. Only a draft or something sent back can be sent again."
+msgstr "Việc này đã được gửi. Chỉ bản nháp hoặc việc đã bị trả lại mới gửi lại được."
+
+#. module: biz_approval_workflow
+msgid "Say what you are asking for."
+msgstr "Hãy nêu rõ bạn đang xin điều gì."
+
+#. module: biz_approval_workflow
+msgid "Whether this is approved is decided by the people on its approval route, not by editing it here."
+msgstr "Việc này được duyệt hay không là do những người trên lộ trình phê duyệt quyết định, không phải bằng cách sửa ở đây."
+
+#. module: biz_approval_workflow
+msgid "This has been sent in for approval, so it cannot be changed. Ask for it to be sent back first."
+msgstr "Việc này đã được gửi đi phê duyệt nên không sửa được. Hãy xin trả lại trước."
+
+#. module: biz_approval_workflow
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: biz_approval_workflow
+msgid "Marked urgent"
+msgstr "Được đánh dấu khẩn"
+
+#. module: biz_approval_workflow
+msgid "Kind of request"
+msgstr "Loại yêu cầu"
+
+#. module: biz_approval_workflow
+msgid "Any kind"
+msgstr "Mọi loại"
+
+#. module: biz_approval_workflow
+msgid "%(name)s already holds this responsibility for the same area over the same dates. End that one first."
+msgstr "%(name)s đã giữ trách nhiệm này cho cùng khu vực trong cùng khoảng thời gian. Hãy kết thúc mục đó trước."
+
+#. module: biz_approval_workflow
+msgid "Approval: %s"
+msgstr "Phê duyệt: %s"
+
+#. module: biz_approval_workflow
+msgid "an approval"
+msgstr "một phê duyệt"
+
+#. module: biz_approval_workflow
+msgid "Your approval is needed: %s"
+msgstr "Cần bạn phê duyệt: %s"
+
+#. module: biz_approval_workflow
+msgid "Still waiting for your approval: %s"
+msgstr "Vẫn đang chờ bạn phê duyệt: %s"
+
+#. module: biz_approval_workflow
+msgid "Overdue approval: %s"
+msgstr "Phê duyệt quá hạn: %s"
+
+#. module: biz_approval_workflow
+msgid "Sent back to you: %s"
+msgstr "Đã trả lại cho bạn: %s"
+
+#. module: biz_approval_workflow
+msgid "Approved: %s"
+msgstr "Đã duyệt: %s"
+
+#. module: biz_approval_workflow
+msgid "Turned down: %s"
+msgstr "Đã từ chối: %s"
+
+#. module: biz_approval_workflow
+msgid "An exception was used: %s"
+msgstr "Một ngoại lệ đã được dùng: %s"
+
+#. module: biz_approval_workflow
+msgid "You are covering an approval: %s"
+msgstr "Bạn đang đảm nhiệm một phê duyệt: %s"
+
+#. module: biz_approval_workflow
+msgid "Your approval is needed on \"%s\"."
+msgstr "Cần bạn phê duyệt “%s”."
+
+#. module: biz_approval_workflow
+msgid "Step: %s"
+msgstr "Bước: %s"
+
+#. module: biz_approval_workflow
+msgid "Reason given: %s"
+msgstr "Lý do đã nêu: %s"
+
+#. module: biz_approval_workflow
+msgid "This is still waiting for you."
+msgstr "Việc này vẫn đang chờ bạn."
+
+#. module: biz_approval_workflow
+msgid "This has passed its target time and nobody has decided it yet."
+msgstr "Việc này đã quá thời hạn mong muốn và chưa ai quyết định."
+
+#. module: biz_approval_workflow
+msgid "This was sent back to you."
+msgstr "Việc này đã được trả lại cho bạn."
+
+#. module: biz_approval_workflow
+msgid "This was approved."
+msgstr "Việc này đã được duyệt."
+
+#. module: biz_approval_workflow
+msgid "This was turned down."
+msgstr "Việc này đã bị từ chối."
+
+#. module: biz_approval_workflow
+msgid "Someone approved a step they were involved in, using an exception you allowed."
+msgstr "Có người đã duyệt một bước mà chính họ tham gia, bằng ngoại lệ bạn cho phép."
+
+#. module: biz_approval_workflow
+msgid "You are covering this for someone else."
+msgstr "Bạn đang đảm nhiệm việc này thay cho người khác."
+
+#. module: biz_approval_workflow
+msgid "What would change"
+msgstr "Những gì sẽ thay đổi"
+
+#. module: biz_approval_workflow
+msgid "%(who)s is allowed to approve this but not to carry it out — that needs %(what)s. Hand this step to somebody who has it, or ask for the permission to be added."
+msgstr "%(who)s được phép duyệt việc này nhưng không được phép thực hiện — việc đó cần %(what)s. Hãy chuyển bước này cho người có quyền, hoặc xin cấp thêm quyền."
+
+#. module: biz_approval_workflow
+msgid "This has already been carried out."
+msgstr "Việc này đã được thực hiện."
+
+#. module: biz_approval_workflow
+msgid "What is being asked for"
+msgstr "Đang xin điều gì"
+
+#. module: biz_approval_workflow
+msgid "%s item(s)"
+msgstr "%s mục"
+
+#. module: biz_approval_workflow
+msgid "What"
+msgstr "Nội dung"
+
+#. module: biz_approval_workflow
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: biz_approval_workflow
+msgid "Proposed"
+msgstr "Đề xuất"
+
+#. module: biz_approval_workflow
+msgid "This kind of request cannot be carried out on its own yet."
+msgstr "Loại yêu cầu này chưa thể tự thực hiện."
+
+#. module: biz_approval_workflow
+msgid " and %s more"
+msgstr " và %s mục nữa"
+
+#. module: biz_approval_workflow
+msgid "Nothing was changed. Somebody else has already changed this since it was proposed: %(what)s%(more)s. Send it back and propose it again against what is there now."
+msgstr "Không có gì được thay đổi. Người khác đã thay đổi nội dung này kể từ khi được đề xuất: %(what)s%(more)s. Hãy trả lại và đề xuất lại dựa trên hiện trạng."
+
+#. module: biz_approval_workflow
+msgid "A reason was written down"
+msgstr "Đã ghi lại lý do"
+
+#. module: biz_approval_workflow
+msgid "Where"
+msgstr "Ở đâu"
+
+#. module: biz_approval_workflow
+msgid "%(what)s (was %(was)s, now %(now)s)"
+msgstr "%(what)s (trước là %(was)s, nay là %(now)s)"
+
+#. module: biz_approval_workflow
+msgid "Nothing was changed: %(what)s%(more)s."
+msgstr "Không có gì được thay đổi: %(what)s%(more)s."
+
+#. module: biz_approval_workflow
+msgid "another permission"
+msgstr "một quyền khác"
+
+#. module: biz_approval_workflow
+msgid "Proposed by %s"
+msgstr "Do %s đề xuất"
+
+#. module: biz_approval_workflow
+msgid "Approved as %(ref)s"
+msgstr "Đã duyệt với mã %(ref)s"

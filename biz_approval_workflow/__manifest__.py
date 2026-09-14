@@ -23,6 +23,10 @@ What it owns
 * biz.approval.engine         — resolve / preview / validate / publish /
                                 submit / decide / reassign / cancel / repair
 * biz.approval.adapter.mixin  — the contract a business model implements
+* biz.approval.proposal.mixin — a change written down before anybody may make
+                                it, for every door whose press IS the change:
+                                snapshot re-check, the permission the original
+                                door required, the audit line, the fast lane
 * biz.approval.generic.request— a real "Other request" object and the reference
                                 adapter implementation
 
@@ -34,7 +38,7 @@ Nothing here ever approves on its own: escalation reminds, escalates and — onl
 when configured — reassigns to a named backup. A route with no steps is a
 published choice ("no approval needed"), never an escalation outcome.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
