@@ -24,6 +24,8 @@ import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .tenant_approval import pending_answer, propose_platform
+
 from .billing_rules import SERVING_STATES
 from .rollout_rules import (
     CUSTOMER_RINGS, DEFAULT_HOURS, DEFAULT_START_HOUR, DEFAULT_TZ, PRE_NOTICE_HOURS,
@@ -373,6 +375,20 @@ class PbTenantsRollout(models.AbstractModel):
         blockers = self._rollout_blockers(rel, missing, plan)
         if blockers:
             raise UserError('\n\n'.join(blockers))
+
+        # Sending a release to every customer is a platform decision (P7).
+        held = propose_platform(
+            self.env, 'rollout_start',
+            _("Roll %s out to every customer", rel.name or ''),
+            {'release_id': rel.id, 'watch_canary': watch_canary,
+             'watch_early': watch_early},
+            tenants=self.env['pb.tenant'].sudo().browse(
+                [t['tenant_id'] for t in plan['tasks'] if t.get('tenant_id')]))
+        if held is not None and not held.get('applied'):
+            return dict(self.rollout_state(),
+                        **pending_answer(held, _("The rollout")))
+        if held is not None:
+            return self.rollout_state()
 
         rollout = self.env['pb.rollout'].sudo().create({
             'release_id': rel.id,
@@ -914,6 +930,15 @@ class PbTenantsRollout(models.AbstractModel):
         if (confirm or '').strip() != r.release_id.name:
             raise UserError(_('Type "%s" to call this rollout off.')
                             % r.release_id.name)
+        held = propose_platform(
+            self.env, 'rollout_abort',
+            _("Stop the rollout of %s", r.release_id.name or ''),
+            {'rollout_id': r.id, 'confirm': r.release_id.name},
+            tenants=r.task_ids.mapped('tenant_id'), typed=confirm)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("Stopping the rollout"))
+        if held is not None:
+            return self.rollout_state()
         left = r.task_ids.filtered(lambda t: t.state in ('queued', 'failed'))
         left.write({'state': 'skipped'})
         r.sudo().write({'state': 'aborted', 'finished_at': fields.Datetime.now(),

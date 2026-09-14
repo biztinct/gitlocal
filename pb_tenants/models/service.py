@@ -30,6 +30,8 @@ from datetime import datetime, timedelta, timezone
 import odoo
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+
+from .tenant_approval import pending_answer, propose_platform
 from odoo.modules.registry import Registry
 from odoo.service import db as db_service
 
@@ -2686,6 +2688,15 @@ class PbTenants(models.AbstractModel):
             b = Backup.search([('tenant_id', '=', t.id), ('state', '=', 'done')], limit=1)
         if not b or not os.path.exists(b.path):
             raise UserError(_('No usable backup file found for this tenant.'))
+        held = propose_platform(
+            self.env, 'restore_staging',
+            _("Restore %s from a backup", t.name or t.slug),
+            {'tenant_id': t.id, 'backup_id': b.id}, tenants=t)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("The restore"))
+        if held is not None:
+            return dict(held.get('result') or {}, ok=True,
+                        reference=held.get('reference'))
         staging = '%s-staging' % t.slug
         if self._db_exists(staging):
             _direct(db_service.exp_drop)(staging)
@@ -2719,6 +2730,15 @@ class PbTenants(models.AbstractModel):
             raise UserError(_('Confirmation text does not match the tenant subdomain.'))
         if t.state == 'decommissioned':
             raise UserError(_('Tenant is already decommissioned.'))
+        held = propose_platform(
+            self.env, 'offboard', _("Close %s down", t.name or t.slug),
+            {'tenant_id': t.id, 'confirm_slug': t.slug},
+            tenants=t, typed=confirm_slug)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("Closing %s down") % t.name)
+        if held is not None:
+            return dict(held.get('result') or {}, ok=True,
+                        reference=held.get('reference'))
         final = None
         if self._db_exists(t.slug):
             final = self._do_backup(t, 'final')

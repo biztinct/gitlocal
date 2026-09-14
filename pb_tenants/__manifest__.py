@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Tenant Mission Control',
     'summary': 'Create and manage Payobook SaaS tenants: provisioning, backups, custom domains, health.',
-    'version': '19.0.2.2.0',
+    'version': '19.0.2.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -16,9 +16,12 @@
                 # real dependency of this one, on the master only: `pb_tenancy`
                 # is a product module every database gets, and this cockpit is
                 # the one module no customer ever gets.
-                'pb_tenancy'],
+                'pb_tenancy',
+                # P7: pausing or closing a customer is a decision.
+                'biz_approval_workflow'],
     'data': [
         'security/ir.model.access.csv',
+        'security/tenant_approval_rules.xml',
         'views/pb_tenants_action.xml',
         'data/pb_sidebar.xml',
         'data/pb_feature.xml',
@@ -37,6 +40,7 @@
             'pb_tenants/static/src/xml/tenants.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -28,6 +28,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .tenant_approval import pending_answer, propose_platform
+
 from .billing_rules import SERVING_STATES
 from .feature_rules import (
     MODES, T_FEATURES, custom_count, effective_features, features_sentence,
@@ -265,6 +267,20 @@ class PbTenantsFeatures(models.AbstractModel):
             lambda t: t.state != 'decommissioned')
         if not tenants:
             raise UserError(_("Pick at least one customer first."))
+        held = propose_platform(
+            self.env, 'features_bulk',
+            _("Switch %(name)s %(word)s for %(n)s customer(s)",
+              name=feature.name or key, word=_("on") if on else _("off"),
+              n=len(tenants)),
+            {'key': key, 'on': on, 'tenant_ids': tenants.ids,
+             'reason': reason},
+            tenants=tenants, reason=reason)
+        if held is not None and not held.get('applied'):
+            return dict(pending_answer(held, _("The switch")),
+                        sent=[], failed=[], data=self.features_data())
+        if held is not None:
+            return dict(held.get('result') or {},
+                        reference=held.get('reference'))
         sent, failed = [], []
         for tenant in tenants:
             self._write_switch(tenant, feature, on, reason)
@@ -309,6 +325,15 @@ class PbTenantsFeatures(models.AbstractModel):
             raise UserError(_("A feature is either hidden or shown locked."))
         if 'name' in clean and not (clean['name'] or '').strip():
             raise UserError(_("A feature needs a name people can read."))
+        held = propose_platform(
+            self.env, 'feature_save',
+            _("Change the feature %s", feature.name or ''),
+            {'feature_id': feature.id, 'vals': clean})
+        if held is not None and not held.get('applied'):
+            return dict(self.features_data(),
+                        **pending_answer(held, _("The change")))
+        if held is not None:
+            return self.features_data()
         feature.write(clean)
         for tenant in self.env['pb.tenant'].sudo().search(
                 [('state', 'in', SERVING_STATES)]):

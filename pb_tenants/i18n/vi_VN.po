@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -1502,3 +1502,180 @@ msgstr "n/a"
 #: code:addons/pb_tenants/static/src/js/tenants.js:316
 msgid "Offboarding failed."
 msgstr "Tắt máy không thành công."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_tenants
+msgid "%(what)s was sent for approval — it is with %(who)s."
+msgstr "%(what)s đã được gửi phê duyệt — đang ở chỗ %(who)s."
+
+#. module: pb_tenants
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_tenants
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_tenants
+msgid "Cannot be undone"
+msgstr "Không thể hoàn tác"
+
+#. module: pb_tenants
+msgid "Change the feature %s"
+msgstr "Thay đổi tính năng %s"
+
+#. module: pb_tenants
+msgid "Close %s down"
+msgstr "Đóng %s"
+
+#. module: pb_tenants
+msgid "Closing %s down"
+msgstr "Việc đóng %s"
+
+#. module: pb_tenants
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_tenants
+msgid "Customers affected"
+msgstr "Số khách hàng bị ảnh hưởng"
+
+#. module: pb_tenants
+msgid "Ending %s"
+msgstr "Việc kết thúc %s"
+
+#. module: pb_tenants
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_tenants
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_tenants
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_tenants
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_tenants
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_tenants
+msgid "Pause %s"
+msgstr "Tạm dừng %s"
+
+#. module: pb_tenants
+msgid "Pausing %s"
+msgstr "Việc tạm dừng %s"
+
+#. module: pb_tenants
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_tenants
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_tenants
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_tenants
+msgid "Put %(who)s on %(plan)s"
+msgstr "Chuyển %(who)s sang gói %(plan)s"
+
+#. module: pb_tenants
+msgid "Restore %s from a backup"
+msgstr "Khôi phục %s từ bản sao lưu"
+
+#. module: pb_tenants
+msgid "Roll %s out to every customer"
+msgstr "Triển khai %s cho mọi khách hàng"
+
+#. module: pb_tenants
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_tenants
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_tenants
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_tenants
+msgid "Set the end date for %s"
+msgstr "Đặt ngày kết thúc cho %s"
+
+#. module: pb_tenants
+msgid "Stop the rollout of %s"
+msgstr "Dừng đợt triển khai %s"
+
+#. module: pb_tenants
+msgid "Stopping the rollout"
+msgstr "Việc dừng đợt triển khai"
+
+#. module: pb_tenants
+msgid "Switch %(name)s %(word)s for %(n)s customer(s)"
+msgstr "Bật/tắt %(name)s thành %(word)s cho %(n)s khách hàng"
+
+#. module: pb_tenants
+msgid "The change"
+msgstr "Thay đổi này"
+
+#. module: pb_tenants
+msgid "The fleet screens are not installed on this database."
+msgstr "Màn hình quản lý khách hàng không được cài trên cơ sở dữ liệu này."
+
+#. module: pb_tenants
+msgid "The plan change"
+msgstr "Việc đổi gói"
+
+#. module: pb_tenants
+msgid "The restore"
+msgstr "Việc khôi phục"
+
+#. module: pb_tenants
+msgid "The rollout"
+msgstr "Đợt triển khai"
+
+#. module: pb_tenants
+msgid "The switch"
+msgstr "Việc bật/tắt"
+
+#. module: pb_tenants
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_tenants
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_tenants
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_tenants
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_tenants
+msgid "off"
+msgstr "tắt"
+
+#. module: pb_tenants
+msgid "on"
+msgstr "bật"
+
+#. module: pb_tenants
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

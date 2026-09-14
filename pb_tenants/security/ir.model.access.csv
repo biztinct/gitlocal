@@ -13,3 +13,5 @@ access_pb_plan_tier_admin,pb.plan.tier admin,model_pb_plan_tier,base.group_syste
 access_pb_tenant_usage_admin,pb.tenant.usage admin,model_pb_tenant_usage,base.group_system,1,1,1,1
 access_pb_tenant_invoice_admin,pb.tenant.invoice admin,model_pb_tenant_invoice,base.group_system,1,1,1,1
 access_pb_tenant_invoice_line_admin,pb.tenant.invoice.line admin,model_pb_tenant_invoice_line,base.group_system,1,1,1,1
+access_pb_tenant_proposal_system,platform proposal system,model_pb_tenant_proposal,base.group_system,1,1,1,1
+access_pb_tenant_proposal_seat,platform proposal anyone asked to decide,model_pb_tenant_proposal,base.group_user,1,0,0,0

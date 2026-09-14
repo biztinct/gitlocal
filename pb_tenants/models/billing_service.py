@@ -33,6 +33,8 @@ from datetime import timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .tenant_approval import pending_answer, propose_platform
+
 from .billing_rules import (
     DEFAULT_DUE_DAYS, DEFAULT_REMINDER_DAYS, DEFAULT_RETENTION_DAYS,
     DEFAULT_SUSPEND_AFTER_DAYS, DEFAULT_TRIAL_DAYS, PRICING, PRICING_LABEL,
@@ -783,6 +785,17 @@ class PbTenantsBilling(models.AbstractModel):
         plan = self.env['pb.plan'].sudo().browse(int(plan_id or 0)).exists()
         if not plan:
             raise UserError(_("Pick a plan first."))
+        held = propose_platform(
+            self.env, 'set_plan',
+            _("Put %(who)s on %(plan)s", who=tenant.name or tenant.slug,
+              plan=plan.name or ''),
+            {'tenant_id': tenant.id, 'plan_id': plan.id, 'trial': trial},
+            tenants=tenant)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("The plan change"))
+        if held is not None:
+            return dict(held.get('result') or {}, ok=True,
+                        reference=held.get('reference'))
         vals = {'plan_id': plan.id}
         if trial and tenant.state in ('trial', 'live'):
             vals['state'] = 'trial'
@@ -847,6 +860,18 @@ class PbTenantsBilling(models.AbstractModel):
             raise UserError(_(
                 "Type %s to confirm. Pausing shuts every one of their people "
                 "out of Payobook until somebody resumes it.") % tenant.slug)
+        # The typed slug is checked HERE, before anything is written down, so
+        # a typo can never become a request about the wrong customer (P7).
+        held = propose_platform(
+            self.env, 'suspend', _("Pause %s", tenant.name or tenant.slug),
+            {'tenant_id': tenant.id, 'reason': reason,
+             'confirm_slug': tenant.slug},
+            tenants=tenant, typed=confirm_slug, reason=reason)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("Pausing %s") % tenant.name)
+        if held is not None:
+            return dict(held.get('result') or {}, ok=True,
+                        reference=held.get('reference'))
         return self._do_suspend(tenant, reason or _("Unpaid invoice."))
 
     def _do_suspend(self, tenant, reason):
@@ -898,6 +923,17 @@ class PbTenantsBilling(models.AbstractModel):
             days = max(1, int(days or DEFAULT_RETENTION_DAYS))
         except (TypeError, ValueError):
             days = DEFAULT_RETENTION_DAYS
+        held = propose_platform(
+            self.env, 'schedule_deletion',
+            _("Set the end date for %s", tenant.name or tenant.slug),
+            {'tenant_id': tenant.id, 'days': days, 'reason': reason,
+             'confirm_slug': tenant.slug},
+            tenants=tenant, typed=confirm_slug, reason=reason)
+        if held is not None and not held.get('applied'):
+            return pending_answer(held, _("Ending %s") % tenant.name)
+        if held is not None:
+            return dict(held.get('result') or {}, ok=True,
+                        reference=held.get('reference'))
         backup = ''
         try:
             self._do_backup(tenant, 'final')

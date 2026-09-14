@@ -25,3 +25,5 @@ from . import test_billing
 from . import test_support
 # ERRORS E4-1 — how much of their own brand each customer gets.
 from . import test_brand_rules
+# Approval Matrix P7 — two owners agree before a customer is paused.
+from . import test_p7_platform
