@@ -99,6 +99,15 @@ class BizApprovalProposalMixin(models.AbstractModel):
     #: Group xml ids the ORIGINAL door required. The last approver must hold
     #: one of them, because they are the one who performs the write.
     _proposal_gate_groups = ()
+    #: May a route for this kind of proposal name "their manager"?
+    #:
+    #: FALSE by default, and that is a real answer rather than a shrug: most
+    #: proposals are about a RATE, a BAND or a CUSTOMER and have no person for
+    #: a manager to be the manager OF. A proposal that is about somebody sets
+    #: this True and overrides `_approval_manager_uids` to say who — and if it
+    #: does not, `validate_for_publish` refuses the route rather than letting a
+    #: step resolve to nobody.
+    _proposal_manager_mode = False
 
     # ------------------------------------------------------------- the row
     name = fields.Char(string='Reference', readonly=True, copy=False,
@@ -369,7 +378,7 @@ class BizApprovalProposalMixin(models.AbstractModel):
             'evidence': [{'key': 'reason_given',
                           'label': _('A reason was written down')}],
             'scope_levels': [_('Whole company')],
-            'manager_mode': False,
+            'manager_mode': bool(self._proposal_manager_mode),
         }
 
     @api.model

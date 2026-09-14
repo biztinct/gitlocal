@@ -46,6 +46,10 @@ class PbVerdictProposal(models.Model):
     _approval_process_key = VERDICT_PROCESS_KEY
     _proposal_prefix = 'VER'
     _proposal_gate_groups = ()
+    #: A verdict IS about a person, and the default route's first step is
+    #: their own manager — read off the record, never off a login
+    #: (ledger AM50).
+    _proposal_manager_mode = True
     _proposal_kind_labels = {
         'fail': 'Not passed',
         'extend': 'Extended',
