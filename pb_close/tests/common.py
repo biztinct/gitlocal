@@ -24,6 +24,21 @@ class CloseCase(TransactionCase):
         cls.Grid = cls.env['hr.attendance.weekentry']
         cls.Rule = cls.env['pb.attendance.rule'].sudo()
 
+        # THESE SUITES ARE ABOUT THE GATE AND THE WEEK, NOT ABOUT APPROVALS
+        # (ledger AM100). Phase 7 puts REOPENING a closed day on a route,
+        # because taking a week back after everybody signed it is a decision —
+        # and it raises the bulk door's own gate to the one the lock model has
+        # always asked for. The gate is what these cases are about, so the
+        # company publishes the choice every company is allowed to make:
+        # nobody checks this one. The manager check is untouched and still
+        # exercised; only the second pair of eyes is waived.
+        try:
+            cls.env['biz.approval.seed'].set_no_approval_needed(
+                cls.company, 'unlock',
+                reason='Close suite: these cases are about the gate')
+        except Exception:       # noqa: BLE001 — a fixture must not die here
+            pass
+
         # A settled PAST week so nothing here collides with "today" logic and
         # nothing is scheduled in the future (shift seeding refuses that).
         today = date.today()

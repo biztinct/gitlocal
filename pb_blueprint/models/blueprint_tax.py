@@ -28,6 +28,10 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
+from odoo.addons.pb_hr_payroll_formula.models.statutory_approval import (
+    STATUTORY_WRITE as _STATUTORY_WRITE,
+)
+
 from . import recipe_compiler as rc
 from .recipe_schema import INSURANCE_BASIS, RecipeError, validate_recipe
 
@@ -343,7 +347,17 @@ class PbBlueprintTax(models.AbstractModel):
                 # BP3: `save_rate_table` unlinks and recreates every bracket, so
                 # the ids on the client are gone the moment this returns. The
                 # screen is repainted from the answer, never from what it held.
-                result = self.env['pb.formula.studio'].save_rate_table(config.id, {
+                #
+                # P7: THE GUIDED JOURNEY IS NOT HELD, AND THAT IS THE POINT.
+                # A rate table on a LIVE scheme travels the statutory route,
+                # because it is a statement about what a country pays. This one
+                # is being written inside the setup journey, on a configuration
+                # nobody is paid by yet, and the moment the whole thing IS
+                # agreed to is the scheme's own activation — which Phase 4
+                # already holds. A route in the middle of a setup wizard is a
+                # dead end, not a safeguard.
+                result = self.env['pb.formula.studio'].with_context(
+                    **{_STATUTORY_WRITE: True}).save_rate_table(config.id, {
                     'id': table.id,
                     'code': (table.code or '').upper(),
                     'name': table.name or table.code,

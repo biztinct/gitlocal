@@ -48,6 +48,22 @@ class TestSchemeMap(TransactionCase):
         })
         cls.env.user.company_ids = [(4, cls.company.id), (4, cls.other.id)]
 
+        # THIS SUITE IS ABOUT WHO IS PAID BY WHAT, NOT ABOUT APPROVALS
+        # (ledger AM100). Phase 7 puts attaching a team to a scheme on a
+        # route, because it changes what those people are paid the very next
+        # run. These cases are about what the MAP then says, so the company
+        # publishes the choice every company is allowed to make: nobody checks
+        # this one. The write gate on the board is untouched.
+        # Both companies: a proposal is filed against the company the USER is
+        # acting in, which is not the one the fixture made.
+        for company in (cls.env.company, cls.company, cls.other):
+            try:
+                cls.env['biz.approval.seed'].set_no_approval_needed(
+                    company, 'schememap',
+                    reason='Scheme map suite: these cases are about the map')
+            except Exception:   # noqa: BLE001 — a fixture must not die here
+                pass
+
         Department = cls.env['hr.department']
         cls.top = Department.create({'name': 'P2 Bakery',
                                      'company_id': cls.company.id})
