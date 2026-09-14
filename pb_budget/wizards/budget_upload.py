@@ -32,6 +32,8 @@ import io
 import logging
 
 from odoo import _, api, fields, models
+
+from odoo.addons.pb_group.models.fx_approval import FX_WRITE
 from odoo.exceptions import UserError
 
 from odoo.addons.pb_budget.models.budget_common import (BUDGET_TYPES, TYPE_KEYS,
@@ -160,6 +162,32 @@ class PbBudgetUploadWizard(models.TransientModel):
         """Read it again, then write it. The preview is never trusted."""
         self.env['pb.budget']._require_edit()
         plan = self._plan(file_b64, fy, budget_type)
+        # A budget upload writes hundreds of lines in one press (P7).
+        if not self.env.context.get(FX_WRITE) \
+                and 'pb.fx.proposal' in self.env:
+            answer = self.env['pb.fx.proposal'].propose(
+                'budget_upload',
+                _("Budget upload · %(n)s line(s)", n=len(plan['writes'])),
+                payload={'file': file_b64, 'fy': fy,
+                         'budget_type': budget_type},
+                facts={'rates_changed': {'value': 0, 'unit': ''},
+                       'budget_lines': {'value': len(plan['writes']),
+                                        'unit': ''},
+                       'amount_total': {'value': round(sum(
+                           row['amount'] for row in plan['writes']), 2),
+                           'unit': ''},
+                       'policy_changed': {'value': False, 'unit': ''}},
+                amount=round(sum(row['amount'] for row in plan['writes']), 2),
+            ).answer()
+            if not answer.get('applied'):
+                plan.pop('writes', None)
+                plan.update(answer)
+                plan['message'] = _("Sent for approval — %s",
+                                    answer.get('with_whom')
+                                    or _('your approver'))
+                return plan
+            return dict(answer.get('result') or {},
+                        reference=answer.get('reference'))
         Budget = self.env['pb.budget.line']
         created = updated = 0
         for row in plan['writes']:

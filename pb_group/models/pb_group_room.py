@@ -29,6 +29,8 @@ import time
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from .fx_approval import FX_WRITE
+
 from .pb_division import COLOUR_COUNT, fold
 
 _logger = logging.getLogger(__name__)
@@ -785,6 +787,30 @@ class PbGroupRoom(models.AbstractModel):
             group = Group.browse(group_id).exists()
             if not group:
                 raise UserError(_("That group is no longer here."))
+            # Which rate to use, which currency to read in, when the year
+            # starts: a policy, and a policy is agreed (P7). Creating a group
+            # is not held — a new group prices nothing until it has members.
+            policy_fields = ('presentation_currency_id', 'fx_policy',
+                             'fiscal_start_month', 'split_pay_policy')
+            moved = {f: payload[f] for f in policy_fields
+                     if f in payload and payload[f] != group[f]}
+            if moved and not self.env.context.get(FX_WRITE) \
+                    and 'pb.fx.proposal' in self.env:
+                answer = self.env['pb.fx.proposal'].propose(
+                    'policy',
+                    _("Money policy · %s", group.name or ''),
+                    payload={'values': dict(vals, id=group.id)},
+                    snapshot={f: group[f] for f in sorted(moved)},
+                    facts={'rates_changed': {'value': 0, 'unit': ''},
+                           'budget_lines': {'value': 0, 'unit': ''},
+                           'amount_total': {'value': 0.0, 'unit': ''},
+                           'policy_changed': {'value': True, 'unit': ''}},
+                    target=group,
+                ).answer()
+                if not answer.get('applied'):
+                    room = self.get_room()
+                    room['proposal'] = answer
+                    return room
             group.write(payload)
         else:
             group = Group.create(payload)

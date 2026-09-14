@@ -62,7 +62,7 @@ that is wrong by a factor of twenty-six thousand (R23).
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji.
 """,
-    'version': '19.0.2.2.1',
+    'version': '19.0.2.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

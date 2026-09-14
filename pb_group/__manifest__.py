@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   No amount is ever stored converted: every figure keeps the currency it was
   paid in and is converted when somebody looks at it.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -46,12 +46,15 @@ WHAT IT DOES NOT CHANGE
         'pb_hub',               # the global palette + the shared back chip
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_settings',          # the cog this screen lives behind
+        # P7: a rate, a group's money policy and a budget are decisions.
+        'biz_approval_workflow',
     ],
     'data': [
         'security/pb_group_security.xml',
         'security/ir.model.access.csv',
         'views/pb_group_views.xml',
         'views/pb_group_action.xml',
+        'security/fx_approval_rules.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -62,6 +65,7 @@ WHAT IT DOES NOT CHANGE
             'pb_group/static/src/xml/group_room.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

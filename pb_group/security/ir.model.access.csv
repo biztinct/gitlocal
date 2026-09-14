@@ -11,3 +11,6 @@ access_pb_division_link_system,division link system,model_pb_division_link,base.
 access_pb_group_visibility_user,who sees what read,model_pb_group_visibility,base.group_user,1,0,0,0
 access_pb_group_visibility_admin,who sees what admin,model_pb_group_visibility,pb_group.group_group_admin,1,1,1,1
 access_pb_group_visibility_system,who sees what system,model_pb_group_visibility,base.group_system,1,1,1,1
+access_pb_fx_proposal_admin,fx proposal admin,model_pb_fx_proposal,pb_group.group_group_admin,1,1,1,1
+access_pb_fx_proposal_system,fx proposal system,model_pb_fx_proposal,base.group_system,1,1,1,1
+access_pb_fx_proposal_seat,fx proposal anyone asked to decide,model_pb_fx_proposal,base.group_user,1,0,0,0

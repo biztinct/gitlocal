@@ -30,6 +30,8 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
+
+from odoo.addons.pb_group.models.fx_approval import FX_WRITE
 from odoo.exceptions import AccessError, UserError
 
 from .budget_common import (BOARD_ROW_CAP, BUDGET_TYPES, EXPENSE_ROW_CAP,
@@ -1165,6 +1167,22 @@ class PbBudget(models.AbstractModel):
                 "An expense belongs to HR operations or to Admin. What people "
                 "are paid comes from the pay runs themselves and is never "
                 "typed in here."))
+        if not self.env.context.get(FX_WRITE) \
+                and 'pb.fx.proposal' in self.env:
+            answer = self.env['pb.fx.proposal'].propose(
+                'budget_expense',
+                _("Expense · %(what)s", what=vals['name'].strip()),
+                payload={'values': vals},
+                facts={'rates_changed': {'value': 0, 'unit': ''},
+                       'budget_lines': {'value': 1, 'unit': ''},
+                       'amount_total': {'value': amount, 'unit': ''},
+                       'policy_changed': {'value': False, 'unit': ''}},
+                amount=amount,
+            ).answer()
+            if not answer.get('applied'):
+                return dict(answer, ok=True, pending=True)
+            return dict(answer.get('result') or {}, ok=True,
+                        reference=answer.get('reference'))
         rec = self.env['pb.budget.expense'].create({
             'name': vals['name'].strip(),
             'spend_date': vals.get('spend_date') or fields.Date.context_today(self),

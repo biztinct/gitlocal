@@ -2048,3 +2048,80 @@ msgstr "cập nhật"
 #: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
 msgid "— every figure in"
 msgstr "— mọi con số tính bằng"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_budget
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_budget
+msgid "Budget upload · %(n)s line(s)"
+msgstr "Tải ngân sách · %(n)s dòng"
+
+#. module: pb_budget
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_budget
+msgid "Expense · %(what)s"
+msgstr "Chi phí · %(what)s"
+
+#. module: pb_budget
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_budget
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_budget
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_budget
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_budget
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_budget
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_budget
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_budget
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_budget
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_budget
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_budget
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_budget
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_budget
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_budget
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
