@@ -27,6 +27,7 @@ from odoo.addons.biz_approval_workflow.models.chain_shim import (
 )
 
 from .letter import LETTER_WRITE
+from .lifecycle_common import LETTER_TYPES
 
 _logger = logging.getLogger(__name__)
 
@@ -34,7 +35,16 @@ LETTERS_PROCESS_KEY = 'letters'
 
 #: The letter types that quote what somebody is paid. A route almost always
 #: wants to answer those differently from a simple confirmation of employment.
-PAY_LETTER_TYPES = ('offer', 'salary', 'increment', 'promotion', 'bonus')
+#: Taken from `LETTER_TYPES` by hand rather than guessed: a key this product
+#: does not have would have made the fact silently always false.
+PAY_LETTER_TYPES = ('pay_review', 'pay_change', 'incentive', 'ff_cover')
+
+#: The words for each key. `pb.hr.letter.letter_type` is a RELATED field, and
+#: a related Selection's `.selection` attribute is a CALLABLE — iterating it
+#: raises `TypeError: 'function' object is not iterable`, which is exactly what
+#: the whole-catalogue scan hit on every screen that asks every adapter what it
+#: can be conditioned on. The list is the one the model itself is built from.
+LETTER_TYPE_LABELS = dict(LETTER_TYPES)
 
 
 class PbHrLetterApproval(models.Model):
@@ -68,8 +78,8 @@ class PbHrLetterApproval(models.Model):
         return {
             'company_id': company.id,
             'title': _("%(what)s for %(who)s",
-                       what=dict(self._fields['letter_type'].selection or []
-                                 ).get(self.letter_type) or _('Letter'),
+                       what=LETTER_TYPE_LABELS.get(self.letter_type)
+                       or _('Letter'),
                        who=employee.name or ''),
             'scope_keys': [''],
             'scope_label': company.name,
@@ -107,8 +117,7 @@ class PbHrLetterApproval(models.Model):
                                     'label': _('Quotes what they are paid')},
             },
             'kinds': [{'key': key, 'label': label}
-                      for key, label in (
-                          self._fields['letter_type'].selection or [])],
+                      for key, label in LETTER_TYPES],
             'evidence': [{'key': 'pdf_ready',
                           'label': _('The PDF is ready')}],
             'scope_levels': [_('Whole company')],
