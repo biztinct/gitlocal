@@ -36,6 +36,10 @@ from markupsafe import escape
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
+from odoo.addons.pb_probation.models.verdict_approval import (
+    VERDICT_WRITE, propose_verdict,
+)
+
 from .pip_common import (
     CHECKIN_FREQ_DAYS, CHECKIN_FREQS, EVAL_OBJECTIVE_PREFIX, EVAL_QUESTIONS,
     GROUP_HEAD, GROUP_USER, LETTER_PIP, OBJECTIVE_STATE_LABEL,
@@ -793,6 +797,13 @@ class PbPipCase(models.Model):
         if objective_states:
             self._write_objective_states(objective_states)
 
+        held = propose_verdict(
+            self, verdict,
+            {'args': {'verdict': verdict, 'rating': rating, 'note': note,
+                      'objective_states': None}})
+        if held is not None:
+            return held
+
         vals = {'verdict': verdict,
                 'state': VERDICT_STATE[verdict],
                 'verdict_at': fields.Datetime.now(),
@@ -964,7 +975,11 @@ class PbPipCase(models.Model):
             closed = 0
             for case in cases:
                 try:
-                    case.action_terminate(reason=reason)
+                    # The resignation this follows HAS been approved, and the
+                    # plan is closed because of it. Asking a second route to
+                    # agree would leave the plan open for ever.
+                    case.with_context(
+                        **{VERDICT_WRITE: True}).action_terminate(reason=reason)
                     closed += 1
                 except Exception:       # noqa: BLE001 — one plan, one grave
                     _logger.exception('pb_pip: could not close plan %s after '
@@ -989,6 +1004,9 @@ class PbPipCase(models.Model):
         self.ensure_one()
         if self.state not in PIP_OPEN:
             return False
+        held = propose_verdict(self, 'terminate', {'reason': reason})
+        if held is not None:
+            return held
         self.sudo().write({
             'state': 'terminated',
             'closed_at': fields.Datetime.now(),

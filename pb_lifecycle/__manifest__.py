@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.3.1',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -69,10 +69,12 @@ that has closed expires itself. The whole job is behind
         'pb_sidebar',           # this module ships a rail item
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_employee_vault',    # generated letters are filed as vault documents
+        'biz_approval_workflow',  # P7: sending a letter is the act
     ],
     'data': [
         'security/pb_lifecycle_security.xml',
         'security/ir.model.access.csv',
+        'security/letter_approval_rules.xml',
         'report/hr_letter_report.xml',
         'views/journey_template_views.xml',
         'views/letter_views.xml',
@@ -103,6 +105,7 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/scss/token_pages.scss',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -1,0 +1,138 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_lifecycle
+msgid "%(what)s for %(who)s"
+msgstr "%(what)s cho %(who)s"
+
+#. module: pb_lifecycle
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_lifecycle
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_lifecycle
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_lifecycle
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_lifecycle
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_lifecycle
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_lifecycle
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_lifecycle
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_lifecycle
+msgid "Kind of letter"
+msgstr "Loại thư"
+
+#. module: pb_lifecycle
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_lifecycle
+msgid "No email on record"
+msgstr "Hồ sơ không có email"
+
+#. module: pb_lifecycle
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_lifecycle
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_lifecycle
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_lifecycle
+msgid "Quotes pay"
+msgstr "Có nêu mức lương"
+
+#. module: pb_lifecycle
+msgid "Quotes what they are paid"
+msgstr "Có nêu mức lương của họ"
+
+#. module: pb_lifecycle
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_lifecycle
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_lifecycle
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_lifecycle
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#. module: pb_lifecycle
+msgid "The PDF is ready"
+msgstr "Tệp PDF đã sẵn sàng"
+
+#. module: pb_lifecycle
+msgid "The letter"
+msgstr "Nội dung thư"
+
+#. module: pb_lifecycle
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_lifecycle
+msgid "This letter has already been sent."
+msgstr "Thư này đã được gửi."
+
+#. module: pb_lifecycle
+msgid "To"
+msgstr "Gửi tới"
+
+#. module: pb_lifecycle
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_lifecycle
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_lifecycle
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_lifecycle
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

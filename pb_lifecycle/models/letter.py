@@ -26,6 +26,12 @@ from .lifecycle_common import LETTER_TYPES
 
 _logger = logging.getLogger(__name__)
 
+#: "This send IS the approved one." Declared HERE and not in
+#: `letter_approval`, which EXTENDS this model: importing that file from
+#: this one would run its class body first and Odoo would try to extend a
+#: model that does not exist yet.
+LETTER_WRITE = 'pb_letter_approved_send'
+
 #: The holes a letter body may contain. Shown to the author in the form help,
 #: so the list on screen and the list the engine fills are the same list.
 PLACEHOLDERS = [
@@ -249,11 +255,30 @@ class PbHrLetter(models.Model):
             return False
 
     def action_send(self):
-        """Email the letter with the PDF attached."""
+        """Email the letter with the PDF attached.
+
+        Sending is the act (P7): where a route is published this asks for it
+        and the email goes out when the route says yes. Generating stays free
+        — a draft binds nobody.
+        """
         template = self.env.ref('pb_lifecycle.mail_template_letter_delivery',
                                 raise_if_not_found=False)
         if not template:
             raise UserError(_("The letter email is not set up yet."))
+        if not self.env.context.get(LETTER_WRITE) \
+                and 'biz.approval.engine' in self.env:
+            held = self.env['biz.approval.request']
+            for rec in self:
+                if rec.state == 'sent':
+                    continue
+                if rec.state == 'draft':
+                    rec.action_generate()
+                request = self.env['biz.approval.engine'].submit(rec)
+                if request and not rec.approval_request_id.state == 'applied':
+                    held |= rec.approval_request_id
+            if held:
+                return {'pending': True, 'requests': held.ids}
+            return len(self)
         sent = 0
         for rec in self:
             if rec.state == 'draft':

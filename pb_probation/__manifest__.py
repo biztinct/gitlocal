@@ -46,7 +46,7 @@ letter, and puts a button in front of a human. That button reuses P4's own
 `setup_offboarding()` rather than growing a second way to open a leaving
 checklist.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -62,10 +62,12 @@ checklist.
         'pb_onboarding',        # the joining checklist this hangs off, and /my/journey
         'pb_offboarding',       # the leaving checklist a failed trial can open
         'pb_me_portal',         # the .pbme portal kit the card reuses
+        'biz_approval_workflow',  # P7: a verdict that ends a job is a decision
     ],
     'data': [
         'security/pb_probation_security.xml',
         'security/ir.model.access.csv',
+        'security/verdict_approval_rules.xml',
         'data/probation_params.xml',
         'data/probation_policy_data.xml',
         'data/letter_template_data.xml',

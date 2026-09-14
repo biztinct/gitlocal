@@ -22,6 +22,13 @@ _logger = logging.getLogger(__name__)
 def post_init_hook(env):
     _backfill_probation(env)
     _stamp_defaults(env)
+    # Approval Matrix P7 — the verdict route, on a fresh install. The
+    # migration beside this does the same on `-u` (ledger AM70/AM91).
+    try:
+        from .models.verdict_approval import seed_all
+        seed_all(env)
+    except Exception:                   # noqa: BLE001 — never fail an install
+        _logger.exception('pb_probation: the verdict route could not be laid')
 
 
 def _backfill_probation(env):

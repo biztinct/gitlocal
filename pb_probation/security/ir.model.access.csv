@@ -23,3 +23,6 @@ access_pb_training_status_user,Training status read,model_pb_training_status,pb_
 access_pb_training_status_manager,Training status manager,model_pb_training_status,pb_lifecycle.group_lifecycle_manager,1,1,1,1
 access_pb_training_status_admin,Training status admin,model_pb_training_status,pb_lifecycle.group_lifecycle_admin,1,1,1,1
 access_pb_training_status_system,Training status system,model_pb_training_status,base.group_system,1,1,1,1
+access_pb_verdict_proposal_hr,verdict proposal HR,model_pb_verdict_proposal,hr.group_hr_user,1,1,1,0
+access_pb_verdict_proposal_system,verdict proposal system,model_pb_verdict_proposal,base.group_system,1,1,1,1
+access_pb_verdict_proposal_seat,verdict proposal anyone asked to decide,model_pb_verdict_proposal,base.group_user,1,1,1,0

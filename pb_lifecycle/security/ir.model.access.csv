@@ -27,3 +27,4 @@ access_pb_employee_checkin_system,check-in system,model_pb_employee_checkin,base
 access_pb_feedback_request_system,feedback request system,model_pb_feedback_request,base.group_system,1,1,1,1
 access_pb_letter_template_system,letter template system,model_pb_letter_template,base.group_system,1,1,1,1
 access_pb_hr_letter_system,letter system,model_pb_hr_letter,base.group_system,1,1,1,1
+access_pb_hr_letter_seat,letter anyone asked to decide,model_pb_hr_letter,base.group_user,1,0,0,0

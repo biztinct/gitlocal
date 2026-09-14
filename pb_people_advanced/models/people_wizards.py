@@ -2,7 +2,9 @@
 import logging
 from datetime import date
 
-from odoo import api, models
+from odoo import _, api, models
+
+from .newhire_approval import NEWHIRE_WRITE, require_hr
 
 _logger = logging.getLogger(__name__)
 
@@ -54,10 +56,32 @@ class PbOnboardWizard(models.AbstractModel):
 
     @api.model
     def create_employee(self, vals):
+        require_hr(self.env)
         Emp = self.env['hr.employee']
         evals = {'name': (vals.get('name') or '').strip()}
         if not evals['name']:
             return {'error': 'A name is required.'}
+        if not self.env.context.get(NEWHIRE_WRITE) \
+                and 'pb.newhire.proposal' in self.env:
+            answer = self.env['pb.newhire.proposal'].propose(
+                'employee',
+                _("Add %s to the payroll", evals['name']),
+                payload={'values': vals},
+                facts={'wage': {'value': float(vals.get('wage') or 0.0),
+                                'unit': self.env.company.currency_id.name
+                                or ''},
+                       'has_bank': {'value': bool(vals.get('account_number')),
+                                    'unit': ''},
+                       'contract_type': {
+                           'value': str(vals.get('structure_type_id') or ''),
+                           'unit': ''}},
+                amount=float(vals.get('wage') or 0.0),
+            ).answer()
+            if not answer.get('applied'):
+                return dict(answer, employee_id=0, employee_name=evals['name'],
+                            contract_id=0, error=None)
+            return dict(answer.get('result') or {},
+                        reference=answer.get('reference'))
         for k_src, k_dst in [('job_id', 'job_id'), ('department_id', 'department_id'),
                              ('country_id', 'country_id')]:
             if vals.get(k_src):
@@ -128,9 +152,33 @@ class PbContractWizard(models.AbstractModel):
 
     @api.model
     def create_contract(self, vals):
+        require_hr(self.env)
         if not vals.get('employee_id'):
             return {'error': 'No employee selected.'}
         emp = self.env['hr.employee'].browse(int(vals['employee_id']))
+        if not self.env.context.get(NEWHIRE_WRITE) \
+                and 'pb.newhire.proposal' in self.env:
+            answer = self.env['pb.newhire.proposal'].propose(
+                'contract',
+                _("Contract for %s", emp.name or ''),
+                payload={'values': vals},
+                facts={'wage': {'value': float(vals.get('wage') or 0.0),
+                                'unit': self.env.company.currency_id.name
+                                or ''},
+                       'has_bank': {'value': bool(
+                           getattr(emp, 'account_number', False)), 'unit': ''},
+                       'contract_type': {
+                           'value': str(vals.get('structure_type_id') or ''),
+                           'unit': ''}},
+                target=emp,
+                subject_uids=emp.user_id.ids,
+                amount=float(vals.get('wage') or 0.0),
+            ).answer()
+            if not answer.get('applied'):
+                return dict(answer, contract_id=0, name='',
+                            employee_id=emp.id, error=None)
+            return dict(answer.get('result') or {},
+                        reference=answer.get('reference'))
         cvals = {
             'employee_id': emp.id,
             'name': vals.get('name') or ('%s - %s' % (emp.name, vals.get('date_start') or date.today())),

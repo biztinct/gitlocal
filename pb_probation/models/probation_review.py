@@ -34,6 +34,8 @@ from markupsafe import Markup, escape
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
+from .verdict_approval import propose_verdict
+
 from .probation_common import (
     GROUP_MANAGER, MAX_NOMINEES, MIN_NOMINEES, P_PROBATION_MAIL,
     PEER_QUESTIONS, PEER_QUESTION_LABEL, PEER_RATING_KEYS, REVIEW_KINDS,
@@ -767,6 +769,16 @@ class PbProbationReview(models.Model):
             'blocked_text': joined_sentence(blocked) if blocked else '',
         }
 
+    def _tenure_months(self):
+        """Roughly how long they have been here, for the route to read."""
+        self.ensure_one()
+        start = self.employee_id.sudo().first_contract_date \
+            if 'first_contract_date' in self.employee_id._fields else False
+        if not start:
+            return 0
+        today = fields.Date.context_today(self)
+        return max(0, (today.year - start.year) * 12 + today.month - start.month)
+
     def action_verdict(self, verdict, strengths=None, improvements=None,
                        extension_months=None):
         """Decide, and do everything that follows from deciding."""
@@ -784,6 +796,17 @@ class PbProbationReview(models.Model):
                 "colleagues first, or the decision rests on one opinion."))
         if verdict == 'pass':
             self._check_training_gate()
+
+        # "Pass" is the manager's, as it always was. The other two change what
+        # happens to somebody's job, so they are proposed (P7).
+        held = propose_verdict(
+            self, verdict,
+            {'args': {'verdict': verdict, 'strengths': strengths,
+                      'improvements': improvements,
+                      'extension_months': extension_months}},
+            tenure_months=self._tenure_months())
+        if held is not None:
+            return held
 
         vals = {'verdict': verdict,
                 'verdict_at': fields.Datetime.now(),

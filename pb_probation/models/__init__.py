@@ -11,3 +11,5 @@ from . import journey_case_ext
 from . import buddy_ext
 from . import probation_automation
 from . import pb_probation
+# Approval Matrix P7 — a verdict that ends a job is a decision.
+from . import verdict_approval

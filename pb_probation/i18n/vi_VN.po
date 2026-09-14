@@ -1,0 +1,118 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_probation
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_probation
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_probation
+msgid "Closed because they are leaving"
+msgstr "Đóng vì họ sắp nghỉ việc"
+
+#. module: pb_probation
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_probation
+msgid "Extended"
+msgstr "Được gia hạn"
+
+#. module: pb_probation
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_probation
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_probation
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_probation
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_probation
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_probation
+msgid "Months with the company"
+msgstr "Số tháng làm việc tại công ty"
+
+#. module: pb_probation
+msgid "Not passed"
+msgstr "Không đạt"
+
+#. module: pb_probation
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_probation
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_probation
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_probation
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_probation
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_probation
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_probation
+msgid "That review is no longer here."
+msgstr "Đợt đánh giá đó không còn ở đây."
+
+#. module: pb_probation
+msgid "The verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_probation
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_probation
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_probation
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_probation
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

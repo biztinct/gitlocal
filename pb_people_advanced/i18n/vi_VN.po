@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -337,3 +337,108 @@ msgstr "Vai trò"
 #: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:56
 msgid "Employee created; contract: %(error)s"
 msgstr "Nhân viên được tạo ra; hợp đồng: %(error)s"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_people_advanced
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_people_advanced
+msgid "Add %s to the payroll"
+msgstr "Thêm %s vào bảng lương"
+
+#. module: pb_people_advanced
+msgid "Adding somebody to the payroll, or giving them a contract, is for HR. Ask somebody in HR to do this, or to give you the HR permission."
+msgstr "Thêm người vào bảng lương, hoặc ký hợp đồng cho họ, là việc của nhân sự. Hãy nhờ nhân sự làm việc này, hoặc cấp cho bạn quyền nhân sự."
+
+#. module: pb_people_advanced
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_people_advanced
+msgid "Bank details given"
+msgstr "Đã có thông tin ngân hàng"
+
+#. module: pb_people_advanced
+msgid "Contract for %s"
+msgstr "Hợp đồng cho %s"
+
+#. module: pb_people_advanced
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_people_advanced
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_people_advanced
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_people_advanced
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_people_advanced
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_people_advanced
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_people_advanced
+msgid "Kind of contract"
+msgstr "Loại hợp đồng"
+
+#. module: pb_people_advanced
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_people_advanced
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_people_advanced
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_people_advanced
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_people_advanced
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_people_advanced
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_people_advanced
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_people_advanced
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_people_advanced
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_people_advanced
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_people_advanced
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_people_advanced
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
