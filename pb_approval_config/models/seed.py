@@ -225,11 +225,12 @@ def seed_company(env, company):
         })
 
     # ------------------------------------------------------- the person
-    held = Responsibility.search([
+    # Ever set up, held today or not: a seat the business ended is a choice
+    # an upgrade must not undo (ledger AM101).
+    held = Responsibility.with_context(active_test=False).search([
         ('company_id', '=', company.id),
         ('role_id', '=', role.id),
         ('scope_key', '=', ''),
-        ('active', '=', True),
     ], limit=1)
     if not held:
         Responsibility.create({

@@ -139,11 +139,13 @@ class HrPayslipRunSeed(models.Model):
         # Before the publish, not after: the whole-coverage check runs at
         # publish time and a seat filled a second later would be reported as a
         # gap the publisher had to confirm.
+        # Ever set up, held today or not: a seat the business ended is a
+        # choice an upgrade must not undo (ledger AM101).
         for key, xmlid in SEED_ROLES:
             role = roles[key]
-            held = Responsibility.search([
+            held = Responsibility.with_context(active_test=False).search([
                 ('company_id', '=', company.id), ('role_id', '=', role.id),
-                ('scope_key', '=', ''), ('active', '=', True)], limit=1)
+                ('scope_key', '=', '')], limit=1)
             if held:
                 continue
             people = _holders(self.env, company, xmlid)

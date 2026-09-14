@@ -107,18 +107,21 @@ class BizApprovalSeed(models.AbstractModel):
         holder and the second the backup — a named person, never a group
         (the engine never falls back to "anybody in that group").
 
-        Does nothing when the responsibility is already filled: this runs from
-        an install, a migration and a company created later, and the business
-        may since have chosen somebody else.
+        Does nothing when the responsibility was EVER set up for the company,
+        held today or not: this runs from an install, a migration and a
+        company created later, and the business may since have chosen
+        somebody else — or nobody, on purpose. A seat the business ended is a
+        choice; an upgrade that quietly re-seated the old holder would undo it
+        (ledger AM101).
         """
         role = self.env['biz.approval.role'].sudo().search(
             [('key', '=', role_key)], limit=1)
         if not role:
             return False
         Responsibility = self.env['biz.approval.responsibility'].sudo()
-        held = Responsibility.search([
+        held = Responsibility.with_context(active_test=False).search([
             ('company_id', '=', company.id), ('role_id', '=', role.id),
-            ('scope_key', '=', ''), ('active', '=', True)], limit=1)
+            ('scope_key', '=', '')], limit=1)
         if held:
             return held
         users = self.env['res.users'].sudo().browse()
