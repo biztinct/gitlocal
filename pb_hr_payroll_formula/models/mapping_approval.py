@@ -163,9 +163,13 @@ def _held(env):
 class HrIntegrationConnectorApproval(models.Model):
     _inherit = 'hr.integration.connector'
 
+    #: WHEN the fetch runs, and nothing else. `cron_pull_enabled` is
+    #: deliberately NOT among them, for the reason `integration_cron.py`
+    #: already gives: switching a fetch ON is not a change to WHEN it runs,
+    #: it is a connector opting in at all — and holding it would mean the
+    #: dispatcher never sees a connector somebody just turned on.
     _SC2_APPROVED_FIELDS = ('sync_frequency', 'sync_weekday',
-                            'sync_day_of_month', 'sync_time',
-                            'cron_pull_enabled')
+                            'sync_day_of_month', 'sync_time')
 
     def write(self, vals):
         """A fetch schedule decides WHEN next month's pay data arrives."""
@@ -177,6 +181,9 @@ class HrIntegrationConnectorApproval(models.Model):
                                kind_key='schedule') != 'route':
             return super().write(vals)
         held = {f: vals[f] for f in touched}
+        # The ORM's own constraints still get to refuse this, before anybody
+        # is asked to agree to it.
+        Proposal.precheck(self, held)
         for connector in self:
             Proposal.propose(
                 'schedule',

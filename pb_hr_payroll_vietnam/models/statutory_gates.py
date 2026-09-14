@@ -74,9 +74,13 @@ class StatutoryGateMixin(models.AbstractModel):
         if not self._statutory_held(vals):
             return super().write(vals)
         Proposal = self.env['pb.statutory.proposal']
-        for record in self:
-            held = {k: v for k, v in vals.items()
+        held_all = {k: v for k, v in vals.items()
                     if k in self._statutory_money_fields}
+        # The ORM's own constraints still refuse a bad value before anybody is
+        # asked to agree to it.
+        Proposal.precheck(self, held_all)
+        for record in self:
+            held = dict(held_all)
             Proposal.propose(
                 self._statutory_kind,
                 _("%(what)s · %(who)s",

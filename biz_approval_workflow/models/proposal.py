@@ -37,7 +37,7 @@ import json
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -221,6 +221,33 @@ class BizApprovalProposalMixin(models.AbstractModel):
         if not live or any(s.get('kind') == 'fast' for s in live):
             return 'fast'
         return 'route'
+
+    @api.model
+    def precheck(self, record, vals):
+        """Let the RECORD refuse bad values before they become a request.
+
+        A `write` hook that proposes instead of writing takes the ORM's own
+        constraints out of the path: a schedule of "day 31", a rate of -5, a
+        band whose bottom is above its top would all be written down, sent to
+        somebody, agreed to, and only blow up at apply time — in front of the
+        approver, about a mistake the person who typed it should have been
+        told about at once.
+
+        So the values are applied to an IN-MEMORY copy of the record and the
+        model's own `@api.constrains` are run against it. Nothing is written,
+        nothing is rolled back, and there is no second copy of the rule.
+        """
+        if not record or not vals:
+            return True
+        try:
+            draft = record[:1].new(dict(vals), origin=record[:1])
+            draft._validate_fields(list(vals))
+        except (ValidationError, UserError):
+            raise
+        except Exception:       # noqa: BLE001 — a check must not invent a fault
+            _logger.debug('proposal precheck could not run on %s',
+                          record._name, exc_info=True)
+        return True
 
     # ==================================================================
     # Making one

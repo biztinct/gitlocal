@@ -140,6 +140,7 @@ class PbPayReviewLimit(models.Model):
                                kind_key='limit') != 'route':
             return super().write(vals)
         values = {f: vals[f] for f in held}
+        Proposal.precheck(company_wide, values)
         for limit in company_wide:
             Proposal.propose(
                 'limit',

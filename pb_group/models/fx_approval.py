@@ -161,6 +161,7 @@ class ResCurrencyRateApproval(models.Model):
                                kind_key='rate') != 'route':
             return super().write(vals)
         values = {f: vals[f] for f in held}
+        Proposal.precheck(self, values)
         for rate in self:
             Proposal.propose(
                 'rate',
