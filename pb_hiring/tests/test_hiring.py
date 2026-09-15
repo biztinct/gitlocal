@@ -535,7 +535,13 @@ class TestSourceGates(TransactionCase):
         as a bare `<` and the whole template dies, pointing at the template
         and never at the loop (R1)."""
         reserved = {'lt', 'gt', 'lte', 'gte', 'and', 'or', 'not', 'in'}
-        src = _src('static', 'src', 'xml', 'hiring_board.xml')
+        # COMMENTS ARE STRIPPED FIRST (R118, and this is the third gate in
+        # this module to learn it). The sentence at the top of the template
+        # that stops the next contributor writing `t-as="lt"` has to be able
+        # to SAY `t-as="lt"`, and a gate that forbids it is a gate that
+        # forbids its own explanation.
+        src = re.sub(r'<!--.*?-->', '', _src('static', 'src', 'xml',
+                                             'hiring_board.xml'), flags=re.S)
         for name in re.findall(r't-as="(\w+)"', src):
             self.assertNotIn(name, reserved,
                              'hiring_board.xml uses the reserved name %s'
