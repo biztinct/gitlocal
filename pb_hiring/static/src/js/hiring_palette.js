@@ -43,7 +43,9 @@ import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { LIFECYCLE_LENSES, LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
+import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbHiringBoard } from "@pb_hiring/js/hiring_board";
+import { PbHiringNumbers } from "@pb_hiring/js/hiring_numbers";
 
 registry.category(LIFECYCLE_LENSES).add("hiring", {
     key: "hiring",
@@ -56,6 +58,34 @@ registry.category(LIFECYCLE_LENSES).add("hiring", {
         "pb_hiring.group_hiring_admin",
     ]),
 }, { sequence: 10 });
+
+/* ------------------------------------------------- the Insights lens ----
+ * A3. `pb_insights_hub`'s four shipped lenses carry no sequence, so
+ * bolted-on ones start at 20 — P9 took Budget 20 (R96), so Hiring takes
+ * **30** and lands after it: what a role was supposed to cost, then how long
+ * it took to fill.
+ *
+ * ITS OWN GATE AND NOT THE HUB'S. A recruiter holds no analytics group and a
+ * data analyst holds no hiring group, so this lens's readers are genuinely
+ * not the hub's usual readers (R97, the same shape the Budget lens met). The
+ * facade `pb.hiring.analytics` enforces independently; this only decides
+ * whether the lens is OFFERED.
+ *
+ * "Hiring" measures 37px in the 60px rail label box (R63/R141) — comfortably
+ * inside — and it is the same word the reader sees on the Lifecycle hub.
+ */
+registry.category(INSIGHTS_LENSES).add("hiring", {
+    key: "hiring",
+    icon: "userPlus",
+    label: _t("Hiring"),
+    Component: PbHiringNumbers,
+    groups: [
+        "pb_hiring.group_hiring_user",
+        "pb_hiring.group_hiring_manager",
+        "pb_hiring.group_hiring_admin",
+        "base.group_system",
+    ],
+}, { sequence: 30 });
 
 const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
 const HIRING_GATE = [
@@ -90,6 +120,18 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
         icon: "checkCheck",
         label: _t("What a panel scores on"),
         sub: _t("The five lines every interviewer is asked to score, one to five."),
+    }, {
+        id: "hiring_bgv_lines",
+        xmlid: "pb_hiring.action_pb_hiring_bgv_template",
+        icon: "shieldCheck",
+        label: _t("What a background check covers"),
+        sub: _t("Each line has to be answered before an offer can be drafted."),
+    }, {
+        id: "hiring_doc_lines",
+        xmlid: "pb_hiring.action_pb_hiring_doc_template",
+        icon: "paperclip",
+        label: _t("What a joiner is asked for"),
+        sub: _t("The list on the candidate's own page, with the sentence under each one."),
     }],
 }, { sequence: 40 });
 
@@ -175,3 +217,31 @@ palette.add("hiring_feedback", {
     requires: "pb_hiring_board",
     action: { xmlid: "pb_hiring.action_pb_hiring_feedback" },
 }, { sequence: 3560 });
+
+/* ------------------------------------------------ A3, the offer phase ----
+ * Still inside A1's 3500 block: the wave plan gives this module one block
+ * and B1 starts at 3600, so the offer phase takes 3570 and 3580 rather than
+ * opening a second block for the same module.
+ */
+palette.add("hiring_analytics", {
+    id: "hiring_analytics",
+    label: _t("Hiring numbers"),
+    sublabel: _t("Insights"),
+    icon: "barChart",
+    groups: HIRING_GATE,
+    // The presence probe is the lens's OWN action tag, not the board's: a
+    // build that shipped the board and not the numbers must not offer a door
+    // into a screen that is not there.
+    requires: "pb_hiring_numbers",
+    action: { xmlid: "pb_hiring.action_pb_hiring_numbers" },
+}, { sequence: 3570 });
+
+palette.add("hiring_cover", {
+    id: "hiring_cover",
+    label: _t("Cover for a recruiter"),
+    sublabel: _t("Hiring"),
+    icon: "userCheck",
+    groups: HIRING_GATE,
+    requires: "pb_hiring_board",
+    action: { xmlid: "pb_hiring.action_pb_hiring_cover" },
+}, { sequence: 3580 });

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Hiring lens on the Insights hub.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators (R1). The loops here are `tl`,
+       `rg`, `sg`, `sc`, `dl`, `ns` and `ag`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form MERGES with the static class.
+       ==================================================================== -->
+  <t t-name="pb_hiring.PbHiringNumbers">
+    <div class="pbim pbim-page pbhn"
+         t-att-class="{ 'pbhn--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Working out the hiring numbers…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no hiring access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel pbhn-empty">
+          <div class="pbhn-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>The hiring numbers are for the hiring team</h2>
+          <p>How long roles take to fill, where candidates get stuck and how
+             many offers are accepted are the figures the people doing the
+             hiring are judged on. Ask them, or ask your HR administrator to
+             add you to the hiring team.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbhn-head">
+            <div class="pbhn-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Hiring</h1>
+              <p class="pbim-sub">How long it takes, where it gets stuck, and
+                 how often the answer is yes.</p>
+            </div>
+            <div class="pbhn-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Work the numbers out again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn primary" t-on-click="download"
+                      t-att-disabled="state.busy or state.empty">
+                <t t-out="ic('download',15)"/> Download the spreadsheet
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the range ======================
+               Four presses and a pair of dates. The four are what somebody
+               actually asks for; the dates are for the quarter that does not
+               fit any of them. -->
+          <div class="pbhn-range">
+            <t t-foreach="ranges" t-as="rg" t-key="rg.key">
+              <button class="pbhn-chip"
+                      t-att-class="{ on: state.range === rg.key }"
+                      t-on-click="() => this.pickRange(rg.key)">
+                <t t-esc="rg.label"/>
+              </button>
+            </t>
+            <div class="pbhn-dates">
+              <input type="date" class="pbhn-in" t-model="state.from"
+                     t-on-change="onCustom" aria-label="From"/>
+              <span class="pbhn-to">to</span>
+              <input type="date" class="pbhn-in" t-model="state.to"
+                     t-on-change="onCustom" aria-label="To"/>
+            </div>
+          </div>
+
+          <!-- ============ nothing agreed in this range ============
+               R27: a filter that matches nothing is a broken promise, and a
+               screen of zeros is how a working feature gets reported as
+               broken. The sentence carries the dates so the reader can see
+               what to change. -->
+          <div t-if="state.empty" class="pbim-panel pbhn-empty">
+            <div class="pbhn-empty-ic"><t t-out="ic('briefcase',30)"/></div>
+            <h2>Nothing to measure in this stretch</h2>
+            <p t-esc="state.headline"/>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.pickRange('365')">
+              <t t-out="ic('history',15)"/> Try the last year
+            </button>
+          </div>
+
+          <t t-else="">
+
+            <!-- ==================== the sentence ==================== -->
+            <div class="pbim-panel pbhn-headline">
+              <div class="pbhn-headline-ic"><t t-out="ic('sparkles',20)"/></div>
+              <p t-esc="state.headline"/>
+            </div>
+
+            <!-- ==================== the numbers ==================== -->
+            <div class="pbim-stats pbhn-kpis">
+              <t t-foreach="state.tiles" t-as="tl" t-key="tl.key">
+                <div class="pbim-stat pbhn-stat" t-att-title="tl.hint">
+                  <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n">
+                      <t t-esc="shown(tl)"/><small t-if="tl.unit"
+                        t-esc="' ' + tl.unit"/>
+                    </div>
+                    <div class="l" t-esc="tl.label"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==================== where they get stuck ==================== -->
+            <div class="pbhn-grid">
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('layoutList',16)"/> Where candidates
+                      wait</h3>
+                  <p>Days between one move and the next. The stage somebody is
+                     sitting in now is not counted — it is still running.</p>
+                </div>
+                <div t-if="!state.stages.length" class="pbhn-none">
+                  Nobody has been moved between stages on these roles yet, so
+                  there is nothing to time.
+                </div>
+                <t t-else="">
+                  <t t-foreach="state.stages" t-as="sg" t-key="sg.id">
+                    <div class="pbhn-row">
+                      <div class="pbhn-row-name" t-esc="sg.name"/>
+                      <div class="pbhn-bar">
+                        <span t-attf-style="width: {{ share(state.stages, sg.mean, 'mean') }}%;"/>
+                      </div>
+                      <div class="pbhn-row-n">
+                        <t t-esc="sg.mean"/> <small>days</small>
+                      </div>
+                      <div class="pbhn-row-sub">
+                        <t t-esc="sg.moves"/>
+                        <t t-if="sg.moves === 1"> move</t>
+                        <t t-else=""> moves</t>
+                      </div>
+                    </div>
+                  </t>
+                </t>
+              </div>
+
+              <!-- ==================== where they came from ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('globe',16)"/> Where they came from</h3>
+                  <p>Candidates per channel, and how many of each actually
+                     joined.</p>
+                </div>
+                <div t-if="!state.sources.length" class="pbhn-none">
+                  No candidates have applied to these roles yet.
+                </div>
+                <t t-else="">
+                  <t t-foreach="state.sources" t-as="sc" t-key="sc.id">
+                    <div class="pbhn-row">
+                      <div class="pbhn-row-name" t-esc="sc.name"/>
+                      <div class="pbhn-bar">
+                        <span t-attf-style="width: {{ share(state.sources, sc.applicants, 'applicants') }}%;"/>
+                      </div>
+                      <div class="pbhn-row-n">
+                        <t t-esc="sc.applicants"/>
+                      </div>
+                      <div class="pbhn-row-sub">
+                        <t t-esc="sc.hires"/> joined
+                        <t t-if="sc.hires"> · <t t-esc="sc.rate"/>%</t>
+                      </div>
+                    </div>
+                  </t>
+                </t>
+              </div>
+
+              <!-- ==================== the delays ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('repeat',16)"/> Interviews that moved</h3>
+                  <p>It is not about blame. It is the only way anybody can
+                     answer why hiring here takes as long as it does.</p>
+                </div>
+                <t t-foreach="state.delays" t-as="dl" t-key="dl.key">
+                  <div class="pbhn-row">
+                    <div class="pbhn-row-name" t-esc="dl.name"/>
+                    <div class="pbhn-bar">
+                      <span t-attf-style="width: {{ share(state.delays, dl.count, 'count') }}%;"/>
+                    </div>
+                    <div class="pbhn-row-n" t-esc="dl.count"/>
+                    <div class="pbhn-row-sub">
+                      <t t-if="dl.late"><t t-esc="dl.late"/> at short
+                        notice</t>
+                    </div>
+                  </div>
+                </t>
+                <t t-foreach="state.noShows" t-as="ns" t-key="ns.key">
+                  <div class="pbhn-row pbhn-row--quiet" t-if="ns.count">
+                    <div class="pbhn-row-name" t-esc="ns.name"/>
+                    <div class="pbhn-bar">
+                      <span t-attf-style="width: {{ share(state.noShows, ns.count, 'count') }}%;"/>
+                    </div>
+                    <div class="pbhn-row-n" t-esc="ns.count"/>
+                    <div class="pbhn-row-sub">did not come</div>
+                  </div>
+                </t>
+              </div>
+
+              <!-- ==================== agency or our own ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('building',16)"/> An agency, or our own
+                      team</h3>
+                  <p>Only roles that actually filled are timed. A role still
+                     open has not taken anything yet.</p>
+                </div>
+                <t t-foreach="state.agency" t-as="ag" t-key="ag.key">
+                  <div class="pbhn-row">
+                    <div class="pbhn-row-name" t-esc="ag.name"/>
+                    <div class="pbhn-row-n">
+                      <t t-if="ag.median === null">—</t>
+                      <t t-else=""><t t-esc="ag.median"/> <small>days</small></t>
+                    </div>
+                    <div class="pbhn-row-sub">
+                      <t t-esc="ag.filled"/> of <t t-esc="ag.roles"/> filled
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+
+          </t>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

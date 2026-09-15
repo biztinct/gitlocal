@@ -1,0 +1,207 @@
+// =====================================================================
+//  The Hiring numbers lens — .pbhn-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-stats). This file only says what is SPECIFIC to a screen whose
+//  whole job is eight figures and four small tables.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+//
+//  Every @keyframes is at the TOP LEVEL (R85): nested inside a selector,
+//  Sass emits it nested too and no browser plays it. Every moving
+//  declaration — the starting opacity, the transform AND the animation —
+//  lives inside `@media (prefers-reduced-motion: no-preference)`, so under a
+//  reduced-motion preference the surface paints finished on the first frame
+//  with nothing to recover from.
+//
+//  The kit has no dark palette product-wide (R134), so "light and dark" is
+//  satisfied here the way it is everywhere else in this kit: by every colour
+//  RESOLVING through a `--pbim-*` token with a literal fallback beside it.
+// =====================================================================
+
+// THE `to` FRAME IS NOT OPTIONAL when the rule below sets the starting
+// opacity itself: with `fill-mode: both` and no `to`, the end frame is the
+// element's own value — which is the `opacity: 0` the rule just set — so the
+// surface animates from invisible to invisible. (The same shape blanked the
+// offer panel on the Hiring board; the comment there has the whole story.)
+@keyframes pbhn-rise {
+    from { transform: translateY(10px); opacity: 0; }
+    to   { transform: none;             opacity: 1; }
+}
+
+.pbhn {
+    .pbhn-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    &.pbhn--embedded .pbhn-head { margin-bottom: 10px; }
+    .pbhn-head-id { flex: 1 1 320px; min-width: 0; }
+    .pbhn-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // ------------------------------------------------------- the range
+    .pbhn-range {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .pbhn-chip {
+        padding: 8px 15px; border-radius: 999px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        font: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
+
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary-strong, #3730A3);
+        }
+    }
+    .pbhn-dates {
+        display: flex; align-items: center; gap: 8px; margin-left: auto;
+    }
+    .pbhn-to { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    .pbhn-in {
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 9px;
+        padding: 8px 11px; font: inherit; font-size: 13px;
+        color: var(--pbim-text, #334155);
+        background: var(--pbim-surface, #FFFFFF); outline: none;
+
+        &:focus {
+            border-color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+        }
+    }
+
+    // ----------------------------------------------------- the sentence
+    .pbhn-headline {
+        display: flex; align-items: flex-start; gap: 13px;
+        padding: 15px 18px; margin-bottom: 16px;
+        background: var(--pbim-soft, #EEF2FF);
+        border-color: var(--pbim-primary, #4F46E5);
+
+        p {
+            margin: 0; font-size: 14.5px; line-height: 1.6;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbhn-headline-ic {
+        flex: 0 0 auto; color: var(--pbim-primary-strong, #3730A3);
+        margin-top: 1px;
+    }
+
+    // The kit's `.pbim-stats` is a grid with NO COLUMNS on purpose — each
+    // cockpit knows how many numbers it has (R32). Eight here, so four and
+    // four rather than six and a stranded pair.
+    .pbhn-kpis {
+        grid-template-columns: repeat(4, 1fr);
+        margin-bottom: 18px;
+    }
+    @media (max-width: 1180px) {
+        .pbhn-kpis { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .pbhn-kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+    .pbhn-stat {
+        cursor: default;
+
+        .n small {
+            font-size: 12px; font-weight: 600;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    // -------------------------------------------------------- the tables
+    .pbhn-grid {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    }
+    @media (max-width: 1000px) {
+        .pbhn-grid { grid-template-columns: 1fr; }
+    }
+    .pbhn-table { padding: 18px 20px 12px; }
+    .pbhn-table-head {
+        margin-bottom: 12px;
+
+        h3 {
+            display: flex; align-items: center; gap: 8px;
+            margin: 0; font-size: 14.5px; font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+        p {
+            margin: 5px 0 0; font-size: 12.5px; line-height: 1.55;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .pbhn-none {
+        padding: 14px 0 18px; font-size: 13px; line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // A BAR AND A NUMBER, not a chart engine. The shape is what a reader
+    // takes from a table like this, and the shape survives a printout, a
+    // screenshot and a phone.
+    .pbhn-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr) auto auto;
+        align-items: center; gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 13px;
+
+        &:last-child { border-bottom: none; }
+        &.pbhn-row--quiet { opacity: .8; }
+    }
+    @media (max-width: 620px) {
+        .pbhn-row { grid-template-columns: minmax(0, 1fr) auto; }
+        .pbhn-bar { display: none; }
+    }
+    .pbhn-row-name {
+        font-weight: 650; color: var(--pbim-ink, #1B1733);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbhn-bar {
+        height: 8px; border-radius: 999px;
+        background: var(--pbim-line, #E2E8F0); overflow: hidden;
+
+        span {
+            display: block; height: 100%; border-radius: 999px;
+            background: var(--pbim-primary, #4F46E5);
+        }
+    }
+    .pbhn-row-n {
+        font-weight: 750; color: var(--pbim-ink, #1B1733); white-space: nowrap;
+
+        small { font-weight: 600; color: var(--pbim-muted, #64748B); }
+    }
+    .pbhn-row-sub {
+        font-size: 12px; color: var(--pbim-muted, #64748B); white-space: nowrap;
+    }
+
+    // ------------------------------------------------------ empty states
+    .pbhn-empty {
+        padding: 46px 32px; text-align: center;
+
+        h2 {
+            margin: 14px 0 8px; font-size: 18px; font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+        p {
+            max-width: 560px; margin: 0 auto; font-size: 13.5px;
+            line-height: 1.65; color: var(--pbim-muted, #64748B);
+        }
+        .pbim-btn { margin-top: 16px; }
+    }
+    .pbhn-empty-ic { color: var(--pbim-primary, #4F46E5); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhn .pbhn-headline,
+    .pbhn .pbhn-table {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: pbhn-rise .24s ease-out both;
+    }
+    .pbhn .pbhn-bar span { transition: width .3s ease-out; }
+    .pbhn .pbhn-chip { transition: border-color .12s, background .12s; }
+}
