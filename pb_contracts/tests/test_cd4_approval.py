@@ -7,10 +7,10 @@ when a route really is published.
 
 WHAT IT PROVES, AND WHY EACH ONE MATTERS
   1. A change to somebody's PAY is written down and the contract is untouched.
-  2. A change that moves no money — a reference, a note — writes straight
-     through, because "Salary and contract changes" is the row, and a route in
-     front of fixing a typo is a gate nobody asked for.
-  3. A mixed press does both: the money waits, the note lands, and the answer
+  2. A change that moves no money — a location, a cost centre — writes
+     straight through, because "Salary and contract changes" is the row, and a
+     route in front of fixing a typo is a gate nobody asked for.
+  3. A mixed press does both: the money waits, the location lands, and the answer
      says how many were saved so nobody reads "nothing happened" over
      something that did.
   4. Approving it writes exactly what was proposed, once.
@@ -33,14 +33,21 @@ class TestCd4ContractApproval(TransactionCase):
         cls.admin = cls.env.ref('base.user_admin')
         cls.admin.write({'company_ids': [(4, cls.company.id)]})
 
-        cls.hr = cls._user('cd4_hr', 'Hana HR',
-                           ['base.group_user', 'hr.group_hr_manager',
-                            'hr_contract.group_hr_contract_manager'])
-        cls.lead = cls._user('cd4_lead', 'Lena Lead',
-                             ['base.group_user', 'hr.group_hr_manager',
-                              'hr_contract.group_hr_contract_manager'])
+        # The PAY group is not decoration: the drawer masks the wage from
+        # anybody who does not hold it, and a masked field is read-only, so
+        # without it "change the pay" never reaches the route at all — it is
+        # refused one step earlier, which is the right behaviour and the
+        # wrong fixture (ledger AM143).
+        groups = ['base.group_user', 'hr.group_hr_manager',
+                  'hr_contract.group_hr_contract_manager',
+                  'om_hr_payroll.group_hr_payroll_manager']
+        cls.hr = cls._user('cd4_hr', 'Hana HR', groups)
+        cls.lead = cls._user('cd4_lead', 'Lena Lead', groups)
         cls.Proposal._approval_seed_default(cls.company)
         cls._seat('hr_lead', cls.lead)
+        # A pay change turns the finance rung on, so it needs a person too —
+        # an unseated rung is a request nobody can move.
+        cls._seat('finance', cls.lead)
 
         cls.calendar = cls.env['resource.calendar'].create(
             {'name': 'CD4 Hours', 'company_id': cls.company.id})
@@ -84,6 +91,22 @@ class TestCd4ContractApproval(TransactionCase):
             'scope_key': '', 'scope_label': cls.company.name,
             'user_id': user.id})
 
+    def _approve_all(self, request):
+        """Walk the route to the end, deciding as whoever is seated.
+
+        A pay change turns on the finance rung as well as the HR lead's, so
+        a test that presses approve once is testing half a route.
+        """
+        for _guard in range(6):
+            request.invalidate_recordset()
+            if request.state != 'pending':
+                return
+            step = request.sudo().step_ids.filtered(
+                lambda s: s.key == request.current_step_key)[:1]
+            seat = step.seat_ids.filtered(lambda s: s.status == 'open')[:1]
+            self.engine.with_user(seat.acting_user_id or self.lead).decide(
+                request, request.current_step_key, 'approve', 'Agreed')
+
     def _save(self, terms, user=None):
         return self.Facade.with_user(user or self.hr).with_company(
             self.company).save_contract_360(self.contract.id, terms, [], '')
@@ -105,23 +128,24 @@ class TestCd4ContractApproval(TransactionCase):
 
     # ------------------------------------------------------------------ 2
     def test_cd4_a_change_that_moves_no_money_writes_straight_through(self):
-        answer = self._save({'name': 'CD4 Contract (renamed)'})
+        answer = self._save({'location': 'CD4 Site B'})
 
         self.assertFalse(answer.get('pending'),
-                         'a rename is not a salary change')
+                         'a location is not a salary change')
+        self.assertEqual(answer['saved'], 1)
         self.contract.invalidate_recordset()
-        self.assertEqual(self.contract.name, 'CD4 Contract (renamed)')
+        self.assertEqual(self.contract.location, 'CD4 Site B')
 
     # ------------------------------------------------------------------ 3
     def test_cd4_a_mixed_press_waits_for_the_money_and_lands_the_rest(self):
         was = self.contract.wage
-        answer = self._save({'wage': 16000000.0, 'name': 'CD4 both'})
+        answer = self._save({'wage': 16000000.0, 'location': 'CD4 Site C'})
 
         self.assertTrue(answer.get('pending'))
         self.assertEqual(answer['saved'], 1,
-                         'the note was saved and the answer should say so')
+                         'the location was saved and the answer should say so')
         self.contract.invalidate_recordset()
-        self.assertEqual(self.contract.name, 'CD4 both')
+        self.assertEqual(self.contract.location, 'CD4 Site C')
         self.assertEqual(self.contract.wage, was)
 
     # ------------------------------------------------------------------ 4
@@ -131,8 +155,7 @@ class TestCd4ContractApproval(TransactionCase):
         request = proposal.approval_request_id
         self.assertTrue(request)
 
-        self.engine.with_user(self.lead).decide(
-            request, request.current_step_key, 'approve', 'Agreed')
+        self._approve_all(request)
         self.contract.invalidate_recordset()
         proposal.invalidate_recordset()
         self.assertEqual(self.contract.wage, 17000000.0)
