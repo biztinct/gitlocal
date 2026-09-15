@@ -133,7 +133,7 @@ the wave, because somebody will meet a refusal they have never seen:
    asked for a manager. It now asks for the manager, which is what reopening a
    day has always required.
 
-### 2a. Five more behaviour changes, found while the suites ran
+### 2a. More behaviour changes, found while the suites ran
 
 These are not in the tables above because they are not new routes. Each one is
 a fix to something Phases 6 and 7 had already changed, and each is worth
@@ -177,7 +177,18 @@ knowing before the wave.
    server's own sentence and offer "See the request". Approvals admins also
    get **"Move it to somebody else"** in the request drawer, which the engine
    has been able to do since Phase 1 with no door for it.
-7. **The guided setup's tax-band editor is not held.** A rate table on a live
+7. **The contract drawer holds only what moves money.** "Salary and contract
+   changes" is the row, so the wage, the dates, the structure, the working
+   schedule, the status and EVERY component are written down and asked about;
+   a location, a cost centre, a tax number or a note is written in the same
+   press and the answer says how many were saved. Two things follow for the
+   wave: **a person who cannot see a wage today still cannot change one** (the
+   drawer masks it from anybody without the payroll-manager role, and a masked
+   field is read-only — the route is never reached), and the default route's
+   second rung is conditional on the change touching pay, so **the Finance
+   approver seat must be filled in every company or a pay change stops on a
+   rung nobody holds.** The query in §4.6 finds those too.
+8. **The guided setup's tax-band editor is not held.** A rate table on a live
    scheme travels the statutory route; one written inside the Blueprint
    journey does not, because the scheme's own activation is the gate (Phase 4)
    and a route in the middle of a setup wizard is a dead end.
