@@ -182,10 +182,16 @@ class PbTenantProposal(models.Model):
     # ------------------------------------------------------------- the seed
     @api.model
     def _approval_seed_default(self, company):
-        if 'pb.tenant' not in self.env:
-            # Not a platform database. A tenant never gets this row.
-            return False
         Seed = self.env['biz.approval.seed']
+        # The row names its record even where no route is laid — see the
+        # demo adapter for the whole reasoning. A tenant database has the
+        # catalogue row (it comes from the configuration module, which every
+        # database has) and nothing that can raise one, which is the honest
+        # state and not a gap.
+        Seed.point_process(TENANT_PROCESS_KEY, 'pb.tenant.proposal')
+        if 'pb.tenant' not in self.env:
+            # Not a platform database. A tenant never gets the ROUTE.
+            return False
         Seed.fill_role_from_group(company, 'platform_owner',
                                   ('base.group_system',))
         return Seed.lay(

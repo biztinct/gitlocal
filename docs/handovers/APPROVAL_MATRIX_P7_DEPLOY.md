@@ -15,7 +15,7 @@ this is only the payload.
 | Module | Version | Action | Why it is in the wave |
 |---|---|---|---|
 | `biz_approval_workflow` | 19.0.1.5.0 | `-u` | **the proposal mixin.** A change written down before anybody may make it: snapshot re-check, the permission the original door required, the audit line, the fast lane. Plus the Vietnamese for every P1 refusal string |
-| `pb_approval_config` | 19.0.1.5.1 | `-u` | the "Letters to people" catalogue row, two new responsibilities, **the spreadsheet importer** and its review screen; the `end-` relay; the inbox's team scope; **a second migration that finishes two half-laid routes** (§3) |
+| `pb_approval_config` | 19.0.1.5.2 | `-u` | the "Letters to people" catalogue row, two new responsibilities, **the spreadsheet importer** and its review screen; the `end-` relay; the inbox's team scope; **a second migration that finishes two half-laid routes** (§3) |
 | `pb_hr_payroll_formula` | 19.0.1.132.0 | `-u` | **four proposal records**: statutory, mappings, the scheme map, demo data. Plus `action_publish` on a legislation pack and the gate on its raw `state` write |
 | `pb_statutory` | 19.0.1.3.0 | `-u` | the two config wizards gain the payroll-manager permission they never had, and propose |
 | `pb_hr_payroll_vietnam` | 19.0.1.2.0 | `-u` | tax bands, insurance policy, insurance adjustment — all four doors propose |
@@ -39,6 +39,20 @@ this is only the payload.
 | `pb_blueprint` | 19.0.1.9.3 | `-u` | the guided setup's tax-band editor writes through instead of proposing mid-journey (§2a) |
 | `pb_contracts` | 19.0.1.5.0 | `-u` | **contract changes.** The drawer wrote money with no route at all; "Salary and contract changes" is connected at last |
 | `pb_payruns` | 19.0.2.1.0 | `-u` | its seed says that "Reopen an approved run" is this route's own send-back (§2b) |
+
+### THE ENGINE GOES FIRST, AND IT IS NOT A PREFERENCE
+
+`biz_approval_workflow` adds COLUMNS this phase — `biz_approval_process
+.covered_by_key` and `biz_approval_request.seat_notes` — and every adapter
+reads them. Upgrade an adapter against an engine that has not been upgraded
+and the module fails at load with `UndefinedColumn`, in a module whose own
+code is fine. That is ledger AM116's shape on a live box rather than on a test
+template: a phase that adds columns to a module everything depends on makes
+every OTHER module's upgrade depend on the order.
+
+So the command puts the engine first and lets the cascade do the rest, and a
+run that upgrades a single adapter by name is wrong even when it looks
+quicker.
 
 **One `-u` does most of it**, as in P5 and P6: every module above depends,
 directly or through the chain, on `biz_approval_workflow`, so
@@ -191,6 +205,7 @@ necessarily the person the business means.
 | `pb_hr_fullandfinal .../19.0.1.2.0/post-fnf_route.py` | **marks every EXISTING settlement `approved`** (they were produced and mostly paid; the new column defaults to "being prepared", so without this a historical settlement would read as about to happen and could no longer be printed), then the settlement route |
 | `pb_govt_reports .../19.0.1.2.0/post-filing_route.py` | the filing route |
 | `pb_approval_config .../19.0.1.5.0/end-p7_adapters.py` | **an `end-` script, and that is the point** (ledger AM75): the duck-typed relay that asks every adapter in the registry for its default route, after the whole graph is loaded |
+| `pb_approval_config .../19.0.1.5.2/end-repoint_rows.py` | points every catalogue row at its record and writes the `covered_by` links, by re-running the seed. Two things the seeds learned to do after they had already run: a row names its record as soon as the ADAPTER exists, not only where this database has a reason to lay a route; and two rows are answered by another row rather than by an adapter of their own |
 | `pb_approval_config .../19.0.1.5.1/end-heal_half_laid.py` | **finishes two routes a bug left half-laid.** Two adapters' definitions were refused during the build (a related Selection read as a callable, and a manager step on a process that said it had no manager mode), and the seeder left a workflow and a draft with no binding. Both causes are fixed and the seeder no longer leaves anything behind; this goes back for the ones already written down. Log the query first if you want to see them: `SELECT p.key FROM biz_approval_workflow w JOIN biz_approval_workflow_version v ON v.workflow_id=w.id JOIN biz_approval_process p ON p.id=w.process_id WHERE v.status='draft' AND NOT EXISTS (SELECT 1 FROM biz_approval_binding b WHERE b.workflow_id=w.id AND b.active)` |
 | each module's `post_init_hook` | the same seeds, on a FRESH install, where no migration runs at all |
 | `res.company.create` | a company made later gets all fourteen |
@@ -578,9 +593,11 @@ is the bar to reproduce:
 | `pb_govt_reports` | 8 / 8 |
 | `pb_probation` | 5 / 5 |
 
-**Before a round of suites, refresh the template** (ledger AM116): a phase that
-adds models to modules other than the one under test leaves every clone
-without those tables, and the failures land in modules nobody touched.
+**Before a round of suites, refresh the template** (ledger AM116): a phase
+that adds models — or COLUMNS to a model everything depends on — leaves every
+clone without them, and the failures land in modules nobody touched, as
+`UndefinedColumn` or as a table that is not there. Phase 7 hit this twice, the
+second time with two columns on the engine.
 `createdb -T am_tpl am_tpl_bak && odoo-bin … -d am_tpl -u all`.
 
 ## 7.9 The order of the walk, once it is up

@@ -128,12 +128,22 @@ class PbDemoProposal(models.Model):
     # ------------------------------------------------------------- the seed
     @api.model
     def _approval_seed_default(self, company):
+        Seed = self.env['biz.approval.seed']
+        # THE ROW NAMES ITS RECORD EVEN WHERE NO ROUTE IS LAID.
+        #
+        # "Wired up" and "somebody has set a route up" are two different
+        # questions, and the catalogue answers the first. This adapter is in
+        # the registry on every payroll database, so the row can hold a
+        # request — it simply has nothing to hold one ABOUT until a demo
+        # module is installed. Pointing it only when the route is laid made
+        # the Matrix say "Not connected yet", which says nobody is checking
+        # it, about a row that is wired up and unused.
+        Seed.point_process(DEMO_PROCESS_KEY, 'pb.demo.proposal')
         if 'pb.demo.seed' not in self.env \
                 and 'pb.demo.generator' not in self.env:
-            # Nothing on this database can make demo data, so a route for it
-            # would be a row the business can never use.
+            # Nothing on this database can make demo data, so a ROUTE for it
+            # would be one the business can never use.
             return False
-        Seed = self.env['biz.approval.seed']
         Seed.fill_role_from_group(company, 'director', ('base.group_system',))
         return Seed.lay(
             company, DEMO_PROCESS_KEY, 'Demo data',
