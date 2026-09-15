@@ -769,12 +769,19 @@ class TestTheFacadeIsHonestAboutAccess(HiringCase):
         self.assertNotIn('_is_admin', body)
 
     def test_the_two_built_in_administrators_hold_the_top_tier(self):
-        """Without this a fresh install has nobody who can see the board."""
-        group = self.env.ref('pb_hiring.group_hiring_admin')
+        """Without this a fresh install has nobody who can see the board.
+
+        DIRECT membership with `active_test=False`, not `all_user_ids`: the
+        system account (uid 1) is inactive on a live database, so the
+        transitive set R7 rightly recommends for finding PEOPLE leaves it
+        out — which is correct there and the wrong question here.
+        """
+        group = self.env.ref('pb_hiring.group_hiring_admin').sudo()
+        members = group.with_context(active_test=False).user_ids.ids
         for xmlid in ('base.user_root', 'base.user_admin'):
             user = self.env.ref(xmlid, raise_if_not_found=False)
             if user:
-                self.assertIn(user.id, group.sudo().all_user_ids.ids,
+                self.assertIn(user.id, members,
                               '%s does not hold group_hiring_admin' % xmlid)
 
     def test_the_budget_sentence_is_words_and_never_markup(self):
@@ -850,3 +857,34 @@ class TestTheRouteMirror(HiringCase):
         self.assertTrue(second.job_id)
         self.assertEqual(second.job_id.id, first.job_id.id)
         self.assertEqual(second.job_id.sudo().no_of_recruitment, 5)
+
+
+@tagged('post_install', '-at_install')
+class TestAFailedLegCannotUndoAnApproval(HiringCase):
+    """A try/except is not enough when the thing that failed reached the
+    database: Postgres aborts the whole transaction and every statement after
+    it fails too, including the record's own status write."""
+
+    def test_every_leg_of_opening_runs_in_a_savepoint(self):
+        src = _src('models', 'requisition.py')
+        body = src.split('def _on_opened', 1)[1].split('def _ensure_job', 1)[0]
+        self.assertEqual(body.count('self._leg('), 4)
+        leg = src.split('def _leg', 1)[1].split('def _on_opened', 1)[0]
+        self.assertIn('self.env.cr.savepoint()', leg)
+
+    def test_a_broken_leg_leaves_the_role_open_anyway(self):
+        """The whole promise, proven rather than intended: the status stands
+        and the transaction is still usable afterwards."""
+        req = self._requisition()
+        req._chain_state_write('open')
+
+        def boom():
+            # a REAL database error, not a Python one — that is the case a
+            # try/except alone does not survive
+            self.env.cr.execute('SELECT 1 FROM a_table_that_does_not_exist')
+
+        req._leg('a leg that fails in the database', boom)
+        # the transaction is still alive and the record still reads open
+        self.assertEqual(req.state, 'open')
+        self.assertTrue(self.env['pb.hiring.requisition'].search_count(
+            [('id', '=', req.id)]))

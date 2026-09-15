@@ -615,12 +615,38 @@ class PbHiringRequisition(models.Model):
             self._on_opened()
         return res
 
+    def _leg(self, name, fn):
+        """One piece of paperwork, inside its own SAVEPOINT.
+
+        A try/except IS NOT ENOUGH when the thing that failed reached the
+        DATABASE. Postgres aborts the whole transaction on an error, and
+        Python catching the exception does not undo that: every statement
+        after it fails too. Proven live — a duplicate job name blew up leg
+        one, and legs two, three and four then failed on a transaction that
+        was already dead, taking the record's own status write with them.
+        The request read "approved" in the inbox and the role read "Manager
+        agreed" on the board, for ever, with four cheerful WARNING lines in
+        the log and nothing on screen.
+
+        `cr.savepoint()` rolls back just this leg and leaves the transaction
+        usable, which is the only thing that makes "paperwork never fails an
+        approval" (R104) actually true rather than merely intended.
+        """
+        self.ensure_one()
+        try:
+            with self.env.cr.savepoint():
+                return fn()
+        except Exception:               # noqa: BLE001 — never fail an approval
+            _logger.warning('pb_hiring: %s failed on request %s', name,
+                            self.id, exc_info=True)
+            return False
+
     def _on_opened(self):
-        """Four legs, four try/excepts (R104).
+        """Four legs, four savepoints (R104).
 
         The role is open the moment the status says so. Everything below is
         paperwork, and paperwork must never be able to report an approval as
-        a failure.
+        a failure — nor quietly undo one.
         """
         self.ensure_one()
         if not self.opened_on:
@@ -633,29 +659,10 @@ class PbHiringRequisition(models.Model):
         # nothing ever went back for it: every job read `user_id = False` over
         # a request that named a recruiter perfectly well, and no screen said
         # anything was wrong.
-        try:
-            self._apply_country_rule()
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: the hiring rule could not be applied '
-                            'to request %s', self.id, exc_info=True)
-
-        try:
-            self._ensure_job()
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: the job for request %s could not be '
-                            'prepared', self.id, exc_info=True)
-
-        try:
-            self._notify_recruiters()
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: the recruiter notice for request %s '
-                            'did not go out', self.id, exc_info=True)
-
-        try:
-            self._open_referrals()
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: referrals could not be opened on '
-                            'request %s', self.id, exc_info=True)
+        self._leg('the hiring rule', self._apply_country_rule)
+        self._leg('the job', self._ensure_job)
+        self._leg('the recruiter notice', self._notify_recruiters)
+        self._leg('opening referrals', self._open_referrals)
         return True
 
     def _ensure_job(self):

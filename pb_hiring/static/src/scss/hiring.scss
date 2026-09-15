@@ -19,6 +19,26 @@
 // =====================================================================
 
 @keyframes pbhr-rise { from { transform: translateY(10px); opacity: 0; } }
+
+// THE INPUT PRIMITIVE IS TOP LEVEL, not nested under either surface. It is
+// used by the board's filter row AND by the dialogs, and a scrim mounts
+// outside the surface that opened it as often as inside (R114) — so a rule
+// that lives under one of them silently does not reach the other. Written
+// under `.pbhr-scrim` alone, the four filter pickers on the board rendered
+// as unstyled native selects with their text clipped.
+.pbhr-in {
+    width: 100%; border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 9px; padding: 9px 11px; font: inherit;
+    font-size: 13.5px; color: var(--pbim-text, #334155);
+    background: var(--pbim-surface, #FFFFFF); outline: none;
+
+    &:focus {
+        border-color: var(--pbim-primary, #4F46E5);
+        box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+    }
+}
+textarea.pbhr-in { resize: vertical; line-height: 1.55; }
+
 @keyframes pbhr-slide { from { transform: translateX(28px); opacity: 0; } }
 
 .pbhr {
@@ -89,10 +109,14 @@
             box-shadow: 0 0 0 3px var(--pbim-ring);
         }
     }
-    // Qualified rather than generic (R26): a later kit rule with the same
-    // specificity wins on source order, and a picker that eats its own row
-    // pushes every chip beside it down.
-    .pbhr-sel.pbhr-sel { width: auto; min-width: 150px; max-width: 220px; }
+    // Qualified rather than generic (R26). `width: auto` on a native select
+    // sizes it to its LONGEST option, which here is a department name, so
+    // the picker eats the row; a floor and a ceiling with the text allowed
+    // to ellipsis is the only thing that holds four of them on one line.
+    .pbhr-sel.pbhr-sel {
+        width: auto; min-width: 160px; max-width: 220px;
+        text-overflow: ellipsis;
+    }
 
     // ------------------------------------------------------- the cards
     .pbhr-grid {
@@ -344,16 +368,4 @@
                  color: var(--pbim-muted, #64748B); }
     }
     .pbhr-f--wide { grid-column: 1 / -1; }
-    .pbhr-in {
-        width: 100%; border: 1px solid var(--pbim-line, #E2E8F0);
-        border-radius: 9px; padding: 9px 11px; font: inherit;
-        font-size: 13.5px; color: var(--pbim-text, #334155);
-        background: var(--pbim-surface, #FFFFFF); outline: none;
-
-        &:focus {
-            border-color: var(--pbim-primary, #4F46E5);
-            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
-        }
-    }
-    textarea.pbhr-in { resize: vertical; line-height: 1.55; }
 }

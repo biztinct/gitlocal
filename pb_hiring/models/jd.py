@@ -163,18 +163,20 @@ class PbHiringJd(models.Model):
         self.ensure_one()
         self.sudo().write({'approved_on': fields.Datetime.now(),
                            'approved_by': self.env.uid})
-        try:
-            self.requisition_id.sudo().write({'jd_current_id': self.id})
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: advert %s could not be made the '
-                            'current one', self.id, exc_info=True)
+        # SAVEPOINTS, not bare try/excepts: a failure that reached the
+        # database aborts the WHOLE transaction, and catching the exception
+        # in Python does not revive it — every statement after it fails too,
+        # including the ones that record the agreement itself.
+        self.requisition_id._leg(
+            'pointing the request at advert %s' % self.id,
+            lambda: self.requisition_id.sudo().write(
+                {'jd_current_id': self.id}))
         job = self.requisition_id.job_id
         if job:
-            try:
-                job.sudo().write({'website_description': self.body or ''})
-            except Exception:           # noqa: BLE001
-                _logger.warning('pb_hiring: the job text was not updated from '
-                                'advert %s', self.id, exc_info=True)
+            self.requisition_id._leg(
+                'putting advert %s on the job' % self.id,
+                lambda: job.sudo().write(
+                    {'website_description': self.body or ''}))
         return True
 
     def _approval_can(self, from_state, to_state):

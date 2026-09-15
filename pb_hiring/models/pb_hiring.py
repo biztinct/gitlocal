@@ -317,10 +317,14 @@ class PbHiring(models.AbstractModel):
                     ('company_id', 'in', self.env.companies.ids
                      or [self.env.company.id]),
                     ('submitted_on', '>=', str(month_start))]), default=0),
+            # THE SAME DOMAIN AS THE CHIP IT FILTERS (R80). Counting only
+            # the ones still going, over a filter that shows every one of
+            # them, put "Over budget 0" on a board with an "Over by
+            # 300,000,000 ₫" card two inches below it — a number that is
+            # wrong about the list beside it, and a filter that opens on
+            # rows the tile said were not there.
             'over_budget': sum(1 for r in rows
-                               if r['budget_status'] == 'over'
-                               and r['state'] in ('draft', 'submitted',
-                                                  'manager_ok', 'hr_ok')),
+                               if r['budget_status'] == 'over'),
         }
 
     # =====================================================================

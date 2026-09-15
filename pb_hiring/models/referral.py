@@ -136,11 +136,13 @@ class PbHiringReferral(models.Model):
             'candidate_phone': values.get('phone') or '',
             'note': values.get('note') or '',
         })
-        try:
-            referral._tell_the_recruiter()
-        except Exception:               # noqa: BLE001 — never fail a referral
-            _logger.warning('pb_hiring: the recruiter was not told about '
-                            'referral %s', referral.id, exc_info=True)
+        # A SAVEPOINT, not a bare try/except: a mail failure that reached the
+        # database would otherwise abort the transaction that holds the
+        # referral and the candidate, and the person who took the trouble to
+        # put a name forward would get an error page over a referral that was
+        # already made.
+        req._leg('telling the recruiter about referral %s' % referral.id,
+                 referral._tell_the_recruiter)
         return referral
 
     @api.model
