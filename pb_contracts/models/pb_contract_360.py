@@ -1346,10 +1346,16 @@ class PbContracts(models.AbstractModel):
         if self.env.context.get(CONTRACT_WRITE) \
                 or 'pb.contract.proposal' not in self.env:
             return None
-        if not term_vals and not any(plan.get(k) for k in
-                                     ('edits', 'adds', 'removes')):
+        # ONLY WHAT MOVES MONEY. The row is "Salary and contract changes",
+        # and a route in front of fixing a reference or a note would be a gate
+        # nobody asked for — the narrowing AM53 already made for a live pay
+        # scheme. Every component IS money; among the terms, only the ones
+        # that decide what somebody is paid or for how long.
+        money = [k for k in (term_vals or {}) if k in MONEY_TERMS]
+        components_touched = any(plan.get(k) for k in
+                                 ('edits', 'adds', 'removes'))
+        if not money and not components_touched:
             return None
-        money = [k for k in term_vals if k in MONEY_TERMS]
         components_changed = (len(plan.get('edits') or [])
                               + len(plan.get('adds') or [])
                               + len(plan.get('removes') or []))
@@ -1358,13 +1364,19 @@ class PbContracts(models.AbstractModel):
                   'old': edit.get('old_amount'),
                   'new': edit.get('new_amount')}
                  for edit in (plan.get('edits') or [])[:20]]
+        # The proposal carries ONLY the money half. A note typed in the same
+        # press is written straight through below, because holding it would
+        # have been the gate nobody asked for — and because a change that
+        # waits a day should not take a spelling fix with it.
+        held_terms = {k: v for k, v in (terms or {}).items()
+                      if k in MONEY_TERMS}
         answer = self.env['pb.contract.proposal'].propose(
             'terms',
             _("Contract change · %s", contract.employee_id.name or ''),
-            payload={'contract_id': contract.id, 'terms': terms or {},
+            payload={'contract_id': contract.id, 'terms': held_terms,
                      'components': components or [], 'note': note or '',
                      'shown': shown},
-            snapshot={key: contract[key] for key in sorted(term_vals)
+            snapshot={key: contract[key] for key in sorted(held_terms)
                       if key in contract._fields},
             facts={'wage': {'value': float(term_vals.get('wage')
                                            or contract.wage or 0.0),
@@ -1380,7 +1392,21 @@ class PbContracts(models.AbstractModel):
         ).answer()
         if answer.get('applied'):
             return None
-        return {'ok': True, 'saved': 0, 'refusals': [], 'pending': True,
+        # The terms that are NOT money were never in the proposal, so they are
+        # written here and now — the answer says how many, so nobody reads
+        # "nothing was saved" over a note that was.
+        plain = {k: v for k, v in (term_vals or {}).items()
+                 if k not in MONEY_TERMS}
+        written = 0
+        if plain:
+            try:
+                with self.env.cr.savepoint():
+                    contract.write(plain)
+                written = len(plain)
+            except Exception:       # noqa: BLE001 — the money still waits
+                _logger.exception("Contract drawer: plain-term write refused "
+                                  "on %s", contract.id)
+        return {'ok': True, 'saved': written, 'refusals': [], 'pending': True,
                 'reference': answer.get('reference'),
                 'request_id': answer.get('request_id'),
                 'msg': answer.get('message') or '',

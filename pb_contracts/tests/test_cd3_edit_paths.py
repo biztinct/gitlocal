@@ -18,6 +18,8 @@ from datetime import date
 
 from odoo.tests import TransactionCase, tagged
 
+from .approval_lane import no_approval_needed
+
 
 @tagged('post_install', '-at_install')
 class TestCd3EditPaths(TransactionCase):
@@ -25,6 +27,9 @@ class TestCd3EditPaths(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # THIS SUITE IS ABOUT THE WRITE, NOT ABOUT WHO AGREES
+        # (ledger AM100). See `tests/approval_lane.py`.
+        no_approval_needed(cls.env)
         cls.Facade = cls.env['pb.contracts']
         cls.Contract = cls.env['hr.contract']
         cls.Employee = cls.env['hr.employee']
