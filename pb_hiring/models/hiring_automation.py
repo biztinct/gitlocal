@@ -23,7 +23,8 @@ from datetime import timedelta
 from odoo import _, api, fields, models
 
 from .hiring_common import (
-    P_JD_REMINDER_DAYS, P_RECRUITER_NUDGE_DAYS, counted, number,
+    P_JD_REMINDER_DAYS, P_RECRUITER_NUDGE_DAYS, P_REMINDER_CAP, P_REMINDERS,
+    P_URGENT_AFTER_HOURS, counted, flag, leg, number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -46,9 +47,10 @@ class PbHiringAutomation(models.AbstractModel):
 
     @api.model
     def run_now(self):
-        counts = {'jd': 0, 'recruiter': 0}
+        counts = {'jd': 0, 'recruiter': 0, 'late_feedback': 0}
         for key, fn in (('jd', self._nudge_adverts),
-                        ('recruiter', self._nudge_open_roles)):
+                        ('recruiter', self._nudge_open_roles),
+                        ('late_feedback', self._chase_late_feedback)):
             try:
                 counts[key] = fn()
             except Exception:           # noqa: BLE001 — a job never raises
@@ -58,25 +60,33 @@ class PbHiringAutomation(models.AbstractModel):
 
     @api.model
     def describe(self, counts):
-        """The sentence a person reads, with the real numbers in it."""
-        jd, rec = counts.get('jd', 0), counts.get('recruiter', 0)
-        # BRANCH THE WHOLE SENTENCE (R117): a frame with one word swapped in
-        # produces "You does not have", and a translator handed the frame and
-        # the word separately cannot fix a verb they were never given.
-        if not jd and not rec:
+        """The sentence a person reads, with the real numbers in it.
+
+        BRANCHED WHOLE (R117): a frame with one word swapped in produces
+        "You does not have", and a translator handed the frame and the word
+        separately cannot fix a verb they were never given. With three
+        numbers the combinations stop being worth branching by hand, so each
+        clause is a whole sentence of its own and they are joined.
+        """
+        jd = counts.get('jd', 0)
+        rec = counts.get('recruiter', 0)
+        late = counts.get('late_feedback', 0)
+        parts = []
+        if jd:
+            parts.append(_("%(n)s %(word)s nudged.", n=jd,
+                           word=counted(jd, _('job description was'),
+                                        _('job descriptions were'))))
+        if rec:
+            parts.append(_("%(n)s open %(word)s still nobody recruiting it.",
+                           n=rec,
+                           word=counted(rec, _('role has'), _('roles have'))))
+        if late:
+            parts.append(_("%(n)s late %(word)s chased.", n=late,
+                           word=counted(late, _('opinion was'),
+                                        _('opinions were'))))
+        if not parts:
             return _("Nothing needed chasing today.")
-        if jd and not rec:
-            return _("%(n)s %(word)s nudged.", n=jd,
-                     word=counted(jd, _('job description was'),
-                                  _('job descriptions were')))
-        if rec and not jd:
-            return _("%(n)s open %(word)s still nobody recruiting it.", n=rec,
-                     word=counted(rec, _('role has'), _('roles have')))
-        return _("%(jn)s %(jword)s nudged, and %(rn)s open %(rword)s still "
-                 "nobody recruiting it.",
-                 jn=jd, jword=counted(jd, _('job description was'),
-                                      _('job descriptions were')),
-                 rn=rec, rword=counted(rec, _('role has'), _('roles have')))
+        return ' '.join(parts)
 
     # =====================================================================
     #  An advert nobody has agreed
@@ -164,6 +174,137 @@ class PbHiringAutomation(models.AbstractModel):
             except Exception:           # noqa: BLE001 — per record
                 _logger.warning('pb_hiring: could not chase open role %s',
                                 req.id, exc_info=True)
+        return made
+
+    # =====================================================================
+    #  A2 — the hour that is coming, every ten minutes
+    # =====================================================================
+    @api.model
+    def _cron_reminders(self):
+        counts = self.run_reminders()
+        _logger.info('pb_hiring: %s', self.describe_reminders(counts))
+        return counts
+
+    @api.model
+    def run_reminders(self):
+        """The day-before and half-hour nudges, in one pass.
+
+        A SEPARATE JOB FROM THE NIGHT, because it is a different question. The
+        nightly one asks "what has gone stale"; this one asks "who has
+        something in half an hour", and the answer is only useful if it is
+        asked every ten minutes. Running it by hand is harmless: both nudges
+        are stamped on the interview, so a second pass in the same window
+        sends nothing.
+        """
+        counts = {'day_before': 0, 'half_hour': 0}
+        if not flag(self.env, P_REMINDERS):
+            _logger.info('pb_hiring: interview reminders are switched off, so '
+                         'nobody was told about an hour that is coming')
+            return counts
+        for key, fn in (('day_before', self._remind_day_before),
+                        ('half_hour', self._remind_half_hour)):
+            try:
+                counts[key] = fn()
+            except Exception:           # noqa: BLE001 — a job never raises
+                _logger.warning('pb_hiring: the %s reminder failed', key,
+                                exc_info=True)
+        return counts
+
+    @api.model
+    def describe_reminders(self, counts):
+        day = counts.get('day_before', 0)
+        half = counts.get('half_hour', 0)
+        parts = []
+        if day:
+            parts.append(_("%(n)s %(word)s tomorrow.", n=day,
+                           word=counted(day, _('interview is'),
+                                        _('interviews are'))))
+        if half:
+            parts.append(_("%(n)s %(word)s within the half hour.", n=half,
+                           word=counted(half, _('interview is'),
+                                        _('interviews are'))))
+        if not parts:
+            return _("No interview needed a reminder just now.")
+        return ' '.join(parts)
+
+    @api.model
+    def _due_interviews(self, low, high, stamp_field):
+        """The interviews inside a WINDOW, not past a threshold.
+
+        A threshold ("start is less than a day away") would fire on every
+        interview in the next twenty-four hours, every ten minutes, for ever
+        — it is only the stamp that would stop it, and a stamp is a repair
+        rather than a design. A window is the honest question, and the stamp
+        is then belt as well as braces.
+
+        THE SERVER'S OWN CLOCK (R36): the live box runs a day behind the
+        laptop these tests are written on.
+        """
+        now = fields.Datetime.now()
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        return self.env['pb.hiring.interview'].sudo().search([
+            ('state', '=', 'scheduled'),
+            ('start', '>=', now + low),
+            ('start', '<=', now + high),
+            (stamp_field, '=', False),
+        ], order='start', limit=cap)
+
+    @api.model
+    def _remind_day_before(self):
+        rows = self._due_interviews(timedelta(hours=23, minutes=50),
+                                    timedelta(hours=24, minutes=10),
+                                    'reminder_24h_sent')
+        return self._remind_each(rows, '24h')
+
+    @api.model
+    def _remind_half_hour(self):
+        rows = self._due_interviews(timedelta(minutes=25),
+                                    timedelta(minutes=35),
+                                    'reminder_30m_sent')
+        return self._remind_each(rows, '30m')
+
+    @api.model
+    def _remind_each(self, rows, which):
+        made = 0
+        for interview in rows:
+            # PER RECORD, IN ITS OWN SAVEPOINT. One interview whose candidate
+            # address is malformed must not cost the other forty their
+            # reminder, and a failure that reached the database would take
+            # the whole run with it (R131).
+            if leg(self.env, 'the %s reminder on interview %s'
+                   % (which, interview.id),
+                   lambda i=interview: i._remind(which)) is not False:
+                made += 1
+        return made
+
+    # =====================================================================
+    #  A2 — the opinions that are late, once a day
+    # =====================================================================
+    @api.model
+    def _chase_late_feedback(self):
+        """ONE urgent mail per late opinion, ever.
+
+        Idempotent by `urgent_sent_at` rather than by a search for an open
+        to-do, because the to-do is raised on the INTERVIEW and three late
+        opinions on one interview are three different people to chase. R49's
+        lesson from the other side: only an identifier a row actually HAS may
+        be the key.
+        """
+        grace = max(0, number(self.env, P_URGENT_AFTER_HOURS, 0))
+        cutoff = fields.Datetime.now() - timedelta(hours=grace)
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        rows = self.env['pb.hiring.feedback'].sudo().search([
+            ('state', '=', 'pending'),
+            ('urgent_sent_at', '=', False),
+            ('due_at', '!=', False),
+            ('due_at', '<=', cutoff),
+            ('interview_id.state', 'in', ('scheduled', 'done')),
+        ], order='due_at', limit=cap)
+        made = 0
+        for row in rows:
+            if leg(self.env, 'the chase on opinion %s' % row.id,
+                   row._chase) is not False:
+                made += 1
         return made
 
     @api.model

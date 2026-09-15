@@ -31,5 +31,40 @@
         <field name="value">3</field>
     </record>
 
+    <!-- ============ A2 ============ -->
+
+    <record id="param_feedback_hours" model="ir.config_parameter">
+        <field name="key">pb_hiring.feedback_hours</field>
+        <!-- WORKING hours, on the company's own calendar. Twenty-four plain
+             hours would ask a panel member who interviewed at four on a
+             Friday to answer by four on a Saturday. -->
+        <field name="value">24</field>
+    </record>
+
+    <record id="param_urgent_after_hours" model="ir.config_parameter">
+        <field name="key">pb_hiring.urgent_after_hours</field>
+        <!-- Zero: the chase goes out the moment an opinion is late. A panel
+             member asked a week later has forgotten the conversation, so a
+             grace period buys nothing and costs the answer. -->
+        <field name="value">0</field>
+    </record>
+
+    <record id="param_interview_duration" model="ir.config_parameter">
+        <field name="key">pb_hiring.interview_duration</field>
+        <!-- What the length box starts at. Forty-five minutes is the length
+             of a real interview; an hour is what a diary defaults to. -->
+        <field name="value">45</field>
+    </record>
+
+    <record id="param_reminder_cap" model="ir.config_parameter">
+        <field name="key">pb_hiring.reminder_cap</field>
+        <!-- A cap that is right for a screen is a bug in a job (R76), so the
+             jobs carry their own and it is a dial rather than a literal. Four
+             hundred interviews inside one ten-minute window is far beyond
+             anything real; the number exists so a runaway cannot mail a
+             company into silence. -->
+        <field name="value">400</field>
+    </record>
+
 </data>
 </odoo>

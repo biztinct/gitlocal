@@ -32,6 +32,14 @@ P_REFERRAL_MAIL = 'pb_hiring.referral_mail'
 P_JD_REMINDER_DAYS = 'pb_hiring.jd_reminder_days'
 P_RECRUITER_NUDGE_DAYS = 'pb_hiring.recruiter_nudge_days'
 
+# ------------------------------------------------- A2, the interview loop
+P_REMINDERS = 'pb_hiring.reminders'
+P_CANDIDATE_MAIL = 'pb_hiring.candidate_mail'
+P_FEEDBACK_HOURS = 'pb_hiring.feedback_hours'
+P_URGENT_AFTER_HOURS = 'pb_hiring.urgent_after_hours'
+P_INTERVIEW_DURATION = 'pb_hiring.interview_duration'
+P_REMINDER_CAP = 'pb_hiring.reminder_cap'
+
 DEFAULTS = {
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
@@ -42,6 +50,19 @@ DEFAULTS = {
     P_REFERRAL_MAIL: '1',
     P_JD_REMINDER_DAYS: '3',
     P_RECRUITER_NUDGE_DAYS: '3',
+    # ON. A candidate who is not told where to be at ten o'clock is a
+    # candidate who does not come, and the whole point of an invitation is
+    # that it leaves the building.
+    P_REMINDERS: '1',
+    P_CANDIDATE_MAIL: '1',
+    P_FEEDBACK_HOURS: '24',
+    # Zero: the nudge goes at the moment the opinion is late, not a day
+    # after it. A panel member who is asked a week later has forgotten.
+    P_URGENT_AFTER_HOURS: '0',
+    P_INTERVIEW_DURATION: '45',
+    # A cap that is right for a SCREEN is a bug in a CRON (R76), so the jobs
+    # carry their own and it is a dial rather than a literal.
+    P_REMINDER_CAP: '400',
 }
 
 # ------------------------------------------------------------- the choices
@@ -112,8 +133,81 @@ SCREEN_TAGS = [
     ('other_role', 'Better suited to another role'),
 ]
 
+# ==========================================================================
+#  A2 — the interview loop
+# ==========================================================================
+INTERVIEW_STATES = [
+    ('scheduled', 'Arranged'),
+    ('done', 'Done'),
+    ('no_show', 'Nobody came'),
+    ('cancelled', 'Called off'),
+    ('rescheduled', 'Moved'),
+]
+
+#: The statuses in which an interview is still going to happen.
+INTERVIEW_LIVE = ('scheduled',)
+
+INTERVIEW_MODES = [
+    ('in_person', 'In person'),
+    ('video', 'On a video call'),
+    ('phone', 'On the phone'),
+]
+
+NO_SHOW_BY = [
+    ('candidate', 'The candidate did not come'),
+    ('interviewer', 'Somebody on our side did not come'),
+]
+
+#: Whose fault a move is. It is not a blame column — it is the only way a
+#: company can ever answer "are we the reason our hiring takes eleven weeks".
+DELAY_KINDS = [
+    ('internal', 'Our side moved it'),
+    ('external', 'The candidate moved it'),
+]
+
+FEEDBACK_STATES = [
+    ('pending', 'Waiting'),
+    ('submitted', 'In'),
+    ('expired', 'Closed'),
+]
+
+#: Ordered worst to best, so a mean of the stored numbers is meaningful.
+RECOMMENDATIONS = [
+    ('strong_no', 'Strong no'),
+    ('no', 'No'),
+    ('yes', 'Yes'),
+    ('strong_yes', 'Strong yes'),
+]
+
+RECOMMENDATION_SCORE = {'strong_no': 1, 'no': 2, 'yes': 3, 'strong_yes': 4}
+
+DEBRIEF_DECISIONS = [
+    ('select', 'We want them'),
+    ('hold', 'Keep them warm'),
+    ('reject', 'Not this time'),
+]
+
+#: The kinds of stage after which a debrief and a decision make sense. A
+#: debrief on round one is a decision taken before the process has run.
+FINAL_KINDS = ('final', 'panel')
+
 
 # ------------------------------------------------------------- the helpers
+def leg(env, label, fn):
+    """One piece of paperwork, inside its own SAVEPOINT (R131).
+
+    The record-scoped twin of `pb.hiring.requisition._leg`, for the models
+    and the jobs that are not a requisition. A try/except IS NOT ENOUGH when
+    the thing that failed reached the database: Postgres aborts the whole
+    transaction and every statement after it fails too, including the write
+    that the paperwork was about.
+    """
+    try:
+        with env.cr.savepoint():
+            return fn()
+    except Exception:                   # noqa: BLE001 — paperwork never fails
+        _logger.warning('pb_hiring: %s failed', label, exc_info=True)
+        return False
 def flag(env, key, default=None):
     """A switch, read as a switch and never as a truthy string."""
     raw = env['ir.config_parameter'].sudo().get_param(

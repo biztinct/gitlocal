@@ -27,3 +27,28 @@ access_pb_hiring_country_rule_user,Hiring rule recruiter,model_pb_hiring_country
 access_pb_hiring_country_rule_manager,Hiring rule manager,model_pb_hiring_country_rule,pb_hiring.group_hiring_manager,1,0,0,0
 access_pb_hiring_country_rule_admin,Hiring rule head of hiring,model_pb_hiring_country_rule,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_country_rule_system,Hiring rule system,model_pb_hiring_country_rule,base.group_system,1,1,1,1
+access_pb_hiring_interview_staff,Interview mine,model_pb_hiring_interview,base.group_user,1,0,0,0
+access_pb_hiring_interview_user,Interview recruiter,model_pb_hiring_interview,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_interview_manager,Interview manager,model_pb_hiring_interview,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_interview_admin,Interview head of hiring,model_pb_hiring_interview,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_interview_system,Interview system,model_pb_hiring_interview,base.group_system,1,1,1,1
+access_pb_hiring_reschedule_staff,Interview moved mine,model_pb_hiring_reschedule,base.group_user,1,0,0,0
+access_pb_hiring_reschedule_user,Interview moved recruiter,model_pb_hiring_reschedule,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_reschedule_manager,Interview moved manager,model_pb_hiring_reschedule,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_reschedule_admin,Interview moved head of hiring,model_pb_hiring_reschedule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_reschedule_system,Interview moved system,model_pb_hiring_reschedule,base.group_system,1,1,1,1
+access_pb_hiring_feedback_staff,Interview opinion mine,model_pb_hiring_feedback,base.group_user,1,0,0,0
+access_pb_hiring_feedback_user,Interview opinion recruiter,model_pb_hiring_feedback,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_feedback_manager,Interview opinion manager,model_pb_hiring_feedback,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_feedback_admin,Interview opinion head of hiring,model_pb_hiring_feedback,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_feedback_system,Interview opinion system,model_pb_hiring_feedback,base.group_system,1,1,1,1
+access_pb_hiring_criterion_staff,Scoring line read,model_pb_hiring_criterion,base.group_user,1,0,0,0
+access_pb_hiring_criterion_user,Scoring line recruiter,model_pb_hiring_criterion,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_criterion_manager,Scoring line manager,model_pb_hiring_criterion,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_criterion_admin,Scoring line head of hiring,model_pb_hiring_criterion,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_criterion_system,Scoring line system,model_pb_hiring_criterion,base.group_system,1,1,1,1
+access_pb_hiring_stage_log_staff,Candidate stage move read,model_pb_hiring_stage_log,base.group_user,1,0,0,0
+access_pb_hiring_stage_log_user,Candidate stage move recruiter,model_pb_hiring_stage_log,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_stage_log_manager,Candidate stage move manager,model_pb_hiring_stage_log,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_stage_log_admin,Candidate stage move head of hiring,model_pb_hiring_stage_log,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_stage_log_system,Candidate stage move system,model_pb_hiring_stage_log,base.group_system,1,1,1,1

@@ -107,6 +107,109 @@
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <!-- ============ A2, the interview loop ============ -->
+
+    <record id="rule_interview_company" model="ir.rule">
+        <field name="name">Interview: company</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_reschedule_company" model="ir.rule">
+        <field name="name">Interview moved: company</field>
+        <field name="model_id" ref="model_pb_hiring_reschedule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_feedback_company" model="ir.rule">
+        <field name="name">Interview opinion: company</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_criterion_company" model="ir.rule">
+        <field name="name">Scoring line: company</field>
+        <field name="model_id" ref="model_pb_hiring_criterion"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_stage_log_company" model="ir.rule">
+        <field name="name">Candidate stage move: company</field>
+        <field name="model_id" ref="model_pb_hiring_stage_log"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE INTERVIEW — THE PAIR AGAIN (R60/R65).
+
+         A panel member is by definition somebody with no hiring permission:
+         a plant manager who sits on two interviews a year. They must see the
+         hour they are sitting in and NOTHING ELSE, and the narrow rule that
+         gives them that would — shipped alone — take every other interview
+         away from the recruiters, because group rules are ORed over the
+         rules that APPLY.
+         ================================================================== -->
+
+    <record id="rule_interview_own" model="ir.rule">
+        <field name="name">Interview: the ones I am in</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', '|', ('panel_employee_ids.user_id', '=', user.id), ('recruiter_id', '=', user.id), ('requisition_id.requested_by_user_id', '=', user.id), ('requisition_id.reporting_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_interview_all" model="ir.rule">
+        <field name="name">Interview: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_reschedule_own" model="ir.rule">
+        <field name="name">Interview moved: the ones I am in</field>
+        <field name="model_id" ref="model_pb_hiring_reschedule"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('interview_id.panel_employee_ids.user_id', '=', user.id), ('interview_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_reschedule_all" model="ir.rule">
+        <field name="name">Interview moved: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_reschedule"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- AN OPINION IS THE PANEL MEMBER'S OWN AND THE HIRING TEAM'S, and
+         nobody else's. Not the hiring manager's either: a department head
+         who can read what each individual interviewer said is a department
+         head nobody on that panel will be candid in front of again. -->
+    <record id="rule_feedback_own" model="ir.rule">
+        <field name="name">Interview opinion: the one I was asked for</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('panel_user_id', '=', user.id), ('interview_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_feedback_all" model="ir.rule">
+        <field name="name">Interview opinion: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_stage_log_own" model="ir.rule">
+        <field name="name">Candidate stage move: my own roles</field>
+        <field name="model_id" ref="model_pb_hiring_stage_log"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('requisition_id.requested_by_user_id', '=', user.id), ('requisition_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_stage_log_all" model="ir.rule">
+        <field name="name">Candidate stage move: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_stage_log"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
     <!-- ==================================================================
          WHO SEES WHOSE REQUEST.
 

@@ -19,7 +19,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .hiring_common import SCREEN_TAGS, as_id
+from .hiring_common import P_CANDIDATE_MAIL, SCREEN_TAGS, as_id, flag, leg
 
 _logger = logging.getLogger(__name__)
 
@@ -43,6 +43,44 @@ class HrApplicant(models.Model):
         help='Where this candidate was moved to, or should be moved to.')
     pb_referral_ids = fields.One2many('pb.hiring.referral', 'applicant_id',
                                       string='Referral')
+    pb_interview_ids = fields.One2many('pb.hiring.interview', 'applicant_id',
+                                       string='Interviews')
+    pb_stage_log_ids = fields.One2many('pb.hiring.stage.log', 'applicant_id',
+                                       string='Where they have been')
+
+    # =====================================================================
+    #  Every move, written down as it happens
+    # =====================================================================
+    def write(self, vals):
+        """THE LEDGER HANGS OFF `write` AND NOT OFF OUR OWN BUTTONS.
+
+        A candidate is moved by four different things — this module's
+        screening, this module's interview scheduling, the standard kanban a
+        recruiter drags a card across, and the occasional mass edit — and a
+        history that only knows about our own three is a history that lies
+        about the fourth. `write` is the one place all four meet.
+
+        The stage before the move is read BEFORE `super()`, because
+        afterwards it is gone. Writing the row is a savepoint leg (R131): a
+        ledger entry is a courtesy to a report that has not been written yet,
+        and it must never be able to fail somebody's afternoon — nor, having
+        failed, to take the move itself down with it.
+        """
+        before = {}
+        if 'stage_id' in vals:
+            before = {rec.id: rec.stage_id.id for rec in self}
+        res = super().write(vals)
+        if before:
+            Log = self.env['pb.hiring.stage.log']
+            for rec in self:
+                was = before.get(rec.id)
+                now = rec.stage_id.id
+                if was == now:
+                    continue
+                leg(self.env, 'the stage log for candidate %s' % rec.id,
+                    lambda rec=rec, was=was, now=now: Log.note_move(
+                        rec, was, now))
+        return res
 
     # =====================================================================
     #  The four answers
@@ -157,6 +195,86 @@ class HrApplicant(models.Model):
             except Exception:           # noqa: BLE001 — a note is a courtesy
                 _logger.warning('pb_hiring: could not note the move on job %s',
                                 target.id, exc_info=True)
+        return True
+
+    # =====================================================================
+    #  The two answers a candidate is actually waiting for
+    # =====================================================================
+    def _pb_next_stage(self, step=None):
+        """The stage they move to, in the order the business set out.
+
+        A step from the hiring request that names a stage wins, because that
+        is what everybody agreed the process was. Otherwise it is simply the
+        next stage this job has, which is what dragging the card would do.
+        """
+        self.ensure_one()
+        if step and step.sudo().stage_id:
+            return step.sudo().stage_id
+        return self.env['hr.recruitment.stage'].sudo().search(
+            [('sequence', '>', self.stage_id.sequence or 0),
+             '|', ('job_ids', '=', False), ('job_ids', 'in', self.job_id.ids)],
+            order='sequence, id', limit=1)
+
+    def action_pb_next_round(self, step_id=None):
+        """Through to the next round, and the candidate is TOLD.
+
+        The stage move and the email are two different promises and only the
+        first one is this method's job — a mail server that is down must not
+        be able to leave a candidate stuck on the stage they were on, so the
+        telling is a savepoint leg (R131).
+        """
+        self.ensure_one()
+        step = self.env['pb.hiring.step'].sudo().browse(
+            as_id(step_id)).exists() if step_id else None
+        stage = self._pb_next_stage(step)
+        if not stage:
+            raise UserError(_(
+                "There is no stage after this one on this role. Add one to "
+                "the hiring request, or make the offer."))
+        if stage.id == self.stage_id.id:
+            raise UserError(_("They are already at that stage."))
+        self.sudo().write({'stage_id': stage.id, 'kanban_state': 'done'})
+        self.sudo().message_post(body=_(
+            "Through to %s.", stage.name or ''))
+        leg(self.env, 'the next-round note to candidate %s' % self.id,
+            lambda: self._pb_tell_candidate(
+                'pb_hiring.mail_template_candidate_next_round'))
+        return True
+
+    def action_pb_reject(self, reason_id=None):
+        """Not this time — said, rather than left unsaid.
+
+        The refusal itself is the standard one (`refuse_reason_id`, archived,
+        dated) so nothing downstream can tell the difference. What this adds
+        is that somebody is actually told, which is the single most common
+        thing a hiring process forgets to do.
+        """
+        self.ensure_one()
+        self.action_pb_screen('rejected', reason_id=reason_id)
+        leg(self.env, 'the answer to candidate %s' % self.id,
+            lambda: self._pb_tell_candidate(
+                'pb_hiring.mail_template_candidate_rejected'))
+        return True
+
+    def _pb_tell_candidate(self, xmlid):
+        """One mail to the candidate, addressed explicitly (R6) and gated on
+        the switch that governs every candidate mail in this module."""
+        self.ensure_one()
+        if not flag(self.env, P_CANDIDATE_MAIL):
+            _logger.info('pb_hiring: candidate mail is switched off; %s would '
+                         'have been told', self.sudo().email_from or 'nobody')
+            return False
+        address = (self.sudo().email_from or '').strip()
+        if not address:
+            _logger.info('pb_hiring: candidate %s has no email address, so '
+                         'nothing was sent', self.id)
+            return False
+        template = self.env.ref(xmlid, raise_if_not_found=False)
+        if not template:
+            return False
+        template.sudo().send_mail(
+            self.id, force_send=False,
+            email_values={'email_to': address, 'auto_delete': False})
         return True
 
     # ------------------------------------------------------------ the doors

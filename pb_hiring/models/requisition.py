@@ -61,6 +61,14 @@ class PbHiringStep(models.Model):
                             required=True)
     owner_id = fields.Many2one('res.users', string='Who runs it',
                                domain="[('share', '=', False)]")
+    # A2. OPTIONAL ON PURPOSE. A stage named here is the stage a candidate is
+    # moved to when this round is arranged, which is what the business agreed
+    # the process was. Left empty, nothing moves — a stage the hiring request
+    # never mentioned is a stage somebody would have to undo.
+    stage_id = fields.Many2one(
+        'hr.recruitment.stage', string='Which stage it puts them on',
+        help='Optional. Arranging this round moves the candidate here. Leave '
+             'it empty and the candidate stays where the recruiter put them.')
     days_expected = fields.Integer(
         string='Days it should take', default=3,
         help='Used to say how long the whole process should take. It is a '
@@ -190,6 +198,16 @@ class PbHiringRequisition(models.Model):
                                    string='Referrals')
     applicant_ids = fields.One2many(
         'hr.applicant', 'pb_requisition_id', string='Candidates')
+    interview_ids = fields.One2many(
+        'pb.hiring.interview', 'requisition_id', string='Interviews')
+    # A2. THE POINTER A3 STARTS FROM. Written by the debrief on the last
+    # round and by nothing else, so "who did we pick" has exactly one answer
+    # and it is the one a panel actually agreed.
+    selected_applicant_id = fields.Many2one(
+        'hr.applicant', string='The one we want', copy=False,
+        ondelete='set null', tracking=True,
+        help='Set by the debrief on the last round. The background check and '
+             'the offer start from here.')
 
     referral_open = fields.Boolean(
         string='Open to referrals', copy=False, tracking=True,
