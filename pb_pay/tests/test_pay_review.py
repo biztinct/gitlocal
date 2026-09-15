@@ -162,11 +162,16 @@ class TestPayReview(TransactionCase):
             'scope_key': '', 'scope_label': cls.company.name,
             'user_id': user.id})
 
-    #: Which button belongs to which rung of the published route.
+    #: Which button belongs to which rung of the published route, and who
+    #: holds it. More than one name per rung because the two records do not
+    #: have the same buttons — `pb.pay.change` has no `action_finance_approve`
+    #: — and under a route ANY of the driven buttons decides the LIVE step
+    #: (ledger AM84), so the first one the record actually has is the one to
+    #: press.
     _RUNG_BUTTON = {
-        'hr': ('action_hr_approve', 'hr_lead'),
-        'fin': ('action_finance_approve', 'fin_lead'),
-        'signoff': ('action_ceo_approve', 'ceo_lead'),
+        'hr': (('action_hr_approve',), 'hr_lead'),
+        'fin': (('action_finance_approve', 'action_ceo_approve'), 'fin_lead'),
+        'signoff': (('action_ceo_approve',), 'ceo_lead'),
     }
 
     def _walk_the_ladder(self, record):
@@ -189,8 +194,12 @@ class TestPayReview(TransactionCase):
             rung = self._RUNG_BUTTON.get(request.current_step_key)
             if not rung:
                 break
-            button, who = rung
-            getattr(record.with_user(getattr(self, who)), button)()
+            names, who = rung
+            actor = record.with_user(getattr(self, who))
+            pressed = next((n for n in names if hasattr(actor, n)), None)
+            self.assertTrue(pressed,
+                            '%s has none of %s' % (record._name, names))
+            getattr(actor, pressed)()
         record.invalidate_recordset()
         return record
 
