@@ -198,6 +198,8 @@ msgid "Action blocked"
 msgstr "Hành động bị chặn"
 
 #. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
 msgid "Waiting for approval"
 msgstr "Đang chờ phê duyệt"
 

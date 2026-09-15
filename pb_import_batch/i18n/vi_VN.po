@@ -197,22 +197,30 @@ msgid "Action failed."
 msgstr "Thao tác không thành công."
 
 #. module: pb_import_batch
+#. odoo-python
+#. odoo-javascript
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_import_batch
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Send for approval"
 msgstr "Gửi đi duyệt"
 
 #. module: pb_import_batch
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Commit import"
 msgstr "Ghi dữ liệu vào hệ thống"
 
 #. module: pb_import_batch
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "See the request"
 msgstr "Xem yêu cầu"

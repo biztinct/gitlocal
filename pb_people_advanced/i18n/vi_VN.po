@@ -348,10 +348,14 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
 msgid "Add %s to the payroll"
 msgstr "Thêm %s vào bảng lương"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Adding somebody to the payroll, or giving them a contract, is for HR. Ask somebody in HR to do this, or to give you the HR permission."
 msgstr "Thêm người vào bảng lương, hoặc ký hợp đồng cho họ, là việc của nhân sự. Hãy nhờ nhân sự làm việc này, hoặc cấp cho bạn quyền nhân sự."
 
@@ -360,10 +364,14 @@ msgid "Amount"
 msgstr "Số tiền"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Bank details given"
 msgstr "Đã có thông tin ngân hàng"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
 msgid "Contract for %s"
 msgstr "Hợp đồng cho %s"
 
@@ -380,6 +388,8 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/security/newhire_approval_rules.xml:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -392,10 +402,14 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Kind of contract"
 msgstr "Loại hợp đồng"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Monthly pay"
 msgstr "Lương tháng"
 
@@ -404,6 +418,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/__manifest__.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -453,6 +469,8 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "And a contract straight away"
 msgstr "Và có hợp đồng ngay"
 
@@ -461,26 +479,38 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Bank"
 msgstr "Ngân hàng"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Bank account"
 msgstr "Tài khoản ngân hàng"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Contract starts in force"
 msgstr "Hợp đồng có hiệu lực ngay"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Ends"
 msgstr "Kết thúc"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Job title"
 msgstr "Chức danh"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Name"
 msgstr "Họ tên"
 
@@ -493,6 +523,8 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Starts"
 msgstr "Bắt đầu"
 
@@ -501,10 +533,14 @@ msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
 msgid "What"
 msgstr "Nội dung"
 

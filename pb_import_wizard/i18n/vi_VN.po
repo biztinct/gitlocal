@@ -330,22 +330,30 @@ msgid "Step failed."
 msgstr "Bước không thành công."
 
 #. module: pb_import_wizard
+#. odoo-python
+#. odoo-javascript
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Sent for approval"
 msgstr "Đã gửi duyệt"
 
 #. module: pb_import_wizard
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "The employees and payslips are made once it is approved."
 msgstr "Nhân viên và phiếu lương sẽ được tạo sau khi được phê duyệt."
 
 #. module: pb_import_wizard
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "waiting for its approver"
 msgstr "đang chờ người phê duyệt"
 
 #. module: pb_import_wizard
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Send for approval"
 msgstr "Gửi đi duyệt"

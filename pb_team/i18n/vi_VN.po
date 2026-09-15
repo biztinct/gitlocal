@@ -312,5 +312,6 @@ msgstr "mục đích"
 
 #. module: pb_team
 #. odoo-javascript
+#: code:addons/pb_team/static/src/js/pb_team.js:0
 msgid "Taking you to Approvals…"
 msgstr "Đang chuyển bạn tới mục Phê duyệt…"

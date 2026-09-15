@@ -5752,22 +5752,32 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Accept %s suggested band(s)"
 msgstr "Chấp nhận %s dải lương đề xuất"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "Bands changed"
 msgstr "Số dải lương thay đổi"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "Biggest move (%)"
 msgstr "Mức dịch lớn nhất (%)"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Finance approver"
 msgstr "Người duyệt tài chính"
 
@@ -5776,10 +5786,14 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid "Guidance · %s"
 msgstr "Hướng dẫn · %s"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/tests/test_pay_review.py:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -5788,22 +5802,32 @@ msgid "HR lifecycle team"
 msgstr "Nhóm vòng đời nhân sự"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Import %s band(s) from a spreadsheet"
 msgstr "Nhập %s dải lương từ bảng tính"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Move the %(side)s edge of %(band)s"
 msgstr "Dịch mốc %(side)s của %(band)s"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Pay %(job)s from %(band)s"
 msgstr "Trả lương %(job)s theo %(band)s"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review.py:0
 msgid "Pay review limit · %s"
 msgstr "Hạn mức đợt xét lương · %s"
 
@@ -5812,6 +5836,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "People in those bands"
 msgstr "Số người trong các dải lương đó"
 
@@ -5820,10 +5846,14 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Put %s back where it was"
 msgstr "Đưa %s về như cũ"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Save the band %s"
 msgstr "Lưu dải lương %s"
 
@@ -5840,14 +5870,20 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_reviews.py:0
 msgid "Start a guidance grid"
 msgstr "Tạo bảng hướng dẫn"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "Take %s out of its band"
 msgstr "Đưa %s ra khỏi dải lương"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "That limit no longer exists."
 msgstr "Hạn mức đó không còn tồn tại."
 
@@ -5864,6 +5900,8 @@ msgid "Yes"
 msgstr "Có"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/tests/test_pay_review.py:0
 msgid "highest"
 msgstr "cao nhất"
 
@@ -5872,10 +5910,14 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/tests/test_pay.py:0
 msgid "lowest"
 msgstr "thấp nhất"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_bands.py:0
 msgid "new band"
 msgstr "dải lương mới"
 
@@ -5901,10 +5943,14 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "Bands in the file"
 msgstr "Số dải lương trong tệp"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "Bands suggested"
 msgstr "Số dải lương được đề xuất"
 
@@ -5917,13 +5963,19 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_guidance.py:0
 msgid "Square"
 msgstr "Ô"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
 msgid "That job stops being paid from this band"
 msgstr "Vị trí đó thôi được trả lương theo dải này"
 
 #. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/tests/test_pay_review.py:0
 msgid "What"
 msgstr "Nội dung"

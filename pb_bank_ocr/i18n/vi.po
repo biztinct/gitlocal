@@ -62,6 +62,7 @@ msgid "Refused"
 msgstr "Đã từ chối"
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid ""
 "The verification results of a bank change request are system-computed and "
@@ -71,16 +72,19 @@ msgstr ""
 "không thể chỉnh sửa: %s."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "Only HR or Finance can confirm a duplicate account."
 msgstr "Chỉ Nhân sự hoặc Tài chính mới có thể xác nhận tài khoản trùng lặp."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "A decided bank change request is immutable."
 msgstr "Yêu cầu thay đổi ngân hàng đã được quyết định thì không thể thay đổi."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid ""
 "This request is under review — only HR or Finance may edit the submitted "
@@ -90,16 +94,19 @@ msgstr ""
 "sửa thông tin đã gửi lúc này."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "Only HR can re-target a bank change request."
 msgstr "Chỉ Nhân sự mới có thể chuyển yêu cầu thay đổi ngân hàng sang nhân viên khác."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "The account number must be 6-19 digits before approval."
 msgstr "Số tài khoản phải có 6-19 chữ số trước khi duyệt."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid ""
 "This account collides with another employee. HR must tick 'Duplicate "
@@ -109,6 +116,7 @@ msgstr ""
 "trùng lặp' trước khi duyệt."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid ""
 "This account collides with another employee. HR must tick 'Duplicate "
@@ -118,26 +126,31 @@ msgstr ""
 "trùng lặp' trước khi gửi yêu cầu này."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "An account number is required to submit."
 msgstr "Cần có số tài khoản để gửi."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "Account number must be 6-19 digits."
 msgstr "Số tài khoản phải có 6-19 chữ số."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "SWIFT/BIC format looks invalid."
 msgstr "Định dạng SWIFT/BIC có vẻ không hợp lệ."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "Bank not recognised in the registry."
 msgstr "Ngân hàng không có trong danh mục."
 
 #. module: pb_bank_ocr
+#. odoo-python
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 msgid "All format checks passed."
 msgstr "Tất cả kiểm tra định dạng đều đạt."

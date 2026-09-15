@@ -930,5 +930,6 @@ msgstr "Δ"
 
 #. module: pb_mission
 #. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
 msgid "Other requests"
 msgstr "Yêu cầu khác"

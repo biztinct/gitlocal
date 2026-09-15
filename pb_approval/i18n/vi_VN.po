@@ -292,9 +292,13 @@ msgid "payslips"
 msgstr "phiếu lương"
 
 #. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/js/approval_redirect.js:0
 msgid "Approvals have moved to Home. Open Home and choose Approvals."
 msgstr "Phê duyệt đã chuyển sang Trang chính. Hãy mở Trang chính và chọn Phê duyệt."
 
 #. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/redirect.xml:0
 msgid "Opening Approvals…"
 msgstr "Đang mở Phê duyệt…"

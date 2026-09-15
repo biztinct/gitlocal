@@ -988,574 +988,735 @@ msgid "— view"
 msgstr "— xem"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The final approver needs the Pay & Deliver role to carry this out%(what)s. Ask someone who has it to decide this step, or ask for the step to be moved to them."
 msgstr "Người phê duyệt cuối cần quyền Trả lương & Gửi để thực hiện việc này%(what)s. Hãy nhờ người có quyền đó quyết định bước này, hoặc yêu cầu chuyển bước này sang cho họ."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid " (%s)"
 msgstr " (%s)"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "the bank file"
 msgstr "tệp ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "the payment release"
 msgstr "lệnh chuyển tiền"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "the payroll journal"
 msgstr "bút toán lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "the payslip send-out"
 msgstr "việc gửi phiếu lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Bank file · %(bank)s · %(run)s"
 msgstr "Tệp ngân hàng · %(bank)s · %(run)s"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Bank file"
 msgstr "Tệp ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "bank"
 msgstr "ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Bank"
 msgstr "Ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "File"
 msgstr "Tệp"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "1 payment"
 msgstr "1 khoản chi"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "%s payments"
 msgstr "%s khoản chi"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Left out of the file"
 msgstr "Không có trong tệp"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Everybody in this pay run is in the file"
 msgstr "Mọi người trong kỳ lương này đều có trong tệp"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Why"
 msgstr "Lý do"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "These people are not paid by this file. Fix their bank details and prepare it again if they should be."
 msgstr "Những người này không được trả qua tệp này. Hãy sửa thông tin ngân hàng của họ rồi tạo lại tệp nếu họ cần được trả."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "That pay run no longer exists."
 msgstr "Kỳ lương này không còn tồn tại."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "“%s” has not been approved yet, so a bank file cannot be prepared from it. Send the pay run in for approval first."
 msgstr "“%s” chưa được phê duyệt nên chưa thể tạo tệp ngân hàng. Hãy gửi kỳ lương đi duyệt trước."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This bank file has already been sent in."
 msgstr "Tệp ngân hàng này đã được gửi đi rồi."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "A newer bank file has replaced this one. Send that one in instead."
 msgstr "Một tệp ngân hàng mới hơn đã thay thế tệp này. Hãy gửi tệp mới đó."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "A newer bank file has replaced this one. Download that one instead."
 msgstr "Một tệp ngân hàng mới hơn đã thay thế tệp này. Hãy tải tệp mới đó."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This bank file was turned down, so it cannot be downloaded. Prepare it again."
 msgstr "Tệp ngân hàng này đã bị từ chối nên không thể tải về. Hãy tạo lại."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "There is no file to approve."
 msgstr "Không có tệp nào để phê duyệt."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The file is missing, so it cannot be approved."
 msgstr "Không tìm thấy tệp nên không thể phê duyệt."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The file changed after it was sent in, so this approval no longer covers it. Prepare it again."
 msgstr "Tệp đã thay đổi sau khi được gửi đi, nên phê duyệt này không còn đúng với tệp. Hãy tạo lại."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This file has not been approved yet, so it cannot be downloaded. It is with %s."
 msgstr "Tệp này chưa được phê duyệt nên chưa thể tải về. Tệp đang ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This is not the approved file — what is stored no longer matches what was signed off. Prepare it again."
 msgstr "Đây không phải tệp đã được phê duyệt — nội dung lưu trữ không còn khớp với bản đã ký duyệt. Hãy tạo lại."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "%(who)s approved the bank file %(name)s (%(rows)s payments)"
 msgstr "%(who)s đã phê duyệt tệp ngân hàng %(name)s (%(rows)s khoản chi)"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "A newer bank file replaced this one."
 msgstr "Một tệp ngân hàng mới hơn đã thay thế tệp này."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The pay run pays %(run)s and the file carries %(file)s."
 msgstr "Kỳ lương chi %(run)s còn tệp ghi %(file)s."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The pay run is approved"
 msgstr "Kỳ lương đã được phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The total matches the pay run"
 msgstr "Tổng tiền khớp với kỳ lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Control total"
 msgstr "Tổng kiểm tra"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Rows in the file"
 msgstr "Số dòng trong tệp"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "People left out"
 msgstr "Số người bị bỏ ra"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The first file for this pay run"
 msgstr "Tệp đầu tiên của kỳ lương này"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Bank file downloaded"
 msgstr "Đã tải tệp ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Waiting for approval"
 msgstr "Đang chờ phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Approved"
 msgstr "Đã phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "its approver"
 msgstr "người phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "their approver"
 msgstr "người phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Payment release · %s"
 msgstr "Lệnh chuyển tiền · %s"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Payment release"
 msgstr "Lệnh chuyển tiền"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Payment released"
 msgstr "Đã chuyển tiền"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "1 person"
 msgstr "1 người"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "%s people"
 msgstr "%s người"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "What is being released"
 msgstr "Nội dung chuyển tiền"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "That bank file no longer exists."
 msgstr "Tệp ngân hàng này không còn tồn tại."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file has not been approved yet, so the money cannot be released. It is with %s."
 msgstr "Tệp ngân hàng chưa được phê duyệt nên chưa thể chuyển tiền. Tệp đang ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This file has already been sent for release, and is with %s."
 msgstr "Tệp này đã được gửi đi để chuyển tiền và đang ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This file has already been released."
 msgstr "Tệp này đã được chuyển tiền rồi."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "This release has already been sent in."
 msgstr "Lệnh chuyển tiền này đã được gửi đi rồi."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file behind this release is no longer approved, so the money cannot be sent."
 msgstr "Tệp ngân hàng của lệnh chuyển tiền này không còn ở trạng thái đã phê duyệt, nên không thể chuyển tiền."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file behind this release is no longer the approved one, so the money cannot be marked as sent."
 msgstr "Tệp ngân hàng của lệnh chuyển tiền này không còn là bản đã được phê duyệt, nên không thể đánh dấu là đã chuyển."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file has changed since it was approved, so this release no longer covers it. Prepare the file again and have it approved before releasing the money."
 msgstr "Tệp ngân hàng đã thay đổi kể từ khi được phê duyệt, nên lệnh chuyển tiền này không còn đúng với tệp. Hãy tạo lại tệp và xin phê duyệt trước khi chuyển tiền."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Pay run"
 msgstr "Kỳ lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file was signed off by %s."
 msgstr "Tệp ngân hàng đã được %s ký duyệt."
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "%(who)s released %(amount)s to %(n)s people%(ref)s"
 msgstr "%(who)s đã chuyển %(amount)s cho %(n)s người%(ref)s"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid " · reference %s"
 msgstr " · mã tham chiếu %s"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "no reference"
 msgstr "không có mã tham chiếu"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank file is approved"
 msgstr "Tệp ngân hàng đã được phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "The bank confirmation"
 msgstr "Xác nhận của ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "People paid"
 msgstr "Số người được trả"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Somebody already signed the file off"
 msgstr "Đã có người ký duyệt tệp"
 
 #. module: pb_pay_delivery
+#. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
 msgid "Bank reference"
 msgstr "Mã tham chiếu ngân hàng"
 
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payroll journal · %s"
 msgstr "Bút toán lương · %s"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payroll journal"
 msgstr "Bút toán lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payroll"
 msgstr "Lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Rounding"
 msgstr "Làm tròn"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "1 accounting line"
 msgstr "1 dòng hạch toán"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "%s accounting lines"
 msgstr "%s dòng hạch toán"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The accounting entry"
 msgstr "Bút toán kế toán"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "This journal entry has already been sent in."
 msgstr "Bút toán này đã được gửi đi rồi."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "There is no accounting entry to post."
 msgstr "Không có bút toán nào để ghi sổ."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The accounting entry behind this is gone, so there is nothing to post."
 msgstr "Bút toán của mục này không còn, nên không có gì để ghi sổ."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "This entry needed a rounding line to balance."
 msgstr "Bút toán này cần một dòng làm tròn để cân đối."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "%(who)s posted the payroll journal for %(run)s"
 msgstr "%(who)s đã ghi sổ bút toán lương cho %(run)s"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Debit"
 msgstr "Nợ"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Credit"
 msgstr "Có"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Posted"
 msgstr "Đã ghi sổ"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The entry balances"
 msgstr "Bút toán đã cân đối"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Money to put aside"
 msgstr "Số tiền cần chuẩn bị"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Post a payroll journal entry when a pay run is finished"
 msgstr "Ghi bút toán lương khi một kỳ lương hoàn tất"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payslips · %s"
 msgstr "Phiếu lương · %s"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payslips"
 msgstr "Phiếu lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payslips sent"
 msgstr "Đã gửi phiếu lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "1 payslip"
 msgstr "1 phiếu lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "%s payslips"
 msgstr "%s phiếu lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "%(sent)s sent, %(failed)s failed"
 msgstr "Đã gửi %(sent)s, thất bại %(failed)s"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "These payslips are already waiting to be approved, with %s."
 msgstr "Các phiếu lương này đang chờ phê duyệt, ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "No confirmed payslips in this pay run to deliver."
 msgstr "Kỳ lương này chưa có phiếu lương nào đã xác nhận để gửi."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The money has been sent"
 msgstr "Tiền đã được chuyển"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "There is no approved bank file for this pay run yet.%s"
 msgstr "Kỳ lương này chưa có tệp ngân hàng nào được phê duyệt.%s"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid " The one that was prepared is with %s."
 msgstr " Tệp đã tạo đang ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The bank file has to be approved before the money can be released."
 msgstr "Tệp ngân hàng phải được phê duyệt trước khi có thể chuyển tiền."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Pay scheme"
 msgstr "Bảng lương"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Division"
 msgstr "Bộ phận"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Prepare bank file for approval"
 msgstr "Tạo tệp ngân hàng để duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Prepare and approve now (no approval needed)"
 msgstr "Tạo và duyệt ngay (không cần phê duyệt)"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Prepare it again and send it in"
 msgstr "Tạo lại và gửi đi duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Prepare again — approved on the spot"
 msgstr "Tạo lại — duyệt ngay lập tức"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Release the money now (no approval needed)"
 msgstr "Chuyển tiền ngay (không cần phê duyệt)"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Send the release for approval"
 msgstr "Gửi lệnh chuyển tiền đi duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Send payslips for approval"
 msgstr "Gửi phiếu lương đi duyệt"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The bank file is ready to download."
 msgstr "Tệp ngân hàng đã sẵn sàng để tải về."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The bank file is with %s for approval."
 msgstr "Tệp ngân hàng đang ở chỗ %s để duyệt."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The money is marked as released."
 msgstr "Đã đánh dấu là tiền được chuyển."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The release is with %s."
 msgstr "Lệnh chuyển tiền đang ở chỗ %s."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "The payslips are with %s for approval."
 msgstr "Phiếu lương đang ở chỗ %s để duyệt."
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Bank file approval"
 msgstr "Phê duyệt tệp ngân hàng"
 
 #. module: pb_pay_delivery
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_pay_delivery/models/payroll_journal.py:0 code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0 code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "Payslip send-out"
 msgstr "Gửi phiếu lương"

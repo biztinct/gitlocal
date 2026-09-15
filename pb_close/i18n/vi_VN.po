@@ -661,6 +661,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
@@ -673,10 +675,14 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Reopen %s closed day(s)"
 msgstr "Mở lại %s ngày đã chốt"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Reopening a closed day needs a reason — it is the only account anyone reviewing this payroll will have of why the week was taken back."
 msgstr "Mở lại một ngày đã chốt cần có lý do — đó là căn cứ duy nhất để người rà soát bảng lương hiểu vì sao tuần đó bị lấy lại."
 
@@ -718,10 +724,14 @@ msgstr "người phê duyệt của bạn"
 # ===================================================================
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "%s in all"
 msgstr "tổng cộng %s"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "A finished pay run already covers these"
 msgstr "Một kỳ lương đã hoàn tất có bao gồm các ngày này"
 
@@ -730,6 +740,8 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "And more"
 msgstr "Và thêm nữa"
 
@@ -738,10 +750,14 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Days to reopen"
 msgstr "Các ngày cần mở lại"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Reason"
 msgstr "Lý do"
 
@@ -750,14 +766,20 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/models/unlock_approval.py:0
 msgid "Still closed right now"
 msgstr "Hiện vẫn đang chốt"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/tests/test_clean_batch.py:0
 msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_close
+#. odoo-python
+#: code:addons/pb_close/tests/test_locks.py:0
 msgid "What"
 msgstr "Nội dung"
 

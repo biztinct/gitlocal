@@ -255,50 +255,74 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Change a contract"
 msgstr "Thay đổi một hợp đồng"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Changes what they are paid"
 msgstr "Thay đổi mức lương của họ"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Components changed"
 msgstr "Số thành phần thay đổi"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
 msgid "Contract change · %s"
 msgstr "Thay đổi hợp đồng · %s"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Ends"
 msgstr "Kết thúc"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Finance approver"
 msgstr "Người duyệt tài chính"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/tests/test_cd4_approval.py:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Kind of contract"
 msgstr "Loại hợp đồng"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/tests/test_cd4_approval.py:0
 msgid "Monthly pay"
 msgstr "Lương tháng"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "New monthly pay"
 msgstr "Lương tháng mới"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/tests/test_cd2_fills_from.py:0
 msgid "Person"
 msgstr "Nhân sự"
 
@@ -307,10 +331,14 @@ msgid "Reason"
 msgstr "Lý do"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Salary structure"
 msgstr "Cấu trúc lương"
 
 #. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "See the request"
 msgstr "Xem yêu cầu"
 
@@ -319,14 +347,20 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Starts"
 msgstr "Bắt đầu"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -335,10 +369,14 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "The contract could not be changed."
 msgstr "Không thay đổi được hợp đồng."
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/tests/approval_lane.py:0
 msgid "What"
 msgstr "Nội dung"
 
@@ -347,5 +385,7 @@ msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Working hours"
 msgstr "Giờ làm việc"

@@ -7848,7 +7848,9 @@ msgid "✓ All formulas are valid and evaluate correctly!"
 msgstr "✓ Tất cả formulas are Hợp lệ and evaluate correctly!"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #, python-format
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 msgid "%d rules imported from Excel"
 msgstr "%d quy tắc được nhập từ Excel"
 
@@ -7875,6 +7877,8 @@ msgid "Auto-assigned Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
 msgstr "Tự động gán ký tự cột kiểu Excel (A, B, C...Z, AA, AB, v.v.)"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/views/formula_rule_views.xml:0
 msgid "Converted Python"
 msgstr "Python đã chuyển đổi"
 
@@ -7897,14 +7901,20 @@ msgid "General Manager Pending"
 msgstr "Chờ Tổng Giám đốc"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_rule_composer.py:0
 msgid "Rejected"
 msgstr "Đã từ chối"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_rule_composer.py:0
 msgid "Reject"
 msgstr "Từ chối"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 msgid "Download Excel"
 msgstr "Tải xuống Excel"
 

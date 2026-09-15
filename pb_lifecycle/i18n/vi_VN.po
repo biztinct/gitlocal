@@ -18,6 +18,8 @@ msgstr ""
 # ===================================================================
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "%(what)s for %(who)s"
 msgstr "%(what)s cho %(who)s"
 
@@ -42,6 +44,8 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/security/letter_approval_rules.xml:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -54,14 +58,20 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "Kind of letter"
 msgstr "Loại thư"
 
 #. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/security/letter_approval_rules.xml:0
 msgid "Letter"
 msgstr "Thư"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "No email on record"
 msgstr "Hồ sơ không có email"
 
@@ -70,6 +80,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/data/pb_sidebar.xml:0
 msgid "People"
 msgstr "Số người"
 
@@ -78,18 +90,26 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "Quotes pay"
 msgstr "Có nêu mức lương"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "Quotes what they are paid"
 msgstr "Có nêu mức lương của họ"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
 msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
@@ -98,14 +118,20 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "Subject"
 msgstr "Tiêu đề"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "The PDF is ready"
 msgstr "Tệp PDF đã sẵn sàng"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "The letter"
 msgstr "Nội dung thư"
 
@@ -114,6 +140,8 @@ msgid "Their manager"
 msgstr "Quản lý của họ"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "This letter has already been sent."
 msgstr "Thư này đã được gửi."
 
@@ -122,6 +150,8 @@ msgid "To"
 msgstr "Gửi tới"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
 msgid "Whole company"
 msgstr "Toàn công ty"
 
@@ -134,5 +164,7 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"

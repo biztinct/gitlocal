@@ -474,12 +474,16 @@ msgid "Continue with this file"
 msgstr "Tiếp tục với tập tin này"
 
 #. module: pb_payrun_wizard
+#. odoo-python
+#. odoo-javascript
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0 code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
 msgid "The pay data is with %s for approval. The payslips are made once it is approved."
 msgstr "Dữ liệu lương đang ở chỗ %s để duyệt. Phiếu lương sẽ được tạo sau khi được phê duyệt."
 
 #. module: pb_payrun_wizard
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0 code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
 msgid "The pay data is waiting for its approval. The payslips are made once it is approved."
 msgstr "Dữ liệu lương đang chờ phê duyệt. Phiếu lương sẽ được tạo sau khi được phê duyệt."

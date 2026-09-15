@@ -14,182 +14,254 @@ msgstr ""
 
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "%s (the field or the person is gone)"
 msgstr "%s (trường dữ liệu hoặc người này không còn)"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "1 person"
 msgstr "1 người"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "%s people"
 msgstr "%s người"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "1 value"
 msgstr "1 giá trị"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "%s values"
 msgstr "%s giá trị"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Records change · %(people)s · %(values)s"
 msgstr "Thay đổi hồ sơ · %(people)s · %(values)s"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "What would change"
 msgstr "Những gì sẽ thay đổi"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "This change has already been carried out."
 msgstr "Thay đổi này đã được thực hiện rồi."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "This change has already been sent in."
 msgstr "Thay đổi này đã được gửi đi rồi."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "There is nothing in this change to approve."
 msgstr "Thay đổi này không có gì để phê duyệt."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Division"
 msgstr "Bộ phận"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Values"
 msgstr "Số giá trị"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Showing the first %(shown)s of %(total)s values."
 msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s giá trị."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Now"
 msgstr "Hiện tại"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Proposed"
 msgstr "Đề xuất"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid " and %s more"
 msgstr " và %s mục nữa"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Nothing was changed. Somebody else has already changed %(n)s of these values since this was proposed: %(names)s%(more)s. Send this back and propose it again against what is there now."
 msgstr "Không có gì được thay đổi. Người khác đã sửa %(n)s giá trị trong số này kể từ khi đề xuất được tạo: %(names)s%(more)s. Hãy trả lại và đề xuất lại dựa trên dữ liệu hiện có."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "These have been changed by somebody else since this was proposed, so nothing was written: %(names)s%(more)s."
 msgstr "Những mục này đã bị người khác sửa kể từ khi đề xuất được tạo, nên không có gì được ghi: %(names)s%(more)s."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "A reason was written down"
 msgstr "Đã ghi lý do"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "People affected"
 msgstr "Số người bị ảnh hưởng"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Values changed"
 msgstr "Số giá trị thay đổi"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Changes bank details"
 msgstr "Thay đổi thông tin ngân hàng"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Changes pay"
 msgstr "Thay đổi lương"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Where it came from"
 msgstr "Nguồn của thay đổi"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Typed on the desk"
 msgstr "Nhập trên màn hình Hồ sơ"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "From a file"
 msgstr "Từ một tệp"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Bank details"
 msgstr "Thông tin ngân hàng"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Yes"
 msgstr "Có"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Pay"
 msgstr "Lương"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Records Desk changes"
 msgstr "Thay đổi hồ sơ hàng loạt"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Sent for approval — %s"
 msgstr "Đã gửi duyệt — %s"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "waiting for its approver"
 msgstr "đang chờ người phê duyệt"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "The Approvals screen is not installed on this database."
 msgstr "Màn hình Phê duyệt chưa được cài trên cơ sở dữ liệu này."
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_records
+#. odoo-python
+#. odoo-javascript
 #: code:addons/pb_records/models/records_approval.py:0 code:addons/pb_records/models/pb_records_desk.py:0 code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "with"
 msgstr "đang ở chỗ"

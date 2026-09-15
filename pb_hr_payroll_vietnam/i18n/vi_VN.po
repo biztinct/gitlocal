@@ -3546,10 +3546,14 @@ msgstr "📊 Báo cáo Chính phủ"
 # ===================================================================
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/statutory_gates.py:0
 msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_tax_table.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
@@ -3582,6 +3586,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/statutory_gates.py:0
 msgid "Insurance adjustment · %s"
 msgstr "Điều chỉnh bảo hiểm · %s"
 
@@ -3590,6 +3596,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_vietnam/views/payroll_dashboard_vietnam.xml:0
 msgid "People"
 msgstr "Số người"
 
@@ -3598,6 +3606,8 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/statutory_gates.py:0
 msgid "Rebuild the tax bands · %s"
 msgstr "Dựng lại các bậc thuế · %s"
 
@@ -3614,6 +3624,8 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/statutory_gates.py:0
 msgid "The tax bands were rebuilt."
 msgstr "Các bậc thuế đã được dựng lại."
 

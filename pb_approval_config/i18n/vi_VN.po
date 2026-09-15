@@ -3141,6 +3141,7 @@ msgid "That workflow no longer exists."
 msgstr "Luồng phê duyệt đó không còn tồn tại."
 
 #. module: pb_approval_config
+#. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "The %s already under way keep the people and steps they were given."
 msgstr ""
@@ -4542,18 +4543,26 @@ msgstr ""
 "                  người gửi"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "%s payslip"
 msgstr "%s phiếu lương"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "%s payslips"
 msgstr "%s phiếu lương"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "%s person"
 msgstr "%s người"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "%s people"
 msgstr "%s người"
 
@@ -4564,24 +4573,31 @@ msgstr "%s người"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "Mine"
 msgstr "Của tôi"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "My team"
 msgstr "Nhóm của tôi"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "Everyone"
 msgstr "Tất cả mọi người"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "Everything I am part of"
 msgstr "Mọi việc tôi có liên quan"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "The whole company"
 msgstr "Toàn công ty"
 
@@ -4592,10 +4608,14 @@ msgstr ""
 "Chỉ người phụ trách phê duyệt mới xem được mọi yêu cầu trong công ty."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "This is no longer waiting for a decision."
 msgstr "Việc này không còn chờ quyết định nữa."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 msgid "No step is waiting for a decision on this."
 msgstr "Không có bước nào đang chờ quyết định cho việc này."
 
@@ -4609,6 +4629,8 @@ msgid "\"%(who)s\" in the %(column)s column is not a responsibility this app kno
 msgstr "“%(who)s” ở cột %(column)s không phải là trách nhiệm mà ứng dụng biết, nên bước đó đã được bỏ qua."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "%(drafts)s draft route(s) made from %(rows)s row(s). Nothing is in force until somebody publishes it."
 msgstr "Đã tạo %(drafts)s lộ trình nháp từ %(rows)s dòng. Chưa có gì có hiệu lực cho đến khi được công bố."
 
@@ -4617,42 +4639,62 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "%s (from the spreadsheet)"
 msgstr "%s (từ bảng tính)"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "Final approver"
 msgstr "Người duyệt cuối"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p7.xml:0
 msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "From the approval matrix spreadsheet: %s"
 msgstr "Từ bảng tính ma trận phê duyệt: %s"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p6.xml:0
 msgid "HR lifecycle team"
 msgstr "Nhóm vòng đời nhân sự"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p6.xml:0
 msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "Pick somebody with an account."
 msgstr "Hãy chọn một người có tài khoản."
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p7.xml:0
 msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
 msgid "Proposed from the spreadsheet · choose the account"
 msgstr "Đề xuất từ bảng tính · hãy chọn tài khoản"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/tests/test_p7_import.py:0
 msgid "Reviewer"
 msgstr "Người rà soát"
 
@@ -4669,22 +4711,32 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "Spreadsheets cannot be read on this server yet. Ask whoever looks after it to add the spreadsheet reader."
 msgstr "Máy chủ này chưa đọc được bảng tính. Hãy nhờ người phụ trách bổ sung trình đọc bảng tính."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "That file could not be read."
 msgstr "Không đọc được tệp đó."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "That file is empty."
 msgstr "Tệp đó rỗng."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "That file is not a spreadsheet this app can read. Save it as an .xlsx and try again."
 msgstr "Tệp đó không phải bảng tính mà ứng dụng đọc được. Hãy lưu dưới dạng .xlsx rồi thử lại."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "That proposed person is no longer here."
 msgstr "Người được đề xuất đó không còn ở đây."
 
@@ -4701,6 +4753,8 @@ msgid "The turnaround \"%s\" could not be read as a number of days, so no chase-
 msgstr "Không đọc được thời hạn “%s” thành số ngày, nên chưa đặt ngày nhắc."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
 msgid "There is no place in the list for this yet."
 msgstr "Danh sách chưa có mục cho việc này."
 
@@ -4726,30 +4780,44 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
 msgid "Decided with %s"
 msgstr "Được quyết định cùng %s"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
 msgid "Decided with another"
 msgstr "Quyết định cùng mục khác"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "It could not be moved."
 msgstr "Không chuyển được."
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Move it"
 msgstr "Chuyển đi"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Move it to somebody else"
 msgstr "Chuyển cho người khác"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Moved. It is with them now."
 msgstr "Đã chuyển. Việc này đang ở chỗ họ."
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Say what is wrong with the seat it is on — away, left, or the only person named is the one who sent it in."
 msgstr "Hãy nêu vấn đề với vị trí đang giữ việc này — nghỉ phép, đã nghỉ việc, hoặc người duy nhất được nêu chính là người đã gửi."
 
@@ -4762,25 +4830,37 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
 msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "The step goes to the person you choose, and the one it was with stops waiting. Your name and your reason are kept with the request, and the person who gets it reads them."
 msgstr "Bước này chuyển sang người bạn chọn, và người đang giữ sẽ thôi chờ. Tên và lý do của bạn được lưu cùng yêu cầu, và người nhận sẽ đọc được."
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/migrations/19.0.1.5.1/end-heal_half_laid.py:0
 msgid "What"
 msgstr "Nội dung"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Who should decide it instead?"
 msgstr "Ai sẽ quyết định thay?"
 
 #. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Why is it moving? (required)"
 msgstr "Vì sao chuyển? (bắt buộc)"

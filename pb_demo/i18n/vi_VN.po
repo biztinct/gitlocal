@@ -679,6 +679,8 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_generator.py:0
 msgid "Generate the full demo world"
 msgstr "Tạo toàn bộ dữ liệu minh hoạ"
 
@@ -699,6 +701,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_integrations.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -739,5 +743,7 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_demo
+#. odoo-python
+#: code:addons/pb_demo/models/demo_generator.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"

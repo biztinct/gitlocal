@@ -2253,10 +2253,14 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Budget lines"
 msgstr "Số dòng ngân sách"
 
@@ -2265,14 +2269,20 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Exchange rate · %(currency)s · %(when)s"
 msgstr "Tỷ giá · %(currency)s · %(when)s"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Finance approver"
 msgstr "Người duyệt tài chính"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
@@ -2289,6 +2299,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Money policy · %s"
 msgstr "Chính sách tiền tệ · %s"
 
@@ -2301,14 +2313,20 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Policy changed"
 msgstr "Chính sách thay đổi"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Rates changed"
 msgstr "Số tỷ giá thay đổi"
 
 #. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -2317,10 +2335,14 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "That exchange rate no longer exists."
 msgstr "Tỷ giá đó không còn tồn tại."
 
@@ -2358,18 +2380,26 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/tests/test_group.py:0
 msgid "Currency"
 msgstr "Loại tiền"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Financial year"
 msgstr "Năm tài chính"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Financial year starts in month"
 msgstr "Năm tài chính bắt đầu từ tháng"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "How a split payment is treated"
 msgstr "Cách xử lý khoản chi trả tách"
 
@@ -2378,6 +2408,8 @@ msgid "On"
 msgstr "Vào ngày"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Reads in"
 msgstr "Hiển thị theo"
 
@@ -2394,6 +2426,8 @@ msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Supplier"
 msgstr "Nhà cung cấp"
 
@@ -2402,10 +2436,14 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "Total"
 msgstr "Tổng cộng"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
 msgid "What"
 msgstr "Nội dung"
 
@@ -2414,17 +2452,25 @@ msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "What it is for"
 msgstr "Dùng cho việc gì"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/fx_approval.py:0
 msgid "What the money was for"
 msgstr "Khoản tiền dùng cho việc gì"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
 msgid "When"
 msgstr "Khi nào"
 
 #. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
 msgid "Which rate to use"
 msgstr "Dùng tỷ giá nào"

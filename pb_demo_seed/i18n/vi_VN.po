@@ -50,6 +50,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/models/demo_seed.py:0
 msgid "Load demo data"
 msgstr "Nạp dữ liệu minh hoạ"
 
@@ -58,6 +60,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/seeds/org.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -66,10 +70,14 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/__manifest__.py:0
 msgid "Remove demo data"
 msgstr "Gỡ dữ liệu minh hoạ"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/models/demo_seed.py:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -86,6 +94,8 @@ msgid "Their manager"
 msgstr "Quản lý của họ"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/models/demo_seed.py:0
 msgid "This is not a demo database, so somebody has to agree to it first. It is with %s."
 msgstr "Đây không phải cơ sở dữ liệu minh hoạ, nên phải có người đồng ý trước. Việc này đang ở chỗ %s."
 
@@ -102,5 +112,7 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_demo_seed
+#. odoo-python
+#: code:addons/pb_demo_seed/models/demo_seed.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"

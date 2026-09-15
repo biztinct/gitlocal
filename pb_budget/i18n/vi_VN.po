@@ -2059,6 +2059,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
 msgid "Budget upload · %(n)s line(s)"
 msgstr "Tải ngân sách · %(n)s dòng"
 
@@ -2067,6 +2069,8 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
 msgid "Expense · %(what)s"
 msgstr "Chi phí · %(what)s"
 
@@ -2136,6 +2140,8 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
 msgid "Added."
 msgstr "Đã thêm."
 

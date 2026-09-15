@@ -368,22 +368,32 @@ msgstr "chờ phê duyệt"
 # =====================================================================
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "Only time off that is waiting for approval can be sent in."
 msgstr "Chỉ đơn nghỉ đang chờ duyệt mới gửi đi được."
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "Sent back: %s"
 msgstr "Đã trả lại: %s"
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "How many days"
 msgstr "Bao nhiêu ngày"
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "Kind of time off"
 msgstr "Loại nghỉ phép"
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/tests/test_timeoff.py:0
 msgid "Unpaid"
 msgstr "Không lương"
 
@@ -392,5 +402,7 @@ msgid "Falls in a month whose pay is already being worked out"
 msgstr "Rơi vào tháng lương đang được tính"
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "The time off"
 msgstr "Kỳ nghỉ"

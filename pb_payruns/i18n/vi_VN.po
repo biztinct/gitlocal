@@ -698,58 +698,86 @@ msgid "Finance approval"
 msgstr "Tài chính phê duyệt"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Waiting for approval"
 msgstr "Đang chờ phê duyệt"
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "Pay run sent in for approval."
 msgstr "Kỳ lương đã được gửi đi phê duyệt."
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "Open the approval"
 msgstr "Mở phê duyệt"
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "Approvals are not available on this server."
 msgstr "Máy chủ này không có chức năng phê duyệt."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Sent in for approval"
 msgstr "Đã gửi đi phê duyệt"
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/views/hr_payslip_run_kanban.xml:0
 msgid "Waiting for my decision"
 msgstr "Đang chờ tôi quyết định"
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/views/hr_payslip_run_form_enhance.xml:0
 msgid "Split Into Review Groups"
 msgstr "Tách thành các nhóm soát xét"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Sent back because"
 msgstr "Bị trả lại vì"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Sent back by"
 msgstr "Người trả lại"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Sent back on"
 msgstr "Ngày trả lại"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Prepared by"
 msgstr "Người lập"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Pay data stamp"
 msgstr "Dấu dữ liệu lương"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/approval_seed.py:0
 msgid "Pay run approval"
 msgstr "Phê duyệt kỳ lương"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Split into review groups"
 msgstr "Tách thành các nhóm soát xét"
 
@@ -770,10 +798,14 @@ msgid "There are no payslips in this pay run yet, so there is nothing to approve
 msgstr "Kỳ lương này chưa có phiếu lương nào nên không có gì để phê duyệt."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Only a pay run that is still a draft can be split."
 msgstr "Chỉ có thể tách một kỳ lương còn ở trạng thái nháp."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Everybody in this pay run is paid by the same scheme in the same part of the business, so there is nothing to split."
 msgstr "Mọi người trong kỳ lương này đều được trả theo cùng một phương án lương và cùng một bộ phận nên không có gì để tách."
 
@@ -786,10 +818,14 @@ msgid "The split was stopped because the totals did not add back up. Nothing was
 msgstr "Việc tách đã bị dừng vì các tổng số không khớp lại. Không có gì thay đổi."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "The split was stopped because the original pay run still has payslips in it. Nothing was changed."
 msgstr "Việc tách đã bị dừng vì kỳ lương gốc vẫn còn phiếu lương. Không có gì thay đổi."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Pay runs are no longer approved in fixed stages. This one follows the approval route your business published — open it in Approvals to make a decision."
 msgstr "Kỳ lương không còn được phê duyệt theo các chặng cố định. Kỳ lương này đi theo lộ trình phê duyệt doanh nghiệp đã công bố — hãy mở trong Phê duyệt để ra quyết định."
 
@@ -798,46 +834,68 @@ msgid "A pay run that is waiting for approval cannot be deleted. Reject it first
 msgstr "Không thể xoá một kỳ lương đang chờ phê duyệt. Hãy từ chối nó trước."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Total net pay"
 msgstr "Tổng thực nhận"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Total gross pay"
 msgstr "Tổng lương gộp"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/tests/__init__.py:0
 msgid "Payslips"
 msgstr "Phiếu lương"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Change against the last run"
 msgstr "Thay đổi so với kỳ trước"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Contains overtime"
 msgstr "Có làm thêm giờ"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Control report"
 msgstr "Báo cáo đối chiếu"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Note on the changes"
 msgstr "Ghi chú về các thay đổi"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Bank control total"
 msgstr "Tổng kiểm soát ngân hàng"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Pay scheme"
 msgstr "Phương án lương"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/approval_seed.py:0
 msgid "Pay run"
 msgstr "Kỳ lương"
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/tests/test_approval_engine.py:0
 msgid "Approval"
 msgstr "Phê duyệt"
 
@@ -846,5 +904,7 @@ msgid "Not sent in yet. Submit for approval sends it to whoever your business ha
 msgstr "Chưa gửi đi. Nút Gửi đi phê duyệt sẽ chuyển kỳ lương này tới những người doanh nghiệp đã chọn cho phương án lương này."
 
 #. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Nobody checks it"
 msgstr "Không ai kiểm"

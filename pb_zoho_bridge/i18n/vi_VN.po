@@ -14,132 +14,158 @@ msgstr ""
 
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Arrivals · %s people"
 msgstr "Hồ sơ đến · %s người"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "1 person"
 msgstr "1 người"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "%s people"
 msgstr "%s người"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Details change"
 msgstr "Thay đổi thông tin"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Joining"
 msgstr "Vào làm"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Leaving"
 msgstr "Nghỉ việc"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Who is in this batch"
 msgstr "Những ai trong đợt này"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "These arrivals have already been sent in."
 msgstr "Các hồ sơ này đã được gửi đi rồi."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "There is nothing in this batch to approve."
 msgstr "Đợt này không có gì để phê duyệt."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Arrivals"
 msgstr "Hồ sơ đến"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "What would happen"
 msgstr "Điều sẽ xảy ra"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Showing the first %(shown)s of %(total)s."
 msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "People in this batch"
 msgstr "Số người trong đợt này"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Details changing"
 msgstr "Số hồ sơ đổi thông tin"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Would create sign-ins"
 msgstr "Sẽ tạo tài khoản đăng nhập"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Pushed to us"
 msgstr "Hệ thống kia gửi sang"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "From a file"
 msgstr "Từ một tệp"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Fetched by us"
 msgstr "Payobook tự lấy về"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Creates sign-ins"
 msgstr "Tạo tài khoản đăng nhập"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Yes"
 msgstr "Có"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Turned down"
 msgstr "Bị từ chối"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Left alone — the record changed in the meantime"
 msgstr "Giữ nguyên — hồ sơ đã thay đổi trong lúc chờ"
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "%s was changed in Payobook after this arrival was sent for approval, so nothing was overwritten. Check the record and, if the change still applies, ask for it again."
 msgstr "%s đã được sửa trong Payobook sau khi hồ sơ này được gửi duyệt, nên không có gì bị ghi đè. Hãy kiểm tra hồ sơ và nếu thay đổi vẫn đúng thì gửi lại."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Somebody decided this should not happen."
 msgstr "Có người đã quyết định không thực hiện việc này."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "%s of them are waiting for approval before anything is changed."
 msgstr "%s trong số đó đang chờ phê duyệt trước khi có bất kỳ thay đổi nào."
 
 #. module: pb_zoho_bridge
+#. odoo-python
 #: code:addons/pb_zoho_bridge/models/arrival_batch.py:0 code:addons/pb_zoho_bridge/models/zoho_pipeline.py:0
 msgid "Arrivals from a connected system"
 msgstr "Hồ sơ đến từ hệ thống được kết nối"

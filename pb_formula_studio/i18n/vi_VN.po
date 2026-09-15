@@ -14506,131 +14506,157 @@ msgid "Feeds these components"
 msgstr "Cung cấp các thành phần này"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_config_view_inherit.xml:1
 msgid "formula_config_list"
 msgstr "công thức_config_list"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_config_view_inherit.xml:1
 msgid "formula_config_kanban"
 msgstr "công thức_config_kanban"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Payroll review ·"
 msgstr "Đánh giá tiền lương ·"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Payo"
 msgstr "Payo"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "book"
 msgstr "sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Read-only review"
 msgstr "Đánh giá chỉ đọc"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Payroll configuration review"
 msgstr "Đánh giá cấu hình tiền lương"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Prepared by"
 msgstr "Chuẩn bị bởi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Thank you — your sign-off has been recorded."
 msgstr "Cảm ơn bạn - việc đăng xuất của bạn đã được ghi lại."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Your comment has been posted."
 msgstr "Bình luận của bạn đã được đăng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Health score"
 msgstr "Điểm sức khỏe"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Sample payslip"
 msgstr "Phiếu lương mẫu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "A representative payslip computed live through the engine"
 msgstr "Phiếu lương đại diện được tính toán trực tiếp thông qua công cụ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Earnings"
 msgstr "Thu nhập"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Deductions"
 msgstr "Khấu trừ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "No sample data available for a preview yet."
 msgstr "Chưa có dữ liệu mẫu nào để xem trước."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Release for your approval"
 msgstr "Phát hành để bạn chấp thuận"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "changed · sealed by"
 msgstr "đã thay đổi · được niêm phong bởi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Your name"
 msgstr "Tên của bạn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Approve & sign off"
 msgstr "Phê duyệt và đăng xuất"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Salary components"
 msgstr "Thành phần tiền lương"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Every component in this configuration, exactly as it computes."
 msgstr "Mọi thành phần trong cấu hình này đều chính xác như tính toán của nó."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Formula / value"
 msgstr "Công thức/giá trị"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "from input"
 msgstr "từ đầu vào"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Questions & comments"
 msgstr "Câu hỏi và nhận xét"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid ""
 "Anything unclear or off? Leave a note and the payroll team will follow up."
@@ -14639,42 +14665,50 @@ msgstr ""
 "theo dõi."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "No comments yet."
 msgstr "Chưa có bình luận nào"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Write a comment…"
 msgstr "Viết bình luận…"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Post comment"
 msgstr "Đăng bình luận"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Shared securely by"
 msgstr "Được chia sẻ an toàn bởi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Payobook"
 msgstr "Payobook"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "· this link is private to you and can be revoked at any time."
 msgstr ""
 "· Liên kết này là riêng tư đối với bạn và có thể bị thu hồi bất cứ lúc nào."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "Link unavailable"
 msgstr "Liên kết không có sẵn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid ""
 "body{margin:0;background:#14102E;color:#fff;font-family:-apple-"
@@ -14694,11 +14728,13 @@ msgstr ""
 "p{color:#C9C4E4;line-height:1.55}"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid "This review link is no longer available"
 msgstr "Liên kết đánh giá này không còn tồn tại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
 msgid ""
 "It may have expired or been revoked. Please ask your payroll contact for a "
@@ -14708,26 +14744,33 @@ msgstr ""
 "lương của bạn để có một liên kết mới."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/hr_payslip_calculation_view.xml:1
 msgid "Show the calculation"
 msgstr "Hiển thị phép tính"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/multisheet_wizard_view_inherit.xml:1
 #: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
 msgid "pbfs-iw"
 msgstr "pbfs-iw"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
 msgid "action_generate_and_close"
 msgstr "hành động_generate_and_close"
 
 #. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Approval workflows"
 msgstr "Lộ trình phê duyệt"
 
 #. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Choose the checks for this scheme. Activating the scheme and submitting a pay run both need a complete approval route."
 msgstr "Chọn các bước kiểm cho phương án lương này. Kích hoạt phương án lương và gửi kỳ lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."
 
@@ -14741,6 +14784,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Apply %(name)s %(version)s to %(n)s pay scheme(s)"
 msgstr "Áp dụng %(name)s %(version)s cho %(n)s phương án lương"
 
@@ -14749,6 +14794,8 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Delete rate table %s"
 msgstr "Xoá bảng tỷ lệ %s"
 
@@ -14773,14 +14820,20 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Pay %(team)s with %(scheme)s"
 msgstr "Trả lương %(team)s theo %(scheme)s"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/tests/test_scheme_gate.py:0
 msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/tests/test_column_roles.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -14789,10 +14842,14 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Rate table %(code)s · %(scheme)s"
 msgstr "Bảng tỷ lệ %(code)s · %(scheme)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -14801,10 +14858,14 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Stop paying %s with this scheme"
 msgstr "Ngừng trả lương %s theo phương án này"
 

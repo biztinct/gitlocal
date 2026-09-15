@@ -22,6 +22,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/comp_common.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
@@ -38,6 +40,8 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/comp_common.py:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -46,14 +50,20 @@ msgid "HR lifecycle team"
 msgstr "Nhóm vòng đời nhân sự"
 
 #. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/security/pb_comp_ben_security.xml:0
 msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -62,10 +72,14 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Reopen %s"
 msgstr "Mở lại %s"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Reopened after approval %(ref)s. Reason: %(why)s"
 msgstr "Đã mở lại sau phê duyệt %(ref)s. Lý do: %(why)s"
 
@@ -74,6 +88,8 @@ msgid "Reopening a closed month needs a reason — it is the only account anybod
 msgstr "Mở lại một tháng đã chốt cần có lý do — đó là căn cứ duy nhất để người rà soát bảng lương hiểu vì sao tháng đó bị lấy lại."
 
 #. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -82,14 +98,20 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "That month is already open."
 msgstr "Tháng đó đã mở rồi."
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "That month is no longer in the calendar."
 msgstr "Tháng đó không còn trong lịch."
 
@@ -110,6 +132,8 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "none given"
 msgstr "không nêu"
 
@@ -131,18 +155,26 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Month"
 msgstr "Tháng"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Open again"
 msgstr "Mở lại"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Pay runs already finished in it"
 msgstr "Số kỳ lương đã hoàn tất trong tháng"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Reason"
 msgstr "Lý do"
 
@@ -151,6 +183,8 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -159,14 +193,20 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
 msgid "This month is closed to changes."
 msgstr "Tháng này đã chốt, không nhận thay đổi."
 
 #. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
 msgid "This month is open again."
 msgstr "Tháng này đã mở lại."
 
 #. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/__manifest__.py:0
 msgid "What"
 msgstr "Nội dung"
 
@@ -175,5 +215,7 @@ msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
 msgid "Why is it being reopened?"
 msgstr "Vì sao mở lại?"

@@ -1022,6 +1022,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
 msgid "Accept the drafted map · %s row(s)"
 msgstr "Chấp nhận bản đồ dự thảo · %s dòng"
 
@@ -1054,6 +1056,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
 msgid "Pay %(who)s with %(scheme)s"
 msgstr "Trả lương %(who)s theo %(scheme)s"
 
@@ -1062,6 +1066,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
 msgid "People"
 msgstr "Số người"
 
@@ -1070,6 +1076,8 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -1078,10 +1086,14 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
 msgid "Stop paying %s with this scheme"
 msgstr "Ngừng trả lương %s theo phương án này"
 

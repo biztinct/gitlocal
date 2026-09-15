@@ -5965,16 +5965,19 @@ msgid "a relief"
 msgstr "một sự nhẹ nhõm"
 
 #. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/data/config_template_vn_complete.xml:1
 msgid "Vietnam · Complete"
 msgstr "Việt Nam · Hoàn thành"
 
 #. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/data/config_template_vn_complete.xml:1
 msgid "VN"
 msgstr "VN"
 
 #. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/data/config_template_vn_complete.xml:1
 msgid ""
 "Everything a Vietnamese monthly payroll normally needs, with a plain "
@@ -5995,6 +5998,7 @@ msgstr ""
 "trình thiết lập."
 
 #. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/data/config_template_vn_complete.xml:1
 msgid ""
 "[{\"code\": \"VNTAX\", \"name\": \"Vietnam income tax (monthly, seven "
@@ -6016,6 +6020,7 @@ msgstr ""
 "52000000, \"tỷ lệ\": 0,3}, {\"thấp hơn\": 80000000, \"tỷ lệ\": 0,35}]}]"
 
 #. module: pb_blueprint
+#. odoo-javascript
 #: code:addons/pb_blueprint/data/config_template_vn_complete.xml:1
 msgid ""
 "[{\"ref\": \"Resolution 110/2025/UBTVQH15\", \"title\": \"Family-"
@@ -8332,26 +8337,38 @@ msgid "%(what)s was %(was)s when these numbers were agreed, and is %(now)s now."
 msgstr "%(what)s là %(was)s khi các con số này được thống nhất, và bây giờ là %(now)s."
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_connect.js:0
 msgid "Choose the checks for this scheme."
 msgstr "Chọn các bước kiểm cho phương án lương này."
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_connect.js:0
 msgid "Finish can save a draft. Activating the scheme and submitting a pay run both need a complete approval route."
 msgstr "Hoàn tất vẫn lưu được bản nháp. Nhưng kích hoạt phương án lương và gửi kỳ lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/connect_text.js:0
 msgid "Manage later: Approvals → Matrix · every kind of request"
 msgstr "Quản lý sau: Phê duyệt → Ma trận · mọi loại yêu cầu"
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/connect_text.js:0
 msgid "Same as the rest of the company"
 msgstr "Giống phần còn lại của công ty"
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/finish_text.js:0
 msgid "Nobody has to approve a pay run on this scheme"
 msgstr "Không ai phải phê duyệt kỳ lương của phương án này"
 
 #. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/connect.xml:0
 msgid "Shared · Scheme change"
 msgstr "Dùng chung · Thay đổi phương án lương"
 
@@ -8368,5 +8385,7 @@ msgid "Somebody else looks after approvals on this account. This scheme will fol
 msgstr "Người khác phụ trách phê duyệt trên tài khoản này. Phương án lương này sẽ theo những gì họ đã thiết lập cho kỳ lương."
 
 #. module: pb_blueprint
+#. odoo-python
+#: code:addons/pb_blueprint/tools/gen_vn_complete.py:0
 msgid "System"
 msgstr "Hệ thống"

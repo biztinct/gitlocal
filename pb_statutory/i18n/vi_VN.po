@@ -637,10 +637,14 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 msgid "New insurance policy · %s"
 msgstr "Chính sách bảo hiểm mới · %s"
 
 #. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 msgid "New tax table · %s"
 msgstr "Bảng thuế mới · %s"
 
@@ -669,6 +673,8 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 msgid "Statutory rates and tax tables are set by payroll managers. Ask somebody who looks after payroll to do this, or to give you the payroll manager permission."
 msgstr "Tỷ lệ theo luật và bảng thuế do trưởng bộ phận tiền lương thiết lập. Hãy nhờ người phụ trách tiền lương làm việc này, hoặc cấp cho bạn quyền trưởng bộ phận tiền lương."
 
@@ -702,14 +708,20 @@ msgid "About"
 msgstr "Về"
 
 #. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory_wizards.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 msgid "Reason"
 msgstr "Lý do"
 
 #. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
 msgid "See the request"
 msgstr "Xem yêu cầu"
 
@@ -718,6 +730,8 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
 msgid "What"
 msgstr "Nội dung"
 

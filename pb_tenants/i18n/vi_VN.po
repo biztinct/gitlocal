@@ -1509,6 +1509,8 @@ msgstr "Tắt máy không thành công."
 # ===================================================================
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "%(what)s was sent for approval — it is with %(who)s."
 msgstr "%(what)s đã được gửi phê duyệt — đang ở chỗ %(who)s."
 
@@ -1517,22 +1519,32 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Cannot be undone"
 msgstr "Không thể hoàn tác"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/feature_service.py:0
 msgid "Change the feature %s"
 msgstr "Thay đổi tính năng %s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
 msgid "Close %s down"
 msgstr "Đóng %s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
 msgid "Closing %s down"
 msgstr "Việc đóng %s"
 
@@ -1541,10 +1553,14 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Customers affected"
 msgstr "Số khách hàng bị ảnh hưởng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Ending %s"
 msgstr "Việc kết thúc %s"
 
@@ -1569,10 +1585,14 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Pause %s"
 msgstr "Tạm dừng %s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Pausing %s"
 msgstr "Việc tạm dừng %s"
 
@@ -1581,26 +1601,38 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing.py:0
 msgid "People"
 msgstr "Số người"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Put %(who)s on %(plan)s"
 msgstr "Chuyển %(who)s sang gói %(plan)s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
 msgid "Restore %s from a backup"
 msgstr "Khôi phục %s từ bản sao lưu"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/rollout_service.py:0
 msgid "Roll %s out to every customer"
 msgstr "Triển khai %s cho mọi khách hàng"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -1609,46 +1641,68 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "Set the end date for %s"
 msgstr "Đặt ngày kết thúc cho %s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/rollout_service.py:0
 msgid "Stop the rollout of %s"
 msgstr "Dừng đợt triển khai %s"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/rollout_service.py:0
 msgid "Stopping the rollout"
 msgstr "Việc dừng đợt triển khai"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/feature_service.py:0
 msgid "Switch %(name)s %(word)s for %(n)s customer(s)"
 msgstr "Bật/tắt %(name)s thành %(word)s cho %(n)s khách hàng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/feature_service.py:0
 msgid "The change"
 msgstr "Thay đổi này"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "The fleet screens are not installed on this database."
 msgstr "Màn hình quản lý khách hàng không được cài trên cơ sở dữ liệu này."
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_service.py:0
 msgid "The plan change"
 msgstr "Việc đổi gói"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/service.py:0
 msgid "The restore"
 msgstr "Việc khôi phục"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/rollout_service.py:0
 msgid "The rollout"
 msgstr "Đợt triển khai"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/support_service.py:0
 msgid "The switch"
 msgstr "Việc bật/tắt"
 
@@ -1677,6 +1731,8 @@ msgid "on"
 msgstr "bật"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
 
@@ -1686,70 +1742,104 @@ msgstr "người phê duyệt của bạn"
 # ===================================================================
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "%s day(s)"
 msgstr "%s ngày"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/support_rules.py:0
 msgid "About"
 msgstr "Về"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "As a trial"
 msgstr "Dưới dạng dùng thử"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Can this be undone?"
 msgstr "Việc này có hoàn tác được không?"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_features.py:0
 msgid "Customer"
 msgstr "Khách hàng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_features.py:0
 msgid "Customers"
 msgstr "Các khách hàng"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "Done."
 msgstr "Đã xong."
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_features.py:0
 msgid "Feature"
 msgstr "Tính năng"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "From the backup"
 msgstr "Từ bản sao lưu"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "New plan"
 msgstr "Gói mới"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "No — this one cannot be taken back"
 msgstr "Không — việc này không thể lấy lại"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_tenant_sync.py:0
 msgid "Reason"
 msgstr "Lý do"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_release.py:0
 msgid "Release"
 msgstr "Bản phát hành"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "Saved, and every live customer has been told."
 msgstr "Đã lưu, và mọi khách hàng đang hoạt động đã được thông báo."
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Switched"
 msgstr "Đã chuyển thành"
 
@@ -1758,21 +1848,31 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
 msgid "The rollout has started — the practice run goes first."
 msgstr "Đợt triển khai đã bắt đầu — lượt chạy thử đi trước."
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Their data may go after"
 msgstr "Dữ liệu của họ có thể bị xoá sau"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/tenant_approval.py:0
 msgid "Typed to confirm"
 msgstr "Đã gõ để xác nhận"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/tests/test_release.py:0
 msgid "What"
 msgstr "Nội dung"
 
 #. module: pb_tenants
+#. odoo-python
+#: code:addons/pb_tenants/models/billing_rules.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"

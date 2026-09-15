@@ -2293,17 +2293,25 @@ msgstr "%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần d
 # =====================================================================
 
 #. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "Hours asked for"
 msgstr "Số giờ đề nghị"
 
 #. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "Overtime already had this year"
 msgstr "Số giờ tăng ca đã dùng trong năm"
 
 #. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "Past what the law allows"
 msgstr "Vượt mức pháp luật cho phép"
 
 #. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "The overtime"
 msgstr "Giờ tăng ca"

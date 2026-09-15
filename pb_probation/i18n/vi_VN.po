@@ -18,6 +18,8 @@ msgstr ""
 # ===================================================================
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
@@ -26,6 +28,8 @@ msgid "Amount"
 msgstr "Số tiền"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "Closed because they are leaving"
 msgstr "Đóng vì họ sắp nghỉ việc"
 
@@ -34,6 +38,8 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
 msgid "Extended"
 msgstr "Được gia hạn"
 
@@ -50,6 +56,8 @@ msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "HR lifecycle team"
 msgstr "Nhóm vòng đời nhân sự"
 
@@ -58,10 +66,14 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "Months with the company"
 msgstr "Số tháng làm việc tại công ty"
 
 #. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
 msgid "Not passed"
 msgstr "Không đạt"
 
@@ -90,14 +102,20 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "That review is no longer here."
 msgstr "Đợt đánh giá đó không còn ở đây."
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/__manifest__.py:0
 msgid "The verdict"
 msgstr "Kết luận"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "Their manager"
 msgstr "Quản lý của họ"
 
@@ -123,10 +141,14 @@ msgstr "người phê duyệt của bạn"
 # ===================================================================
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "%s month(s)"
 msgstr "%s tháng"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "About"
 msgstr "Về"
 
@@ -135,14 +157,20 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
 msgid "Extended by"
 msgstr "Gia hạn thêm"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "Reason"
 msgstr "Lý do"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/feedback_ext.py:0
 msgid "Record"
 msgstr "Hồ sơ"
 
@@ -151,6 +179,8 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -159,17 +189,25 @@ msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
 msgid "Verdict"
 msgstr "Kết luận"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_policy.py:0
 msgid "What"
 msgstr "Nội dung"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/controllers/portal.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
 msgid "What has to improve"
 msgstr "Điều cần cải thiện"

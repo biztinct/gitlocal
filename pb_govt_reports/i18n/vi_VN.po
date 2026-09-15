@@ -349,6 +349,8 @@ msgstr "Đã tạo (các) tệp %s. Không có gì được gửi đi bất cứ
 # ===================================================================
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
 msgid "%(filing)s · %(country)s · %(period)s"
 msgstr "%(filing)s · %(country)s · %(period)s"
 
@@ -365,6 +367,8 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/security/filing_approval_rules.xml:0
 msgid "Filing"
 msgstr "Tờ khai"
 
@@ -389,6 +393,8 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
@@ -397,6 +403,8 @@ msgid "People"
 msgstr "Số người"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "Period"
 msgstr "Kỳ"
 
@@ -405,6 +413,8 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
 msgid "Sent for approval"
 msgstr "Đã gửi phê duyệt"
 
@@ -413,14 +423,20 @@ msgid "Sent for approval — %s"
 msgstr "Đã gửi phê duyệt — %s"
 
 #. module: pb_govt_reports
+#. odoo-javascript
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
 msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "Statutory filing"
 msgstr "Tờ khai theo luật"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
 msgid "Statutory filings are produced by payroll. Ask somebody who looks after payroll to do this, or to give you the payroll officer permission."
 msgstr "Tờ khai theo luật do bộ phận tiền lương lập. Hãy nhờ người phụ trách tiền lương làm việc này, hoặc cấp cho bạn quyền nhân viên tiền lương."
 
@@ -429,6 +445,8 @@ msgid "Their manager"
 msgstr "Quản lý của họ"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "Which filing"
 msgstr "Tờ khai nào"
 
@@ -445,6 +463,8 @@ msgid "its approver"
 msgstr "người phê duyệt của nó"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/pb_filing_flow.py:0
 msgid "this period"
 msgstr "kỳ này"
 
@@ -466,6 +486,8 @@ msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "From"
 msgstr "Từ"
 
@@ -482,6 +504,8 @@ msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "Team"
 msgstr "Nhóm"
 
@@ -490,9 +514,13 @@ msgid "To"
 msgstr "Đến"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/__manifest__.py:0
 msgid "What"
 msgstr "Nội dung"
 
 #. module: pb_govt_reports
+#. odoo-python
+#: code:addons/pb_govt_reports/models/filing_approval.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"

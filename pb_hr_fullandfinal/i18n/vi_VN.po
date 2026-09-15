@@ -579,6 +579,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
@@ -587,10 +589,14 @@ msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Final settlement · %s"
 msgstr "Thanh toán cuối cùng · %s"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Finance approver"
 msgstr "Người duyệt tài chính"
 
@@ -599,10 +605,14 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "From a file"
 msgstr "Từ một tệp"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -615,10 +625,14 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Last day"
 msgstr "Ngày làm việc cuối"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Net payable"
 msgstr "Thực trả"
 
@@ -627,6 +641,8 @@ msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "People"
 msgstr "Số người"
 
@@ -651,14 +667,20 @@ msgid "Their manager"
 msgstr "Quản lý của họ"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "This settlement has already been approved."
 msgstr "Khoản thanh toán này đã được duyệt."
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "This settlement has already been sent in."
 msgstr "Khoản thanh toán này đã được gửi đi."
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "This settlement has not been sent for approval yet."
 msgstr "Khoản thanh toán này chưa được gửi phê duyệt."
 
@@ -675,18 +697,26 @@ msgid "This settlement was turned down, so there is nothing to print."
 msgstr "Khoản thanh toán này đã bị từ chối nên không có gì để in."
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "What it comes to"
 msgstr "Tổng cộng là bao nhiêu"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "What they are owed"
 msgstr "Số tiền còn nợ họ"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Whole company"
 msgstr "Toàn công ty"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "Worked out here"
 msgstr "Được tính tại đây"
 
@@ -695,6 +725,8 @@ msgid "Yes"
 msgstr "Có"
 
 #. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
 msgid "its approver"
 msgstr "người phê duyệt của nó"
 

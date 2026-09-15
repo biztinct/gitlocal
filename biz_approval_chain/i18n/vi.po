@@ -12,12 +12,14 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: biz_approval_chain
+#. odoo-javascript
 #. openerp-web
 #: code:addons/biz_approval_chain/static/src/js/approval_stepper.js:0
 msgid "Cancelled"
 msgstr "Đã hủy"
 
 #. module: biz_approval_chain
+#. odoo-javascript
 #. openerp-web
 #: code:addons/biz_approval_chain/static/src/js/approval_stepper.js:0
 msgid "Refused"
@@ -34,26 +36,31 @@ msgid "Approval Step Log"
 msgstr "Nhật ký bước phê duyệt"
 
 #. module: biz_approval_chain
+#. odoo-python
 #: code:addons/biz_approval_chain/models/biz_approval_mixin.py:0
 msgid "Illegal approval transition: %s → %s."
 msgstr "Chuyển trạng thái phê duyệt không hợp lệ: %s → %s."
 
 #. module: biz_approval_chain
+#. odoo-python
 #: code:addons/biz_approval_chain/models/biz_approval_mixin.py:0
 msgid "You are not allowed to perform this approval step."
 msgstr "Bạn không được phép thực hiện bước phê duyệt này."
 
 #. module: biz_approval_chain
+#. odoo-python
 #: code:addons/biz_approval_chain/models/biz_approval_mixin.py:0
 msgid "This record is already closed."
 msgstr "Bản ghi này đã được đóng."
 
 #. module: biz_approval_chain
+#. odoo-python
 #: code:addons/biz_approval_chain/models/biz_approval_mixin.py:0
 msgid "You are not allowed to refuse this step."
 msgstr "Bạn không được phép từ chối bước này."
 
 #. module: biz_approval_chain
+#. odoo-python
 #: code:addons/biz_approval_chain/models/biz_approval_mixin.py:0
 msgid ""
 "The status of %s is driven by its approval chain — use the approval actions."

@@ -14616,122 +14616,146 @@ msgstr ""
 "cách thủ công: %s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #. Approval Matrix Phase 5 — money out and pay data
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "1 row"
 msgstr "1 dòng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "%s rows"
 msgstr "%s dòng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "What is in the file"
 msgstr "Nội dung của tệp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "This file is already waiting to be approved, with %s."
 msgstr "Tệp này đang chờ phê duyệt, ở chỗ %s."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Sent for approval"
 msgstr "Đã gửi duyệt"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "This pay data is now with %s."
 msgstr "Dữ liệu lương này hiện đang ở chỗ %s."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Pay data"
 msgstr "Dữ liệu lương"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Showing the first %(shown)s of %(total)s rows."
 msgstr "Đang hiển thị %(shown)s trong tổng số %(total)s dòng."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "The file passed its checks"
 msgstr "Tệp đã qua kiểm tra"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Rows in the file"
 msgstr "Số dòng trong tệp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "People in the file"
 msgstr "Số người trong tệp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "People it would create"
 msgstr "Số người sẽ được tạo mới"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Take-home pay in the file"
 msgstr "Tổng lương thực nhận trong tệp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Used for this pay run only"
 msgstr "Chỉ dùng cho kỳ lương này"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Creates payslips"
 msgstr "Tạo phiếu lương"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "This run only"
 msgstr "Chỉ kỳ lương này"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Kept on the records"
 msgstr "Lưu vào hồ sơ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Rows with a problem"
 msgstr "Số dòng có vấn đề"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "its approver"
 msgstr "người phê duyệt"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "%s row(s) have a problem"
 msgstr "%s dòng có vấn đề"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "New person"
 msgstr "Người mới"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Already on file"
 msgstr "Đã có hồ sơ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "Past pay data loads"
 msgstr "Nạp dữ liệu lương kỳ trước"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_approval.py:0
 msgid "\"This run only\" pay data"
 msgstr "Dữ liệu lương “chỉ kỳ này”"
@@ -14747,6 +14771,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "A demo database"
 msgstr "Là cơ sở dữ liệu minh hoạ"
 
@@ -14755,10 +14781,14 @@ msgid "A legislation pack is published with the Publish button, so that somebody
 msgstr "Gói quy định được công bố bằng nút Công bố, để có người đồng ý trước."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_scheme_proposal.py:0
 msgid "Country director"
 msgstr "Giám đốc quốc gia"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Fetch schedule · %s"
 msgstr "Lịch lấy dữ liệu · %s"
 
@@ -14771,6 +14801,8 @@ msgid "Finance controller"
 msgstr "Kiểm soát tài chính"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/security/import_approval_rules.xml:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -14783,26 +14815,38 @@ msgid "Head of pay"
 msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Mappings changed"
 msgstr "Số ánh xạ thay đổi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Mappings switched on"
 msgstr "Số ánh xạ được bật"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Pay schemes affected"
 msgstr "Số phương án lương bị ảnh hưởng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_scheme_proposal.py:0
 msgid "Payroll manager"
 msgstr "Trưởng bộ phận tiền lương"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/__manifest__.py:0
 msgid "People"
 msgstr "Số người"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "People moved"
 msgstr "Số người chuyển"
 
@@ -14811,34 +14855,50 @@ msgid "Platform owner"
 msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Point %s at a component"
 msgstr "Trỏ %s tới một thành phần"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Publish %(name)s %(version)s"
 msgstr "Công bố %(name)s %(version)s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Read the field list · %s"
 msgstr "Đọc danh sách trường · %s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/migrations/19.0.1.84.0/post-zoho_paths_that_zoho_serves.py:0
 msgid "Records"
 msgstr "Số bản ghi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Repair %s severed mapping(s)"
 msgstr "Sửa %s ánh xạ bị đứt"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Rows changed"
 msgstr "Số dòng thay đổi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Schedule changed"
 msgstr "Lịch đã thay đổi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Schemes involved"
 msgstr "Số phương án liên quan"
 
@@ -14851,66 +14911,98 @@ msgid "Sent for approval."
 msgstr "Đã gửi phê duyệt."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Switch on %(n)s mapping(s) · %(who)s"
 msgstr "Bật %(n)s ánh xạ · %(who)s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Takes effect"
 msgstr "Có hiệu lực từ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "That adjustment no longer exists."
 msgstr "Khoản điều chỉnh đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "That connection no longer exists."
 msgstr "Kết nối đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "That demo world no longer exists."
 msgstr "Bộ dữ liệu minh hoạ đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "That insurance policy no longer exists."
 msgstr "Chính sách bảo hiểm đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "That legislation pack no longer exists."
 msgstr "Gói quy định đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "That mapping no longer exists."
 msgstr "Ánh xạ đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "That tax band no longer exists."
 msgstr "Bậc thuế đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "That tax table no longer exists."
 msgstr "Bảng thuế đó không còn tồn tại."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "The board that answers this is not installed any more."
 msgstr "Màn hình trả lời việc này không còn được cài đặt."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "The demo world builder is not installed any more."
 msgstr "Trình tạo dữ liệu minh hoạ không còn được cài đặt."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "The field list was read."
 msgstr "Đã đọc danh sách trường."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "The legislation pack could not be applied."
 msgstr "Không áp dụng được gói quy định."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "The rate table could not be deleted."
 msgstr "Không xoá được bảng tỷ lệ."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "The rate table could not be saved."
 msgstr "Không lưu được bảng tỷ lệ."
 
@@ -14919,6 +15011,8 @@ msgid "Their manager"
 msgstr "Quản lý của họ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "This pack is already published."
 msgstr "Gói này đã được công bố."
 
@@ -14944,26 +15038,38 @@ msgstr "người phê duyệt của bạn"
 # ===================================================================
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_sc1_catalog_truth.py:0
 msgid "About"
 msgstr "Về"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Also build the standard bands"
 msgstr "Đồng thời dựng các bậc chuẩn"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Applied to payroll"
 msgstr "Đã áp dụng vào bảng lương"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/scheme_proposal.py:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "At what time"
 msgstr "Vào lúc mấy giờ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Bands in the table now"
 msgstr "Số bậc hiện có trong bảng"
 
@@ -14972,6 +15078,8 @@ msgid "Demo people, contracts and payslips are written into this database"
 msgstr "Nhân sự, hợp đồng và phiếu lương minh hoạ sẽ được ghi vào cơ sở dữ liệu này"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "Demo world"
 msgstr "Bộ dữ liệu minh hoạ"
 
@@ -14980,42 +15088,62 @@ msgid "Each one that resolves to a value starts feeding the payslip"
 msgstr "Mỗi ánh xạ cho ra giá trị sẽ bắt đầu cấp dữ liệu cho phiếu lương"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Every band is deleted and rebuilt"
 msgstr "Mọi bậc bị xoá và dựng lại"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "Every record that demo world made is removed"
 msgstr "Mọi bản ghi do bộ dữ liệu minh hoạ tạo ra sẽ bị gỡ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "For which kind of run"
 msgstr "Cho loại kỳ chạy nào"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "How often it fetches"
 msgstr "Tần suất lấy dữ liệu"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "Is this a demo database?"
 msgstr "Đây có phải cơ sở dữ liệu minh hoạ không?"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Lines in the drafted map"
 msgstr "Số dòng trong bản đồ dự thảo"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Mappings waiting to be switched on"
 msgstr "Số ánh xạ đang chờ được bật"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Paid by"
 msgstr "Trả lương theo"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Pay schemes it would change"
 msgstr "Số phương án lương sẽ bị thay đổi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "Rate table"
 msgstr "Bảng tỷ lệ"
 
@@ -15024,14 +15152,20 @@ msgid "See the request"
 msgstr "Xem yêu cầu"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Severed mappings to mend"
 msgstr "Số ánh xạ đứt cần sửa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Team"
 msgstr "Nhóm"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Team or division"
 msgstr "Nhóm hoặc bộ phận"
 
@@ -15044,30 +15178,44 @@ msgid "The source system is asked what fields it has, and a mapping row is made 
 msgstr "Hệ thống nguồn được hỏi có những trường nào, và mỗi trường mới sẽ có một dòng ánh xạ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "The table and its bands are deleted"
 msgstr "Bảng và các bậc của nó bị xoá"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Those people stop being paid by that scheme"
 msgstr "Những người đó thôi được trả lương theo phương án đó"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/migrations/19.0.1.84.0/post-zoho_paths_that_zoho_serves.py:0
 msgid "What"
 msgstr "Nội dung"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_cron.py:0
 msgid "Which day of the month"
 msgstr "Ngày nào trong tháng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_cron.py:0
 msgid "Which day of the week"
 msgstr "Ngày nào trong tuần"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Wiring to remove"
 msgstr "Liên kết cần gỡ"
 

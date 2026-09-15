@@ -2351,70 +2351,104 @@ msgid "• Final Approval Review"
 msgstr "• Đánh giá phê duyệt cuối cùng"
 
 #. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/__manifest__.py:0
 msgid "Payroll Analytics"
 msgstr "Phân tích bảng lương"
 
 #. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
 msgid "Success"
 msgstr "Thành công"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Warning"
 msgstr "Cảnh báo"
 
 #. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/bank_export_log.py:0
 msgid "Info"
 msgstr "Thông tin"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Normal"
 msgstr "Bình thường"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Employee count is stable compared to last month"
 msgstr "Số lượng nhân viên ổn định so với tháng trước"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Total payroll variance is within acceptable range"
 msgstr "Chênh lệch tổng quỹ lương nằm trong phạm vi cho phép"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "No critical anomalies detected in salary components"
 msgstr "Không phát hiện bất thường nghiêm trọng ở các thành phần lương"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Bank export file can be generated after approval"
 msgstr "Có thể tạo tệp ngân hàng sau khi phê duyệt"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "No Anomalies Detected"
 msgstr "Không phát hiện bất thường"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "All payroll components are within expected ranges."
 msgstr "Tất cả thành phần lương nằm trong phạm vi kỳ vọng."
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Are you sure you want to approve this payroll? This action cannot be undone."
 msgstr "Bạn có chắc muốn phê duyệt bảng lương này? Hành động này không thể hoàn tác."
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Processing..."
 msgstr "Đang xử lý..."
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Payroll approved successfully! Refreshing page..."
 msgstr "Đã phê duyệt bảng lương thành công! Đang làm mới trang..."
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "FINAL APPROVE"
 msgstr "PHÊ DUYỆT CUỐI"
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Error approving payroll: "
 msgstr "Lỗi phê duyệt bảng lương: "
 
 #. module: payroll_analytics_approval
+#. odoo-javascript
+#: code:addons/payroll_analytics_approval/static/src/js/payroll_dashboard.js:0
 msgid "Unknown error"
 msgstr "Lỗi không xác định"
 
@@ -2447,6 +2481,8 @@ msgid "No message available"
 msgstr "Không có thông báo"
 
 #. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
 msgid "Alert"
 msgstr "Cảnh báo"
 
