@@ -95,7 +95,7 @@ checking it — and on a full install there should be none.
 (`seat_user_ids`), and eleven new tables. No state machine is replaced, no
 column is removed.
 
-## 2. Before you start — fourteen more routes are published per company
+## 2. Before you start — fifteen more routes are published per company
 
 From the moment they exist they are IN FORCE. Every one is the ladder that was
 already in the code, or — for the five doors that had NO gate at all — the
@@ -117,6 +117,7 @@ ladder that always should have been.
 | Final settlements | HR lead → Finance approver | the settlement cannot be printed until approved |
 | Reopening a pay month | Payroll manager | closing is unchanged; reopening needs a reason |
 | Statutory filings | Payroll manager | **a real change**: this module had no permission check |
+| Salary and contract changes | HR lead → Finance approver *(only when the change touches pay)* | **a real change**: the contract drawer wrote money with no gate at all. Only the terms that move money are held — a location or a tax number is saved in the same press (§2a.7) |
 
 **Five gates are NEW, not re-routed.** Tell whoever runs these screens before
 the wave, because somebody will meet a refusal they have never seen:
@@ -215,11 +216,12 @@ necessarily the person the business means.
 | `pb_comp_ben .../19.0.1.4.0/post-month_route.py` | the reopen-a-month route |
 | `pb_hr_fullandfinal .../19.0.1.2.0/post-fnf_route.py` | **marks every EXISTING settlement `approved`** (they were produced and mostly paid; the new column defaults to "being prepared", so without this a historical settlement would read as about to happen and could no longer be printed), then the settlement route |
 | `pb_govt_reports .../19.0.1.2.0/post-filing_route.py` | the filing route |
+| `pb_contracts .../19.0.1.5.0/post-contract_route.py` | the contract-change route |
 | `pb_approval_config .../19.0.1.5.0/end-p7_adapters.py` | **an `end-` script, and that is the point** (ledger AM75): the duck-typed relay that asks every adapter in the registry for its default route, after the whole graph is loaded |
 | `pb_approval_config .../19.0.1.5.2/end-repoint_rows.py` | points every catalogue row at its record and writes the `covered_by` links, by re-running the seed. Two things the seeds learned to do after they had already run: a row names its record as soon as the ADAPTER exists, not only where this database has a reason to lay a route; and two rows are answered by another row rather than by an adapter of their own |
 | `pb_approval_config .../19.0.1.5.1/end-heal_half_laid.py` | **finishes two routes a bug left half-laid.** Two adapters' definitions were refused during the build (a related Selection read as a callable, and a manager step on a process that said it had no manager mode), and the seeder left a workflow and a draft with no binding. Both causes are fixed and the seeder no longer leaves anything behind; this goes back for the ones already written down. Log the query first if you want to see them: `SELECT p.key FROM biz_approval_workflow w JOIN biz_approval_workflow_version v ON v.workflow_id=w.id JOIN biz_approval_process p ON p.id=w.process_id WHERE v.status='draft' AND NOT EXISTS (SELECT 1 FROM biz_approval_binding b WHERE b.workflow_id=w.id AND b.active)` |
 | each module's `post_init_hook` | the same seeds, on a FRESH install, where no migration runs at all |
-| `res.company.create` | a company made later gets all fourteen |
+| `res.company.create` | a company made later gets all fifteen |
 
 Every one is idempotent; running all of them in a row creates exactly one of
 everything.
@@ -247,9 +249,10 @@ everything.
           to_regclass('pb_unlock_proposal'),
           to_regclass('pb_month_proposal'),
           to_regclass('pb_filing_proposal'),
+          to_regclass('pb_contract_proposal'),
           to_regclass('pb_approval_proposed_person');
    ```
-   All thirteen must be non-null on the master. `pb_tenant_proposal` is
+   All fourteen must be non-null on the master. `pb_tenant_proposal` is
    platform-only and will be null on a tenant, which is correct.
 
 3. **Check the new columns exist:**
@@ -261,7 +264,7 @@ everything.
           to_regclass('pb_hr_letter_seat_rel');
    ```
 
-4. **Check the fourteen routes landed, per company:**
+4. **Check the fifteen routes landed, per company:**
    ```sql
    SELECT c.name, p.key, w.name, v.status
    FROM biz_approval_binding b
@@ -271,11 +274,11 @@ everything.
    LEFT JOIN biz_approval_workflow_version v ON v.id = w.published_version_id
    WHERE p.key IN ('statutory','bands','fx','schememap','mappings',
                    'tenant','demo','verdict','letters','newhire',
-                   'unlock','fnf','month','filing')
+                   'unlock','fnf','month','filing','contract')
      AND b.active AND b.scope_key = ''
    ORDER BY c.name, p.key;
    ```
-   Fourteen rows per company on the master (thirteen on a tenant — no
+   Fifteen rows per company on the master (fourteen on a tenant — no
    `tenant` row), every one `published`.
 
 5. **Check the catalogue tells the truth:**
@@ -283,11 +286,15 @@ everything.
    SELECT key, model_name FROM biz_approval_process
    WHERE key IN ('statutory','bands','fx','schememap','mappings',
                  'tenant','demo','verdict','letters','newhire',
-                 'unlock','fnf','month','filing')
+                 'unlock','fnf','month','filing','contract')
    ORDER BY key;
    ```
-   No `model_name` may be null. Then open the Matrix: every one of the
-   thirty-nine rows must read as protected rather than "Not connected yet".
+   No `model_name` may be null. Then open the Matrix: **no row may read
+   "Not connected yet"** — a row is either pointed at its record by an
+   installed adapter, or answered by another row (§2b). The count itself
+   depends on which modules a database has, so count it rather than trust a
+   number: `SELECT count(*) FROM biz_approval_process;` and the §2b query
+   names every exception.
 
 6. **Fill the two new seats — and the platform one needs a BACKUP.**
    **Finance controller** signs the second half of every exchange-rate and
@@ -341,7 +348,10 @@ everything.
    * new hires — **HR**;
    * reopening a day — **Attendance or payroll manager**;
    * reopening a month — **Payroll manager**;
-   * filings — **Payroll officer or manager**.
+   * filings — **Payroll officer or manager**;
+   * contract changes — **Contract manager or HR manager**, and the wage
+     itself is only visible, and so only writable, to a **Payroll
+     manager** (ledger AM143).
    A country director who holds none of these will approve and then be
    refused when it applies, leaving the request `approved` with a block
    reason. Either give that person the permission or make the last step
@@ -392,7 +402,7 @@ To stop a route being in force WITHOUT rolling back, set that process to
 **"No approval needed"** in the Matrix. Every door then behaves exactly as it
 did before the phase — a press writes at once — and every use is still
 recorded as a request. That is a published choice, not a bypass, and it is the
-answer to "we are not ready for this yet" for all fourteen.
+answer to "we are not ready for this yet" for all fifteen.
 
 The five NEW GATES are the one thing a fast lane does not undo: they are
 permissions, not routes. If one of them has to come off in a hurry, the answer
@@ -487,7 +497,7 @@ else is real.
 
 ## 7.5 What the wave publishes — the whole count
 
-**About 37 default routes per company**, in seven areas:
+**About 38 default routes per company**, in seven areas:
 
 | Phase | Processes it puts in force |
 |---|---|
@@ -496,7 +506,7 @@ else is real.
 | P4 | `timesheet`, `scheme` |
 | P5 | `bankfile`, `release`, `journal`, `payslips`, `records`, `runonly`, `loads`, `arrivals` |
 | P6 | `assets`, `correction`, `bankchange`, `trip`, `awards`, `extension`, `master`, `resign`, `paychange`, `payreview`, `recognition`, `leave`, `overtime`, `roles`, `support` |
-| P7 | `statutory`, `bands`, `fx`, `schememap`, `mappings`, `tenant`, `demo`, `verdict`, `letters`, `newhire`, `unlock`, `fnf`, `month`, `filing` |
+| P7 | `statutory`, `bands`, `fx`, `schememap`, `mappings`, `tenant`, `demo`, `verdict`, `letters`, `newhire`, `unlock`, `fnf`, `month`, `filing`, `contract` |
 
 **Ten responsibilities have to be filled per company**: Approver, HR lead,
 Finance approver, Payroll manager, Country director, Equipment team, Head of
@@ -535,12 +545,16 @@ Move each one to `done` or `draft` before the wave, or the upgrade stops.
    GROUP BY c.name ORDER BY c.name;
    ```
    `not_published` must be 0 everywhere.
-4. **The catalogue census**:
+4. **The catalogue census.** A row is honest if an installed adapter points
+   it at a record, OR another row answers it (§2b). Anything else is a row
+   telling people nobody is checking it:
    ```sql
-   SELECT count(*) FILTER (WHERE model_name IS NULL OR model_name = '')
-     AS rows_with_no_model FROM biz_approval_process;
+   SELECT count(*) AS rows_nobody_is_checking FROM biz_approval_process
+    WHERE (model_name IS NULL OR model_name = '')
+      AND (covered_by_key IS NULL OR covered_by_key = '');
    ```
-   Must be 0.
+   Must be 0. The two rows with a `covered_by_key` — `retro` and `reopen` —
+   are expected to have no model of their own.
 5. **The seats census**:
    ```sql
    SELECT r.key, count(*) FROM biz_approval_responsibility x
