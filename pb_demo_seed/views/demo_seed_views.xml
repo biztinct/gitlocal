@@ -39,25 +39,40 @@
                     </div>
                     <div class="alert alert-info" role="status"
                          invisible="state == 'loaded'">
-                        Nothing is loaded. Choose a world and press
-                        <b>Load demo data</b>. Everything it creates is written
-                        into the list below, and <b>Remove demo data</b> takes
-                        out exactly those records and nothing else.
+                        <p class="mb-0">
+                            Nothing is loaded. Choose a world and press
+                            <b>Load demo data</b>. Everything it creates is
+                            written into the list below, and <b>Remove demo
+                            data</b> takes out exactly those records and
+                            nothing else.
+                        </p>
                     </div>
                     <div class="alert alert-warning" role="status"
                          invisible="state != 'loaded' or profile == 'adopted'">
-                        Demo data is loaded. Do not use this on a database that
-                        is already live with real people unless you mean to.
+                        <p class="mb-0">
+                            Demo data is loaded. Do not use this on a database
+                            that is already live with real people unless you
+                            mean to.
+                        </p>
                     </div>
+                    <!--
+                      ONE PARAGRAPH, ONE CHILD. The alert is laid out as a row,
+                      so a <b> in the middle of the sentence becomes a column
+                      of its own and the sentence reads in three pieces across
+                      the screen. Everything the reader reads goes inside one
+                      <p>.
+                    -->
                     <div class="alert alert-info" role="status"
                          invisible="profile != 'adopted'">
-                        These are records the app itself made while somebody was
-                        showing it off — demo requests, demo candidates, demo
-                        people. Nothing here was built by a demo world, so there
-                        is nothing to load. <b>Remove demo data</b> takes out
-                        exactly the records listed below; demo logins are
-                        switched off rather than deleted, so the history that
-                        names them still reads properly.
+                        <p class="mb-0">
+                            These are records the app itself made while somebody
+                            was showing it off — demo requests, demo candidates,
+                            demo people. Nothing here was built by a demo world,
+                            so there is nothing to load. <b>Remove demo data</b>
+                            takes out exactly the records listed below; demo
+                            logins are switched off rather than deleted, so the
+                            history that names them still reads properly.
+                        </p>
                     </div>
                     <group>
                         <group>

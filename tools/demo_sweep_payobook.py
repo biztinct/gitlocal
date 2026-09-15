@@ -689,11 +689,10 @@ def register(env, collected):
     print('  %-40s %5s' % ('TOTAL', total))
     print('  %s row(s) newly added to the register' % added)
     if not DRY:
-        summary = '\n'.join(
-            '%s × %s' % (count, model_name)
-            for model_name, count in sorted(counts.items(),
-                                            key=lambda kv: -kv[1]))
-        seed.sudo().write({'summary': summary})
+        # The panel says what it holds in the words the screens use, not in
+        # model names — `summarise_register()` is the same sentence the door
+        # writes for any other module that registers something.
+        seed.sudo().write({'summary': seed.summarise_register()})
         env.cr.commit()
         preview = seed.preview_remove()
         print('  "What would be removed" now answers: %s record(s), '

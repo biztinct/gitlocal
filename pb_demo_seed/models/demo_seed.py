@@ -230,6 +230,8 @@ class PbDemoSeed(models.Model):
             return 0
         seed = self.programme_seed()
         added = seed._register_records(records, label=label, last=last)
+        if added:
+            seed.sudo().write({'summary': seed.summarise_register()})
         _logger.info(
             "pb_demo_seed: %s of %s %s registered as '%s'",
             added, len(records), getattr(records, '_name', 'record'),
@@ -306,6 +308,23 @@ class PbDemoSeed(models.Model):
             ('model_name', '=', record._name),
             ('res_id', '=', record.id),
         ]))
+
+    def summarise_register(self):
+        """What is on this register, in the words the screens use.
+
+        "119 × Journey Step", never "119 × pb.journey.task": the panel is read
+        by whoever is about to press Remove, and a list of model names tells
+        them nothing about what they would lose.
+        """
+        self.ensure_one()
+        counts = dict(self.env['pb.demo.record'].sudo()._read_group(
+            [('seed_id', '=', self.id)], ['model_name'], ['__count']))
+        names = {m.model: m.name for m in self.env['ir.model'].sudo().search(
+            [('model', 'in', list(counts))])}
+        return '\n'.join(
+            '%s × %s' % (count, names.get(model_name, model_name))
+            for model_name, count in sorted(counts.items(),
+                                            key=lambda kv: -kv[1]))
 
     @api.model
     def _row_label(self, record):
