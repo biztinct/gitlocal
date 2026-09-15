@@ -145,7 +145,8 @@ class TestP7Matrix(MatrixCase):
         rows = [r for area in payload['areas'] for r in area['rows']]
         self.assertTrue(rows)
         for row in rows:
-            self.assertIn(row['status'], ('live', 'draft', 'needs', 'soon'))
+            self.assertIn(row['status'],
+                          ('live', 'draft', 'needs', 'soon', 'covered'))
 
     # ================================================================ Z06
     def test_z06a_no_po_msgstr_anywhere_says_odoo(self):

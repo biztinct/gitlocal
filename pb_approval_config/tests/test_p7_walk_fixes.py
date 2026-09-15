@@ -16,21 +16,37 @@ from odoo.tests import tagged
 from .common import MatrixCase
 from .test_p7_matrix import TOUCHED_MODULES, _repo_root
 
-#: Every P7 door reachable from a screen, and the file that presses it.
-#: A module that calls one of these MUST branch on the answer, because the
-#: answer is a proposal wherever a route is published.
+#: Every P7 door reachable from a screen. A SCREEN that calls one of these
+#: must branch on the answer, because the answer is a proposal wherever a
+#: route is published.
+#:
+#: `set_state` is qualified by its model and the rest are not, because
+#: `set_state` is a name two unrelated screens use — `pb.paycal`'s reopens a
+#: pay month and `pb.asset.request`'s moves an asset along its own ladder,
+#: which Phase 6 already put on the engine and which is not a proposal at all.
+#: A door list that cannot tell them apart fails a screen that is correct.
 P7_DOORS = (
     'create_policy', 'create_tax_table', 'tenant_suspend',
     'tenant_schedule_deletion', 'offboard', 'rollout_start', 'rollout_abort',
     'tenant_set_plan', 'features_bulk', 'feature_save', 'restore_staging',
     'save_group', 'add_expense', 'accept_draft', 'save_rate_table',
     'delete_rate_table', 'legislation_apply', 'create_employee',
-    'create_contract', 'save_contract_360', 'set_state',
+    'create_contract', 'save_contract_360',
 )
 
+#: (model, method) pairs, for the names more than one screen uses.
+P7_DOORS_QUALIFIED = (('pb.paycal', 'set_state'),)
+
 #: What a screen has to READ before it may say anything. Any one of them is
-#: enough: they are the three names the server answers with.
-BRANCHED = ('pending', 'applied', '_saidSoFar', 'result.message')
+#: enough: they are the names the server answers with.
+#:
+#: THE UNIT IS THE SCREEN, NOT THE FILE. A client action is a `.js` that
+#: fetches and a `.xml` that draws, and the two halves are as free to divide
+#: the work as any other pair of files: both guided wizards keep the answer in
+#: `state.result` and branch on `state.result.applied` IN THE TEMPLATE. A
+#: check that reads only the `.js` calls that a lie.
+BRANCHED = ('pending', 'applied', '_saidSoFar', 'result.message',
+            'result.message')
 
 
 @tagged('post_install', '-at_install')
@@ -52,26 +68,48 @@ class TestP7WalkFixes(MatrixCase):
         """
         blind = []
         for module in TOUCHED_MODULES + ('pb_contracts',):
-            root = os.path.join(_repo_root(), module)
+            root = os.path.join(_repo_root(), module, 'static')
             if not os.path.isdir(root):
                 continue
-            for folder, _dirs, files in os.walk(root):
-                if '__pycache__' in folder or os.sep + 'tests' in folder:
+            for surface, bodies in self._surfaces(root).items():
+                whole = '\n'.join(bodies.values())
+                presses = [d for d in P7_DOORS
+                           if '"%s"' % d in whole or "'%s'" % d in whole]
+                for model, method in P7_DOORS_QUALIFIED:
+                    if ('"%s"' % model in whole and
+                            ('"%s"' % method in whole
+                             or "'%s'" % method in whole)):
+                        presses.append('%s.%s' % (model, method))
+                if not presses:
                     continue
-                for name in sorted(files):
-                    if not name.endswith('.js'):
-                        continue
-                    path = os.path.join(folder, name)
-                    body = open(path, encoding='utf-8').read()
-                    presses = [d for d in P7_DOORS
-                               if '"%s"' % d in body or "'%s'" % d in body]
-                    if not presses:
-                        continue
-                    if any(token in body for token in BRANCHED):
-                        continue
-                    blind.append('%s/%s presses %s and never reads the answer'
-                                 % (module, name, ', '.join(presses)))
+                if any(token in whole for token in BRANCHED):
+                    continue
+                blind.append('%s · %s presses %s and never reads the answer'
+                             % (module, surface, ', '.join(presses)))
         self.assertFalse(blind, '\n'.join(blind))
+
+    def _surfaces(self, root):
+        """A screen is its `.js` and the `.xml` that draws it, together.
+
+        Keyed by the file's base name, so `statutory_wizards.js` and
+        `statutory_wizards.xml` are one surface — which is what they are.
+        Anything whose partner is missing stands alone.
+        """
+        out = {}
+        for folder, _dirs, files in os.walk(root):
+            if '__pycache__' in folder or os.sep + 'tests' in folder:
+                continue
+            for name in sorted(files):
+                if not name.endswith(('.js', '.xml')):
+                    continue
+                path = os.path.join(folder, name)
+                base = os.path.splitext(name)[0]
+                try:
+                    body = open(path, encoding='utf-8').read()
+                except (OSError, UnicodeDecodeError):
+                    continue
+                out.setdefault(base, {})[name] = body
+        return out
 
     def test_w1_the_server_says_the_sentence_itself(self):
         """One sentence, from the server, so no screen has to invent one."""
@@ -122,20 +160,31 @@ class TestP7WalkFixes(MatrixCase):
         installed. Nothing else is honest."""
         payload = self.as_admin('pb.approval.matrix').get_matrix(False)
         rows = [r for area in payload['areas'] for r in area['rows']]
-        Process = self.env['biz.approval.process'].sudo()
-        stranded = []
-        for row in rows:
-            if row['status'] != 'soon':
-                continue
-            process = Process._by_key(row['process_key'])
-            # A row whose model is not in the registry is a module that is
-            # simply not on this database — which is a true thing to say.
-            if process.model_name and process.model_name in self.env:
-                stranded.append(row['process_key'])
+        # WHICH KEYS ANY INSTALLED ADAPTER ACTUALLY ANSWERS FOR.
+        #
+        # Asked of the REGISTRY rather than of the row's own `model_name`: a
+        # row can name a model that exists for another reason entirely. The
+        # weekly-timesheet row still says `hr.attendance.weekentry` — the
+        # SCREEN, which `pb_hr_workforce` ships — until `pb_timesheet_approval`
+        # is installed and repoints it at the packet (ledger AM45). On a
+        # database without that module the row is honestly not connected, and
+        # a check that looked only at whether the named model exists would
+        # have called it a fault.
+        answered = set()
+        for name in list(self.env.registry.models):
+            model = self.env[name]
+            key = getattr(model, '_approval_process_key', None)
+            keys = set(getattr(model, '_approval_process_keys', ()) or ())
+            if key:
+                keys.add(key)
+            answered |= keys
+        stranded = [row['process_key'] for row in rows
+                    if row['status'] == 'soon'
+                    and row['process_key'] in answered]
         self.assertFalse(
             stranded,
-            'these rows say nobody is checking them and their module is right '
-            'here: %s' % stranded)
+            'an adapter in this registry answers for these, and the Matrix '
+            'still says nobody is checking them: %s' % stranded)
 
     def test_w4_a_covered_row_names_the_row_that_covers_it(self):
         Process = self.env['biz.approval.process'].sudo()

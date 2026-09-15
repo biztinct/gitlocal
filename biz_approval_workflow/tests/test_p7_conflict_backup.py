@@ -120,6 +120,7 @@ class TestConflictBackup(ApprovalCase):
             'delegate_user_id': self.bob.id,
             'date_from': today,
             'date_to': today,
+            'reason': 'Away for the day',
         })
         self._published(self._route())
         request = self.submit(self.ask(user=self.alice), user=self.alice)

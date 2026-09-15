@@ -32,9 +32,17 @@ class TestMatrixFacade(MatrixCase):
         self.assertTrue(rows['generic']['route_labels'])
         self.assertTrue(rows['generic']['workflow_id'])
 
-        # a process no adapter has claimed can never read as protected
-        self.assertEqual(rows['reopen']['status'], 'soon')
+        # A PROCESS NO ADAPTER HAS CLAIMED CAN NEVER READ AS PROTECTED — and
+        # since P7 it has two honest ways of saying so. "Reopen an approved
+        # run" turned out to be the pay-run request's own send-back, decided
+        # by the same people on the same request, so where `pb_payruns` is
+        # installed the row says "Decided with Pay run" instead of "Not
+        # connected yet", which would have said nobody checks it.
+        self.assertIn(rows['reopen']['status'], ('soon', 'covered'))
         self.assertFalse(rows['reopen']['connected'])
+        if rows['reopen']['status'] == 'covered':
+            self.assertTrue(rows['reopen']['covered_by'],
+                            'a covered row must name the row that covers it')
 
         # money rows are marked so the publisher is asked to confirm later
         self.assertTrue(rows['bankfile']['money'])
