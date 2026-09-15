@@ -632,3 +632,18 @@ P3 §5, P4 §5, P5 §5, P6 §5 and §5 of this document, in that order. The firs
 five minutes that matter: Home → Approvals opens; a pay run can be sent in; a
 bank file needs two people; a laptop request draws its real route; a statutory
 rate asks before it is written.
+
+## Walk record (15 Sep, local `am_walk7` = `am_tpl` + `-u all` + `pb_tenants`, Fable)
+
+People: admin; Nithya Rao (payroll manager, head of pay, HR lead holder); Monica Tran (country director, finance holder; backup of every seat); tenant "Canary Co" (`canaryco`, live). Four screen checks of §5 plus the re-check after the walk fixes:
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Statutory → New insurance policy as Nithya | Nothing written; proposal + request pending. First pass the panel said "Policy created" (fixed): it now reads "Sent for approval — Monica Tran … Monica Tran was asked instead of Nithya Rao, because Nithya Rao sent this in", with Done / See the request. Monica sees "Your turn", approves; the director rung then moves to Nithya (repeated-person rule) who sent it in — the drawer offers "Move it to somebody else" |
+| 2 | Pay bands → drag the highest edge as Nithya | "Sent for approval — Nithya Rao"; band unchanged; `move_edge` proposal pending |
+| 3 | Tenants → Plan → Pause as admin | Wrong slug: nothing happens before anything is written; right slug: first pass the toast said "Their access is paused" (fixed) — now "Pausing Canary Co was sent for approval — it is with Nithya Rao. See the request"; customer still live; proposal pending; drawer shows destructive = yes and the typed slug |
+| 4 | Matrix → Bring in from a spreadsheet (RIZE workbook) | "10 draft route(s) made from 10 row(s). Nothing is in force until somebody publishes it."; every row recognised; overtime threshold as a note; "Case-by-case" / "penultimate working day" turnarounds flagged; named people proposed, none matched; "Respective Line Manager" no longer listed as a person (fixed) |
+| — | Drawer | The proposer is refused their own approval in words ("You sent this in. Somebody else has to decide this one…"); "What would change" reads in plain words (fixed: it showed payload keys) |
+| — | Matrix statuses | Retro adjustments and Reopen an approved run read "Decided with …" (fixed: "Not connected yet"); Salary and contract changes now has its own route (`pb_contracts`) |
+
+For the wave (owner items): a two-person company will stall a route whose second rung falls back to the person who sent it in — seat a third person, set the repeated-person rule to "same person may", or arrange the self-approval exception; the drawer's "Move it to somebody else" is the door out. The platform route with one owner + one backup seats the backup on BOTH rungs when the owner proposes — name two real platform owners before the wave.
