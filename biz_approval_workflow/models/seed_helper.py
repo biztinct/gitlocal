@@ -183,6 +183,8 @@ class BizApprovalSeed(models.AbstractModel):
 
         workflow = Workflow.search([('company_id', '=', company.id),
                                     ('process_id', '=', process.id)], limit=1)
+        #: What THIS call made, so a refusal can take it back with it.
+        mine = self.env['biz.approval.workflow']
         if not workflow:
             workflow = Workflow.create({
                 'name': workflow_name,
@@ -190,6 +192,7 @@ class BizApprovalSeed(models.AbstractModel):
                 'process_id': process.id,
                 'owner_user_id': publisher.id,
             })
+            mine = workflow
 
         version = workflow.version_ids.filtered(
             lambda v: v.status == 'published').sorted('revision')[-1:]
@@ -220,6 +223,24 @@ class BizApprovalSeed(models.AbstractModel):
                 _logger.warning('approval seed: the default "%s" route was '
                                 'refused: %s', process_key,
                                 [e['code'] for e in checks['errors']])
+                # A REFUSED SEED LEAVES NOTHING BEHIND.
+                #
+                # Without this, a route whose definition the engine could not
+                # accept — an adapter with a bug in its capabilities, say —
+                # left a workflow and a draft version with no binding, and
+                # the NEXT run (after somebody fixed the adapter) published
+                # them and bound them. That is the right end state and the
+                # wrong shape: `seed_all` is supposed to be idempotent, and a
+                # database carrying half a route is one where the first run
+                # creates something and the second does not. Two of these sat
+                # in the test template for a whole phase and read as a
+                # duplicate-binding bug in code that was correct.
+                #
+                # Only what THIS call made is taken back: a workflow that was
+                # already there belongs to the business.
+                if mine:
+                    mine.version_ids.sudo().unlink()
+                    mine.sudo().unlink()
                 return False
             engine.publish(
                 version.id, version.draft_revision, None,
