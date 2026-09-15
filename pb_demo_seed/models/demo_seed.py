@@ -20,6 +20,20 @@ is the worst of the possible outcomes.
 THE PROFILE IS THE DATA, THIS IS THE MACHINERY. What gets built lives in
 `pb_demo_seed/seeds/`; this file knows how to run one, register what it made,
 and undo it. A second tenant is a second profile.
+
+AND THE PRODUCT MAKES DEMO RECORDS TOO. A phase testing a new screen creates a
+hiring request, three candidates and an offer — real records, made by the real
+code, which is the only way to prove the screen works. Those are demo data by
+every test except who typed them, and the register is the right place for them.
+`register()` is the public door for that: any module can hand its fixtures over
+without depending on this one::
+
+    seed = self.env.get('pb.demo.seed')
+    if seed is not None:
+        seed.register(records, "What these are")
+
+They land on a seed row of their own (profile `adopted`, `programme_seed()`),
+beside — never instead of — a world a profile built.
 """
 
 import logging
@@ -43,6 +57,24 @@ PROTECTED_MODELS = frozenset((
     'ir.model', 'ir.model.fields', 'ir.ui.view', 'ir.actions.act_window',
     'hr.formula.config', 'hr.formula.rule',
 ))
+
+#: The one protected model the register may hold — and it is SWITCHED OFF
+#: rather than deleted.
+#:
+#: A demo login is demo data: it was made for a demo, it is named for one, and
+#: leaving it behind is leaving a way into the database nobody owns. But a
+#: login is also the name on every approval, every chatter line and every
+#: audit row it ever touched, and deleting it would either take those with it
+#: or leave them pointing at nothing. Switching it off ends the access, which
+#: is the part that matters, and keeps the history readable, which is the part
+#: somebody may still need.
+ARCHIVE_INSTEAD_OF_DELETE = frozenset(('res.users',))
+
+#: The register every record the PRODUCT made for a demo is written into.
+#:
+#: One row per company, found by this name. The name is on the screen, so it
+#: says what it is in the words the panel beside it uses.
+PROGRAMME_SEED_NAME = 'DEMO HR programme data'
 
 
 class PbDemoRecord(models.Model):
@@ -122,6 +154,166 @@ class PbDemoSeed(models.Model):
         from ..seeds import PROFILES
         return [(key, spec['label']) for key, spec in PROFILES.items()]
 
+    # ------------------------------------------------------------------
+    #  The register, as a door other modules can use
+    # ------------------------------------------------------------------
+    @api.model
+    def programme_seed(self):
+        """The panel that holds records the product made, found or created.
+
+        Profile `adopted`, because nothing here was BUILT by a profile: the
+        records already existed and this row adopts them. It is created
+        `loaded` for the same reason — there is no load to press, and a panel
+        that offers one over a register full of real records is an invitation
+        to a mistake.
+        """
+        company = self._programme_company()
+        seed = self.sudo().search([
+            ('name', '=', PROGRAMME_SEED_NAME),
+            ('company_id', '=', company.id),
+        ], limit=1)
+        if seed:
+            return seed
+        return self.sudo().create({
+            'name': PROGRAMME_SEED_NAME,
+            'profile': 'adopted',
+            'state': 'loaded',
+            'loaded_on': fields.Datetime.now(),
+            'loaded_by': self.env.user.id,
+            'company_id': company.id,
+        })
+
+    @api.model
+    def _programme_company(self):
+        """The company demo records belong to.
+
+        THE COMPANY WITH THE MOST PEOPLE IN IT, which is the operating company
+        by definition and needs nobody to configure it.
+
+        Not `search([], limit=1)`, which is the lowest id — on a database that
+        has been through a few years of setup that is the empty shell the
+        first install left, and a row stamped with it is hidden by the company
+        rule from everybody who works in the real company. And not the
+        session's own company either, however tempting: an administrator's own
+        employee record sits in that same empty shell (R79), so a demo
+        register created by an administrator would land there while every
+        record on it lives somewhere else.
+        """
+        counts = dict(self.env['hr.employee'].sudo().with_context(
+            active_test=False)._read_group([], ['company_id'], ['__count']))
+        if counts:
+            return max(counts, key=lambda company: counts[company])
+        return self.env.company
+
+    @api.model
+    def register(self, records, label=None, last=False):
+        """Put records the product made onto the programme register.
+
+        THE CALLER MUST NOT DEPEND ON THIS MODULE. Demo data is optional on a
+        tenant and this module is not installed everywhere, so every caller
+        asks first and carries on if the answer is no::
+
+            seed = self.env.get('pb.demo.seed')
+            if seed is not None:
+                seed.register(records, "Three demo candidates")
+
+        `last=True` puts them below everything else, so the removal reaches
+        them at the END of its backwards walk — for the records that are made
+        as a side effect of what depends on them (an employee's private
+        contact is the one that keeps coming up).
+
+        Returns how many rows were added. Registering the same record twice is
+        not an error and adds nothing: a fixture that runs again is a fixture,
+        not a second record.
+        """
+        if not records:
+            return 0
+        seed = self.programme_seed()
+        added = seed._register_records(records, label=label, last=last)
+        _logger.info(
+            "pb_demo_seed: %s of %s %s registered as '%s'",
+            added, len(records), getattr(records, '_name', 'record'),
+            label or 'demo data')
+        return added
+
+    def _register_records(self, records, label=None, last=False):
+        """NOT `_register`: that name belongs to the ORM.
+
+        `_register` is the boolean every model class carries to say whether it
+        should go into the registry, so a method of that name is shadowed by
+        `True` and every call dies with `TypeError: 'bool' object is not
+        callable` — from inside the model, with a traceback that points at the
+        caller rather than at the clash.
+        """
+        self.ensure_one()
+        Row = self.env['pb.demo.record'].sudo()
+        top = Row.search([('seed_id', '=', self.id)],
+                         order='sequence desc', limit=1).sequence or 0
+        bottom = Row.search([('seed_id', '=', self.id)],
+                            order='sequence asc', limit=1).sequence or 0
+        added = 0
+        for one in records:
+            if last:
+                bottom -= 1
+                sequence = bottom
+            else:
+                top += 1
+                sequence = top
+            if self._register_row(one, sequence, label=label):
+                added += 1
+            elif last:
+                bottom += 1
+            else:
+                top -= 1
+        return added
+
+    def _register_row(self, record, sequence, label=None):
+        """THE ONLY PLACE A REGISTER ROW IS WRITTEN.
+
+        Both doors come here — the one a profile's builder uses while it is
+        creating a world, and the one another module uses to hand over
+        records it made itself. Two writers would be two sets of rules about
+        what may go on the register, and the day they disagree is the day the
+        removal takes out something it should not have.
+        """
+        self.ensure_one()
+        if not self._may_register(record._name):
+            _logger.warning(
+                "pb_demo_seed: refusing to register a %s; the removal must "
+                "never be handed one.", record._name)
+            return self.env['pb.demo.record'].browse()
+        if self._registered_already(record):
+            return self.env['pb.demo.record'].browse()
+        return self.env['pb.demo.record'].sudo().create({
+            'seed_id': self.id,
+            'sequence': sequence,
+            'model_name': record._name,
+            'res_id': record.id,
+            'label': label or self._row_label(record),
+        })
+
+    @api.model
+    def _may_register(self, model_name):
+        """Is this a kind of record the register is allowed to hold?"""
+        return (model_name not in PROTECTED_MODELS
+                or model_name in ARCHIVE_INSTEAD_OF_DELETE)
+
+    def _registered_already(self, record):
+        """A row may already be here from a load whose removal was blocked."""
+        self.ensure_one()
+        return bool(self.env['pb.demo.record'].sudo().search_count([
+            ('seed_id', '=', self.id),
+            ('model_name', '=', record._name),
+            ('res_id', '=', record.id),
+        ]))
+
+    @api.model
+    def _row_label(self, record):
+        try:
+            return (record.display_name or '')[:120] or record._name
+        except Exception:                          # noqa: BLE001
+            return record._name
+
     @api.depends('record_ids')
     def _compute_record_count(self):
         counts = dict(self.env['pb.demo.record']._read_group(
@@ -186,6 +378,19 @@ class PbDemoSeed(models.Model):
         if not spec:
             raise UserError(_("There is no demo world called '%s'.", self.profile))
 
+        # NOTHING TO BUILD, AND THAT IS THE POINT. An adopted panel holds
+        # records that already existed — the product made them while somebody
+        # was testing a screen. There is no world to put in, only a list to
+        # keep, so "load" means "this panel is in use" and nothing else.
+        if not spec['builders']:
+            self.sudo().write({
+                'state': 'loaded',
+                'loaded_on': self.loaded_on or fields.Datetime.now(),
+                'loaded_by': self.loaded_by.id or self.env.user.id,
+            })
+            return self.summary or _(
+                "This panel holds records the product made. Nothing was built.")
+
         # ONE DEMO WORLD AT A TIME, PER COMPANY.
         #
         # Not a policy — a fact the database enforces and this would otherwise
@@ -195,10 +400,7 @@ class PbDemoSeed(models.Model):
         # partly-built demo and a register that does not describe it. Saying so
         # before anything is created is the difference between a sentence and a
         # mess.
-        other = self.search([
-            ('id', '!=', self.id), ('state', '=', 'loaded'),
-            ('company_id', '=', self.company_id.id),
-        ], limit=1)
+        other = self._other_loaded_world()
         if other:
             raise UserError(_(
                 "'%(name)s' is already loaded in %(company)s. Remove it before "
@@ -222,6 +424,22 @@ class PbDemoSeed(models.Model):
                      len(context.registered), self.profile)
         return summary
 
+    def _other_loaded_world(self):
+        """A world already loaded in this company that a second would land on.
+
+        AN ADOPTED PANEL IS NEVER ONE. It builds nothing, so it cannot land on
+        anybody's suppliers, and a register of records the product made is the
+        normal thing to find beside a built world rather than a rival to it.
+        Ignored in both directions: it does not block a world from loading,
+        and a loaded world does not stop the product handing records over.
+        """
+        self.ensure_one()
+        return self.search([
+            ('id', '!=', self.id), ('state', '=', 'loaded'),
+            ('profile', '!=', 'adopted'),
+            ('company_id', '=', self.company_id.id),
+        ], limit=1)
+
     # ------------------------------------------------------------------
     #  Remove
     # ------------------------------------------------------------------
@@ -232,21 +450,89 @@ class PbDemoSeed(models.Model):
         held = self._demo_proposal('remove')
         if held is not None:
             return held
-        removed, blocked = self.remove_demo()
+        removed, switched_off, blocked = self.remove_demo()
+        # BRANCH THE WHOLE SENTENCE (R46/R117): "1 login(s)" is a programme
+        # writing, and a frame with one word swapped cannot be translated.
+        logins = ''
+        if switched_off == 1:
+            logins = '\n' + _(
+                "One login was switched off rather than deleted.")
+        elif switched_off:
+            logins = '\n' + _(
+                "%s logins were switched off rather than deleted.",
+                switched_off)
         if blocked:
             return self._notify(
                 _("Demo data mostly removed"),
                 _("%(removed)s records were removed. %(blocked)s could not be, "
                   "because something else now refers to them:\n%(list)s",
                   removed=removed, blocked=len(blocked),
-                  list='\n'.join('• %s' % b for b in blocked[:10])),
+                  list='\n'.join('• %s' % b for b in blocked[:10])) + logins,
                 kind='warning')
         return self._notify(
             _("Demo data removed"),
-            _("%s records were removed. Nothing was left behind.", removed))
+            _("%s records were removed. Nothing was left behind.",
+              removed) + logins)
+
+    def action_preview_remove(self):
+        """What Remove would take out, without taking anything out."""
+        self.ensure_one()
+        preview = self.preview_remove()
+        if not preview['total'] and not preview['users']:
+            return self._notify(
+                _("Nothing to remove"),
+                _("Every record on this list has already gone."),
+                kind='warning')
+        lines = ['%s × %s' % (row['count'], row['label'])
+                 for row in preview['per_model'][:12]]
+        if len(preview['per_model']) > 12:
+            lines.append(_("… and %s more kinds",
+                           len(preview['per_model']) - 12))
+        if preview['users']:
+            lines.append(_("%s would be switched off rather than deleted",
+                           ', '.join(preview['users'][:5])))
+        if preview['gone']:
+            lines.append(_("%s have already gone", preview['gone']))
+        return self._notify(
+            _("%s records would be removed", preview['total']),
+            '\n'.join(lines), kind='warning')
+
+    def preview_remove(self):
+        """Count what Remove would take out. Reads only, changes nothing.
+
+        The honest answer to "what exactly does that button do", asked before
+        pressing it rather than after. It is also the only safe question on a
+        database that is not a demo one.
+        """
+        self.ensure_one()
+        per_model, users, gone = {}, [], 0
+        for row in self.record_ids:
+            record = row._record()
+            if not record.exists():
+                gone += 1
+                continue
+            if row.model_name in ARCHIVE_INSTEAD_OF_DELETE:
+                users.append(row.label or record.display_name)
+                continue
+            per_model[row.model_name] = per_model.get(row.model_name, 0) + 1
+        names = {m.model: m.name for m in self.env['ir.model'].sudo().search(
+            [('model', 'in', list(per_model))])}
+        return {
+            'total': sum(per_model.values()),
+            'per_model': [
+                {'model': model_name,
+                 'label': names.get(model_name, model_name),
+                 'count': count}
+                for model_name, count in sorted(per_model.items(),
+                                                key=lambda kv: -kv[1])],
+            'users': users,
+            'gone': gone,
+        }
 
     def remove_demo(self):
-        """Walk the register backwards and unlink. Returns `(removed, blocked)`.
+        """Walk the register backwards and unlink.
+
+        Returns `(removed, switched_off, blocked)`.
 
         BACKWARDS BECAUSE CREATION ORDER IS DEPENDENCY ORDER. A contract is made
         after the employee it belongs to and an asset handover after both, so
@@ -259,17 +545,36 @@ class PbDemoSeed(models.Model):
         statement poisons the whole transaction unless it is fenced.
         """
         self.ensure_one()
-        removed, blocked = 0, []
+        removed, switched_off, blocked = 0, 0, []
+        done_rows = self.env['pb.demo.record']
         self._release_before_removal()
         rows = self.record_ids.sorted(key=lambda r: (r.sequence, r.id),
                                       reverse=True)
         for row in rows:
+            record = row._record()
+            if row.model_name in ARCHIVE_INSTEAD_OF_DELETE:
+                # A LOGIN IS SWITCHED OFF, NOT DELETED. Everything it ever
+                # approved, wrote or was told about still names it.
+                if record.exists() and record.active:
+                    try:
+                        with self.env.cr.savepoint():
+                            record.sudo().write({'active': False})
+                        switched_off += 1
+                    except Exception as exc:       # noqa: BLE001
+                        blocked.append('%s — %s' % (
+                            row.label or row.model_name,
+                            self._why_blocked(exc)))
+                        _logger.info("pb_demo_seed: could not switch off "
+                                     "%s(%s): %s",
+                                     row.model_name, row.res_id, exc)
+                        continue
+                done_rows |= row
+                continue
             if row.model_name in PROTECTED_MODELS:
                 _logger.warning(
                     "pb_demo_seed: refusing to remove a %s; the register "
                     "should never have held one.", row.model_name)
                 continue
-            record = row._record()
             if not record.exists():
                 continue
             try:
@@ -281,11 +586,15 @@ class PbDemoSeed(models.Model):
                     row.label or row.model_name, self._why_blocked(exc)))
                 _logger.info("pb_demo_seed: could not remove %s(%s): %s",
                              row.model_name, row.res_id, exc)
+        # A SWITCHED-OFF LOGIN'S ROW GOES TOO, because the register's job on
+        # it is finished. Leaving it would keep the panel for ever "loaded"
+        # over a list on which there is nothing left to do.
+        done_rows.unlink()
         self.record_ids.filtered(lambda r: not r._record().exists()).unlink()
         if not self.record_ids:
             self.sudo().write({'state': 'empty', 'loaded_on': False,
                                'loaded_by': False, 'summary': False})
-        return removed, blocked
+        return removed, switched_off, blocked
 
     def _release_before_removal(self):
         """Undo the two states that REFUSE to be deleted, before walking.
@@ -400,6 +709,9 @@ class PbDemoSeed(models.Model):
             'res_model': 'pb.demo.record',
             'view_mode': 'list',
             'domain': [('seed_id', '=', self.id)],
+            # R125: a hand-built act_window dict must carry `views`, or the
+            # client throws before the screen is ever drawn.
+            'views': [[False, 'list']],
             'context': {'search_default_group_by_model': 1},
         }
 
@@ -430,8 +742,17 @@ class SeedContext:
         self.today = fields.Date.context_today(seed)
         self.registered = []
         self._seen = set()
-        self._sequence = 0
-        self._late = 0
+        # CARRY ON FROM WHAT THE REGISTER ALREADY HOLDS. A panel whose last
+        # removal was blocked still has rows on it, and starting again at one
+        # would interleave this load's records with the leftovers — which is
+        # the one thing the order is for.
+        Row = seed.env['pb.demo.record'].sudo()
+        self._sequence = Row.search([('seed_id', '=', seed.id)],
+                                    order='sequence desc', limit=1).sequence or 0
+        self._sequence = max(self._sequence, 0)
+        self._late = Row.search([('seed_id', '=', seed.id)],
+                                order='sequence asc', limit=1).sequence or 0
+        self._late = min(self._late, 0)
         self._named = {}
         self._counts = {}
 
@@ -523,41 +844,27 @@ class SeedContext:
         would be removed first — and Odoo refuses to delete a contact while an
         employee points at it. Giving it a sequence below zero puts it at the
         end of the backwards walk, where it belongs.
+
+        A row may already be here from a load whose removal was blocked — a pay
+        run holding an employee down, say — so the WRITER dedups, and it is the
+        same writer the public `register()` door uses. Two ways of putting a
+        row on the register would be two sets of rules about what may be on it.
         """
         for one in record:
             if (one._name, one.id) in self._seen:
                 continue
             self._seen.add((one._name, one.id))
-            # A row may already be here from a load whose removal was blocked —
-            # a pay run holding an employee down, say. Registering it twice
-            # would make the register describe one record as two.
-            if self.env['pb.demo.record'].sudo().search_count([
-                    ('seed_id', '=', self.seed.id),
-                    ('model_name', '=', one._name),
-                    ('res_id', '=', one.id)]):
-                continue
             if last:
                 self._late -= 1
                 sequence = self._late
             else:
                 self._sequence += 1
                 sequence = self._sequence
-            self.env['pb.demo.record'].sudo().create({
-                'seed_id': self.seed.id,
-                'sequence': sequence,
-                'model_name': one._name,
-                'res_id': one.id,
-                'label': label or self._label(one),
-            })
+            if not self.seed._register_row(one, sequence, label=label):
+                continue
             self.registered.append((one._name, one.id))
             self._counts[one._name] = self._counts.get(one._name, 0) + 1
         return record
-
-    def _label(self, record):
-        try:
-            return (record.display_name or '')[:120] or record._name
-        except Exception:                          # noqa: BLE001
-            return record._name
 
     # -- remembering ---------------------------------------------------
     def set(self, key, value):

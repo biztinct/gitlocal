@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Data',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'summary': 'Load a small, complete, believable demo world — and take it out '
                'again without leaving a trace.',
@@ -27,13 +27,22 @@ as it is made, and "Remove demo data" walks that register backwards and takes
 them out. It deletes nothing it did not create — not by matching on a name, not
 by guessing, but because it wrote the list itself.
 
-Nothing here is specific to one customer. The world is described by a PROFILE;
-`rize_vn` is the one that ships, and a second tenant is a second profile rather
-than a second module.
+Records the PRODUCT made for a demo — the ones somebody created on a screen
+while showing it off — go on a register of their own, so they can be taken out
+the same way.
+
+Nothing here is specific to one customer. The world is described by a PROFILE,
+and a second tenant is a second profile rather than a second module.
 """,
     'author': 'Payobook',
     'website': 'https://payobook.com',
     'license': 'LGPL-3',
+    # WHAT THE WORLD IS BUILT OUT OF, and nothing else. The Vietnam payroll
+    # mapping is deliberately NOT here: `seeds/people.py` writes its fields
+    # only where the model actually has them (`if name in Employee._fields`),
+    # so a database without it gets a demo world with no payroll facts rather
+    # than no demo world at all — and this module can then be installed on a
+    # database that does not carry the mapping.
     'depends': [
         'pb_settings',
         'pb_lifecycle',
@@ -47,7 +56,6 @@ than a second module.
         'pb_budget',
         'pb_contract_lifecycle',
         'pb_offboarding',
-        'pb_payroll_mapping_vn',
     ],
     'data': [
         'security/ir.model.access.csv',

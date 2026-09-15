@@ -83,9 +83,12 @@ def remove(env):
     if seed.state != 'loaded':
         print('Nothing loaded.')
         return seed
-    removed, blocked = seed.remove_demo()
+    removed, switched_off, blocked = seed.remove_demo()
     env.cr.commit()
     print('Removed %s records.' % removed)
+    if switched_off:
+        print('Switched off %s login(s) rather than deleting them.'
+              % switched_off)
     if blocked:
         print('Could not remove %s:' % len(blocked))
         for line in blocked:

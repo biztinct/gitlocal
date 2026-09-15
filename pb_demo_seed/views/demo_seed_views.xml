@@ -13,14 +13,23 @@
         <field name="arch" type="xml">
             <form string="Demo data">
                 <header>
+                    <!--
+                      NO LOAD BUTTON ON AN ADOPTED PANEL. There is nothing to
+                      build: it holds records the product made while somebody
+                      was demonstrating a screen. A button that would do
+                      nothing is worse than no button.
+                    -->
                     <button name="action_load" type="object"
                             string="Load demo data" class="btn-primary"
-                            invisible="state == 'loaded'"
+                            invisible="state == 'loaded' or profile == 'adopted'"
                             confirm="This creates five demo people and the records around them. Continue?"/>
+                    <button name="action_preview_remove" type="object"
+                            string="What would be removed" class="btn-secondary"
+                            invisible="state != 'loaded'"/>
                     <button name="action_remove" type="object"
                             string="Remove demo data" class="btn-secondary"
                             invisible="state != 'loaded'"
-                            confirm="This permanently removes everything the demo load created. Continue?"/>
+                            confirm="This permanently removes every record on the list below. Logins are switched off rather than deleted. Continue?"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="empty,loaded"/>
                 </header>
@@ -36,9 +45,19 @@
                         out exactly those records and nothing else.
                     </div>
                     <div class="alert alert-warning" role="status"
-                         invisible="state != 'loaded'">
+                         invisible="state != 'loaded' or profile == 'adopted'">
                         Demo data is loaded. Do not use this on a database that
                         is already live with real people unless you mean to.
+                    </div>
+                    <div class="alert alert-info" role="status"
+                         invisible="profile != 'adopted'">
+                        These are records the app itself made while somebody was
+                        showing it off — demo requests, demo candidates, demo
+                        people. Nothing here was built by a demo world, so there
+                        is nothing to load. <b>Remove demo data</b> takes out
+                        exactly the records listed below; demo logins are
+                        switched off rather than deleted, so the history that
+                        names them still reads properly.
                     </div>
                     <group>
                         <group>

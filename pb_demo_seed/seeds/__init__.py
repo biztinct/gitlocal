@@ -12,7 +12,11 @@ from . import org, people, assets, journeys, contracts_exits, programs
 
 PROFILES = {
     'rize_vn': {
-        'label': 'Rize Vietnam — five people, five stories',
+        # THE KEY IS ENGINEERING, THE LABEL IS THE SCREEN. The key is stored
+        # in a `noupdate` row on every database that has ever loaded this
+        # world, so renaming it would orphan those panels; the label is what a
+        # person reads and carries no customer's name.
+        'label': 'DEMO Vietnam — five people, five stories',
         'builders': [
             org.build,
             people.build,
@@ -21,5 +25,14 @@ PROFILES = {
             journeys.build,
             contracts_exits.build,
         ],
+    },
+    # NO BUILDERS ON PURPOSE. This world is not built, it is adopted: the
+    # records already exist because the product made them while somebody was
+    # testing a screen, and `pb.demo.seed.register()` hands them over. It is
+    # still a world for the removal's purposes — one register, one backwards
+    # walk, one button.
+    'adopted': {
+        'label': 'Records adopted from the product',
+        'builders': [],
     },
 }
