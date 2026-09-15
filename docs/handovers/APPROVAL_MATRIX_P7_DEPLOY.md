@@ -15,7 +15,7 @@ this is only the payload.
 | Module | Version | Action | Why it is in the wave |
 |---|---|---|---|
 | `biz_approval_workflow` | 19.0.1.5.0 | `-u` | **the proposal mixin.** A change written down before anybody may make it: snapshot re-check, the permission the original door required, the audit line, the fast lane. Plus the Vietnamese for every P1 refusal string |
-| `pb_approval_config` | 19.0.1.5.0 | `-u` | the "Letters to people" catalogue row, two new responsibilities, **the spreadsheet importer** and its review screen; the `end-` relay |
+| `pb_approval_config` | 19.0.1.5.1 | `-u` | the "Letters to people" catalogue row, two new responsibilities, **the spreadsheet importer** and its review screen; the `end-` relay; the inbox's team scope; **a second migration that finishes two half-laid routes** (§3) |
 | `pb_hr_payroll_formula` | 19.0.1.131.0 | `-u` | **four proposal records**: statutory, mappings, the scheme map, demo data. Plus `action_publish` on a legislation pack and the gate on its raw `state` write |
 | `pb_statutory` | 19.0.1.3.0 | `-u` | the two config wizards gain the payroll-manager permission they never had, and propose |
 | `pb_hr_payroll_vietnam` | 19.0.1.2.0 | `-u` | tax bands, insurance policy, insurance adjustment — all four doors propose |
@@ -35,6 +35,8 @@ this is only the payload.
 | `pb_comp_ben` | 19.0.1.4.0 | `-u` | **reopening a pay month**, with a reason |
 | `pb_hr_fullandfinal` | 19.0.1.2.0 | `-u` | **final settlements** gain a status, and cannot be printed until approved |
 | `pb_govt_reports` | 19.0.1.2.0 | `-u` | **statutory filings.** The module had no permission check at all; now it has one, and a route |
+| `pb_hr_workforce` | 19.0.4.17.0 | `-u` | **one line, and it matters:** the line manager an overtime route names can now carry out their own decision (§2a) |
+| `pb_blueprint` | 19.0.1.9.3 | `-u` | the guided setup's tax-band editor writes through instead of proposing mid-journey (§2a) |
 
 **One `-u` does most of it**, as in P5 and P6: every module above depends,
 directly or through the chain, on `biz_approval_workflow`, so
@@ -95,6 +97,42 @@ the wave, because somebody will meet a refusal they have never seen:
    asked for a manager. It now asks for the manager, which is what reopening a
    day has always required.
 
+### 2a. Five more behaviour changes, found while the suites ran
+
+These are not in the tables above because they are not new routes. Each one is
+a fix to something Phases 6 and 7 had already changed, and each is worth
+knowing before the wave.
+
+1. **An overtime route's line manager can carry out their own decision.** The
+   record rule on `hr.overtime.request` lets a plain attendance officer write
+   only their OWN rows, while the default route's one rung is "their
+   manager" — so a supervisor decided and the ORM then refused them the write.
+   The apply now carries the engine's authority, AFTER `_ot_can_decide` (this
+   product's own rule: the officer/manager tier, or the employee's own line
+   manager) has said yes. **Consequence for the wave: nothing to configure. It
+   was broken for every company and is not any more.**
+2. **A route may skip a conditional rung.** `chain_shim._advance_state` used
+   to re-check the consumer's own transition table, which refused a route that
+   legitimately went from one rung to the last. Affects all eleven chain
+   consumers; nothing to configure.
+3. **"My team" in the inbox now means "about my people OR waiting on a seat of
+   mine".** Most people a line manager approves for clock in on a badge and
+   have no login, so `subject_user_ids` could not reach them and a
+   supervisor's dock was empty while their seat sat on every request in it.
+   **Tell the supervisors: the Workforce dock now has things in it.** It is
+   still a read; every decision goes through the engine.
+4. **A correction on a day locked between submit and approve leaves the
+   correction `submitted`, the request `approved`, and the reason in words on
+   the request** — where before Phase 6 it wrote `refused` on the record. That
+   is better and deliberate: the approval stands and the correction can be
+   carried out the moment somebody reopens the day
+   (`biz.approval.engine.retry_apply`). Nobody has to do anything; a support
+   question about "my correction says submitted" is answered by the request.
+5. **The guided setup's tax-band editor is not held.** A rate table on a live
+   scheme travels the statutory route; one written inside the Blueprint
+   journey does not, because the scheme's own activation is the gate (Phase 4)
+   and a route in the middle of a setup wizard is a dead end.
+
 **Two responsibilities are new**: **Finance controller** and **Platform
 owner**. Both are seeded from whoever holds the group the job was done by —
 check them, because the person a group happens to list first is not
@@ -118,6 +156,7 @@ necessarily the person the business means.
 | `pb_hr_fullandfinal .../19.0.1.2.0/post-fnf_route.py` | **marks every EXISTING settlement `approved`** (they were produced and mostly paid; the new column defaults to "being prepared", so without this a historical settlement would read as about to happen and could no longer be printed), then the settlement route |
 | `pb_govt_reports .../19.0.1.2.0/post-filing_route.py` | the filing route |
 | `pb_approval_config .../19.0.1.5.0/end-p7_adapters.py` | **an `end-` script, and that is the point** (ledger AM75): the duck-typed relay that asks every adapter in the registry for its default route, after the whole graph is loaded |
+| `pb_approval_config .../19.0.1.5.1/end-heal_half_laid.py` | **finishes two routes a bug left half-laid.** Two adapters' definitions were refused during the build (a related Selection read as a callable, and a manager step on a process that said it had no manager mode), and the seeder left a workflow and a draft with no binding. Both causes are fixed and the seeder no longer leaves anything behind; this goes back for the ones already written down. Log the query first if you want to see them: `SELECT p.key FROM biz_approval_workflow w JOIN biz_approval_workflow_version v ON v.workflow_id=w.id JOIN biz_approval_process p ON p.id=w.process_id WHERE v.status='draft' AND NOT EXISTS (SELECT 1 FROM biz_approval_binding b WHERE b.workflow_id=w.id AND b.active)` |
 | each module's `post_init_hook` | the same seeds, on a FRESH install, where no migration runs at all |
 | `res.company.create` | a company made later gets all fourteen |
 
@@ -467,8 +506,30 @@ sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf \
 ```
 
 `--test-enable` only runs tests for modules it installs/updates, so the
-cascade is what gives the coverage. Expect the suite counts recorded in each
-phase report.
+cascade is what gives the coverage. What P7 closed with, on the local runtime,
+is the bar to reproduce:
+
+| Suite | Result |
+|---|---|
+| `biz_approval_workflow` | 48 / 48 |
+| `pb_approval_config` | 101 / 101 |
+| `pb_hr_payroll_formula` | 451 / 451 |
+| `pb_tenants` | 377 / 379 — the two `TestAlerts` t8 capacity cases read `/proc/meminfo` and cannot pass on macOS (ledger AM122); they pass on the Linux box |
+| `pb_pay` | 117 / 117 |
+| `pb_close` | 104 / 104 |
+| `pb_hr_workforce` | 42 / 42 |
+| `pb_mission` | 54 / 54 |
+| `pb_payruns` | 60 / 60 |
+| `pb_scheme_map` | 30 / 30 |
+| `pb_timeoff` | 13 / 13 |
+| `pb_assets` | 10 / 10 |
+| `pb_govt_reports` | 8 / 8 |
+| `pb_probation` | 5 / 5 |
+
+**Before a round of suites, refresh the template** (ledger AM116): a phase that
+adds models to modules other than the one under test leaves every clone
+without those tables, and the failures land in modules nobody touched.
+`createdb -T am_tpl am_tpl_bak && odoo-bin … -d am_tpl -u all`.
 
 ## 7.9 The order of the walk, once it is up
 
