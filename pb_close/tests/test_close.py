@@ -110,8 +110,10 @@ class TestCloseBoard(CloseCase):
             'company_id': self.company.id})
         req.action_submit()
         self.assertIn('ot_pending', self._flags(self._data(), self.emp))
-        # …and once decided it stops flagging
-        req.action_approve()
+        # …and once decided it stops flagging. Overtime is decided by the
+        # person's own manager, which is who the route asks (ledger AM100:
+        # this suite is about the board, so it acts as that person).
+        req.with_user(self.line_manager).action_approve()
         self.assertNotIn('ot_pending', self._flags(self._data(), self.emp))
 
     def test_a_pending_ot_on_an_otherwise_empty_day_still_surfaces(self):
@@ -347,7 +349,7 @@ class TestCloseBoard(CloseCase):
             'actual_hours': 2.0, 'reason': 'x',
             'company_id': self.company.id})
         req.action_submit()
-        req.action_approve()
+        req.with_user(self.line_manager).action_approve()
 
         h = self._data()['handoff']
         self.assertAlmostEqual(h['regular'], 8.0, places=2)

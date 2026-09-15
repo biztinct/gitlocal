@@ -324,9 +324,31 @@ class TestWfLock(CloseCase):
         # Decided by the person's own manager, which is who the route asks.
         corr.with_user(self.line_manager).action_approve()   # must NOT raise
 
-        self.assertEqual(corr.state, 'refused')
-        self.assertTrue(corr.apply_error)
-        self.assertIn('closed', corr.apply_error)
+        # WHERE THE REFUSAL LANDS MOVED IN PHASE 6, AND IT MOVED FORWARD.
+        #
+        # This case used to assert `refused` + `apply_error` on the record,
+        # because the model applied its own correction in a savepoint. The
+        # correction now applies when the ROUTE says yes, inside the engine's
+        # savepoint, and the adapter deliberately raises rather than writes —
+        # anything written there would be rolled back with the exception
+        # (`pb_attendance_flow/models/attendance_correction_approval.py`).
+        #
+        # What the case is really about is unchanged and still asserted: the
+        # press does not raise, so an approver clearing a batch is not stopped
+        # by one closed day; and nothing was written to a locked day. What is
+        # BETTER is the end state — the approval stands, the reason is
+        # recorded in words on the request the approver is looking at, and the
+        # correction is still `submitted` rather than dead, so it can be
+        # carried out the moment somebody reopens the day. `refused` was a
+        # dead end; this is a queue.
+        request = corr.approval_request_id
+        self.assertTrue(request, 'the correction should have a request')
+        self.assertEqual(request.state, 'approved')
+        self.assertTrue(request.block_reason,
+                        'the approver must be told why it did not happen')
+        self.assertIn('closed', request.block_reason)
+        self.assertEqual(corr.state, 'submitted',
+                         'a correction that could not be applied is not dead')
         self.assertFalse(self.Att.sudo().search_count([
             ('employee_id', '=', self.emp.id),
             ('check_in', '>=', datetime.combine(self.day, time.min)),
@@ -383,7 +405,9 @@ class TestWfLock(CloseCase):
         req = self._ot(day=self.day2)
         req.action_submit()
         self.assertEqual(req.state, 'submitted')
-        req.action_approve()
+        # Overtime is decided by the person's own manager (ledger AM100: this
+        # suite is about the lock, so it acts as the person the route asks).
+        req.with_user(self.line_manager).action_approve()
         self.assertEqual(req.state, 'approved')
 
     def test_a_no_op_transition_is_not_refused(self):
@@ -391,7 +415,7 @@ class TestWfLock(CloseCase):
         have transitioned anyway would be a lie about what was blocked."""
         req = self._ot(day=self.day2)
         req.action_submit()
-        req.action_approve()
+        req.with_user(self.line_manager).action_approve()
         self._lock(day=self.day2)
         req.action_submit()                # already approved → no-op, no raise
         self.assertEqual(req.state, 'approved')
