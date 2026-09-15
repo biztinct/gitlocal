@@ -185,13 +185,23 @@ the adapter module depends on `biz_approval_workflow` only, never on
 `pb_approval_config` (AM52). Escalation "after N days" is the engine's
 delegation/escalation, configured on the route — not a bespoke cron.
 
-### B2. Credentials — an owner input the new session must ask for on day one
+### B2. Credentials — READY, nothing to ask the owner
 
-The new session cannot log in. The owner must EITHER give the current
-`ash@biztinct.com` password (used only to reset a validator, never to test
-with), OR authorise re-activating uid 2065:
-`UPDATE res_users SET active=true WHERE id=2065;` (password still
-`RizeP0!2026`; deactivate again at close). Prompt 1 asks for this.
+The owner ruled on 2026-09-15: re-use the wave-1 validator. It was
+re-activated, its password reset (it had been changed when the account was
+retired) and it was given the permissions the five areas need — all done and
+verified by API login the same day:
+
+- **`igc1.validator` / `RizeP0!2026`** (uid 2065) on `payobook` — system
+  administrator plus: HR manager, leave manager, attendance manager,
+  recruitment manager + user, E-Learning manager + officer, contract manager,
+  website designer, formula manager, lifecycle manager, head of pay
+  (16 groups). If a phase needs one more, grant it and record it in the
+  ledger; do not create another login.
+- **Archive it at close**: `active = False` on uid 2065 is the last step of
+  the closeout, and the closeout says so.
+- The owner's own login (`ash@biztinct.com`) is never used for testing and
+  its password is not known to this programme.
 
 ---
 
@@ -480,11 +490,10 @@ fonts, light+dark) — with, per tab: the requirement rows from the sheet, what
 exists today, what gets built, where it appears on screen, the approval
 routes, the switches. Show it to me. I will approve or trim; then start A1.
 
-Credentials: I will give you EITHER the current ash@biztinct.com password
-(use it only to re-activate a validator, never to test with) OR permission to
-run  UPDATE res_users SET active=true WHERE id=2065;  on payobook so that
-igc1.validator / RizeP0!2026 works again. Ask me for one of these now, before
-Step 0, and deactivate the validator again at the end.
+Credentials: test as igc1.validator / RizeP0!2026 on payobook (uid 2065,
+already re-enabled and given the permissions for all five areas — handover
+Part B2). Never use my own login. Archive uid 2065 as the last step of the
+closeout.
 
 Standing rules, every phase, verbatim in every handover: white-label (never
 "Odoo" in anything a user sees); plain English on screen and in every
