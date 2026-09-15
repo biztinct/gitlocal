@@ -213,7 +213,7 @@ without owner approval between them.
 | Phase | Module(s) | Status |
 |---|---|---|
 | A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
-| A2 | pb_hiring — the interview loop | not started |
+| A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
 | A3 | pb_hiring — BGV, offer, closure, analytics | not started |
 | E1–E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
@@ -1382,3 +1382,107 @@ without owner approval between them.
   responsibility seats (both were the owner's account and are the owner's
   again). All five pre-existing test logins read group-for-group identical
   to before. Every test mail was cancelled in the same script that sent it.
+
+### A2 (pb_hiring, 2026-09-15/16)
+
+- **R143 — A `default` ON A STORED COMPUTE MEANS THE COMPUTE NEVER RUNS.**
+  `kind` was `default='interview'` with `compute=…, store=True,
+  readonly=False`. A stored compute that is `readonly=False` is skipped
+  whenever a value is supplied — and a default supplies one on *every single
+  create*. So `step_id` was read, `_compute_kind` never fired, and a final
+  conversation booked against the "Final conversation" step read back as an
+  ordinary interview. The debrief then refused to open on the one round it
+  exists for, with a perfectly sensible refusal about the round being the
+  wrong kind. Nothing anywhere said the kind had been ignored. **Remove the
+  default; then, because the field is `required=True` and has no value at
+  insert time, add `precompute=True`** — without it the compute runs AFTER the
+  INSERT and Postgres refuses the row on the not-null constraint. The same
+  shape bit `round_no` in its plain-Integer form: `default=1` meant `create`
+  could never tell "nobody has said" from "somebody said one", `_next_round()`
+  never ran, and **every round of every candidate read "Round 1"** — the one
+  number the model exists to keep. Zero is the absence; `create` fills it in.
+  (R101 from the other direction: there a required field with a default could
+  not tell a guess from a statement; here it cannot tell a default from an
+  answer.)
+- **R144 — `message_post` ESCAPES A PLAIN STRING BODY.** The "everybody has
+  answered" summary was assembled with `<br/>` inside a `_()` sentence and
+  reached the chatter as the four characters `&lt;br/&gt;`, so three opinions
+  rendered as one run-on line with the markup visible in it. R51 says `t-out`
+  escapes a plain string and only renders `markup()` raw; this is the same
+  rule on the WRITING side and it applies to every `message_post` in the
+  codebase. Build the body with `markupsafe.Markup`, and interpolate with
+  `Markup('%s') % value` so each value is still escaped — a panel member
+  called `Nguyễn <script>` must not be able to inject anything into a chatter
+  a whole hiring team reads.
+- **R145 — RFC 5545 FOLDS AT 75 OCTETS, so a plain `in` test fails over a
+  perfectly good calendar file.** `build_ics` folds correctly (it has to —
+  some clients refuse an unfolded file), which splits a long address across
+  two lines with a leading space: `…candidate@examp\r\n le.com`. An assertion
+  that greps the raw bytes for an address therefore fails on exactly the
+  invitations that are longest and most worth checking. Unfold with
+  `raw.replace('\r\n ', '')` before matching, and assert the folding itself
+  separately rather than tolerating it.
+- **R146 — THE ICON GATE MUST READ THE OBJECT-LITERAL MAPS, or it checks half
+  the icons.** A1's gate matched `icon: "…"` and a `//icon` trailing comment
+  and so never saw `SCREEN_ICON = { rejected: "xCircle", … }` — which shipped
+  against a registry that did not have `xCircle`. `ic()` falls back to a plain
+  circle with no error, so the "Not this time" screening button has been
+  drawing a blank circle since A1 and nothing reported it. The gate now parses
+  every `*_ICON` map in the board file as well.
+- **R147 — THE SHARED ICON REGISTRY ON THE SERVER CAN BE OLDER THAN THE
+  REPO'S, and a module that deploys only itself never notices.** `pb_hiring`
+  deploys `pb_hiring`; `pb_import_kit` on the live box was still nine icons
+  behind the repo (`workflow bell paperclip flag repeat circleDot ban minus
+  xCircle` — a purely additive block the Approval Matrix programme committed
+  and never deployed). A local check of icon names against the REPO passes and
+  the live screen still draws blank circles. **Check against the installed
+  copy** — which is what a test running on the server does, and is why the
+  gate above belongs in the test suite rather than in a pre-deploy script.
+  Repaired by rsyncing that one file (additive, JS-only, no `-u`); the tree is
+  otherwise byte-identical. Worth a sweep of the other shared modules.
+- **R148 — the reminder job matches a WINDOW, not a threshold.** "Start is
+  less than a day away" fires on every interview in the next twenty-four
+  hours, every ten minutes, for ever — only the stamp would stop it, and a
+  stamp is then a repair rather than a design. `[now+23h50, now+24h10]` and
+  `[now+25m, now+35m]` ask the honest question and the stamp is belt as well
+  as braces. Proven live both ways: one mail each to four people, then nothing
+  on the second pass.
+- **R149 — 24 WORKING hours is a different answer from 24 hours, and the
+  difference is days.** `resource.calendar.plan_hours(24, stop,
+  compute_leaves=True)` on company 5's calendar turned an interview finishing
+  Wednesday 17:45 local into a Monday deadline — because Wednesday evening,
+  Thursday, Friday and Monday is where twenty-four working hours actually
+  land. A plain `+24h` would have asked a Friday panel to answer on a
+  Saturday. `plan_hours` takes and returns NAIVE UTC (`localized()` attaches
+  UTC, `to_timezone(None)` strips it again), so the ORM's own datetimes go
+  straight in. A company with no `resource_calendar_id` is answered honestly
+  with plain hours AND a log line — never a guessed working week.
+- **R150 — the stock calendar needs BOTH silencers, and they guard different
+  things.** `dont_notify` stops the alarm setup in
+  `calendar_event.create` (:725) and `no_mail_to_attendees` stops the attendee
+  mail in `calendar_attendee._notify_attendees` (:140). Creating the event
+  with only one of them still lets a branded invitation out. Asserted by
+  counting new `mail.mail` rows whose model is `calendar.event` or
+  `calendar.attendee` and requiring zero — on scheduling AND on a reschedule,
+  because the reschedule writes to the event too.
+- **R151 — ⌘K and Settings numbers after A2.** A2 stayed inside A1's **3500**
+  block: `hiring_interviews` **3550** ("Interviews this week"),
+  `hiring_feedback` **3560** ("Feedback owed"). B1 still starts at **3600**.
+  The Hiring settings category (sequence 40) now has TWO cards — "Hiring
+  rules" and "What a panel scores on" — so `soleCard` no longer applies and it
+  draws its own section page, which is correct for a category with two real
+  things in it.
+- **R152 — the A2 test cast and what was put back.** Test data stays and is
+  named "RIZE W2 …" (D9). **No group was granted to anybody**: every live
+  action was taken as `rize.w2.recruiter@example.com` (uid 4446), which keeps
+  `pb_hiring.group_hiring_user` from A1 (R142) and whose ACL already allows
+  everything this phase needs — verified group-for-group against a snapshot
+  taken before the first write, all six accounts identical. No password was
+  reset either; `RizeW2!2026`, `RizeP4!2026`, `RizeP8!2026` and `RizeP0!2026`
+  all still worked. New: three candidates **175–177** on job 147
+  (`rize.w2.thao@`, `rize.w2.khoa@`, `rize.w2.hanh@example.com`), seven
+  interviews **77–83** on requisition 56, their opinions, one reschedule and
+  one no-show; requisition 56 was given recruiter 4446 and its steps 2 and 3
+  were pointed at the First/Second Interview stages (demo data). Every test
+  mail went to an `@example.com` address and was cancelled in the same
+  session; the outgoing queue is empty.
