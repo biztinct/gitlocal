@@ -68,6 +68,38 @@ class PbSchemeMapProposal(models.Model):
                     'config_id': row.config_id.id if row else 0}
         return {}
 
+    # ------------------------------------------------------------ the rows
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        rows = []
+        if self.kind == 'attach':
+            kind, _sep, raw = str(payload.get('segment') or '').partition('-')
+            rows.append((_('Team or division'), '', self._row_label(
+                'hr.department' if kind == 'department' else 'pb.division',
+                raw)))
+            rows.append((_('Paid by'), '', self._row_label(
+                'hr.formula.config', payload.get('config_id'))))
+            rows.append((_('For which kind of run'), '',
+                         str(payload.get('cycle_type') or _('any'))))
+        elif self.kind in ('detach', 'map_delete'):
+            args = payload.get('args') or []
+            rows.append((_('Wiring to remove'), '', self._row_label(
+                'hr.formula.scheme.assignment',
+                payload.get('assignment_id') or (args[0] if args else 0))))
+            rows.append((_('What happens'), '',
+                         _('Those people stop being paid by that scheme')))
+        elif self.kind == 'accept_draft':
+            rows.append((_('Lines in the drafted map'), '',
+                         str(len(payload.get('rows') or []))))
+        elif self.kind == 'map_create':
+            args = payload.get('args') or [0, 0, 0, 0]
+            rows.append((_('Team'), '',
+                         self._row_label('hr.department', args[2])))
+            rows.append((_('Paid by'), '',
+                         self._row_label('hr.formula.config', args[3])))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _board(self):
         if 'pb.scheme.board' not in self.env:

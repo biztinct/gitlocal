@@ -90,6 +90,57 @@ class PbBandsProposal(models.Model):
             return {'amount': target.amount}
         return {}
 
+    # ------------------------------------------------------------ the rows
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        snapshot = self.snapshot() or {}
+        target = self._target()
+        rows = []
+        if target is not None:
+            rows.append((_('Band') if self.kind != 'guidance_cell'
+                         else _('Square'), '', target.display_name or ''))
+        if self.kind == 'move_edge':
+            side = _('Lowest') if payload.get('side') == 'min' \
+                else _('Highest')
+            rows.append((side, snapshot.get(payload.get('side') or 'min', ''),
+                         payload.get('amount')))
+        elif self.kind in ('set_range', 'save_band'):
+            values = payload.get('values') or payload
+            for key, label in (('min', _('Lowest')), ('mid', _('Middle')),
+                               ('max', _('Highest'))):
+                if key in values:
+                    rows.append((label, snapshot.get(key, ''), values[key]))
+            for key, label in (('min_amount', _('Lowest')),
+                               ('mid_amount', _('Middle')),
+                               ('max_amount', _('Highest'))):
+                if key in values:
+                    rows.append((label, snapshot.get(key[:3], ''),
+                                 values[key]))
+        elif self.kind == 'link_job':
+            rows.append((_('Job'), '', self._row_label(
+                'hr.job', payload.get('job_id'))))
+        elif self.kind == 'unlink_job':
+            rows.append((_('What happens'), '',
+                         _('That job stops being paid from this band')))
+        elif self.kind == 'accept_suggestion':
+            rows.append((_('Bands suggested'), '',
+                         str(len(payload.get('proposals') or []))))
+        elif self.kind == 'import':
+            rows.append((_('Bands in the file'), '',
+                         str(len(payload.get('rows') or []))))
+        elif self.kind == 'guidance_cell':
+            rows.append((_('Guidance'), snapshot.get('pct', ''),
+                         payload.get('pct')))
+        elif self.kind == 'guidance_default':
+            rows.append((_('What happens'), '',
+                         _('A guidance grid is created and used by every '
+                           'review from now on')))
+        elif self.kind == 'limit':
+            for key, value in sorted((payload.get('values') or {}).items()):
+                rows.append((str(key), snapshot.get(key, ''), value))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _bands(self):
         return self.env['pb.pay.bands'].with_context(**{BANDS_WRITE: True})

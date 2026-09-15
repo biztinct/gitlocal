@@ -92,6 +92,46 @@ class PbMappingProposal(models.Model):
             self.target_id).exists()
         return record or None
 
+    # ------------------------------------------------------------ the rows
+    _SCHEDULE_WORDS = {
+        'sync_frequency': 'How often it fetches',
+        'sync_weekday': 'Which day of the week',
+        'sync_day_of_month': 'Which day of the month',
+        'sync_time': 'At what time',
+    }
+
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        snapshot = self.snapshot() or {}
+        target = self._target()
+        rows = []
+        if target is not None:
+            rows.append((_('Connection') if self.kind != 'auto_map'
+                         else _('Mapping'), '', target.display_name or ''))
+        if self.kind == 'schedule':
+            for key, value in sorted((payload.get('values') or {}).items()):
+                rows.append((_(self._SCHEDULE_WORDS.get(key, key)),
+                             snapshot.get(key, ''), value))
+        elif self.kind == 'activate':
+            rows.append((_('Mappings waiting to be switched on'), '',
+                         str(snapshot.get('suggested', ''))))
+            rows.append((_('What happens'), '',
+                         _('Each one that resolves to a value starts '
+                           'feeding the payslip')))
+        elif self.kind == 'fetch_fields':
+            rows.append((_('What happens'), '',
+                         _('The source system is asked what fields it has, '
+                           'and a mapping row is made for each new one')))
+        elif self.kind == 'auto_map':
+            rows.append((_('What happens'), '',
+                         _('The mapping is pointed at the component whose '
+                           'name matches')))
+        elif self.kind == 'repair':
+            rows.append((_('Severed mappings to mend'), '',
+                         str(len(payload.get('mapping_ids') or []))))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _apply_schedule(self):
         target = self._target()
@@ -224,8 +264,7 @@ class HrIntegrationConnectorApproval(models.Model):
             return dict(answer.get('result') or {}, ok=True,
                         reference=answer.get('reference'))
         return dict(answer, ok=True, pending=True, promoted=0, tested=0,
-                    msg=_("Sent for approval — %s",
-                          answer.get('with_whom') or _('your approver')))
+                    msg=answer.get('message') or '')
 
     def action_fetch_available_fields(self):
         self.ensure_one()
@@ -242,8 +281,7 @@ class HrIntegrationConnectorApproval(models.Model):
         )
         answer = proposal.answer()
         message = _("The field list was read.") if answer.get('applied') \
-            else _("Sent for approval — %s",
-                   answer.get('with_whom') or _('your approver'))
+            else (answer.get('message') or '')
         return {
             'type': 'ir.actions.client', 'tag': 'display_notification',
             'params': {'message': message,
@@ -259,7 +297,7 @@ class HrIntegrationFieldMappingApproval(models.Model):
         self.ensure_one()
         if not _held(self.env) or self.target_rule_id:
             return super().action_auto_map()
-        self.env['pb.mapping.proposal'].propose(
+        proposal = self.env['pb.mapping.proposal'].propose(
             'auto_map',
             _("Point %s at a component", self.source_field or ''),
             payload={'mapping_id': self.id},
@@ -269,7 +307,14 @@ class HrIntegrationFieldMappingApproval(models.Model):
                    'schedule_changed': {'value': False, 'unit': ''}},
             target=self,
         )
-        return True
+        answer = proposal.answer()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {'message': answer.get('message') or '',
+                       'type': 'success' if answer.get('applied')
+                       else 'info'},
+        }
 
     def action_repair_severed(self):
         if not _held(self.env) or not self:

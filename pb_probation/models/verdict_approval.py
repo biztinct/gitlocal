@@ -89,6 +89,32 @@ class PbVerdictProposal(models.Model):
         manager = target.employee_id.sudo().parent_id.user_id
         return manager.ids
 
+    # ------------------------------------------------------------ the rows
+    def _proposal_rows(self):
+        self.ensure_one()
+        target = self._target()
+        payload = self.payload() or {}
+        args = payload.get('args') or {}
+        rows = [(_('Verdict'), '', self._proposal_kind_label())]
+        if target is not None:
+            if 'employee_id' in target._fields:
+                rows.append((_('About'), '',
+                             target.employee_id.display_name or ''))
+            rows.append((_('Record'), '', target.display_name or ''))
+        facts = self.facts() or {}
+        months = (facts.get('tenure_months') or {}).get('value')
+        if months:
+            rows.append((_('Months with the company'), '', months))
+        if args.get('extension_months'):
+            rows.append((_('Extended by'), '',
+                         _("%s month(s)", args['extension_months'])))
+        if args.get('improvements'):
+            rows.append((_('What has to improve'), '',
+                         str(args['improvements'])[:120]))
+        if payload.get('reason'):
+            rows.append((_('Reason'), '', str(payload['reason'])[:120]))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _carry_out(self):
         target = self._target()

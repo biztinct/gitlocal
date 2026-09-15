@@ -90,6 +90,19 @@ class PbDemoProposal(models.Model):
             return {'state': target.state}
         return {}
 
+    def _proposal_rows(self):
+        self.ensure_one()
+        target = self._target()
+        rows = [(_('What'), '', self._proposal_kind_label())]
+        if target is not None:
+            rows.append((_('Demo world'), '', target.display_name or ''))
+        rows.append((_('Is this a demo database?'), '', _('No')))
+        rows.append((_('What happens'), '',
+                     _('Demo people, contracts and payslips are written into '
+                       'this database') if self.kind != 'remove'
+                     else _('Every record that demo world made is removed')))
+        return rows
+
     def _apply_load(self):
         target = self._target()
         if not target:

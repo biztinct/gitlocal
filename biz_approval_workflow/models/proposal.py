@@ -311,8 +311,37 @@ class BizApprovalProposalMixin(models.AbstractModel):
             'with_whom': self.waiting_for(),
             'route': self.route_labels(),
             'block_note': self.block_note or '',
+            # THE ONE SENTENCE EVERY SCREEN PRINTS. A door that returns a
+            # proposal and a screen that still says "Policy created" is the
+            # worst kind of lie a control can tell — it is confident and it is
+            # wrong. The server says what happened, once, in words, so no
+            # screen has to work it out from an id that came back zero.
+            'message': self.answer_message(),
+            # What the app wants to say about who was asked — a backup taking
+            # a seat because the holder sent it in, or nobody being able to
+            # approve it yet. Warnings, never refusals.
+            'notes': [note.get('msg') or '' for note in
+                      (request.seat_notes or []) if request],
             'result': self.result(),
         }
+
+    def answer_message(self):
+        """What the screen says back, in one sentence.
+
+        Three outcomes and three sentences, because a single "if not ok"
+        branch always lies to one of them (ledger AM78).
+        """
+        self.ensure_one()
+        if self.applied:
+            return _("%s — done.", self._proposal_kind_label())
+        if self.block_note:
+            return _("%(what)s was approved but could not be carried out: "
+                     "%(why)s", what=self._proposal_kind_label(),
+                     why=self.block_note)
+        who = self.waiting_for()
+        if who:
+            return _("Sent for approval — %s", who)
+        return _("Sent for approval.")
 
     def waiting_for(self):
         """Whose desk this is on right now, in names."""
@@ -417,38 +446,60 @@ class BizApprovalProposalMixin(models.AbstractModel):
         self.ensure_one()
         return self._proposal_kind_label()
 
+    def _proposal_rows(self):
+        """What would change, in the words a person reads.
+
+        THE PAYLOAD IS NOT A SCREEN. It is the exact call the door would have
+        made — `{'args': {...}, 'tenant_ids': [3], 'typed': 'canaryco'}` — and
+        printing its keys gave an approver rows reading "args · 3 item(s)" and
+        "values · 12 item(s)". That is not a description of a decision; it is
+        a dump of an implementation, and an approver who cannot read what they
+        are agreeing to should not be agreeing to it.
+
+        Every concrete proposal answers this per `kind`, as a list of
+        ``(label, before, after)`` — `before` empty where there is nothing to
+        compare, which is most creates. The default is EMPTY on purpose: a
+        proposal that has not said what it is about shows its chips and its
+        reason and nothing else, rather than showing the wiring.
+        """
+        self.ensure_one()
+        return []
+
     def _approval_detail(self, request):
-        """What would change, as plainly as an opaque payload can be shown."""
+        """The drawer's small table: plain words, never the payload."""
         self.ensure_one()
         rows = []
-        snapshot = self.snapshot() or {}
-        for key, value in sorted((self.payload() or {}).items()):
-            if isinstance(value, (dict, list)):
-                shown = _("%s item(s)", len(value))
-            else:
-                shown = str(value)
-            before = snapshot.get(key)
+        for row in (self._proposal_rows() or [])[:40]:
+            label, before, after = (list(row) + ['', ''])[:3]
             rows.append({
-                'head': str(key)[:40],
+                'head': str(label)[:60],
                 'sub': '',
-                'cells': ['' if before is None else str(before)[:40],
-                          shown[:40]],
+                'cells': ['' if before in (None, False) else str(before)[:60],
+                          '' if after in (None, False) else str(after)[:60]],
                 'tone': 'on',
             })
-            if len(rows) >= 40:
-                break
         chips = [{'label': _('What'), 'value': self._proposal_kind_label()}]
         if self.scope_label:
             chips.append({'label': _('Where'), 'value': self.scope_label})
-        if not rows and not chips:
-            return None
+        if self.user_id:
+            chips.append({'label': _('Asked by'), 'value': self.user_id.name})
         return {
             'title': _('What would change'),
-            'columns': [_('Now'), _('Proposed')],
+            'columns': [_('Now'), _('Proposed')] if any(
+                r['cells'][0] for r in rows) else ['', _('Proposed')],
             'rows': rows,
             'chips': chips,
             'note': self.note or '',
         }
+
+    # -------------------------------------------------- a helper for rows
+    def _row_label(self, model, res_id, fallback=''):
+        """A record's own name, or a plain word when it has gone."""
+        self.ensure_one()
+        if not res_id or model not in self.env:
+            return fallback
+        record = self.env[model].sudo().browse(int(res_id)).exists()
+        return record.display_name if record else fallback
 
     # -------------------------------------------------------- transitions
     def _approval_freeze(self, request):

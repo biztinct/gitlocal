@@ -67,6 +67,24 @@ class PbUnlockProposal(models.Model):
             ('state', '=', 'locked')])
         return {'still_closed': len(locked)}
 
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        days = payload.get('days') or []
+        facts = self.facts() or {}
+        rows = [(_('Days to reopen'), '', ', '.join(str(d) for d in days[:8]))]
+        if len(days) > 8:
+            rows.append((_('And more'), '', _("%s in all", len(days))))
+        rows.append((_('Still closed right now'), '',
+                     str((self.snapshot() or {}).get('still_closed', ''))))
+        if (facts.get('days_in_closed_payroll') or {}).get('value'):
+            rows.append((_('A finished pay run already covers these'), '',
+                         _('Yes — reopening them changes hours somebody has '
+                           'already been paid for')))
+        if payload.get('reason'):
+            rows.append((_('Reason'), '', str(payload['reason'])[:160]))
+        return rows
+
     def _apply_unlock(self):
         payload = self.payload()
         company_id = (self.company_id or self.env.company).id

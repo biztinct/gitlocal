@@ -69,6 +69,41 @@ class PbNewHireProposal(models.Model):
         'contract_type': {'type': 'char', 'label': 'Kind of contract'},
     }
 
+    # ------------------------------------------------------------ the rows
+    _PERSON_WORDS = {
+        'name': 'Name', 'job_title': 'Job title',
+        'work_email': 'Work email', 'work_phone': 'Work phone',
+        'wage': 'Monthly pay', 'date_start': 'Starts',
+        'date_end': 'Ends', 'account_number': 'Bank account',
+        'bank_name': 'Bank',
+    }
+    _PICKED = {'job_id': ('hr.job', 'Job'),
+               'department_id': ('hr.department', 'Team'),
+               'country_id': ('res.country', 'Country'),
+               'employee_id': ('hr.employee', 'Person'),
+               'struct_id': ('hr.payroll.structure', 'Salary structure'),
+               'structure_type_id': ('hr.payroll.structure.type',
+                                     'Kind of contract'),
+               'resource_calendar_id': ('resource.calendar',
+                                        'Working hours')}
+
+    def _proposal_rows(self):
+        self.ensure_one()
+        values = (self.payload() or {}).get('values') or {}
+        rows = []
+        for key, label in self._PERSON_WORDS.items():
+            if values.get(key) not in (None, '', False):
+                rows.append((_(label), '', values[key]))
+        for key, (model, label) in self._PICKED.items():
+            if values.get(key):
+                rows.append((_(label), '',
+                             self._row_label(model, values[key])))
+        if values.get('with_contract'):
+            rows.append((_('And a contract straight away'), '', _('Yes')))
+        if values.get('activate'):
+            rows.append((_('Contract starts in force'), '', _('Yes')))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _apply_employee(self):
         payload = self.payload()

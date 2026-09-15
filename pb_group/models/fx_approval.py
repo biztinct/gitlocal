@@ -81,6 +81,53 @@ class PbFxProposal(models.Model):
         values = (self.payload() or {}).get('values') or {}
         return {k: target[k] for k in sorted(values) if k in target._fields}
 
+    # ------------------------------------------------------------ the rows
+    _POLICY_WORDS = {
+        'presentation_currency_id': 'Reads in',
+        'fx_policy': 'Which rate to use',
+        'fiscal_start_month': 'Financial year starts in month',
+        'split_pay_policy': 'How a split payment is treated',
+    }
+
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        snapshot = self.snapshot() or {}
+        target = self._target()
+        rows = []
+        if self.kind == 'rate' and target is not None:
+            rows.append((_('Currency'), '', target.currency_id.name or ''))
+            rows.append((_('On'), '', str(target.name or '')))
+            for key, value in sorted((payload.get('values') or {}).items()):
+                rows.append((_('Rate') if key == 'rate' else str(key),
+                             snapshot.get(key, ''), value))
+        elif self.kind == 'policy':
+            values = payload.get('values') or {}
+            if target is not None:
+                rows.append((_('Group'), '', target.display_name or ''))
+            for key, label in self._POLICY_WORDS.items():
+                if key not in values:
+                    continue
+                before, after = snapshot.get(key, ''), values[key]
+                if key == 'presentation_currency_id':
+                    before = self._row_label('res.currency', before)
+                    after = self._row_label('res.currency', after)
+                rows.append((_(label), before, after))
+        elif self.kind == 'budget_upload':
+            rows.append((_('What it is for'), '',
+                         str(payload.get('budget_type') or '')))
+            rows.append((_('Financial year'), '', str(payload.get('fy') or '')))
+            rows.append((_('Total'), '', self.amount))
+        elif self.kind == 'budget_expense':
+            values = payload.get('values') or {}
+            rows.append((_('What the money was for'), '',
+                         str(values.get('name') or '')))
+            rows.append((_('Amount'), '', self.amount))
+            rows.append((_('When'), '', str(values.get('spend_date') or '')))
+            if values.get('supplier'):
+                rows.append((_('Supplier'), '', str(values['supplier'])))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _apply_rate(self):
         target = self._target()

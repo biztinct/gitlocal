@@ -60,6 +60,21 @@ class PbMonthProposal(models.Model):
         target = self._target()
         return {'state': target.state} if target is not None else {}
 
+    def _proposal_rows(self):
+        self.ensure_one()
+        target = self._target()
+        facts = self.facts() or {}
+        rows = [(_('Month'), '', target.display_name if target is not None
+                 else (facts.get('month') or {}).get('value', ''))]
+        rows.append((_('Status'), (self.snapshot() or {}).get('state', ''),
+                     _('Open again')))
+        runs = (facts.get('runs_done_in_month') or {}).get('value')
+        if runs:
+            rows.append((_('Pay runs already finished in it'), '', runs))
+        if self.note:
+            rows.append((_('Reason'), '', self.note[:160]))
+        return rows
+
     def _apply_reopen(self):
         target = self._target()
         if not target:

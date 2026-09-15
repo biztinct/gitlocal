@@ -93,6 +93,55 @@ class PbTenantProposal(models.Model):
         rows = Tenant.sudo().browse(ids).exists() if ids else Tenant
         return {'states': sorted('%s:%s' % (t.slug, t.state) for t in rows)}
 
+    # ------------------------------------------------------------ the rows
+    def _proposal_rows(self):
+        """Who it is about and what would happen to them, in words."""
+        self.ensure_one()
+        payload = self.payload() or {}
+        args = payload.get('args') or {}
+        rows = []
+        Tenant = self.env.get('pb.tenant')
+        names = []
+        if Tenant is not None:
+            names = [t.name or t.slug for t in Tenant.sudo().browse(
+                [int(i) for i in (payload.get('tenant_ids') or [])]).exists()]
+        if names:
+            rows.append((_('Customer') if len(names) == 1
+                         else _('Customers'), '', ', '.join(names[:6])))
+        rows.append((_('What'), '', self._proposal_kind_label()))
+        if self.kind == 'schedule_deletion' and args.get('days'):
+            rows.append((_('Their data may go after'), '',
+                         _("%s day(s)", args['days'])))
+        if self.kind == 'set_plan':
+            rows.append((_('New plan'), '',
+                         self._row_label('pb.plan', args.get('plan_id'))))
+            if args.get('trial'):
+                rows.append((_('As a trial'), '', _('Yes')))
+        if self.kind in ('rollout_start', 'rollout_abort'):
+            rows.append((_('Release'), '',
+                         self._row_label('pb.release', args.get('release_id'))
+                         or str(args.get('confirm') or '')))
+        if self.kind in ('features_bulk', 'feature_save'):
+            rows.append((_('Feature'), '',
+                         str(args.get('key')
+                             or self._row_label('pb.feature',
+                                                args.get('feature_id')))))
+            if 'on' in args:
+                rows.append((_('Switched'), '',
+                             _('on') if args['on'] else _('off')))
+        if self.kind == 'restore_staging':
+            rows.append((_('From the backup'), '',
+                         self._row_label('pb.tenant.backup',
+                                         args.get('backup_id'))))
+        if args.get('reason'):
+            rows.append((_('Reason'), '', str(args['reason'])[:120]))
+        if payload.get('typed'):
+            rows.append((_('Typed to confirm'), '', str(payload['typed'])))
+        if self.kind in DESTRUCTIVE:
+            rows.append((_('Can this be undone?'), '',
+                         _('No — this one cannot be taken back')))
+        return rows
+
     # --------------------------------------------------------- the applies
     def _svc(self, model):
         if model not in self.env:

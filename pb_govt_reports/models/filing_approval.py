@@ -56,6 +56,30 @@ class PbFilingProposal(models.Model):
         'period': {'type': 'char', 'label': 'Period'},
     }
 
+    # ------------------------------------------------------------- the rows
+    def _proposal_rows(self):
+        self.ensure_one()
+        payload = self.payload() or {}
+        facts = self.facts() or {}
+        rows = [
+            (_('Country'), '', str(payload.get('country') or '')),
+            (_('Which filing'), '', str(payload.get('filing_key') or '')),
+            (_('Period'), '', (facts.get('period') or {}).get('value', '')),
+        ]
+        values = payload.get('values') or {}
+        for key in ('date_from', 'date_to', 'submission_period'):
+            if values.get(key):
+                rows.append((_('From') if key == 'date_from'
+                             else _('To') if key == 'date_to'
+                             else _('Period'), '', values[key]))
+        if values.get('department_id'):
+            rows.append((_('Team'), '', self._row_label(
+                'hr.department', values['department_id'])))
+        rows.append((_('What happens'), '',
+                     _('The file is produced and kept, ready to send to the '
+                       'authority')))
+        return rows
+
     # ------------------------------------------------------------ the apply
     def _apply_filing(self):
         """Build the wizard again and press its own generate button."""

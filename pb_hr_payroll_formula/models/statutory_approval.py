@@ -128,6 +128,82 @@ class PbStatutoryProposal(models.Model):
             table_id).exists()
         return table or None
 
+    # ------------------------------------------------------------ the rows
+    #: The rate and ceiling fields, in the words the cockpit prints.
+    _FIELD_WORDS = {
+        'si_employer_rate': 'Social insurance · employer %',
+        'si_employee_rate': 'Social insurance · employee %',
+        'si_max_salary_ceiling': 'Social insurance · ceiling',
+        'hi_employer_rate': 'Health insurance · employer %',
+        'hi_employee_rate': 'Health insurance · employee %',
+        'hi_max_salary_ceiling': 'Health insurance · ceiling',
+        'ui_employer_rate': 'Unemployment · employer %',
+        'ui_employee_rate': 'Unemployment · employee %',
+        'ui_max_salary_ceiling': 'Unemployment · ceiling',
+        'effective_date': 'Takes effect',
+        'end_date': 'Ends',
+        'active': 'In use',
+        'name': 'Name',
+        'code': 'Code',
+        'tax_year': 'Tax year',
+        'personal_deduction': 'Personal allowance',
+        'dependent_deduction': 'Allowance per dependant',
+        'income_from': 'Band starts at',
+        'income_to': 'Band ends at',
+        'tax_rate': 'Rate %',
+        'fixed_amount': 'Fixed amount',
+    }
+
+    def _words(self, key):
+        return _(self._FIELD_WORDS[key]) if key in self._FIELD_WORDS \
+            else str(key)
+
+    def _proposal_rows(self):
+        """Every rate, ceiling and band by its own name — never the dict."""
+        self.ensure_one()
+        payload = self.payload() or {}
+        snapshot = self.snapshot() or {}
+        values = payload.get('values') or {}
+        rows = []
+        target = self._target()
+        if target is not None:
+            rows.append((_('About'), '', target.display_name or ''))
+        for key in sorted(values):
+            rows.append((self._words(key),
+                         snapshot.get(key, ''), values[key]))
+        if self.kind == 'tax_table_create' and payload.get('gen_slabs'):
+            rows.append((_('Also build the standard bands'), '', _('Yes')))
+        if self.kind == 'tax_slabs':
+            rows.append((_('Bands in the table now'), '',
+                         str(snapshot.get('bands', ''))))
+            rows.append((_('What happens'), '',
+                         _('Every band is deleted and rebuilt')))
+        if self.kind == 'pack_apply':
+            configs = payload.get('config_ids') or []
+            rows.append((_('Legislation pack'), '',
+                         self._row_label('hr.formula.legislation.pack',
+                                         payload.get('pack_id'))))
+            rows.append((_('Pay schemes it would change'), '',
+                         str(len(configs))))
+        if self.kind == 'pack_publish' and target is not None:
+            rows.append((_('Status'), snapshot.get('state', ''),
+                         _('Published')))
+        if self.kind in ('rate_table_save', 'rate_table_delete'):
+            table = payload.get('table') or {}
+            rows.append((_('Rate table'), snapshot.get('code', ''),
+                         table.get('code') or snapshot.get('code', '')))
+            if self.kind == 'rate_table_save':
+                rows.append((_('Bands'), str(snapshot.get('brackets', '')),
+                             str(len(table.get('brackets') or []))))
+            else:
+                rows.append((_('What happens'), '',
+                             _('The table and its bands are deleted')))
+        if self.kind == 'insurance_adjust' and target is not None:
+            rows.append((_('Difference'), '', target.difference))
+            rows.append((_('Status'), snapshot.get('state', ''),
+                         _('Applied to payroll')))
+        return rows
+
     # ==================================================================
     # Carrying each kind out
     # ==================================================================
