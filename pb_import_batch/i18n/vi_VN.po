@@ -196,20 +196,24 @@ msgstr "Cần chú ý"
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
+#. module: pb_import_batch
 #. Approval Matrix Phase 5 — money out and pay data
-#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+#: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Approvals"
 msgstr "Phê duyệt"
 
-#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+#. module: pb_import_batch
+#: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Send for approval"
 msgstr "Gửi đi duyệt"
 
-#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+#. module: pb_import_batch
+#: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "Commit import"
 msgstr "Ghi dữ liệu vào hệ thống"
 
-#: models/batch_cockpit.py static/src/js/batch_cockpit.js
+#. module: pb_import_batch
+#: code:addons/pb_import_batch/models/batch_cockpit.py:0 code:addons/pb_import_batch/static/src/js/batch_cockpit.js:0
 msgid "See the request"
 msgstr "Xem yêu cầu"
 

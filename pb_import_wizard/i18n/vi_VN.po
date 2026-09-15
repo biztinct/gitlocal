@@ -329,20 +329,24 @@ msgstr "Đang chờ"
 msgid "Step failed."
 msgstr "Bước không thành công."
 
+#. module: pb_import_wizard
 #. Approval Matrix Phase 5 — money out and pay data
-#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+#: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Sent for approval"
 msgstr "Đã gửi duyệt"
 
-#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+#. module: pb_import_wizard
+#: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "The employees and payslips are made once it is approved."
 msgstr "Nhân viên và phiếu lương sẽ được tạo sau khi được phê duyệt."
 
-#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+#. module: pb_import_wizard
+#: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "waiting for its approver"
 msgstr "đang chờ người phê duyệt"
 
-#: models/pb_import_wizard.py static/src/xml/import_wizard.xml
+#. module: pb_import_wizard
+#: code:addons/pb_import_wizard/models/pb_import_wizard.py:0 code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Send for approval"
 msgstr "Gửi đi duyệt"
 

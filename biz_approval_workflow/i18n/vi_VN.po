@@ -13,24 +13,29 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 
+#. module: biz_approval_workflow
 #. Approval Matrix Phase 5 — money out and pay data
-#: models/seed_helper.py models/outbox.py
+#: code:addons/biz_approval_workflow/models/seed_helper.py:0 code:addons/biz_approval_workflow/models/outbox.py:0
 msgid "That kind of request is not in the list yet."
 msgstr "Loại yêu cầu này chưa có trong danh sách."
 
-#: models/seed_helper.py models/outbox.py
+#. module: biz_approval_workflow
+#: code:addons/biz_approval_workflow/models/seed_helper.py:0 code:addons/biz_approval_workflow/models/outbox.py:0
 msgid "\"No approval needed\" could not be published for this."
 msgstr "Không thể công bố “Không cần phê duyệt” cho mục này."
 
-#: models/seed_helper.py models/outbox.py
+#. module: biz_approval_workflow
+#: code:addons/biz_approval_workflow/models/seed_helper.py:0 code:addons/biz_approval_workflow/models/outbox.py:0
 msgid "For your information"
 msgstr "Để bạn biết"
 
-#: models/seed_helper.py models/outbox.py
+#. module: biz_approval_workflow
+#: code:addons/biz_approval_workflow/models/seed_helper.py:0 code:addons/biz_approval_workflow/models/outbox.py:0
 msgid "For your information: %s"
 msgstr "Để bạn biết: %s"
 
-#: models/seed_helper.py models/outbox.py
+#. module: biz_approval_workflow
+#: code:addons/biz_approval_workflow/models/seed_helper.py:0 code:addons/biz_approval_workflow/models/outbox.py:0
 msgid "This is for your information. Nothing is waiting for you."
 msgstr "Đây là thông tin để bạn biết. Không có gì đang chờ bạn."
 
