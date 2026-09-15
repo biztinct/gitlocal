@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The agency's own card gains the two numbers that answer "was it
+         worth it".
+
+         BY INHERITANCE AND NOT BY EDITING `pb_vendor_access`. The vendor
+         register knows nothing about hiring and should not have to: the
+         module that owns the pointer owns the screen it appears on, which is
+         this one. `pb_vendor_access` is untouched.
+
+         VIEW INHERITANCE MAY NOT SELECT BY `[@string=...]` on Odoo 19, so
+         the anchor is the title block by CLASS. The vendor form has no
+         button box of its own, so this adds one — which is additive and
+         correct: any later module wanting a stat button on a supplier now
+         has somewhere to put it.
+
+         The stat button is invisible for a vendor that is not a recruitment
+         agency — an insurer with "People they found: 0" on its card is a
+         number that means nothing and invites somebody to wonder why.
+         ================================================================== -->
+
+    <record id="view_pb_vendor_form_hiring" model="ir.ui.view">
+        <field name="name">pb.vendor.form.hiring</field>
+        <field name="model">pb.vendor</field>
+        <field name="inherit_id" ref="pb_vendor_access.view_pb_vendor_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_open_hiring" type="object"
+                            class="oe_stat_button" icon="fa-user-plus"
+                            invisible="vendor_type != 'recruitment'">
+                        <field name="hiring_count" widget="statinfo"
+                               string="People they found"/>
+                    </button>
+                    <button name="action_open_hiring" type="object"
+                            class="oe_stat_button" icon="fa-clock-o"
+                            invisible="vendor_type != 'recruitment' or hiring_avg_days == 0">
+                        <field name="hiring_avg_days" widget="statinfo"
+                               string="Days to fill, average"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
