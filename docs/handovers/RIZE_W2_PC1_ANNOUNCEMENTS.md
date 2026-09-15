@@ -144,7 +144,7 @@ inherit the QWeb views instead.
 
 ## 3. Tests
 T1  Install + gates; route laid; migration idempotent.
-T2  Post "RIZE W2 Town hall" (company 5, department 657, send in 3 days,
+T2  Post "DEMO Town hall" (company 5, department 657, send in 3 days,
     responsible lam.ngo): `recipient_count` = people in 657 with a work
     email (assert vs psql); the T-2 nudge job → one mail + activity to
     lam.ngo once (run twice).
@@ -175,9 +175,20 @@ T10 ⌘K 3700–3730; People lens `announcements` at 80 (label measured);
     Home lens at 30; Settings at 50; deploy `19.0.1.0.0`, crons active,
     log clean.
 T11 Reverts (seat, groups, passwords), mails cancelled; posts stay named
-    RIZE W2.
+    DEMO (ledger rule 9).
 
 ## 4. Report back
 As A1, plus the sender's exact idempotency rule, the audience expansion
 helper signature, the card views' xmlids, switches, new R-entries, ledger
 row, owner items (turn the cards on, real responsibles, Slack later).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.

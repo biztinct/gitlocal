@@ -238,3 +238,14 @@ As A1, plus: the escalation verdict (already in force or fixed how), the
 registry name, the field group xmlid, every string you renamed, switches,
 new R-entries, ledger row, owner items (who is field staff, real carry
 caps per type, the cut-off date).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.

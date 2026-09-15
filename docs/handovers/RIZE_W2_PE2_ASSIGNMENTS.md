@@ -76,7 +76,7 @@ pages beyond the due-date/reason/delay additions. Do not touch
   manager — set `parent_id` to employee 17122 (lam.ngo, uid 2326) for the
   test if empty, demo data D9); HR = validator; a second learner ess2.demo
   (employee 9884, password `RizeP2!2026`, re-set R74). New joiner test:
-  create "RIZE W2 Joiner" through the connected-system path (the P10 intern
+  create "DEMO Joiner" through the connected-system path (the P10 intern
   recipe, `RIZE_LEDGER.md` R112) so the joiner journey opens with your
   step.
 
@@ -201,7 +201,7 @@ T11 HR lens Assignments tab light + dark, screenshots `RIZE/w2_e2_*.png`,
     no console errors, `unhandledrejection` listener.
 T12 ⌘K 3940/3950; deploy `19.0.1.1.0`, crons active, log clean.
 T13 Reverts (groups, seats, passwords), mails cancelled; test data stays
-    (the joiner, assignments, the probation review) named RIZE W2.
+    (the joiner, assignments, the probation review) named DEMO (rule 9).
 
 ## 4. Report back
 As E1, plus the assignment/delay/schedule API for E3 (fields, facade
@@ -209,3 +209,14 @@ verbs, how `done` and `score` are computed, the status-row link), cron
 xmlids, switches, the template step xmlid you added, new R-entries, ledger
 row, owner items (day-one rule and compliance schedules to set up, real HR
 addresses).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.

@@ -150,9 +150,20 @@ T9  Chrome light + dark: check-in form, change request, Insights lens,
 T10 ⌘K 3640–3660; Insights lens `goals` at 50; Home lens at 40; deploy
     `19.0.1.1.0`, crons active, log clean.
 T11 Reverts (seat, groups, passwords), mails cancelled; data stays named
-    RIZE W2.
+    DEMO (ledger rule 9).
 
 ## 4. Report back
 As B1, plus the scoring formula in words for the closeout, the close
 procedure, what the Home lens reads, switches, new R-entries, ledger row,
 owner items (bands, check-in day, the minimum-months rules).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.

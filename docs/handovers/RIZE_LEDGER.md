@@ -47,6 +47,16 @@ without owner approval between them.
    Chrome MCP (light AND dark) before reporting done.
 8. **Do not modify** `vendor_license_core` (product self-licensing; namespace collision —
    RIZE vendor models are `pb.vendor.*`, never `vendor.license.*`).
+9. **Demo data is named DEMO and registered** (owner, 2026-09-16, D18 — supersedes every
+   earlier "test data stays, named RIZE W2"): no record a phase creates on `payobook` may
+   carry the customer name anywhere a viewer can see (names, subjects, notes, chatter,
+   logins, emails, job/department titles, letter bodies) — the owner shows `payobook.com`
+   to the customer's competitors. Names start with **DEMO**, logins are
+   `demo.<role>@example.com`, and every demo record is registered at creation with the
+   Demo data panel: `seed = env.get('pb.demo.seed'); if seed is not None:
+   seed.register(records, label)` (X1 adds the API; the guard keeps `pb_demo_seed`
+   optional). Phase reports carry a "Demo records" table. Module names, xmlids, docs
+   and commit messages keep "rize" — they are engineering-facing.
 
 ## Deploy ritual (proven; follow exactly)
 
@@ -190,6 +200,15 @@ without owner approval between them.
 - Wave 2 ledger entries start at **R131**; ⌘K blocks A 3500 / B 3600 / C 3700 /
   D 3800 / E 3900; validator `igc1.validator` (uid 2065) re-enabled for the wave
   and archived as the last closeout step.
+- **D18 (2026-09-16) — demo data is kept, named DEMO, never RIZE, and on the
+  register.** The owner may show `payobook.com` to the customer's competitors, so no
+  demo record may carry the customer name; every one starts with DEMO and is
+  registered with the existing Load / Remove demo data mechanism (`pb_demo_seed`),
+  which is INSTALLED on `payobook` for this (authorised by the ruling). Existing
+  wave-1/2 demo rows are renamed and back-filled onto the register by phase X1
+  (`RIZE_W2_PX1_DEMO_SWEEP.md`, after A3, before E1). Binding rule 9. The owner
+  never presses Remove on `payobook` by accident: it goes through the demo-data
+  approval on a non-demo database.
 
 ## Phase plan & status
 
@@ -214,7 +233,8 @@ without owner approval between them.
 |---|---|---|
 | A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
 | A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
-| A3 | pb_hiring — BGV, offer, closure, analytics | not started |
+| A3 | pb_hiring — BGV, offer, closure, analytics | in progress (launched 2026-09-16) |
+| X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | designed (`RIZE_W2_PX1_DEMO_SWEEP.md`), runs after A3 |
 | E1–E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |

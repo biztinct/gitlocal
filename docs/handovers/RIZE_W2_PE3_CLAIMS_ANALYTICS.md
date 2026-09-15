@@ -145,10 +145,21 @@ T8  Screens light + dark (`RIZE/w2_e3_*.png`): claims page at 390 px, HR
 T9  ⌘K 3960/3970; Insights lens `training` at 40; deploy `19.0.1.2.0`,
     crons active, log clean.
 T10 Reverts (seat, groups, passwords), mails cancelled; data stays named
-    RIZE W2; the queued payslip value is REPORTED to the owner (a real
+    DEMO (ledger rule 9); the queued payslip value is REPORTED to the owner (a real
     pay run was touched: which run, which person, which amount).
 
 ## 4. Report back
 As E2, plus the claim → incentive → run chain in words for the closeout,
 the vault filing rule, what the pack contains, owner items (allowance
 amounts, the pack address and switch, the kind label).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.

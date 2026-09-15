@@ -166,7 +166,7 @@ changes.
 - Actors: admin `igc1.validator` / `RizeP0!2026` (uid 2065, holds E-Learning
   manager + officer); learner `ess1.demo@payobook.com` (uid 1984, employee
   10080, company 5, PORTAL user — re-set password to `RizeP7!2026`, R74);
-  manager view later (E2). Test data stays, named "RIZE W2 …" (D9).
+  manager view later (E2). Test data stays, named "DEMO …" (D18, ledger rule 9).
 
 ---
 
@@ -348,10 +348,10 @@ T2  Learn hub in the browser as the validator: rail "Learn" opens the hub on
     the Lessons lens and the lessons journey renders exactly as before
     (compare a screenshot to a pre-change one); the Training lens is
     offered to the validator and absent for a user without the group.
-T3  Create "RIZE W2 Agronomist basics" (company 5, `visibility='members'`,
+T3  Create "DEMO Agronomist basics" (company 5, `visibility='members'`,
     `enroll='invite'`, `completed_template_id=False`): a YouTube video
     lesson, a PDF lesson (small local file), an article, a quiz (2
-    questions), and a certification lesson on a new survey "RIZE W2
+    questions), and a certification lesson on a new survey "DEMO
     Agronomist basics — test" (3 scored single-choice questions, pass 70,
     3 attempts, certification). Enrol ess1.demo (employee 10080) through
     the HR lens "Enrol people" (accent-folded search "dem" finds them).
@@ -393,7 +393,7 @@ T13 ⌘K rows 3900–3920 (3930 if a URL door exists) present; `pb_learn_lens`
     holds `training` at 20; "Training" label fits.
 T14 Passwords re-set to ledger values; group grants reverted against a
     snapshot; demo courses' visibility change noted; test data stays, named
-    RIZE W2.
+    DEMO (ledger rule 9).
 
 ---
 
@@ -415,3 +415,14 @@ palette rows; registry names; **API for E2/E3**: `pb.my.training` reads
 computed, the survey link fields; test accounts; switches; new R-entries;
 the ledger's Wave 2 table row for E1; the owner's checkpoint items (what to
 look at and where).
+
+## Demo-data rule (owner, 2026-09-16 — D18, ledger binding rule 9)
+Every demo record this phase creates on `payobook` is KEPT for future demos, so it
+must NOT carry the customer name ("RIZE"/"Rize") anywhere a viewer can see — names,
+subjects, notes, chatter, logins, emails, job/department titles, letter bodies. Name
+them starting with **DEMO** ("DEMO Town hall"), logins `demo.<role>@example.com`.
+Register every one at creation, in the fixture code:
+`seed = self.env.get('pb.demo.seed'); if seed is not None: seed.register(records, label)`
+(the guard keeps `pb_demo_seed` optional on tenants). The report carries a "Demo
+records" table (model, ids, label) and the register count. Any "named RIZE W2" wording
+left in this file is superseded by this section.
