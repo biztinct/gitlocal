@@ -2,13 +2,18 @@
 {
     'name': 'Payobook Contracts Cockpit',
     'summary': 'Bespoke contracts landing + detail cockpit (light-teal People identity)',
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_people_advanced'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_people_advanced',
+                # P7: a contract's terms are money, so a change to them is
+                # a decision.
+                'biz_approval_workflow'],
     'data': [
+        'security/ir.model.access.csv',
+        'security/contract_approval_rules.xml',
         'views/pb_contracts_action.xml',
     ],
     'assets': {
@@ -26,6 +31,7 @@
             'pb_contracts/static/src/xml/contract_detail.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -1143,6 +1143,27 @@ export class Contract360Drawer extends Component {
         const refusals = result.refusals || [];
         if (result.detail) { this.state.d = result.detail; }
 
+        // A CONTRACT'S TERMS ARE MONEY, SO THE SAVE MAY HAVE BECOME A
+        // REQUEST. Nothing is written until the route says yes, so the staged
+        // edits STAY staged — the person can still see exactly what they
+        // asked for — and the drawer says who is holding it rather than
+        // "1 change saved" over a contract nothing has touched.
+        if (result.pending) {
+            this.notif.add(result.msg || _t("Sent for approval."), {
+                type: "info",
+                buttons: result.request_id ? [{
+                    name: _t("See the request"),
+                    onClick: () => this.action.doAction({
+                        type: "ir.actions.client",
+                        tag: "pb_approval_inbox",
+                        name: _t("Approvals"),
+                        params: { request_id: result.request_id },
+                    }),
+                }] : [],
+            });
+            return;
+        }
+
         if (result.ok === false && !refusals.length) {
             this.notif.add(result.msg || _t("Nothing was saved."), { type: "warning" });
             return;

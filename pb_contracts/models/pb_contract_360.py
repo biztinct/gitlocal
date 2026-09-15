@@ -28,6 +28,10 @@ from datetime import date, datetime
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .contract_approval import (
+    CONTRACT_WRITE, MONEY_TERMS,
+)
+
 from .pb_contracts import NEXT, STATE_LABEL, _initials
 
 _logger = logging.getLogger(__name__)
@@ -1255,6 +1259,17 @@ class PbContracts(models.AbstractModel):
         term_vals, plan, refusals = self._cd_judge(
             contract, terms, components, symbol, can_write, unmask)
 
+        # A CONTRACT'S TERMS ARE MONEY, SO THE SAVE ASKS (P7).
+        # Nothing is written here where a route is published: the plan and
+        # what the contract says right now are written down, and the drawer's
+        # own save runs again — this exact method, this exact allow-list —
+        # when the route says yes. A second write path would be a second set
+        # of rails to keep in step.
+        held = self._cd_propose(contract, terms, components, note,
+                                term_vals, plan)
+        if held is not None:
+            return held
+
         saved = 0
         # ---- the terms, written IN PLACE on this contract (owner ruling §1.8)
         if term_vals:
@@ -1318,6 +1333,57 @@ class PbContracts(models.AbstractModel):
 
         return {'ok': True, 'saved': saved, 'refusals': refusals,
                 'msg': self._cd_msg(saved, len(refusals)),
+                'detail': self._cd_payload(contract)}
+
+    @api.model
+    def _cd_propose(self, contract, terms, components, note, term_vals, plan):
+        """Write the change down and ask. None means "carry on and write".
+
+        Under a published "No approval needed" route the engine carries it
+        out inside this call and the answer is the one the drawer has always
+        had, press for press.
+        """
+        if self.env.context.get(CONTRACT_WRITE) \
+                or 'pb.contract.proposal' not in self.env:
+            return None
+        if not term_vals and not any(plan.get(k) for k in
+                                     ('edits', 'adds', 'removes')):
+            return None
+        money = [k for k in term_vals if k in MONEY_TERMS]
+        components_changed = (len(plan.get('edits') or [])
+                              + len(plan.get('adds') or [])
+                              + len(plan.get('removes') or []))
+        shown = [{'label': (edit['line'].advantage_template_id.name
+                            if edit.get('line') else ''),
+                  'old': edit.get('old_amount'),
+                  'new': edit.get('new_amount')}
+                 for edit in (plan.get('edits') or [])[:20]]
+        answer = self.env['pb.contract.proposal'].propose(
+            'terms',
+            _("Contract change · %s", contract.employee_id.name or ''),
+            payload={'contract_id': contract.id, 'terms': terms or {},
+                     'components': components or [], 'note': note or '',
+                     'shown': shown},
+            snapshot={key: contract[key] for key in sorted(term_vals)
+                      if key in contract._fields},
+            facts={'wage': {'value': float(term_vals.get('wage')
+                                           or contract.wage or 0.0),
+                            'unit': (contract.company_id
+                                     or self.env.company).currency_id.name
+                            or ''},
+                   'touches_pay': {'value': bool(money), 'unit': ''},
+                   'components': {'value': components_changed, 'unit': ''}},
+            target=contract,
+            subject_uids=contract.employee_id.user_id.ids,
+            note=note,
+            amount=float(term_vals.get('wage') or contract.wage or 0.0),
+        ).answer()
+        if answer.get('applied'):
+            return None
+        return {'ok': True, 'saved': 0, 'refusals': [], 'pending': True,
+                'reference': answer.get('reference'),
+                'request_id': answer.get('request_id'),
+                'msg': answer.get('message') or '',
                 'detail': self._cd_payload(contract)}
 
     @api.model

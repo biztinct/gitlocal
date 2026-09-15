@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
 "PO-Revision-Date: 2026-08-27 21:11+1000\n"
@@ -244,3 +244,108 @@ msgstr "Bắt đầu vào năm nay"
 #: code:addons/pb_contracts/static/src/js/contracts.js:16
 msgid "Custom"
 msgstr "Tùy chỉnh"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_contracts
+msgid "About"
+msgstr "Về"
+
+#. module: pb_contracts
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_contracts
+msgid "Change a contract"
+msgstr "Thay đổi một hợp đồng"
+
+#. module: pb_contracts
+msgid "Changes what they are paid"
+msgstr "Thay đổi mức lương của họ"
+
+#. module: pb_contracts
+msgid "Components changed"
+msgstr "Số thành phần thay đổi"
+
+#. module: pb_contracts
+msgid "Contract change · %s"
+msgstr "Thay đổi hợp đồng · %s"
+
+#. module: pb_contracts
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_contracts
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_contracts
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_contracts
+msgid "Kind of contract"
+msgstr "Loại hợp đồng"
+
+#. module: pb_contracts
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_contracts
+msgid "New monthly pay"
+msgstr "Lương tháng mới"
+
+#. module: pb_contracts
+msgid "Person"
+msgstr "Nhân sự"
+
+#. module: pb_contracts
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_contracts
+msgid "Salary structure"
+msgstr "Cấu trúc lương"
+
+#. module: pb_contracts
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_contracts
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_contracts
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_contracts
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_contracts
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_contracts
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_contracts
+msgid "The contract could not be changed."
+msgstr "Không thay đổi được hợp đồng."
+
+#. module: pb_contracts
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_contracts
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_contracts
+msgid "Working hours"
+msgstr "Giờ làm việc"
