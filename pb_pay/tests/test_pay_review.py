@@ -442,9 +442,22 @@ class TestPayReview(TransactionCase):
         review.with_user(self.ceo_lead).action_ceo_approve()
         self.assertEqual(review.state, 'approved')
 
+        # THE TRAIL IS THE ROUTE'S, NOT THE RECORD'S LADDER.
+        #
+        # Under a published route `get_approval_trail` answers from the
+        # REQUEST, in the engine's own vocabulary: "sent in", then one row per
+        # decision naming the STEP it was on, then "carried out". The old list
+        # — `['proposed', 'hr_review', 'finance', 'approved']` — was the
+        # record's states, and it could never be right again anyway, because
+        # the finance rung is not in this route.
         trail = review.get_approval_trail()
-        self.assertEqual(trail[0]['to_state'], 'proposed')
-        self.assertEqual(trail[-1]['to_state'], 'approved')
+        self.assertEqual(trail[0]['to_state'], '_sent')
+        self.assertEqual(trail[0]['user'], self.preparer.name)
+        steps = [row['to_state'] for row in trail
+                 if row['to_state'].startswith('step:')]
+        self.assertEqual(steps, ['step:hr', 'step:signoff'],
+                         'the trail names the rungs the route really had')
+        self.assertEqual(trail[-1]['to_state'], '_done')
 
     def test_t04_a_review_can_be_sent_back_with_a_reason(self):
         review = self._review()
