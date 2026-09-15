@@ -1266,7 +1266,7 @@ class PbContracts(models.AbstractModel):
         # when the route says yes. A second write path would be a second set
         # of rails to keep in step.
         held = self._cd_propose(contract, terms, components, note,
-                                term_vals, plan)
+                                term_vals, plan, refusals)
         if held is not None:
             return held
 
@@ -1336,12 +1336,17 @@ class PbContracts(models.AbstractModel):
                 'detail': self._cd_payload(contract)}
 
     @api.model
-    def _cd_propose(self, contract, terms, components, note, term_vals, plan):
+    def _cd_propose(self, contract, terms, components, note, term_vals, plan,
+                    refusals=None):
         """Write the change down and ask. None means "carry on and write".
 
         Under a published "No approval needed" route the engine carries it
-        out inside this call and the answer is the one the drawer has always
-        had, press for press.
+        out INSIDE this call — the apply re-enters this very method with the
+        approved-write flag on — so the answer comes back from here too. It
+        must never be `None` in that case: falling through to the write body
+        below would write every money term and every component a SECOND time,
+        add a duplicate line for each added component, and file a second
+        "changed by hand" row against each one (ledger AM144).
         """
         if self.env.context.get(CONTRACT_WRITE) \
                 or 'pb.contract.proposal' not in self.env:
@@ -1390,23 +1395,44 @@ class PbContracts(models.AbstractModel):
             note=note,
             amount=float(term_vals.get('wage') or contract.wage or 0.0),
         ).answer()
-        if answer.get('applied'):
-            return None
-        # The terms that are NOT money were never in the proposal, so they are
-        # written here and now — the answer says how many, so nobody reads
-        # "nothing was saved" over a note that was.
+        # The terms that are NOT money were never in the proposal — holding a
+        # spelling fix behind a pay decision would be the gate nobody asked
+        # for — so they are written here and now, on BOTH branches, and the
+        # answer says how many so nobody reads "nothing was saved" over a
+        # change that was.
         plain = {k: v for k, v in (term_vals or {}).items()
                  if k not in MONEY_TERMS}
         written = 0
+        refusals = list(refusals or [])
         if plain:
             try:
                 with self.env.cr.savepoint():
                     contract.write(plain)
                 written = len(plain)
-            except Exception:       # noqa: BLE001 — the money still waits
+            except Exception as error:       # noqa: BLE001
                 _logger.exception("Contract drawer: plain-term write refused "
                                   "on %s", contract.id)
-        return {'ok': True, 'saved': written, 'refusals': [], 'pending': True,
+                reason = self._cd_reason(error)
+                refusals += [{'scope': 'term', 'key': name, 'why': reason}
+                             for name in plain]
+
+        if answer.get('applied'):
+            # "No approval needed" is published: the money and the components
+            # are already written, once, by the apply. Report what it did and
+            # STOP — this is the whole of the save.
+            result = answer.get('result') or {}
+            refusals += list(result.get('refusals') or [])
+            saved = int(result.get('saved') or 0) + written
+            # The apply wrote through its own copy of the record, so this
+            # one's cache still holds the old values and the drawer would
+            # re-open on them.
+            contract.invalidate_recordset()
+            return {'ok': True, 'saved': saved, 'refusals': refusals,
+                    'msg': self._cd_msg(saved, len(refusals)),
+                    'detail': self._cd_payload(contract)}
+
+        return {'ok': True, 'saved': written, 'refusals': refusals,
+                'pending': True,
                 'reference': answer.get('reference'),
                 'request_id': answer.get('request_id'),
                 'msg': answer.get('message') or '',
