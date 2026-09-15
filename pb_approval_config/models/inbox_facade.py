@@ -24,6 +24,7 @@ from odoo.addons.biz_approval_workflow.models import definition as D
 _logger = logging.getLogger(__name__)
 
 CONFIG_GROUP = 'biz_approval_workflow.group_approval_config'
+ADMIN_GROUP = 'biz_approval_workflow.group_approval_admin'
 
 #: Caps on anything a caller controls — reachable over JSON-RPC.
 MAX_CARDS = 120
@@ -708,6 +709,21 @@ class PbApprovalInbox(models.AbstractModel):
         }
 
     # ============================================================= the acts
+    def _can_move_at_all(self):
+        """Group membership only — this reads no record of any kind.
+
+        `has_group` answers from the user's own groups, so it is safe to ask
+        before a request has been touched. Keep it that way: anything added
+        here that browses a record puts the team queue back in the dock.
+        """
+        user = self.env.user
+        if self.env.su or user._is_admin():
+            return True
+        return self._safe(
+            lambda: (user.has_group(CONFIG_GROUP)
+                     or user.has_group(ADMIN_GROUP)),
+            default=False)
+
     @api.model
     def can_move_it(self, request_id):
         """May this person move the live step to somebody else?
@@ -718,26 +734,31 @@ class PbApprovalInbox(models.AbstractModel):
         commonest dead end — the seat is swapped to the backup at build time
         now, and this is what is left when there is no backup either.
         """
-        request = self.env['biz.approval.request'].browse(int(request_id or 0))
-        if not request.exists():
-            return {'can': False, 'step_key': '', 'seats': []}
-        request.check_access('read')
-        # ASK THE CHEAP QUESTION FIRST, AND DO NOT READ IF THE ANSWER IS NO.
+        # ASK THE CHEAP QUESTION FIRST, AND READ NOTHING AT ALL IF THE ANSWER
+        # IS NO.
         #
         # Everybody who may open the drawer runs this — a line manager
-        # reading what is waiting for them included — and the WORKFLOW behind
-        # a request is set-up data they have no business reading. The first
-        # cut reached for `version_id.workflow_id.owner_user_id` for
-        # everybody and handed an ordinary approver "you have stumbled upon
-        # some top-secret records" in the middle of a queue they were allowed
-        # to see. Only somebody who looks after approvals can move a step at
-        # all, so only they need the lookup that says whether they own THIS
-        # route (the audit-console pattern: gated first, then `sudo()`).
-        if not self._can_config():
-            owner = request.sudo().version_id.workflow_id.owner_user_id
-            if not (owner and owner.id == self.env.uid):
-                return {'can': False, 'step_key': '', 'seats': []}
-        step = request.sudo().step_ids.filtered(
+        # reading what is waiting on a seat of theirs included — and a
+        # request reached through the TEAM queue is served with `sudo()`,
+        # because a supervisor is allowed to see what is happening to their
+        # people without being allowed to read the record itself. Two earlier
+        # cuts still touched the record before the gate (first the workflow
+        # owner, then `check_access`) and handed that supervisor "you have
+        # stumbled upon some top-secret records" in the middle of a queue
+        # they were invited into.
+        #
+        # Moving a live step to somebody else is set-up work, so the only
+        # question worth asking is group membership — which reads nothing —
+        # and every read after it is `sudo()`. A route owner who does not
+        # look after approvals is not a case: building a route needs these
+        # rights in the first place.
+        if not self._can_move_at_all():
+            return {'can': False, 'step_key': '', 'seats': []}
+        request = self.env['biz.approval.request'].sudo().browse(
+            int(request_id or 0))
+        if not request.exists():
+            return {'can': False, 'step_key': '', 'seats': []}
+        step = request.step_ids.filtered(
             lambda s: s.key == request.current_step_key)[:1]
         return {
             'can': bool(step),
@@ -756,7 +777,8 @@ class PbApprovalInbox(models.AbstractModel):
         list of four hundred logins is not a choice, it is a search box with
         no question.
         """
-        step = request.sudo().step_ids.filtered(
+        request = request.sudo()
+        step = request.step_ids.filtered(
             lambda s: s.key == request.current_step_key)[:1]
         on_it = set(step.seat_ids.mapped('acting_user_id').ids)
         held = self.env['biz.approval.responsibility'].sudo().search(
@@ -769,10 +791,15 @@ class PbApprovalInbox(models.AbstractModel):
     @api.model
     def move_it(self, request_id, seat_key, user_id, reason=None):
         """Hand one seat to somebody else, with a reason, in the trail."""
-        request = self.env['biz.approval.request'].browse(int(request_id or 0))
+        # Same gate as the button that offers this, asked the same cheap way.
+        if not self._can_move_at_all():
+            raise UserError(_(
+                "Moving a step to somebody else is something whoever looks "
+                "after approvals does."))
+        request = self.env['biz.approval.request'].sudo().browse(
+            int(request_id or 0))
         if not request.exists():
             raise UserError(_("That request no longer exists."))
-        request.check_access('read')
         reason = _clip(reason)
         if len(reason.strip()) < MIN_REASON:
             raise UserError(_(
