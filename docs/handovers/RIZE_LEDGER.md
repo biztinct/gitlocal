@@ -233,7 +233,7 @@ without owner approval between them.
 |---|---|---|
 | A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
 | A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
-| A3 | pb_hiring — BGV, offer, closure, analytics | in progress (launched 2026-09-16) |
+| A3 | pb_hiring — the background check, the document request, the offer (letter, candidate page, signed copy), the closure into a joiner, recruiter cover, the agency link and the Hiring numbers lens | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T14 pass, 201 unit tests green; six live-only defects found and fixed — see R153–R158) |
 | X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | designed (`RIZE_W2_PX1_DEMO_SWEEP.md`), runs after A3 |
 | E1–E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
@@ -1506,3 +1506,108 @@ without owner approval between them.
   were pointed at the First/Second Interview stages (demo data). Every test
   mail went to an `@example.com` address and was cancelled in the same
   session; the outgoing queue is empty.
+
+### A3 (pb_hiring, 2026-09-15/16)
+
+- **R153 — A RELATED SELECTION MUST NOT BE GIVEN A `selection_add`, and the
+  punishment is the WHOLE REGISTRY.** `pb.hr.letter.letter_type` is
+  `related='template_id.letter_type'` and re-declares `LETTER_TYPES` for
+  documentation, so adding "Offer letter" to it looked like the obvious
+  second half of adding it to `pb.letter.template`. Odoo takes a related
+  field's selection from the SOURCE field and says so — *"selection attribute
+  will be ignored as the field is related"* — so the extension achieves
+  nothing; and it is not merely useless, because the `ondelete` spec that
+  `selection_add` requires trips
+  `assert self.default is not None` in `odoo/orm/fields_selection.py:149` and
+  **fails the entire registry load** with the real error only in
+  `/var/log/odoo/odoo-server.log`. Extend the TEMPLATE alone; every related
+  field downstream follows for free. (A related Selection also cannot be
+  given a `groups=` or a domain for the same reason — the attributes are the
+  source field's.)
+- **R154 — A DATE WINDOW THAT DECIDES A PERMISSION IS READ ON THE SERVER'S
+  CLOCK, never `context_today`.** `fields.Date.context_today` answers in the
+  READER's timezone. A Vietnamese recruiter writing a cover "from today"
+  stores tomorrow's date by the server's reckoning for seven hours of every
+  day; a colleague whose account has no timezone set then reads UTC, finds
+  the window has not started, and is refused a role they are demonstrably
+  covering — with nothing on any screen to explain it. Found by the very
+  first test that asked the question AS SOMEBODY ELSE; the same shape is
+  invisible to any test that asks it as the user who wrote the record.
+  **A permission that changes with who is asking is not a permission**:
+  `pb.hiring.cover._window_today()` is `fields.Date.today()` and every reader
+  of the window — the gate, the nightly job, the approval hook — goes through
+  it. R36 from the permission side rather than the job side.
+- **R155 — `context_today` DATES AND UTC DATETIMES CANNOT BE SUBTRACTED, and
+  a `>= 0` guard then drops exactly the fastest rows.** `opened_on` and
+  `filled_on` are written with `context_today` (the ACTING person's
+  timezone); `sent_on` is a UTC datetime. A role agreed at half past five on
+  a Vietnamese evening and offered the same evening is MINUS one day, so the
+  usual `if days >= 0` skipped it — and "Days to an offer" reported *no
+  answer* over two offers that had gone out the same day. A negative span
+  across a timezone boundary is an ARTEFACT, not data: floor it at zero and
+  count it (`analytics._span`), and make every other surface that measures
+  the same distance — here the vendor card — use the same helper, or the two
+  screens will disagree by a day and nobody will know which is right.
+- **R156 — A `from`-ONLY KEYFRAME CANNOT RESTORE WHAT THE RULE TOOK AWAY.**
+  R85 says put every moving declaration — the starting opacity, the transform
+  AND the animation — inside `@media (prefers-reduced-motion: no-preference)`,
+  and that is right. What it does not say is that the keyframe then needs an
+  explicit `to`. With `animation-fill-mode: both` and a `from`-only keyframe
+  the 100% frame is the element's OWN computed value, which the same rule has
+  just set to `opacity: 0` — so the surface animates from invisible to
+  invisible and stays there for ever. The offer panel rendered as a BLANK
+  RECTANGLE with every one of its numbers present in the DOM, no console
+  error, nothing in any log. A1's `.pbhr-card` is fine because it sets no
+  opacity of its own and lets `both` back-fill the `from`. Either shape works;
+  mixing them does not. Check it by reading `getComputedStyle(el).opacity`
+  after the animation, not by looking for an error.
+- **R157 — THE GATE THAT DECIDES WHAT SOMEBODY MAY DO AND THE GATE THAT
+  DECIDES WHETHER THEY MAY LOOK HAVE TO AGREE.** A recruiter's stand-in was
+  allowed every action on the roles they covered and was shown "Hiring is
+  looked after by the hiring team" when they went to do one: `_require_recruit`
+  had learnt about cover and `_can_read` had not. The same afternoon, the
+  second half: with the read gate fixed the board opened EMPTY, because the
+  record rules let a plain user see the roles they raised, manage or recruit
+  and a stand-in is none of those. Widening the `ir.rule` was the other option
+  and it is the worse one — a rule domain is memoised in the `default`
+  ormcache group and nothing about creating a cover invalidates it (R59), so
+  a cover would start working some time later. The board reads the covered
+  recruiter's rows AS THE SYSTEM with the recruiter clause written out in the
+  domain, which is this module's doctrine everywhere else (R89). **Any
+  permission that is granted by a RECORD rather than by a group has three
+  places to reach, not one: the door, the read gate, and the record rules.**
+- **R158 — a phase that adds a section to an existing drawer must re-open
+  that drawer AS SOMEBODY WITHOUT ITS GROUPS.** `get_requisition` built its
+  `postings` list inline, so the person who ASKED for a role — who holds no
+  hiring group by definition — got an `AccessError` naming a model they have
+  never heard of, over a drawer whose other eight sections they were entitled
+  to. A1 shipped it that way and nothing found it for two phases, because
+  every test of that screen was run by a recruiter. Every list in a drawer
+  gets its own `_safe()` probe (R92), and a recruiter is given read on the
+  letter library so the native form's picker can draw at all.
+- **R159 — ⌘K and lens numbers after A3.** A3 stayed inside A1's **3500**
+  block: `hiring_analytics` **3570** ("Hiring numbers", Insights) and
+  `hiring_cover` **3580** ("Cover for a recruiter"). B1 still starts at
+  **3600**. On the Insights hub the four shipped lenses carry no sequence and
+  bolted-on ones start at 20, so Budget is 20 (R96) and **Hiring is 30** —
+  what a role was supposed to cost, then how long it took to fill. The Hiring
+  settings category (sequence 40) now has FOUR cards: the hiring rules, what
+  a panel scores on, what a background check covers, and what a joiner is
+  asked for.
+- **R160 — the A3 test cast and what was put back.** Demo data stays and, per
+  the owner's rule of 2026-09-16, **everything this phase created is named
+  "DEMO …" and carries no programme code** — payobook.com may be shown to
+  competitors. New: requisition **798** "DEMO Senior Agronomist" (company 5,
+  department 657, head count 2, agency Talent Partners), job **762**,
+  candidates **552** "DEMO Nguyen Van An" / **553** "DEMO Tran Thi Binh" /
+  **554** "DEMO Pham Quoc Cuong" (all `demo.a3.*@example.com`), offers
+  **106/107** closed and **108** left mid-route on requisition 57 so the
+  "waiting on you" chip has something to show, employees **19613/19614**
+  with their contracts, pay packages, joining checklists and portal logins,
+  and cover **26** (ended). **Two things were borrowed and both were put
+  back**: the company-5 `hr_lead` responsibility seat (uid 2 → 2065 → uid 2)
+  and `pb_hiring.group_hiring_manager` on uid 2065, without which nothing can
+  exercise the HR-lead gates. Verified group-for-group against a snapshot
+  taken before the first write: all six accounts identical. No password was
+  reset. Every test mail went to an `@example.com` address and this phase's
+  traffic was cancelled in the same session.
