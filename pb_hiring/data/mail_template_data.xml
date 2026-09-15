@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every mail template in this codebase is: a tenant
+         that has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` IN
+         `email_values`. A template's own rendered address can reach mail.mail
+         EMPTY, and the message is then created, queued and addressed to
+         nobody with no error anywhere (R6). The `email_to` field below is
+         kept as documentation of who each one is FOR.
+
+         A template renders against the MODEL it is declared on, so handing a
+         posting's id to a template declared on the request would silently
+         render somebody else's record. -->
+
+    <!-- ============ the recruiter: a role has been agreed ============ -->
+    <record id="mail_template_requisition_recruiter" model="mail.template">
+        <field name="name">Hiring: a role has been agreed</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
+        <field name="subject">{{ object.title }} has been agreed — it is yours to fill</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.title or ''"/></strong> has been
+                    agreed and it is on your desk.
+                </p>
+                <ul>
+                    <li>Part of the business:
+                        <strong><t t-out="object.department_id.name or ''"/></strong></li>
+                    <li>How many:
+                        <strong><t t-out="object.headcount or 1"/></strong></li>
+                    <li t-if="object.location or object.country_id">Where:
+                        <strong><t t-out="object.location or object.country_id.name or ''"/></strong></li>
+                    <li t-if="object.target_start_date">Wanted by:
+                        <strong><t t-out="object.target_start_date or ''"/></strong></li>
+                    <li>Asked for by:
+                        <strong><t t-out="object.requested_by_id.name or ''"/></strong></li>
+                </ul>
+                <p>
+                    Open <strong>Lifecycle</strong> in Payobook and go to
+                    <strong>Hiring</strong>. Its row is near the top. The next
+                    thing it needs is an advert somebody has agreed — until
+                    there is one, the role cannot be published.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ====== the recruiter's manager: the same news, one line ====== -->
+    <record id="mail_template_requisition_recruiter_manager" model="mail.template">
+        <field name="name">Hiring: a role has been agreed (manager's copy)</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.recruiter_manager_id.email or '' }}</field>
+        <field name="subject">A new role for your team to fill: {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.headcount or 1"/> to find, in
+                    <t t-out="object.department_id.name or ''"/>) has been
+                    agreed, and
+                    <strong><t t-out="object.recruiter_id.name or ''"/></strong>
+                    is picking it up.
+                </p>
+                <p style="color:#4A5568;">
+                    You are told at the same time so that the role is not
+                    invisible if they are away.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- =========== the recruiter: somebody referred a name =========== -->
+    <record id="mail_template_referral_recruiter" model="mail.template">
+        <field name="name">Hiring: somebody put a name forward</field>
+        <field name="model_id" ref="model_pb_hiring_referral"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.requisition_id.recruiter_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} put someone forward for {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has put
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    forward for
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>.
+                </p>
+                <p t-if="object.note" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.note or ''"/>
+                </p>
+                <p>
+                    They are already in the pipeline for that role, tagged as
+                    a referral, with whatever was attached. A referral that is
+                    answered in a week is worth ten that are answered in a
+                    month — the person who sent it is watching.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- =============== a job board: here is the advert =============== -->
+    <record id="mail_template_posting" model="mail.template">
+        <field name="name">Hiring: an advert for a job board</field>
+        <field name="model_id" ref="model_pb_hiring_posting"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.platform_email or '' }}</field>
+        <field name="subject">{{ object.subject }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <t t-out="object.body_html or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,29 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_hiring_requisition_staff,Hiring request mine and my department's,model_pb_hiring_requisition,base.group_user,1,1,1,0
+access_pb_hiring_requisition_user,Hiring request recruiter,model_pb_hiring_requisition,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_requisition_manager,Hiring request manager,model_pb_hiring_requisition,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_requisition_admin,Hiring request head of hiring,model_pb_hiring_requisition,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_requisition_system,Hiring request system,model_pb_hiring_requisition,base.group_system,1,1,1,1
+access_pb_hiring_step_staff,Hiring stage mine,model_pb_hiring_step,base.group_user,1,1,1,1
+access_pb_hiring_step_user,Hiring stage recruiter,model_pb_hiring_step,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_step_manager,Hiring stage manager,model_pb_hiring_step,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_step_system,Hiring stage system,model_pb_hiring_step,base.group_system,1,1,1,1
+access_pb_hiring_jd_staff,Job description mine,model_pb_hiring_jd,base.group_user,1,1,1,0
+access_pb_hiring_jd_user,Job description recruiter,model_pb_hiring_jd,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_jd_manager,Job description manager,model_pb_hiring_jd,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_jd_admin,Job description head of hiring,model_pb_hiring_jd,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_jd_system,Job description system,model_pb_hiring_jd,base.group_system,1,1,1,1
+access_pb_hiring_referral_staff,Referral mine,model_pb_hiring_referral,base.group_user,1,0,0,0
+access_pb_hiring_referral_user,Referral recruiter,model_pb_hiring_referral,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_referral_manager,Referral manager,model_pb_hiring_referral,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_referral_admin,Referral head of hiring,model_pb_hiring_referral,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_referral_system,Referral system,model_pb_hiring_referral,base.group_system,1,1,1,1
+access_pb_hiring_posting_user,Advert recruiter,model_pb_hiring_posting,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_posting_manager,Advert manager,model_pb_hiring_posting,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_posting_admin,Advert head of hiring,model_pb_hiring_posting,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_posting_system,Advert system,model_pb_hiring_posting,base.group_system,1,1,1,1
+access_pb_hiring_country_rule_staff,Hiring rule read,model_pb_hiring_country_rule,base.group_user,1,0,0,0
+access_pb_hiring_country_rule_user,Hiring rule recruiter,model_pb_hiring_country_rule,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_country_rule_manager,Hiring rule manager,model_pb_hiring_country_rule,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_country_rule_admin,Hiring rule head of hiring,model_pb_hiring_country_rule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_country_rule_system,Hiring rule system,model_pb_hiring_country_rule,base.group_system,1,1,1,1

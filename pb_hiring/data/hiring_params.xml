@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         The DIALS, shipped so they are discoverable rather than folklore.
+
+         The SWITCHES are deliberately not here. They default in code
+         (`hiring_common.DEFAULTS`), because a `noupdate="1"` record for a
+         switch freezes whatever value a test run happened to leave behind:
+         the next upgrade never corrects it. P3, P4 and P5 all wrote the
+         same thing down.
+
+         `pb_hiring.platform_mail` in particular defaults to OFF and is
+         meant to be turned on by hand, once, by somebody who has read the
+         advert a job board is about to receive.
+         ================================================================== -->
+
+    <record id="param_jd_reminder_days" model="ir.config_parameter">
+        <field name="key">pb_hiring.jd_reminder_days</field>
+        <!-- Three days. Long enough that a hiring manager on a short trip is
+             not chased for nothing; short enough that an advert waiting to
+             be agreed does not quietly cost a fortnight. -->
+        <field name="value">3</field>
+    </record>
+
+    <record id="param_recruiter_nudge_days" model="ir.config_parameter">
+        <field name="key">pb_hiring.recruiter_nudge_days</field>
+        <!-- How long a role may be open with nobody recruiting it before the
+             hiring administrators are told. -->
+        <field name="value">3</field>
+    </record>
+
+</data>
+</odoo>

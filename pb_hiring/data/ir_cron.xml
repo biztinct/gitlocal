@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         ONE job, not two: both nudges are the same question asked of two
+         tables, and a person reading the log wants one line with two numbers
+         in it rather than two lines they have to add up. It is idempotent by
+         the to-do it raises, so running it twice in a morning changes
+         nothing. -->
+
+    <record id="cron_hiring_daily" model="ir.cron">
+        <field name="name">Hiring: chase the adverts and the roles nobody is recruiting</field>
+        <field name="model_id" ref="model_pb_hiring_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_daily()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

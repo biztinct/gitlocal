@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE TWO CATALOGUE ROWS THIS MODULE OWNS.
+
+         The engine's own words: "every other row in the catalogue is
+         created by the module that owns the business object, so the
+         catalogue can never claim something is wired up when it is not".
+         That is also what keeps the dependency honest — this module depends
+         on the ENGINE and never on the configuration screen that displays
+         these rows (ledger AM52).
+
+         `noupdate="1"` so a business that has reworded or re-sequenced one
+         of these on a live database keeps its wording. The `model_name` is
+         re-pointed from the seed rather than from here, because this file
+         is noupdate and an existing database would keep the old name for
+         ever (ledger AM45).
+         ================================================================== -->
+
+    <record id="process_hiring_request" model="biz.approval.process">
+        <field name="key">hiring_request</field>
+        <field name="name">Hiring request</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hiring.requisition</field>
+        <field name="description">Asking for a new person: the role, how many, and what it is expected to cost.</field>
+        <field name="money" eval="True"/>
+        <field name="sequence">230</field>
+    </record>
+
+    <record id="process_hiring_jd" model="biz.approval.process">
+        <field name="key">hiring_jd</field>
+        <field name="name">Job description</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hiring.jd</field>
+        <field name="description">The wording of an advert, before it goes onto the careers page or out to a job board.</field>
+        <field name="sequence">232</field>
+    </record>
+
+</odoo>

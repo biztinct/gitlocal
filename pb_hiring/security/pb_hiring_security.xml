@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, AND THE REASON IS THE CANDIDATES.
+
+         P3, P4 and P5 rode the lifecycle tiers and were right to: a joining
+         checklist, a leaving checklist and a trial period are the same
+         question about the same people. Hiring is not that question. The
+         rows here are about people who do NOT work here — their CVs, their
+         salary expectations, the fact that they applied at all — and "they
+         could already see the joining checklists" is not a reason to hand
+         that over. P6 made the identical call for improvement plans.
+
+         The ladder is wired INTO the standard recruitment permissions
+         rather than beside them, because the store underneath is the
+         standard applicant table: somebody who may run hiring here must be
+         able to open a candidate there, and two permission systems over one
+         set of records is a permission system nobody can reason about.
+
+         NO `&` IN A PRIVILEGE NAME, EVER (R124). Odoo 19 builds the user
+         form's access-rights arch by embedding privilege names into
+         `<group string="…">` without escaping, and one ampersand makes
+         opening ANY user from Settings crash.
+         ================================================================== -->
+
+    <record id="module_category_hiring" model="ir.module.category">
+        <field name="name">Hiring</field>
+        <field name="sequence">56</field>
+    </record>
+
+    <!-- Odoo 19 pattern: `res.groups` has no `category_id`; a privilege
+         record carries it instead. -->
+    <record id="res_groups_privilege_hiring" model="res.groups.privilege">
+        <field name="name">Hiring</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_hiring"/>
+    </record>
+
+    <record id="group_hiring_user" model="res.groups">
+        <field name="name">Recruiter</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_hiring"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+        <field name="comment">See every hiring request in the company, screen candidates, write and publish adverts. Does not agree requests and does not edit the hiring rules.</field>
+    </record>
+
+    <record id="group_hiring_manager" model="res.groups">
+        <field name="name">Hiring manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_hiring"/>
+        <field name="implied_ids" eval="[(4, ref('group_hiring_user')), (4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
+        <field name="comment">Everything above, plus agreeing a hiring request, agreeing an advert, closing a role and marking one filled.</field>
+    </record>
+
+    <record id="group_hiring_admin" model="res.groups">
+        <field name="name">Head of hiring</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_hiring"/>
+        <field name="implied_ids" eval="[(4, ref('group_hiring_manager'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Every
+             other person is added by a human, on purpose. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Everything above, plus the hiring rules — who recruits for which company and country — and the switches.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. Global rules (no `groups`), so they are ANDed with
+         everything below rather than ORed.
+         ================================================================== -->
+
+    <record id="rule_requisition_company" model="ir.rule">
+        <field name="name">Hiring request: company</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_jd_company" model="ir.rule">
+        <field name="name">Job description: company</field>
+        <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_referral_company" model="ir.rule">
+        <field name="name">Referral: company</field>
+        <field name="model_id" ref="model_pb_hiring_referral"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_posting_company" model="ir.rule">
+        <field name="name">Advert: company</field>
+        <field name="model_id" ref="model_pb_hiring_posting"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_step_company" model="ir.rule">
+        <field name="name">Hiring stage: company</field>
+        <field name="model_id" ref="model_pb_hiring_step"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_country_rule_company" model="ir.rule">
+        <field name="name">Hiring rule: company</field>
+        <field name="model_id" ref="model_pb_hiring_country_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE REQUEST.
+
+         SHIP THE PAIR, ALWAYS (R60/R65). `ir.rule` group rules are ORed
+         over the rules that APPLY, so a narrow rule shipped on its own is
+         a NARROWING: a recruiter who also holds the plain internal-user
+         tier would have exactly one applicable group rule — the tight one
+         — and would lose sight of every request in the company. The wide
+         rule beside it is not redundant; it is what makes the narrow one
+         safe to add.
+         ================================================================== -->
+
+    <record id="rule_requisition_own" model="ir.rule">
+        <field name="name">Hiring request: mine and my department's</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', '|', ('requested_by_user_id', '=', user.id), ('reporting_manager_id.user_id', '=', user.id), ('recruiter_id', '=', user.id), ('department_id.manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_requisition_all" model="ir.rule">
+        <field name="name">Hiring request: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_jd_own" model="ir.rule">
+        <field name="name">Job description: mine and my department's</field>
+        <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('requisition_id.requested_by_user_id', '=', user.id), ('requisition_id.reporting_manager_id.user_id', '=', user.id), ('requisition_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_jd_all" model="ir.rule">
+        <field name="name">Job description: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- A referral is the referrer's own business and the hiring team's, and
+         nobody else's: knowing which of their colleagues put a friend
+         forward is not something a company should broadcast. -->
+    <record id="rule_referral_own" model="ir.rule">
+        <field name="name">Referral: the one I made</field>
+        <field name="model_id" ref="model_pb_hiring_referral"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('referrer_user_id', '=', user.id), ('requisition_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_referral_all" model="ir.rule">
+        <field name="name">Referral: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_referral"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+
+    <!-- ==================================================================
+         A SEAT IS ALSO A READ (approval matrix, ledger AM60).
+
+         A published route may ask somebody to decide a hiring request who
+         holds no hiring permission at all — a department head's own manager
+         is the everyday case, and a Finance approver the other one. The
+         engine re-checks that the decider can READ the record before it
+         accepts a decision, so without this the route would hand out a seat
+         the ORM then refuses. READ ONLY: being asked to decide something has
+         never been permission to change it.
+         ================================================================== -->
+    <record id="rule_requisition_seat" model="ir.rule">
+        <field name="name">Hiring request: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_jd_seat" model="ir.rule">
+        <field name="name">Job description: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>
