@@ -512,9 +512,24 @@ class BizApprovalChainShim(models.AbstractModel):
         if not spec or not self._engine_managed():
             return super()._advance_state(to_state, note)
         frm = self.state
-        if (frm, to_state) not in self._approval_transitions:
-            raise UserError(
-                _("Illegal approval transition: %s → %s.", frm, to_state))
+        # THE ROUTE DECIDES THE ORDER, NOT THE RECORD'S OWN LADDER.
+        #
+        # This used to re-check the consumer's transition table before doing
+        # anything, and that is the wrong question the moment a route is
+        # published: a rung with a CONDITION on it may be excluded, so the
+        # engine legitimately goes from the HR rung straight to the last one
+        # while the record's table still reads "hr_review → finance →
+        # approved". The button then answered "Illegal approval transition:
+        # hr_review → approved" about a route that was doing exactly what it
+        # was configured to do.
+        #
+        # Every branch below either hands the press to the engine — which has
+        # its own authority on which step is live, who holds it and what the
+        # record may then be written to — or falls through to `super()`, which
+        # IS the record's own business and checks its own table there. So the
+        # check belongs on that path and only on it (ledger AM84: under a
+        # route the buttons say what somebody MEANS, and the engine says
+        # whether it may happen).
         if to_state in spec['reverse_to'] and frm != spec['draft_state']:
             return self._chain_decide('return', note or _("Sent back"))
         if to_state == spec['submit_state'] and frm not in spec['driven']:
