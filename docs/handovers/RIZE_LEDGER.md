@@ -15,7 +15,14 @@ without owner approval between them.
 - Admin login for browser validation: `ash@biztinct.com` / `{withheld: rize-admin}`
   (reset 2026-09-01 per owner pre-authorization — the owner gets this password in the
   final report). Secondary test account: `igc1.validator` / `{withheld: rize-p0-validator}` (user id 2065,
-  email rize.validator@payobook.local — DEACTIVATE at programme end).
+  email ig.c1.validator@payobook.local — DEACTIVATE at programme end).
+- Demo logins (X1 renamed the first one; the password did not change):
+
+  | Login | Was | Password | Who it is |
+  |---|---|---|---|
+  | `demo.recruiter@example.com` | `rize.w2.recruiter@example.com` (uid 4446) | `RizeW2!2026` | the recruiter A1–A3 did everything as; holds `pb_hiring.group_hiring_user` |
+  | `demo.a3.an@example.com` / `demo.a3.binh@example.com` | — (A3 named them) | portal, no password set | the two demo joiners |
+  | `lam.ngo@` `tuan.quach@` `diep.thai@` `linh.quan@` `danh.su@` `nguyen.tang@` `loc.uong@example.com` | — (TIDY renamed them) | `RizeP4!2026` / `RizeP8!2026` / `RizeP9!2026` as per R87/R99 | the wave-1 test cast |
 - Live server ssh alias: `Payobook19v2`. Odoo 19 CE, service `odoo-server`, config
   `/etc/odoo-server.conf`, DB `payobook`, log `/var/log/odoo/odoo-server.log`, passwordless sudo.
 
@@ -53,9 +60,23 @@ without owner approval between them.
    logins, emails, job/department titles, letter bodies) — the owner shows `payobook.com`
    to the customer's competitors. Names start with **DEMO**, logins are
    `demo.<role>@example.com`, and every demo record is registered at creation with the
-   Demo data panel: `seed = env.get('pb.demo.seed'); if seed is not None:
-   seed.register(records, label)` (X1 adds the API; the guard keeps `pb_demo_seed`
-   optional). Phase reports carry a "Demo records" table. Module names, xmlids, docs
+   Demo data panel (X1 built the API and `pb_demo_seed` 19.0.1.2.0 is INSTALLED on
+   `payobook`; the guard keeps the module optional on a tenant that has not got it):
+
+   ```python
+   seed = self.env.get('pb.demo.seed')          # None if not installed
+   if seed is not None:
+       seed.register(records, "Three demo candidates")   # -> rows added
+       seed.register(contacts, "Their contacts", last=True)  # removed LAST
+   ```
+   `register(records, label=None, last=False)` is `@api.model`, takes a recordset
+   (one model per call), dedups per record, refuses every protected model except
+   `res.users` — a registered login is SWITCHED OFF on removal rather than deleted —
+   and returns how many rows it added. The rows land on the panel named
+   **"DEMO HR programme data"** (`programme_seed()`, profile `adopted`), beside the
+   world-building panel rather than instead of it. `preview_remove()` answers what
+   Remove would take out without taking anything out.
+   Phase reports carry a "Demo records" table. Module names, xmlids, docs
    and commit messages keep "rize" — they are engineering-facing.
 
 ## Deploy ritual (proven; follow exactly)
@@ -234,7 +255,7 @@ without owner approval between them.
 | A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
 | A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
 | A3 | pb_hiring — the background check, the document request, the offer (letter, candidate page, signed copy), the closure into a joiner, recruiter cover, the agency link and the Hiring numbers lens | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T14 pass, 201 unit tests green; six live-only defects found and fixed — see R153–R160) |
-| X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | designed (`RIZE_W2_PX1_DEMO_SWEEP.md`), runs after A3 |
+| X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | **DONE** (live on `payobook`, 19.0.1.2.0 — INSTALLED, the only module whose state changed; T1–T11 pass; every customer-named demo row renamed and the whole programme's demo data on one register — see R161–R168) |
 | E1–E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
@@ -1499,7 +1520,9 @@ without owner approval between them.
   everything this phase needs — verified group-for-group against a snapshot
   taken before the first write, all six accounts identical. No password was
   reset either; `RizeW2!2026`, `RizeP4!2026`, `RizeP8!2026` and `RizeP0!2026`
-  all still worked. New: three candidates **175–177** on job 147
+  all still worked. (X1 renamed the recruiter's login to
+  `demo.recruiter@example.com`; the password is unchanged.) New: three
+  candidates **175–177** on job 147
   (`rize.w2.thao@`, `rize.w2.khoa@`, `rize.w2.hanh@example.com`), seven
   interviews **77–83** on requisition 56, their opinions, one reschedule and
   one no-show; requisition 56 was given recruiter 4446 and its steps 2 and 3
@@ -1611,3 +1634,105 @@ without owner approval between them.
   taken before the first write: all six accounts identical. No password was
   reset. Every test mail went to an `@example.com` address and this phase's
   traffic was cancelled in the same session.
+
+### X1 (pb_demo_seed — the DEMO sweep, 2026-09-16)
+
+- **R161 — A TRACKED WRITE PUTS THE OLD NAME STRAIGHT BACK IN, in a place
+  nothing can rename away afterwards.** Renaming a hiring request through the
+  ORM posts a chatter line — *"Title: RIZE W2 Field Officer → DEMO Field
+  Officer"* — and a `mail_tracking_value` row carrying the old spelling, so a
+  sweep whose whole job is to remove a word creates fresh copies of it as it
+  goes, roughly one per record, inside the history it has just finished
+  cleaning. Worse, the new rows are indistinguishable from the old ones and a
+  second pass simply makes more. **Every write in a rename goes through
+  `with_context(tracking_disable=True, mail_notrack=True,
+  mail_create_nolog=True)`.** The same applies to any bulk data repair on a
+  model with a chatter.
+- **R162 — a word boundary is `\m`/`\M` in Postgres and `\b` in Python, and a
+  pattern that carries the wrong one fails in opposite ways.** `'\mrize\M'` is
+  exactly right in SQL and raises `re.error: bad escape \m` in Python;
+  `r'\brize\b'` is right in Python and matches nothing in Postgres. The sweep
+  asks Postgres to FIND (it has the rows and does one pass per table) and
+  Python to REPLACE (one rule, case-preserving, used by every path), so it
+  carries the same test written twice — which is worth saying out loud in the
+  file, because the two spellings look like a typo for each other.
+- **R163 — DELETING A CANCELLED `mail.mail` DELETES A CHATTER MESSAGE.**
+  `mail.mail` `_inherits` `mail.message`, and `unlink` on a delegating model
+  deletes the parent row too. On this database 131 of the cancelled test mails
+  share their message with a record's chatter — so "delete the cancelled test
+  mails" would have silently taken 131 hiring conversations with them. Rewrite
+  the text instead: a cancelled mail never sends, so the only thing that
+  matters about it is what a person reading the record can see.
+- **R164 — the rows that name the customer loudest are not demo data at all.**
+  13 `pb_alert` rows say *"Rize Farms has no recent backup"* — they are the
+  fleet monitor talking about a REAL tenant of this product, the same tenant
+  `pb_tenant` holds and `pb_tenant_backup` has paths for. An alert that stops
+  naming the thing it is about is a broken alert, so all three tables are
+  survivors of the sweep, with the province of Rize in Turkey
+  (`res_country_state`) and the browser's own push rows (`bus_bus`, which
+  expire within the hour). **A rename sweep needs a survivor list with a
+  REASON against each line, printed every run** — otherwise the next person
+  reads "58 columns still carry the name" as a failure.
+- **R165 — a stored compute that names a person does NOT follow that person's
+  rename.** `pb.hiring.cover.name` is `@api.depends('recruiter_id', …)` — the
+  RECORD, not `recruiter_id.name` — so renaming the recruiter left the cover
+  reading "… covering RIZE W2 Recruiter" for ever, with nothing to invalidate
+  it (R138 from the other side: there the answer was frozen for the length of
+  an environment, here it is frozen in the database). Any sweep that renames
+  people has to finish with a pass over every text column, not only the ones
+  it meant to touch.
+- **R166 — a crawl that follows a pointer at a USER collects the whole
+  database.** Deciding which records are demo data by following what points at
+  what is the only honest method — but `create_uid` is a `many2one` to
+  `res.users` on every row in Postgres, and half the models also carry a
+  manager, an owner or an HR partner. Following those from a demo LOGIN would
+  have put real people's journeys on a register whose button deletes them.
+  **The rule is subject versus actor**: follow a pointer at a demo EMPLOYEE,
+  TEAM, ROLE or REQUEST (the record is about them), never a pointer at a demo
+  USER or CONTACT (the record was merely touched by them), and let
+  `res.users`, `res.partner`, `hr.employee`, `hr.department`, `hr.job` and
+  `pb.vendor` be named by hand and never grown by the crawl.
+- **R167 — a module installs into the company of whoever ran the install, and
+  for a shipped `noupdate` record that is for ever.** The "Demo data" panel
+  landed in company 1 — the empty shell the first install left (R16 again) —
+  so pressing Load would have built five demo people into a company nobody
+  works in and every screen would have shown an empty demo. The sweep moves
+  the panel to the operating company while it is still EMPTY (once a world is
+  loaded the company is where its people live and must not move). Any seeded
+  record with a `company_id` wants the same treatment.
+- **R169 — `_register` IS THE ORM'S OWN NAME and a method called that is
+  shadowed by `True`.** Every model class carries `_register`, the boolean
+  that says whether it belongs in the registry, so
+  `def _register(self, records…)` is silently replaced and the first call dies
+  with `TypeError: 'bool' object is not callable` — pointing at the caller,
+  not at the clash, and only when the code path is actually reached (here:
+  after a nine-minute rename, on a live database). Private helper names on an
+  Odoo model are not free: `_register`, `_name`, `_table`, `_order`, `_auto`,
+  `_inherit`, `_description` and `_sequence` all belong to the framework.
+- **R168 — the X1 register: what is on it, and what deliberately is not.**
+  981 records over 62 kinds, on one panel called **"DEMO HR programme data"**
+  (profile `adopted`, company 5), built by naming the programme's own test
+  cast from `RIZE_CLOSEOUT.md` and the per-phase entries above and then
+  following the pointers four passes deep. On it: the 31 test employees
+  (17118–17148), the two A3 joiners, their contracts, journeys, check-ins,
+  clearances, letters, documents, probation reviews, growth plans, awards,
+  settlements and pay packages; the whole hiring wave (10 requests, 7 jobs, 7
+  candidates, 5 adverts, 3 postings, 9 interviews, 3 offers, 3 background
+  checks, 2 document requests, 1 cover) with its calendar entries, attendees
+  and the entire approval trail (18 requests, 39 steps, 39 seats, 28
+  decisions, 92 events, 95 step logs); the three test departments; the demo
+  logins (switched off, not deleted, when Remove is pressed) and every demo
+  person's private contact, registered LAST. **Not on it:** vendor 11 "Talent
+  Partners" (A3 reused it rather than making it — the parent phase ruled it
+  pre-existing; its sibling 12 and agreements 18/20 are registered), any pay
+  run or payslip, `igc1.validator`, the `pb_demo` 4,500-person world, the
+  older `*.demo@payobook.com` logins, the shipped letter templates, hiring
+  rules and other configuration the product itself ships, and the derived
+  `pb.budget.actuals` rows the nightly job rebuilds anyway.
+- **R170 — a bulk ORM rename over a live database still sends ONE email, and
+  the commit is what sends it.** Part 1's commit flushed the outgoing queue
+  and a notification went out from the write to the renamed recruiter's own
+  records — to `demo.recruiter@example.com`, which is why every fixture on
+  this programme uses `@example.com` (R47: this box flushes at commit, not on
+  the hourly cron). Assume any commit on this database posts whatever is
+  sitting in `mail.mail`, and check the queue before committing a repair.
