@@ -603,8 +603,9 @@ is the bar to reproduce:
 
 | Suite | Result |
 |---|---|
-| `biz_approval_workflow` | 48 / 48 |
-| `pb_approval_config` | 101 / 101 |
+| `biz_approval_workflow` | 52 / 52 |
+| `pb_approval_config` | 108 / 108 |
+| `pb_contracts` | 47 / 47 (run with `pb_approval_config`) |
 | `pb_hr_payroll_formula` | 451 / 451 |
 | `pb_tenants` | 377 / 379 — the two `TestAlerts` t8 capacity cases read `/proc/meminfo` and cannot pass on macOS (ledger AM122); they pass on the Linux box |
 | `pb_pay` | 117 / 117 |
