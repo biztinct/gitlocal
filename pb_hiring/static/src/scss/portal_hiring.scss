@@ -1,0 +1,111 @@
+// =====================================================================
+//  /my/refer — .pbhr-*
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK BESIDE ITS TOKEN (R39). The
+//  portal is a FRONTEND bundle and the backend's token sheet is not in it,
+//  so a bare `var(--pbim-ink)` resolves to nothing and the text disappears.
+//  The portal surface is also light-only by design — there is no dark
+//  palette to chase here; what "check it in both themes" means on `/my/…`
+//  is checking that every colour resolves at all.
+//
+//  Structure comes from pb_me_portal's .pbme kit — the hero, the cards, the
+//  form grid, the empty state — so this page reads as part of the
+//  employee's own area rather than something bolted on.
+//
+//  No `min()`/`max()` with mixed units: Sass evaluates those and a px/%
+//  pair kills the whole frontend bundle.
+// =====================================================================
+
+@keyframes pbhr-p-rise { from { transform: translateY(8px); opacity: 0; } }
+
+.pbhr {
+    // ------------------------------------------------------- the notices
+    .pbhr-notice {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 15px; border-radius: 12px; margin-bottom: 16px;
+        border: 1px solid var(--pbim-primary, #4F46E5);
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-dark, #3730A3);
+        font-size: 13.5px; font-weight: 600;
+    }
+    .pbhr-notice--bad {
+        border-color: var(--pbim-rose, #E11D48);
+        background: var(--pbim-rose-soft, #FFF1F2);
+        color: #9F1239;
+    }
+    .pbhr-ic { flex: 0 0 auto; }
+
+    // ------------------------------------------------------ the sections
+    .pbhr-sec {
+        margin: 26px 0 12px; font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .05em;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------------- the roles
+    .pbhr-roles {
+        display: grid; gap: 14px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .pbhr-role {
+        padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+
+        &.pbhr-role--on { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79, 70, 229, .16); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbhr-role {
+            animation: pbhr-p-rise .2s ease-out both;
+            transition: box-shadow .15s, transform .15s;
+            &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 24, 40, .08); }
+        }
+    }
+    .pbhr-role-top { display: flex; align-items: flex-start; gap: 12px; }
+    .pbhr-role-ic {
+        flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbhr-role-id { min-width: 0; }
+    .pbhr-role-name {
+        font-size: 15px; font-weight: 700; color: #1B1733; line-height: 1.3;
+    }
+    .pbhr-role-meta {
+        margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap;
+        font-size: 12px; color: #64748B;
+
+        span { display: inline-flex; align-items: center; gap: 4px; }
+    }
+    .pbhr-role-sum { font-size: 12.5px; line-height: 1.55; margin: 0; }
+    .pbhr-role-btn { align-self: flex-start; margin-top: auto; }
+
+    // -------------------------------------------------------- the form
+    .pbhr-form { margin-top: 18px; padding: 20px 22px; }
+    .pbhr-hint {
+        display: block; margin-top: 4px; font-size: 11.5px; color: #64748B;
+    }
+    .pbhr-submit { margin-top: 16px; }
+    .pbhr-fineprint {
+        margin: 12px 0 0; font-size: 12px; line-height: 1.6;
+    }
+
+    // ----------------------------------------------- what you have sent
+    .pbhr-mine { padding: 6px 18px; }
+    .pbhr-mine-row {
+        display: flex; align-items: center; gap: 14px; padding: 13px 0;
+        border-bottom: 1px solid #E2E8F0;
+
+        &:last-child { border-bottom: none; }
+    }
+    .pbhr-mine-main { flex: 1; min-width: 0; }
+    .pbhr-mine-name { font-size: 13.5px; font-weight: 650; color: #1B1733; }
+    .pbhr-mine-meta { margin-top: 2px; font-size: 11.5px; color: #64748B; }
+
+    // A badge carrying a state WORD, so the kit's capitalisation is right
+    // here — but the colours have to be stated, because the portal bundle
+    // has no token sheet behind it.
+    .pbhr-st--hired { color: #15803D; border-color: #86EFAC; }
+    .pbhr-st--not_this_time { color: #64748B; }
+    .pbhr-st--in_progress { color: #B45309; border-color: #FCD34D; }
+    .pbhr-st--received { color: #4338CA; border-color: #C7D2FE; }
+}

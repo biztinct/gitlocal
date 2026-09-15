@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/refer` reuses `pb_me_portal`'s .pbme kit — the same hero, the
+       same cards, the same empty state — so it looks like it was always
+       part of the employee's own area rather than bolted on. Everything
+       specific to it is under .pbhr.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be
+       called from QWeb, so the handful of glyphs this page uses are inlined
+       here, exactly as pb_lifecycle's token pages, pb_me_portal's ess_icon
+       and pb_offboarding's of_icon do.
+
+       W87: the icon name is passed with t-value="'name'", NEVER as a t-set
+       BODY — a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false
+       and every icon falls through to the else branch.
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42): in a server-side
+       template the dict form writes the Python repr into the attribute AND
+       drops the static class. No `t-key` anywhere (R5) — that is an OWL
+       directive. No render key called `request` (R4).
+       ================================================================== -->
+  <template id="hr_icon" name="Hiring page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbhr-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'userPlus'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></t>
+      <t t-elif="icon == 'briefcase'"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></t>
+      <t t-elif="icon == 'mapPin'"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_hiring" name="Hiring portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="42">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'refer'" class="breadcrumb-item active">Refer someone</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================
+       ALWAYS DRAWN, with a lazily-fetched counter. A card whose PRESENCE is
+       conditional on a counter is never drawn at all, because
+       portal.portal_my_home fetches its counters after the page has
+       rendered (R62). Anybody can refer somebody, so there is nothing to
+       gate on anyway. -->
+  <template id="portal_my_home_hiring" name="Hiring home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="42">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Refer someone</t>
+        <t t-set="text">Know somebody good? Put their name forward for a role we are hiring for</t>
+        <t t-set="url" t-value="'/my/refer'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'refer_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/refer                                                        -->
+  <!-- ================================================================= -->
+  <template id="portal_my_refer" name="Refer someone (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhr">
+
+        <div t-if="notice" class="pbhr-notice">
+          <t t-call="pb_hiring.hr_icon"><t t-set="icon" t-value="'check'"/></t>
+          <span t-esc="notice"/>
+        </div>
+        <div t-if="problem" class="pbhr-notice pbhr-notice--bad">
+          <t t-call="pb_hiring.hr_icon"><t t-set="icon" t-value="'alert'"/></t>
+          <span t-esc="problem"/>
+        </div>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Refer someone</t>
+          <t t-set="hero_sub">The best people we hire usually come from somebody who already works here. If you know one, this takes a minute.</t>
+        </t>
+
+        <!-- ==================== nothing open ==================== -->
+        <div t-if="not roles" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_hiring.hr_icon">
+              <t t-set="icon" t-value="'briefcase'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>No roles are open to referrals just now</h3>
+          <p class="pbme-muted">
+            A role appears here once it has been agreed and opened to
+            referrals. Come back in a week — or, if you know somebody who
+            would be right for us whatever we are hiring for, tell your HR
+            team and they can open one.
+          </p>
+        </div>
+
+        <!-- ==================== the open roles ==================== -->
+        <t t-if="roles">
+          <div class="pbme-card-title pbhr-sec">
+            Roles you can put somebody forward for
+          </div>
+          <div class="pbhr-roles">
+            <div t-foreach="roles" t-as="role"
+                 t-attf-class="pbme-card pbhr-role #{picked == role.id and 'pbhr-role--on' or ''}">
+              <div class="pbhr-role-top">
+                <div class="pbhr-role-ic">
+                  <t t-call="pb_hiring.hr_icon">
+                    <t t-set="icon" t-value="'briefcase'"/>
+                  </t>
+                </div>
+                <div class="pbhr-role-id">
+                  <div class="pbhr-role-name"><t t-esc="role.title"/></div>
+                  <div class="pbhr-role-meta">
+                    <span t-if="role.department_id"><t t-esc="role.department_id.name"/></span>
+                    <span t-if="role.location or role.country_id">
+                      <t t-call="pb_hiring.hr_icon">
+                        <t t-set="icon" t-value="'mapPin'"/>
+                        <t t-set="isz" t-value="13"/>
+                      </t>
+                      <t t-esc="role.location or role.country_id.name"/>
+                    </span>
+                    <span>
+                      <t t-call="pb_hiring.hr_icon">
+                        <t t-set="icon" t-value="'users'"/>
+                        <t t-set="isz" t-value="13"/>
+                      </t>
+                      <t t-if="role.headcount == 1">1 to find</t>
+                      <t t-else=""><t t-esc="role.headcount"/> to find</t>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p t-if="role.jd_current_id and role.jd_current_id.summary"
+                 class="pbme-muted pbhr-role-sum">
+                <t t-esc="role.jd_current_id.summary"/>
+              </p>
+              <a t-attf-href="/my/refer?role=#{role.id}#refer-form"
+                 class="pbme-btn pbhr-role-btn">
+                <t t-call="pb_hiring.hr_icon">
+                  <t t-set="icon" t-value="'userPlus'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+                Refer for this role
+              </a>
+            </div>
+          </div>
+
+          <!-- ======================= the form ======================= -->
+          <div class="pbme-card pbhr-form" id="refer-form">
+            <div class="pbme-card-title">Who do you have in mind?</div>
+            <form action="/my/refer/submit" method="post"
+                  enctype="multipart/form-data">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+              <div class="pbme-form-grid">
+                <label class="pbme-form-wide">
+                  <span class="pbme-flabel">Which role</span>
+                  <select name="requisition_id" required="required">
+                    <option value="">Pick a role…</option>
+                    <option t-foreach="roles" t-as="opt"
+                            t-att-value="opt.id"
+                            t-att-selected="'selected' if picked == opt.id else None">
+                      <t t-esc="opt.title"/>
+                      <t t-if="opt.department_id"> — <t t-esc="opt.department_id.name"/></t>
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span class="pbme-flabel">Their name</span>
+                  <input type="text" name="name" required="required"
+                         maxlength="120" placeholder="First and last name"/>
+                </label>
+                <label>
+                  <span class="pbme-flabel">Their email</span>
+                  <input type="email" name="email" maxlength="120"
+                         placeholder="name@example.com"/>
+                </label>
+                <label>
+                  <span class="pbme-flabel">Their phone</span>
+                  <input type="text" name="phone" maxlength="40"
+                         placeholder="Optional if you gave an email"/>
+                </label>
+                <label>
+                  <span class="pbme-flabel">Their CV</span>
+                  <input type="file" name="cv"
+                         accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+                  <span class="pbhr-hint">PDF or Word, up to 5 MB. Optional.</span>
+                </label>
+                <label class="pbme-form-wide">
+                  <span class="pbme-flabel">Why they would be good</span>
+                  <textarea name="note" rows="4" maxlength="2000"
+                            placeholder="One real example beats three adjectives. What have you seen them do?"/>
+                </label>
+              </div>
+              <button type="submit" class="pbme-btn pbhr-submit">
+                <t t-call="pb_hiring.hr_icon">
+                  <t t-set="icon" t-value="'send'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+                Put them forward
+              </button>
+              <p class="pbme-muted pbhr-fineprint">
+                The recruiter for that role gets this straight away, and the
+                person you named goes into the pipeline tagged as your
+                referral. You will see how it is going on this page.
+              </p>
+            </form>
+          </div>
+        </t>
+
+        <!-- ==================== what you have sent ==================== -->
+        <t t-if="mine">
+          <div class="pbme-card-title pbhr-sec">People you have put forward</div>
+          <div class="pbme-card pbhr-mine">
+            <div t-foreach="mine" t-as="rr" class="pbhr-mine-row">
+              <div class="pbhr-mine-main">
+                <div class="pbhr-mine-name"><t t-esc="rr.candidate_name"/></div>
+                <div class="pbhr-mine-meta">
+                  <t t-esc="rr.requisition_id.title"/>
+                  <t t-if="rr.submitted_on"> · <t t-esc="rr.submitted_on.strftime('%d %b %Y')"/></t>
+                </div>
+              </div>
+              <span t-attf-class="pbme-badge pbhr-st pbhr-st--#{rr.state}">
+                <t t-esc="rr.state_label"/>
+              </span>
+            </div>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>
