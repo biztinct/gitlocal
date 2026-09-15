@@ -114,12 +114,28 @@ class ResCompanyUnlockSeed(models.Model):
 
 
 def propose_unlock(env, days, reason):
-    """Write the reopen down and ask. None means "carry on and reopen"."""
+    """Write the reopen down and ask. None means "carry on and reopen".
+
+    THE REASON IS REFUSED HERE, NOT ONLY IN `unlock_day`. Two doors reach a
+    reopen — the lock model itself and the Close cockpit's bulk button — and
+    the cockpit's one used to get its refusal for free, because it looped
+    through the lock model. Now that it proposes instead, a rail that lived
+    only in `unlock_day` would have been silently dropped on that path: the
+    proposal would be written, applied, refused INSIDE the apply, and the
+    refusal recorded on a request rather than raised at the person who typed
+    nothing. The rule belongs to the proposal, which is what both doors share.
+    """
     if env.context.get(UNLOCK_WRITE) or 'pb.unlock.proposal' not in env:
         return None
     days = [str(d) for d in (days or [])]
     if not days:
         return None
+    reason = (reason or '').strip()
+    if not reason:
+        raise UserError(_(
+            "Reopening a closed day needs a reason — it is the only account "
+            "anyone reviewing this payroll will have of why the week was "
+            "taken back."))
     return env['pb.unlock.proposal'].propose(
         'unlock',
         _("Reopen %s closed day(s)", len(days)),
