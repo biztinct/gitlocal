@@ -137,12 +137,32 @@ class PbApprovalInbox(models.AbstractModel):
         """
         Request = self.env['biz.approval.request']
         if scope == 'team':
+            # "MY TEAM" IS DEFINED IN LOGINS, AND MOST OF THE PEOPLE A LINE
+            # MANAGER APPROVES FOR DO NOT HAVE ONE.
+            #
+            # `subject_user_ids` is filled from the subjects' USER accounts,
+            # and a person who clocks in on a badge has none (ledger AM50 says
+            # the same thing from the other side — "their manager" cannot be
+            # resolved through a login either). So a supervisor whose whole
+            # team punches a clock opened the dock and found it empty, while
+            # their own seat sat on every one of those requests.
+            #
+            # The queue is therefore "about somebody who works for me, OR
+            # waiting on a seat of mine" — which is also the debt AM103 wrote
+            # down from the other end, where a request waiting on YOU was
+            # filed under "Other requests" because the person it is about does
+            # not report to you. It is still a READ and only a read: every
+            # decision goes through the engine, which re-checks the seat, the
+            # account and the record's own access.
             team = self._my_team_user_ids()
+            waiting = [('seat_ids.acting_user_id', '=', self.env.uid),
+                       ('seat_ids.status', '=', 'open')]
+            company = [('company_id', 'in', self._my_company_ids())]
             if not team:
-                return Request, [('id', '=', 0)]
-            return Request.sudo(), [
-                ('subject_user_ids', 'in', team),
-                ('company_id', 'in', self._my_company_ids())]
+                return Request.sudo(), waiting + company
+            return Request.sudo(), (
+                ['|', ('subject_user_ids', 'in', team)]
+                + ['&'] + waiting + company)
         if scope == 'org':
             if not self._can_org():
                 raise AccessError(_(
