@@ -22,14 +22,16 @@ turns on.
 """
 
 import logging
-from datetime import date
+from datetime import date, timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .hiring_common import (
-    BUDGET_STATUS, GROUP_ADMIN, GROUP_MANAGER, GROUP_USER, REFERRAL_STATES,
-    REQUISITION_STATES, ROLE_TYPES, SCREEN_TAGS, as_id, counted, fold,
+    BUDGET_STATUS, DEBRIEF_DECISIONS, DELAY_KINDS, FINAL_KINDS, GROUP_ADMIN,
+    GROUP_MANAGER, GROUP_USER, INTERVIEW_MODES, INTERVIEW_STATES, NO_SHOW_BY,
+    RECOMMENDATIONS, REFERRAL_STATES, REQUISITION_STATES, ROLE_TYPES,
+    SCREEN_TAGS, STEP_KINDS, as_id, counted, fold,
 )
 
 _logger = logging.getLogger(__name__)
@@ -145,6 +147,8 @@ class PbHiring(models.AbstractModel):
         rows = [self._row(req) for req in requests]
         rows.sort(key=lambda r: (r['rank'], -(r['days_open'] or 0),
                                  -(r['id'] or 0)))
+        interviews = self._safe(lambda: self._interview_rows(co_ids),
+                                default=[])
 
         return {
             'allowed': True,
@@ -152,7 +156,7 @@ class PbHiring(models.AbstractModel):
             'can_recruit': self._can_recruit(),
             'can_admin': self._can_admin(),
             'can_raise': Requisition._can_raise(),
-            'kpis': self._kpis(rows),
+            'kpis': self._kpis(rows, interviews),
             'rows': rows,
             'departments': self._safe(lambda: self._departments(co_ids),
                                       default=[]),
@@ -171,6 +175,19 @@ class PbHiring(models.AbstractModel):
                     [('company_id', 'in', co_ids)]), default=0),
             'total': total,
             'capped': total > len(rows),
+            # A2 — the other half of this board. The words come from the
+            # server's own lists so the screen can never hold a second copy
+            # that drifts out of step with them.
+            'interviews': interviews,
+            'interview_states': [{'key': k, 'label': v}
+                                 for k, v in INTERVIEW_STATES],
+            'modes': [{'key': k, 'label': v} for k, v in INTERVIEW_MODES],
+            'step_kinds': [{'key': k, 'label': v} for k, v in STEP_KINDS],
+            'no_show_reasons': [{'key': k, 'label': v} for k, v in NO_SHOW_BY],
+            'delay_kinds': [{'key': k, 'label': v} for k, v in DELAY_KINDS],
+            'decisions': [{'key': k, 'label': v} for k, v in DEBRIEF_DECISIONS],
+            'recommendations': [{'key': k, 'label': v}
+                                for k, v in RECOMMENDATIONS],
         }
 
     @api.model
@@ -180,7 +197,10 @@ class PbHiring(models.AbstractModel):
                 'can_raise': False, 'kpis': {}, 'rows': [], 'departments': [],
                 'countries': [], 'recruiters': [], 'states': [],
                 'role_types': [], 'budget_states': [], 'screen_tags': [],
-                'rule_count': 0, 'total': 0, 'capped': False}
+                'rule_count': 0, 'total': 0, 'capped': False,
+                'interviews': [], 'interview_states': [], 'modes': [],
+                'step_kinds': [], 'no_show_reasons': [], 'delay_kinds': [],
+                'decisions': [], 'recommendations': []}
 
     @api.model
     def _departments(self, co_ids):
@@ -304,10 +324,82 @@ class PbHiring(models.AbstractModel):
         return [{'id': s.id, 'name': s.name or '', 'count': by_stage[s.id]}
                 for s in stages]
 
+    # =====================================================================
+    #  A2 — the interviews
+    # =====================================================================
     @api.model
-    def _kpis(self, rows):
+    def _interview_rows(self, co_ids, limit=None):
+        """Everything still live, plus the recent past.
+
+        The window is deliberate: an interview last March is history and
+        belongs on the candidate, not on a board whose question is "what is
+        happening this week and what is stuck". Six weeks back is enough to
+        still see the round whose opinions nobody has written.
+        """
+        cap = int(limit or BOARD_LIMIT)
+        since = fields.Datetime.now() - timedelta(days=42)
+        rows = self.env['pb.hiring.interview'].search(
+            [('company_id', 'in', co_ids), ('start', '>=', since)],
+            order='start', limit=cap)
+        return [self._interview_row(rec) for rec in rows]
+
+    @api.model
+    def _interview_row(self, rec):
+        now = fields.Datetime.now()
+        today = fields.Date.context_today(self)
+        start = rec.start
+        bucket = 'past'
+        if rec.state == 'scheduled' and start:
+            if start.date() == today:
+                bucket = 'today'
+            elif today < start.date() <= today + timedelta(days=7):
+                bucket = 'week'
+            elif start > now:
+                bucket = 'later'
+        if rec.state in ('scheduled', 'done') and rec.feedback_late:
+            bucket = 'late'
+        elif rec.state in ('scheduled', 'done') and rec.stop and rec.stop < now \
+                and rec.feedback_in < rec.feedback_total:
+            bucket = 'awaiting'
+        return {
+            'id': rec.id,
+            'requisition_id': rec.requisition_id.id,
+            'role': rec.requisition_id.title or '',
+            'applicant_id': rec.applicant_id.id,
+            'candidate': rec.candidate_name or '',
+            'round_no': rec.round_no or 1,
+            'kind': rec.kind or '',
+            'kind_label': dict(STEP_KINDS).get(rec.kind, ''),
+            'start': str(rec.start or ''),
+            'stop': str(rec.stop or ''),
+            'mode': rec.mode or '',
+            'mode_label': dict(INTERVIEW_MODES).get(rec.mode, ''),
+            'location': rec.location or '',
+            'panel': [p.name or '' for p in rec.panel_employee_ids.sudo()],
+            'recruiter': rec.recruiter_id.name or '',
+            'state': rec.state,
+            'state_label': dict(INTERVIEW_STATES).get(rec.state, ''),
+            'feedback_in': rec.feedback_in,
+            'feedback_total': rec.feedback_total,
+            'feedback_late': rec.feedback_late,
+            'feedback_due': str(rec.feedback_due_at or ''),
+            'recommendation_avg': round(rec.recommendation_avg, 2),
+            'late_notice': bool(rec.late_notice),
+            'moved_times': len(rec.reschedule_ids),
+            'decision': rec.decision or '',
+            'decision_label': dict(DEBRIEF_DECISIONS).get(rec.decision, ''),
+            'can_debrief': rec.kind in FINAL_KINDS,
+            'bucket': bucket,
+        }
+
+    @api.model
+    def _kpis(self, rows, interviews=None):
+        interviews = interviews or []
         month_start = date.today().replace(day=1)
         return {
+            'interviews_week': sum(1 for i in interviews
+                                   if i['bucket'] in ('today', 'week')),
+            'feedback_late': sum(i['feedback_late'] for i in interviews),
             'open': sum(1 for r in rows if r['state'] == 'open'),
             'waiting': sum(1 for r in rows if r['waiting']),
             'waiting_mine': sum(1 for r in rows if r['waiting_mine']),
@@ -351,8 +443,14 @@ class PbHiring(models.AbstractModel):
                        'kind_label': dict(s._fields['kind'].selection).get(
                            s.kind, ''),
                        'owner': s.owner_id.name or '',
+                       'stage': s.stage_id.name or '',
                        'days': s.days_expected or 0}
                       for s in req.step_ids],
+            'selected_applicant_id': req.selected_applicant_id.id,
+            'selected_applicant':
+                req.selected_applicant_id.sudo().partner_name or '',
+            'panel_people': self._safe(lambda: self._panel_people(req),
+                                       default=[]),
             'jds': [{'id': j.id, 'version': j.version or 1,
                      'title': j.title or '', 'state': j.state,
                      'state_label': dict(j._fields['state'].selection).get(
@@ -399,8 +497,20 @@ class PbHiring(models.AbstractModel):
         rows = Applicant.with_context(active_test=False).search(
             [('job_id', '=', req.job_id.id)],
             order='stage_id desc, id desc', limit=120)
+        # ONE READ FOR EVERY CANDIDATE'S INTERVIEWS, not one per card. A
+        # drawer with forty candidates would otherwise be forty searches, and
+        # the row cap above is what makes that a slow screen rather than a
+        # broken one — which is the worse of the two failures.
+        by_applicant = {}
+        interviews = self.env['pb.hiring.interview'].search(
+            [('applicant_id', 'in', rows.ids)], order='start desc', limit=400)
+        for rec in interviews:
+            by_applicant.setdefault(rec.applicant_id.id, []).append(
+                self._interview_row(rec))
         out = []
         for app in rows:
+            mine = by_applicant.get(app.id, [])
+            live = [i for i in mine if i['state'] == 'scheduled']
             out.append({
                 'id': app.id,
                 'name': app.partner_name or app.email_from or _('Candidate'),
@@ -412,8 +522,39 @@ class PbHiring(models.AbstractModel):
                 'screen_label': dict(SCREEN_TAGS).get(app.pb_screen, ''),
                 'status': app.application_status or '',
                 'active': bool(app.active),
+                'interviews': mine,
+                # The one a person would ask about: the hour that has not
+                # happened yet, soonest first.
+                'next_interview': sorted(
+                    live, key=lambda i: i['start'])[0] if live else None,
+                'rounds': len([i for i in mine
+                               if i['state'] not in ('cancelled',
+                                                     'rescheduled')]),
+                'selected': app.id == req.selected_applicant_id.id,
             })
         return out
+
+    @api.model
+    def _panel_people(self, req):
+        """Who can be put on a panel: this company's people, folded for
+        searching.
+
+        `fold` rather than a domain `ilike`, because Postgres on this box has
+        no `unaccent` extension and most people on this database have an
+        accent in their name (R78) — and `search_read` of two columns rather
+        than a `search` of records, because reading one field of an
+        `hr.employee` reads forty (R56).
+        """
+        co_ids = [req.company_id.id] if req.company_id \
+            else (self.env.companies.ids or [self.env.company.id])
+        rows = self.env['hr.employee'].sudo().search_read(
+            [('company_id', 'in', co_ids)], ['id', 'name', 'job_title'],
+            limit=600)
+        return sorted(
+            [{'id': r['id'], 'name': r['name'] or '',
+              'role': r.get('job_title') or '',
+              'fold': fold(r['name'] or '')} for r in rows],
+            key=lambda r: r['fold'])
 
     # =====================================================================
     #  The verbs
@@ -609,6 +750,127 @@ class PbHiring(models.AbstractModel):
         counts = self.env['pb.hiring.automation'].run_now()
         return {'note': self.env['pb.hiring.automation'].describe(counts),
                 'counts': counts}
+
+    # =====================================================================
+    #  A2 — the interview loop
+    # =====================================================================
+    def _interview(self, payload, key='interview_id'):
+        rec = self.env['pb.hiring.interview'].browse(
+            as_id(payload.get(key) or payload.get('id')))
+        rec.ensure_one()
+        return rec
+
+    def _act_schedule(self, payload):
+        self._require_recruit()
+        interview = self.env['pb.hiring.interview'].schedule(payload)
+        return {
+            'id': interview.id,
+            'note': _("Round %(n)s with %(who)s is arranged, and everybody "
+                      "has the invitation.",
+                      n=interview.round_no or 1,
+                      who=interview.candidate_name or ''),
+        }
+
+    def _act_reschedule(self, payload):
+        self._require_recruit()
+        fresh = self._interview(payload).reschedule(payload)
+        return {'id': fresh.id,
+                'note': _("Moved. The old time is called off and the new one "
+                          "has gone out.")}
+
+    def _act_no_show(self, payload):
+        self._require_recruit()
+        interview = self._interview(payload)
+        interview.action_no_show(by=payload.get('by'),
+                                 note=payload.get('note'))
+        return {'id': interview.id, 'state': interview.state,
+                'note': _("Written down. The recruiter has been given "
+                          "something to do about it.")}
+
+    def _act_mark_done(self, payload):
+        self._require_recruit()
+        interview = self._interview(payload)
+        interview.action_mark_done()
+        return {'id': interview.id, 'state': interview.state,
+                'note': _("Done, with every opinion in.")}
+
+    def _act_cancel_interview(self, payload):
+        self._require_recruit()
+        interview = self._interview(payload)
+        interview.action_cancel(note=payload.get('note'))
+        return {'id': interview.id, 'state': interview.state,
+                'note': _("Called off, and everybody has been told.")}
+
+    def _act_debrief(self, payload):
+        self._require_recruit()
+        interview = self._interview(payload)
+        interview.action_debrief(notes=payload.get('notes'),
+                                 decision=payload.get('decision'))
+        return {'id': interview.id,
+                'note': _("Written down while everybody still remembers it.")}
+
+    def _act_next_round(self, payload):
+        self._require_recruit()
+        applicant = self.env['hr.applicant'].browse(
+            as_id(payload.get('applicant_id')))
+        applicant.ensure_one()
+        applicant.action_pb_next_round(step_id=payload.get('step_id'))
+        return {'id': applicant.id,
+                'note': _("Through to %s, and they have been told.",
+                          applicant.sudo().stage_id.name or '')}
+
+    def _act_reject(self, payload):
+        self._require_recruit()
+        applicant = self.env['hr.applicant'].browse(
+            as_id(payload.get('applicant_id')))
+        applicant.ensure_one()
+        name = applicant.sudo().partner_name or ''
+        applicant.action_pb_reject(reason_id=payload.get('reason_id'))
+        return {'id': applicant.id,
+                'note': _("%s has been told. It is a small thing and almost "
+                          "nobody does it.", name)}
+
+    def _act_open_interview(self, payload):
+        interview = self._interview(payload)
+        return {'type': 'ir.actions.act_window',
+                'res_model': 'pb.hiring.interview', 'res_id': interview.id,
+                'view_mode': 'form', 'views': [[False, 'form']],
+                'name': interview.display_name}
+
+    def _act_copy_feedback_link(self, payload):
+        """A panel member whose mail bounced is a very ordinary problem."""
+        self._require_recruit()
+        row = self.env['pb.hiring.feedback'].browse(
+            as_id(payload.get('feedback_id')))
+        row.ensure_one()
+        return {'id': row.id, 'link': row.sudo()._token_url(),
+                'note': _("Their own link is on screen — send it to them "
+                          "however you like.")}
+
+    def _act_interview_panel(self, payload):
+        """Who is on this interview's panel, and what each of them said."""
+        interview = self._interview(payload)
+        labels = dict(RECOMMENDATIONS)
+        return {
+            'id': interview.id,
+            'rows': [{
+                'id': f.id,
+                'who': f.panel_employee_id.sudo().name or '',
+                'state': f.state,
+                'verdict': labels.get(f.recommendation, ''),
+                'score': round(f.score_avg, 1),
+                'notes': f.notes or '',
+                'due': str(f.due_at or ''),
+                'chased': bool(f.urgent_sent_at),
+            } for f in interview.feedback_ids.sorted('id')],
+        }
+
+    def _act_run_reminders(self, payload):
+        """The ten-minute step, run by hand. Stamped, so it is safe."""
+        self._require_recruit()
+        Auto = self.env['pb.hiring.automation']
+        counts = Auto.run_reminders()
+        return {'note': Auto.describe_reminders(counts), 'counts': counts}
 
     # --------------------------------------------------------------- helper
     def _get(self, payload):

@@ -46,6 +46,21 @@ const SCREEN_ICON = {
 
 const BUDGET_ICON = { within: "checkCircle", over: "alert", unknown: "info" };
 
+/** How an interview is happening, drawn rather than spelled out. */
+const MODE_ICON = { in_person: "mapPin", video: "monitor", phone: "smartphone" };
+
+/**
+ * The four questions the Interviews tab answers, in the order somebody asks
+ * them. "Late" is last and is the only one that is ever red: it is the only
+ * one where a person outside the company is waiting.
+ */
+const IV_FOCUS = ["today", "week", "awaiting", "late"];
+
+/** A recommendation is stored 1-4; this is what each number looks like. */
+const VERDICT_ICON = {
+    strong_yes: "smilePlus", yes: "smile", no: "meh", strong_no: "frown",
+};
+
 export class PbHiringBoard extends Component {
     static template = "pb_hiring.PbHiringBoard";
     static props = ["*"];
@@ -55,6 +70,7 @@ export class PbHiringBoard extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.screenOrder = SCREEN_ORDER;
+        this.ivFocusKeys = IV_FOCUS;
 
         this.state = useState({
             loaded: false,
@@ -92,6 +108,29 @@ export class PbHiringBoard extends Component {
             raising: null,
             writingJd: null,
             moving: null,
+
+            // ---- A2, the interview loop ----
+            // The board has TWO questions and they are not the same
+            // question: "which roles are we trying to fill" and "what is
+            // happening this week". A single list that tried to answer both
+            // would answer neither.
+            tab: "roles",
+            interviews: [],
+            interviewStates: [],
+            modes: [],
+            stepKinds: [],
+            noShowReasons: [],
+            delayKinds: [],
+            decisions: [],
+            recommendations: [],
+            ivFocus: "",
+            ivQ: "",
+            scheduling: null,
+            rescheduling: null,
+            noShowing: null,
+            debriefing: null,
+            rejecting: null,
+            panelQ: "",
         });
 
         onWillStart(async () => { await this.load(); });
@@ -132,6 +171,14 @@ export class PbHiringBoard extends Component {
                 ruleCount: d.rule_count || 0,
                 total: d.total || 0,
                 capped: !!d.capped,
+                interviews: d.interviews || [],
+                interviewStates: d.interview_states || [],
+                modes: d.modes || [],
+                stepKinds: d.step_kinds || [],
+                noShowReasons: d.no_show_reasons || [],
+                delayKinds: d.delay_kinds || [],
+                decisions: d.decisions || [],
+                recommendations: d.recommendations || [],
                 loaded: true,
             });
         } catch (e) {
@@ -318,6 +365,325 @@ export class PbHiringBoard extends Component {
             job_id: Number(move.job_id),
         });
         if (res) { this.state.moving = null; }
+    }
+
+    // =====================================================================
+    //  A2 — the interviews
+    // =====================================================================
+    modeIcon(mode) { return MODE_ICON[mode] || "calendar"; }
+
+    verdictIcon(avg) {
+        if (!avg) { return "circle"; }
+        if (avg >= 3.5) { return VERDICT_ICON.strong_yes; }
+        if (avg >= 2.5) { return VERDICT_ICON.yes; }
+        if (avg >= 1.5) { return VERDICT_ICON.no; }
+        return VERDICT_ICON.strong_no;
+    }
+
+    /** The words for a focus chip, so the server keeps no second copy. */
+    ivFocusLabel(key) {
+        return {
+            today: _t("Today"),
+            week: _t("This week"),
+            awaiting: _t("Waiting on an opinion"),
+            late: _t("Late"),
+        }[key] || key;
+    }
+
+    ivFocusCount(key) {
+        if (key === "late") {
+            return this.state.interviews.filter((i) => i.feedback_late).length;
+        }
+        return this.state.interviews.filter((i) => i.bucket === key).length;
+    }
+
+    get filteredInterviews() {
+        const q = (this.state.ivQ || "").trim().toLowerCase();
+        return this.state.interviews.filter((i) => {
+            if (this.state.ivFocus === "late" && !i.feedback_late) {
+                return false;
+            }
+            if (this.state.ivFocus && this.state.ivFocus !== "late"
+                && i.bucket !== this.state.ivFocus) {
+                return false;
+            }
+            if (q) {
+                const hay = [i.candidate, i.role, i.recruiter,
+                             (i.panel || []).join(" ")]
+                    .join(" ").toLowerCase();
+                if (!hay.includes(q)) { return false; }
+            }
+            return true;
+        });
+    }
+
+    toggleIvFocus(key) {
+        this.state.ivFocus = this.state.ivFocus === key ? "" : key;
+    }
+
+    setTab(tab) { this.state.tab = tab; }
+
+    /**
+     * Tomorrow at ten, as the value a `datetime-local` input wants.
+     *
+     * A scheduling dialog that opens empty is a dialog where the first thing
+     * anybody does is type today's date badly. Tomorrow at ten is almost
+     * never right and is always close, which is the useful kind of default.
+     */
+    defaultStart() {
+        const when = new Date();
+        when.setDate(when.getDate() + 1);
+        when.setHours(10, 0, 0, 0);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${when.getFullYear()}-${pad(when.getMonth() + 1)}-`
+            + `${pad(when.getDate())}T${pad(when.getHours())}:`
+            + `${pad(when.getMinutes())}`;
+    }
+
+    /**
+     * A `datetime-local` value is the reader's own wall clock; the server
+     * stores naive UTC. Converting here rather than on the server is what
+     * makes "ten o'clock" mean ten o'clock to the person who typed it.
+     */
+    toServerTime(local) {
+        if (!local) { return ""; }
+        const when = new Date(local);
+        if (isNaN(when.getTime())) { return ""; }
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${when.getUTCFullYear()}-${pad(when.getUTCMonth() + 1)}-`
+            + `${pad(when.getUTCDate())} ${pad(when.getUTCHours())}:`
+            + `${pad(when.getUTCMinutes())}:00`;
+    }
+
+    /** A stored naive-UTC string, back on the reader's own clock. */
+    localWhen(stored) {
+        if (!stored) { return ""; }
+        const when = new Date(`${String(stored).replace(" ", "T")}Z`);
+        if (isNaN(when.getTime())) { return String(stored); }
+        return when.toLocaleString(undefined, {
+            day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+        });
+    }
+
+    // --------------------------------------------------------- arranging one
+    startSchedule(candidate) {
+        const d = this.state.drawer;
+        this.state.panelQ = "";
+        this.state.scheduling = {
+            applicant_id: candidate.id,
+            name: candidate.name,
+            requisition_id: d ? d.id : 0,
+            step_id: "",
+            start: this.defaultStart(),
+            duration_minutes: 45,
+            mode: "in_person",
+            location: "",
+            panel: [],
+        };
+    }
+
+    cancelSchedule() { this.state.scheduling = null; }
+
+    get panelChoices() {
+        const d = this.state.drawer;
+        const people = (d && d.panel_people) || [];
+        const q = (this.state.panelQ || "").trim().toLowerCase();
+        if (!q) { return people.slice(0, 40); }
+        // Folded on the server so an accent cannot hide a colleague (R78).
+        return people.filter((p) => p.fold.includes(q)
+                             || p.name.toLowerCase().includes(q)).slice(0, 40);
+    }
+
+    onPanel(id) {
+        const form = this.state.scheduling || this.state.rescheduling;
+        return !!form && form.panel.includes(id);
+    }
+
+    togglePanel(id) {
+        const form = this.state.scheduling || this.state.rescheduling;
+        if (!form) { return; }
+        const at = form.panel.indexOf(id);
+        if (at === -1) { form.panel.push(id); } else { form.panel.splice(at, 1); }
+    }
+
+    panelName(id) {
+        const d = this.state.drawer;
+        const hit = ((d && d.panel_people) || []).find((p) => p.id === id);
+        return hit ? hit.name : "";
+    }
+
+    async saveSchedule() {
+        const form = this.state.scheduling;
+        if (!form) { return; }
+        if (!form.panel.length) {
+            this.notif.add(
+                _t("Say who is on the panel — nobody can give an opinion on a conversation they were not in."),
+                { type: "warning" });
+            return;
+        }
+        const start = this.toServerTime(form.start);
+        if (!start) {
+            this.notif.add(_t("Say when it is."), { type: "warning" });
+            return;
+        }
+        const res = await this.act("schedule", {
+            applicant_id: form.applicant_id,
+            requisition_id: form.requisition_id,
+            step_id: form.step_id || false,
+            start,
+            duration_minutes: Number(form.duration_minutes) || 45,
+            mode: form.mode,
+            location: form.location,
+            panel_employee_ids: form.panel,
+        });
+        if (res) { this.state.scheduling = null; }
+    }
+
+    // ----------------------------------------------------------- moving one
+    startReschedule(interview) {
+        this.state.panelQ = "";
+        this.state.rescheduling = {
+            interview_id: interview.id,
+            name: interview.candidate,
+            was: interview.start,
+            start: this.defaultStart(),
+            duration_minutes: 45,
+            mode: interview.mode || "in_person",
+            location: interview.location || "",
+            reason: "",
+            delay_kind: "",
+            panel: [],
+        };
+    }
+
+    cancelReschedule() { this.state.rescheduling = null; }
+
+    async saveReschedule() {
+        const form = this.state.rescheduling;
+        if (!form) { return; }
+        if (!form.reason.trim()) {
+            this.notif.add(
+                _t("Say why it is moving. In six weeks nobody will remember, and this is the only place the answer will be."),
+                { type: "warning" });
+            return;
+        }
+        if (!form.delay_kind) {
+            this.notif.add(
+                _t("Say whose side moved it. It is not about blame — it is the only way anybody can answer why hiring here takes as long as it does."),
+                { type: "warning" });
+            return;
+        }
+        const start = this.toServerTime(form.start);
+        if (!start) {
+            this.notif.add(_t("Say when it is moving to."), { type: "warning" });
+            return;
+        }
+        const res = await this.act("reschedule", {
+            interview_id: form.interview_id,
+            start,
+            duration_minutes: Number(form.duration_minutes) || 45,
+            mode: form.mode,
+            location: form.location,
+            reason: form.reason,
+            delay_kind: form.delay_kind,
+        });
+        if (res) { this.state.rescheduling = null; }
+    }
+
+    // --------------------------------------------------------- nobody came
+    startNoShow(interview) {
+        this.state.noShowing = {
+            interview_id: interview.id,
+            name: interview.candidate,
+            by: "",
+            note: "",
+        };
+    }
+
+    cancelNoShow() { this.state.noShowing = null; }
+
+    async saveNoShow() {
+        const form = this.state.noShowing;
+        if (!form) { return; }
+        if (!form.by) {
+            this.notif.add(
+                _t("Say who did not come — the candidate, or somebody on our side."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("no_show", { ...form });
+        if (res) { this.state.noShowing = null; }
+    }
+
+    // ------------------------------------------------------------ the debrief
+    startDebrief(interview) {
+        this.state.debriefing = {
+            interview_id: interview.id,
+            name: interview.candidate,
+            notes: interview.decision ? "" : "",
+            decision: interview.decision || "",
+        };
+    }
+
+    cancelDebrief() { this.state.debriefing = null; }
+
+    async saveDebrief() {
+        const form = this.state.debriefing;
+        if (!form) { return; }
+        if (!form.decision) {
+            this.notif.add(
+                _t("Say what was decided: we want them, keep them warm, or not this time."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("debrief", { ...form });
+        if (res) { this.state.debriefing = null; }
+    }
+
+    // ------------------------------------------------------- the two answers
+    async nextRound(candidate, stepId) {
+        await this.act("next_round", {
+            applicant_id: candidate.id, step_id: stepId || false,
+        });
+    }
+
+    startReject(candidate) {
+        this.state.rejecting = {
+            applicant_id: candidate.id,
+            name: candidate.name,
+            reason_id: "",
+        };
+    }
+
+    cancelReject() { this.state.rejecting = null; }
+
+    async saveReject() {
+        const form = this.state.rejecting;
+        if (!form) { return; }
+        const res = await this.act("reject", {
+            applicant_id: form.applicant_id,
+            reason_id: form.reason_id || false,
+        });
+        if (res) { this.state.rejecting = null; }
+    }
+
+    async markDone(interview) {
+        await this.act("mark_done", { interview_id: interview.id });
+    }
+
+    async copyFeedbackLink(feedbackId) {
+        const res = await this.act("copy_feedback_link",
+                                   { feedback_id: feedbackId },
+                                   { reload: false, silent: true });
+        if (res && res.link) {
+            // A STICKY NOTIFICATION AND NOT A CLIPBOARD WRITE. The clipboard
+            // API is refused outside a secure context and in a cross-origin
+            // frame, and a copy button that silently does nothing is worse
+            // than a link somebody can see and select.
+            this.notif.add(res.link, {
+                type: "info", sticky: true, title: _t("Their own link"),
+            });
+        }
     }
 
     // ------------------------------------------------------------ the words

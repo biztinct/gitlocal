@@ -76,7 +76,7 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
     key: "hiring",
     icon: "userPlus",
     label: _t("Hiring"),
-    blurb: _t("Who picks a hiring request up once it has been agreed."),
+    blurb: _t("Who picks a hiring request up, and what a panel is asked to score."),
     groups: HIRING_ADMIN,
     cards: [{
         id: "hiring_rules",
@@ -84,6 +84,12 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
         icon: "globe",
         label: _t("Hiring rules"),
         sub: _t("One line per company and country: the recruiter and their manager."),
+    }, {
+        id: "hiring_criteria",
+        xmlid: "pb_hiring.action_pb_hiring_criterion",
+        icon: "checkCheck",
+        label: _t("What a panel scores on"),
+        sub: _t("The five lines every interviewer is asked to score, one to five."),
     }],
 }, { sequence: 40 });
 
@@ -141,3 +147,31 @@ palette.add("hiring_rules", {
     requires: "pb_hiring_board",
     action: { xmlid: "pb_hiring.action_pb_hiring_country_rule" },
 }, { sequence: 3540 });
+
+/* ---------------------------------------------------- A2, the interviews --
+ * Still inside A1's 3500 block: the wave plan gives this module one block
+ * and B1 starts at 3600, so the interview loop takes 3550 and 3560 rather
+ * than opening a second block for the same module.
+ */
+palette.add("hiring_interviews", {
+    id: "hiring_interviews",
+    label: _t("Interviews this week"),
+    sublabel: _t("Hiring"),
+    icon: "calendar",
+    groups: HIRING_GATE,
+    requires: "pb_hiring_board",
+    action: { xmlid: "pb_hiring.action_pb_hiring_interview" },
+}, { sequence: 3550 });
+
+// The recruiter's gate and not the wider one: chasing somebody for an
+// opinion is the recruiter's work, and a list of who is late is a list of
+// colleagues being slow.
+palette.add("hiring_feedback", {
+    id: "hiring_feedback",
+    label: _t("Feedback owed"),
+    sublabel: _t("Hiring"),
+    icon: "inbox",
+    groups: HIRING_GATE,
+    requires: "pb_hiring_board",
+    action: { xmlid: "pb_hiring.action_pb_hiring_feedback" },
+}, { sequence: 3560 });
