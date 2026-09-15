@@ -25,10 +25,21 @@
 
           <!-- RESULT -->
           <t t-elif="state.result">
-            <div class="pplw-result">
+            <!-- TWO ENDINGS, BECAUSE THERE ARE TWO. Putting somebody on the
+                 payroll travels a route where one is published, and this
+                 panel would otherwise say "Employee added" over a person who does
+                 not exist yet. -->
+            <div t-if="state.result.applied" class="pplw-result">
               <div class="pplw-result-ic"><t t-out="ic('check',30)"/></div>
               <h3>Employee added</h3>
               <p><t t-esc="state.result.employee_name"/><t t-if="state.result.contract_id"> · first contract created</t></p>
+            </div>
+            <div t-else="" class="pplw-result is-waiting">
+              <div class="pplw-result-ic"><t t-out="ic('clock',30)"/></div>
+              <h3 t-esc="state.result.message"/>
+              <p>Nobody has been added to the payroll yet. It is written down, and the person is created when the route says yes.</p>
+              <p t-if="state.result.reference" class="pbim-sub">Reference <t t-esc="state.result.reference"/></p>
+              <div t-foreach="state.result.notes or []" t-as="nt" t-key="nt_index" class="pbim-sub" t-esc="nt"/>
             </div>
           </t>
 
@@ -123,7 +134,7 @@
           <button t-elif="state.step === 1" class="pbim-btn ghost" t-on-click="close">Cancel</button>
           <button t-else="" class="pbim-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
           <div class="pplw-sp"/>
-          <button t-if="state.result" class="pbim-btn primary" t-on-click="openEmployee"><t t-out="ic('arrow',15)"/> Open employee</button>
+          <button t-if="state.result and state.result.applied" class="pbim-btn primary" t-on-click="openEmployee"><t t-out="ic('arrow',15)"/> Open employee</button>
           <button t-elif="state.step &lt; 3" class="pbim-btn primary" t-att-disabled="!canNext" t-on-click="next">Next <t t-out="ic('arrow',15)"/></button>
           <button t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create employee</button>
         </div>

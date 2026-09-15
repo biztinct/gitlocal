@@ -182,9 +182,7 @@ class PbBudgetUploadWizard(models.TransientModel):
             if not answer.get('applied'):
                 plan.pop('writes', None)
                 plan.update(answer)
-                plan['message'] = _("Sent for approval — %s",
-                                    answer.get('with_whom')
-                                    or _('your approver'))
+                plan['message'] = answer.get('message') or ''
                 return plan
             return dict(answer.get('result') or {},
                         reference=answer.get('reference'))

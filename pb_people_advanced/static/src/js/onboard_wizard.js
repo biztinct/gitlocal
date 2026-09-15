@@ -52,8 +52,14 @@ export class OnboardWizard extends Component {
         this.state.loading = true; this.state.busyMsg = "Creating employee…";
         try {
             const res = await this.orm.call(MODEL, "create_employee", [this.state.form]);
-            if (res.error && !res.employee_id) { this.notif.add(res.error, { type: "danger" }); return; }
-            if (res.error) this.notif.add(_t("Employee created; contract: %(error)s", { error: res.error }), { type: "warning" });
+            // A PENDING ANSWER IS NOT A FAILURE. It carries no employee id
+            // because nobody has been added yet — that is the point.
+            if (res.error && !res.employee_id && !res.pending) {
+                this.notif.add(res.error, { type: "danger" }); return;
+            }
+            if (res.error && res.applied) {
+                this.notif.add(_t("Employee created; contract: %(error)s", { error: res.error }), { type: "warning" });
+            }
             this.state.result = res;
         } catch (e) {
             this.notif.add((e && e.message && e.message.toString()) || _t("Failed."), { type: "danger" });

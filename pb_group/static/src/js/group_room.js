@@ -225,7 +225,18 @@ export class PbGroupRoom extends Component {
             this.state.room = await this.orm.call("pb.group.room", method,
                                                   args);
             this.state.failed = "";
-            if (done) { this.notif.add(done, { type: "success" }); }
+            // A POLICY CHANGE MAY HAVE BECOME A REQUEST. Which rate to use,
+            // which currency the group reads in, when its year starts: those
+            // travel a route where one is published, and the room comes back
+            // with the proposal instead of the change. Saying "Saved" over a
+            // group that is exactly as it was is a control that lies.
+            const held = this.state.room && this.state.room.proposal;
+            if (held && !held.applied) {
+                this.notif.add(held.message || _t("Sent for approval."),
+                               { type: "info" });
+            } else if (done) {
+                this.notif.add(done, { type: "success" });
+            }
             return true;
         } catch (e) {
             const message = this._msg(

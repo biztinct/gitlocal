@@ -1086,8 +1086,8 @@ class PbPayBands(models.AbstractModel):
                 'reference': answer.get('reference'),
                 'with_whom': answer.get('with_whom'),
                 'route': answer.get('route'),
-                'sentence': _("Sent for approval — %s",
-                              answer.get('with_whom') or _('your approver'))}
+                'message': answer.get('message') or '',
+                'sentence': answer.get('message') or ''}
 
     @api.model
     def _band_facts(self, band, low=None, high=None, people=0):

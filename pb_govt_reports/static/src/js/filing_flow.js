@@ -215,12 +215,21 @@ export class PbFilingFlow extends Component {
     get outcomeLabel() {
         const d = this.state.result || {};
         const n = (d.artifacts || []).length;
+        // THREE OUTCOMES, THREE SENTENCES. A filing that is waiting for
+        // somebody has produced nothing — and "this filing ran and produced
+        // no file" would send its reader looking for a fault in the wizard
+        // instead of at their own approvals inbox.
+        if (d.pending) {
+            return d.message || _t("Sent for approval.");
+        }
         if (n) {
             return _t("Generated %s file(s). Nothing has been sent anywhere — "
                       + "download them and file them yourself.", n);
         }
         return _t("This filing ran and produced no file.");
     }
+
+    get isWaiting() { return !!(this.state.result && this.state.result.pending); }
 
     value(name) {
         const v = this.state.form[name];
@@ -315,7 +324,10 @@ export class PbFilingFlow extends Component {
         if (!d) { return; }
         this.state.result = d;
         this.state.step = "deliver";
-        if ((d.artifacts || []).length) {
+        if (d.pending) {
+            this.notif.add(d.message || _t("Sent for approval."),
+                           { type: "info" });
+        } else if ((d.artifacts || []).length) {
             // One sentence, one msgid (W80).
             this.notif.add(this.producedLabel(d), { type: "success" });
         }

@@ -2143,6 +2143,25 @@ export class PbFormulaStudio extends Component {
         } catch (e) { this.state.legisPacks = []; }
         finally { this.state.legisBusy = false; }
     }
+
+    /**
+     * What a studio door says back, now that a press can become a request.
+     *
+     * A legislation pack, a rate table: statutory numbers, and where a route
+     * is published they travel it. The answer comes back `ok` with `pending`
+     * on it, and a toast saying "Applied · 12 values updated" over a scheme
+     * nothing has touched is a control that lies. Returns true when the change
+     * really happened.
+     */
+    _saidSoFar(r, okMsg) {
+        if (r && r.pending) {
+            this.notif.add(r.message || _t("Sent for approval."),
+                           { type: "info" });
+            return false;
+        }
+        if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+        return true;
+    }
     async legisSelect(packId) {
         this.state.legisSel = packId;
         this.state.legisDetail = null;
@@ -2181,7 +2200,7 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "legislation_apply",
                 [this.state.legisSel, configId]);
             if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Apply failed"), { type: "warning" }); return; }
-            this.notif.add(_t("Applied · %(count)s values updated", { count: r.total_changed }), { type: "success" });
+            if (!this._saidSoFar(r, _t("Applied · %(count)s values updated", { count: r.total_changed }))) { return; }
             await this.legisSelect(this.state.legisSel);
             await this._afterLegisApply(configId);
         } catch (e) { this.notif.add(_t("Apply failed"), { type: "danger" }); }
@@ -2197,7 +2216,7 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "legislation_apply",
                 [this.state.legisSel, false, ids]);
             if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Roll-out failed"), { type: "warning" }); return; }
-            this.notif.add(_t("Rolled out to %(configs)s configurations · %(values)s values updated", { configs: r.configs_touched, values: r.total_changed }), { type: "success" });
+            if (!this._saidSoFar(r, _t("Rolled out to %(configs)s configurations · %(values)s values updated", { configs: r.configs_touched, values: r.total_changed }))) { return; }
             await this.legisSelect(this.state.legisSel);
             await this._afterLegisApply(null);
         } catch (e) { this.notif.add(_t("Roll-out failed"), { type: "danger" }); }
@@ -4657,7 +4676,7 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "save_rate_table",
                 [this.state.config.id, this.state.rateEdit]);
             if (!r || !r.ok) { this.state.rateErr = (r && r.msg) || _t("Save failed"); return; }
-            this.notif.add(_t("Rate table saved"), { type: "success" });
+            if (!this._saidSoFar(r, _t("Rate table saved"))) { return; }
             await this.reloadRates();
             this.state.rateEdit = null;
             // BRACKET recompiles at compute — refresh preview so the grid/card reflect it
@@ -4672,7 +4691,7 @@ export class PbFormulaStudio extends Component {
         if (this._lockedNotice()) return;
         const r = await this.orm.call("pb.formula.studio", "delete_rate_table", [t.id]);
         if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Delete failed"), { type: "warning" }); return; }
-        this.notif.add(_t("Rate table deleted"), { type: "success" });
+        if (!this._saidSoFar(r, _t("Rate table deleted"))) { return; }
         await this.reloadRates();
     }
     setPreviewIncome(ev) {

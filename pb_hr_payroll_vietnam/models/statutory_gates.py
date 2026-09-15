@@ -144,17 +144,20 @@ class VietnamTaxTableApproval(models.Model):
                    'configs_affected': {'value': 0, 'unit': ''}},
             target=self,
         )
-        return self._statutory_notice(proposal)
+        return self.env['pb.statutory.gate.mixin']._statutory_notice(proposal)
+
+
+class _StatutoryNotice(models.AbstractModel):
+    """Where the one sentence every statutory button says back lives."""
+    _inherit = 'pb.statutory.gate.mixin'
 
     @api.model
     def _statutory_notice(self, proposal):
+        """One sentence, from the server, for every statutory button."""
         answer = proposal.answer()
-        if answer.get('applied'):
-            message = _("The tax bands were rebuilt.")
-        elif answer.get('with_whom'):
-            message = _("Sent for approval — %s", answer['with_whom'])
-        else:
-            message = _("Sent for approval.")
+        message = _("The tax bands were rebuilt.") \
+            if answer.get('applied') and proposal.kind == 'tax_slabs' \
+            else (answer.get('message') or '')
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -183,7 +186,7 @@ class VietnamInsuranceAdjustmentApproval(models.Model):
             raise AccessError(_(
                 "Applying an insurance adjustment is a payroll manager's "
                 "decision. Ask somebody who looks after payroll to do this."))
-        self.env['pb.statutory.proposal'].propose(
+        proposal = self.env['pb.statutory.proposal'].propose(
             'insurance_adjust',
             _("Insurance adjustment · %s", self.display_name or ''),
             payload={'adjustment_id': self.id},
@@ -195,4 +198,7 @@ class VietnamInsuranceAdjustmentApproval(models.Model):
             target=self,
             amount=abs(float(self.difference or 0.0)),
         )
-        return True
+        # A BUTTON THAT RETURNS True SAYS NOTHING. The adjustment is not
+        # applied yet, and a form that simply reloads unchanged is a screen
+        # that leaves its reader guessing.
+        return self.env['pb.statutory.gate.mixin']._statutory_notice(proposal)

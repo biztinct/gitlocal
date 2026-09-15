@@ -479,6 +479,27 @@ export class SchemeMapBoard extends Component {
         this.state.attaching = { segments: keys.slice(), cycle: "any" };
     }
 
+
+    /**
+     * What the board says back, now that a wiring change can become a request.
+     *
+     * Who is paid by which scheme travels a route where one is published, and
+     * the board comes back with the proposal instead of the change. A toast
+     * saying "attached" over a map that is exactly as it was is a control
+     * that lies.
+     *
+     * Returns true when the change really happened.
+     */
+    _saidSoFar(board, okMsg, tone = "success") {
+        const held = board && board.proposal;
+        if (held && !held.applied) {
+            this.notif.add(held.message || _t("Sent for approval."),
+                           { type: "info" });
+            return false;
+        }
+        if (okMsg) { this.notif.add(okMsg, { type: tone }); }
+        return true;
+    }
     openAttachForPicked() {
         if (this.state.picked.length) { this.openAttach(this.state.picked); }
     }
@@ -552,12 +573,12 @@ export class SchemeMapBoard extends Component {
             }
             this.state.picked = [];
             this.closeAttach();
-            this.notif.add(
+            this._saidSoFar(
+                this.state.board,
                 done === 1
                     ? _t("Attached. The people in that team are paid by this scheme from now on.")
                     : _t("Attached %(count)s teams to this scheme.",
-                         { count: done }),
-                { type: "success" });
+                         { count: done }));
         } catch (e) {
             // GR12 — a refusal about something the reader is LOOKING AT belongs
             // beside it. A toast over an open panel is a sentence about a
@@ -575,10 +596,11 @@ export class SchemeMapBoard extends Component {
         try {
             this.state.board = await this.orm.call(
                 MODEL, "detach", [wire.id, this.state.companyId || 0]);
-            this.notif.add(
+            this._saidSoFar(
+                this.state.board,
                 _t("%(segment)s is no longer attached to %(scheme)s.",
                    { segment: wire.segment_label, scheme: wire.config }),
-                { type: "info" });
+                "info");
         } catch (e) {
             this.notif.add(this._msg(e, _t("That line could not be removed.")),
                            { type: "danger" });
@@ -641,10 +663,12 @@ export class SchemeMapBoard extends Component {
                 MODEL, "accept_draft", [rows, this.state.companyId || 0]);
             this.state.board = result.board;
             this.closeDraft();
-            this.notif.add(
+            // `accept_draft` answers with the PROPOSAL where a route is
+            // published, and with the written map where one is not.
+            this._saidSoFar(
+                { proposal: result.applied === undefined ? null : result },
                 _t("%(count)s lines written to the map. Every person under them now knows what pays them.",
-                   { count: result.created }),
-                { type: "success" });
+                   { count: result.created }));
         } catch (e) {
             this.notif.add(
                 this._msg(e, _t("The map could not be written.")),

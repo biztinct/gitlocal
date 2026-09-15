@@ -117,7 +117,7 @@
             <!-- ======================== step 3: the outcome ======================== -->
             <t t-if="state.step === 'deliver'">
               <div class="pplw-result">
-                <div class="pplw-result-ic" t-out="ic(artifacts.length ? 'checkCircle' : 'alert', 26)"/>
+                <div class="pplw-result-ic" t-out="ic(isWaiting ? 'clock' : (artifacts.length ? 'checkCircle' : 'alert'), 26)"/>
                 <h3 t-esc="filing and filing.label"/>
                 <p t-esc="outcomeLabel"/>
               </div>
@@ -133,7 +133,10 @@
                 </button>
               </div>
 
-              <div t-if="resultMessage" class="pplw-note gfw-msg" t-esc="resultMessage"/>
+              <div t-if="isWaiting and state.result.reference" class="pplw-note gfw-msg">
+                Reference <t t-esc="state.result.reference"/>. The file is produced when the route says yes.
+              </div>
+              <div t-if="!isWaiting and resultMessage" class="pplw-note gfw-msg" t-esc="resultMessage"/>
             </t>
 
           </t>

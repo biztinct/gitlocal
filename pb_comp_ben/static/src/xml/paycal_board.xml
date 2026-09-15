@@ -192,11 +192,20 @@
                         t-on-click="() => this.setState(state.open, 'closed')">
                   Close this month
                 </button>
-                <button class="pbim-btn-sm ghost"
-                        t-if="state.open.state === 'closed'"
-                        t-on-click="() => this.setState(state.open, 'upcoming')">
-                  Open it again
-                </button>
+                <!-- REOPENING NEEDS A REASON, AND SO THE SCREEN ASKS FOR
+                     ONE. A button that can only ever be refused is a dead
+                     end; the box beside it is what makes the refusal
+                     impossible to meet. -->
+                <t t-if="state.open.state === 'closed'">
+                  <input type="text" class="pbim-input pcal-reason"
+                         placeholder="Why is it being reopened?"
+                         t-model="state.reopenReason"/>
+                  <button class="pbim-btn-sm ghost"
+                          t-att-disabled="!(state.reopenReason or '').trim()"
+                          t-on-click="() => this.setState(state.open, 'upcoming')">
+                    Open it again
+                  </button>
+                </t>
               </div>
             </div>
             <div class="pcal-detail-grid">

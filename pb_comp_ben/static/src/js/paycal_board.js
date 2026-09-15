@@ -44,6 +44,9 @@ export class PbPaycalBoard extends Component {
             kpis: {},
 
             open: null,          // the month whose panel is open
+            // Reopening a closed month needs a reason — it is the only
+            // account anybody reviewing the payroll will have of why.
+            reopenReason: "",
             building: false,     // the "build the year" dialog
             build: { cutoff: 25, pay: 1, months: 12, offsets: "5,2,0" },
             busy: false,
@@ -110,11 +113,21 @@ export class PbPaycalBoard extends Component {
         if (!this.state.canWrite) { return; }
         this.state.busy = true;
         try {
-            await this.orm.call("pb.paycal", "set_state", [mo.id, next]);
+            const r = await this.orm.call("pb.paycal", "set_state",
+                                          [mo.id, next, this.state.reopenReason || ""]);
             await this.load(this.state.year);
-            this.notif.add(next === "closed"
-                ? _t("This month is closed to changes.")
-                : _t("This month is open again."), { type: "success" });
+            this.state.reopenReason = "";
+            // REOPENING A MONTH IS A DECISION; CLOSING ONE IS NOT. Where a
+            // route is published the press becomes a request, and the month
+            // is still closed until somebody agrees.
+            if (r && r.pending) {
+                this.notif.add(r.message || _t("Sent for approval."),
+                               { type: "info" });
+            } else {
+                this.notif.add(next === "closed"
+                    ? _t("This month is closed to changes.")
+                    : _t("This month is open again."), { type: "success" });
+            }
         } catch (e) {
             this.notif.add(e.message ? e.message.data ? e.message.data.message
                 : e.message : _t("That could not be saved."), { type: "danger" });

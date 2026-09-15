@@ -941,7 +941,10 @@ export class PbBudgetBoard extends Component {
                 note: e.note,
             }]);
             this.state.spending = false;
-            this.notif.add(res.message, { type: "success" });
+            // An expense travels the budget route where one is published, and
+            // the answer then says so instead of "added".
+            this.notif.add(res.message || _t("Added."),
+                           { type: res.pending ? "info" : "success" });
             await this.reload();
         } catch (err) {
             this.notif.add(this._msg(err, _t("That could not be saved.")),

@@ -647,8 +647,8 @@ export class PbTenants extends Component {
             r.planOpen = false;
             r.plan = null;
             this._syncPoll();
-            this.notif.add(_t("The rollout has started — the practice run goes first."),
-                           { type: "success" });
+            this._saidSoFar(
+                r.d, _t("The rollout has started — the practice run goes first."));
             this.loadSync();
         } catch (e) {
             this.notif.add(this.errText(e, _t("It could not be started.")), { type: "danger" });
@@ -663,7 +663,7 @@ export class PbTenants extends Component {
         try {
             r.d = await this.orm.call("pb.tenants", method, args);
             this._syncPoll();
-            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this._saidSoFar(r.d, okMsg);
             this.loadSync();
             return true;
         } catch (e) {
@@ -1413,8 +1413,7 @@ export class PbTenants extends Component {
             f.d = res.data || f.d;
             f.confirm = null;
             f.range = null;
-            this.notif.add(res.message || _t("Done."),
-                           { type: (res.failed || []).length ? "warning" : "success" });
+            this._saidSoFar(res, res.message || _t("Done."));
             this.loadFleet();
         } catch (e) {
             this.notif.add(this.errText(e, _t("That did not work.")), { type: "danger" });
@@ -1459,8 +1458,8 @@ export class PbTenants extends Component {
                 lock_text: e.lock_text, sequence: parseInt(e.sequence, 10) || 10,
             }]);
             f.edit = null;
-            this.notif.add(_t("Saved, and every live customer has been told."),
-                           { type: "success" });
+            this._saidSoFar(
+                f.d, _t("Saved, and every live customer has been told."));
             this.loadFleet();
         } catch (err) {
             this.notif.add(this.errText(err, _t("That could not be saved.")),
@@ -2136,13 +2135,44 @@ export class PbTenants extends Component {
         }
     }
 
+    /**
+     * What a fleet press says back, now that a press can become a request.
+     *
+     * A PENDING ANSWER MUST NEVER WEAR THE SUCCESS SENTENCE. "Their access is
+     * paused. Their data is untouched." over a customer who is still live is
+     * the worst kind of lie a control can tell: confident and wrong. The
+     * server already says what happened, in words, so the screen prints that
+     * and offers the one door out — the request somebody is holding.
+     *
+     * Returns true when the press really happened.
+     */
+    _saidSoFar(r, okMsg) {
+        if (r && r.pending) {
+            this.notif.add(r.message || _t("Sent for approval."), {
+                type: "info",
+                buttons: r.request_id ? [{
+                    name: _t("See the request"),
+                    onClick: () => this.action.doAction({
+                        type: "ir.actions.client",
+                        tag: "pb_approval_inbox",
+                        name: _t("Approvals"),
+                        params: { request_id: r.request_id },
+                    }),
+                }] : [],
+            });
+            return false;
+        }
+        if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+        return true;
+    }
+
     async _planCall(method, args, busy, okMsg) {
         const p = this.state.plan;
         p.busy = busy;
         try {
             const r = await this.orm.call("pb.tenants", method, args);
             if (r && r.data) { p.d = r.data; }
-            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this._saidSoFar(r, okMsg);
             p.confirm = "";
             p.reason = "";
             await this.openDetail(this.state.det.id);
@@ -2536,7 +2566,7 @@ export class PbTenants extends Component {
         try {
             const d = await this.orm.silent.call("pb.tenants", method, args);
             if (d && d.id) { det.d = d; }
-            if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
+            this._saidSoFar(d, okMsg);
             return d;
         } catch (e) {
             this.notif.add((e && e.data && e.data.message) || _t("Action failed."), { type: "danger" });
@@ -2609,8 +2639,9 @@ export class PbTenants extends Component {
         det.busy = "offboard";
         try {
             const r = await this.orm.call("pb.tenants", "offboard", [det.id, det.confirm]);
-            this.notif.add(_t("Tenant decommissioned. Final backup: %(backup)s", { backup: r.final_backup || _t("n/a") }), { type: "success" });
-            this.backToFleet();
+            if (this._saidSoFar(r, _t("Tenant decommissioned. Final backup: %(backup)s", { backup: r.final_backup || _t("n/a") }))) {
+                this.backToFleet();
+            }
         } catch (e) {
             this.notif.add((e && e.data && e.data.message) || _t("Offboarding failed."), { type: "danger" });
         } finally {

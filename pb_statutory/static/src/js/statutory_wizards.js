@@ -40,6 +40,18 @@ export class PolicyWizard extends Component {
             if (r.error) { this.notif.add(r.error, { type: "danger" }); return; } this.state.result = r;
         } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); } finally { this.state.loading = false; }
     }
+
+    /** The one door out of a proposal: the request somebody is holding. */
+    seeRequest() {
+        const id = this.state.result && this.state.result.request_id;
+        if (!id) { return; }
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_approval_inbox",
+            name: _t("Approvals"),
+            params: { request_id: id },
+        });
+    }
     openPolicy() { const id = this.state.result && this.state.result.policy_id; if (id) this.action.doAction({ type: "ir.actions.client", tag: "pb_policy_detail", name: "Policy", params: { policy_id: id } }); }
     close() { this.action.doAction("pb_statutory.action_pb_statutory", { clearBreadcrumbs: true }); }
 }
@@ -73,6 +85,18 @@ export class TaxWizard extends Component {
         try { const r = await this.orm.call(MODEL, "create_tax_table", [this.state.form]);
             if (r.error) { this.notif.add(r.error, { type: "danger" }); return; } this.state.result = r;
         } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); } finally { this.state.loading = false; }
+    }
+
+    /** The one door out of a proposal: the request somebody is holding. */
+    seeRequest() {
+        const id = this.state.result && this.state.result.request_id;
+        if (!id) { return; }
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_approval_inbox",
+            name: _t("Approvals"),
+            params: { request_id: id },
+        });
     }
     openTax() { const id = this.state.result && this.state.result.tax_id; if (id) this.action.doAction({ type: "ir.actions.client", tag: "pb_tax_detail", name: "Tax table", params: { tax_id: id } }); }
     close() { this.action.doAction("pb_statutory.action_pb_statutory", { clearBreadcrumbs: true }); }

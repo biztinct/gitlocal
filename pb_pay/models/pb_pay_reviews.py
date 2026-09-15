@@ -513,9 +513,7 @@ class PbPayReviews(models.AbstractModel):
         if answer.get('applied'):
             return None
         return dict(answer, ok=True, pending=True, cells=[], rows=[],
-                    sentence=_("Sent for approval — %s",
-                               answer.get('with_whom')
-                               or _('your approver')))
+                    sentence=answer.get('message') or '')
 
     # ============================================================ the writes
     @api.model
