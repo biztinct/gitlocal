@@ -321,7 +321,8 @@ class TestWfLock(CloseCase):
         self.assertEqual(corr.state, 'submitted')
 
         self._lock()                       # closed between submit and approve
-        corr.action_approve()              # must NOT raise
+        # Decided by the person's own manager, which is who the route asks.
+        corr.with_user(self.line_manager).action_approve()   # must NOT raise
 
         self.assertEqual(corr.state, 'refused')
         self.assertTrue(corr.apply_error)
@@ -341,7 +342,7 @@ class TestWfLock(CloseCase):
             'new_check_out': datetime.combine(self.day2, time(16, 0)),
             'reason': 'forgot to punch', 'company_id': self.company.id})
         corr.action_submit()
-        corr.action_approve()
+        corr.with_user(self.line_manager).action_approve()
         self.assertEqual(corr.state, 'approved')
         self.assertFalse(corr.apply_error)
 

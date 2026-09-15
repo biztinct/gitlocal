@@ -108,8 +108,15 @@ class TestPayReview(TransactionCase):
         # independence rail refuses somebody their own approval, so the
         # review is sent in by a preparer who decides none of it — which is
         # what a pay review really looks like.
+        # THE PREPARER IS A PAY MANAGER, and has to be. Sending a review in
+        # is a write on it, and `biz.approval.engine.submit` re-checks that
+        # access before it opens a route — as it should: a person who cannot
+        # edit a review has no business starting an approval of one. What the
+        # preparer does NOT hold is a SEAT, which is what keeps them out of
+        # every decision on their own review.
         cls.preparer = cls._staff_user(
-            'p6b.preparer@example.com', ['base.group_user'])
+            'p6b.preparer@example.com',
+            ['base.group_user', 'pb_pay.group_pay_manager'])
         cls.hr_lead = cls._staff_user(
             'p6b.lead@example.com',
             ['base.group_user', 'pb_pay.group_pay_manager'])

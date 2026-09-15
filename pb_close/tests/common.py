@@ -56,11 +56,30 @@ class CloseCase(TransactionCase):
             'open_checkout_hours': 16,
             'variance_minutes': 10, 'variance_hours_week': 0.5})
 
+        # A CORRECTION IS DECIDED BY THE PERSON'S OWN MANAGER, so the fixture
+        # needs one with a login. Phase 6 put attendance corrections on the
+        # engine and the route's first rung is "their manager"; an employee
+        # with nobody above them leaves that rung with no seat, the request
+        # blocks, and the suite's own `action_approve` then answers "no step
+        # is waiting for a decision on this one" — a refusal about the
+        # fixture, not about the lock these cases are here to test.
+        cls.line_manager = cls._mk_user('p4_line_manager', [
+            'hr.group_hr_user',
+            'hr_attendance.group_hr_attendance_officer'])
         Emp = cls.env['hr.employee']
+        # NOT `cls.boss`: `TestCleanBatch` uses that name for a USER of its
+        # own and re-parents both employees onto its own manager. Two fixtures
+        # sharing one attribute name is a collision waiting for whoever adds
+        # the third.
+        cls.line_boss = Emp.create({
+            'name': 'P4 Line Boss', 'company_id': cls.company.id, 'tz': 'UTC',
+            'user_id': cls.line_manager.id})
         cls.emp = Emp.create({'name': 'P4 Punchy', 'company_id': cls.company.id,
-                              'tz': 'UTC', 'barcode': 'P4C001'})
+                              'tz': 'UTC', 'barcode': 'P4C001',
+                              'parent_id': cls.line_boss.id})
         cls.emp2 = Emp.create({'name': 'P4 Steady', 'company_id': cls.company.id,
-                               'tz': 'UTC', 'barcode': 'P4C002'})
+                               'tz': 'UTC', 'barcode': 'P4C002',
+                               'parent_id': cls.line_boss.id})
 
         # break_duration 0 on purpose: `duration` (→ shift.planned_hours) is
         # end − start − break, so the stock 1 h break would make an 8 h punch

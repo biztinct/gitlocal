@@ -8,7 +8,7 @@ and not seven. Each of those is a case below, because each of them is a way for
 a useful instrument to become an ignored one.
 """
 
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
@@ -395,40 +395,51 @@ class TestCloseBoard(CloseCase):
     # ==================================================================
     #  P5 WP-0a — the open-punch threshold
     # ==================================================================
-    def _this_week(self):
-        today = date.today()
-        return today, (today - timedelta(days=today.weekday())).isoformat()
-
     def _open_punch_now(self, hours_ago):
-        """An open punch that started `hours_ago` hours ago, on TODAY's local
-        day. `self.emp` is a UTC employee (see common.py), so the local day and
-        the UTC day are the same and the fixture cannot straddle midnight —
-        the assertion is about the threshold, never about a timezone."""
+        """An open punch that started `hours_ago` hours ago.
+
+        IT CAN STRADDLE MIDNIGHT, AND ONCE IT DID. The docstring here used to
+        claim it could not, on the grounds that `self.emp` is a UTC employee —
+        which settles the TIMEZONE and says nothing about the CLOCK. A suite
+        run at 00:18 UTC put a two-hour-old punch on yesterday, the board was
+        asked about today, and the day came back `missing_punch` (a shift with
+        no punch at all) instead of `missing_checkout`. The assertion was about
+        the threshold and the failure was about the hour the machine happened
+        to be started — ledger AM99's family, at a boundary rather than a date.
+
+        The punch is still where it really is; the callers ask the board about
+        the day the punch LANDED ON, which is the honest question either way.
+        """
         ci = fields.Datetime.now() - timedelta(hours=hours_ago)
         return self.Att.create({
             'employee_id': self.emp.id, 'check_in': ci,
             'pb_entry_source': 'grid'})
+
+    def _punch_day(self, attendance):
+        """(the day that punch is on, the Monday of its week)."""
+        day = fields.Datetime.to_datetime(attendance.check_in).date()
+        return day, (day - timedelta(days=day.weekday())).isoformat()
 
     def test_a_punch_open_since_this_morning_is_not_a_missing_checkout(self):
         """Until P5 the board flagged EVERY open punch with no threshold at
         all, so on a live day roughly fifty of the sixty-six flags were people
         standing at their machines. The exception engine has always gated the
         same kind on `open_checkout_hours`."""
-        today, week = self._this_week()
-        self._shift(self.emp, today)
-        self._open_punch_now(2)
+        punch = self._open_punch_now(2)
+        day, week = self._punch_day(punch)
+        self._shift(self.emp, day)
         data = self._data(week_start=week)
-        self.assertNotIn('missing_checkout', self._flags(data, self.emp))
+        self.assertNotIn('missing_checkout', self._flags(data, self.emp, day))
 
     def test_a_punch_open_past_the_threshold_is_still_a_missing_checkout(self):
         """The same punch, the same board — only the company's threshold
         moved. Proves the number is READ from the rule rather than hardcoded."""
-        today, week = self._this_week()
-        self._shift(self.emp, today)
-        self._open_punch_now(2)
+        punch = self._open_punch_now(2)
+        day, week = self._punch_day(punch)
+        self._shift(self.emp, day)
         self.rule.open_checkout_hours = 1
         data = self._data(week_start=week)
-        self.assertIn('missing_checkout', self._flags(data, self.emp, today))
+        self.assertIn('missing_checkout', self._flags(data, self.emp, day))
 
     def test_a_settled_day_with_no_check_out_is_still_flagged(self):
         """The regression guard for the fix: a genuinely forgotten punch on a
@@ -445,9 +456,9 @@ class TestCloseBoard(CloseCase):
         """The point of the fix is AGREEMENT, not a number: two surfaces that
         disagree about what an exception IS leave the officer with no way to
         tell which one to believe."""
-        today, week = self._this_week()
+        punch = self._open_punch_now(2)
+        today, week = self._punch_day(punch)
         self._shift(self.emp, today)
-        self._open_punch_now(2)
         Engine = self.env['pb.attendance.exception.engine'].sudo()
 
         def engine_says():
@@ -457,7 +468,7 @@ class TestCloseBoard(CloseCase):
 
         def board_says():
             return 'missing_checkout' in self._flags(
-                self._data(week_start=week), self.emp)
+                self._data(week_start=week), self.emp, today)
 
         self.assertEqual(board_says(), engine_says())
         self.assertFalse(board_says())
