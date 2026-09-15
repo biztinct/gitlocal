@@ -132,4 +132,212 @@
     .pbhr-st--not_this_time { color: #64748B; }
     .pbhr-st--in_progress { color: #B45309; border-color: #FCD34D; }
     .pbhr-st--received { color: #4338CA; border-color: #C7D2FE; }
+
+    // A hiring request's own statuses, on /my/hiring
+    .pbhr-st--open, .pbhr-st--filled { color: #4338CA; border-color: #C7D2FE; }
+    .pbhr-st--draft { color: #64748B; }
+    .pbhr-st--submitted, .pbhr-st--manager_ok, .pbhr-st--hr_ok {
+        color: #B45309; border-color: #FCD34D;
+    }
+    .pbhr-st--refused, .pbhr-st--closed { color: #64748B; }
+
+    // ================================================================
+    //  /my/hiring — what you owe, and what you are sitting in
+    // ================================================================
+    .pbhr-owed, .pbhr-ivs { display: flex; flex-direction: column; gap: 12px; }
+
+    .pbhr-owe {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        padding: 16px 18px;
+        border-left: 3px solid #4F46E5;
+
+        // LATE IS A DIFFERENT COLOUR AND NOT A DIFFERENT SHOUT. Somebody
+        // who is late has already had one email about it; the page's job is
+        // to be findable, not to tell them off again.
+        &.pbhr-owe--late { border-left-color: #E11D48; }
+    }
+    .pbhr-owe-main { flex: 1 1 260px; min-width: 0; }
+    .pbhr-owe-name {
+        font-size: 14.5px; font-weight: 700; color: #1B1733; line-height: 1.35;
+    }
+    .pbhr-owe-meta { margin-top: 4px; font-size: 12px; color: #64748B; }
+    .pbhr-owe-btn { flex: 0 0 auto; }
+
+    .pbhr-iv {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        padding: 14px 18px;
+    }
+    // The date reads as a date and not as a sentence: a person scanning this
+    // list is looking for a day, and a day they can find in one glance is
+    // the whole difference between a list and a page.
+    .pbhr-iv-when {
+        flex: 0 0 auto; width: 72px; text-align: center;
+        padding: 8px 6px; border-radius: 11px;
+        background: #EEF2FF; color: #4338CA;
+    }
+    .pbhr-iv-day { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+    .pbhr-iv-time { font-size: 16px; font-weight: 800; line-height: 1.2; }
+    .pbhr-iv-main { flex: 1 1 240px; min-width: 0; }
+    .pbhr-iv-name {
+        font-size: 14.5px; font-weight: 700; color: #1B1733;
+    }
+    .pbhr-iv-meta {
+        margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap;
+        font-size: 12px; color: #64748B;
+
+        span { display: inline-flex; align-items: center; gap: 4px; }
+    }
+    .pbhr-iv-btn { flex: 0 0 auto; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbhr-owe, .pbhr-iv { animation: pbhr-p-rise .2s ease-out both; }
+    }
+}
+
+// =====================================================================
+//  /hiring/f/<token> — the panel member's page, with no login behind it
+//
+//  NOT NESTED UNDER `.pbhr` and not under anything else (R114/R135): this
+//  page is its own document, rendered by web.frontend_layout with no portal
+//  wrapper, so a descendant selector would silently reach nothing.
+//
+//  EVERY COLOUR CARRIES A LITERAL (R39). The frontend bundle has no token
+//  sheet behind it, and a visitor here is not even logged in.
+// =====================================================================
+@keyframes pbhf-rise { from { transform: translateY(10px); opacity: 0; } }
+
+.pbhf-page {
+    min-height: 70vh;
+    padding: 40px 16px 64px;
+    background: #F8FAFC;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.pbhf-card {
+    width: 100%;
+    max-width: 620px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    padding: 34px 34px 30px;
+    box-shadow: 0 10px 34px rgba(16, 24, 40, .07);
+
+    h1 {
+        font-size: 22px; font-weight: 800; color: #1B1733;
+        letter-spacing: -.015em; margin: 14px 0 8px;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-card { animation: pbhf-rise .24s ease-out both; }
+}
+@media (max-width: 640px) {
+    .pbhf-card { padding: 24px 20px 22px; border-radius: 14px; }
+}
+
+.pbhf-card__brand {
+    font-size: 12px; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; color: #4F46E5;
+}
+.pbhf-card__ic {
+    margin-top: 18px; width: 54px; height: 54px; border-radius: 16px;
+    display: grid; place-items: center;
+    background: #EEF2FF; color: #4F46E5;
+
+    &.pbhf-card__ic--ok { background: #ECFDF5; color: #15803D; }
+    &.pbhf-card__ic--warn { background: #FFF7ED; color: #B45309; }
+}
+.pbhf-card__sub {
+    font-size: 14px; line-height: 1.65; color: #475569; margin: 0 0 4px;
+}
+.pbhf-card__fine {
+    margin: 18px 0 0; font-size: 12px; color: #64748B; line-height: 1.6;
+}
+.pbhf-ic { flex: 0 0 auto; }
+
+.pbhf-meta {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin: 14px 0 6px; padding: 7px 12px; border-radius: 999px;
+    background: #F1F5F9; color: #475569; font-size: 12.5px;
+}
+
+.pbhf-crit {
+    padding: 16px 0;
+    border-bottom: 1px solid #F1F5F9;
+
+    &:last-of-type { border-bottom: none; }
+}
+.pbhf-label {
+    display: block; font-size: 14px; font-weight: 700; color: #1B1733;
+    margin-top: 16px;
+}
+.pbhf-help {
+    margin: 4px 0 0; font-size: 12.5px; color: #64748B; line-height: 1.55;
+}
+
+// FIVE BOXES AND NOT A DROPDOWN. A scale a person can see all of at once is
+// a scale they answer honestly; a dropdown is a scale they pick the middle
+// of. The radio itself is hidden and the label IS the control, so the whole
+// box is a target on a phone.
+.pbhf-scale, .pbhf-verdict {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+}
+.pbhf-scale__o, .pbhf-verdict__o {
+    position: relative; cursor: pointer; margin: 0;
+
+    input {
+        position: absolute; opacity: 0; width: 100%; height: 100%;
+        margin: 0; cursor: pointer;
+    }
+    span {
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid #E2E8F0; border-radius: 10px;
+        background: #FFFFFF; color: #334155;
+        font-size: 14px; font-weight: 650;
+    }
+    input:checked + span {
+        border-color: #4F46E5; background: #EEF2FF; color: #3730A3;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+    }
+    input:focus-visible + span { border-color: #4F46E5; }
+}
+.pbhf-scale__o span { width: 48px; height: 44px; }
+.pbhf-verdict__o span { padding: 10px 16px; }
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-scale__o span, .pbhf-verdict__o span {
+        transition: border-color .12s, background .12s, box-shadow .12s;
+    }
+}
+
+.pbhf-input {
+    width: 100%; margin-top: 8px;
+    border: 1px solid #E2E8F0; border-radius: 10px;
+    padding: 11px 13px; font: inherit; font-size: 14px; color: #334155;
+    background: #FFFFFF; outline: none; resize: vertical; line-height: 1.6;
+
+    &:focus {
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+    }
+}
+
+.pbhf-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 22px; padding: 12px 22px;
+    border: 1px solid #E2E8F0; border-radius: 11px;
+    background: #FFFFFF; color: #334155;
+    font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+
+    &.pbhf-btn--primary {
+        background: #4F46E5; border-color: #4F46E5; color: #FFFFFF;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-btn { transition: transform .12s, box-shadow .12s; }
+    .pbhf-btn--primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, .28);
+    }
 }

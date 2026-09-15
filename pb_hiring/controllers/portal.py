@@ -16,8 +16,9 @@ a sentence rather than a traceback — a portal page never shows a traceback.
 
 import base64
 import logging
+from datetime import timedelta
 
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
@@ -73,7 +74,109 @@ class PbHiringPortal(CustomerPortal):
         if 'refer_count' in counters:
             emp = self._hiring_employee()
             values['refer_count'] = len(self._open_roles(emp)) if emp else 0
+        if 'hiring_count' in counters:
+            emp = self._hiring_employee()
+            values['hiring_count'] = self._hiring_waiting(emp) if emp else 0
         return values
+
+    # =================================================================
+    #  A2 — what hiring is waiting on this person for
+    # =================================================================
+    def _hiring_waiting(self, employee):
+        """The number on the home card: things that need THEM, not things
+        that merely mention them.
+
+        An opinion they owe and an interview they are sitting in this
+        fortnight are both work. A hiring request they raised that is sailing
+        through a sign-off is not, and putting it in the number would make
+        the card cry wolf every week.
+        """
+        if not employee:
+            return 0
+        return len(self._feedback_owed(employee)) \
+            + len(self._my_interviews(employee))
+
+    def _feedback_owed(self, employee):
+        if not employee:
+            return request.env['pb.hiring.feedback'].sudo().browse()
+        return request.env['pb.hiring.feedback'].sudo().search(
+            [('panel_employee_id', '=', employee.id),
+             ('state', '=', 'pending')], order='due_at', limit=40)
+
+    def _my_interviews(self, employee, days=14):
+        """The hours this person is sitting in, over the next fortnight.
+
+        A fortnight rather than everything: a page that lists an interview
+        six months out is a page somebody scrolls past, and the hour that
+        matters is always near the top of it.
+        """
+        if not employee:
+            return request.env['pb.hiring.interview'].sudo().browse()
+        now = fields.Datetime.now()
+        return request.env['pb.hiring.interview'].sudo().search([
+            ('panel_employee_ids', 'in', employee.ids),
+            ('state', '=', 'scheduled'),
+            ('start', '>=', now),
+            ('start', '<=', now + timedelta(days=days)),
+        ], order='start', limit=40)
+
+    def _my_requests(self, employee):
+        if not employee:
+            return request.env['pb.hiring.requisition'].sudo().browse()
+        return request.env['pb.hiring.requisition'].sudo().search(
+            ['|', ('requested_by_id', '=', employee.id),
+             ('reporting_manager_id', '=', employee.id)],
+            order='id desc', limit=30)
+
+    @http.route(['/my/hiring'], type='http', auth='user', website=True)
+    def portal_my_hiring(self, **kw):
+        """Everything hiring wants from ONE person, on one page.
+
+        Three lists and no navigation: what I asked for, what I am sitting
+        in, and what I owe somebody. A hiring manager and a panel member are
+        different people with different work, and neither of them should have
+        to learn a system to find their own two things.
+        """
+        emp = self._hiring_employee()
+        if not emp:
+            return request.redirect('/my')
+        interviews = self._my_interviews(emp)
+        values = {
+            'page_name': 'hiring',
+            'employee': emp,
+            'requests': self._my_requests(emp),
+            'interviews': interviews,
+            'owed': self._feedback_owed(emp),
+            'now': fields.Datetime.now(),
+        }
+        return request.render('pb_hiring.portal_my_hiring', values)
+
+    @http.route(['/my/hiring/ics/<int:interview_id>'], type='http',
+                auth='user', website=False, sitemap=False)
+    def portal_hiring_ics(self, interview_id, **kw):
+        """The hour, as a file their own diary understands.
+
+        THE ROUTE IS THE GATE and the employee is re-resolved from the
+        session, so the id in the URL buys nothing: it is checked against the
+        panel, the recruiter and the person who asked for the role, and
+        anything else is a redirect with a sentence rather than a file.
+        """
+        emp = self._hiring_employee()
+        interview = request.env['pb.hiring.interview'].sudo().browse(
+            interview_id).exists()
+        if not emp or not interview:
+            return request.redirect('/my/hiring')
+        allowed = (emp.id in interview.panel_employee_ids.ids
+                   or interview.recruiter_id.id == request.env.user.id
+                   or interview.requisition_id.requested_by_id.id == emp.id)
+        if not allowed:
+            return request.redirect('/my/hiring')
+        return request.make_response(
+            interview._ics(),
+            headers=[('Content-Type', 'text/calendar; charset=utf-8'),
+                     ('Content-Disposition',
+                      'attachment; filename="interview-%s.ics"'
+                      % interview.id)])
 
     # =================================================================
     #  /my/refer

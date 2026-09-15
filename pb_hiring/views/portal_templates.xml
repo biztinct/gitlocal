@@ -35,6 +35,11 @@
       <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
       <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
       <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'download'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></t>
+      <t t-elif="icon == 'monitor'"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></t>
+      <t t-elif="icon == 'smartphone'"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></t>
+      <t t-elif="icon == 'checkCircle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
@@ -44,6 +49,7 @@
             inherit_id="portal.portal_breadcrumbs" priority="42">
     <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
       <li t-if="page_name == 'refer'" class="breadcrumb-item active">Refer someone</li>
+      <li t-if="page_name == 'hiring'" class="breadcrumb-item active">My hiring</li>
     </xpath>
   </template>
 
@@ -63,6 +69,27 @@
         <t t-set="url" t-value="'/my/refer'"/>
         <t t-set="config_card" t-value="True"/>
         <t t-set="placeholder_count" t-value="'refer_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================
+       ALSO ALWAYS DRAWN, and for the same reason (R62): a card whose
+       PRESENCE is conditional on a counter is never drawn at all, because
+       portal.portal_my_home fetches its counters after the page has
+       rendered. Unconditional plus a lazy count sidesteps the trap entirely
+       — there is no eager key to forget on one of the paths through home(),
+       and a missing key on a `t-if` is a 500 for the whole of /my. -->
+  <template id="portal_my_home_hiring_mine" name="My hiring home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="43">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My hiring</t>
+        <t t-set="text">The interviews you are sitting in, the views you owe somebody, and the roles you asked for</t>
+        <t t-set="url" t-value="'/my/hiring'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'hiring_count'"/>
       </t>
     </xpath>
   </template>
@@ -233,6 +260,160 @@
               </div>
               <span t-attf-class="pbme-badge pbhr-st pbhr-st--#{rr.state}">
                 <t t-esc="rr.state_label"/>
+              </span>
+            </div>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/hiring                                                       -->
+  <!--                                                                   -->
+  <!--  THREE LISTS AND NO NAVIGATION. A hiring manager and a panel       -->
+  <!--  member are different people with different work, and neither of   -->
+  <!--  them should have to learn a system to find their own two things.  -->
+  <!--  What I owe somebody comes FIRST, because it is the only one of    -->
+  <!--  the three where another person is waiting.                        -->
+  <!-- ================================================================= -->
+  <template id="portal_my_hiring" name="My hiring (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhr">
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My hiring</t>
+          <t t-set="hero_sub">The interviews you are sitting in, the views somebody is waiting on you for, and the roles you asked for.</t>
+        </t>
+
+        <!-- ============ nothing at all ============ -->
+        <div t-if="not owed and not interviews and not requests"
+             class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_hiring.hr_icon">
+              <t t-set="icon" t-value="'calendar'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>Nothing here for you just now</h3>
+          <p class="pbme-muted">
+            This page fills in on its own. It shows an interview the moment
+            you are put on a panel, a short scoring form once you have sat in
+            one, and any role you have asked for while it is being agreed.
+            Nothing here means nothing is waiting on you.
+          </p>
+          <a href="/my/refer" class="pbme-btn">
+            <t t-call="pb_hiring.hr_icon">
+              <t t-set="icon" t-value="'userPlus'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            Refer someone instead
+          </a>
+        </div>
+
+        <!-- ============ what you owe somebody ============ -->
+        <t t-if="owed">
+          <div class="pbme-card-title pbhr-sec">
+            Somebody is waiting on you
+          </div>
+          <div class="pbhr-owed">
+            <div t-foreach="owed" t-as="ask"
+                 t-attf-class="pbme-card pbhr-owe #{ask.due_at and ask.due_at &lt; now and 'pbhr-owe--late' or ''}">
+              <div class="pbhr-owe-main">
+                <div class="pbhr-owe-name">
+                  What did you think of
+                  <t t-esc="ask.interview_id.candidate_name"/>?
+                </div>
+                <div class="pbhr-owe-meta">
+                  <t t-esc="ask.interview_id.requisition_id.title"/>
+                  · round <t t-esc="ask.interview_id.round_no"/>
+                  <t t-if="ask.due_at">
+                    ·
+                    <t t-if="ask.due_at &lt; now">this was wanted by</t>
+                    <t t-else="">wanted by</t>
+                    <t t-esc="ask.due_at.strftime('%d %b, %H:%M')"/>
+                  </t>
+                </div>
+              </div>
+              <a t-att-href="ask._token_url()" class="pbme-btn pbhr-owe-btn">
+                <t t-call="pb_hiring.hr_icon">
+                  <t t-set="icon" t-value="'check'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+                It takes a minute
+              </a>
+            </div>
+          </div>
+        </t>
+
+        <!-- ============ what you are sitting in ============ -->
+        <t t-if="interviews">
+          <div class="pbme-card-title pbhr-sec">
+            Interviews you are on, the next two weeks
+          </div>
+          <div class="pbhr-ivs">
+            <div t-foreach="interviews" t-as="iv" class="pbme-card pbhr-iv">
+              <div class="pbhr-iv-when">
+                <div class="pbhr-iv-day"
+                     t-esc="iv.start.strftime('%d %b')"/>
+                <div class="pbhr-iv-time"
+                     t-esc="iv.start.strftime('%H:%M')"/>
+              </div>
+              <div class="pbhr-iv-main">
+                <div class="pbhr-iv-name"><t t-esc="iv.candidate_name"/></div>
+                <div class="pbhr-iv-meta">
+                  <span>
+                    <t t-esc="iv.requisition_id.title"/> · round
+                    <t t-esc="iv.round_no"/>
+                  </span>
+                  <span t-if="iv.location">
+                    <t t-call="pb_hiring.hr_icon">
+                      <t t-set="icon" t-value="iv.mode == 'video' and 'monitor' or (iv.mode == 'phone' and 'smartphone' or 'mapPin')"/>
+                      <t t-set="isz" t-value="13"/>
+                    </t>
+                    <t t-esc="iv.location"/>
+                  </span>
+                  <span>
+                    <t t-call="pb_hiring.hr_icon">
+                      <t t-set="icon" t-value="'clock'"/>
+                      <t t-set="isz" t-value="13"/>
+                    </t>
+                    <t t-esc="iv.duration_minutes"/> minutes
+                  </span>
+                </div>
+              </div>
+              <a t-attf-href="/my/hiring/ics/#{iv.id}"
+                 class="pbme-btn pbhr-iv-btn">
+                <t t-call="pb_hiring.hr_icon">
+                  <t t-set="icon" t-value="'download'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+                Add to my calendar
+              </a>
+            </div>
+          </div>
+        </t>
+
+        <!-- ============ what you asked for ============ -->
+        <t t-if="requests">
+          <div class="pbme-card-title pbhr-sec">Roles you asked for</div>
+          <div class="pbme-card pbhr-mine">
+            <div t-foreach="requests" t-as="rq" class="pbhr-mine-row">
+              <div class="pbhr-mine-main">
+                <div class="pbhr-mine-name"><t t-esc="rq.title"/></div>
+                <div class="pbhr-mine-meta">
+                  <t t-esc="rq.name"/>
+                  <t t-if="rq.department_id"> · <t t-esc="rq.department_id.name"/></t>
+                  <t t-if="rq.state == 'open'">
+                    ·
+                    <t t-if="rq.applicant_count == 1">1 candidate</t>
+                    <t t-else=""><t t-esc="rq.applicant_count"/> candidates</t>
+                  </t>
+                </div>
+              </div>
+              <span t-attf-class="pbme-badge pbhr-st pbhr-st--#{rq.state}">
+                <t t-esc="dict(rq._fields['state'].selection).get(rq.state, '')"/>
               </span>
             </div>
           </div>

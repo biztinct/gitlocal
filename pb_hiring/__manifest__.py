@@ -43,10 +43,27 @@ WHAT THIS MODULE IS
     which recruiter picks a request up and who their manager is, so an approved
     request lands on a real person's desk within the minute.
 
-WHAT IT DELIBERATELY DOES NOT DO YET. Interviews, background checks, offers and
-the hiring analytics are the next two phases and are not in this one.
+  * **The interview loop.** An hour is arranged once and everybody is invited
+    from here — the candidate, the panel and the recruiter — each with a
+    calendar file they can open straight into their own diary. Payobook
+    reminds them the day before and again half an hour before. Moving an
+    interview asks why and whose side moved it, and keeps both, so a company
+    can finally answer why its hiring takes as long as it does. Nobody coming
+    is written down rather than forgotten.
+  * **Opinions that actually land.** Everybody who sat in the room gets their
+    own private link — no sign-in, it works once — with five lines to score
+    and one question: would you hire them. A day of working hours later,
+    anybody who has not answered is chased once. A round cannot be closed
+    while an opinion is missing, because "closed" would then mean "forgotten".
+  * **The two answers a candidate is waiting for.** Through to the next round,
+    or not this time — both written in plain words, both actually sent. On the
+    last conversation the panel's verdict and the decision are recorded
+    together, and that is where the offer starts from.
+
+WHAT IT DELIBERATELY DOES NOT DO YET. Background checks, offers, the offer
+letter and the hiring analytics are the next phase and are not in this one.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -67,6 +84,7 @@ the hiring analytics are the next two phases and are not in this one.
         'pb_me_portal',             # the .pbme employee-page kit
         'pb_budget',                # the one budget table (ruling D2)
         'pb_settings',              # the cog the hiring rules live behind
+        'calendar',                 # A2: the diary entry behind an interview
     ],
     'data': [
         'security/pb_hiring_security.xml',
@@ -74,10 +92,14 @@ the hiring analytics are the next two phases and are not in this one.
         'data/approval_process.xml',
         'data/ir_sequence.xml',
         'data/hiring_params.xml',
+        'data/hiring_criteria.xml',
         'data/mail_template_data.xml',
+        'data/mail_template_interviews.xml',
         'data/ir_cron.xml',
         'views/hiring_views.xml',
+        'views/interview_views.xml',
         'views/portal_templates.xml',
+        'views/token_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
