@@ -75,13 +75,22 @@ class PbTenantProposal(models.Model):
     }
 
     def _live_snapshot(self):
-        """Where each customer this is about stands, right now."""
+        """Where each customer this is about stands, right now.
+
+        THE SHAPE IS THE SAME WHETHER OR NOT THERE ARE ANY. A snapshot is
+        compared key by key, so an empty answer of `{}` beside a stored
+        `{'states': []}` reads as "somebody changed `states` from nothing to
+        nothing" and the change is refused. Two presses are about no customer
+        in particular — editing the feature catalogue, and rolling a release
+        out on a platform with no live customers yet — and both were quietly
+        blocked by their own empty list.
+        """
         self.ensure_one()
-        ids = (self.payload() or {}).get('tenant_ids') or []
         Tenant = self.env.get('pb.tenant')
-        if Tenant is None or not ids:
+        if Tenant is None:
             return {}
-        rows = Tenant.sudo().browse([int(i) for i in ids]).exists()
+        ids = [int(i) for i in ((self.payload() or {}).get('tenant_ids') or [])]
+        rows = Tenant.sudo().browse(ids).exists() if ids else Tenant
         return {'states': sorted('%s:%s' % (t.slug, t.state) for t in rows)}
 
     # --------------------------------------------------------- the applies
