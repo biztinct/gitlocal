@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         WHAT A JOINER IS ASKED FOR, in the words they would use.
+
+         Every line has a sentence under it on the candidate's own page,
+         because "Passport / ID" and "a photograph of the page with your
+         picture on it" are the difference between one upload and a week of
+         emails.
+
+         Company-less (R8), one record and one xmlid each (R58),
+         `noupdate="1"` so a reworded list survives every upgrade.
+         ================================================================== -->
+
+    <record id="doc_id" model="pb.hiring.doc.template">
+        <field name="name">Your passport or ID card</field>
+        <field name="sequence">10</field>
+        <field name="required" eval="True"/>
+        <field name="help_text">A clear photograph or scan of the page with your picture and details on it.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="doc_degree" model="pb.hiring.doc.template">
+        <field name="name">Your highest qualification</field>
+        <field name="sequence">20</field>
+        <field name="required" eval="True"/>
+        <field name="help_text">The certificate itself. If you cannot lay your hands on it, tell your recruiter — it is not a reason to hold anything up.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="doc_payslip" model="pb.hiring.doc.template">
+        <field name="name">Your last payslip or offer letter</field>
+        <field name="sequence">30</field>
+        <field name="required" eval="True"/>
+        <field name="help_text">Whichever you have. It is used to get your pay right from the first month.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="doc_bank" model="pb.hiring.doc.template">
+        <field name="name">Your bank details</field>
+        <field name="sequence">40</field>
+        <field name="required" eval="True"/>
+        <field name="help_text">A photograph of your bank card or the top of a statement — the account number and the name on the account.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="doc_photo" model="pb.hiring.doc.template">
+        <field name="name">A photograph of you</field>
+        <field name="sequence">50</field>
+        <field name="required" eval="True"/>
+        <field name="help_text">For your pass and your record here. A plain background is ideal and a phone photograph is fine.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="doc_tax" model="pb.hiring.doc.template">
+        <field name="name">Your tax code</field>
+        <field name="sequence">60</field>
+        <!-- OPTIONAL: a first-time employee does not have one yet, and a
+             required line they cannot possibly satisfy is a door that never
+             opens. -->
+        <field name="required" eval="False"/>
+        <field name="help_text">If you already have one. If this is your first job, leave it — we will sort it out for you.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</data>
+</odoo>

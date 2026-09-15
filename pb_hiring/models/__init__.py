@@ -11,7 +11,21 @@ from . import (
     stage_log,
     interview,
     panel_feedback,
+    # A3. The order matters in one place only: `offer` declares the model that
+    # `bgv`, `docreq`, `offer_approval` and `offer_closure` extend or point at,
+    # and `requisition_a3` names them all.
+    bgv,
+    offer,
+    offer_approval,
+    offer_closure,
+    docreq,
+    cover,
+    cover_approval,
+    requisition_a3,
+    vendor_ext,
+    analytics,
     hr_applicant_ext,
     pb_hiring,
+    pb_hiring_a3,
     hiring_automation,
 )

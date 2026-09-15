@@ -66,5 +66,22 @@
         <field name="value">400</field>
     </record>
 
+    <!-- ============ A3 ============ -->
+
+    <record id="param_doc_deadline_days" model="ir.config_parameter">
+        <field name="key">pb_hiring.doc_deadline_days</field>
+        <!-- WORKING days, on the company's own calendar. Two plain days from
+             a Friday afternoon is a Sunday, which is a deadline that exists
+             only to be missed. -->
+        <field name="value">2</field>
+    </record>
+
+    <record id="param_doc_reminder_days" model="ir.config_parameter">
+        <field name="key">pb_hiring.doc_reminder_days</field>
+        <!-- One a day and never two. A candidate chased twice in a morning is
+             a candidate who stops reading the emails. -->
+        <field name="value">1</field>
+    </record>
+
 </data>
 </odoo>

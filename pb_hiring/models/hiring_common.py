@@ -40,6 +40,13 @@ P_URGENT_AFTER_HOURS = 'pb_hiring.urgent_after_hours'
 P_INTERVIEW_DURATION = 'pb_hiring.interview_duration'
 P_REMINDER_CAP = 'pb_hiring.reminder_cap'
 
+# --------------------------------------------- A3, the offer and the closure
+P_DOC_DEADLINE_DAYS = 'pb_hiring.doc_deadline_days'
+P_DOC_REMINDER_DAYS = 'pb_hiring.doc_reminder_days'
+P_OFFER_MAIL = 'pb_hiring.offer_mail'
+P_CLOSURE_MAIL = 'pb_hiring.closure_mail'
+P_CREATE_CONTRACT = 'pb_hiring.create_contract'
+
 DEFAULTS = {
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
@@ -63,6 +70,22 @@ DEFAULTS = {
     # A cap that is right for a SCREEN is a bug in a CRON (R76), so the jobs
     # carry their own and it is a dial rather than a literal.
     P_REMINDER_CAP: '400',
+    # A3. Two days is what the sheet asks for, and it is counted in WORKING
+    # days on the company's own calendar for the same reason the feedback
+    # window is (R149): a request sent on a Friday afternoon that wanted an
+    # answer by Sunday would be a deadline nobody could meet.
+    P_DOC_DEADLINE_DAYS: '2',
+    P_DOC_REMINDER_DAYS: '1',
+    # ON. An offer that is agreed and never sent is the single most expensive
+    # thing that can go wrong here, so the mail leaves by default and the
+    # switch exists for a business that sends offers by hand.
+    P_OFFER_MAIL: '1',
+    P_CLOSURE_MAIL: '1',
+    # ON. The contract is what gives a joiner a joining date, and without one
+    # they have no anniversary, no probation clock and no row in the joiner
+    # digest. Off, the closure still makes the employee and says in the log
+    # and on the record that the contract was not written.
+    P_CREATE_CONTRACT: '1',
 }
 
 # ------------------------------------------------------------- the choices
@@ -192,6 +215,117 @@ DEBRIEF_DECISIONS = [
 FINAL_KINDS = ('final', 'panel')
 
 
+# ==========================================================================
+#  A3 — the background check, the documents, the offer, the cover
+# ==========================================================================
+BGV_STATES = [
+    ('open', 'Being checked'),
+    ('complete', 'All clear'),
+    ('flagged', 'Something came back'),
+]
+
+#: A result is an ANSWER and `pending` is the absence of one. "Does not
+#: apply" is a real answer and is deliberately separate from "clear": a
+#: candidate with no previous employer has not been checked and cleared, and
+#: a checklist that pretended otherwise would be a checklist nobody trusts.
+BGV_RESULTS = [
+    ('pending', 'Not looked at yet'),
+    ('ok', 'Clear'),
+    ('flag', 'Came back with something'),
+    ('na', 'Does not apply'),
+]
+
+DOCREQ_STATES = [
+    ('sent', 'Asked for'),
+    ('partial', 'Some are in'),
+    ('complete', 'Everything is in'),
+    ('expired', 'Past the date'),
+]
+
+#: draft → submitted → manager_ok → hr_ok → sent → accepted|declined →
+#: signed → closed, plus the route's own dead end.
+OFFER_STATES = [
+    ('draft', 'Being prepared'),
+    ('submitted', 'Sent for sign-off'),
+    ('manager_ok', 'Hiring manager agreed'),
+    ('hr_ok', 'Agreed'),
+    ('sent', 'With the candidate'),
+    ('accepted', 'Accepted'),
+    ('declined', 'Turned down'),
+    ('signed', 'Signed'),
+    ('closed', 'They have joined'),
+    ('refused', 'Not approved'),
+]
+
+#: The statuses in which an offer is still a live piece of work.
+OFFER_LIVE = ('draft', 'submitted', 'manager_ok', 'hr_ok', 'sent', 'accepted',
+              'signed')
+
+CANDIDATE_DECISIONS = [
+    ('pending', 'Waiting to hear'),
+    ('accepted', 'Accepted'),
+    ('declined', 'Turned it down'),
+]
+
+#: What a line of an offer IS. The same five words the pay package uses, so
+#: the package the offer becomes at closure reads as the same document.
+OFFER_KINDS = [
+    ('earning', 'Pay'),
+    ('statutory', 'Statutory contribution'),
+    ('benefit', 'Benefit'),
+    ('perquisite', 'Perk'),
+    ('bonus', 'Variable'),
+]
+
+OFFER_PERIODS = [
+    ('monthly', 'Every month'),
+    ('yearly', 'Once a year'),
+    ('one_time', 'One-off'),
+]
+
+#: WHAT ONE YEAR OF A LINE IS WORTH, and it is deliberately NOT the pay
+#: package's table. `pb.employee.comp` scores a one-off at ZERO, which is
+#: right for "what is this person paid every year" and wrong for an offer: a
+#: sign-on bonus is real money in the first year and it is the number a
+#: candidate weighs the offer on. So a one-off counts once here, and the
+#: package the closure creates keeps comp's own arithmetic — the two answer
+#: different questions and both are honest about which.
+OFFER_PERIOD_YEAR = {'monthly': 12.0, 'yearly': 1.0, 'one_time': 1.0}
+
+#: What ONE MONTH of a line is worth. Only a monthly line has a monthly
+#: figure: dividing a yearly bonus by twelve would put money on a payslip
+#: that is not paid in that month.
+OFFER_PERIOD_MONTH = {'monthly': 1.0, 'yearly': 0.0, 'one_time': 0.0}
+
+COVER_STATES = [
+    ('draft', 'Being written'),
+    ('submitted', 'Sent in'),
+    ('approved', 'Agreed'),
+    ('active', 'Covering now'),
+    ('ended', 'Finished'),
+    ('refused', 'Not agreed'),
+]
+
+#: A cover that is agreed or running is one that can stand in for somebody.
+COVER_LIVE = ('approved', 'active')
+
+#: The letter type this module adds to the shared letter library.
+OFFER_LETTER_TYPE = 'offer'
+
+#: What the candidate may send us, and nothing else. A public upload form is
+#: the widest door in the product and it takes documents and pictures only.
+UPLOAD_MIME_OK = {
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png',
+}
+
+#: Five megabytes. A phone photograph of a passport is about two.
+UPLOAD_MAX_BYTES = 5 * 1024 * 1024
+
+
 # ------------------------------------------------------------- the helpers
 def leg(env, label, fn):
     """One piece of paperwork, inside its own SAVEPOINT (R131).
@@ -246,6 +380,26 @@ def fold(text):
     out = unicodedata.normalize('NFKD', str(text))
     out = ''.join(ch for ch in out if not unicodedata.combining(ch))
     return out.replace('đ', 'd').replace('Đ', 'D').lower()
+
+
+def slug_filename(text, fallback='file'):
+    """A file name a person can still read, with the accents FOLDED.
+
+    A plain `[^A-Za-z0-9]` pass turns "Bùi Hữu Dũng" into `B_i_H_u_D_ng`,
+    which nobody can read and which collides with every other name of the
+    same shape (R28). `fold` does the NFKD pass and the hand map for `đ`;
+    this only tidies what is left, keeps the extension and never lets a
+    candidate's own file name decide where a file is written.
+    """
+    import os
+    import re
+    raw = (text or '').strip()
+    if not raw:
+        return fallback
+    stem, ext = os.path.splitext(os.path.basename(raw))
+    stem = re.sub(r'[^a-z0-9]+', '-', fold(stem)).strip('-')
+    ext = re.sub(r'[^a-z0-9.]+', '', fold(ext))[:8]
+    return (stem or fallback)[:80] + (ext or '')
 
 
 def as_id(value):

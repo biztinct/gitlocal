@@ -25,7 +25,9 @@ def post_init_hook(env):
 
 def _seed_approval_routes(env):
     for module, label in (('requisition_approval', 'hiring request'),
-                          ('jd_approval', 'job description')):
+                          ('jd_approval', 'job description'),
+                          ('offer_approval', 'offer'),
+                          ('cover_approval', 'recruiter cover')):
         try:
             mod = __import__(
                 'odoo.addons.pb_hiring.models.%s' % module,

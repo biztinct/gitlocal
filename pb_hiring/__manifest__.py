@@ -60,10 +60,41 @@ WHAT THIS MODULE IS
     last conversation the panel's verdict and the decision are recorded
     together, and that is where the offer starts from.
 
-WHAT IT DELIBERATELY DOES NOT DO YET. Background checks, offers, the offer
-letter and the hiring analytics are the next phase and are not in this one.
+  * **The background check, and the door it holds shut.** A checklist per
+    candidate, every line answered before an offer can be drafted, and a
+    written "we are going ahead anyway" when something comes back. It is not a
+    note: it stops the next step until somebody has said.
+  * **The papers, asked for once.** The candidate gets one link, on their
+    phone, listing exactly what is wanted with two working days to send it.
+    They are reminded once a day and never twice, and the recruiter is told
+    the day the window shuts — because somebody who has gone quiet is a person
+    to ring, not a row to expire.
+  * **The offer.** Every line of it typed out with the word a candidate would
+    use, a month and a year worked out at the bottom, the company's own offer
+    letter filled in and printed, and a route — the hiring manager first,
+    because it is their team and their budget, then the HR lead, because it
+    has to sit beside what everybody else is paid. Change a number after
+    somebody has agreed it and it goes round again.
+  * **Their answer, in their own words.** The candidate reads the offer on a
+    page of their own, accepts or turns it down, and can say why. Signing is
+    recorded by a person with the signed copy attached — nothing here pretends
+    to be a signature it is not.
+  * **Day one, in one press.** Closing an offer makes the employee record, the
+    contract that gives them a joining date, the pay package for the
+    compensation team, their login, and the SAME joining checklist somebody
+    arriving through a connected system gets. The role closes itself when the
+    last person has joined, the advert comes off the careers page and the
+    people who need to know are told.
+  * **Cover for a recruiter.** A fortnight away is a request their own manager
+    agrees, and for that fortnight one named colleague can work on their roles
+    and on nobody else's. Nothing is granted and nothing has to be taken back.
+  * **The numbers.** How long a role takes to fill, how long to a first offer,
+    where candidates get stuck, how many offers are accepted, which channels
+    actually produce joiners, how often interviews move and whose side moves
+    them, and whether an agency is faster than doing it yourself — with the
+    whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -85,6 +116,15 @@ letter and the hiring analytics are the next phase and are not in this one.
         'pb_budget',                # the one budget table (ruling D2)
         'pb_settings',              # the cog the hiring rules live behind
         'calendar',                 # A2: the diary entry behind an interview
+        # A3. Every one of these is a JOIN and not a copy: the offer becomes a
+        # pay package, the signed letter is filed in the vault, the joiner gets
+        # the connected system's own joining path, the agency is the vendor
+        # register's own row, and the numbers live on the Insights hub.
+        'pb_comp_ben',              # the pay package an offer becomes
+        'pb_employee_vault',        # where the signed letter is filed
+        'pb_zoho_bridge',           # the joining checklist and the login (D6)
+        'pb_vendor_access',         # the agency on the other end of the role
+        'pb_insights_hub',          # the hub the Hiring numbers lens joins
     ],
     'data': [
         'security/pb_hiring_security.xml',
@@ -95,19 +135,30 @@ letter and the hiring analytics are the next phase and are not in this one.
         'data/hiring_criteria.xml',
         'data/mail_template_data.xml',
         'data/mail_template_interviews.xml',
+        'data/hiring_bgv_templates.xml',
+        'data/hiring_doc_templates.xml',
+        'data/letter_template_offer.xml',
+        'data/mail_template_offer.xml',
         'data/ir_cron.xml',
+        'report/hiring_offer_report.xml',
         'views/hiring_views.xml',
         'views/interview_views.xml',
+        'views/offer_views.xml',
+        'views/vendor_views.xml',
         'views/portal_templates.xml',
         'views/token_templates.xml',
+        'views/offer_token_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_hiring/static/src/scss/hiring.scss',
             # the leaf component first, then the rows that name its action
+            'pb_hiring/static/src/scss/hiring_numbers.scss',
             'pb_hiring/static/src/js/hiring_board.js',
+            'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
+            'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
             'pb_hiring/static/src/scss/portal_hiring.scss',

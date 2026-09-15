@@ -267,6 +267,125 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- ==================================================================
+         A3 — the background check, the papers, the offer and the cover.
+
+         COMPANY FIRST, as global rules (no `groups`), so they are ANDed with
+         everything below rather than ORed.
+         ================================================================== -->
+
+    <record id="rule_bgv_company" model="ir.rule">
+        <field name="name">Background check: company</field>
+        <field name="model_id" ref="model_pb_hiring_bgv"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_bgv_item_company" model="ir.rule">
+        <field name="name">Background check answer: company</field>
+        <field name="model_id" ref="model_pb_hiring_bgv_item"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_bgv_template_company" model="ir.rule">
+        <field name="name">Background check line: company</field>
+        <field name="model_id" ref="model_pb_hiring_bgv_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_doc_template_company" model="ir.rule">
+        <field name="name">Joining document: company</field>
+        <field name="model_id" ref="model_pb_hiring_doc_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_docreq_company" model="ir.rule">
+        <field name="name">Document request: company</field>
+        <field name="model_id" ref="model_pb_hiring_docreq"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_docreq_item_company" model="ir.rule">
+        <field name="name">Document asked for: company</field>
+        <field name="model_id" ref="model_pb_hiring_docreq_item"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_offer_company" model="ir.rule">
+        <field name="name">Offer: company</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_offer_line_company" model="ir.rule">
+        <field name="name">Offer line: company</field>
+        <field name="model_id" ref="model_pb_hiring_offer_line"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_cover_company" model="ir.rule">
+        <field name="name">Cover: company</field>
+        <field name="model_id" ref="model_pb_hiring_cover"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE OFFER — THE PAIR AGAIN (R60/R65).
+
+         AN OFFER IS SOMEBODY'S PAY, and it is the most sensitive row this
+         module holds. The narrow rule gives the hiring manager the offers
+         for their OWN roles — they have to agree them — and the wide rule
+         beside it keeps the hiring team's sight of everything. Shipped
+         alone, the narrow one would be a NARROWING: group rules are ORed
+         over the rules that APPLY, so a recruiter who also holds the plain
+         internal-user tier would have exactly one applicable group rule and
+         would lose sight of every offer in the company.
+         ================================================================== -->
+
+    <record id="rule_offer_own" model="ir.rule">
+        <field name="name">Offer: the ones on my own roles</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('requisition_id.requested_by_user_id', '=', user.id), ('requisition_id.reporting_manager_id.user_id', '=', user.id), ('requisition_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_offer_all" model="ir.rule">
+        <field name="name">Offer: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_offer_line_own" model="ir.rule">
+        <field name="name">Offer line: the ones on my own roles</field>
+        <field name="model_id" ref="model_pb_hiring_offer_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('offer_id.requisition_id.requested_by_user_id', '=', user.id), ('offer_id.requisition_id.reporting_manager_id.user_id', '=', user.id), ('offer_id.requisition_id.recruiter_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_offer_line_all" model="ir.rule">
+        <field name="name">Offer line: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_offer_line"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- A COVER IS THE TWO PEOPLE IN IT AND THE PERSON WHO AGREES IT, and
+         the hiring team's. Not everybody's: who is away next week is not a
+         thing a company should broadcast. -->
+    <record id="rule_cover_own" model="ir.rule">
+        <field name="name">Cover: mine</field>
+        <field name="model_id" ref="model_pb_hiring_cover"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('recruiter_id', '=', user.id), ('cover_user_id', '=', user.id), ('approver_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_cover_all" model="ir.rule">
+        <field name="name">Cover: the hiring team</field>
+        <field name="model_id" ref="model_pb_hiring_cover"/>
+        <field name="groups" eval="[(4, ref('group_hiring_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
 </data>
 
     <!-- ==================================================================
@@ -294,6 +413,28 @@
     <record id="rule_jd_seat" model="ir.rule">
         <field name="name">Job description: the people the route asked to decide it</field>
         <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_offer_seat" model="ir.rule">
+        <field name="name">Offer: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_cover_seat" model="ir.rule">
+        <field name="name">Cover: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_hiring_cover"/>
         <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         <field name="perm_read" eval="True"/>

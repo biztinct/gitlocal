@@ -37,4 +37,28 @@
         <field name="sequence">232</field>
     </record>
 
+    <!-- A3. Two more rows this module owns. They sit beside the first two in
+         the catalogue because they are the same story: asking for a person,
+         describing the role, offering it, and covering for whoever is doing
+         the asking. -->
+
+    <record id="process_hiring_offer" model="biz.approval.process">
+        <field name="key">hiring_offer</field>
+        <field name="name">Offer</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hiring.offer</field>
+        <field name="description">What a candidate is being offered: the pay, the day they would start, and the title on the letter.</field>
+        <field name="money" eval="True"/>
+        <field name="sequence">234</field>
+    </record>
+
+    <record id="process_hiring_cover" model="biz.approval.process">
+        <field name="key">hiring_cover</field>
+        <field name="name">Recruiter cover</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hiring.cover</field>
+        <field name="description">A colleague picking up a recruiter's roles while they are away.</field>
+        <field name="sequence">236</field>
+    </record>
+
 </odoo>
