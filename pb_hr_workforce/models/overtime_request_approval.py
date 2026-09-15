@@ -281,7 +281,25 @@ class OvertimeRequestApproval(models.Model):
                 "This overtime is approved, but %s is not allowed to record "
                 "overtime. Ask somebody who looks after approvals to move "
                 "this step to a person who is.", self.env.user.name))
-        self.with_context(**{ENGINE_APPLY: True}).action_approve()
+        # THE QUESTION HAS BEEN ASKED, BY THE MODULE THAT OWNS IT.
+        #
+        # `_ot_can_decide` is this product's own rule about who may approve
+        # overtime, and it says in so many words: the attendance officer or
+        # manager tier, OR the employee's own line manager. The default route's
+        # only rung is that line manager — and the record RULE on this model
+        # lets a plain officer WRITE nothing but their own rows (writes across
+        # the team need `group_hr_attendance_manager`). So a perfectly correct
+        # approver decided, and the ORM then refused them the write their
+        # decision authorises: "p4_line_manager doesn't have 'write' access to
+        # Overtime Request", recorded on the request and invisible on the
+        # screen. Ledger AM54's shape, on the route every company gets.
+        #
+        # The seat rule stays READ-ONLY (AM60: a seat is a read and nothing
+        # else). The widening is here, in one place, AFTER the owning module's
+        # own gate has said yes — the audit-console pattern. `sudo()` does not
+        # change `env.uid`, so every stamp and the whole trail keep the real
+        # person's name.
+        self.sudo().with_context(**{ENGINE_APPLY: True}).action_approve()
         return True
 
     def _approval_reject(self, request, reason):
