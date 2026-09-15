@@ -16,7 +16,7 @@ this is only the payload.
 |---|---|---|---|
 | `biz_approval_workflow` | 19.0.1.5.0 | `-u` | **the proposal mixin.** A change written down before anybody may make it: snapshot re-check, the permission the original door required, the audit line, the fast lane. Plus the Vietnamese for every P1 refusal string |
 | `pb_approval_config` | 19.0.1.5.1 | `-u` | the "Letters to people" catalogue row, two new responsibilities, **the spreadsheet importer** and its review screen; the `end-` relay; the inbox's team scope; **a second migration that finishes two half-laid routes** (§3) |
-| `pb_hr_payroll_formula` | 19.0.1.131.0 | `-u` | **four proposal records**: statutory, mappings, the scheme map, demo data. Plus `action_publish` on a legislation pack and the gate on its raw `state` write |
+| `pb_hr_payroll_formula` | 19.0.1.132.0 | `-u` | **four proposal records**: statutory, mappings, the scheme map, demo data. Plus `action_publish` on a legislation pack and the gate on its raw `state` write |
 | `pb_statutory` | 19.0.1.3.0 | `-u` | the two config wizards gain the payroll-manager permission they never had, and propose |
 | `pb_hr_payroll_vietnam` | 19.0.1.2.0 | `-u` | tax bands, insurance policy, insurance adjustment — all four doors propose |
 | `pb_formula_studio` | 19.0.1.191.0 | `-u` | legislation packs, rate tables and the scheme mapping doors propose |
@@ -37,6 +37,8 @@ this is only the payload.
 | `pb_govt_reports` | 19.0.1.2.0 | `-u` | **statutory filings.** The module had no permission check at all; now it has one, and a route |
 | `pb_hr_workforce` | 19.0.4.17.0 | `-u` | **one line, and it matters:** the line manager an overtime route names can now carry out their own decision (§2a) |
 | `pb_blueprint` | 19.0.1.9.3 | `-u` | the guided setup's tax-band editor writes through instead of proposing mid-journey (§2a) |
+| `pb_contracts` | 19.0.1.5.0 | `-u` | **contract changes.** The drawer wrote money with no route at all; "Salary and contract changes" is connected at last |
+| `pb_payruns` | 19.0.2.1.0 | `-u` | its seed says that "Reopen an approved run" is this route's own send-back (§2b) |
 
 **One `-u` does most of it**, as in P5 and P6: every module above depends,
 directly or through the chain, on `biz_approval_workflow`, so
@@ -53,6 +55,26 @@ worth naming so nothing is missed if the cascade is not used:
 | `pb_statutory` | `pb_hr_payroll_formula`, `biz_approval_workflow` | the statutory proposal record lives in the payroll engine, which is the only module the cockpit, the country tables and the studio all reach |
 | `pb_govt_reports` | `pb_hr_payroll_base`, `biz_approval_workflow` | the payroll roles it had never checked |
 | `pb_people_advanced`, `pb_close`, `pb_group`, `pb_lifecycle`, `pb_probation`, `pb_tenants`, `pb_hr_fullandfinal` | `biz_approval_workflow` | each now holds a proposal record of its own |
+
+### 2b. One more catalogue change
+
+**No row reads "Not connected yet" on a full install any more.** Three did:
+
+* `contract` ("Salary and contract changes") was a real gap and has a real
+  adapter now — see `pb_contracts` above;
+* `retro` and `reopen` are **covered by another row** rather than gaps: a
+  retro line is created inside a pay-data load and travels that request, and
+  taking an approved run back is the pay-run request's own send-back. Each
+  now carries `covered_by_key`, set by the covering adapter's own seed, and
+  the Matrix reads "Decided with Past pay data loads" instead.
+
+Check it after the wave:
+```sql
+SELECT key, name, model_name, covered_by_key FROM biz_approval_process
+ WHERE covered_by_key IS NOT NULL OR model_name IS NULL ORDER BY key;
+```
+A row with neither a model nor a `covered_by_key` is a row that says nobody is
+checking it — and on a full install there should be none.
 
 **Nothing is destructive.** Four new columns on `hr.full.final.settlement`
 (`state`, `approved_at`, `approved_by`, `seat_user_ids`), one on `pb.hr.letter`
@@ -128,7 +150,20 @@ knowing before the wave.
    carried out the moment somebody reopens the day
    (`biz.approval.engine.retry_apply`). Nobody has to do anything; a support
    question about "my correction says submitted" is answered by the request.
-5. **The guided setup's tax-band editor is not held.** A rate table on a live
+5. **The seat a route lands on may not be the person it names.** Where the
+   holder is the one who sent it in, the ADMIN-SET BACKUP takes the seat and
+   the trail says why ("Monica Tran holds this one because Nithya Rao sent it
+   in"). Where there is no backup either, the holder keeps it and the request
+   carries a warning naming People & backups — a warning, never a block.
+   **Consequence for the wave: give every responsibility a backup, or the
+   one-person company meets that warning on its first request.** The query is
+   in §4.6.
+6. **Every screen that presses a Phase-7 door now reads the answer.** Two said
+   "done" over something that had not happened; all of them now print the
+   server's own sentence and offer "See the request". Approvals admins also
+   get **"Move it to somebody else"** in the request drawer, which the engine
+   has been able to do since Phase 1 with no door for it.
+7. **The guided setup's tax-band editor is not held.** A rate table on a live
    scheme travels the statutory route; one written inside the Blueprint
    journey does not, because the scheme's own activation is the gate (Phase 4)
    and a route in the middle of a setup wizard is a dead end.
@@ -251,6 +286,23 @@ everything.
    sets the process to **"No approval needed"** instead — that is the
    published choice, and it still records every use.
 
+   **EVERY responsibility wants a backup now, not only this one.** Where the
+   person a route names is the one who sent the request in, the backup takes
+   the seat; with no backup the request carries a warning and waits for
+   somebody to be named. The whole picture in one query:
+   ```sql
+   SELECT c.name, r.key, u.login AS holder, b.login AS backup
+   FROM biz_approval_responsibility x
+   JOIN biz_approval_role r ON r.id = x.role_id
+   JOIN res_company c ON c.id = x.company_id
+   LEFT JOIN res_users u ON u.id = x.user_id
+   LEFT JOIN res_users b ON b.id = x.backup_user_id
+   WHERE x.active AND x.backup_user_id IS NULL
+   ORDER BY c.name, r.key;
+   ```
+   Every row it returns is a seat that will stall the day its holder is the
+   person who pressed the button.
+
 7. **The people a route names must be able to do the thing.** The last
    approver carries it out AS THEMSELVES (safety rail 5, ledger AM54). Each
    proposal declares the permission its original door required and refuses by
@@ -365,7 +417,7 @@ pb_contract_lifecycle  pb_me_portal  pb_offboarding  pb_pay  pb_rnr
 pb_timeoff  pb_hr_workforce  pb_mission  pb_team  biz_access  pb_tenancy
 pb_statutory  pb_hr_payroll_vietnam  pb_formula_studio  pb_scheme_map
 pb_group  pb_budget  pb_tenants  pb_demo  pb_demo_seed  pb_probation  pb_pip
-pb_lifecycle  pb_people_advanced  pb_close  pb_govt_reports
+pb_lifecycle  pb_people_advanced  pb_close  pb_govt_reports  pb_contracts
 ```
 
 ```bash
