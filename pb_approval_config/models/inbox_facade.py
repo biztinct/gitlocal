@@ -414,6 +414,7 @@ class PbApprovalInbox(models.AbstractModel):
         payload = self._card(request)
         step = self._current_step(request)
         conflict = self._conflict_for_me(request, step)
+        move = self.can_move_it(request.id)
 
         payload.update({
             'facts': self._facts(request),
@@ -443,8 +444,9 @@ class PbApprovalInbox(models.AbstractModel):
             # meets them before they wonder.
             'seat_notes': [n.get('msg') or ''
                            for n in (request.seat_notes or [])],
-            'can_move_it': self.can_move_it(request.id),
-            'move_people': self._move_candidates(request),
+            'can_move_it': move,
+            'move_people': self._move_candidates(request) if move['can']
+                           else [],
             'can_cancel': bool(request.state in ('pending', 'blocked')
                                and (request.submitter_uid.id == self.env.uid
                                     or self._can_config())),
@@ -718,15 +720,27 @@ class PbApprovalInbox(models.AbstractModel):
         """
         request = self.env['biz.approval.request'].browse(int(request_id or 0))
         if not request.exists():
-            return {'can': False}
+            return {'can': False, 'step_key': '', 'seats': []}
         request.check_access('read')
-        owner = request.version_id.workflow_id.owner_user_id
-        can = bool(self._can_config()
-                   or (owner and owner.id == self.env.uid))
-        step = request.step_ids.filtered(
+        # ASK THE CHEAP QUESTION FIRST, AND DO NOT READ IF THE ANSWER IS NO.
+        #
+        # Everybody who may open the drawer runs this — a line manager
+        # reading what is waiting for them included — and the WORKFLOW behind
+        # a request is set-up data they have no business reading. The first
+        # cut reached for `version_id.workflow_id.owner_user_id` for
+        # everybody and handed an ordinary approver "you have stumbled upon
+        # some top-secret records" in the middle of a queue they were allowed
+        # to see. Only somebody who looks after approvals can move a step at
+        # all, so only they need the lookup that says whether they own THIS
+        # route (the audit-console pattern: gated first, then `sudo()`).
+        if not self._can_config():
+            owner = request.sudo().version_id.workflow_id.owner_user_id
+            if not (owner and owner.id == self.env.uid):
+                return {'can': False, 'step_key': '', 'seats': []}
+        step = request.sudo().step_ids.filtered(
             lambda s: s.key == request.current_step_key)[:1]
         return {
-            'can': can and bool(step),
+            'can': bool(step),
             'step_key': step.key if step else '',
             'seats': [{'key': seat.key,
                        'name': seat.acting_user_id.name or '',
@@ -742,7 +756,7 @@ class PbApprovalInbox(models.AbstractModel):
         list of four hundred logins is not a choice, it is a search box with
         no question.
         """
-        step = request.step_ids.filtered(
+        step = request.sudo().step_ids.filtered(
             lambda s: s.key == request.current_step_key)[:1]
         on_it = set(step.seat_ids.mapped('acting_user_id').ids)
         held = self.env['biz.approval.responsibility'].sudo().search(
