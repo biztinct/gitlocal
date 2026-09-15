@@ -437,6 +437,14 @@ class PbApprovalInbox(models.AbstractModel):
             'can_decide': bool(payload['mine']),
             'can_repair': bool(request.state == 'blocked'
                                and self._can_config()),
+            # WHAT THE APP WANTS TO SAY ABOUT WHO WAS ASKED. A backup took a
+            # seat because the holder sent it in, or nobody can approve it
+            # yet — warnings, never refusals, above the steps where a reader
+            # meets them before they wonder.
+            'seat_notes': [n.get('msg') or ''
+                           for n in (request.seat_notes or [])],
+            'can_move_it': self.can_move_it(request.id),
+            'move_people': self._move_candidates(request),
             'can_cancel': bool(request.state in ('pending', 'blocked')
                                and (request.submitter_uid.id == self.env.uid
                                     or self._can_config())),
@@ -698,6 +706,68 @@ class PbApprovalInbox(models.AbstractModel):
         }
 
     # ============================================================= the acts
+    @api.model
+    def can_move_it(self, request_id):
+        """May this person move the live step to somebody else?
+
+        `biz.approval.engine.reassign` has existed since Phase 1 and had no
+        door: the only way to mend a request whose one seat belongs to the
+        person who sent it in was a shell. That is the wrong end of the walk's
+        commonest dead end — the seat is swapped to the backup at build time
+        now, and this is what is left when there is no backup either.
+        """
+        request = self.env['biz.approval.request'].browse(int(request_id or 0))
+        if not request.exists():
+            return {'can': False}
+        request.check_access('read')
+        owner = request.version_id.workflow_id.owner_user_id
+        can = bool(self._can_config()
+                   or (owner and owner.id == self.env.uid))
+        step = request.step_ids.filtered(
+            lambda s: s.key == request.current_step_key)[:1]
+        return {
+            'can': can and bool(step),
+            'step_key': step.key if step else '',
+            'seats': [{'key': seat.key,
+                       'name': seat.acting_user_id.name or '',
+                       'user_id': seat.acting_user_id.id}
+                      for seat in step.seat_ids if seat.status == 'open'],
+        }
+
+    def _move_candidates(self, request):
+        """Whom a stuck step could be handed to.
+
+        The people who already hold a responsibility in this company, minus
+        whoever is on the step now. Deliberately NOT every internal user: a
+        list of four hundred logins is not a choice, it is a search box with
+        no question.
+        """
+        step = request.step_ids.filtered(
+            lambda s: s.key == request.current_step_key)[:1]
+        on_it = set(step.seat_ids.mapped('acting_user_id').ids)
+        held = self.env['biz.approval.responsibility'].sudo().search(
+            [('company_id', '=', request.company_id.id), ('active', '=', True)])
+        people = held.mapped('user_id') | held.mapped('backup_user_id')
+        return [{'id': u.id, 'name': u.name or ''}
+                for u in people.sorted('name')
+                if u.active and u.id not in on_it]
+
+    @api.model
+    def move_it(self, request_id, seat_key, user_id, reason=None):
+        """Hand one seat to somebody else, with a reason, in the trail."""
+        request = self.env['biz.approval.request'].browse(int(request_id or 0))
+        if not request.exists():
+            raise UserError(_("That request no longer exists."))
+        request.check_access('read')
+        reason = _clip(reason)
+        if len(reason.strip()) < MIN_REASON:
+            raise UserError(_(
+                "Say why you are moving this to somebody else. It is kept "
+                "with the request, and the person who gets it reads it."))
+        self.env['biz.approval.engine'].reassign(
+            request, seat_key, int(user_id or 0), reason)
+        return self.get_request(request.id)
+
     @api.model
     def decide(self, request_id, step_key, action, reason=None,
                expected_lock_revision=None, idempotency_key=None,

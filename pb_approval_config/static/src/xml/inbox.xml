@@ -328,6 +328,20 @@
             <span><b>Sent back:</b> <t t-esc="request.return_note"/></span>
           </div>
 
+          <!-- WHAT THE APP WANTS TO SAY ABOUT WHO WAS ASKED. A backup took
+               a seat because the holder sent it in, or nobody can approve it
+               yet. Warnings, never refusals, and ABOVE the facts — a reader
+               meets them before they wonder why the name is not the one they
+               expected. -->
+          <div t-if="request.seat_notes and request.seat_notes.length"
+               class="pbim-note pbam-note-amber pbam-seatnotes">
+            <t t-out="ic('alert',14)"/>
+            <div>
+              <div t-foreach="request.seat_notes" t-as="sn" t-key="sn_index"
+                   t-esc="sn"/>
+            </div>
+          </div>
+
           <div t-if="request.facts.length">
             <div class="pbam-k">The facts, as they were when it was sent in</div>
             <div class="pbam-factgrid">
@@ -482,6 +496,11 @@
                     t-on-click="() => this.approve()">
               <t t-out="ic('check',14)"/> <span>Approve</span>
             </button>
+            <button t-if="canMoveIt" class="pbim-btn ghost"
+                    t-att-disabled="state.busy"
+                    t-on-click="() => this.openModal('moveit')">
+              <t t-out="ic('userCheck',14)"/> <span>Move it to somebody else</span>
+            </button>
           </t>
           <t t-else="">
             <span class="pbim-sub pbam-waitnote">
@@ -492,6 +511,15 @@
             </span>
             <button t-if="request.can_cancel" class="pbim-btn ghost"
                     t-att-disabled="state.busy" t-on-click="() => this.cancel()">Withdraw it</button>
+            <!-- THE LAST WAY OUT OF A STUCK SEAT. The engine has had
+                 `reassign` since Phase 1 and no door: the only way to mend a
+                 request whose one seat belongs to the person who sent it in
+                 was a shell. -->
+            <button t-if="canMoveIt" class="pbim-btn ghost"
+                    t-att-disabled="state.busy"
+                    t-on-click="() => this.openModal('moveit')">
+              <t t-out="ic('userCheck',14)"/> <span>Move it to somebody else</span>
+            </button>
             <button class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Close</button>
           </t>
         </div>
@@ -505,6 +533,16 @@
             <div class="pbim-note" t-att-class="'pbam-note-' + modalCopy.tone">
               <span t-if="modalCopy.note"><b t-esc="modalCopy.note"/> </span>
               <span t-esc="modalCopy.body"/>
+            </div>
+            <!-- WHO IT GOES TO. Only for the one modal that needs it: the
+                 others are about a decision, this one is about a person. -->
+            <div t-if="state.modal === 'moveit'" class="pbam-field">
+              <label>Who should decide it instead?</label>
+              <select class="pbam-input" t-on-change="setMoveTo">
+                <option value="">Choose somebody…</option>
+                <option t-foreach="movePeople" t-as="mp" t-key="mp.id"
+                        t-att-value="mp.id" t-esc="mp.name"/>
+              </select>
             </div>
             <div class="pbam-field">
               <label t-esc="modalCopy.label"/>
@@ -522,6 +560,9 @@
               <button t-elif="state.modal === 'sendback'" class="pbim-btn primary"
                       t-att-disabled="!reasonOk or state.busy"
                       t-on-click="() => this.sendBack()" t-esc="modalCopy.confirm"/>
+              <button t-elif="state.modal === 'moveit'" class="pbim-btn primary"
+                      t-att-disabled="!reasonOk or !state.moveTo or state.busy"
+                      t-on-click="() => this.moveIt()" t-esc="modalCopy.confirm"/>
               <button t-else="" class="pbim-btn danger"
                       t-att-disabled="!reasonOk or state.busy"
                       t-on-click="() => this.reject()" t-esc="modalCopy.confirm"/>

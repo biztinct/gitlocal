@@ -280,3 +280,23 @@
         .pbam-req:hover { transform: translateY(-1px); }
     }
 }
+
+/* ======================================================================
+   WHAT THE APP WANTS TO SAY ABOUT WHO WAS ASKED (P7 walk, W3)
+
+   A backup took a seat because the holder sent it in, or nobody can approve
+   it yet. Warnings, never refusals — so they wear the amber of a thing worth
+   knowing rather than the rose of a thing that went wrong, and they sit above
+   the facts, where a reader meets them before they wonder why the name is not
+   the one they expected.
+   ====================================================================== */
+.pbim.pbam-inbox {
+    .pbim-note.pbam-seatnotes {
+        display: flex; gap: 8px; align-items: flex-start;
+        padding: 10px 12px; border-radius: 9px; font-size: 12.5px;
+        margin: 0 0 12px;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+
+        div div + div { margin-top: 4px; }
+    }
+}

@@ -58,6 +58,8 @@ export class RequestDrawer extends Component {
             request: null,
             modal: "",
             reason: "",
+            // Who a stuck step would be handed to.
+            moveTo: "",
             busy: false,
         });
 
@@ -130,6 +132,15 @@ export class RequestDrawer extends Component {
                 confirm: _t("Send it back"),
                 tone: "info",
             },
+            moveit: {
+                title: _t("Move it to somebody else"),
+                note: "",
+                body: _t("The step goes to the person you choose, and the one it was with stops waiting. Your name and your reason are kept with the request, and the person who gets it reads them."),
+                label: _t("Why is it moving? (required)"),
+                hint: _t("Say what is wrong with the seat it is on — away, left, or the only person named is the one who sent it in."),
+                confirm: _t("Move it"),
+                tone: "info",
+            },
             reject: {
                 title: _t("Turn this down"),
                 note: _t("This ends the request."),
@@ -146,6 +157,41 @@ export class RequestDrawer extends Component {
     openModal(kind) {
         this.state.modal = kind;
         this.state.reason = "";
+        this.state.moveTo = "";
+    }
+
+    /** Whom this step could be handed to: anybody but the seats it is on. */
+    get movePeople() {
+        return (this.request.move_people || []);
+    }
+
+    get canMoveIt() {
+        const can = this.request.can_move_it;
+        return !!(can && can.can && (can.seats || []).length);
+    }
+
+    setMoveTo(ev) { this.state.moveTo = ev.target.value; }
+
+    async moveIt() {
+        const can = this.request.can_move_it || {};
+        const seat = (can.seats || [])[0];
+        if (!seat) { return; }
+        this.state.busy = true;
+        try {
+            this.state.request = await this.orm.call(
+                "pb.approval.inbox", "move_it",
+                [this.props.requestId, seat.key,
+                 parseInt(this.state.moveTo, 10), this.state.reason]);
+            this.notif.add(_t("Moved. It is with them now."), { type: "info" });
+            this.closeModal();
+            if (this.props.onChanged) { this.props.onChanged(); }
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                    || _t("It could not be moved."), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
     }
 
     closeModal() {
