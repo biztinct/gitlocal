@@ -1,0 +1,359 @@
+// =====================================================================
+//  The Hiring lens — .pbhr-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-badge, .pbim-modal, .pbim-modal-scrim). This file only says what
+//  is SPECIFIC to a board whose row is a request for a person: the card,
+//  the budget chip, the pipeline bar and the drawer.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file (ledger).
+//
+//  Every @keyframes is at the TOP LEVEL (R85): nested inside a selector,
+//  Sass emits it nested too and no browser plays it.
+//
+//  THE DIALOG RULES ARE NOT NESTED UNDER `.pbhr` (R114). A scrim mounts
+//  outside the surface that opened it as often as inside, and a descendant
+//  selector makes a dialog's whole appearance depend on where in the DOM it
+//  lands. Own classes, tokens re-declared on the scrim.
+// =====================================================================
+
+@keyframes pbhr-rise { from { transform: translateY(10px); opacity: 0; } }
+@keyframes pbhr-slide { from { transform: translateX(28px); opacity: 0; } }
+
+.pbhr {
+    // ---------------------------------------------------------- header
+    .pbhr-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    &.pbhr--embedded .pbhr-head { margin-bottom: 12px; }
+    .pbhr-head-id { flex: 1 1 320px; min-width: 0; }
+    .pbhr-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // ------------------------------------- the rule nobody has written
+    .pbhr-notice {
+        display: flex; gap: 13px; align-items: flex-start;
+        padding: 14px 16px; margin-bottom: 16px;
+        background: var(--pbim-soft); border-color: var(--pbim-primary);
+
+        b { font-size: 13.5px; color: var(--pbim-ink); }
+        p { margin: 4px 0 0; font-size: 12.5px; color: var(--pbim-muted);
+            line-height: 1.55; }
+    }
+    .pbhr-notice-ic { color: var(--pbim-primary-strong); flex: 0 0 auto; }
+    .pbhr-notice-btn { margin-top: 10px; }
+
+    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
+    // cockpit knows how many numbers it has (R32). Six here, three under
+    // 1180px, two under 700px.
+    .pbhr-kpis {
+        grid-template-columns: repeat(6, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1180px) { .pbhr-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .pbhr-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    // A tile that filters has to LOOK pressable, and a tile that does not
+    // must not — half of these are numbers and half are doors.
+    .pbhr-stat {
+        text-align: left; font: inherit; cursor: pointer;
+        border: 1px solid var(--pbim-line);
+
+        &.on { border-color: var(--pbim-primary);
+               box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &.warn .pbim-stat-ic { color: var(--pbim-amber); }
+        &.err .pbim-stat-ic { color: var(--pbim-rose); }
+        &.ok .pbim-stat-ic { color: var(--pbim-primary-strong); }
+        &.pbhr-stat--flat { cursor: default; }
+    }
+
+    // --------------------------------------------------------- filters
+    .pbhr-filters { padding: 14px 16px; margin-bottom: 18px; }
+    .pbhr-filter-row {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .pbhr-search {
+        display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 8px 12px; color: var(--pbim-muted);
+        background: var(--pbim-surface);
+
+        input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font: inherit; font-size: 13.5px; color: var(--pbim-text);
+            min-width: 0;
+        }
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    // Qualified rather than generic (R26): a later kit rule with the same
+    // specificity wins on source order, and a picker that eats its own row
+    // pushes every chip beside it down.
+    .pbhr-sel.pbhr-sel { width: auto; min-width: 150px; max-width: 220px; }
+
+    // ------------------------------------------------------- the cards
+    .pbhr-grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    }
+    .pbhr-card {
+        padding: 18px; display: flex; flex-direction: column; gap: 12px;
+        cursor: pointer;
+
+        &.is-mine { border-color: var(--pbim-primary); }
+        &.is-over { border-color: var(--pbim-rose); }
+    }
+    // Every moving declaration inside the no-preference block, so under a
+    // reduced-motion preference the surface simply paints finished (R85).
+    @media (prefers-reduced-motion: no-preference) {
+        .pbhr-card {
+            transition: box-shadow .15s, transform .15s, border-color .15s;
+            animation: pbhr-rise .22s ease-out both;
+            &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+        }
+    }
+
+    .pbhr-card-top {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 12px;
+    }
+    .pbhr-card-id { min-width: 0; }
+    .pbhr-card-title {
+        font-size: 15.5px; font-weight: 700; color: var(--pbim-ink);
+        line-height: 1.3;
+    }
+    .pbhr-card-sub {
+        margin-top: 3px; font-size: 12px; color: var(--pbim-muted);
+    }
+    .pbhr-card-people { flex: 0 0 auto; }
+    .pbhr-avatar {
+        width: 34px; height: 34px; border-radius: 50%;
+        object-fit: cover; border: 1px solid var(--pbim-line);
+    }
+    .pbhr-avatar--none {
+        display: inline-flex; align-items: center; justify-content: center;
+        color: var(--pbim-muted); background: var(--pbim-line-2);
+    }
+
+    .pbhr-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    // A badge that carries a SENTENCE must turn capitalisation off itself:
+    // the kit capitalises every word, which is right for "Approved" and
+    // wrong for "Over by 120,000,000 VND" (R33).
+    .pbim-badge.pbhr-budget, .pbim-badge.pbhr-state,
+    .pbim-badge.pbhr-heads, .pbim-badge.pbhr-ref, .pbim-badge.pbhr-pub {
+        text-transform: none;
+        display: inline-flex; align-items: center; gap: 5px;
+    }
+    .pbhr-budget--over  { color: var(--pbim-rose); border-color: var(--pbim-rose); }
+    .pbhr-budget--within { color: var(--pbim-primary-strong); }
+    .pbhr-budget--unknown { color: var(--pbim-muted); }
+    .pbhr-state--open, .pbhr-state--filled { color: var(--pbim-primary-strong); }
+    .pbhr-state--refused, .pbhr-state--closed { color: var(--pbim-muted); }
+    .pbhr-state--submitted, .pbhr-state--manager_ok, .pbhr-state--hr_ok {
+        color: var(--pbim-amber);
+    }
+
+    // ------------------------------------------------- the pipeline bar
+    .pbhr-pipe {
+        display: flex; gap: 3px; height: 26px; border-radius: 8px;
+        overflow: hidden;
+    }
+    .pbhr-pipe-seg {
+        min-width: 26px; display: flex; align-items: center;
+        justify-content: center; background: var(--pbim-soft);
+        color: var(--pbim-primary-strong); font-size: 11.5px;
+        font-weight: 700;
+
+        &:last-child { background: var(--pbim-primary); color: #fff; }
+    }
+    .pbhr-pipe--empty {
+        align-items: center; padding: 0 10px; background: var(--pbim-line-2);
+        color: var(--pbim-muted); font-size: 11.5px;
+    }
+
+    .pbhr-card-foot {
+        display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px;
+        color: var(--pbim-muted);
+    }
+    .pbhr-foot-bit { display: inline-flex; align-items: center; gap: 5px; }
+    .pbhr-foot-age { margin-left: auto; }
+
+    // ------------------------------------------------------ empty states
+    .pbhr-empty {
+        padding: 46px 30px; text-align: center;
+
+        h2 { font-size: 17px; font-weight: 700; margin: 14px 0 8px;
+             color: var(--pbim-ink); }
+        p { max-width: 620px; margin: 0 auto; font-size: 13px;
+            color: var(--pbim-muted); line-height: 1.6; }
+        .pbim-btn { margin-top: 18px; }
+    }
+    .pbhr-empty-ic { color: var(--pbim-primary); }
+    .pbhr-cap { margin-top: 14px; }
+}
+
+// =====================================================================
+//  The drawer and the dialogs — NOT nested under .pbhr (R114).
+//
+//  The scrim is what centres and dims; `.pbim-modal` carries no
+//  positioning of its own and no padding (R45), which is why every part
+//  below sets its own.
+// =====================================================================
+.pbhr-scrim {
+    .pbhr-drawer {
+        width: 1000px; max-width: 94vw; max-height: 92vh;
+        display: flex; flex-direction: column;
+    }
+    .pbhr-dialog { width: 720px; max-width: 94vw; max-height: 92vh;
+                   display: flex; flex-direction: column; }
+    .pbhr-dialog--small { width: 520px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhr-scrim .pbhr-drawer { animation: pbhr-slide .2s ease-out both; }
+    .pbhr-scrim .pbhr-dialog { animation: pbhr-rise .18s ease-out both; }
+}
+
+.pbhr-scrim {
+    .pbhr-drawer-head { align-items: flex-start; }
+    .pbhr-drawer-title {
+        font-size: 17px; font-weight: 800; color: var(--pbim-ink, #1B1733);
+        letter-spacing: -.01em;
+    }
+    .pbhr-drawer-sub {
+        margin-top: 3px; font-size: 12.5px;
+        color: var(--pbim-muted, #64748B); line-height: 1.5;
+    }
+    .pbhr-drawer-body { padding: 18px 22px; }
+    .pbhr-drawer-foot { flex-wrap: wrap; }
+    .pbhr-foot-gap { flex: 1 1 auto; }
+
+    // --------------------------------------------------- the money panel
+    .pbhr-money {
+        display: flex; gap: 13px; align-items: flex-start;
+        padding: 14px 16px; border-radius: 12px; margin-bottom: 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-line-2, #F1F5F9);
+
+        b { font-size: 13.5px; color: var(--pbim-ink, #1B1733); }
+        p { margin: 4px 0 0; font-size: 12.5px;
+            color: var(--pbim-muted, #64748B); line-height: 1.55; }
+        .pbim-btn { margin-left: auto; flex: 0 0 auto; }
+    }
+    .pbhr-money-ic { flex: 0 0 auto; color: var(--pbim-muted, #64748B); }
+    .pbhr-money--within { border-color: var(--pbim-primary, #4F46E5); }
+    .pbhr-money--within .pbhr-money-ic { color: var(--pbim-primary-strong, #4338CA); }
+    .pbhr-money--over { border-color: var(--pbim-rose, #E11D48); }
+    .pbhr-money--over .pbhr-money-ic { color: var(--pbim-rose, #E11D48); }
+
+    // ------------------------------------------------------- the facts
+    .pbhr-facts {
+        display: grid; gap: 12px; margin-bottom: 16px;
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .pbhr-fact {
+        display: flex; flex-direction: column; gap: 2px; min-width: 0;
+
+        .k { font-size: 11px; text-transform: uppercase;
+             letter-spacing: .04em; color: var(--pbim-muted, #64748B); }
+        .v { font-size: 13.5px; font-weight: 600;
+             color: var(--pbim-ink, #1B1733); }
+    }
+    @media (max-width: 760px) { .pbhr-facts { grid-template-columns: repeat(2, 1fr); } }
+
+    .pbhr-req {
+        margin: 0 0 16px; padding: 12px 14px; border-radius: 10px;
+        background: var(--pbim-line-2, #F1F5F9); font-size: 12.5px;
+        color: var(--pbim-text, #334155); line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    // --------------------------------------------------- section titles
+    .pbhr-sec {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 12px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .05em; color: var(--pbim-muted, #64748B);
+        margin: 18px 0 10px;
+    }
+    .pbhr-sec-btn { margin-left: auto; }
+
+    // -------------------------------------------------------- the lists
+    .pbhr-list { display: flex; flex-direction: column; gap: 8px; }
+    .pbhr-list-row {
+        display: flex; align-items: center; gap: 12px;
+        padding: 11px 14px; border-radius: 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+
+        &.is-current { border-color: var(--pbim-primary, #4F46E5); }
+        &.is-out { opacity: .55; }
+    }
+    .pbhr-list-main { flex: 1; min-width: 0; }
+    .pbhr-list-name {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        font-size: 13.5px; font-weight: 650;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbhr-list-meta {
+        margin-top: 2px; font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbhr-list-acts { display: flex; gap: 6px; flex: 0 0 auto; }
+    .pbim-badge.pbhr-cur { text-transform: none; }
+    .pbhr-scr.on {
+        border-color: var(--pbim-primary, #4F46E5);
+        color: var(--pbim-primary-strong, #4338CA);
+    }
+    .pbhr-mini-empty {
+        padding: 14px 16px; border-radius: 10px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        font-size: 12.5px; color: var(--pbim-muted, #64748B);
+        line-height: 1.55;
+    }
+
+    // -------------------------------------------------------- the stages
+    .pbhr-steps { display: flex; flex-direction: column; gap: 8px; }
+    .pbhr-step {
+        display: flex; align-items: center; gap: 12px;
+        padding: 9px 12px; border-radius: 10px;
+        background: var(--pbim-line-2, #F1F5F9);
+    }
+    .pbhr-step-n {
+        flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-primary, #4F46E5); color: #fff;
+        font-size: 11.5px; font-weight: 700;
+    }
+    .pbhr-step-name { font-size: 13px; font-weight: 600;
+                      color: var(--pbim-ink, #1B1733); }
+    .pbhr-step-meta { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+
+    // --------------------------------------------------------- the forms
+    .pbhr-form {
+        display: grid; gap: 14px; padding: 18px 22px;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 680px) { .pbhr-form { grid-template-columns: 1fr; } }
+    .pbhr-f {
+        display: flex; flex-direction: column; gap: 5px; min-width: 0;
+
+        > span { font-size: 11.5px; font-weight: 600;
+                 color: var(--pbim-muted, #64748B); }
+    }
+    .pbhr-f--wide { grid-column: 1 / -1; }
+    .pbhr-in {
+        width: 100%; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 9px; padding: 9px 11px; font: inherit;
+        font-size: 13.5px; color: var(--pbim-text, #334155);
+        background: var(--pbim-surface, #FFFFFF); outline: none;
+
+        &:focus {
+            border-color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+        }
+    }
+    textarea.pbhr-in { resize: vertical; line-height: 1.55; }
+}
