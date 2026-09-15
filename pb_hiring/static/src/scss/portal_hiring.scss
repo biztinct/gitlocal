@@ -81,6 +81,30 @@
 
     // -------------------------------------------------------- the form
     .pbhr-form { margin-top: 18px; padding: 20px 22px; }
+
+    // THE KIT STYLES INPUTS AND TEXTAREAS AND NOT SELECTS, so the "Which
+    // role" picker rendered as a raw browser control — square corners, a
+    // grey 1px border and no padding — sitting directly above two fields
+    // that did not. A form where one field looks like the operating system
+    // and the rest look like the product reads as broken even though every
+    // control works.
+    .pbhr-form select {
+        width: 100%; border: 1px solid #E2E8F0; border-radius: 9px;
+        padding: 9px 11px; font: inherit; font-size: 13.5px;
+        color: #334155; background: #FFFFFF; outline: none;
+        appearance: none;
+        // the chevron, drawn rather than fetched: the frontend bundle has no
+        // icon module and an <img> would be one more request per field
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        padding-right: 34px;
+
+        &:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+        }
+    }
     .pbhr-hint {
         display: block; margin-top: 4px; font-size: 11.5px; color: #64748B;
     }

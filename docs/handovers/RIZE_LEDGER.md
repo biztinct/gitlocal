@@ -208,6 +208,18 @@ without owner approval between them.
 | P10 | pb_contract_lifecycle | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 waived by D9; one fallback-safe edit to `pb_hr_payroll_analytics`, its own commit) |
 | P11 | pb_vendor_access — vendor register + agreements, the role catalogue, hand-overs that auto-revert, two Settings panels | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 = memberships reverted / records left per D9; one additive JS edit to `pb_settings` — a soft CATEGORY registry, now test-enforced) |
 
+### Wave 2 (the five uncoloured tabs, from 2026-09-15)
+
+| Phase | Module(s) | Status |
+|---|---|---|
+| A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
+| A2 | pb_hiring — the interview loop | not started |
+| A3 | pb_hiring — BGV, offer, closure, analytics | not started |
+| E1–E3 | pb_training | not started |
+| B1–B2 | pb_goals | not started |
+| D1 | pb_timeoff + pb_driver_checkin | not started |
+| C1 | pb_hr_comm | not started |
+
 ## Gotchas discovered during RIZE phases (append here)
 
 ### P0 (pb_lifecycle, 2026-08-31)
@@ -1248,3 +1260,125 @@ without owner approval between them.
   Column widths ARE supported on list `<field>` (`width="240px"`,
   `common.rng`) — pin them where a long text column would otherwise starve
   the name column.
+
+### A1 (pb_hiring, 2026-09-15)
+
+- **R131 — A TRY/EXCEPT IS NOT ENOUGH WHEN THE THING THAT FAILED REACHED THE
+  DATABASE.** This is the most important entry in the wave so far, because
+  the pattern it breaks is one every RIZE phase uses. Postgres aborts the
+  WHOLE transaction on an error; catching the exception in Python does not
+  revive it, and every statement after it fails too. A duplicate job name
+  blew up leg one of `_on_opened`; legs two, three and four then failed on a
+  transaction that was already dead — and so did the record's own status
+  write, which had happened BEFORE them. The approval request read
+  "approved" in the inbox while the hiring request read "Manager agreed" on
+  the board, for ever, with four cheerful WARNING lines in the log and
+  nothing on any screen. The R104 pattern ("every leg in its own
+  try/except") therefore does not do what P10 believed it did the moment a
+  leg touches the database. **Every such leg needs `with
+  self.env.cr.savepoint():` inside the try** — `pb_hiring`'s `_leg(name, fn)`
+  is the shape. P0–P11's own hook and cron legs are all still bare
+  try/excepts and have the same hole; they have not been audited.
+- **R132 — THE MIDDLE OF A ROUTE IS WRITTEN AS THE APPROVER, and a seat is a
+  read.** AM60 is right that being asked to decide something is not
+  permission to change it, and the seat `ir.rule` is correctly read-only. But
+  `_approval_advance` mirrors each intermediate status onto the record while
+  the acting user is the approver — who is, by design, somebody who may hold
+  no permission on that model at all (a department head's own manager). The
+  rule refused the write, the engine swallowed it (it must: a decision a
+  person really made can never be undone by a consumer that cannot follow
+  its own route, `engine.py:1336`), and the record sat one rung behind for
+  ever. Only visible as one line in `/var/log/odoo/odoo-server.log`.
+  **Fix: override `_chain_engine_write` to run `self.sudo()`.** The trail is
+  unaffected — `_chain_log` still runs as the acting user, so the approval
+  log keeps the real name. **Any consumer whose `register_chain(driven=…)`
+  tuple has MORE THAN ONE intermediate status needs this.** Wave 1 never met
+  it because every wave-1 chain has at most one.
+- **R133 — `hr.job` is UNIQUE on (name, company_id, department_id).** A
+  company asking for two Field Officers in the same team in the same year is
+  not doing anything unusual, and the second `create` dies on a raw Postgres
+  error. Under R131 that error also killed everything after it. Anything
+  that makes an `hr.job` must **find-or-create**, which is the better answer
+  anyway: candidates apply to a ROLE, not to a piece of paperwork, so two
+  requests for one role share one pipeline and the target head count is the
+  sum of the live requests pointing at it.
+- **R134 — the pbim kit has NO dark palette, product-wide.** R20 recorded
+  that native list views break under `data-theme="dark"`; the fuller truth
+  is that `biz_theme`'s dark block redefines only the `--vu-*` tokens, and
+  the `--pbim-*` tokens every RIZE cockpit is built from are declared once,
+  light. Verified side by side on 2026-09-15: the Hiring lens and the
+  shipped Contracts lens render IDENTICALLY under `data-theme="dark"` and
+  under an emulated `prefers-color-scheme: dark`. So "validate in light AND
+  dark" on a pbim cockpit is satisfied, exactly as R39 says for the portal,
+  by proving every colour RESOLVES — it is a `pb_import_kit` job with a
+  blast radius of every cockpit in the product, and not a feature phase's.
+- **R135 — a shared CSS primitive may not live under either surface that
+  uses it.** R114 says a dialog's rules must not be nested under the
+  cockpit's root class. The other half: `.pbhr-in` was written INSIDE the
+  `.pbhr-scrim` block, so the four filter pickers on the board — which are
+  not in a scrim — rendered as raw browser selects with their text clipped,
+  next to a search box that looked like the product. A primitive both
+  surfaces use goes at the TOP LEVEL of the stylesheet. Related: the `.pbme`
+  portal kit styles `input` and `textarea` and NOT `select`, so any portal
+  form with a picker has to style it itself or one field will look like the
+  operating system while the rest look like the product.
+- **R136 — the standard applicant store, as it actually is on this build.**
+  `hr.applicant` has **no `description` field** — the notes column is
+  `applicant_notes`. Refusing is `write({'refuse_reason_id': …, 'active':
+  False, 'refuse_date': now})`, exactly what the standard wizard does. The
+  talent-pool constraint only fires for a record that IS a talent
+  (`pool_applicant_id == self`), so writing `talent_pool_ids` on an ordinary
+  applicant is safe. `hr.job.website_published` is a COMPUTED field whose
+  inverse writes the stored `is_published`; assert on `is_published`.
+  `hr.job.requirements` carries `groups="hr.group_hr_user"`, so write it
+  under sudo.
+- **R137 — `value_to_html` is the wrong money helper for a stored sentence.**
+  `self.env['ir.qweb.field.monetary'].value_to_html(...)` answers
+  `<span class="oe_currency_value">600,000,000</span> ₫`, which is right
+  inside a rendered report and is the report's own source code the moment it
+  lands in a Char field a board shows with `t-esc` (R51 from the writing
+  side). `odoo.tools.misc.formatLang(env, amount, currency_obj=…)` answers
+  the same number as plain text.
+- **R138 — a non-stored compute is right ONCE unless its `depends` names
+  every hop.** `pb.hiring.referral.state` depended on `applicant_id` alone,
+  so it was correct the first time it was read and then frozen for the life
+  of the environment — a referral reading "Received" over a candidate turned
+  down half an hour earlier. Odoo uses the dependency list to invalidate the
+  cache as well as to recompute; name the fields the answer is MADE of
+  (`applicant_id.application_status`, `.active`, `.stage_id`), not just the
+  record it hangs off.
+- **R139 — a raw-SQL age applied to a record with an unflushed ORM write is
+  undone by the next `search()`.** R22 from the test side: the state write
+  sat in the `towrite` buffer, `search()` flushed it, and the flush stamped
+  `write_date` back to now — so the daily job found nothing and read as
+  broken. `env.flush_all()` before the SQL, `env.invalidate_all()` after it.
+- **R140 — the RIZE settings card may be an XMLID and needs no client
+  action.** `pb_settings`'s `_cardPresent` accepts `{tag}` or `{xmlid}`
+  (`settings_hub.js:565` region) and `settingsActionXmlids()` probes the
+  xmlid ones server-side, so a single-card category pointing at an
+  `ir.actions.act_window` xmlid opens the list directly through `soleCard`.
+  A1 took **Hiring, sequence 40** (Vendors 20 and Access 30 are P11's).
+- **R141 — ⌘K and lens numbers after A1.** A1 took the **3500** block
+  (hiring_board 3500, hiring_requests 3510, hiring_jds 3520,
+  hiring_referrals 3530, hiring_rules 3540); B1 starts at **3600** per the
+  wave plan. Lifecycle-hub lens sequences are now **Hiring 10**, New joiners
+  20, Exits 30, Probation 40, Growth plans 50, Contracts 60 (Journeys is a
+  literal in the hub's own config and carries none). "Hiring" measures
+  **37px** in the 60px rail label box — comfortably inside, unlike
+  "Probation" (60px) and "Contracts" (63px).
+- **R142 — the A1 test cast and what was put back.** Test data stays and is
+  named "RIZE W2 …" (D9). New: user **4446** `rize.w2.recruiter@example.com`
+  / `RizeW2!2026` (employee 17338, company 5, department 657, manager 17122)
+  — this account KEEPS `pb_hiring.group_hiring_user`, because an account
+  with no role is an account nobody can use; it is the only grant not
+  reverted. Employee **17139** was given `parent_id = 17122` and keeps it
+  (demo data, D9 — the handover asked for this). Twelve `pb.budget.line`
+  rows for department 657, FY2026 (1,200,000,000 ₫ budgeted, 600,000,000 ₫
+  spent) so the budget check has something to read. Nine hiring requests
+  HR-2026-0055…0063, four `hr.job` rows, one hiring rule, four adverts,
+  one referral. **Everything borrowed was given back and verified against a
+  snapshot taken before the first write**: uid 2065's `group_budget_team`
+  and `group_hiring_admin`, and the company-5 `hr_lead` and `finance`
+  responsibility seats (both were the owner's account and are the owner's
+  again). All five pre-existing test logins read group-for-group identical
+  to before. Every test mail was cancelled in the same script that sent it.
