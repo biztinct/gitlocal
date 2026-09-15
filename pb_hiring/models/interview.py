@@ -72,14 +72,30 @@ class PbHiringInterview(models.Model):
         'pb.hiring.step', string='Which stage',
         help='The stage of this role the interview is for, as it was agreed '
              'on the hiring request.')
+    # NO `default=1` HERE, AND THAT IS THE WHOLE POINT. A default is a value
+    # supplied on every create, so `create` could never tell "nobody has said"
+    # from "somebody said one" and the counting below never ran: every round
+    # of every candidate read "Round 1". Zero is the absence, and `create`
+    # fills it in.
     round_no = fields.Integer(
-        string='Round', default=1, readonly=True, copy=False,
+        string='Round', default=0, readonly=True, copy=False,
         help='Which time this is that this candidate has been seen. Moving '
              'an interview keeps its round number — it is the same round, on '
              'a different day.')
+    # NO `default` HERE EITHER, for exactly the same reason: a stored compute
+    # that is `readonly=False` does NOT run when a value is supplied, and a
+    # default supplies one on every single create. With the default in place
+    # a final conversation booked against the "Final conversation" step read
+    # back as an ordinary interview — and the debrief then refused to open on
+    # the one round it exists for.
+    # `precompute=True` is what makes a REQUIRED stored compute possible at
+    # all: without it the compute runs AFTER the insert and Postgres refuses
+    # the row on the not-null constraint. With it, the value is worked out
+    # from `step_id` before the row is written, which is the only ordering
+    # that lets the step decide and still keeps the column honest.
     kind = fields.Selection(
-        STEP_KINDS, string='What kind', default='interview', required=True,
-        compute='_compute_kind', store=True, readonly=False)
+        STEP_KINDS, string='What kind', required=True,
+        compute='_compute_kind', store=True, readonly=False, precompute=True)
 
     start = fields.Datetime(string='When', required=True, index=True,
                             tracking=True)
@@ -177,6 +193,8 @@ class PbHiringInterview(models.Model):
 
     @api.depends('step_id', 'step_id.kind')
     def _compute_kind(self):
+        """The step this round belongs to says what kind of round it is, and
+        an interview that is not one of the agreed steps is an interview."""
         for rec in self:
             rec.kind = rec.step_id.kind or rec.kind or 'interview'
 
@@ -372,6 +390,9 @@ class PbHiringInterview(models.Model):
         if not start:
             raise UserError(_("Say when it is."))
 
+        # `kind` is deliberately NOT set here unless the caller named one: the
+        # step is what decides, through the compute, and a value supplied at
+        # create time would stop that compute ever running.
         vals = {
             'requisition_id': req.id,
             'applicant_id': applicant.id,

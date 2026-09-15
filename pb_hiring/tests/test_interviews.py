@@ -174,11 +174,23 @@ class TestArrangingOne(InterviewCase):
 
     def test_t2_the_ics_says_the_same_time_the_record_does(self):
         interview = self._schedule()
-        ics = interview._ics().decode('utf-8')
+        raw = interview._ics().decode('utf-8')
+        # UNFOLD FIRST. RFC 5545 §3.1 folds every line at 75 octets, and a
+        # long address is therefore split across two lines with a leading
+        # space — correct, and invisible to a plain `in` test, which is how
+        # this assertion failed over a perfectly good calendar file.
+        ics = raw.replace('\r\n ', '')
         self.assertIn('BEGIN:VEVENT', ics)
         self.assertIn(interview.start.strftime('DTSTART:%Y%m%dT%H%M%SZ'), ics)
         self.assertIn(interview.stop.strftime('DTEND:%Y%m%dT%H%M%SZ'), ics)
         self.assertIn('rize.w2.a2.candidate@example.com', ics)
+        self.assertIn('rize.w2.a2.panel2@example.com', ics)
+        # The folding itself is a promise to the calendar clients that refuse
+        # an unfolded file, so it is asserted rather than merely tolerated.
+        self.assertTrue(
+            all(len(line.encode('utf-8')) <= 75
+                for line in raw.split('\r\n')),
+            'a line in the calendar file is longer than 75 octets')
 
     def test_t2_the_window_is_working_hours_not_plain_ones(self):
         """Asserted against `plan_hours` directly rather than against a
@@ -208,6 +220,42 @@ class TestArrangingOne(InterviewCase):
             self.assertEqual(row.due_at, interview.feedback_due_at)
         self.assertEqual(len(set(interview.feedback_ids.mapped('token'))), 2,
                          'two panel members shared one link')
+
+    def test_t2_the_second_round_is_round_two(self):
+        """A `default=1` on `round_no` is a value supplied on every create, so
+        `create` could never tell "nobody has said" from "somebody said one"
+        and the counting never ran: every round of every candidate read
+        "Round 1". Found live."""
+        first = self._schedule()
+        second = self._schedule(start=self._tomorrow(14))
+        self.assertEqual(first.round_no, 1)
+        self.assertEqual(second.round_no, 2)
+        # A moved hour is the SAME round on a different day.
+        moved = second.reschedule({'start': self._tomorrow(16),
+                                   'reason': 'Clash.',
+                                   'delay_kind': 'internal'})
+        self.assertEqual(moved.round_no, 2)
+        # And a cancelled one never happened, so it does not push the count.
+        third = self._schedule(start=self._tomorrow(18))
+        self.assertEqual(third.round_no, 3)
+        third.action_cancel(note='Withdrew.')
+        fourth = self._schedule(start=self._tomorrow(20))
+        self.assertEqual(fourth.round_no, 3)
+
+    def test_t2_the_kind_follows_the_step_it_was_booked_against(self):
+        """A stored compute that is `readonly=False` does NOT run when a value
+        is supplied, and a `default` supplies one on every create — so a final
+        conversation booked against the "Final conversation" step read back as
+        an ordinary interview, and the debrief then refused to open on the one
+        round it exists for. Found live."""
+        final_step = self.env['pb.hiring.step'].sudo().create({
+            'requisition_id': self.req.id, 'name': 'RIZE W2 A2 Final',
+            'kind': 'final'})
+        interview = self._schedule(step_id=final_step.id)
+        self.assertEqual(interview.kind, 'final')
+        # And with no step at all it is simply an interview.
+        plain = self._schedule(start=self._tomorrow(16))
+        self.assertEqual(plain.kind, 'interview')
 
     def test_t2_an_hour_that_has_gone_cannot_be_arranged(self):
         with self.assertRaises(ValidationError):
@@ -465,6 +513,12 @@ class TestTheFeedbackPage(InterviewCase):
         interview.invalidate_recordset()
         bodies = ' '.join(interview.message_ids.mapped('body') or [])
         self.assertIn('Everybody has answered', bodies)
+        # THE LINE BREAKS MUST BE LINE BREAKS. `message_post` escapes a plain
+        # string body, so a `<br/>` built into a `_()` sentence lands in the
+        # chatter as the four characters `&lt;br/&gt;` and the summary reads
+        # as one run-on line with its own markup in it. Found live.
+        self.assertNotIn('&lt;br', bodies)
+        self.assertIn('<br', bodies)
         self.assertAlmostEqual(interview.recommendation_avg, 3.5, places=2)
         self.assertTrue(self.env['mail.activity'].sudo().search([
             ('res_model', '=', 'pb.hiring.interview'),
@@ -813,6 +867,42 @@ class TestA2SourceGates(TransactionCase):
             self.assertTrue(
                 self.env.ref(xmlid, raise_if_not_found=False),
                 'the palette points at %s, which does not resolve' % xmlid)
+
+    def test_every_icon_name_including_the_MAPS_is_in_the_registry(self):
+        """A1's gate read `icon: "…"` and the two `//icon` comments, and
+        MISSED the object-literal maps — so `SCREEN_ICON.rejected = "xCircle"`
+        shipped live against a registry that did not have `xCircle`, and the
+        "Not this time" button has been drawing a blank circle ever since.
+        `ic()` falls back silently, so nothing anywhere reported it.
+
+        This reads the INSTALLED `pb_import_kit`, which is the server's own
+        copy — the repo's can be ahead of it, and on 2026-09-15 it was by
+        nine icons.
+        """
+        path = get_module_path('pb_import_kit')
+        with open(path + '/static/src/js/import_icons.js',
+                  encoding='utf-8') as fh:
+            known = set(re.findall(r"^\s{4}([A-Za-z][A-Za-z0-9]*):\s*'",
+                                   fh.read(), re.M))
+        self.assertIn('briefcase', known, 'the icon registry did not parse')
+        used = set(re.findall(r"ic\('([A-Za-z0-9_]+)'",
+                              _src('static', 'src', 'xml',
+                                   'hiring_board.xml')))
+        board = _src('static', 'src', 'js', 'hiring_board.js')
+        both = board + _src('static', 'src', 'js', 'hiring_palette.js')
+        used |= set(re.findall(r'icon:\s*"([A-Za-z0-9_]+)"', both))
+        # The maps, which is the half A1's gate could not see.
+        for name in ('SCREEN_ICON', 'BUDGET_ICON', 'MODE_ICON',
+                     'VERDICT_ICON'):
+            block = re.search(name + r'\s*=\s*\{(.*?)\};', board, re.S)
+            self.assertTrue(block, '%s is no longer an object literal — this '
+                                   'gate needs updating with it' % name)
+            used |= set(re.findall(r':\s*"([A-Za-z0-9_]+)"', block.group(1)))
+        missing = sorted(u for u in used if u not in known)
+        self.assertFalse(
+            missing,
+            'these icons are not in the installed ic() registry and render '
+            'as a blank circle with no error: %s' % missing)
 
     def test_no_python_style_implicit_string_concatenation(self):
         for fname in ('hiring_board.js', 'hiring_palette.js'):

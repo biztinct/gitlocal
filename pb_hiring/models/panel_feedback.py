@@ -25,6 +25,8 @@ import json
 import logging
 import secrets
 
+from markupsafe import Markup
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -271,19 +273,26 @@ class PbHiringFeedback(models.Model):
         if not rows or any(r.state != 'submitted' for r in rows):
             return False
         labels = dict(RECOMMENDATIONS)
-        lines = []
-        for row in rows.sorted('id'):
-            lines.append(_(
-                "%(who)s — %(verdict)s (%(score)s out of 5). %(notes)s",
-                who=row.panel_employee_id.sudo().name or '',
-                verdict=labels.get(row.recommendation, _('no answer')),
-                score=round(row.score_avg, 1),
-                notes=(row.notes or '').strip()))
-        interview.message_post(body=_(
-            "Everybody has answered — %(n)s %(word)s in.<br/>%(lines)s",
-            n=len(rows),
-            word=counted(len(rows), _('opinion'), _('opinions')),
-            lines='<br/>'.join(lines)))
+        # `message_post` ESCAPES A PLAIN STRING BODY, so a `<br/>` built into
+        # a `_()` sentence lands in the chatter as the four characters
+        # `&lt;br/&gt;` and the summary reads as one run-on line with its own
+        # markup in it (R51, from the writing side). Only `Markup` is rendered
+        # raw — and `Markup('%s') % value` escapes each interpolated value, so
+        # a panel member called "Nguyễn <script>" cannot inject anything.
+        lines = [
+            Markup('%(who)s — %(verdict)s (%(score)s out of 5). %(notes)s') % {
+                'who': row.panel_employee_id.sudo().name or '',
+                'verdict': labels.get(row.recommendation, _('no answer')),
+                'score': round(row.score_avg, 1),
+                'notes': (row.notes or '').strip(),
+            }
+            for row in rows.sorted('id')
+        ]
+        headline = _("Everybody has answered — %(n)s %(word)s in.",
+                     n=len(rows),
+                     word=counted(len(rows), _('opinion'), _('opinions')))
+        interview.message_post(
+            body=Markup('%s<br/>%s') % (headline, Markup('<br/>').join(lines)))
         if interview.recruiter_id:
             interview.activity_schedule(
                 _TODO,
