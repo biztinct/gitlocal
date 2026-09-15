@@ -104,6 +104,14 @@ class HrPayslipRunSeed(models.Model):
     @api.model
     def _approval_seed_default(self, company):
         """Give one company its published pay-run route. Safe to repeat."""
+        # TAKING AN APPROVED RUN BACK IS THIS ROUTE'S OWN SEND-BACK.
+        # "Reopen an approved run" is not a second decision by second people:
+        # it is the pay-run request being sent back, by somebody on that
+        # request, and it is recorded there. Leaving the catalogue row reading
+        # "Not connected yet" would have said nobody checks a reopen, about
+        # something these same people decide (ledger AM45: the adapter's own
+        # seed says it, never the noupdate data file).
+        self.env['biz.approval.seed'].cover_process('reopen', 'payrun')
         process = self.env['biz.approval.process']._by_key('payrun')
         if not process:
             # The catalogue lives in the configuration module. Without it there

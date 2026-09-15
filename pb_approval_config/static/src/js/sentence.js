@@ -228,6 +228,9 @@ export function statusMeta(status) {
         draft: { label: _t("Draft"), tone: "muted" },
         needs: { label: _t("Needs people"), tone: "warn" },
         soon: { label: _t("Not connected yet"), tone: "blue" },
+        // A row another row already answers. NOT "not connected": that says
+        // nobody is checking it, about something somebody is.
+        covered: { label: _t("Decided with another"), tone: "muted" },
     }[status] || { label: "", tone: "muted" };
 }
 

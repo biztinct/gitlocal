@@ -38,6 +38,29 @@ class BizApprovalProcess(models.Model):
              'warning the publisher confirms.')
     connected = fields.Boolean(compute='_compute_connected',
                                string='Wired up')
+    #: ANOTHER ROW ALREADY ANSWERS THIS ONE.
+    #:
+    #: Some acts turn out, once the adapters exist, to be the same decision
+    #: as another row rather than one of their own: a retro line is created
+    #: inside a pay-data load and travels that route; taking an approved run
+    #: back is the pay-run request's own send-back, decided by the same
+    #: people on the same request. A row like that must not sit on the
+    #: Matrix reading "Not connected yet", which says "nobody is checking
+    #: this" about something somebody IS checking. It names the row that
+    #: covers it instead, and the screen says so in words.
+    #:
+    #: Set by the covering adapter's own seed, never in the catalogue's data
+    #: file, which is `noupdate` (ledger AM45).
+    covered_by_key = fields.Char(string='Covered by')
+    covered_by_name = fields.Char(compute='_compute_covered_by',
+                                  string='Covered by (name)')
+
+    @api.depends('covered_by_key')
+    def _compute_covered_by(self):
+        for rec in self:
+            other = self._by_key(rec.covered_by_key) \
+                if rec.covered_by_key else None
+            rec.covered_by_name = other.name if other else ''
     sequence = fields.Integer(default=10)
     workflow_ids = fields.One2many('biz.approval.workflow', 'process_id')
     workflow_count = fields.Integer(compute='_compute_workflow_count')

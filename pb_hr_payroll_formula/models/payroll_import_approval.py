@@ -407,6 +407,14 @@ class HrPayrollImportBatchSeed(models.Model):
 
     @api.model
     def _approval_seed_default(self, company):
+        # RETRO IS NOT A ROW OF ITS OWN, AND SAYING SO IS THE HONEST END.
+        # Carry-over, proration and retro lines are created INSIDE import
+        # processing and are covered by this very request; there is no
+        # separate door that makes one. Leaving the catalogue row reading
+        # "Not connected yet" would have said nobody checks a retro line,
+        # about something this route checks every time (ledger AM45's rule:
+        # the adapter's own seed says it, never the noupdate data file).
+        self.env['biz.approval.seed'].cover_process('retro', LOADS_PROCESS_KEY)
         laid = False
         for key, name, definition_fn, roles, note in IMPORT_ROUTES:
             laid = self.env['biz.approval.seed'].lay(

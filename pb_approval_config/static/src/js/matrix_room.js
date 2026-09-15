@@ -148,7 +148,7 @@ export class PbApprovalMatrix extends Component {
     }
 
     get statusChips() {
-        return ["live", "draft", "needs", "soon"].map((key) => ({
+        return ["live", "draft", "needs", "soon", "covered"].map((key) => ({
             key, label: statusMeta(key).label, count: this.counts[key] || 0,
         }));
     }

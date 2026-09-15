@@ -258,7 +258,11 @@ class PbApprovalMatrix(models.AbstractModel):
         draft = workflow.draft_version_id if workflow else None
         version = published or draft
 
-        if not process.connected:
+        if not process.connected and process.covered_by_key:
+            # ANOTHER ROW ALREADY ANSWERS THIS ONE. Saying "Not connected yet"
+            # would say nobody is checking it, about something somebody is.
+            status = 'covered'
+        elif not process.connected:
             status = 'soon'
         elif published:
             status = 'needs' if self._gap_count(published) else 'live'
@@ -271,7 +275,9 @@ class PbApprovalMatrix(models.AbstractModel):
         if version and not route:
             route = [_('Nothing is checked')]
 
-        if binding and binding.scope_key:
+        if status == 'covered':
+            applies = _('Decided with %s', process.covered_by_name or '')
+        elif binding and binding.scope_key:
             applies = binding.scope_label or _('one part of the business')
         elif binding:
             applies = _('%s — everywhere', company.name)
@@ -290,6 +296,7 @@ class PbApprovalMatrix(models.AbstractModel):
             'area': process.area or 'other',
             'icon': process._area_icon(),
             'status': status,
+            'covered_by': process.covered_by_name or '',
             'route_labels': route,
             'applies': applies,
             'sub': sub,

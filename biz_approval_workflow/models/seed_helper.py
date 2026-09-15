@@ -83,6 +83,19 @@ class BizApprovalSeed(models.AbstractModel):
         return process
 
     @api.model
+    def cover_process(self, process_key, covered_by_key):
+        """Say, once, that another row already answers this one.
+
+        Done here rather than in the configuration module's data file for
+        the reason `point_process` gives: that file is `noupdate`, and an
+        existing database would never learn it.
+        """
+        process = self.env['biz.approval.process']._by_key(process_key)
+        if process and process.covered_by_key != covered_by_key:
+            process.sudo().write({'covered_by_key': covered_by_key})
+        return process
+
+    @api.model
     def roles_exist(self, keys):
         """Every responsibility key a definition names, or False."""
         Role = self.env['biz.approval.role'].sudo()
