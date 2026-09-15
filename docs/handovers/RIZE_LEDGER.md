@@ -168,6 +168,29 @@ without owner approval between them.
   not required). Test users/passwords still get LISTED in reports for the final summary,
   and mails must still go to safe @example.com/test addresses.
 
+### Wave 2 rulings (owner, 2026-09-15 — the five uncoloured tabs are now in scope)
+
+- **D10 — mixed approach.** EXTEND Leave & Attendance inside `pb_timeoff` /
+  `pb_driver_checkin`; BUILD Hiring (`pb_hiring`), Goals (`pb_goals`), HR Comm
+  (`pb_hr_comm`) and Training (`pb_training`) fresh, in the RIZE style.
+- **D11 — build and test on `payobook` only.** Roll-out to the `rize` tenant is a
+  separate step under the tenant-module-sync rule, never part of a phase.
+- **D12 — outside services stay OFF** (LinkedIn posting, e-signature, Google
+  Calendar, Slack): email only, ICS attachments, screens built ready to connect.
+  Same spirit as D3. "Signed" on an offer is recorded by hand.
+- **D13 — field attendance = location + selfie.** No face matching, no biometric
+  storage. The existing `pb_selfie_attachment_id` on `hr.attendance` is the whole
+  of it.
+- **D14 (designer's call, owner delegated).** Training REUSES the installed
+  E-Learning content engine (`website_slides`) plus Surveys (`survey`, to be
+  installed in E1 — pre-authorised) as the test engine, with every learner surface
+  ours under `/my/training`; Hiring KEEPS the standard applicant / job / talent-pool
+  store underneath a bespoke requisition-to-offer layer. Rationale in
+  `RIZE_W2_HANDOVER.md` Part C.
+- Wave 2 ledger entries start at **R131**; ⌘K blocks A 3500 / B 3600 / C 3700 /
+  D 3800 / E 3900; validator `igc1.validator` (uid 2065) re-enabled for the wave
+  and archived as the last closeout step.
+
 ## Phase plan & status
 
 | Phase | Module(s) | Status |
