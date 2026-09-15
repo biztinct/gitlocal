@@ -65,9 +65,9 @@ textarea.pbhr-in { resize: vertical; line-height: 1.55; }
     .pbhr-notice-btn { margin-top: 10px; }
 
     // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
-    // cockpit knows how many numbers it has (R32). EIGHT here since A2 added
-    // the two interview numbers, so it is four and four rather than six and
-    // a stranded pair; three under 1180px, two under 700px.
+    // cockpit knows how many numbers it has (R32). TEN here since A3 added
+    // the two offer numbers, so it is five rows of two on a phone and a
+    // clean four-four-two on a desktop; three under 1180px, two under 700px.
     .pbhr-kpis {
         grid-template-columns: repeat(4, 1fr);
         margin-bottom: 16px;
@@ -559,5 +559,222 @@ textarea.pbhr-in { resize: vertical; line-height: 1.55; }
     .pbhr-person-r {
         margin-left: auto; font-size: 11.5px;
         color: var(--pbim-muted, #64748B);
+    }
+}
+
+// =====================================================================
+//  A3 — the path from "we have decided" to "they are here on Monday".
+//
+//  THE STRIP IS THE HERO and everything else here serves it: three panels
+//  that open under it, one at a time, and the small controls each one needs.
+//
+//  The dialog rules are NOT nested under `.pbhr` (R114) — they live at the
+//  top level with the rest of this file's dialog rules, because a scrim
+//  mounts outside the surface that opened it as often as inside.
+// =====================================================================
+.pbhr {
+
+    // ------------------------------------------------- the cover banner
+    .pbhr-cover {
+        display: flex; gap: 13px; align-items: flex-start;
+        padding: 14px 16px; margin-bottom: 16px;
+        background: var(--pbim-soft, #EEF2FF);
+        border-color: var(--pbim-primary, #4F46E5);
+
+        b { font-size: 13.5px; color: var(--pbim-ink); }
+        p { margin: 4px 0 0; font-size: 12.5px; color: var(--pbim-muted);
+            line-height: 1.55; }
+    }
+    .pbhr-cover-ic {
+        flex: 0 0 auto; color: var(--pbim-primary-strong); margin-top: 1px;
+    }
+
+    // ---------------------------------------------------- the path strip
+    .pbhr-path {
+        display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+        margin-bottom: 14px;
+    }
+    @media (max-width: 1100px) {
+        .pbhr-path { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 620px) {
+        .pbhr-path { grid-template-columns: repeat(2, 1fr); }
+    }
+    .pbhr-path-chip {
+        display: flex; align-items: center; gap: 9px; text-align: left;
+        padding: 11px 12px; border-radius: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        font: inherit; cursor: pointer; min-width: 0;
+
+        .pbhr-path-ic {
+            flex: 0 0 auto; color: var(--pbim-muted, #64748B);
+            display: inline-flex;
+        }
+        .pbhr-path-tx { min-width: 0; }
+        .n {
+            display: block; font-size: 12.5px; font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .l {
+            display: block; font-size: 11.5px; color: var(--pbim-muted);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        &.done {
+            border-color: #86EFAC; background: #F0FDF4;
+            .pbhr-path-ic { color: #15803D; }
+        }
+        &.live {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            .pbhr-path-ic { color: var(--pbim-primary-strong, #3730A3); }
+        }
+        &.warn {
+            border-color: #FCD34D; background: #FFFBEB;
+            .pbhr-path-ic { color: #B45309; }
+        }
+        &.on { box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16)); }
+    }
+
+    // --------------------------------------------------------- the panels
+    .pbhr-panel { padding: 16px 18px 12px; margin-bottom: 16px; }
+    .pbhr-panel-foot {
+        display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+        margin-top: 14px; padding-top: 12px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbhr-tpl { max-width: 240px; }
+    .pbhr-agency { max-width: 100%; }
+
+    .pbhr-check {
+        display: flex; align-items: flex-start; gap: 12px;
+        padding: 10px 0; border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+        &:last-of-type { border-bottom: none; }
+    }
+    .pbhr-check-main { flex: 1 1 auto; min-width: 0; }
+    .pbhr-check-name {
+        font-size: 13.5px; font-weight: 650; color: var(--pbim-ink);
+
+        em { font-style: normal; font-weight: 500; color: var(--pbim-muted); }
+    }
+    .pbhr-check-help {
+        margin-top: 3px; font-size: 12px; color: var(--pbim-muted);
+        line-height: 1.5;
+    }
+    .pbhr-check-note {
+        margin-top: 5px; padding-left: 10px; font-size: 12.5px;
+        color: var(--pbim-text, #334155); line-height: 1.55;
+        border-left: 2px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbhr-check-btns { display: flex; gap: 4px; flex: 0 0 auto; }
+
+    .pbhr-dot {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px; border-radius: 9px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B); cursor: pointer; padding: 0;
+
+        &.on {
+            border-color: #86EFAC; background: #F0FDF4; color: #15803D;
+        }
+        &.warn.on {
+            border-color: #FCD34D; background: #FFFBEB; color: #B45309;
+        }
+    }
+
+    .pbhr-note-ok, .pbhr-note-warn {
+        display: flex; align-items: flex-start; gap: 9px;
+        margin-top: 12px; padding: 11px 13px; border-radius: 11px;
+        font-size: 12.5px; line-height: 1.55;
+    }
+    .pbhr-note-ok {
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-strong, #3730A3);
+    }
+    .pbhr-note-warn { background: #FFFBEB; color: #B45309; }
+
+    .pbhr-doc-head {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    // ---------------------------------------------------------- the money
+    .pbhr-offer-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 14px; margin-bottom: 12px;
+    }
+    .pbhr-offer-n {
+        font-size: 22px; font-weight: 800; color: var(--pbim-ink, #1B1733);
+        line-height: 1.2;
+
+        small {
+            font-size: 12px; font-weight: 600; color: var(--pbim-muted);
+            margin-left: 5px;
+        }
+    }
+    .pbhr-offer-sub {
+        margin-top: 3px; font-size: 12.5px; color: var(--pbim-muted);
+    }
+    .pbhr-lines { display: flex; flex-direction: column; }
+    .pbhr-line {
+        display: flex; align-items: center; gap: 12px;
+        padding: 9px 0; border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+        &:last-child { border-bottom: none; }
+    }
+    .pbhr-line-main { flex: 1 1 auto; min-width: 0; }
+    .pbhr-line-name {
+        font-size: 13.5px; font-weight: 650; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbhr-line-meta { font-size: 11.5px; color: var(--pbim-muted); }
+    .pbhr-line-amt {
+        flex: 0 0 auto; font-size: 13.5px; font-weight: 750;
+        color: var(--pbim-ink);
+    }
+    .pbhr-line-btns { display: flex; gap: 4px; flex: 0 0 auto; }
+}
+
+// The letter preview is a DIALOG rule and lives at the top level with the
+// rest of them (R114): a scrim mounts outside the surface that opened it as
+// often as inside, and a descendant selector makes a dialog's appearance
+// depend on where in the DOM it lands.
+.pbhr-dialog--wide { max-width: 760px; }
+.pbhr-letter {
+    max-height: 60vh; overflow: auto; padding: 18px 20px;
+    font-size: 13.5px; line-height: 1.7; color: #334155;
+    background: #FFFFFF;
+
+    p { margin: 0 0 12px; }
+    table { border-collapse: collapse; }
+    strong { color: #1B1733; }
+}
+
+// A `from`-ONLY KEYFRAME CANNOT RESTORE WHAT THE RULE TOOK AWAY. R85 says
+// every moving declaration — the starting opacity, the transform and the
+// animation — belongs inside the reduced-motion query, and that is right;
+// what it does not say is that the keyframe then needs an explicit `to`.
+// With `animation-fill-mode: both` and no `to`, the 100% frame is the
+// element's OWN value, which the same rule has just set to `opacity: 0` — so
+// the panel animates from invisible to invisible and stays there for ever.
+// Found live on 2026-09-15: the offer panel rendered as a blank rectangle
+// with every one of its numbers present in the DOM.
+@keyframes pbhr-panel-rise {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: none;            opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhr .pbhr-path-chip {
+        transition: border-color .12s, background .12s, box-shadow .12s;
+    }
+    .pbhr .pbhr-panel {
+        opacity: 0;
+        transform: translateY(8px);
+        animation: pbhr-panel-rise .2s ease-out both;
     }
 }

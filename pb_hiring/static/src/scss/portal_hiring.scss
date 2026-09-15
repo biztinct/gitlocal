@@ -141,6 +141,28 @@
     }
     .pbhr-st--refused, .pbhr-st--closed { color: #64748B; }
 
+    // A3 — where the offer has got to, under the role on `/my/hiring`.
+    // A hiring manager raised a role three months ago; the one thing they
+    // want from this page is whether the person said yes.
+    .pbhr-mine-offer {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin-top: 6px;
+    }
+    .pbhr-of--draft, .pbhr-of--submitted, .pbhr-of--manager_ok {
+        color: #B45309; border-color: #FCD34D;
+    }
+    .pbhr-of--hr_ok, .pbhr-of--sent { color: #4338CA; border-color: #C7D2FE; }
+    .pbhr-of--accepted, .pbhr-of--signed, .pbhr-of--closed {
+        color: #15803D; border-color: #86EFAC;
+    }
+    .pbhr-of--declined { color: #B91C1C; border-color: #FECACA; }
+    .pbhr-waiting {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px;
+        background: #FFF7ED; color: #B45309;
+        font-size: 11.5px; font-weight: 700;
+    }
+
     // ================================================================
     //  /my/hiring — what you owe, and what you are sitting in
     // ================================================================
@@ -341,3 +363,127 @@
         box-shadow: 0 8px 20px rgba(79, 70, 229, .28);
     }
 }
+
+// =====================================================================
+//  A3 — the two pages a CANDIDATE sees.
+//
+//  Built on the `.pbhf-*` card the panel's feedback page established, so a
+//  company sends three different people to three pages that look like one
+//  product. Everything new here is the part that is genuinely different: a
+//  list of things to send with a file box on each one, and an offer with
+//  two numbers a person reads before anything else.
+//
+//  EVERY COLOUR CARRIES A LITERAL, not only a token (R39): the portal has no
+//  dark palette at all and never did, so "works in both themes" is satisfied
+//  by proving every colour RESOLVES. Nothing here reads a `--pbim-*` token,
+//  because the frontend bundle does not carry them.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle.
+// =====================================================================
+
+// ------------------------------------------------- the papers, as progress
+.pbhf-progress {
+    display: flex; align-items: center; gap: 12px; margin: 14px 0 18px;
+}
+.pbhf-progress__bar {
+    flex: 1 1 auto; height: 8px; border-radius: 999px;
+    background: #F1F5F9; overflow: hidden;
+
+    span {
+        display: block; height: 100%; border-radius: 999px;
+        background: #4F46E5;
+    }
+}
+.pbhf-progress__tx {
+    flex: 0 0 auto; font-size: 12.5px; font-weight: 650; color: #475569;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-progress__bar span { transition: width .3s ease-out; }
+}
+
+.pbhf-problem {
+    display: flex; align-items: flex-start; gap: 9px;
+    margin: 0 0 16px; padding: 11px 14px; border-radius: 11px;
+    background: #FEF2F2; color: #B91C1C; font-size: 13px; line-height: 1.55;
+    border: 1px solid #FECACA;
+}
+
+// ONE BOX PER THING ASKED FOR, and the state is on the box. A single
+// "attach everything" field is a field nobody can tell the state of, and a
+// candidate who has sent four of six deserves to see which two are left.
+.pbhf-doc {
+    padding: 14px 0; border-bottom: 1px solid #F1F5F9;
+
+    &:last-of-type { border-bottom: none; }
+    &.pbhf-doc--in .pbhf-doc__tick { color: #15803D; }
+}
+.pbhf-doc__head { display: flex; align-items: flex-start; gap: 10px; }
+.pbhf-doc__tick { flex: 0 0 auto; color: #CBD5E1; margin-top: 1px; }
+.pbhf-doc__name {
+    font-size: 14px; font-weight: 700; color: #1B1733; line-height: 1.4;
+
+    em { font-style: normal; font-weight: 500; color: #64748B; }
+}
+.pbhf-doc__got {
+    margin: 6px 0 0 28px; font-size: 12px; color: #15803D;
+}
+.pbhf-doc__form {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin: 10px 0 0 28px;
+}
+.pbhf-file {
+    flex: 1 1 200px; min-width: 0;
+    font-size: 12.5px; color: #475569;
+
+    &::file-selector-button {
+        margin-right: 10px; padding: 8px 14px;
+        border: 1px solid #E2E8F0; border-radius: 9px;
+        background: #FFFFFF; color: #334155;
+        font: inherit; font-size: 12.5px; font-weight: 650; cursor: pointer;
+    }
+}
+.pbhf-btn--small {
+    margin-top: 0; padding: 9px 16px; font-size: 13px;
+}
+
+// ------------------------------------------------------------ the offer
+.pbhf-offer {
+    margin: 16px 0 0;
+}
+.pbhf-offer__row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; padding: 9px 0; border-bottom: 1px solid #F1F5F9;
+    font-size: 14px; color: #475569;
+
+    &:last-of-type { border-bottom: none; }
+    strong { color: #1B1733; text-align: right; }
+}
+.pbhf-offer__when {
+    display: block; font-style: normal; font-size: 11.5px; font-weight: 500;
+    color: #64748B;
+}
+
+// THE TWO NUMBERS FIRST. A candidate reads a month and a year before they
+// read anything else on an offer, and pretending otherwise by burying them
+// in a table is a design that fights its own reader.
+.pbhf-money {
+    display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 6px;
+}
+.pbhf-money__big {
+    flex: 1 1 140px; padding: 16px 18px; border-radius: 14px;
+    background: #EEF2FF; border: 1px solid #C7D2FE;
+
+    .n {
+        font-size: 22px; font-weight: 800; color: #3730A3;
+        line-height: 1.2; word-break: break-word;
+    }
+    .l { margin-top: 2px; font-size: 12px; color: #4338CA; }
+}
+
+.pbhf-answer { margin-top: 20px; }
+.pbhf-answer__btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.pbhf-btn--ghost {
+    margin-top: 0; border-color: #C7D2FE; color: #3730A3; background: #FFFFFF;
+}
+.pbhf-btn--quiet { color: #64748B; }

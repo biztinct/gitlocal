@@ -411,6 +411,31 @@
                     <t t-else=""><t t-esc="rq.applicant_count"/> candidates</t>
                   </t>
                 </div>
+                <!-- ============ A3: where the offer has got to ============
+                     THE CHIP IS THE POINT OF THIS PAGE FOR A HIRING MANAGER.
+                     They raised a role three months ago and the one thing
+                     they want to know is whether the person said yes — and,
+                     if the sign-off is sitting on them, that it is sitting
+                     on them. -->
+                <t t-foreach="rq.offer_ids.filtered(lambda o: o.state not in ('refused',))" t-as="of">
+                  <div class="pbhr-mine-offer">
+                    <span t-attf-class="pbme-badge pbhr-st pbhr-of--#{of.state}">
+                      <t t-esc="dict(of._fields['state'].selection).get(of.state, '')"/>
+                    </span>
+                    <span class="pbhr-mine-meta">
+                      <t t-esc="of.candidate_name"/>
+                      <t t-if="of.start_date"> · starts <t t-esc="of.start_date"/></t>
+                    </span>
+                    <span class="pbhr-waiting"
+                          t-if="of.state in ('submitted', 'manager_ok') and user_waiting.get(of.id)">
+                      <t t-call="pb_hiring.hr_icon">
+                        <t t-set="icon" t-value="'clock'"/>
+                        <t t-set="isz" t-value="13"/>
+                      </t>
+                      Waiting on you
+                    </span>
+                  </div>
+                </t>
               </div>
               <span t-attf-class="pbme-badge pbhr-st pbhr-st--#{rq.state}">
                 <t t-esc="dict(rq._fields['state'].selection).get(rq.state, '')"/>

@@ -107,8 +107,14 @@ class PbHiring(models.AbstractModel):
         return (user.has_group(GROUP_USER) or user.has_group(GROUP_MANAGER)
                 or user.has_group(GROUP_ADMIN))
 
+    # A3 — the gate takes the ROLE it is being asked about, because a
+    # recruiter's cover is not a promotion: somebody standing in for one
+    # colleague for a fortnight may work on that colleague's roles and on
+    # nobody else's. `pb_hiring_a3.py` is where that second question is asked;
+    # here the argument is simply carried, so every verb names the role it is
+    # about rather than leaving the gate to guess.
     @api.model
-    def _require_recruit(self):
+    def _require_recruit(self, requisition=None):
         if not self._can_recruit():
             raise AccessError(_(
                 "Adverts and candidates are the recruiters' side of this "
@@ -460,14 +466,14 @@ class PbHiring(models.AbstractModel):
                      'approved_on': str(j.approved_on) if j.approved_on
                      else ''}
                     for j in req.jd_ids],
-            'postings': [{'id': p.id, 'platform': p.platform_id.name or '',
-                          'email': p.platform_email or '',
-                          'subject': p.subject or '',
-                          'state': p.state,
-                          'state_label': dict(
-                              p._fields['state'].selection).get(p.state, ''),
-                          'sent_on': str(p.sent_on) if p.sent_on else ''}
-                         for p in req.posting_ids],
+            # EVERY LIST IN THIS DRAWER IS ITS OWN PROBE. Found live on
+            # 2026-09-15: the person who ASKED for a role holds no hiring
+            # group by definition, had no read on the advert pack, and
+            # opening their own request answered an AccessError naming a
+            # model they have never heard of — over a drawer whose other
+            # eight sections they were perfectly entitled to. One failing
+            # number must answer empty, never take the screen down (R92).
+            'postings': self._safe(lambda: self._postings(req), default=[]),
             'referrals': [{'id': r.id, 'name': r.candidate_name or '',
                            'by': self.env['pb.hiring.requisition']._person(
                                r.employee_id).name or '',
@@ -488,6 +494,17 @@ class PbHiring(models.AbstractModel):
                                  [], ['name'], limit=30)], default=[]),
         })
         return row
+
+    @api.model
+    def _postings(self, req):
+        return [{'id': p.id, 'platform': p.platform_id.name or '',
+                 'email': p.platform_email or '',
+                 'subject': p.subject or '',
+                 'state': p.state,
+                 'state_label': dict(p._fields['state'].selection).get(
+                     p.state, ''),
+                 'sent_on': str(p.sent_on) if p.sent_on else ''}
+                for p in req.posting_ids]
 
     @api.model
     def _candidates(self, req):
@@ -645,7 +662,7 @@ class PbHiring(models.AbstractModel):
 
     def _act_toggle_referrals(self, payload):
         req = self._get(payload)
-        self._require_recruit()
+        self._require_recruit(req)
         wanted = not req.referral_open
         req.sudo().write({'referral_open': wanted})
         return {'id': req.id, 'referral_open': wanted,
@@ -655,14 +672,14 @@ class PbHiring(models.AbstractModel):
 
     def _act_publish(self, payload):
         req = self._get(payload)
-        self._require_recruit()
+        self._require_recruit(req)
         return req.action_publish()
 
     def _act_send_posting(self, payload):
-        self._require_recruit()
         posting = self.env['pb.hiring.posting'].browse(
             as_id(payload.get('posting_id')))
         posting.ensure_one()
+        self._require_recruit(posting.requisition_id)
         posting.action_send()
         return {'id': posting.id, 'state': posting.state,
                 'note': _("Sent to %s.", posting.platform_id.name or '')}
@@ -695,10 +712,10 @@ class PbHiring(models.AbstractModel):
 
     # --------------------------------------------------------- the screening
     def _act_screen(self, payload):
-        self._require_recruit()
         applicant = self.env['hr.applicant'].browse(
             as_id(payload.get('applicant_id')))
         applicant.ensure_one()
+        self._require_recruit(applicant.sudo().pb_requisition_id)
         applicant.action_pb_screen(payload.get('tag'),
                                    job_id=payload.get('job_id'),
                                    reason_id=payload.get('reason_id'))
@@ -761,7 +778,8 @@ class PbHiring(models.AbstractModel):
         return rec
 
     def _act_schedule(self, payload):
-        self._require_recruit()
+        self._require_recruit(self.env['pb.hiring.requisition'].browse(
+            as_id(payload.get('requisition_id'))))
         interview = self.env['pb.hiring.interview'].schedule(payload)
         return {
             'id': interview.id,
@@ -772,15 +790,16 @@ class PbHiring(models.AbstractModel):
         }
 
     def _act_reschedule(self, payload):
-        self._require_recruit()
-        fresh = self._interview(payload).reschedule(payload)
+        interview = self._interview(payload)
+        self._require_recruit(interview.requisition_id)
+        fresh = interview.reschedule(payload)
         return {'id': fresh.id,
                 'note': _("Moved. The old time is called off and the new one "
                           "has gone out.")}
 
     def _act_no_show(self, payload):
-        self._require_recruit()
         interview = self._interview(payload)
+        self._require_recruit(interview.requisition_id)
         interview.action_no_show(by=payload.get('by'),
                                  note=payload.get('note'))
         return {'id': interview.id, 'state': interview.state,
@@ -788,42 +807,42 @@ class PbHiring(models.AbstractModel):
                           "something to do about it.")}
 
     def _act_mark_done(self, payload):
-        self._require_recruit()
         interview = self._interview(payload)
+        self._require_recruit(interview.requisition_id)
         interview.action_mark_done()
         return {'id': interview.id, 'state': interview.state,
                 'note': _("Done, with every opinion in.")}
 
     def _act_cancel_interview(self, payload):
-        self._require_recruit()
         interview = self._interview(payload)
+        self._require_recruit(interview.requisition_id)
         interview.action_cancel(note=payload.get('note'))
         return {'id': interview.id, 'state': interview.state,
                 'note': _("Called off, and everybody has been told.")}
 
     def _act_debrief(self, payload):
-        self._require_recruit()
         interview = self._interview(payload)
+        self._require_recruit(interview.requisition_id)
         interview.action_debrief(notes=payload.get('notes'),
                                  decision=payload.get('decision'))
         return {'id': interview.id,
                 'note': _("Written down while everybody still remembers it.")}
 
     def _act_next_round(self, payload):
-        self._require_recruit()
         applicant = self.env['hr.applicant'].browse(
             as_id(payload.get('applicant_id')))
         applicant.ensure_one()
+        self._require_recruit(applicant.sudo().pb_requisition_id)
         applicant.action_pb_next_round(step_id=payload.get('step_id'))
         return {'id': applicant.id,
                 'note': _("Through to %s, and they have been told.",
                           applicant.sudo().stage_id.name or '')}
 
     def _act_reject(self, payload):
-        self._require_recruit()
         applicant = self.env['hr.applicant'].browse(
             as_id(payload.get('applicant_id')))
         applicant.ensure_one()
+        self._require_recruit(applicant.sudo().pb_requisition_id)
         name = applicant.sudo().partner_name or ''
         applicant.action_pb_reject(reason_id=payload.get('reason_id'))
         return {'id': applicant.id,
@@ -839,10 +858,10 @@ class PbHiring(models.AbstractModel):
 
     def _act_copy_feedback_link(self, payload):
         """A panel member whose mail bounced is a very ordinary problem."""
-        self._require_recruit()
         row = self.env['pb.hiring.feedback'].browse(
             as_id(payload.get('feedback_id')))
         row.ensure_one()
+        self._require_recruit(row.requisition_id)
         return {'id': row.id, 'link': row.sudo()._token_url(),
                 'note': _("Their own link is on screen — send it to them "
                           "however you like.")}

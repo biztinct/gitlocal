@@ -30,6 +30,14 @@
       <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
       <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
       <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <!-- A3 adds four. Same rule as the five above: the drawing lives here
+           because a frontend page cannot call the backend's ic() registry,
+           and a page that fell through to a plain circle for half its icons
+           would look broken rather than plain. -->
+      <t t-elif="icon == 'paperclip'"><path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"/></t>
+      <t t-elif="icon == 'award'"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></t>
+      <t t-elif="icon == 'fileText'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'circle'"><circle cx="12" cy="12" r="10"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>

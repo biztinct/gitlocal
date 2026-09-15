@@ -12,7 +12,10 @@
        in: OWL reserves those as operators and the whole template dies with a
        compile error pointing at nothing useful (R1). The loops here are
        `row`, `dp`, `cn`, `sv`, `rc`, `st`, `jd`, `po`, `rf`, `cd`, `pl`,
-       `tg`, `jb`, `rt`.
+       `tg`, `jb`, `rt`, and A3's `ch`, `bi`, `di`, `ol`, `ltp`, `ag`, `cv`,
+       `ok`, `op`, `br`. `ltp` is spelt out rather than `lt` for exactly the
+       reason above — `t-as="lt"` compiles the loop variable into the
+       generated function as a bare `<` and the whole template dies.
 
        `t-att-class` with a DICT is correct HERE and only here — this is an
        OWL template, where the dict form MERGES with the static class. In a
@@ -66,6 +69,15 @@
               <button t-if="state.canAdmin" class="pbim-btn ghost"
                       t-on-click="() => this.act('open_rules', {}, { reload: false })">
                 <t t-out="ic('globe',15)"/> Hiring rules
+              </button>
+              <button t-if="state.canRecruit" class="pbim-btn ghost"
+                      t-on-click="startCover"
+                      title="Ask a colleague to pick up your roles while you are away">
+                <t t-out="ic('userCheck',15)"/> Cover for me
+              </button>
+              <button t-if="state.canRecruit" class="pbim-btn ghost"
+                      t-on-click="openCovers" title="Who is covering for whom">
+                <t t-out="ic('users',15)"/> Covers
               </button>
               <button t-if="state.canRaise" class="pbim-btn primary"
                       t-on-click="startRaise">
@@ -171,6 +183,39 @@
                 <div class="l">Opinions overdue</div>
               </div>
             </button>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic"><t t-out="ic('send',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.offers_out or 0"/>
+                <div class="l">Offers with a candidate</div>
+              </div>
+            </div>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic"><t t-out="ic('sunrise',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.filled_month or 0"/>
+                <div class="l">Joined this month</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ this reader is standing in for somebody ============
+               A cover is invisible by design — nothing about anybody's
+               permissions changes — so the one place it has to be VISIBLE is
+               the board of the person doing the covering. Without this they
+               would simply wonder why they can suddenly press things. -->
+          <div t-if="state.covering.length" class="pbim-panel pbhr-cover">
+            <div class="pbhr-cover-ic"><t t-out="ic('userCheck',18)"/></div>
+            <div>
+              <b>You are standing in
+                <t t-foreach="state.covering" t-as="cv" t-key="cv.id">
+                  for <t t-esc="cv.who"/> until <t t-esc="cv.until"/><t t-if="!cv_last">, </t>
+                </t>
+              </b>
+              <p>Their roles are on this board and you can work on them as
+                 they would. Nothing else about what you are allowed to do has
+                 changed, and this ends by itself on the day it says.</p>
+            </div>
           </div>
 
           <!-- ======================== the two halves ====================
@@ -554,6 +599,320 @@
               </button>
             </div>
 
+            <!-- ==================================================================
+                 A3 — THE PATH, from "we have decided" to "they are here on
+                 Monday". This is the hero of the drawer: six chips, each one
+                 a state the SERVER computed and a door. A strip that only
+                 drew progress would be a picture; the thing a recruiter needs
+                 from this screen is the next press.
+                 ================================================================== -->
+            <t t-if="state.drawer.journey">
+              <div class="pbhr-sec">
+                The offer
+                <span t-if="state.drawer.journey.candidate"
+                      class="pbim-badge pbhr-cur"
+                      t-esc="state.drawer.journey.candidate"/>
+              </div>
+
+              <div t-if="!state.drawer.journey.ready" class="pbhr-mini-empty"
+                   t-esc="state.drawer.journey.why"/>
+
+              <t t-else="">
+                <div class="pbhr-path">
+                  <t t-foreach="state.drawer.journey.chips" t-as="ch"
+                     t-key="ch.key">
+                    <button class="pbhr-path-chip"
+                            t-att-class="{ done: ch.tone === 'done',
+                                           live: ch.tone === 'live',
+                                           warn: ch.tone === 'warn',
+                                           on: state.openPanel === ch.key }"
+                            t-on-click="() => this.pressChip(ch)">
+                      <span class="pbhr-path-ic">
+                        <t t-out="ic(pathIcon(ch.key),16)"/>
+                      </span>
+                      <span class="pbhr-path-tx">
+                        <span class="n" t-esc="ch.label"/>
+                        <span class="l" t-esc="ch.note"/>
+                      </span>
+                    </button>
+                  </t>
+                </div>
+
+                <!-- ============ the background check ============ -->
+                <div t-if="state.openPanel === 'bgv'"
+                     class="pbim-panel pbhr-panel">
+                  <div t-if="!state.drawer.journey.bgv.id"
+                       class="pbhr-mini-empty">
+                    Nothing has been checked yet.
+                    <button class="pbim-btn ghost" t-on-click="startBgv">
+                      <t t-out="ic('shieldCheck',14)"/> Start the background
+                      check
+                    </button>
+                  </div>
+                  <t t-else="">
+                    <div t-if="state.drawer.journey.bgv.override_by"
+                         class="pbhr-note-ok">
+                      <t t-out="ic('info',16)"/>
+                      <span>
+                        <b t-esc="state.drawer.journey.bgv.override_by"/>
+                        said to go ahead anyway:
+                        <t t-esc="state.drawer.journey.bgv.override_note"/>
+                      </span>
+                    </div>
+                    <t t-foreach="state.drawer.journey.bgv.items" t-as="bi"
+                       t-key="bi.id">
+                      <div class="pbhr-check">
+                        <div class="pbhr-check-main">
+                          <div class="pbhr-check-name">
+                            <t t-esc="bi.name"/>
+                            <em t-if="!bi.required"> · optional</em>
+                          </div>
+                          <div class="pbhr-check-help" t-if="bi.help"
+                               t-esc="bi.help"/>
+                          <div class="pbhr-check-note" t-if="bi.note">
+                            <t t-esc="bi.note"/>
+                            <t t-if="bi.by"> — <t t-esc="bi.by"/></t>
+                          </div>
+                        </div>
+                        <div class="pbhr-check-btns" t-if="state.canRecruit">
+                          <button class="pbhr-dot"
+                                  t-att-class="{ on: bi.result === 'ok' }"
+                                  title="Clear"
+                                  t-on-click="() => this.setBgv(bi, 'ok')">
+                            <t t-out="ic('checkCircle',15)"/>
+                          </button>
+                          <button class="pbhr-dot warn"
+                                  t-att-class="{ on: bi.result === 'flag' }"
+                                  title="Came back with something"
+                                  t-on-click="() => this.startNote(bi)">
+                            <t t-out="ic('alert',15)"/>
+                          </button>
+                          <button class="pbhr-dot"
+                                  t-att-class="{ on: bi.result === 'na' }"
+                                  title="Does not apply"
+                                  t-on-click="() => this.setBgv(bi, 'na')">
+                            <t t-out="ic('minusCircle',15)"/>
+                          </button>
+                          <button class="pbhr-dot" title="Write down what was found"
+                                  t-on-click="() => this.startNote(bi)">
+                            <t t-out="ic('pencil',15)"/>
+                          </button>
+                        </div>
+                        <span t-else="" class="pbim-badge"
+                              t-esc="bi.result_label"/>
+                      </div>
+                    </t>
+                    <div t-if="!state.drawer.journey.bgv.ready"
+                         class="pbhr-note-warn">
+                      <t t-out="ic('alert',16)"/>
+                      <span t-esc="state.drawer.journey.bgv.why"/>
+                    </div>
+                    <div class="pbhr-panel-foot">
+                      <button t-if="state.canWrite and state.drawer.journey.bgv.flags and !state.drawer.journey.bgv.override_by"
+                              class="pbim-btn ghost" t-on-click="startOverride">
+                        <t t-out="ic('shield',14)"/> Go ahead anyway
+                      </button>
+                    </div>
+                  </t>
+                </div>
+
+                <!-- ============ the papers ============ -->
+                <div t-if="state.openPanel === 'documents'"
+                     class="pbim-panel pbhr-panel">
+                  <div t-if="!state.drawer.journey.docreq.id"
+                       class="pbhr-mini-empty">
+                    Nobody has asked this candidate for anything yet. They get
+                    one link, on their phone, with two working days to send it.
+                    <button t-if="state.canRecruit and offer.id"
+                            class="pbim-btn ghost"
+                            t-on-click="askForDocuments">
+                      <t t-out="ic('paperclip',14)"/> Ask for their papers
+                    </button>
+                    <span t-if="!offer.id" class="pbhr-check-help">
+                      Draft the offer first — the request hangs off it.
+                    </span>
+                  </div>
+                  <t t-else="">
+                    <div class="pbhr-doc-head">
+                      <span class="pbim-badge"
+                            t-esc="state.drawer.journey.docreq.state_label"/>
+                      <span class="pbhr-check-help">
+                        <t t-esc="state.drawer.journey.docreq['in']"/> of
+                        <t t-esc="state.drawer.journey.docreq.total"/> in ·
+                        wanted by
+                        <t t-esc="state.drawer.journey.docreq.deadline"/>
+                      </span>
+                    </div>
+                    <t t-foreach="state.drawer.journey.docreq.items" t-as="di"
+                       t-key="di.id">
+                      <div class="pbhr-check">
+                        <div class="pbhr-check-main">
+                          <div class="pbhr-check-name">
+                            <t t-esc="di.name"/>
+                            <em t-if="!di.required"> · optional</em>
+                          </div>
+                          <div class="pbhr-check-help" t-if="di.received">
+                            Arrived <t t-esc="localWhen(di.received)"/>
+                          </div>
+                        </div>
+                        <span class="pbhr-dot"
+                              t-att-class="{ on: !!di.received }">
+                          <t t-if="di.received"><t t-out="ic('checkCircle',15)"/></t>
+                          <t t-else=""><t t-out="ic('circle',15)"/></t>
+                        </span>
+                      </div>
+                    </t>
+                    <div class="pbhr-panel-foot" t-if="state.canRecruit">
+                      <button class="pbim-btn ghost"
+                              t-on-click="remindDocuments">
+                        <t t-out="ic('bell',14)"/> Remind them now
+                      </button>
+                      <button class="pbim-btn ghost" t-on-click="copyDocLink">
+                        <t t-out="ic('link',14)"/> Their own link
+                      </button>
+                    </div>
+                  </t>
+                </div>
+
+                <!-- ============ the offer itself ============ -->
+                <div t-if="state.openPanel === 'offer'"
+                     class="pbim-panel pbhr-panel">
+                  <div t-if="!offer.id" class="pbhr-mini-empty">
+                    No offer has been drafted yet. It opens from the panel's
+                    decision on the last conversation, once the background
+                    check is answered.
+                    <button t-if="state.canRecruit" class="pbim-btn primary"
+                            t-on-click="draftOffer">
+                      <t t-out="ic('scrollText',14)"/> Draft the offer
+                    </button>
+                  </div>
+                  <t t-else="">
+                    <div class="pbhr-offer-head">
+                      <div>
+                        <div class="pbhr-offer-n">
+                          <t t-esc="money(offer.monthly_total, offer.currency)"/>
+                          <small>a month</small>
+                        </div>
+                        <div class="pbhr-offer-sub">
+                          <t t-esc="money(offer.annual_total, offer.currency)"/>
+                          a year · starts <t t-esc="offer.start_date"/>
+                        </div>
+                      </div>
+                      <span class="pbim-badge" t-esc="offer.state_label"/>
+                    </div>
+
+                    <div class="pbhr-lines">
+                      <div t-foreach="offer.lines" t-as="ol" t-key="ol.id"
+                           class="pbhr-line">
+                        <div class="pbhr-line-main">
+                          <div class="pbhr-line-name" t-esc="ol.name"/>
+                          <div class="pbhr-line-meta">
+                            <t t-esc="ol.kind_label"/> ·
+                            <t t-esc="ol.period_label"/>
+                          </div>
+                        </div>
+                        <div class="pbhr-line-amt"
+                             t-esc="money(ol.amount, offer.currency)"/>
+                        <div class="pbhr-line-btns"
+                             t-if="state.canRecruit and offer.state === 'draft'">
+                          <button class="pbhr-dot"
+                                  t-on-click="() => this.startLine(ol)"
+                                  title="Change it">
+                            <t t-out="ic('pencil',14)"/>
+                          </button>
+                          <button class="pbhr-dot warn"
+                                  t-on-click="() => this.removeLine(ol)"
+                                  title="Take it off">
+                            <t t-out="ic('trash',14)"/>
+                          </button>
+                        </div>
+                      </div>
+                      <div t-if="!offer.lines.length" class="pbhr-mini-empty">
+                        Nothing is on this offer yet.
+                      </div>
+                    </div>
+
+                    <div class="pbhr-panel-foot">
+                      <button t-if="state.canRecruit and offer.state === 'draft'"
+                              class="pbim-btn ghost"
+                              t-on-click="() => this.startLine(false)">
+                        <t t-out="ic('plus',14)"/> Add a line
+                      </button>
+                      <select t-if="state.canRecruit and offer.state === 'draft'"
+                              class="pbhr-in pbhr-tpl"
+                              t-on-change="(ev) => this.setOfferField('template_id', Number(ev.target.value))">
+                        <option value="">Which letter…</option>
+                        <t t-foreach="state.drawer.letter_templates" t-as="ltp"
+                           t-key="ltp.id">
+                          <option t-att-value="ltp.id"
+                                  t-att-selected="ltp.id === offer.template_id"
+                                  t-esc="ltp.name"/>
+                        </t>
+                      </select>
+                      <button class="pbim-btn ghost" t-on-click="previewLetter">
+                        <t t-out="ic('eye',14)"/> Read the letter
+                      </button>
+                      <button t-if="offer.has_letter" class="pbim-btn ghost"
+                              t-on-click="openLetterPdf">
+                        <t t-out="ic('download',14)"/> The PDF
+                      </button>
+                      <span class="pbhr-foot-gap"/>
+                      <button t-if="state.canRecruit and offer.state === 'draft'"
+                              class="pbim-btn primary" t-on-click="submitOffer">
+                        <t t-out="ic('send',14)"/> Send for sign-off
+                      </button>
+                      <button t-if="state.canRecruit and offer.state === 'hr_ok'"
+                              class="pbim-btn primary"
+                              t-on-click="() => this.sendOffer(false)">
+                        <t t-out="ic('mail',14)"/> Send it to them
+                      </button>
+                      <button t-if="state.canWrite and offer.state === 'hr_ok' and !offer.documents_ready"
+                              class="pbim-btn ghost"
+                              t-on-click="() => this.sendOffer(true)"
+                              t-att-title="offer.documents_why">
+                        <t t-out="ic('alert',14)"/> Send anyway
+                      </button>
+                      <button t-if="state.canRecruit and ['sent','accepted'].includes(offer.state)"
+                              class="pbim-btn primary" t-on-click="startSigning">
+                        <t t-out="ic('stamp',14)"/> Record the signed copy
+                      </button>
+                      <button t-if="state.canRecruit and offer.state === 'signed'"
+                              class="pbim-btn primary" t-on-click="closeOffer">
+                        <t t-out="ic('sunrise',14)"/> They have joined
+                      </button>
+                      <button t-if="offer.state === 'sent'" class="pbim-btn ghost"
+                              t-on-click="copyOfferLink">
+                        <t t-out="ic('link',14)"/> Their own link
+                      </button>
+                    </div>
+
+                    <div t-if="offer.comment" class="pbhr-note-ok">
+                      <t t-out="ic('mail',16)"/>
+                      <span>
+                        <b><t t-esc="offer.candidate"/> said:</b>
+                        <t t-esc="offer.comment"/>
+                      </span>
+                    </div>
+
+                    <div t-if="offer.state === 'closed'" class="pbhr-panel-foot">
+                      <button t-if="offer.employee_id" class="pbim-btn ghost"
+                              t-on-click="() => this.act('open_employee', { offer_id: offer.id }, { reload: false })">
+                        <t t-out="ic('user',14)"/> Their record
+                      </button>
+                      <button t-if="offer.comp_id" class="pbim-btn ghost"
+                              t-on-click="() => this.act('open_package', { offer_id: offer.id }, { reload: false })">
+                        <t t-out="ic('wallet',14)"/> Pay package
+                      </button>
+                      <button t-if="offer.case_id" class="pbim-btn ghost"
+                              t-on-click="() => this.act('open_case', { offer_id: offer.id }, { reload: false })">
+                        <t t-out="ic('layoutList',14)"/> Joining checklist
+                      </button>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </t>
+
             <!-- ======================== the facts ======================== -->
             <div class="pbhr-facts">
               <div class="pbhr-fact">
@@ -579,6 +938,20 @@
               <div class="pbhr-fact">
                 <span class="k">Wanted by</span>
                 <span class="v" t-esc="state.drawer.target_start_date or '—'"/>
+              </div>
+              <div class="pbhr-fact">
+                <span class="k">Agency</span>
+                <select t-if="state.canRecruit" class="pbhr-in pbhr-agency"
+                        t-on-change="(ev) => this.setAgency(ev.target.value)">
+                  <option value="">Nobody — we are doing it</option>
+                  <t t-foreach="state.drawer.agencies" t-as="ag" t-key="ag.id">
+                    <option t-att-value="ag.id"
+                            t-att-selected="ag.id === state.drawer.agency_id"
+                            t-esc="ag.name"/>
+                  </t>
+                </select>
+                <span t-else="" class="v"
+                      t-esc="state.drawer.agency or 'Nobody'"/>
               </div>
             </div>
 
@@ -1290,6 +1663,267 @@
             <button class="pbim-btn ghost" t-on-click="cancelReject">Cancel</button>
             <button class="pbim-btn primary" t-on-click="saveReject">
               <t t-out="ic('send',15)"/> Tell them
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — WHAT CAME BACK ON A BACKGROUND-CHECK LINE
+
+           Every scrim is a DIRECT CHILD of the root div and holds exactly one
+           `.pbim-modal` (R114/R115): the scrim is what centres and dims, the
+           modal is its child, and neither is nested under anything else.
+           ================================================================== -->
+      <div t-if="state.noting" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="cancelNote">
+        <div class="pbim-modal pbhr-dialog" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title" t-esc="state.noting.name"/>
+              <div class="pbhr-drawer-sub">Write down what was actually
+                 found, not whether it was good. In a year this sentence is
+                 the whole of what anybody will know.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="cancelNote">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-form">
+            <label class="pbhr-f pbhr-f--wide">
+              <span>What came back</span>
+              <select class="pbhr-in" t-model="state.noting.result">
+                <option t-foreach="state.bgvResults" t-as="br" t-key="br.key"
+                        t-att-value="br.key" t-esc="br.label"/>
+              </select>
+            </label>
+            <label class="pbhr-f pbhr-f--wide">
+              <span>What was found</span>
+              <textarea class="pbhr-in" rows="4" t-model="state.noting.note"
+                        placeholder="They confirmed the dates but not the job title."/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="cancelNote">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveNote">
+              <t t-out="ic('check',15)"/> Write it down
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — GOING AHEAD ANYWAY
+           ================================================================== -->
+      <div t-if="state.overriding" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="cancelOverride">
+        <div class="pbim-modal pbhr-dialog" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title">Go ahead anyway</div>
+              <div class="pbhr-drawer-sub">Something came back on this check.
+                 An offer can still be made — say why, and what you say is
+                 kept with the check for ever.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="cancelOverride">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-form">
+            <label class="pbhr-f pbhr-f--wide">
+              <span>Why we are going ahead</span>
+              <textarea class="pbhr-in" rows="4" t-model="state.overriding.note"
+                        placeholder="The previous employer will only confirm dates as a matter of policy. The candidate told us this before we asked."/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="cancelOverride">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveOverride">
+              <t t-out="ic('shield',15)"/> Go ahead
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — ONE LINE OF THE OFFER
+           ================================================================== -->
+      <div t-if="state.lineForm" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="cancelLine">
+        <div class="pbim-modal pbhr-dialog" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title">
+                <t t-if="state.lineForm.line_id">Change this line</t>
+                <t t-else="">Add a line</t>
+              </div>
+              <div class="pbhr-drawer-sub">Use the word a candidate would use.
+                 "Basic pay", "Lunch allowance", "Sign-on bonus" — never a
+                 component code.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="cancelLine">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-form">
+            <label class="pbhr-f pbhr-f--wide">
+              <span>What it is</span>
+              <input class="pbhr-in" t-model="state.lineForm.name"
+                     placeholder="Basic pay"/>
+            </label>
+            <label class="pbhr-f">
+              <span>Kind</span>
+              <select class="pbhr-in" t-model="state.lineForm.kind">
+                <option t-foreach="state.offerKinds" t-as="ok" t-key="ok.key"
+                        t-att-value="ok.key" t-esc="ok.label"/>
+              </select>
+            </label>
+            <label class="pbhr-f">
+              <span>How often</span>
+              <select class="pbhr-in" t-model="state.lineForm.period">
+                <option t-foreach="state.offerPeriods" t-as="op" t-key="op.key"
+                        t-att-value="op.key" t-esc="op.label"/>
+              </select>
+            </label>
+            <label class="pbhr-f">
+              <span>Amount</span>
+              <input class="pbhr-in" type="number" step="1000"
+                     t-model="state.lineForm.amount"/>
+            </label>
+            <label class="pbhr-f pbhr-f--wide">
+              <span>Note, if it needs one</span>
+              <input class="pbhr-in" t-model="state.lineForm.note"
+                     placeholder="Paid with the first full month's salary."/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="cancelLine">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveLine">
+              <t t-out="ic('check',15)"/> Save the line
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — THE LETTER, AS IT WILL READ
+           ================================================================== -->
+      <div t-if="state.letter" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="closeLetter">
+        <div class="pbim-modal pbhr-dialog pbhr-dialog--wide"
+             t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title">The letter, as it will read</div>
+              <div class="pbhr-drawer-sub">If a placeholder is still showing
+                 on the page instead of a name or a number, the letter
+                 template has a hole this offer cannot fill — change the
+                 wording under Lifecycle.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeLetter">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-letter">
+            <div t-out="state.letter.html"/>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="closeLetter">Close</button>
+            <button class="pbim-btn primary" t-on-click="openLetterPdf">
+              <t t-out="ic('download',15)"/> The PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — THE SIGNED COPY
+
+           Ruling D12: no e-signature is connected, so signing is a person
+           saying it happened WITH the copy attached. Nothing on this screen
+           pretends to be a signature it is not.
+           ================================================================== -->
+      <div t-if="state.signing" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="cancelSigning">
+        <div class="pbim-modal pbhr-dialog" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title">Record the signed copy</div>
+              <div class="pbhr-drawer-sub">Attach what they sent back. It is
+                 filed on their own record the moment the offer is closed.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="cancelSigning">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-form">
+            <label class="pbhr-f pbhr-f--wide">
+              <span>The signed letter</span>
+              <input class="pbhr-in" type="file"
+                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                     t-on-change="onSignedFile"/>
+            </label>
+            <label class="pbhr-f">
+              <span>Signed on</span>
+              <input class="pbhr-in" type="date"
+                     t-model="state.signing.signed_on"/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="cancelSigning">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveSigning">
+              <t t-out="ic('stamp',15)"/> Record it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A3 — ASK SOMEBODY TO COVER
+           ================================================================== -->
+      <div t-if="state.coverForm" class="pbim-modal-scrim pbhr-scrim"
+           t-on-click="cancelCover">
+        <div class="pbim-modal pbhr-dialog" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbhr-drawer-title">Ask somebody to cover for you</div>
+              <div class="pbhr-drawer-sub">For those days, one colleague can
+                 work on your roles as you would. Nothing about anybody's
+                 permissions changes, and it ends by itself.</div>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="cancelCover">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body pbhr-form">
+            <label class="pbhr-f pbhr-f--wide">
+              <span>Who is standing in</span>
+              <select class="pbhr-in" t-model="state.coverForm.cover_user_id">
+                <option value="">Pick a colleague…</option>
+                <option t-foreach="state.recruiters" t-as="rc" t-key="rc[0]"
+                        t-att-value="rc[0]" t-esc="rc[1]"/>
+              </select>
+            </label>
+            <label class="pbhr-f">
+              <span>From</span>
+              <input class="pbhr-in" type="date"
+                     t-model="state.coverForm.date_from"/>
+            </label>
+            <label class="pbhr-f">
+              <span>Until</span>
+              <input class="pbhr-in" type="date"
+                     t-model="state.coverForm.date_to"/>
+            </label>
+            <label class="pbhr-f pbhr-f--wide">
+              <span>Why</span>
+              <textarea class="pbhr-in" rows="3" t-model="state.coverForm.reason"
+                        placeholder="Two weeks' leave. Everything in flight is on the board."/>
+            </label>
+          </div>
+          <div class="pbim-modal__foot">
+            <button class="pbim-btn ghost" t-on-click="cancelCover">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveCover">
+              <t t-out="ic('send',15)"/> Send it to be agreed
             </button>
           </div>
         </div>

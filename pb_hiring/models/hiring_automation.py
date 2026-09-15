@@ -23,8 +23,9 @@ from datetime import timedelta
 from odoo import _, api, fields, models
 
 from .hiring_common import (
-    P_JD_REMINDER_DAYS, P_RECRUITER_NUDGE_DAYS, P_REMINDER_CAP, P_REMINDERS,
-    P_URGENT_AFTER_HOURS, counted, flag, leg, number,
+    P_DOC_REMINDER_DAYS, P_JD_REMINDER_DAYS, P_RECRUITER_NUDGE_DAYS,
+    P_REMINDER_CAP, P_REMINDERS, P_URGENT_AFTER_HOURS, counted, flag, leg,
+    number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -47,12 +48,22 @@ class PbHiringAutomation(models.AbstractModel):
 
     @api.model
     def run_now(self):
-        counts = {'jd': 0, 'recruiter': 0, 'late_feedback': 0}
+        counts = {'jd': 0, 'recruiter': 0, 'late_feedback': 0,
+                  'documents': 0, 'doc_overdue': 0, 'cover_started': 0,
+                  'cover_ended': 0}
         for key, fn in (('jd', self._nudge_adverts),
                         ('recruiter', self._nudge_open_roles),
-                        ('late_feedback', self._chase_late_feedback)):
+                        ('late_feedback', self._chase_late_feedback),
+                        ('documents', self._chase_documents),
+                        ('doc_overdue', self._document_deadlines),
+                        ('cover', self._move_covers)):
             try:
-                counts[key] = fn()
+                answer = fn()
+                if key == 'cover':
+                    counts['cover_started'] = answer.get('started', 0)
+                    counts['cover_ended'] = answer.get('ended', 0)
+                else:
+                    counts[key] = answer
             except Exception:           # noqa: BLE001 — a job never raises
                 _logger.warning('pb_hiring: the %s nudge failed', key,
                                 exc_info=True)
@@ -84,6 +95,26 @@ class PbHiringAutomation(models.AbstractModel):
             parts.append(_("%(n)s late %(word)s chased.", n=late,
                            word=counted(late, _('opinion was'),
                                         _('opinions were'))))
+        docs = counts.get('documents', 0)
+        if docs:
+            parts.append(_("%(n)s %(word)s reminded about their papers.",
+                           n=docs, word=counted(docs, _('candidate was'),
+                                                _('candidates were'))))
+        overdue = counts.get('doc_overdue', 0)
+        if overdue:
+            parts.append(_("%(n)s document %(word)s past the date.", n=overdue,
+                           word=counted(overdue, _('request is'),
+                                        _('requests are'))))
+        started = counts.get('cover_started', 0)
+        ended = counts.get('cover_ended', 0)
+        if started:
+            parts.append(_("%(n)s %(word)s started.", n=started,
+                           word=counted(started, _('cover has'),
+                                        _('covers have'))))
+        if ended:
+            parts.append(_("%(n)s %(word)s finished.", n=ended,
+                           word=counted(ended, _('cover has'),
+                                        _('covers have'))))
         if not parts:
             return _("Nothing needed chasing today.")
         return ' '.join(parts)
@@ -306,6 +337,66 @@ class PbHiringAutomation(models.AbstractModel):
                    row._chase) is not False:
                 made += 1
         return made
+
+    # =====================================================================
+    #  A3 — the papers a candidate has not sent
+    # =====================================================================
+    @api.model
+    def _chase_documents(self):
+        """ONE reminder a day per candidate, and never two.
+
+        Idempotent by a DATE and not by a counter: a stamp that says "we
+        reminded them today" survives a job that runs twice in a morning, a
+        recruiter pressing the button by hand and a server that was restarted
+        — and it forgets itself overnight, which is exactly the behaviour a
+        daily nudge needs.
+        """
+        every = max(1, number(self.env, P_DOC_REMINDER_DAYS, 1))
+        today = fields.Date.context_today(self)
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        rows = self.env['pb.hiring.docreq'].sudo().search([
+            ('state', 'in', ('sent', 'partial', 'expired')),
+            ('sent_on', '!=', False),
+            ('offer_id.state', 'not in', ('closed', 'declined', 'refused')),
+            '|', ('last_reminder_on', '=', False),
+            ('last_reminder_on', '<=', today - timedelta(days=every)),
+        ], order='deadline', limit=cap)
+        made = 0
+        for row in rows:
+            if leg(self.env, 'the document reminder on request %s' % row.id,
+                   row.action_remind) is not False:
+                made += 1
+        return made
+
+    @api.model
+    def _document_deadlines(self):
+        """The recruiter gets a to-do on the day the window shuts, once.
+
+        A CANDIDATE WHO HAS GONE QUIET IS A PERSON TO RING, not a row to
+        expire. Nothing is closed here and the link stays live — this only
+        makes sure somebody knows.
+        """
+        today = fields.Date.context_today(self)
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        rows = self.env['pb.hiring.docreq'].sudo().search([
+            ('deadline', '!=', False), ('deadline', '<', today),
+            ('deadline_todo_on', '=', False),
+            ('state', '!=', 'complete'),
+            ('offer_id.state', 'not in', ('closed', 'declined', 'refused')),
+        ], order='deadline', limit=cap)
+        made = 0
+        for row in rows:
+            if leg(self.env, 'the document deadline on request %s' % row.id,
+                   row._raise_deadline_todo) is not False:
+                made += 1
+        return made
+
+    # =====================================================================
+    #  A3 — the covers that start and finish today
+    # =====================================================================
+    @api.model
+    def _move_covers(self):
+        return self.env['pb.hiring.cover'].run_window()
 
     @api.model
     def _admin_uids(self):

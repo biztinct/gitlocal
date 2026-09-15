@@ -28,7 +28,7 @@
  * job boards and screening are the RECRUITER's; agreeing, closing and filling
  * a role are the hiring MANAGER's.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, markup, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -59,6 +59,31 @@ const IV_FOCUS = ["today", "week", "awaiting", "late"];
 /** A recommendation is stored 1-4; this is what each number looks like. */
 const VERDICT_ICON = {
     strong_yes: "smilePlus", yes: "smile", no: "meh", strong_no: "frown",
+};
+
+/**
+ * A3 — THE PATH STRIP, which is the hero of the drawer.
+ *
+ * Six chips from "we have decided" to "they are here on Monday". Every one of
+ * them is a state the SERVER computed and a door: a strip that only drew
+ * progress would be a picture, and the thing a recruiter needs from this
+ * screen is the next press.
+ */
+const PATH_ICON = {
+    bgv: "shieldCheck",
+    documents: "paperclip",
+    offer: "scrollText",
+    candidate: "user",
+    signed: "stamp",
+    day_one: "sunrise",
+};
+
+/** What each answer on a background-check line looks like. */
+const BGV_ICON = {
+    pending: "circle",
+    ok: "checkCircle",
+    flag: "alert",
+    na: "minusCircle",
 };
 
 export class PbHiringBoard extends Component {
@@ -131,6 +156,26 @@ export class PbHiringBoard extends Component {
             debriefing: null,
             rejecting: null,
             panelQ: "",
+
+            // ---- A3, the offer ----
+            // The drawer's second half. `journey` is the path strip and the
+            // three panels behind it, all computed on the server: a second
+            // opinion written here about where a candidate has got to would
+            // only ever disagree with the one that counts.
+            offerRows: [],
+            offerStates: [],
+            bgvResults: [],
+            offerKinds: [],
+            offerPeriods: [],
+            agencies: [],
+            covering: [],
+            openPanel: "",
+            noting: null,
+            overriding: null,
+            lineForm: null,
+            signing: null,
+            letter: null,
+            coverForm: null,
         });
 
         onWillStart(async () => { await this.load(); });
@@ -179,6 +224,13 @@ export class PbHiringBoard extends Component {
                 delayKinds: d.delay_kinds || [],
                 decisions: d.decisions || [],
                 recommendations: d.recommendations || [],
+                offerRows: d.offer_rows || [],
+                offerStates: d.offer_states || [],
+                bgvResults: d.bgv_results || [],
+                offerKinds: d.offer_kinds || [],
+                offerPeriods: d.offer_periods || [],
+                agencies: d.agencies || [],
+                covering: d.covering || [],
                 loaded: true,
             });
         } catch (e) {
@@ -268,6 +320,12 @@ export class PbHiringBoard extends Component {
         this.state.drawer = null;
         this.state.writingJd = null;
         this.state.moving = null;
+        this.state.openPanel = "";
+        this.state.lineForm = null;
+        this.state.noting = null;
+        this.state.overriding = null;
+        this.state.signing = null;
+        this.state.letter = null;
     }
 
     // ------------------------------------------------------------------ acts
@@ -684,6 +742,292 @@ export class PbHiringBoard extends Component {
                 type: "info", sticky: true, title: _t("Their own link"),
             });
         }
+    }
+
+    // =====================================================================
+    //  A3 — from "we have decided" to "they are here on Monday"
+    // =====================================================================
+    pathIcon(key) { return PATH_ICON[key] || "circle"; }
+
+    bgvIcon(result) { return BGV_ICON[result] || "circle"; }
+
+    get journey() {
+        const d = this.state.drawer;
+        return (d && d.journey) || {};
+    }
+
+    get offer() {
+        return this.journey.offer || {};
+    }
+
+    /** One panel open at a time: three stacked accordions is a drawer nobody
+     *  can find the bottom of. Pressing the open one closes it. */
+    togglePanel(key) {
+        this.state.openPanel = this.state.openPanel === key ? "" : key;
+    }
+
+    /** Pressing a chip on the path strip opens the panel behind it, and the
+     *  two that are not panels open the record instead. */
+    async pressChip(chip) {
+        if (chip.key === "day_one" && this.offer.employee_id) {
+            await this.act("open_employee", { offer_id: this.offer.id },
+                           { reload: false });
+            return;
+        }
+        if (chip.key === "signed" && this.offer.id) {
+            this.togglePanel("offer");
+            return;
+        }
+        this.togglePanel(chip.key === "candidate" ? "offer" : chip.key);
+    }
+
+    // ------------------------------------------------- the background check
+    async startBgv() {
+        const d = this.state.drawer;
+        if (!d) { return; }
+        await this.act("open_bgv", { requisition_id: d.id });
+        this.state.openPanel = "bgv";
+    }
+
+    async setBgv(item, result) {
+        await this.act("set_bgv_item", { item_id: item.id, result,
+                                         note: item.note || "" });
+    }
+
+    startNote(item) {
+        this.state.noting = { item_id: item.id, name: item.name,
+                              result: item.result, note: item.note || "" };
+    }
+
+    cancelNote() { this.state.noting = null; }
+
+    async saveNote() {
+        const form = this.state.noting;
+        if (!form) { return; }
+        const res = await this.act("set_bgv_item", {
+            item_id: form.item_id, result: form.result, note: form.note,
+        });
+        if (res) { this.state.noting = null; }
+    }
+
+    startOverride() {
+        const bgv = this.journey.bgv || {};
+        this.state.overriding = { bgv_id: bgv.id, note: "" };
+    }
+
+    cancelOverride() { this.state.overriding = null; }
+
+    async saveOverride() {
+        const form = this.state.overriding;
+        if (!form) { return; }
+        if (!form.note.trim()) {
+            this.notif.add(
+                _t("Say why we are going ahead. In a year this sentence is the only thing that will explain the decision."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("bgv_override", { ...form });
+        if (res) { this.state.overriding = null; }
+    }
+
+    // ------------------------------------------------------- the documents
+    async askForDocuments() {
+        const offer = this.offer;
+        if (!offer.id) { return; }
+        await this.act("request_documents", { offer_id: offer.id });
+        this.state.openPanel = "documents";
+    }
+
+    async remindDocuments() {
+        await this.act("remind_documents", { offer_id: this.offer.id });
+    }
+
+    async copyDocLink() {
+        const res = await this.act("copy_doc_link", { offer_id: this.offer.id },
+                                   { reload: false, silent: true });
+        if (res && res.link) {
+            // A STICKY NOTIFICATION AND NOT A CLIPBOARD WRITE: the clipboard
+            // API is refused outside a secure context and in a cross-origin
+            // frame, and a copy button that silently does nothing is worse
+            // than a link somebody can see and select.
+            this.notif.add(res.link, { type: "info", sticky: true,
+                                       title: _t("Their own link") });
+        }
+    }
+
+    // ------------------------------------------------------------ the offer
+    async draftOffer() {
+        const d = this.state.drawer;
+        if (!d) { return; }
+        const res = await this.act("draft_offer", { requisition_id: d.id });
+        if (res) { this.state.openPanel = "offer"; }
+    }
+
+    startLine(line) {
+        this.state.lineForm = line
+            ? { line_id: line.id, name: line.name, kind: line.kind,
+                amount: line.amount, period: line.period, note: line.note }
+            : { line_id: 0, name: "", kind: "earning", amount: 0,
+                period: "monthly", note: "" };
+    }
+
+    cancelLine() { this.state.lineForm = null; }
+
+    async saveLine() {
+        const form = this.state.lineForm;
+        if (!form) { return; }
+        if (!form.name.trim()) {
+            this.notif.add(
+                _t("Say what the line is. A number on its own is a number nobody can check."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("offer_line", {
+            offer_id: this.offer.id, ...form,
+            amount: Number(form.amount) || 0,
+        });
+        if (res) { this.state.lineForm = null; }
+    }
+
+    async removeLine(line) {
+        await this.act("offer_line", { offer_id: this.offer.id,
+                                       line_id: line.id, remove: true });
+    }
+
+    async setOfferField(field, value) {
+        await this.act("offer_set", { offer_id: this.offer.id,
+                                      [field]: value });
+    }
+
+    async previewLetter() {
+        const res = await this.act("offer_letter", { offer_id: this.offer.id },
+                                   { reload: false, silent: true });
+        if (res) {
+            this.state.letter = { html: markup(res.html || ""),
+                                  id: this.offer.id };
+        }
+    }
+
+    closeLetter() { this.state.letter = null; }
+
+    async submitOffer() {
+        await this.act("submit_offer", { offer_id: this.offer.id });
+    }
+
+    async sendOffer(force = false) {
+        await this.act("send_offer", { offer_id: this.offer.id, force });
+    }
+
+    async openLetterPdf() {
+        await this.act("open_letter", { offer_id: this.offer.id },
+                       { reload: false });
+    }
+
+    async copyOfferLink() {
+        const res = await this.act("copy_offer_link",
+                                   { offer_id: this.offer.id },
+                                   { reload: false, silent: true });
+        if (res && res.link) {
+            this.notif.add(res.link, { type: "info", sticky: true,
+                                       title: _t("Their own link") });
+        }
+    }
+
+    // ------------------------------------------------------------- signing
+    startSigning() {
+        this.state.signing = { filename: "", data: "", mimetype: "",
+                               signed_on: "" };
+    }
+
+    cancelSigning() { this.state.signing = null; }
+
+    /**
+     * The signed copy, read in the browser and sent as base64.
+     *
+     * A FILE INPUT AND NOT A DROP ZONE: this is pressed once per hire, by
+     * somebody who has the file open in another window, and a drop zone is a
+     * bigger target for a smaller need.
+     */
+    onSignedFile(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file || !this.state.signing) { return; }
+        if (file.size > 5 * 1024 * 1024) {
+            this.notif.add(
+                _t("That file is bigger than 5 MB. A scan of a signed letter is usually well under that."),
+                { type: "warning" });
+            ev.target.value = "";
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            const raw = String(reader.result || "");
+            this.state.signing.data = raw.slice(raw.indexOf(",") + 1);
+            this.state.signing.filename = file.name;
+            this.state.signing.mimetype = file.type;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async saveSigning() {
+        const form = this.state.signing;
+        if (!form) { return; }
+        if (!form.data) {
+            this.notif.add(
+                _t("Attach the copy they signed. Recording a signature with nothing behind it is the one thing this screen must never let anybody do."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("record_signed", {
+            offer_id: this.offer.id, ...form,
+        });
+        if (res) { this.state.signing = null; }
+    }
+
+    async closeOffer() {
+        await this.act("close_offer", { offer_id: this.offer.id });
+    }
+
+    // ----------------------------------------------------------- the agency
+    async setAgency(vendorId) {
+        const d = this.state.drawer;
+        if (!d) { return; }
+        await this.act("set_agency", { requisition_id: d.id,
+                                       vendor_id: Number(vendorId) || 0 });
+    }
+
+    // ------------------------------------------------------------ the cover
+    startCover() {
+        const today = new Date();
+        const back = new Date();
+        back.setDate(back.getDate() + 14);
+        const pad = (n) => String(n).padStart(2, "0");
+        const iso = (w) => `${w.getFullYear()}-${pad(w.getMonth() + 1)}-`
+            + `${pad(w.getDate())}`;
+        this.state.coverForm = { cover_user_id: "", date_from: iso(today),
+                                 date_to: iso(back), reason: "" };
+    }
+
+    cancelCover() { this.state.coverForm = null; }
+
+    async saveCover() {
+        const form = this.state.coverForm;
+        if (!form) { return; }
+        if (!form.cover_user_id) {
+            this.notif.add(_t("Say who is standing in."), { type: "warning" });
+            return;
+        }
+        if (!form.reason.trim()) {
+            this.notif.add(
+                _t("Say why. A cover request with no reason is one nobody can agree to in good conscience."),
+                { type: "warning" });
+            return;
+        }
+        const res = await this.act("request_cover", { ...form });
+        if (res) { this.state.coverForm = null; }
+    }
+
+    async openCovers() {
+        await this.act("open_covers", {}, { reload: false });
     }
 
     // ------------------------------------------------------------ the words

@@ -141,15 +141,42 @@ class PbHiringPortal(CustomerPortal):
         if not emp:
             return request.redirect('/my')
         interviews = self._my_interviews(emp)
+        requests = self._my_requests(emp)
         values = {
             'page_name': 'hiring',
             'employee': emp,
-            'requests': self._my_requests(emp),
+            'requests': requests,
             'interviews': interviews,
             'owed': self._feedback_owed(emp),
             'now': fields.Datetime.now(),
+            # A3. WHICH OFFERS ARE SITTING ON THIS PERSON, worked out on the
+            # server and handed over as a plain map. The template must not
+            # ask the engine anything itself: a QWeb expression that calls a
+            # method per row is a query per row on a public page, and the
+            # answer here is one read for the lot.
+            'user_waiting': self._offers_waiting_on(requests),
         }
         return request.render('pb_hiring.portal_my_hiring', values)
+
+    def _offers_waiting_on(self, requests):
+        """`{offer_id: True}` for the offers whose route is on this user.
+
+        Read from the ENGINE and never guessed from the status: a route with
+        a conditional rung legitimately skips one, and a second opinion
+        written here would only ever disagree with the one that counts.
+        """
+        out = {}
+        for req in requests:
+            for offer in req.offer_ids:
+                try:
+                    if offer.sudo().with_user(
+                            request.env.user)._chain_my_seat():
+                        out[offer.id] = True
+                except Exception:       # noqa: BLE001 — never a 500 on /my
+                    _logger.warning('pb_hiring: could not read the sign-off '
+                                    'state of offer %s', offer.id,
+                                    exc_info=True)
+        return out
 
     @http.route(['/my/hiring/ics/<int:interview_id>'], type='http',
                 auth='user', website=False, sitemap=False)
