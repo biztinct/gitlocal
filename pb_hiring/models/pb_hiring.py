@@ -63,30 +63,64 @@ class PbHiring(models.AbstractModel):
             _logger.warning('pb_hiring: a board read failed', exc_info=True)
             return default
 
+    # NO `_is_admin()` FALLBACK ANYWHERE IN THIS FACADE, and that is
+    # deliberate — the same call `pb.pip` made for the same reason (R56's
+    # note). The record rules on these models are granted BY NAME: a system
+    # administrator who holds no hiring group has no applicable group rule
+    # and therefore sees no rows at all. A facade that answered "allowed"
+    # over that would draw "No hiring requests yet" across a database full
+    # of them, which is the one thing worse than an explained empty screen.
+    # The two built-in administrator accounts are members of
+    # `group_hiring_admin` in the security file, so nobody is locked out of
+    # a fresh install; everybody else is added by a human, on purpose.
     @api.model
     def _can_read(self):
         user = self.env.user
         return (user.has_group(GROUP_USER) or user.has_group(GROUP_MANAGER)
-                or user.has_group(GROUP_ADMIN) or user._is_admin()
+                or user.has_group(GROUP_ADMIN)
                 or self.env['pb.hiring.requisition']._can_raise(user))
 
     @api.model
     def _can_write(self):
         user = self.env.user
-        return (user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN)
-                or user._is_admin())
+        return (user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN))
 
     @api.model
     def _can_admin(self):
+        return self.env.user.has_group(GROUP_ADMIN)
+
+    @api.model
+    def _can_recruit(self):
+        """THE RECRUITER'S OWN WORK IS NOT THE MANAGER'S WORK.
+
+        Writing and publishing an advert, sending it to a job board and
+        screening a CV are what a recruiter is FOR — the group's own
+        description says so. Agreeing a request, closing a role and marking
+        one filled are decisions about head count and money, and those are
+        the manager tier. Gating the whole facade on the manager tier meant
+        the person doing the job could not press a single button on their
+        own board, and the refusal even told them to "ask the hiring team".
+        """
         user = self.env.user
-        return user.has_group(GROUP_ADMIN) or user._is_admin()
+        return (user.has_group(GROUP_USER) or user.has_group(GROUP_MANAGER)
+                or user.has_group(GROUP_ADMIN))
+
+    @api.model
+    def _require_recruit(self):
+        if not self._can_recruit():
+            raise AccessError(_(
+                "Adverts and candidates are the recruiters' side of this "
+                "screen. Ask whoever is recruiting this role, or ask the HR "
+                "team to add you to the hiring team."))
+        return True
 
     @api.model
     def _require_write(self):
         if not self._can_write():
             raise AccessError(_(
-                "You can see the hiring board, but changing a request is for "
-                "the hiring team. Ask them and they will do it in a minute."))
+                "You can see the hiring board, but agreeing, closing or "
+                "filling a role is for the hiring managers. Ask them and "
+                "they will do it in a minute."))
         return True
 
     # =====================================================================
@@ -115,6 +149,7 @@ class PbHiring(models.AbstractModel):
         return {
             'allowed': True,
             'can_write': self._can_write(),
+            'can_recruit': self._can_recruit(),
             'can_admin': self._can_admin(),
             'can_raise': Requisition._can_raise(),
             'kpis': self._kpis(rows),
@@ -140,7 +175,8 @@ class PbHiring(models.AbstractModel):
 
     @api.model
     def _empty_board(self):
-        return {'allowed': False, 'can_write': False, 'can_admin': False,
+        return {'allowed': False, 'can_write': False,
+                'can_recruit': False, 'can_admin': False,
                 'can_raise': False, 'kpis': {}, 'rows': [], 'departments': [],
                 'countries': [], 'recruiters': [], 'states': [],
                 'role_types': [], 'budget_states': [], 'screen_tags': [],
@@ -464,7 +500,7 @@ class PbHiring(models.AbstractModel):
 
     def _act_toggle_referrals(self, payload):
         req = self._get(payload)
-        self._require_write()
+        self._require_recruit()
         wanted = not req.referral_open
         req.sudo().write({'referral_open': wanted})
         return {'id': req.id, 'referral_open': wanted,
@@ -474,11 +510,11 @@ class PbHiring(models.AbstractModel):
 
     def _act_publish(self, payload):
         req = self._get(payload)
-        self._require_write()
+        self._require_recruit()
         return req.action_publish()
 
     def _act_send_posting(self, payload):
-        self._require_write()
+        self._require_recruit()
         posting = self.env['pb.hiring.posting'].browse(
             as_id(payload.get('posting_id')))
         posting.ensure_one()
@@ -514,7 +550,7 @@ class PbHiring(models.AbstractModel):
 
     # --------------------------------------------------------- the screening
     def _act_screen(self, payload):
-        self._require_write()
+        self._require_recruit()
         applicant = self.env['hr.applicant'].browse(
             as_id(payload.get('applicant_id')))
         applicant.ensure_one()
@@ -565,7 +601,7 @@ class PbHiring(models.AbstractModel):
 
     def _act_run_automation(self, payload):
         """"Run it now" does exactly what the night does (R53)."""
-        self._require_write()
+        self._require_recruit()
         counts = self.env['pb.hiring.automation'].run_now()
         return {'note': self.env['pb.hiring.automation'].describe(counts),
                 'counts': counts}

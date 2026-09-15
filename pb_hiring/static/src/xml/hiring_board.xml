@@ -58,7 +58,7 @@
                       title="Read the board again">
                 <t t-out="ic('refresh',15)"/>
               </button>
-              <button t-if="state.canWrite" class="pbim-btn ghost"
+              <button t-if="state.canRecruit" class="pbim-btn ghost"
                       t-on-click="() => this.act('run_automation', {})"
                       title="Chase the adverts nobody has agreed and the roles nobody is recruiting — exactly what the nightly step does">
                 <t t-out="ic('zap',15)"/> Run today's chasing
@@ -350,7 +350,7 @@
                 <b t-esc="state.drawer.budget_label"/>
                 <p t-esc="state.drawer.budget_note"/>
               </div>
-              <button t-if="state.canWrite" class="pbim-btn ghost"
+              <button t-if="state.canRecruit or state.canRaise" class="pbim-btn ghost"
                       t-on-click="() => this.act('refresh_budget', { requisition_id: state.drawer.id })">
                 <t t-out="ic('refresh',14)"/> Read it again
               </button>
@@ -408,7 +408,8 @@
             <!-- ======================== the advert ======================== -->
             <div class="pbhr-sec">
               The advert
-              <button t-if="state.canWrite" class="pbim-btn ghost pbhr-sec-btn"
+              <button t-if="state.canRecruit or state.canRaise"
+                      class="pbim-btn ghost pbhr-sec-btn"
                       t-on-click="startJd">
                 <t t-out="ic('plus',14)"/> New version
               </button>
@@ -433,7 +434,7 @@
                 </div>
                 <span class="pbim-badge" t-esc="jd.state_label"/>
                 <div class="pbhr-list-acts">
-                  <button t-if="jd.state === 'draft' and state.canWrite"
+                  <button t-if="jd.state === 'draft' and (state.canRecruit or state.canRaise)"
                           class="pbim-btn ghost"
                           t-on-click="() => this.act('submit_jd', { jd_id: jd.id })">
                     <t t-out="ic('send',13)"/> Send it
@@ -463,7 +464,7 @@
                   </div>
                   <span class="pbim-badge" t-esc="po.state_label"/>
                   <div class="pbhr-list-acts">
-                    <button t-if="po.state !== 'sent' and state.canWrite"
+                    <button t-if="po.state !== 'sent' and state.canRecruit"
                             class="pbim-btn ghost"
                             t-on-click="() => this.act('send_posting', { posting_id: po.id })">
                       <t t-out="ic('send',13)"/> Send now
@@ -517,7 +518,7 @@
                     <t t-if="cd.screen_label"> · <t t-esc="cd.screen_label"/></t>
                   </div>
                 </div>
-                <div class="pbhr-list-acts" t-if="state.canWrite and cd.active">
+                <div class="pbhr-list-acts" t-if="state.canRecruit and cd.active">
                   <button t-foreach="screenOrder" t-as="tg" t-key="tg"
                           class="pbim-btn ghost pbhr-scr"
                           t-att-class="{ on: cd.screen === tg }"
@@ -547,14 +548,14 @@
               <t t-out="ic('briefcase',14)"/> The job
             </button>
             <span class="pbhr-foot-gap"/>
-            <button t-if="state.canWrite and state.drawer.state === 'open'"
+            <button t-if="state.canRecruit and state.drawer.state === 'open'"
                     class="pbim-btn ghost"
                     t-on-click="() => this.act('toggle_referrals', { requisition_id: state.drawer.id })">
               <t t-out="ic('userPlus',14)"/>
               <t t-if="state.drawer.referral_open">Close to referrals</t>
               <t t-else="">Open to referrals</t>
             </button>
-            <button t-if="state.canWrite and state.drawer.state === 'open' and !state.drawer.published"
+            <button t-if="state.canRecruit and state.drawer.state === 'open' and !state.drawer.published"
                     class="pbim-btn primary"
                     t-on-click="() => this.act('publish', { requisition_id: state.drawer.id })">
               <t t-out="ic('globe',14)"/> Advertise it

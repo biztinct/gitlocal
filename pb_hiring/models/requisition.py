@@ -28,6 +28,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools.misc import formatLang
 
 from .hiring_common import (
     BUDGET_STATUS, GROUP_ADMIN, GROUP_MANAGER, GROUP_USER, P_NOTIFY_MAIL,
@@ -367,9 +368,18 @@ class PbHiringRequisition(models.Model):
 
     @api.model
     def _money(self, amount, currency):
+        """An amount as a PERSON reads it, and never as markup.
+
+        `ir.qweb.field.monetary.value_to_html` is the obvious helper and the
+        wrong one here: it answers
+        `<span class="oe_currency_value">600,000,000</span> ₫`, which is
+        correct inside a rendered report and is the report's own source code
+        when it lands in a Char field that a board shows with `t-esc` (R51,
+        reached from the writing side rather than the reading side).
+        `formatLang` answers the same number as plain text.
+        """
         try:
-            return self.env['ir.qweb.field.monetary'].value_to_html(
-                amount, {'display_currency': currency})
+            return formatLang(self.env, amount or 0.0, currency_obj=currency)
         except Exception:               # noqa: BLE001 — never fail a sentence
             return '%s %s' % (amount, currency.name if currency else '')
 
@@ -435,8 +445,10 @@ class PbHiringRequisition(models.Model):
         without anybody remembering to grant them anything.
         """
         user = user or self.env.user
-        if user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN) \
-                or user._is_admin():
+        # No `_is_admin()` fallback: see the note on `pb.hiring._can_read`.
+        # The two built-in administrator accounts hold `group_hiring_admin`
+        # already, and anybody else is granted it by name.
+        if user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN):
             return True
         employee = self.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)], limit=1)
@@ -570,6 +582,33 @@ class PbHiringRequisition(models.Model):
     # =====================================================================
     #  What happens when everybody has said yes
     # =====================================================================
+    def _chain_engine_write(self, to_state):
+        """The ENGINE'S OWN write of this record's status runs as the system.
+
+        A SEAT IS A READ AND NEVER A WRITE (ledger AM60), which is exactly
+        right — but this chain has TWO intermediate statuses, so the middle of
+        the route is mirrored onto the record while the acting user is the
+        approver. That approver is, by design, somebody who may hold no
+        hiring permission at all: a department head's own manager. The mirror
+        was therefore refused by the record rule, the engine swallowed it (it
+        must — a decision a person really made can never be undone by a
+        consumer that cannot follow its own route), and the request sat at
+        "Sent in" with one rung already decided. No error reaches anybody:
+        the only trace is one line in the server log.
+
+        Doing it as the system is the honest fix rather than a wider rule.
+        The engine has ALREADY decided who may decide; this write is
+        bookkeeping about a decision that has happened. The trail is
+        unaffected — `_chain_log` still runs as the acting user, so the row
+        in the approval log keeps the real name.
+
+        Every consumer whose `driven` tuple has more than one intermediate
+        status needs this. P10's extension has none, which is why wave 1
+        never met it.
+        """
+        return super(PbHiringRequisition,
+                     self.sudo())._chain_engine_write(to_state)
+
     def _after_approval_transition(self, to_state):
         res = super()._after_approval_transition(to_state)
         if to_state == 'open':
@@ -587,17 +626,24 @@ class PbHiringRequisition(models.Model):
         if not self.opened_on:
             self.sudo().write({'opened_on': fields.Date.context_today(self)})
 
-        try:
-            self._ensure_job()
-        except Exception:               # noqa: BLE001
-            _logger.warning('pb_hiring: the job for request %s could not be '
-                            'prepared', self.id, exc_info=True)
-
+        # THE RULE COMES FIRST, AND THE ORDER IS LOAD-BEARING. The job carries
+        # the recruiter as its own `user_id`, which is what the standard
+        # pipeline screens filter on and what "My jobs" means to a recruiter.
+        # Named second, the job was already created with nobody on it and
+        # nothing ever went back for it: every job read `user_id = False` over
+        # a request that named a recruiter perfectly well, and no screen said
+        # anything was wrong.
         try:
             self._apply_country_rule()
         except Exception:               # noqa: BLE001
             _logger.warning('pb_hiring: the hiring rule could not be applied '
                             'to request %s', self.id, exc_info=True)
+
+        try:
+            self._ensure_job()
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_hiring: the job for request %s could not be '
+                            'prepared', self.id, exc_info=True)
 
         try:
             self._notify_recruiters()
@@ -613,23 +659,47 @@ class PbHiringRequisition(models.Model):
         return True
 
     def _ensure_job(self):
-        """The job the candidates hang off. Created once, linked for ever."""
+        """The job the candidates hang off — CREATED OR LINKED, never doubled.
+
+        `hr.job` carries a unique constraint on (name, company, department).
+        A company that asks for two Field Officers in the same team in the
+        same year is not doing anything unusual, and the second request's
+        job creation died on a raw Postgres error — swallowed by the
+        try/except that `_on_opened` correctly has, so the request opened
+        with no job, no advert and no candidates, and nothing anywhere said
+        why.
+
+        Linking is also the better answer on its own terms: candidates apply
+        to a ROLE, not to a piece of paperwork, and two requests for the same
+        role should share one pipeline. The target head count is then the sum
+        of every live request pointing at that job, which is the number a
+        recruiter actually has to fill.
+        """
         self.ensure_one()
         Job = self.env['hr.job'].sudo()
         if self.job_id:
             job = self.job_id
         else:
-            job = Job.create({
-                'name': self.title,
-                'department_id': self.department_id.id,
-                'company_id': self.company_id.id,
-                'no_of_recruitment': max(1, self.headcount),
-                'user_id': self.recruiter_id.id or False,
-                'manager_id': self.reporting_manager_id.id or False,
-                'address_id': self.company_id.partner_id.id,
-            })
+            job = Job.search([
+                ('name', '=', self.title),
+                ('company_id', '=', self.company_id.id),
+                ('department_id', '=', self.department_id.id),
+            ], limit=1)
+            if job:
+                _logger.info('pb_hiring: %s joined the existing job %s',
+                             self.name, job.id)
+            else:
+                job = Job.create({
+                    'name': self.title,
+                    'department_id': self.department_id.id,
+                    'company_id': self.company_id.id,
+                    'no_of_recruitment': max(1, self.headcount),
+                    'user_id': self.recruiter_id.id or False,
+                    'manager_id': self.reporting_manager_id.id or False,
+                    'address_id': self.company_id.partner_id.id,
+                })
             self.sudo().write({'job_id': job.id})
-        vals = {'no_of_recruitment': max(1, self.headcount)}
+        vals = {'no_of_recruitment': max(1, self._wanted_on(job))}
         if self.recruiter_id and job.user_id != self.recruiter_id:
             vals['user_id'] = self.recruiter_id.id
         if self.reporting_manager_id \
@@ -642,11 +712,28 @@ class PbHiringRequisition(models.Model):
         job.write(vals)
         return job
 
+    def _wanted_on(self, job):
+        """How many people that job is actually for: every live request on
+        it added up, so a second request for the same role raises the target
+        rather than replacing it."""
+        self.ensure_one()
+        others = self.sudo().search([
+            ('job_id', '=', job.id), ('id', '!=', self.id),
+            ('state', 'in', ('open',)),
+        ])
+        return (self.headcount or 1) + sum(o.headcount or 1 for o in others)
+
     def _apply_country_rule(self):
         """Who picks this up. Absence is an answer and it is logged (R120)."""
         self.ensure_one()
+        # THE COMPANY'S OWN COUNTRY IS THE SECOND QUESTION, not a guess.
+        # Most requests are raised without a country typed on them, because
+        # in a single-country company nobody thinks to. Asking only what the
+        # request says leaves a Vietnamese company with a Vietnam rule
+        # answering "no recruiter" on every request anybody raises — a rule
+        # that matches nothing is a broken promise (R27).
         rule = self.env['pb.hiring.country.rule'].rule_for(
-            self.company_id, self.country_id)
+            self.company_id, self.country_id or self.company_id.country_id)
         if not rule:
             _logger.warning(
                 'pb_hiring: request %s was approved and no hiring rule covers '

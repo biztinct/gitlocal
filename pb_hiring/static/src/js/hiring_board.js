@@ -21,9 +21,12 @@
  * counts.
  *
  * WHAT THIS FILE DELIBERATELY DOES NOT DO: decide who may change anything.
- * `pb.hiring._require_write()` and the record rules are the boundary;
- * `state.canWrite` only decides whether a control is OFFERED, because an
- * offer the server would refuse is worse than no offer.
+ * `pb.hiring._require_recruit()` / `_require_write()` and the record rules are
+ * the boundary; `state.canRecruit` and `state.canWrite` only decide whether a
+ * control is OFFERED, because an offer the server would refuse is worse than
+ * no offer. The two tiers are different work and not one permission: adverts,
+ * job boards and screening are the RECRUITER's; agreeing, closing and filling
+ * a role are the hiring MANAGER's.
  */
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -57,6 +60,7 @@ export class PbHiringBoard extends Component {
             loaded: false,
             allowed: true,
             canWrite: false,
+            canRecruit: false,
             canAdmin: false,
             canRaise: false,
             kpis: {},
@@ -113,6 +117,7 @@ export class PbHiringBoard extends Component {
             Object.assign(this.state, {
                 allowed: d.allowed,
                 canWrite: d.can_write,
+                canRecruit: d.can_recruit,
                 canAdmin: d.can_admin,
                 canRaise: d.can_raise,
                 kpis: d.kpis || {},

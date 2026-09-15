@@ -753,3 +753,100 @@ class TestTheApprovalWiring(TransactionCase):
         has already done the work (ledger AM70)."""
         src = _src('migrations', '19.0.1.0.0', 'post-hiring_approval.py')
         self.assertIn('if not version:', src)
+
+
+@tagged('post_install', '-at_install')
+class TestTheFacadeIsHonestAboutAccess(HiringCase):
+    """A gate that says yes over rules that say no draws an empty screen."""
+
+    def test_the_facade_has_no_administrator_fallback(self):
+        """`_is_admin()` in a read gate over record rules granted BY NAME
+        means a system administrator sees "No hiring requests yet" across a
+        database full of them. Found live 2026-09-15 on the validator
+        account, which is a system administrator holding no hiring group."""
+        src = _src('models', 'pb_hiring.py')
+        body = src.split('def _can_read', 1)[1].split('def get_board', 1)[0]
+        self.assertNotIn('_is_admin', body)
+
+    def test_the_two_built_in_administrators_hold_the_top_tier(self):
+        """Without this a fresh install has nobody who can see the board."""
+        group = self.env.ref('pb_hiring.group_hiring_admin')
+        for xmlid in ('base.user_root', 'base.user_admin'):
+            user = self.env.ref(xmlid, raise_if_not_found=False)
+            if user:
+                self.assertIn(user.id, group.sudo().all_user_ids.ids,
+                              '%s does not hold group_hiring_admin' % xmlid)
+
+    def test_the_budget_sentence_is_words_and_never_markup(self):
+        """`value_to_html` answers `<span class="oe_currency_value">…</span>`,
+        which is the report's own source code once it lands in a Char field a
+        board shows with `t-esc` (R51 from the writing side)."""
+        self._budget(forecast=500.0)
+        req = self._requisition(budget_cost=100.0)
+        req._refresh_budget()
+        self.assertNotIn('<', req.budget_note or '')
+
+
+@tagged('post_install', '-at_install')
+class TestTheRouteMirror(HiringCase):
+    """The middle of a route has to reach the record, or it sits at "Sent in"
+    with one rung already decided and nothing says so."""
+
+    def test_the_engine_write_runs_as_the_system(self):
+        src = _src('models', 'requisition.py')
+        self.assertIn('def _chain_engine_write', src)
+        body = src.split('def _chain_engine_write', 1)[1].split('def ', 1)[0]
+        self.assertIn('self.sudo()', body)
+
+    def test_the_trail_is_still_written_by_the_acting_user(self):
+        """The mirror is bookkeeping; the LOG is the record of who decided,
+        and it must never be written as the system."""
+        from odoo.modules.module import get_module_path
+        with open(get_module_path('biz_approval_chain')
+                  + '/models/biz_approval_mixin.py', encoding='utf-8') as fh:
+            mixin = fh.read()
+        body = mixin.split('def _log_transition', 1)[1].split('def ', 1)[0]
+        self.assertNotIn('.sudo()', body)
+
+    def test_the_company_country_is_the_fallback_for_a_rule(self):
+        """Nobody types a country in a single-country company."""
+        Rule = self.env['pb.hiring.country.rule'].sudo()
+        Rule.search([('company_id', '=', self.company.id)]).unlink()
+        country = self.company.country_id
+        if not country:
+            self.skipTest('this company has no country on it')
+        Rule.create({'company_id': self.company.id,
+                     'country_id': country.id,
+                     'recruiter_id': self.env.uid})
+        req = self._requisition(country_id=False)
+        req._chain_state_write('open')
+        req._on_opened()
+        self.assertEqual(req.recruiter_id.id, self.env.uid)
+
+    def test_the_job_carries_the_recruiter_the_rule_named(self):
+        """The rule has to be applied BEFORE the job is made: the job's own
+        `user_id` is what the standard pipeline filters on, and nothing ever
+        goes back for it."""
+        Rule = self.env['pb.hiring.country.rule'].sudo()
+        Rule.search([('company_id', '=', self.company.id)]).unlink()
+        Rule.create({'company_id': self.company.id,
+                     'recruiter_id': self.env.uid})
+        req = self._requisition()
+        req._chain_state_write('open')
+        req._on_opened()
+        self.assertEqual(req.job_id.sudo().user_id.id, self.env.uid)
+
+    def test_a_second_request_for_the_same_role_joins_the_same_job(self):
+        """`hr.job` is unique on (name, company, department). Creating a
+        second one dies on a raw Postgres error inside the try/except that
+        `_on_opened` correctly has, and the request opens with no job at
+        all — no advert, no candidates, and nothing saying why."""
+        first = self._requisition(headcount=2)
+        first._chain_state_write('open')
+        first._on_opened()
+        second = self._requisition(headcount=3)
+        second._chain_state_write('open')
+        second._on_opened()
+        self.assertTrue(second.job_id)
+        self.assertEqual(second.job_id.id, first.job_id.id)
+        self.assertEqual(second.job_id.sudo().no_of_recruitment, 5)
