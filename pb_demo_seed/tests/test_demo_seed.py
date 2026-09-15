@@ -155,9 +155,17 @@ class TestDemoSeed(TransactionCase):
             self.assertEqual(contract.pb_vn_hours_per_day, 8.0)
             self.assertTrue(contract.pb_vn_qual_ot_weekday)
 
-        uniform = contract.advantages_ids.filtered(
-            lambda a: (a.advantage_template_id.code or '') == 'UNIFORM')
-        self.assertEqual(uniform.amount, 500000.0)
+        # THE UNIFORM ALLOWANCE IS A VIETNAM COMPONENT and the template it
+        # hangs off is shipped by the Vietnam mapping, which is no longer a
+        # dependency. On a database that has never heard of it the seeder
+        # correctly writes nothing rather than inventing a pay component, so
+        # the question is only worth asking where the box exists.
+        template = self.env['hr.contract.advantage.template'].sudo().search(
+            [('code', '=', 'UNIFORM')], limit=1)
+        if template:
+            uniform = contract.advantages_ids.filtered(
+                lambda a: (a.advantage_template_id.code or '') == 'UNIFORM')
+            self.assertEqual(uniform.amount, 500000.0)
 
         # And somewhere to pay it.
         self.assertTrue(employee.bank_account_ids)
