@@ -451,6 +451,85 @@ class BizApprovalEngine(models.AbstractModel):
             return 'subject'
         return None
 
+    #: What a conflict READS like, in the words the trail uses.
+    _CONFLICT_PHRASE = {
+        'submitter': 'sent this in',
+        'maker': 'prepared this',
+        'subject': 'this is about them',
+    }
+
+    def _conflict_phrase(self, kind):
+        return {
+            'submitter': _('sent this in'),
+            'maker': _('prepared this'),
+            'subject': _('this is about them'),
+        }.get(kind, '')
+
+    def _conflict_swap(self, people, ctx, safeguards):
+        """The person a route names is sometimes the person who sent it in.
+
+        THE COMMONEST DEAD END THERE IS. A small company has one payroll
+        manager; they change a statutory rate, the route says "payroll
+        manager", and the seat lands on the person who just pressed the
+        button. `decide` then refuses them their own approval — correctly —
+        and refuses their DELEGATE too, because a hand-over must never be a
+        way round the rule. Nobody at all can move it, and nothing on the
+        screen says why.
+
+        So the swap happens where the seat is BUILT, not where it is refused:
+        if the holder conflicts and there is an admin-set BACKUP who does not,
+        the backup takes the seat and both the seat and the trail say why.
+
+        ONLY THE BACKUP, NEVER A DELEGATE. A backup is named in People &
+        backups by whoever looks after approvals; a delegation is the
+        time-boxed "I'm away" cover a person sets for themselves. Letting the
+        second stand in here would let anybody hand their own conflict to a
+        friend — which is exactly what `decide` refuses. The backup comes off
+        `biz.approval.responsibility.backup_user_id` and nowhere else.
+
+        NEVER BLOCKS. Where there is no usable backup the holder keeps the
+        seat and the caller gets a warning naming People & backups: the
+        business decides, the app says what it thinks (the flexibility
+        ruling).
+        """
+        if not safeguards.get('independent'):
+            return people, []
+        out, notes = [], []
+        for person in people:
+            kind = self._conflict_kind(person['user_id'], ctx)
+            if not kind:
+                out.append(person)
+                continue
+            why = self._conflict_phrase(kind)
+            backup = person.get('backup_user_id')
+            if backup and not self._conflict_kind(backup, ctx):
+                swapped = self._people_payload(
+                    [backup],
+                    _("%(backup)s holds this one because %(holder)s %(why)s",
+                      backup=self.env['res.users'].sudo().browse(
+                          backup).name or '',
+                      holder=person['name'], why=why))
+                if swapped:
+                    out += swapped
+                    notes.append({
+                        'code': 'conflict_backup',
+                        'msg': _("%(backup)s was asked instead of "
+                                 "%(holder)s, because %(holder)s %(why)s.",
+                                 backup=swapped[0]['name'],
+                                 holder=person['name'], why=why),
+                    })
+                    continue
+            out.append(person)
+            notes.append({
+                'code': 'conflict_no_backup',
+                'msg': _("%(holder)s %(why)s and is the only person named "
+                         "for this step, so nobody can approve it yet. Name a "
+                         "backup for them in People & backups, or move this "
+                         "one to somebody else.",
+                         holder=person['name'], why=why),
+            })
+        return out, notes
+
     def _independence_issue(self, safeguards, step, people, ctx):
         if not safeguards.get('independent'):
             return None
@@ -864,6 +943,7 @@ class BizApprovalEngine(models.AbstractModel):
         sg = d['safeguards']
         previous = []
         block_reason = ''
+        notes = []
         index = 0
         for sequence, step in enumerate(d['steps'], start=1):
             kind = step['kind']
@@ -899,6 +979,13 @@ class BizApprovalEngine(models.AbstractModel):
                            'block_reason': issue['msg']})
                 block_reason = block_reason or issue['msg']
                 continue
+            # THE INDEPENDENCE SWAP COMES FIRST, and the order matters: the
+            # repeated-person rule moves a seat because somebody already
+            # decided an EARLIER step, and it should be reading the person who
+            # will really be asked.
+            people, conflicts = self._conflict_swap(people, ctx, sg)
+            for note in conflicts:
+                notes.append(dict(note, step=step['title']))
             if sg.get('repeated') == 'different':
                 people, _issue = self._repeated_issue(step, people, previous)
             row.write({'due_at': self._due_for(company, sg, index)})
@@ -915,6 +1002,12 @@ class BizApprovalEngine(models.AbstractModel):
                     'status': 'open',
                 })
             previous += [p['user_id'] for p in people]
+        request.write({'seat_notes': notes})
+        for note in notes:
+            self.env['biz.approval.event']._log(
+                'reassigned' if note['code'] == 'conflict_backup' else 'blocked',
+                note['msg'], company=company, request=request,
+                payload={'code': note['code'], 'step': note.get('step') or ''})
         return block_reason
 
     def _notify_step(self, request, step, ctx, company, on_date, record, row):
@@ -1578,6 +1671,10 @@ class BizApprovalEngine(models.AbstractModel):
             'submitted_at': fields.Datetime.to_string(
                 request.submitted_at) or '',
             'block_reason': request.block_reason or '',
+            # Warnings about WHO was asked — never a refusal (the flexibility
+            # ruling). A door shows them beside "Sent for approval"; the
+            # drawer shows them above the steps.
+            'seat_notes': list(request.seat_notes or []),
             'res_model': request.res_model,
             'res_id': request.res_id,
         }

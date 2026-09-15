@@ -92,6 +92,11 @@ class BizApprovalRequest(models.Model):
     closed_at = fields.Datetime()
     return_note = fields.Text()
     block_reason = fields.Char()
+    #: What the app wants to say about WHO was asked, without refusing
+    #: anything: the person a route named was the person who sent it in and
+    #: their backup took the seat, or there was no backup and nobody can
+    #: approve it yet. Warnings, never blocks (the flexibility ruling).
+    seat_notes = fields.Json(default=list, readonly=True)
     confirmations = fields.Json(default=list)
     idempotency_key = fields.Char(index=True, copy=False)
     step_ids = fields.One2many('biz.approval.request.step', 'request_id')
