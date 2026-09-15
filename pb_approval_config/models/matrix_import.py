@@ -193,7 +193,13 @@ ROLE_SYNONYMS = {
 
 #: Cells that mean "nothing here". Compared lower-cased and stripped.
 EMPTY_WORDS = ('', 'none', 'n/a', 'na', '-', '—', 'not applicable', 'nil',
-               'none (unified)', 'tbd', 'to be decided')
+               'none (unified)', 'tbd', 'to be decided',
+               # Arrangements rather than people. A named-approver column that
+               # says "per bank mandate" is telling you where to look, not who
+               # to ask, and proposing it as somebody's name puts a line in
+               # front of a reader that can only be answered wrongly.
+               'per bank mandate', 'joint authorizers', 'joint authorisers',
+               'as per mandate', 'bank mandate', 'per mandate')
 
 _WS = re.compile(r'\s+')
 
@@ -492,6 +498,18 @@ class PbApprovalMatrixImport(models.AbstractModel):
             if is_empty(cell):
                 continue
             for part in split_joint(cell) or [cell]:
+                # "RESPECTIVE LINE MANAGER" IS NOT A PERSON.
+                #
+                # The named-approver and backup columns hold names — except
+                # where they hold a ROLE that is really a step mode: "their
+                # line manager", "the functional manager", "per bank
+                # mandate". Proposing those as people put a line reading
+                # "Respective Line Manager · choose the account" in front of
+                # somebody, who could only ever answer it wrongly. A phrase
+                # the role table already reads as `manager` is the manager
+                # step, and the step is already in the route.
+                if match_role(part) == 'manager':
+                    continue
                 people.append({'name_text': part.strip(), 'kind': kind})
         return {
             'stage': row.get('stage') or '',
