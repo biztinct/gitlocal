@@ -691,3 +691,36 @@ msgstr "người phê duyệt của nó"
 #. module: pb_statutory
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_statutory
+msgid "About"
+msgstr "Về"
+
+#. module: pb_statutory
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_statutory
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_statutory
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_statutory
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_statutory
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_statutory
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

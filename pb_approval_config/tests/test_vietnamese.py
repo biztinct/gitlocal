@@ -89,7 +89,7 @@ P7_MODULES = (
     'pb_govt_reports', 'pb_group', 'pb_hr_fullandfinal',
     'pb_hr_payroll_formula', 'pb_hr_payroll_vietnam', 'pb_lifecycle',
     'pb_pay', 'pb_people_advanced', 'pb_probation', 'pb_scheme_map',
-    'pb_statutory', 'pb_tenants',
+    'pb_statutory', 'pb_tenants', 'pb_contracts',
 )
 
 #: The marker each module's Phase-7 block carries.
@@ -118,13 +118,16 @@ class TestP7Vietnamese(TransactionCase):
             if not os.path.exists(path):
                 continue
             text = open(path, encoding='utf-8').read()
-            if P7_MARKER not in text and module != 'biz_approval_workflow':
+            if P7_MARKER not in text \
+                    and 'browser walk' not in text \
+                    and module != 'biz_approval_workflow':
                 thin.append('%s: no Phase-7 block' % module)
                 continue
             # The block itself, read as text: a `#. module:` comment is not
             # a marker polib hands back, and the question here is about the
             # entries this phase ADDED rather than about the whole file.
-            block = text.split(P7_MARKER, 1)[-1]
+            marker = P7_MARKER if P7_MARKER in text else 'browser walk'
+            block = text.split(marker, 1)[-1]
             pairs = re.findall(r'^msgid "(.*)"\nmsgstr "(.*)"$', block, re.M)
             self.assertTrue(pairs, '%s: the Phase-7 block is empty' % module)
             empty = [msgid[:50] for msgid, msgstr in pairs

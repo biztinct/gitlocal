@@ -14913,3 +14913,140 @@ msgstr "Có"
 #. module: pb_hr_payroll_formula
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_hr_payroll_formula
+msgid "About"
+msgstr "Về"
+
+#. module: pb_hr_payroll_formula
+msgid "Also build the standard bands"
+msgstr "Đồng thời dựng các bậc chuẩn"
+
+#. module: pb_hr_payroll_formula
+msgid "Applied to payroll"
+msgstr "Đã áp dụng vào bảng lương"
+
+#. module: pb_hr_payroll_formula
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_hr_payroll_formula
+msgid "At what time"
+msgstr "Vào lúc mấy giờ"
+
+#. module: pb_hr_payroll_formula
+msgid "Bands in the table now"
+msgstr "Số bậc hiện có trong bảng"
+
+#. module: pb_hr_payroll_formula
+msgid "Demo people, contracts and payslips are written into this database"
+msgstr "Nhân sự, hợp đồng và phiếu lương minh hoạ sẽ được ghi vào cơ sở dữ liệu này"
+
+#. module: pb_hr_payroll_formula
+msgid "Demo world"
+msgstr "Bộ dữ liệu minh hoạ"
+
+#. module: pb_hr_payroll_formula
+msgid "Each one that resolves to a value starts feeding the payslip"
+msgstr "Mỗi ánh xạ cho ra giá trị sẽ bắt đầu cấp dữ liệu cho phiếu lương"
+
+#. module: pb_hr_payroll_formula
+msgid "Every band is deleted and rebuilt"
+msgstr "Mọi bậc bị xoá và dựng lại"
+
+#. module: pb_hr_payroll_formula
+msgid "Every record that demo world made is removed"
+msgstr "Mọi bản ghi do bộ dữ liệu minh hoạ tạo ra sẽ bị gỡ"
+
+#. module: pb_hr_payroll_formula
+msgid "For which kind of run"
+msgstr "Cho loại kỳ chạy nào"
+
+#. module: pb_hr_payroll_formula
+msgid "How often it fetches"
+msgstr "Tần suất lấy dữ liệu"
+
+#. module: pb_hr_payroll_formula
+msgid "Is this a demo database?"
+msgstr "Đây có phải cơ sở dữ liệu minh hoạ không?"
+
+#. module: pb_hr_payroll_formula
+msgid "Lines in the drafted map"
+msgstr "Số dòng trong bản đồ dự thảo"
+
+#. module: pb_hr_payroll_formula
+msgid "Mappings waiting to be switched on"
+msgstr "Số ánh xạ đang chờ được bật"
+
+#. module: pb_hr_payroll_formula
+msgid "Paid by"
+msgstr "Trả lương theo"
+
+#. module: pb_hr_payroll_formula
+msgid "Pay schemes it would change"
+msgstr "Số phương án lương sẽ bị thay đổi"
+
+#. module: pb_hr_payroll_formula
+msgid "Rate table"
+msgstr "Bảng tỷ lệ"
+
+#. module: pb_hr_payroll_formula
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_hr_payroll_formula
+msgid "Severed mappings to mend"
+msgstr "Số ánh xạ đứt cần sửa"
+
+#. module: pb_hr_payroll_formula
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_hr_payroll_formula
+msgid "Team or division"
+msgstr "Nhóm hoặc bộ phận"
+
+#. module: pb_hr_payroll_formula
+msgid "The mapping is pointed at the component whose name matches"
+msgstr "Ánh xạ được trỏ tới thành phần có tên trùng khớp"
+
+#. module: pb_hr_payroll_formula
+msgid "The source system is asked what fields it has, and a mapping row is made for each new one"
+msgstr "Hệ thống nguồn được hỏi có những trường nào, và mỗi trường mới sẽ có một dòng ánh xạ"
+
+#. module: pb_hr_payroll_formula
+msgid "The table and its bands are deleted"
+msgstr "Bảng và các bậc của nó bị xoá"
+
+#. module: pb_hr_payroll_formula
+msgid "Those people stop being paid by that scheme"
+msgstr "Những người đó thôi được trả lương theo phương án đó"
+
+#. module: pb_hr_payroll_formula
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_hr_payroll_formula
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_hr_payroll_formula
+msgid "Which day of the month"
+msgstr "Ngày nào trong tháng"
+
+#. module: pb_hr_payroll_formula
+msgid "Which day of the week"
+msgstr "Ngày nào trong tuần"
+
+#. module: pb_hr_payroll_formula
+msgid "Wiring to remove"
+msgstr "Liên kết cần gỡ"
+
+#. module: pb_hr_payroll_formula
+msgid "any"
+msgstr "bất kỳ"

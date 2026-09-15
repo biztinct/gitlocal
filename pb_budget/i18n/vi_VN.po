@@ -2125,3 +2125,40 @@ msgstr "người phê duyệt của nó"
 #. module: pb_budget
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_budget
+msgid "About"
+msgstr "Về"
+
+#. module: pb_budget
+msgid "Added."
+msgstr "Đã thêm."
+
+#. module: pb_budget
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_budget
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_budget
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_budget
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_budget
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_budget
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

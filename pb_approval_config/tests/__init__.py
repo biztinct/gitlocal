@@ -9,3 +9,5 @@ from . import test_inbox_scopes
 # Approval Matrix P7 — the spreadsheet door, and the catalogue's own truth.
 from . import test_p7_import
 from . import test_p7_matrix
+# The browser walk's five findings.
+from . import test_p7_walk_fixes

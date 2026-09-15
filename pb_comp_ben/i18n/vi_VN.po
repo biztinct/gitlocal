@@ -116,3 +116,64 @@ msgstr "không nêu"
 #. module: pb_comp_ben
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_comp_ben
+msgid "About"
+msgstr "Về"
+
+#. module: pb_comp_ben
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_comp_ben
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_comp_ben
+msgid "Open again"
+msgstr "Mở lại"
+
+#. module: pb_comp_ben
+msgid "Pay runs already finished in it"
+msgstr "Số kỳ lương đã hoàn tất trong tháng"
+
+#. module: pb_comp_ben
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_comp_ben
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_comp_ben
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_comp_ben
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_comp_ben
+msgid "This month is closed to changes."
+msgstr "Tháng này đã chốt, không nhận thay đổi."
+
+#. module: pb_comp_ben
+msgid "This month is open again."
+msgstr "Tháng này đã mở lại."
+
+#. module: pb_comp_ben
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_comp_ben
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_comp_ben
+msgid "Why is it being reopened?"
+msgstr "Vì sao mở lại?"

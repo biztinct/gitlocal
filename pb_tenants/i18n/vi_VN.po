@@ -1679,3 +1679,100 @@ msgstr "bật"
 #. module: pb_tenants
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_tenants
+msgid "%s day(s)"
+msgstr "%s ngày"
+
+#. module: pb_tenants
+msgid "About"
+msgstr "Về"
+
+#. module: pb_tenants
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_tenants
+msgid "As a trial"
+msgstr "Dưới dạng dùng thử"
+
+#. module: pb_tenants
+msgid "Can this be undone?"
+msgstr "Việc này có hoàn tác được không?"
+
+#. module: pb_tenants
+msgid "Customer"
+msgstr "Khách hàng"
+
+#. module: pb_tenants
+msgid "Customers"
+msgstr "Các khách hàng"
+
+#. module: pb_tenants
+msgid "Done."
+msgstr "Đã xong."
+
+#. module: pb_tenants
+msgid "Feature"
+msgstr "Tính năng"
+
+#. module: pb_tenants
+msgid "From the backup"
+msgstr "Từ bản sao lưu"
+
+#. module: pb_tenants
+msgid "New plan"
+msgstr "Gói mới"
+
+#. module: pb_tenants
+msgid "No — this one cannot be taken back"
+msgstr "Không — việc này không thể lấy lại"
+
+#. module: pb_tenants
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_tenants
+msgid "Release"
+msgstr "Bản phát hành"
+
+#. module: pb_tenants
+msgid "Saved, and every live customer has been told."
+msgstr "Đã lưu, và mọi khách hàng đang hoạt động đã được thông báo."
+
+#. module: pb_tenants
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_tenants
+msgid "Switched"
+msgstr "Đã chuyển thành"
+
+#. module: pb_tenants
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_tenants
+msgid "The rollout has started — the practice run goes first."
+msgstr "Đợt triển khai đã bắt đầu — lượt chạy thử đi trước."
+
+#. module: pb_tenants
+msgid "Their data may go after"
+msgstr "Dữ liệu của họ có thể bị xoá sau"
+
+#. module: pb_tenants
+msgid "Typed to confirm"
+msgstr "Đã gõ để xác nhận"
+
+#. module: pb_tenants
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_tenants
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

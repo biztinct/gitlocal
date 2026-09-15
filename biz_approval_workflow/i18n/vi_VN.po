@@ -837,3 +837,76 @@ msgstr "Do %s đề xuất"
 #. module: biz_approval_workflow
 msgid "Approved as %(ref)s"
 msgstr "Đã duyệt với mã %(ref)s"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: biz_approval_workflow
+msgid "%(backup)s holds this one because %(holder)s %(why)s"
+msgstr "%(backup)s phụ trách mục này vì %(holder)s %(why)s"
+
+#. module: biz_approval_workflow
+msgid "%(backup)s was asked instead of %(holder)s, because %(holder)s %(why)s."
+msgstr "%(backup)s được hỏi thay cho %(holder)s, vì %(holder)s %(why)s."
+
+#. module: biz_approval_workflow
+msgid "%(holder)s %(why)s and is the only person named for this step, so nobody can approve it yet. Name a backup for them in People & backups, or move this one to somebody else."
+msgstr "%(holder)s %(why)s và là người duy nhất được nêu cho bước này, nên chưa ai có thể duyệt. Hãy chỉ định người dự phòng cho họ trong Người & người dự phòng, hoặc chuyển việc này cho người khác."
+
+#. module: biz_approval_workflow
+msgid "%(what)s was approved but could not be carried out: %(why)s"
+msgstr "%(what)s đã được duyệt nhưng không thực hiện được: %(why)s"
+
+#. module: biz_approval_workflow
+msgid "%s — done."
+msgstr "%s — đã xong."
+
+#. module: biz_approval_workflow
+msgid "About"
+msgstr "Về"
+
+#. module: biz_approval_workflow
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: biz_approval_workflow
+msgid "Asked by"
+msgstr "Người yêu cầu"
+
+#. module: biz_approval_workflow
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: biz_approval_workflow
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: biz_approval_workflow
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: biz_approval_workflow
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: biz_approval_workflow
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: biz_approval_workflow
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: biz_approval_workflow
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: biz_approval_workflow
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: biz_approval_workflow
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

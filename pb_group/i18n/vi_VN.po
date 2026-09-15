@@ -2343,3 +2343,88 @@ msgstr "người phê duyệt của nó"
 #. module: pb_group
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_group
+msgid "About"
+msgstr "Về"
+
+#. module: pb_group
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_group
+msgid "Currency"
+msgstr "Loại tiền"
+
+#. module: pb_group
+msgid "Financial year"
+msgstr "Năm tài chính"
+
+#. module: pb_group
+msgid "Financial year starts in month"
+msgstr "Năm tài chính bắt đầu từ tháng"
+
+#. module: pb_group
+msgid "How a split payment is treated"
+msgstr "Cách xử lý khoản chi trả tách"
+
+#. module: pb_group
+msgid "On"
+msgstr "Vào ngày"
+
+#. module: pb_group
+msgid "Reads in"
+msgstr "Hiển thị theo"
+
+#. module: pb_group
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_group
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_group
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_group
+msgid "Supplier"
+msgstr "Nhà cung cấp"
+
+#. module: pb_group
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_group
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_group
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_group
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_group
+msgid "What it is for"
+msgstr "Dùng cho việc gì"
+
+#. module: pb_group
+msgid "What the money was for"
+msgstr "Khoản tiền dùng cho việc gì"
+
+#. module: pb_group
+msgid "When"
+msgstr "Khi nào"
+
+#. module: pb_group
+msgid "Which rate to use"
+msgstr "Dùng tỷ giá nào"

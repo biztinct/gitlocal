@@ -116,3 +116,60 @@ msgstr "người phê duyệt của nó"
 #. module: pb_probation
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_probation
+msgid "%s month(s)"
+msgstr "%s tháng"
+
+#. module: pb_probation
+msgid "About"
+msgstr "Về"
+
+#. module: pb_probation
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_probation
+msgid "Extended by"
+msgstr "Gia hạn thêm"
+
+#. module: pb_probation
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_probation
+msgid "Record"
+msgstr "Hồ sơ"
+
+#. module: pb_probation
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_probation
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_probation
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_probation
+msgid "Verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_probation
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_probation
+msgid "What has to improve"
+msgstr "Điều cần cải thiện"

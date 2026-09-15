@@ -442,3 +442,72 @@ msgstr "người phê duyệt của nó"
 #. module: pb_people_advanced
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_people_advanced
+msgid "About"
+msgstr "Về"
+
+#. module: pb_people_advanced
+msgid "And a contract straight away"
+msgstr "Và có hợp đồng ngay"
+
+#. module: pb_people_advanced
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_people_advanced
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_people_advanced
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_people_advanced
+msgid "Contract starts in force"
+msgstr "Hợp đồng có hiệu lực ngay"
+
+#. module: pb_people_advanced
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_people_advanced
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_people_advanced
+msgid "Name"
+msgstr "Họ tên"
+
+#. module: pb_people_advanced
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_people_advanced
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_people_advanced
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_people_advanced
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_people_advanced
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_people_advanced
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_people_advanced
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

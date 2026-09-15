@@ -5882,3 +5882,48 @@ msgstr "dải lương mới"
 #. module: pb_pay
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_pay
+msgid "A guidance grid is created and used by every review from now on"
+msgstr "Một bảng hướng dẫn được tạo và mọi đợt xét lương từ nay sẽ dùng nó"
+
+#. module: pb_pay
+msgid "About"
+msgstr "Về"
+
+#. module: pb_pay
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_pay
+msgid "Bands in the file"
+msgstr "Số dải lương trong tệp"
+
+#. module: pb_pay
+msgid "Bands suggested"
+msgstr "Số dải lương được đề xuất"
+
+#. module: pb_pay
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_pay
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_pay
+msgid "Square"
+msgstr "Ô"
+
+#. module: pb_pay
+msgid "That job stops being paid from this band"
+msgstr "Vị trí đó thôi được trả lương theo dải này"
+
+#. module: pb_pay
+msgid "What"
+msgstr "Nội dung"

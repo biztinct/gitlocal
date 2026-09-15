@@ -711,3 +711,56 @@ msgstr "người phê duyệt của nó"
 #. module: pb_close
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_close
+msgid "%s in all"
+msgstr "tổng cộng %s"
+
+#. module: pb_close
+msgid "A finished pay run already covers these"
+msgstr "Một kỳ lương đã hoàn tất có bao gồm các ngày này"
+
+#. module: pb_close
+msgid "About"
+msgstr "Về"
+
+#. module: pb_close
+msgid "And more"
+msgstr "Và thêm nữa"
+
+#. module: pb_close
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_close
+msgid "Days to reopen"
+msgstr "Các ngày cần mở lại"
+
+#. module: pb_close
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_close
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_close
+msgid "Still closed right now"
+msgstr "Hiện vẫn đang chốt"
+
+#. module: pb_close
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_close
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_close
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

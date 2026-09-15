@@ -39,6 +39,7 @@ TOUCHED_MODULES = (
     'pb_scheme_map', 'pb_group', 'pb_budget', 'pb_tenants', 'pb_demo',
     'pb_demo_seed', 'pb_probation', 'pb_pip', 'pb_lifecycle',
     'pb_people_advanced', 'pb_close', 'pb_govt_reports',
+    'pb_contracts',
 )
 
 #: Where the word is a technical identifier and must NOT be rewritten: an
@@ -121,6 +122,7 @@ class TestP7Matrix(MatrixCase):
             'fnf': 'hr.full.final.settlement',
             'month': 'pb.month.proposal',
             'filing': 'pb.filing.proposal',
+            'contract': 'pb.contract.proposal',
         }
         Process = self.env['biz.approval.process'].sudo()
         for key, model in expected.items():

@@ -4715,3 +4715,72 @@ msgstr "người phê duyệt của nó"
 #. module: pb_approval_config
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_approval_config
+msgid "About"
+msgstr "Về"
+
+#. module: pb_approval_config
+msgid "Decided with %s"
+msgstr "Được quyết định cùng %s"
+
+#. module: pb_approval_config
+msgid "Decided with another"
+msgstr "Quyết định cùng mục khác"
+
+#. module: pb_approval_config
+msgid "It could not be moved."
+msgstr "Không chuyển được."
+
+#. module: pb_approval_config
+msgid "Move it"
+msgstr "Chuyển đi"
+
+#. module: pb_approval_config
+msgid "Move it to somebody else"
+msgstr "Chuyển cho người khác"
+
+#. module: pb_approval_config
+msgid "Moved. It is with them now."
+msgstr "Đã chuyển. Việc này đang ở chỗ họ."
+
+#. module: pb_approval_config
+msgid "Say what is wrong with the seat it is on — away, left, or the only person named is the one who sent it in."
+msgstr "Hãy nêu vấn đề với vị trí đang giữ việc này — nghỉ phép, đã nghỉ việc, hoặc người duy nhất được nêu chính là người đã gửi."
+
+#. module: pb_approval_config
+msgid "Say why you are moving this to somebody else. It is kept with the request, and the person who gets it reads it."
+msgstr "Hãy nêu lý do bạn chuyển việc này cho người khác. Lý do được lưu cùng yêu cầu và người nhận sẽ đọc được."
+
+#. module: pb_approval_config
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_approval_config
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_approval_config
+msgid "The step goes to the person you choose, and the one it was with stops waiting. Your name and your reason are kept with the request, and the person who gets it reads them."
+msgstr "Bước này chuyển sang người bạn chọn, và người đang giữ sẽ thôi chờ. Tên và lý do của bạn được lưu cùng yêu cầu, và người nhận sẽ đọc được."
+
+#. module: pb_approval_config
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_approval_config
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_approval_config
+msgid "Who should decide it instead?"
+msgstr "Ai sẽ quyết định thay?"
+
+#. module: pb_approval_config
+msgid "Why is it moving? (required)"
+msgstr "Vì sao chuyển? (bắt buộc)"

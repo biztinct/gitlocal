@@ -451,3 +451,48 @@ msgstr "kỳ này"
 #. module: pb_govt_reports
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_govt_reports
+msgid "About"
+msgstr "Về"
+
+#. module: pb_govt_reports
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_govt_reports
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_govt_reports
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_govt_reports
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_govt_reports
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_govt_reports
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_govt_reports
+msgid "To"
+msgstr "Đến"
+
+#. module: pb_govt_reports
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_govt_reports
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
