@@ -169,11 +169,31 @@ class PbTrainingSchedule(models.Model):
         return Employee.search(domain)
 
     def run_now(self):
-        """Make this round's assignments. Idempotent per person per course."""
+        """Make this round's assignments. Once per person per ROUND.
+
+        TWO SKIPS AND BOTH ARE NEEDED, and the second one was found live.
+
+        The obvious test — "have they got an open assignment for this course"
+        — is right for somebody who is still working through it and WRONG for
+        somebody who had already finished the course before the schedule ever
+        ran: their assignment is created `done` in the same breath (which is
+        honest — they have done it), it is therefore not open, and the next
+        run of the schedule assigns it to them again. On a nightly job that is
+        one row per person per night, for ever, with a cheerful count in the
+        log and nothing on any screen to say so.
+
+        So the real question is the one the schedule is actually about: has
+        THIS schedule already asked THIS person within the period it comes
+        round in. A year-old row is outside the window and is reassigned,
+        which is the whole point of a yearly course.
+        """
         self.ensure_one()
         Assignment = self.env['pb.training.assignment'].sudo()
         today = fields.Date.today()
         due = today + relativedelta(days=max(self.due_days, 1))
+        # The first day of the round that is running now.
+        since = today - relativedelta(months=max(self.every_months, 1)) \
+            + relativedelta(days=1)
         made = 0
         for emp in self._people():
             if not emp.user_id or not emp.user_id.partner_id:
@@ -182,6 +202,11 @@ class PbTrainingSchedule(models.Model):
                     ('channel_id', '=', self.channel_id.id),
                     ('employee_id', '=', emp.id),
                     ('state', 'in', ASSIGN_OPEN)]):
+                continue
+            if Assignment.search_count([
+                    ('schedule_id', '=', self.id),
+                    ('employee_id', '=', emp.id),
+                    ('assigned_on', '>=', since)]):
                 continue
             try:
                 with self.env.cr.savepoint():

@@ -649,6 +649,33 @@ class TestSchedules(AssignmentCase):
         # and a second run the same night does nothing
         self.assertEqual(self.Auto._run_schedules(fields.Date.today()), 0)
 
+    def test_t8_somebody_who_had_already_finished_is_not_reassigned(self):
+        """FOUND LIVE. An assignment for a course somebody had already
+        finished is created `done` in the same breath — which is honest, and
+        which means it is not OPEN, so a skip that only looks for an open row
+        assigns it to them again on every single run."""
+        dept = self.env['hr.department'].create({'name': 'DEMO Done team'})
+        self.e_one.department_id = dept.id
+        self._finish(self.u_one, self.simple, [self.simple_lesson])
+        schedule = self.env['pb.training.schedule'].create({
+            'name': 'DEMO Yearly, for somebody who has done it',
+            'channel_id': self.simple.id,
+            'audience': 'department',
+            'department_id': dept.id,
+            'every_months': 12,
+            'due_days': 30,
+            'next_run': fields.Date.today() - timedelta(days=1),
+        })
+        self.assertEqual(schedule.run_now(), 1)
+        row = self.Assignment.sudo().search(
+            [('schedule_id', '=', schedule.id)])
+        self.assertEqual(row.state, 'done',
+                         'they had already finished it, and the record says '
+                         'so')
+        self.assertEqual(schedule.run_now(), 0,
+                         'a finished round must not come round again the '
+                         'same day')
+
     def test_t8_a_schedule_refuses_a_nonsense_period(self):
         with self.assertRaises(Exception):
             self.env['pb.training.schedule'].create({
