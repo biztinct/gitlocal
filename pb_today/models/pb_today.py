@@ -204,11 +204,19 @@ class PbToday(models.AbstractModel):
         tiles = {'total': 0, 'on_shift': 0, 'checked_out': 0,
                  'not_started': 0, 'on_leave': 0, 'late': 0}
 
+        # WHO CHECKED IN FROM A PHONE, IN THE FIELD (RIZE W2 D1). Resolved
+        # ONCE for the whole board rather than per row: the selfie lives on an
+        # `ir.attachment` and asking about it four hundred times is four
+        # hundred round trips for one chip.
+        officer = self._is_officer()
+        field_by_emp = self._field_checkins(atts, officer)
+
         for emp in emps:
             row = self._row(emp, shift_by_emp.get(emp.id) or [],
                             att_by_emp.get(emp.id) or [],
                             leave_by_emp.get(emp.id),
-                            grace_in(emp.company_id), now, is_today)
+                            grace_in(emp.company_id), now, is_today,
+                            field_by_emp.get(emp.id))
             rows.append(row)
             tiles['total'] += 1
             tiles[row['state']] += 1
@@ -250,7 +258,46 @@ class PbToday(models.AbstractModel):
 
     # --------------------------------------------------------------- a row
     @api.model
-    def _row(self, emp, day_shifts, day_atts, leave, grace_minutes, now, is_today):
+    def _is_officer(self):
+        """Only an attendance officer is shown the photograph. Everybody who
+        can open this board may see THAT somebody checked in from the field —
+        that is a fact about the working day — but the picture of a person is
+        theirs, and D13 is explicit that the selfie is a photo on an
+        attendance record and nothing more: no face matching, no biometric,
+        and no wider audience than the people who look after attendance."""
+        user = self.env.user
+        for group in ('hr_attendance.group_hr_attendance_officer',
+                      'hr_attendance.group_hr_attendance_manager'):
+            try:
+                if user.has_group(group):
+                    return True
+            except (ValueError, KeyError):
+                continue
+        return False
+
+    @api.model
+    def _field_checkins(self, atts, officer):
+        """{employee id: {'selfie_url': …}} for today's phone check-ins.
+
+        `pb_selfie_attachment_id` is only on `hr.attendance` when
+        `pb_driver_checkin` is installed — this module depends on it, but a
+        column test is a line and a broken board is a morning, so the read
+        asks first."""
+        if not atts or 'pb_selfie_attachment_id' not in atts._fields:
+            return {}
+        out = {}
+        for att in atts:
+            selfie = att.sudo().pb_selfie_attachment_id
+            if not selfie:
+                continue
+            out[att.employee_id.id] = {
+                'selfie_url': ('/web/content/%s' % selfie.id) if officer else '',
+            }
+        return out
+
+    @api.model
+    def _row(self, emp, day_shifts, day_atts, leave, grace_minutes, now,
+             is_today, field=None):
         tzinfo = self._tzinfo(emp)
         shift = day_shifts[0] if day_shifts else None
         # `atts` came back ordered by check_in, so the first is the arrival and
@@ -293,6 +340,11 @@ class PbToday(models.AbstractModel):
             'leave_type': (leave.holiday_status_id.name or _('Leave')) if leave else '',
             # the two row doors need to know whether a correction makes sense
             'can_correct': state in ('not_started',) or is_late,
+            # D1 — they punched from the phone, out in the field, with a
+            # photo. The URL is empty for anybody but an attendance officer
+            # (D13), so the template has one thing to test either way.
+            'field_checkin': bool(field),
+            'field_selfie_url': (field or {}).get('selfie_url', ''),
         }
 
     @api.model

@@ -44,16 +44,17 @@
         <div class="dm-body">
           <div class="dm-rail" t-if="!mapOnly">
             <div class="dm-rail__head">
-              Drivers <span class="dm-rail__count" t-esc="state.drivers.length"/>
+              Field staff <span class="dm-rail__count" t-esc="state.drivers.length"/>
             </div>
 
             <div t-if="!state.drivers.length" class="dm-empty">
               <div class="dm-empty__icon">
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
               </div>
-              <div class="dm-empty__title">No drivers yet</div>
-              <div class="dm-empty__sub">Assign the Driver role to an employee's user, then
-                they check in from the Payobook Driver app at <b>/driver</b>.</div>
+              <div class="dm-empty__title">No field staff yet</div>
+              <div class="dm-empty__sub">Give someone the Field staff role on their user
+                account — drivers, agronomists, anybody who works away from a desk — and
+                they check in from the Payobook Field check-in app at <b>/driver</b>.</div>
             </div>
 
             <div class="dm-list">
@@ -73,7 +74,14 @@
                         since <t t-esc="sinceTime(dvr.since)"/> ·
                         <t t-esc="fmtAge(dvr.last_ping_age_s)"/> ago
                       </t>
+                      <t t-elif="dvr.on_leave">Not working today</t>
                       <t t-else="">Off duty</t>
+                    </div>
+                    <!-- D1: somebody on approved time off reads as "off duty"
+                         and looks exactly like somebody who has not started,
+                         which is the question this map is opened to answer. -->
+                    <div t-if="dvr.on_leave" class="dm-card__leave">
+                      On leave — <t t-esc="dvr.on_leave"/>
                     </div>
                   </div>
                   <button class="dm-card__play"

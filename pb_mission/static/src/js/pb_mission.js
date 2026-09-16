@@ -92,7 +92,7 @@ const PALETTE_ACTIONS = [
       arrival: { pb_lens: "exceptions", pb_focus: "queue" },
       icon: "fileText", label: _t("File a correction"), sublabel: _t("Time") },
     { id: "open_map", lens: "today", cmd: "map", icon: "mapPin",
-      label: _t("Open the driver map"), sublabel: _t("Today") },
+      label: _t("Open the field map"), sublabel: _t("Today") },
     { id: "apply_leave", lens: "timeoff", cmd: "apply", icon: "umbrella",
       label: _t("Apply time off on behalf"), sublabel: _t("Time Off") },
     { id: "bonus_review", lens: "overtime", cmd: "bonus", icon: "sigma",

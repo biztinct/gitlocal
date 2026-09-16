@@ -20,6 +20,7 @@ own attendance story cannot move the numbers under the test.
 
 from datetime import date, datetime, time, timedelta
 
+from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
 
@@ -351,3 +352,55 @@ class TestTodayFacade(TransactionCase):
         board = self._board()
         self.assertEqual(board['tiles']['total'], 0,
                          'a draft shift must not put anyone on the board')
+
+
+@tagged('post_install', '-at_install')
+class TestFieldCheckinChip(TransactionCase):
+    """RIZE W2 D1 — a row says when somebody punched from the field.
+
+    D13 is the rule this is built to: the selfie is a photograph on an
+    attendance record and nothing else. No face matching, no biometric, and
+    the picture itself opens only for an attendance officer — everybody who
+    can read this board sees THAT somebody checked in from the field, because
+    that is a fact about the working day.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.Today = cls.env['pb.today']
+
+    def test_a_row_always_carries_the_two_keys_the_template_reads(self):
+        """R195's shape: a key a template reads and a payload does not carry
+        is `Cannot read properties of undefined`, shown as the theme's generic
+        "Something went wrong on our side" with nothing in the console."""
+        employee = self.env['hr.employee'].create({'name': 'DEMO Chip Person'})
+        row = self.Today._row(employee, [], [], None, 0,
+                              fields.Datetime.now(), True)
+        self.assertIn('field_checkin', row)
+        self.assertIn('field_selfie_url', row)
+        self.assertFalse(row['field_checkin'])
+        self.assertEqual(row['field_selfie_url'], '')
+
+    def test_the_selfie_url_is_empty_for_anybody_but_an_officer(self):
+        employee = self.env['hr.employee'].create({'name': 'DEMO Chip Person 2'})
+        row = self.Today._row(employee, [], [], None, 0,
+                              fields.Datetime.now(), True,
+                              {'selfie_url': ''})
+        self.assertTrue(row['field_checkin'],
+                        'the CHIP shows for everybody')
+        self.assertEqual(row['field_selfie_url'], '',
+                         'the PHOTO does not (D13)')
+
+    def test_the_camera_icon_is_in_the_shared_registry(self):
+        """`ic()` falls back to a plain circle with NO error for a name the
+        set has never heard of, so a missing glyph ships as a blank circle and
+        nothing reports it (R146/R147). Read from the INSTALLED copy."""
+        import os
+        import re
+        from odoo.modules.module import get_module_path
+        path = os.path.join(get_module_path('pb_import_kit'), 'static', 'src',
+                            'js', 'import_icons.js')
+        with open(path, encoding='utf-8') as fh:
+            known = set(re.findall(r'^\s{4}(\w+):', fh.read(), re.M))
+        self.assertIn('camera', known)

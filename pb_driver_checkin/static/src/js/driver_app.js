@@ -1,4 +1,4 @@
-/* Payobook Driver PWA — standalone phone app.
+/* Payobook Field check-in PWA — standalone phone app.
  * Plain JS (IIFE): the assets_pwa bundle has NO Odoo module loader / webclient,
  * only Leaflet (global `L`) + this file. Auth is the Odoo session (page is
  * auth='user'); unauthenticated hits get Odoo's login redirect on their own. */
@@ -256,7 +256,7 @@
         if (st.avatar_url) { av.style.backgroundImage = 'url(' + st.avatar_url + ')'; }
         header.appendChild(av);
         var hi = el("div", "pbdrv-hi");
-        hi.appendChild(el("div", "pbdrv-name", st.employee || root.dataset.userName || "Driver"));
+        hi.appendChild(el("div", "pbdrv-name", st.employee || root.dataset.userName || "Field check-in"));
         var chip = el("div", "pbdrv-chip " + (on ? "is-on" : "is-off"));
         var sinceTxt = on && st.checked_in_since ? " · " + fmtDuration(sinceSeconds(st.checked_in_since)) : "";
         chip.innerHTML = '<span class="pbdrv-cdot"></span>' + (on ? _t("on_duty") + sinceTxt : _t("off_duty"));

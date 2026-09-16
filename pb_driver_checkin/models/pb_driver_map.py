@@ -37,20 +37,39 @@ class PbDriverMap(models.AbstractModel):
 
     @api.model
     def _driver_group(self):
-        return self.env.ref('pb_driver_checkin.group_pb_driver', raise_if_not_found=False)
+        """THE BROAD GROUP, since RIZE W2 D1 (ruling D16).
+
+        Driver now implies Field staff, so asking about Field staff is asking
+        about every driver AND every agronomist, site visitor or anybody else
+        the business has given the phone app to. Falls back to the Driver
+        group on a database whose upgrade has not landed yet, so the map is
+        never empty for the wrong reason.
+        """
+        return self.env.ref('pb_driver_checkin.group_pb_field_staff',
+                            raise_if_not_found=False) \
+            or self.env.ref('pb_driver_checkin.group_pb_driver',
+                            raise_if_not_found=False)
 
     @api.model
     def _driver_users(self):
-        """res.users in the driver group. Query via the searchable direct
-        group_ids M2M (Odoo 19; res.groups.users is unreliable)."""
+        """The users on the map.
+
+        R7 — `res.users.group_ids` is DIRECT membership ONLY and misses
+        everybody who holds a group through `implied_ids`, which since D16 is
+        every driver on this database. `res.groups.all_user_ids` is the
+        transitive set (`all_implied_by_ids.user_ids`) and is what this has to
+        read, or the generalisation would have silently emptied the map of the
+        very people it was built for.
+        """
         grp = self._driver_group()
         if not grp:
             return self.env['res.users'].browse()
-        return self.env['res.users'].sudo().search([('group_ids', 'in', grp.ids)])
+        return grp.sudo().all_user_ids.filtered('active')
 
     @api.model
     def _driver_employees(self):
-        """Employees whose user is a driver, scoped to accessible companies."""
+        """Employees whose user is field staff, scoped to accessible
+        companies."""
         users = self._driver_users()
         if not users:
             return self.env['hr.employee'].browse()
@@ -59,6 +78,28 @@ class PbDriverMap(models.AbstractModel):
             ('user_id', 'in', users.ids),
             ('company_id', 'in', co_ids),
         ], order='name')
+
+    @api.model
+    def _leave_today(self, employees):
+        """{employee id: what kind of time off} for today's APPROVED leave.
+
+        Sudo, like the Today board's own leave read (`pb_today`): the chip is
+        system-derived context and a viewer without `hr.leave.type` read would
+        otherwise take the whole map down on the dereference. Only the KIND is
+        exposed — never a note, never a date, never anything else on the
+        request.
+        """
+        if not employees:
+            return {}
+        today = fields.Date.context_today(self)
+        leaves = self.env['hr.leave'].sudo().search([
+            ('employee_id', 'in', employees.ids),
+            ('state', '=', 'validate'),
+            ('request_date_from', '<=', today),
+            ('request_date_to', '>=', today),
+        ])
+        return {lv.employee_id.id: (lv.holiday_status_id.name or _('Time off'))
+                for lv in leaves}
 
     # ------------------------------------------------------------- cockpit API
     @api.model
@@ -75,6 +116,14 @@ class PbDriverMap(models.AbstractModel):
         tracker = self.env['biz.geo.tracker']
         positions = self._safe(
             lambda: tracker.get_live_positions(emps.mapped('user_id').ids), default={})
+
+        # WHO IS OFF TODAY, so the rail can say why somebody is not moving.
+        # A field person on approved leave reads as "checked out" and looks
+        # identical to one who has not started — which is the question an
+        # officer opens this map to answer. Its own probe, its own default
+        # (R92: never a shared try/except), so a leave model this build has
+        # changed cannot take the whole map down with it.
+        on_leave = self._safe(lambda: self._leave_today(emps), default={})
 
         drivers = []
         active = idle = checked_out = 0
@@ -116,6 +165,10 @@ class PbDriverMap(models.AbstractModel):
                     'has_selfie': bool(att and att.pb_selfie_attachment_id) if att else False,
                     'selfie_url': ('/web/image/ir.attachment/%s/datas' % att.pb_selfie_attachment_id.id)
                                   if (att and att.pb_selfie_attachment_id) else '',
+                    # '' when they are working; the kind of time off when
+                    # they are not. One string, so the template has one thing
+                    # to test and the rail has one thing to draw.
+                    'on_leave': on_leave.get(e.id, ''),
                 })
             except Exception as ex:
                 _logger.debug("Driver row failed: %s", ex)

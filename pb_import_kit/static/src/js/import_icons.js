@@ -304,6 +304,10 @@ export const IC = {
     ban:          '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
     minus:        '<path d="M5 12h14"/>',
     xCircle:      '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>',
+    // RIZE W2 D1 — the field check-in chip on the Today board. `ic()` falls
+    // back to a plain circle with NO error for a name the set has never heard
+    // of (R146), so a new glyph belongs here and only here.
+    camera:       '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
 };
 
 /**

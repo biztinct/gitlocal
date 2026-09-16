@@ -19,17 +19,36 @@ _IMAGE_MIMES = ('image/jpeg', 'image/png', 'image/webp')
 class DriverApp(http.Controller, GeoPwaShell):
 
     # ------------------------------------------------------------- helpers
-    def _is_driver(self):
+    def _is_field(self):
+        """May this account use the phone check-in?
+
+        RIZE W2 D1 (ruling D16): the question is FIELD STAFF, not Driver.
+        Driver implies Field staff, so every existing driver still passes —
+        and an agronomist can now be given the app without being called a
+        driver on their own record. The Driver group is still asked about
+        explicitly, so a database whose upgrade has not landed yet is never
+        locked out by the rename.
+        """
         u = request.env.user
-        return (u.has_group('pb_driver_checkin.group_pb_driver')
-                or u.has_group('hr_attendance.group_hr_attendance_officer'))
+        for group in ('pb_driver_checkin.group_pb_field_staff',
+                      'pb_driver_checkin.group_pb_driver',
+                      'hr_attendance.group_hr_attendance_officer'):
+            try:
+                if u.has_group(group):
+                    return True
+            except (ValueError, KeyError):
+                # An xmlid this database has never heard of is a module that
+                # is not installed, never a refusal.
+                continue
+        return False
 
     def _employee(self):
         return request.env.user.employee_id
 
-    def _require_driver_employee(self):
-        if not self._is_driver():
-            raise AccessError("You do not have driver access.")
+    def _require_field_employee(self):
+        if not self._is_field():
+            raise AccessError("Field check-in is not switched on for your "
+                              "account.")
         emp = self._employee()
         if not emp:
             raise UserError("No employee is linked to your user account.")
@@ -62,9 +81,22 @@ class DriverApp(http.Controller, GeoPwaShell):
         }
 
     # ------------------------------------------------------------- PWA shell
+    @http.route('/field', type='http', auth='user', methods=['GET'],
+                website=False, sitemap=False)
+    def field_home(self, **kw):
+        """The address the app is CALLED by, pointing at the address it IS.
+
+        `/driver` stays the scope of the installed progressive web app and of
+        its service worker, so a phone that already has it on its home screen
+        keeps working — changing the scope would orphan every installed copy.
+        This is the door somebody types after reading "Field check-in" on a
+        screen.
+        """
+        return request.redirect('/driver', code=302)
+
     @http.route('/driver', type='http', auth='user', methods=['GET'], website=False)
     def driver_home(self, **kw):
-        if not self._is_driver():
+        if not self._is_field():
             return request.render('pb_driver_checkin.driver_no_access')
         if not self._employee():
             return request.render('pb_driver_checkin.driver_no_employee')
@@ -83,7 +115,7 @@ class DriverApp(http.Controller, GeoPwaShell):
              'sizes': '512x512', 'type': 'image/png', 'purpose': 'any maskable'},
         ]
         return self._make_manifest(
-            'Payobook Driver', 'Driver', _SCOPE, _SCOPE,
+            'Payobook Field check-in', 'Field', _SCOPE, _SCOPE,
             theme_color=_THEME, bg_color=_THEME, icons=icons)
 
     @http.route('/driver/service-worker.js', type='http', auth='public',
@@ -94,12 +126,12 @@ class DriverApp(http.Controller, GeoPwaShell):
     # ------------------------------------------------------------- JSON API
     @http.route('/driver/state', type='jsonrpc', auth='user')
     def driver_state(self, **kw):
-        emp = self._require_driver_employee()
+        emp = self._require_field_employee()
         return self._state_payload(emp)
 
     @http.route('/driver/check_in_out', type='jsonrpc', auth='user')
     def driver_check_in_out(self, latitude=None, longitude=None, accuracy=None, **kw):
-        emp = self._require_driver_employee()
+        emp = self._require_field_employee()
         # geo_information keys map to in_<key>/out_<key>; 'mode' → in_mode/out_mode.
         # A checkout with no GPS fix sends null coords — record the punch with
         # no location rather than 0,0 (null island).
@@ -117,7 +149,7 @@ class DriverApp(http.Controller, GeoPwaShell):
     @http.route('/driver/ping', type='jsonrpc', auth='user')
     def driver_ping(self, latitude=None, longitude=None, accuracy=None,
                     speed=None, heading=None, battery=None, **kw):
-        emp = self._require_driver_employee()
+        emp = self._require_field_employee()
         if emp.attendance_state != 'checked_in':
             return {'error': 'not_checked_in'}
         att = emp.last_attendance_id
@@ -135,7 +167,7 @@ class DriverApp(http.Controller, GeoPwaShell):
 
     @http.route('/driver/selfie', type='jsonrpc', auth='user')
     def driver_selfie(self, image_b64=None, mimetype=None, **kw):
-        emp = self._require_driver_employee()
+        emp = self._require_field_employee()
         att = emp.last_attendance_id
         if not att or att.check_out:
             return {'error': 'no_active_checkin'}

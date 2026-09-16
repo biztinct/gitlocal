@@ -8,12 +8,20 @@ PWA (installable, /driver), a manager Live-Map cockpit, an in_mode/out_mode 'gps
 attendance mode, and demo route simulators. Check-ins land in hr.attendance
 (consumed by payroll unchanged).
 """,
-    'version': '19.0.1.4.0',
+    # 19.0.1.5.0 — RIZE W2 D1 (ruling D16): the driver app is the FIELD
+    # check-in app. New `group_pb_field_staff`, which Driver now implies; the
+    # map reads the broad group transitively and says who is on leave; the
+    # Field lens on Mission Control; /field.
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['biz_geo_tracking', 'hr_attendance', 'pb_sidebar', 'pb_import_kit'],
+    'depends': [
+        'biz_geo_tracking', 'hr_attendance', 'pb_sidebar', 'pb_import_kit',
+        'hr_holidays',   # who is on approved time off today, on the map rail
+        'pb_hub',        # the ⌘K palette registry
+    ],
     'post_init_hook': 'post_init_hook',
     'data': [
         'security/driver_security.xml',
@@ -28,6 +36,7 @@ attendance mode, and demo route simulators. Check-ins land in hr.attendance
         'web.assets_backend': [
             'pb_driver_checkin/static/src/scss/driver_map.scss',
             'pb_driver_checkin/static/src/js/driver_map.js',
+            'pb_driver_checkin/static/src/js/field_palette.js',
             'pb_driver_checkin/static/src/xml/driver_map.xml',
         ],
         # NOTE: the phone PWA does NOT use an Odoo asset bundle — a bundle is

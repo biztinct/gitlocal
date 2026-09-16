@@ -394,6 +394,30 @@
     .pbtd-latepill { flex: none; }
     .pbtd-rowact { flex: none; }
 
+    // D1 — checked in from a phone, in the field, with a photo on it. Drawn
+    // as a chip and not as a pill, because it is not a STATE: somebody can be
+    // on shift, late or checked out and still have punched from the field.
+    .pbtd-field {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary-strong, #4B3E96);
+        border: 1px solid transparent;
+
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); text-decoration: none; }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: 1px;
+        }
+    }
+
     .pbtd-empty {
         padding: 46px 24px;
         text-align: center;

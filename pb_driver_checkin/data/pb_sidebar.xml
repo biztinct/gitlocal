@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
 
-    <!-- Driver Tracking cockpit — Workforce section, gated to attendance
-         officers and up (drivers themselves see NO Payobook sidebar).
+    <!-- The field check-in map — Workforce section, gated to attendance
+         officers and up (field staff themselves see NO Payobook sidebar).
 
          RETIRED by Workforce P1b: the map is now part of the Today board — the
          SAME DriverMap component, mounted embedded as the map card and as
@@ -15,7 +15,7 @@
          owns 80. -->
     <record id="item_driver_tracking" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Driver Tracking</field>
+        <field name="name">Field check-in map</field>
         <field name="icon">map-pin</field>
         <field name="sequence">904</field>
         <field name="active" eval="False"/>

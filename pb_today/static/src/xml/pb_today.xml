@@ -133,6 +133,21 @@
 
                   <span class="pbtd-story" t-esc="rowStory(r)"/>
 
+                  <!-- D1: they punched from the phone, out in the field. The
+                       photo opens for an attendance officer and the chip
+                       alone shows for everybody else (D13) — one element,
+                       two behaviours, never a door that can only refuse. -->
+                  <a t-if="r.field_checkin and r.field_selfie_url"
+                     class="pbtd-field" t-att-href="r.field_selfie_url"
+                     target="_blank" rel="noopener"
+                     t-attf-title="Checked in from the field — open {{ r.name }}'s photo">
+                    <span t-out="ic('camera', 12)"/><span>Field</span>
+                  </a>
+                  <span t-elif="r.field_checkin" class="pbtd-field"
+                        title="Checked in from the field">
+                    <span t-out="ic('camera', 12)"/><span>Field</span>
+                  </span>
+
                   <span t-if="r.is_late" class="wfpw-pill wfpw-pill--rose pbtd-latepill">
                     <t t-esc="r.minutes_late"/> min late
                   </span>
