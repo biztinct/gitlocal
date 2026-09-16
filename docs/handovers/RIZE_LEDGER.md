@@ -256,7 +256,8 @@ without owner approval between them.
 | A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
 | A3 | pb_hiring — the background check, the document request, the offer (letter, candidate page, signed copy), the closure into a joiner, recruiter cover, the agency link and the Hiring numbers lens | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T14 pass, 201 unit tests green; six live-only defects found and fixed — see R153–R160) |
 | X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | **DONE** (live on `payobook`, 19.0.1.2.0 — INSTALLED, the only module whose state changed; T1–T11 pass; every customer-named demo row renamed and the whole programme's demo data on one register — see R161–R168) |
-| E1–E3 | pb_training | not started |
+| E1 | pb_training — the learner flow (`/my/training`), the Training lens on a new Learn hub, the door on the public course site, the white-label sweep | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass, 62 unit tests green; `survey` + `website_slides_survey` installed per D15 and TWO auto-install modules came with them — see R173; six live-only defects found and fixed — R171–R180). **Owner checkpoint: the learner flow is waiting to be looked at.** |
+| E2–E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
 | C1 | pb_hr_comm | not started |
@@ -1736,3 +1737,120 @@ without owner approval between them.
   this programme uses `@example.com` (R47: this box flushes at commit, not on
   the hourly cron). Assume any commit on this database posts whatever is
   sitting in `mail.mail`, and check the queue before committing a repair.
+
+### E1 (pb_training, 2026-09-16)
+
+- **R171 — A NON-STORED COMPUTED ONE2MANY ACCEPTS A WRITE AND DISCARDS IT,
+  silently.** `survey.survey.question_ids` is `compute='_compute_page_and_
+  question_ids'` over `question_and_page_ids` (survey_survey.py:73/278) with
+  no inverse, so `create({... 'question_ids': [(0,0,{...})] ...})` returns a
+  survey, raises nothing, logs nothing and has no questions. The demo test
+  was built that way and the board read "0 questions" over a test somebody
+  was about to sit; the FIXTURE looked like it had worked. Write to
+  `question_and_page_ids`, and count with `question_count` rather than
+  `len(question_ids)` — the engine keeps the number beside the field for
+  exactly this reason. **Any one2many that is a compute is a field you can
+  only read**; check for `compute=` before writing a o2m you did not declare.
+- **R172 — `survey.survey.survey_type` HAS NO "certification" VALUE on this
+  build.** It is `survey / live_session / assessment / custom`, and what
+  makes a survey a scored test is the separate `certification` Boolean beside
+  it. Writing `survey_type = 'certification'` is a hard
+  `ValueError: Wrong value for survey.survey.survey_type` on create — loud,
+  and therefore the lucky half. The quiet half was a LIST ACTION whose domain
+  was `[('survey_type','=','certification')]`: it matched nothing and opened
+  empty over a database with tests in it. A Selection this phase did not
+  declare is read out of the field before it is written to
+  (`self.env['survey.survey']._fields['survey_type'].selection`), which is
+  also what the gate now asserts.
+- **R173 — INSTALLING TWO MODULES INSTALLED FOUR.** `survey` and
+  `website_slides_survey` were the two the owner pre-authorised (D15);
+  `hr_skills_survey` and `survey_crm` came with them, because both are
+  `auto_install: True` and their other dependencies (`hr_skills`, `crm`) were
+  already on this database. Odoo does that silently as part of the same run
+  and there is no flag that stops it. **A module install's blast radius is
+  the authorised list PLUS every `auto_install` module whose whole dependency
+  set is about to be satisfied** — compute it before asking for the
+  authorisation, and diff `ir_module_module` before and after either way.
+- **R174 — THE TEST ENGINE TAKES A LEARNER OFF THE COURSE WHEN THEY FAIL
+  THEIR LAST GO.** `website_slides_survey`'s `survey.user_input.
+  _check_for_failed_attempt` (survey_user.py:33) watches for an attempt that
+  is done, unsuccessful and out of attempts, then calls `_remove_membership`
+  and sends the stock "enrol again" mail. That is a sensible design for a
+  company SELLING certifications — the candidate buys another pool of
+  attempts — and it is the wrong answer for an employer: the course vanishes
+  off the employee's own page, taking the eleven lessons they DID finish with
+  it, and nothing on any screen says where it went. Found by the test that
+  asks for a fourth go, which came back "that course is not one of yours".
+  Now `pb_training.unenrol_on_failed_test`, OFF, with the engine's behaviour
+  one switch away and asserted in both positions. **Any engine borrowed whole
+  brings its COMMERCIAL assumptions with it** (R102/R103 from a third
+  direction).
+- **R175 — `slide.channel.create` ENROLS WHOEVER MADE THE COURSE**
+  (slide_channel.py:491,505 — the `channel_partner_ids` default and
+  `_action_add_members(channel.user_id.partner_id)`). So a course made from a
+  shell runs as the superuser and the board reads "3 people" over two
+  learners and one OdooBot partner, which is honest and looks like a bug on a
+  screen somebody is being shown. Not something to "fix" — it is there so the
+  author can find their own course — but a demo fixture has to take itself
+  off afterwards, and any count of "who is on this course" is a count that
+  includes its author.
+- **R176 — `pb.demo.seed.register()` CANNOT BE CALLED OVER JSON-RPC.** It
+  takes a RECORDSET, and a recordset does not survive the wire — it arrives
+  as a plain integer and the first `records._name` is
+  `'int' object has no attribute '_name'` (R43, on X1's own API). Everything
+  a browser session creates has to be registered from a server-side script
+  afterwards, which is what E1 did. Worth an `as_id`-style coercion at that
+  door the next time `pb_demo_seed` is opened.
+- **R177 — `ess1.demo@payobook.com` AND `lam.ngo@example.com` ARE INTERNAL
+  USERS, not portal ones.** R29 recorded them as the ESS demo logins and
+  every handover since has called them portal accounts; on this database
+  today both hold `base.group_user` and `share = False`. It matters for
+  anything that GATES on internal-versus-external: E1's door on the public
+  course site passed both of them straight through, so the gate read as
+  working while never having been exercised. A portal learner had to be made
+  (`demo.learner@example.com`) before the gate could be proved at all.
+  **Check `res.users.share` before calling an account a portal account.**
+- **R178 — A PROGRESS TRACK MUST DECLARE ITS OWN `padding` AND
+  `box-sizing`.** A 100% bar drew 63% full on the drawer, because a rule
+  further up the cascade gives a `<span>` in that panel `padding: 9px 16px` —
+  the fill's containing block was 32px narrower than the track around it, so
+  "finished" rendered as "nearly finished" with no error anywhere and a
+  perfectly plausible-looking screen. The tell is arithmetic, not
+  appearance: measure `fill.getBoundingClientRect().width` against the
+  track's and check the ratio equals the number you wrote.
+- **R179 — the asset table on this box is NOT empty any more.** R116 found
+  `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` answering
+  `DELETE 0` every time and concluded the stale copy is always in the
+  browser. On 2026-09-16 the same statement answered **DELETE 85**, then
+  DELETE 10 on the next wave. So the purge is a real step again — keep doing
+  it — and R116's other half still holds: separate the two questions by
+  curling the bundle before blaming either side.
+- **R180 — ⌘K, lens and settings numbers after E1.** E1 took the **3900**
+  block (`training_board` 3900 "Training" on Learn, `training_courses` 3910,
+  `training_tests` 3920 "Tests and question bank", `training_my` 3930 "My
+  training"). B1 still starts at **3600**. The employee's own page is reached
+  through an `ir.actions.act_url` record, because the palette contract knows
+  exactly two doors — a client-action tag and an xmlid — and nothing else
+  (the shape `pb_rnr.action_my_recognition` set); **there is no URL door**,
+  and that was checked rather than assumed. The Learn hub's one shipped lens
+  (Lessons) carries no sequence, so bolted-on ones start at 20 and
+  **Training is 20**. "Training" measures comfortably inside the 60px rail
+  label box (R63) — it is one word, and the labels that spilled were eleven
+  characters with no break in them.
+- **R181 — the E1 test cast and what was put back.** Demo data stays and
+  every row is named DEMO and is on the register (rule 9). New: course **27**
+  "DEMO Agronomist basics" (4 lessons **112-115**, test lesson **116**),
+  survey **17** "DEMO Agronomist basics — test" with questions **40-42**,
+  quiz questions **38-39**, portal login **5344**
+  `demo.learner@example.com` / `RizeP7!2026` with partner **25801**, three
+  memberships **47-49**, three attempts **36-38** and ten lesson-completion
+  rows. The FAO's "Let's talk about soil" is the video (public, checked by
+  oEmbed before it was used — the first id tried was a maths lecture, which
+  is how a demo ends up looking wrong in front of a customer).
+  **One group was borrowed and given back**: uid 2065 was given
+  `pb_training.group_training_manager` to run the board and it was removed at
+  the end — verified group-for-group against a snapshot taken before the
+  first write, all three accounts identical. Passwords re-set to the ledger's
+  values (`RizeP7!2026` on 1984, `RizeP4!2026` on 2326). Every mail this
+  phase queued was cancelled in the same session; the outgoing queue is
+  empty.
