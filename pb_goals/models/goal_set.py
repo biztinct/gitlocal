@@ -161,15 +161,22 @@ class PbGoalSet(models.Model):
             record.manager_employee_id = manager.id or False
             record.manager_user_id = manager.user_id.id or False
 
-    @api.depends('goal_ids', 'goal_ids.weight', 'goal_ids.kr_ids')
+    #: ARCHIVED GOALS STILL COUNT (B2). Closing a year archives its goals so
+    #: the live lists stop being full of last year's work, and every compute
+    #: on this sheet therefore reads them with `active_test=False` — otherwise
+    #: a closed sheet's weights fall to nought and its progress to zero the
+    #: moment it is put away, with no error and a perfectly normal-looking
+    #: screen. `_all_goals()` is declared in `scoring.py` on this same model.
+    @api.depends('goal_ids', 'goal_ids.weight', 'goal_ids.kr_ids',
+                 'goal_ids.active')
     def _compute_totals(self):
         for record in self:
-            goals = record.goal_ids
+            goals = record._all_goals()
             record.goal_count = len(goals)
             record.kr_count = sum(len(goal.kr_ids) for goal in goals)
             record.weight_total = sum(goals.mapped('weight'))
 
-    @api.depends('goal_ids.progress', 'goal_ids.weight')
+    @api.depends('goal_ids.progress', 'goal_ids.weight', 'goal_ids.active')
     def _compute_progress(self):
         """Weighted where the weights are set, plain average where they are not.
 
@@ -179,7 +186,7 @@ class PbGoalSet(models.Model):
         broken.
         """
         for record in self:
-            goals = record.goal_ids
+            goals = record._all_goals()
             if not goals:
                 record.progress = 0.0
                 continue
@@ -403,6 +410,13 @@ class PbGoalSet(models.Model):
         happened must never be reported as a failure because an email did not.
         """
         result = super()._after_approval_transition(to_state)
+        # WHEN EACH RUNG WAS REACHED (B2). Stamped here rather than in each
+        # door for the same reason everything else is: there are two ways a
+        # sheet moves and only this hook is on both. Without them the reports
+        # cannot say how long anything took, and "how long does a manager sit
+        # on a sheet" is the single number the HR team asks for.
+        leg(self.env, 'stamping the rung on sheet %s' % self.id,
+            lambda: self._stamp_rung(to_state))
         if to_state == 'locked':
             leg(self.env, 'locking goal sheet %s' % self.id,
                 lambda: self._do_lock(by_user=self.env.user))
@@ -413,6 +427,23 @@ class PbGoalSet(models.Model):
             leg(self.env, 'the manager email for %s' % self.id,
                 lambda: self._notify_manager())
         return result
+
+    def _stamp_rung(self, to_state):
+        """The FIRST time a sheet reached each rung, and never the last.
+
+        A sheet that is sent back and resubmitted was first sent in on the day
+        it was first sent in — overwriting that would make every returned
+        sheet look punctual, which is the opposite of what the timeliness
+        figure is for.
+        """
+        self.ensure_one()
+        record = self.sudo()
+        field = {'submitted': 'submitted_at',
+                 'manager_ok': 'manager_ok_at'}.get(to_state)
+        if not field or record[field]:
+            return False
+        record.write({field: fields.Datetime.now()})
+        return True
 
     # ------------------------------------------------------- what locking IS
     def _do_lock(self, by_user=None):

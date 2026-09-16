@@ -28,3 +28,28 @@ access_pb_goal_template_portal,Goal template — everybody reads what they may u
 access_pb_goal_template_user,Goal template — goals administrator,model_pb_goal_template,pb_goals.group_goals_user,1,1,1,1
 access_pb_goal_template_manager,Goal template — HR lead,model_pb_goal_template,pb_goals.group_goals_manager,1,1,1,1
 access_pb_goal_template_admin,Goal template — head of goals,model_pb_goal_template,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_checkin_staff,Check-in — mine and my team's,model_pb_goal_checkin,base.group_user,1,1,0,0
+access_pb_goal_checkin_portal,Check-in — my own on my own page,model_pb_goal_checkin,base.group_portal,1,1,0,0
+access_pb_goal_checkin_user,Check-in — goals administrator,model_pb_goal_checkin,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_checkin_manager,Check-in — HR lead,model_pb_goal_checkin,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_checkin_admin,Check-in — head of goals,model_pb_goal_checkin,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_review_staff,Review — mine and my team's,model_pb_goal_review,base.group_user,1,1,0,0
+access_pb_goal_review_portal,Review — my own on my own page,model_pb_goal_review,base.group_portal,1,1,0,0
+access_pb_goal_review_user,Review — goals administrator,model_pb_goal_review,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_review_manager,Review — HR lead,model_pb_goal_review,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_review_admin,Review — head of goals,model_pb_goal_review,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_change_staff,Change request — mine and my team's,model_pb_goal_change,base.group_user,1,1,1,0
+access_pb_goal_change_portal,Change request — my own on my own page,model_pb_goal_change,base.group_portal,1,1,1,0
+access_pb_goal_change_user,Change request — goals administrator,model_pb_goal_change,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_change_manager,Change request — HR lead,model_pb_goal_change,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_change_admin,Change request — head of goals,model_pb_goal_change,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_audit_staff,Change trail — read what changed on mine,model_pb_goal_audit,base.group_user,1,0,0,0
+access_pb_goal_audit_portal,Change trail — read what changed on mine,model_pb_goal_audit,base.group_portal,1,0,0,0
+access_pb_goal_audit_user,Change trail — goals administrator,model_pb_goal_audit,pb_goals.group_goals_user,1,0,0,0
+access_pb_goal_audit_manager,Change trail — HR lead,model_pb_goal_audit,pb_goals.group_goals_manager,1,0,0,0
+access_pb_goal_audit_admin,Change trail — head of goals,model_pb_goal_audit,pb_goals.group_goals_admin,1,0,0,0
+access_pb_goal_band_staff,Score band — everybody reads what their score is called,model_pb_goal_band,base.group_user,1,0,0,0
+access_pb_goal_band_portal,Score band — everybody reads what their score is called,model_pb_goal_band,base.group_portal,1,0,0,0
+access_pb_goal_band_user,Score band — goals administrator,model_pb_goal_band,pb_goals.group_goals_user,1,0,0,0
+access_pb_goal_band_manager,Score band — HR lead,model_pb_goal_band,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_band_admin,Score band — head of goals,model_pb_goal_band,pb_goals.group_goals_admin,1,1,1,1

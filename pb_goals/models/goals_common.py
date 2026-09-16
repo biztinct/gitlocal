@@ -40,6 +40,15 @@ P_SUBMISSION_DAYS = 'pb_goals.submission_days'
 P_ROW_LIMIT = 'pb_goals.row_limit'
 P_REMINDER_CAP = 'pb_goals.reminder_cap'
 P_BULK_CAP = 'pb_goals.bulk_cap'
+#: ------------------------------------------------------------------ B2
+#: The year AFTER the goals are agreed: the monthly conversation, the two
+#: reviews, and the day the year is scored and put away.
+P_CHECKINS = 'pb_goals.checkins'
+P_CHECKIN_DAY = 'pb_goals.checkin_day'
+P_MID_YEAR_MIN_MONTHS = 'pb_goals.mid_year_min_months'
+P_YEAR_END_MIN_MONTHS = 'pb_goals.year_end_min_months'
+P_YEAREND_MAIL = 'pb_goals.yearend_mail'
+P_REVIEW_LEAD_DAYS = 'pb_goals.review_lead_days'
 #: DELIBERATELY NOT IN `DEFAULTS`. `set_param(key, '')` DELETES the row on this
 #: build, so an empty-string default cannot be materialised: a hook that tried
 #: would write it, find it missing on the next read and write it again for
@@ -81,6 +90,29 @@ DEFAULTS = {
     # rail rather than a page size — the button says how many it would make
     # before it makes any (R54).
     P_BULK_CAP: '2000',
+    # ------------------------------------------------------------------ B2
+    # ON. A goal year without a monthly conversation is a spreadsheet that
+    # gets opened twice. The job only ever makes ONE row a month per agreed
+    # sheet and writes to the two people who are already having the
+    # conversation, so the first night after an upgrade cannot surprise a
+    # company: it makes this month's rows and stops.
+    P_CHECKINS: '1',
+    # The day of the month the conversation is planned for. The 25th is late
+    # enough that the month has happened and early enough that somebody can
+    # still do something about it.
+    P_CHECKIN_DAY: '25',
+    # HOW LONG SOMEBODY HAS TO HAVE BEEN HERE for a review to be fair. Both
+    # are counted from the day their goals actually start covering — the
+    # later of their joining day and the day the year began. Three months is
+    # the shipped answer and it is a dial, because "fair" is a company's
+    # word and not ours.
+    P_MID_YEAR_MIN_MONTHS: '3',
+    P_YEAR_END_MIN_MONTHS: '3',
+    # ON. The one email at the end of the year that says what the score was.
+    P_YEAREND_MAIL: '1',
+    # How many days before a review's date it appears on people's screens and
+    # starts being chased.
+    P_REVIEW_LEAD_DAYS: '30',
 }
 
 # =========================================================================
@@ -101,6 +133,10 @@ CYCLE_STATE_LABEL = dict(CYCLE_STATES)
 #: to say both is how a board ends up unable to show the single most useful row
 #: on it — the person whose goals came back a week ago and who has not touched
 #: them since.
+#: `closed` (B2) is the end of the road and is deliberately a STATUS rather
+#: than an archive flag: "this year is finished and scored" is a thing a board
+#: has to be able to show, and a row that simply disappears is a row somebody
+#: goes looking for.
 SET_STATES = [
     ('draft', 'Being written'),
     ('submitted', 'Waiting on their manager'),
@@ -108,6 +144,7 @@ SET_STATES = [
     ('locked', 'Agreed and locked'),
     ('returned', 'Sent back'),
     ('refused', 'Turned down'),
+    ('closed', 'Finished for the year'),
 ]
 SET_STATE_LABEL = dict(SET_STATES)
 
@@ -131,7 +168,95 @@ SET_RANK = {
     'manager_ok': 3,    # waiting on the HR lead
     'refused': 4,
     'locked': 5,        # nothing to do
+    'closed': 6,        # the year is over
 }
+
+#: The states in which a goal sheet is LIVE — agreed, not yet put away. This is
+#: the set the monthly conversation, the two reviews and the scoring all ask
+#: about, and it is written once here so four files cannot disagree about what
+#: "running" means.
+SET_RUNNING = ('locked',)
+
+
+# =========================================================================
+#  B2 — the year after the goals are agreed
+# =========================================================================
+#: THE MONTHLY CONVERSATION. `missed` is a real outcome and not an error: a
+#: month nobody talked is a fact a manager's own record should carry, and a row
+#: that quietly stays "planned" for ever is a row that says nothing at all.
+CHECKIN_STATES = [
+    ('planned', 'Planned'),
+    ('done', 'Done'),
+    ('missed', 'Missed'),
+]
+CHECKIN_STATE_LABEL = dict(CHECKIN_STATES)
+
+#: The two moments in a year when somebody sits down and scores the goals.
+REVIEW_KINDS = [
+    ('mid_year', 'Half-way review'),
+    ('year_end', 'End-of-year review'),
+]
+REVIEW_KIND_LABEL = dict(REVIEW_KINDS)
+
+REVIEW_STATES = [
+    ('planned', 'Planned'),
+    ('done', 'Done'),
+]
+REVIEW_STATE_LABEL = dict(REVIEW_STATES)
+
+#: WHAT SOMEBODY IS ASKING TO CHANGE. Four kinds because four is what actually
+#: happens, and because the sentence a manager reads is different for each: a
+#: goal that has been overtaken is DROPPED, a new priority is ADDED, a target
+#: that moved is EDITED, and a re-prioritised year is a REWEIGHT.
+CHANGE_KINDS = [
+    ('edit', 'Change a goal'),
+    ('add', 'Add a goal'),
+    ('drop', 'Drop a goal'),
+    ('reweight', 'Change the weights'),
+]
+CHANGE_KIND_LABEL = dict(CHANGE_KINDS)
+
+CHANGE_STATES = [
+    ('draft', 'Being written'),
+    ('submitted', 'Waiting on their manager'),
+    ('manager_ok', 'Waiting on the HR lead'),
+    ('approved', 'Agreed and carried out'),
+    ('refused', 'Turned down'),
+]
+CHANGE_STATE_LABEL = dict(CHANGE_STATES)
+
+#: Problem first again (R113): what somebody has to DO about it, worst first.
+CHANGE_RANK = {
+    'submitted': 0,
+    'manager_ok': 1,
+    'draft': 2,
+    'refused': 3,
+    'approved': 4,
+}
+
+#: The states a change request is still travelling in.
+CHANGE_OPEN = ('draft', 'submitted', 'manager_ok')
+
+#: HOW A KEY RESULT IS SCORED, and the words for each number. Nought to five
+#: and never a bare number: "3" means nothing on a screen, and a translator
+#: handed an integer has nothing to translate. The scale matches the
+#: self-rating's five rungs on purpose — the employee said "On track" in
+#: April and the manager says "On track" in March, and the two words are the
+#: same word.
+SCORES = [
+    ('0', 'Not done'),
+    ('1', 'Well below'),
+    ('2', 'Below'),
+    ('3', 'On track'),
+    ('4', 'Above'),
+    ('5', 'Well above'),
+]
+SCORE_LABEL = dict(SCORES)
+
+#: The highest a key result can score. Named rather than written as a 5 in six
+#: files, because the band table and the sentence that explains it both quote
+#: it.
+SCORE_MAX = 5.0
 
 #: How somebody rates their own chances, and the words for each. One to five
 #: and never a number on its own: "3" means nothing on a screen, and a
