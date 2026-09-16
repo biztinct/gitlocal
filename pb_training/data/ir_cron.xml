@@ -31,4 +31,32 @@
         <field name="active" eval="True"/>
     </record>
 
+    <!-- ==================================================================
+         E3 — THE REPORT PACK, CHECKED DAILY AND SENT ONCE A PERIOD.
+
+         A DAILY JOB AND NEVER A WEEKLY OR MONTHLY `interval_type`. A monthly
+         cron that misses its tick misses the MONTH — the server was down, a
+         restore was running, somebody deployed at midnight — and nothing
+         anywhere says so. This asks every morning "have I sent the pack for
+         the period that has just ended", which cannot miss one: the first
+         tick after the turn sends it, every tick after that does nothing,
+         and a period the job slept through goes out the next morning with
+         the right dates on it.
+
+         THE ROW IS ACTIVE AND THE FEATURE IS OFF. `pb_training.report_pack`
+         ships 0, so the job runs, builds the numbers and LOGS what it would
+         have sent to whom. A thing that is off and does not say so is
+         reported as broken (R54); a cron row that is switched off instead
+         cannot say anything at all.
+         ================================================================== -->
+    <record id="cron_training_pack" model="ir.cron">
+        <field name="name">Training: send the weekly or monthly training pack when its period has ended</field>
+        <field name="model_id" ref="model_pb_training_pack"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_pack()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>
