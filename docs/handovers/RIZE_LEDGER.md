@@ -269,7 +269,7 @@ without owner approval between them.
 | E2 | pb_training — assignments (day-one / trial period / compliance / one-off / leadership), the chasing and its escalation, "ask for more time" through the Matrix, the trial-period link, compliance schedules, the day-one checklist step, the four new board tabs, due dates + a team page on `/my/training` | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T13 pass, 168 unit tests green; the stock sample courses deleted first under D19; seven live-only defects found and fixed — R182–R190; one additive edit to `pb_demo_seed`, its own commit) |
 | E3 | pb_training — the training allowance and the cost claim, the Matrix route, the award on the one money door, certificates in the vault, the Training lens on Insights with a spreadsheet, and the weekly/monthly pack | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T10 pass, 246 unit tests green; five live-only defects found and fixed — R192–R196; one real pay run touched and reported, R199) |
 | B1 | pb_goals — goal years, the goal sheet with weighted goals and key results, the manager + HR-lead route, templates, the joining-checklist kick-off, `/my/goals`, the Goals lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 80 unit tests green; `pb_goals` is the ONLY module whose state changed; ten live-only defects found and fixed — see R200–R211) |
-| B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | not started |
+| B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | **DONE** (live on `payobook`, 19.0.1.1.0 with its migration, T1–T11 pass, 179 unit tests green; `pb_goals` is the ONLY module whose state changed; nine live-only defects found and fixed — one of them a B1 defect that had been live since B1 — see R212–R224) |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
 | C1 | pb_hr_comm | not started |
 
@@ -2268,3 +2268,166 @@ without owner approval between them.
   demo sheets and the engine's independence safeguard correctly refused them.
   Every mail this phase queued went to an `@example.com` or `@payobook.com`
   address and was cancelled in the same session; the outgoing queue is empty.
+
+### B2 (pb_goals — the year after the goals are agreed, 2026-09-16)
+
+- **R212 — THE ONE INBOX SILENTLY DISCARDS A DRAWER ROW THAT IS NOT A DICT,
+  and B1 had been shipping lists since the day it went live.**
+  `pb_approval_config/models/inbox_facade.py:598` skips anything that is not a
+  dict with `head` / `sub` / `cells`, and it drops the whole detail ONLY when
+  there are no chips either (`:593`). So a consumer that hands it lists gets a
+  drawer with its title, its chips and its note all present and **no table** —
+  which reads as "there was nothing to show" rather than as a mistake. Nothing
+  errors, nothing is logged, and the screen looks finished. B1's
+  `pb.goal.set._approval_detail` built its rows as `[title, weight, date,
+  rating]`, so every approver asked to agree somebody's goals since B1 has been
+  shown the counts and not the goals. Found while proving B2's own
+  change-request drawer, which had copied the same shape. **A drawer row is
+  `{'head': …, 'sub': …, 'cells': [...]}` and the cells line up with
+  `columns`.** Both models corrected and a gate walks `_approval_detail` on
+  each of them.
+- **R213 — VIEW INHERITANCE MAY NOT SELECT BY `[@string=…]`, and the error
+  names the wrong line.** The global gotcha list already says xpath may not
+  select by `string`; what it does not say is that this is not a warning — it
+  is *"View inheritance may not use attribute 'string' as a selector"* and it
+  **aborts the whole module load** (EXIT=255, registry left down). Worse, the
+  ParseError names the CHILD view's own first line (`'line': 15`) rather than
+  the xpath that did it, so the line number in the log points at something
+  innocent and the file is 450 lines long. One deploy cycle. Pick a `name`, a
+  `hasclass()` or a structural anchor (`//sheet`); `pb_goals` now has a gate
+  that walks every `<xpath expr=…>` this module ships.
+- **R214 — "DID THIS ROW GET MADE JUST NOW" CANNOT BE ASKED OF
+  `create_date`.** A row made at six o'clock this morning was made TODAY, so a
+  monthly job that counted `row.create_date.date() == today` reported one
+  check-in made on EVERY run of the same day — over a table it had not
+  touched. The rows were identical every time and only the COUNT lied, on a
+  job whose whole claim is that it is idempotent (R90's exact shape, and R184's
+  and R100's). Found live by pressing "run it now" twice. The honest question
+  is which records existed BEFORE this pass, asked once, in one query, before
+  the loop starts. Both `_make_checkins` and `_make_reviews` now do that, and a
+  test asserts one-then-nought.
+- **R215 — THE ENGINE'S INDEPENDENCE SAFEGUARD REFUSES THE ACCOUNT THAT
+  RAISED THE REQUEST, and `move_it` takes a SEAT key and not a step key.**
+  R211 recorded the first half for goal sheets; B2 met it again on the first
+  goal-change request, where the validator had raised it and then held the
+  HR-lead seat — *"This step is not waiting for you"*, which is correct and is
+  the engine doing its job. The reassignment door is
+  `pb.approval.inbox.move_it(request_id, seat_key, user_id, reason)` and the
+  seat key is the `key` off `can_move_it` (`u2326`), NOT the step key (`hr`);
+  passing the step key answers *"That seat is not waiting for anyone."* Also:
+  `inbox_facade.decide` accepts `approve`, `return` and **`reject`** — not
+  `refuse` — and anything else is *"That is not something you can do here."*
+- **R216 — A REFUSAL'S REASON STAYS ON THE REQUEST UNLESS THE CONSUMER TAKES
+  IT.** `chain_shim._approval_reject` (`:484`) calls
+  `_after_approval_transition`, so the consequence fires — but the reason it
+  is handed is never written to the record, and the person who has to act on
+  it reads their own goals page and not an approval inbox. Live: the manager
+  typed a perfectly good sentence, the change read "Turned down" on
+  `/my/goals` with nothing beside it, and the turned-down email had nothing to
+  quote. Override `_approval_reject`, write the note BEFORE `super()` (which is
+  what sends the email), and only when the record has none. B1 had already
+  learnt the same thing for `_approval_return`; the refusal half was missed.
+- **R217 — A GUARD THAT READS AN EMPLOYEE AS THE CALLER REFUSES THE VERY
+  PERSON IT IS FOR.** `pb.goal.kr.write`'s "a score is not the employee's word"
+  guard filtered on `k.employee_id.user_id`, and the person writing a score is
+  by design the employee's own MANAGER, who holds no HR group — so reading one
+  field of an `hr.employee` prefetched forty, forty of which sit behind payroll
+  groups, and the manager got an AccessError naming fields nobody asked for
+  (R56/R104 from the guard side rather than the mail side). `k.sudo()
+  .employee_id.user_id`: the security boundary is the record rule that found
+  the row, not this read.
+- **R218 — A HEADLINE THAT IS NOT INSIDE ITS OWN TAB STAYS ON SCREEN.** The
+  board's B1 headline was rendered before the new tab strip, so opening the
+  conversations tab put a sentence about how many goal sheets had been agreed
+  above a panel about something else — two headlines, one of them answering a
+  question nobody had asked. Obvious once seen and invisible until the tab
+  exists. Anything above a tab strip belongs to every tab; anything that
+  belongs to one goes inside it.
+- **R219 — "1 Months missed" IS THE SAME DEFECT AS "1 goal(s)" (R46).** A KPI
+  tile's label is read as the second half of a sentence, not as a column
+  heading, and a count-noun in it has to agree with its number. Four places on
+  three new surfaces, all found by looking at a demo where every figure
+  happened to be one — which is the ordinary case on a small team and the one a
+  developer's fixture never produces. `counted()` on the count-nouns; labels
+  that are not count-nouns ("Past their day", "Written up", "To decide") are
+  right at every number and are left alone. The plural word for a row's
+  sub-line comes from the SERVER (`sheets_word`, `n_word`), because a frame
+  with a number in it is something a translator cannot fix.
+- **R220 — THE FROZEN COPY KEEPS REAL NUMBERS AND THE PAGE TIDIES THEM ON THE
+  WAY OUT.** `frozen_json` is the audit record of what a year came out at, so
+  rounding it for a screen would be rounding the evidence — but read straight
+  onto a page a Python float renders exactly as Python writes it and the
+  employee's own past year said "88.0% of the way" (R207). Tidy at the READ
+  side, in the facade, every time a frozen figure is handed to a template.
+- **R221 — A TEST THAT ASSERTS `search([])` IS EMPTY ONLY PASSES ON AN EMPTY
+  DATABASE.** This suite runs against the live demo box, so "the job made no
+  check-ins" asserted over the whole table started failing the moment this
+  phase's own demo data existed — for a reason that has nothing to do with the
+  rule it guards. Every assertion about absence is scoped to the fixture's own
+  records.
+- **R222 — the B2 API, for whatever comes next.** Models `pb.goal.checkin`
+  (`set_id, month` first-of-month, `scheduled_date`, `state` planned|done|
+  missed, `progress_note`, `blockers`, `done_at/by`, `kr_snapshot_json`;
+  `ensure_for(set, when)`, `action_checkin_done(note, blockers)`,
+  `action_checkin_missed()`, `snapshot_rows()`), `pb.goal.review` (`kind`
+  mid_year|year_end, `due_date`, `state`, `manager_note`, `employee_note`,
+  `score_at_review`; `action_review_done(manager_note, employee_note)`),
+  `pb.goal.change` (`kind` edit|add|drop|reweight, `payload_json`, `summary`,
+  `reason`, `state` draft→submitted→manager_ok→approved|refused;
+  `raise_change(set_id, kind, values, reason, goal_id)`), `pb.goal.audit`
+  (before/after JSON), `pb.goal.band` (`min_score` is what is asked, the
+  caller walks highest first). On `pb.goal.set`: `covered_from`,
+  `applies_mid_year`, `applies_year_end`, `prorated`, `applicability_note`,
+  `scored`, `score`, `score_band`, `score_tone`, `goals_done`, `frozen_json`,
+  `submitted_at`, `manager_ok_at`, `closed_at`, `_all_goals()`, `_freeze()`,
+  `frozen()`, `score_key_results(scores)`, `_stamp_applicability(force)`. On
+  `pb.goal`: `active`, `scored`, `score`, `done_at/by`, `changed_on`,
+  `change_count`. On `pb.goal.kr`: `score` (0–5 Selection), `score_value`,
+  `scored_at/by`. Facades `pb.goals.get_year(cycle, tab, filters)` +
+  `write_up_checkin` / `write_up_review` / `score_key_results` /
+  `mark_goal_done` / `ask_for_change` / `decide_change` / `preview_close` /
+  `close_cycle`, `pb.goals.analytics.get_numbers(cycle, filters)` +
+  `export_xlsx`, `pb.goals.home.get_home()` + `open_row(kind, id)`,
+  `pb.my.goals` + `write_up_checkin` / `say_on_review` / `ask_for_change` /
+  `mark_goal_done` / `past_year`. Route `goal_change` (xmlid
+  `pb_goals.process_goal_change`), bands `pb_goals.band_outstanding|strong|
+  solid|attention`, mails `mail_goals_checkin/_review_due/_change_agreed/
+  _change_refused/_year_end`. Six new switches: `pb_goals.checkins` 1,
+  `checkin_day` 25, `mid_year_min_months` 3, `year_end_min_months` 3,
+  `yearend_mail` 1, `review_lead_days` 30.
+- **R223 — ⌘K, lens and settings numbers after B2.** B2 stayed inside B1's
+  **3600** block: `goals_checkins` **3640**, `goals_changes` **3650**,
+  `goals_numbers` **3660** (sublabel *Insights*). C1 still starts at **3700**.
+  On the Insights hub the four shipped lenses carry no sequence, so bolted-on
+  ones start at 20 — Budget 20, Hiring 30, Training 40, **Goals 50**. On the
+  Home hub the two shipped lenses carry none either, so Wall is 20,
+  **Decision Room is 30 — which is the number the C1 handover reserves for
+  "Coming up"** and is already taken today — and **Goals is 40**. C1 should
+  take 50 or move the Decision Room, and should not assume 30 is free. This
+  module still ships no Settings category.
+- **R224 — the B2 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **18 rows added
+  to "DEMO HR programme data", which now holds 1,204.** New: goal year **133**
+  "DEMO Goal year 2025" (company 5, Apr–Mar, CLOSED, so `/my/goals` has a
+  finished year to open) with sheet **705** for Bùi Hữu Bảo, goals **660/661**
+  and three key results, scored and frozen at **4.2 · Strong**; check-ins
+  **61–65** on sheet 205 (May and June and August written up, **July missed**,
+  September written up by the employee on the real phone form); review **11**
+  (end-of-year, with what the employee asked to have said on it); changes
+  **23** (reword, agreed through BOTH rungs and carried out, audit row **8**),
+  **24** (add a goal, left waiting on its manager), **25** and **26** (drop,
+  turned down — 25 before the refusal note was fixed and 26 after it, which is
+  why there are two). Sheet **205**'s five key results scored, so it reads
+  **4 out of 5 · Strong**. **Three things were borrowed and all three were put
+  back**: `pb_goals.group_goals_manager` on uid 2065, the company-5 `hr_lead`
+  seat (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7 — and
+  the HR rung of change 23, reassigned to `linh.quan` (uid 2337) because the
+  account that raised it may not decide it (R215). Verified group-for-group
+  against a snapshot taken before the first write: **identical, with no
+  exceptions at all**. **No password was reset**: `RizeP0!2026`, `RizeP4!2026`,
+  `RizeP7!2026` and `RizeP9!2026` were all re-tested by API login at the end
+  and all four work. **No employee's manager was changed.** Sixteen mails this
+  phase queued were cancelled in the same session; the outgoing queue is empty.
+  The only rows on this database that were touched and are NOT this phase's are
+  the two `pb_alert` notices the fleet monitor sends the owner, which were
+  already queued and were deliberately left alone.
