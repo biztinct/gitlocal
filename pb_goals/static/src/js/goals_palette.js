@@ -40,7 +40,11 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
+import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
+import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { PbGoalsBoard } from "@pb_goals/js/goals_board";
+import { PbGoalsNumbers } from "@pb_goals/js/goals_numbers";
+import { PbGoalsHome } from "@pb_goals/js/goals_home";
 
 /**
  * THE LENS IS OPEN TO EVERY MEMBER OF STAFF, AND THAT IS THE WHOLE POINT.
@@ -120,3 +124,76 @@ palette.add("goals_templates", {
     requires: "pb_goals_board",
     action: { xmlid: "pb_goals.action_pb_goal_template" },
 }, { sequence: 3630 });
+
+/* =====================================================================
+ * B2 — the year after the goals are agreed.
+ *
+ * TWO MORE LENSES AND THREE MORE ⌘K ROWS, all inside B1's 3600 block as the
+ * wave plan says. C1 still starts at 3700.
+ * ===================================================================== */
+
+/**
+ * THE INSIGHTS LENS KEEPS THE HR GATE, and that is the opposite call from the
+ * People-hub lens above — deliberately, and for the reason R209 records.
+ *
+ * The board is about ONE PERSON or ONE TEAM: a line manager holds no goals
+ * group by definition, the team view is the whole reason the lens exists, and
+ * gating it on a group made it invisible to every manager in the company. This
+ * screen is the WHOLE COMPANY'S goal year with every manager's compliance
+ * figure on it — a management report rather than a team view — so the group is
+ * the right question here and the facade asks it again on the server (R97:
+ * its own gate and not the hub's, because the two sides cannot import each
+ * other).
+ */
+registry.category(INSIGHTS_LENSES).add("goals", {
+    key: "goals",
+    icon: "target",
+    label: _t("Goals"),
+    Component: PbGoalsNumbers,
+    groups: GOALS_GATE.concat(["base.group_system"]),
+}, { sequence: 50 });
+
+/**
+ * THE HOME LENS IS OPEN TO EVERYBODY WITH A LOGIN, for the same reason the
+ * People-hub lens is: what is behind it is decided by what the SERVER finds
+ * waiting on the person asking, and the worst case is somebody being told
+ * nothing is. A card called "waiting on you" that some people cannot open is
+ * a card that teaches people it is not for them.
+ */
+registry.category(HOME_LENSES).add("goals", {
+    key: "goals",
+    icon: "target",
+    label: _t("Goals"),
+    Component: PbGoalsHome,
+    groups: GOALS_ANYBODY,
+}, { sequence: 40 });
+
+palette.add("goals_checkins", {
+    id: "goals_checkins",
+    label: _t("Goal check-ins"),
+    sublabel: _t("Goals"),
+    icon: "calendar",
+    groups: GOALS_ANYBODY,
+    requires: "pb_goals_board",
+    action: { xmlid: "pb_goals.action_pb_goal_checkin" },
+}, { sequence: 3640 });
+
+palette.add("goals_changes", {
+    id: "goals_changes",
+    label: _t("Goal changes"),
+    sublabel: _t("Goals"),
+    icon: "repeat",
+    groups: GOALS_ANYBODY,
+    requires: "pb_goals_board",
+    action: { xmlid: "pb_goals.action_pb_goal_change" },
+}, { sequence: 3650 });
+
+palette.add("goals_numbers", {
+    id: "goals_numbers",
+    label: _t("Goal numbers"),
+    sublabel: _t("Insights"),
+    icon: "barChart",
+    groups: GOALS_GATE,
+    requires: "pb_goals_numbers",
+    action: { xmlid: "pb_goals.action_pb_goals_numbers" },
+}, { sequence: 3660 });
