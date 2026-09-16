@@ -894,18 +894,45 @@ class TestBoard(GoalsCase):
 @tagged('post_install', '-at_install')
 class TestGates(GoalsCase):
 
-    _JS = ('static/src/js/goals_board.js', 'static/src/js/goals_palette.js')
+    # EVERY FILE THIS MODULE SHIPS, AND THE LIST IS THE GATE (R146). A gate
+    # that names half the files checks half the files, and the half it misses
+    # is the half that was written last — which is exactly how a board shipped
+    # against an icon the registry did not have and drew a blank circle for
+    # two phases with nobody reporting it. B2's files are in these lists for
+    # that reason and any later phase adds its own here in the same change.
+    _JS = ('static/src/js/goals_board.js', 'static/src/js/goals_palette.js',
+           'static/src/js/goals_numbers.js', 'static/src/js/goals_home.js')
     _PY = ('models/goals_common.py', 'models/cycle.py', 'models/goal_set.py',
            'models/goal.py', 'models/kr.py', 'models/template.py',
            'models/goal_set_approval.py', 'models/approval_engine_ext.py',
            'models/journey_ext.py', 'models/automation.py',
            'models/pb_goals.py', 'models/pb_my_goals.py',
+           'models/checkin.py', 'models/review.py', 'models/scoring.py',
+           'models/change.py', 'models/change_approval.py',
+           'models/close.py', 'models/analytics.py',
+           'models/pb_goals_year.py', 'models/pb_goals_home.py',
+           'models/pb_my_goals_year.py',
            'controllers/portal.py', 'hooks.py', '__manifest__.py')
-    _XML = ('views/goal_views.xml', 'views/portal_templates.xml',
-            'data/mail_template_data.xml', 'data/ir_cron.xml',
+    _XML = ('views/goal_views.xml', 'views/goal_year_views.xml',
+            'views/portal_templates.xml', 'views/portal_templates_b2.xml',
+            'data/mail_template_data.xml', 'data/mail_template_b2.xml',
+            'data/ir_cron.xml', 'data/approval_process.xml',
+            'data/goal_band_data.xml',
             'data/journey_step.xml', 'security/pb_goals_security.xml',
             'security/pb_goals_rules.xml',
-            'static/src/xml/goals_board.xml')
+            'security/pb_goals_rules_b2.xml',
+            'static/src/xml/goals_board.xml',
+            'static/src/xml/goals_year.xml',
+            'static/src/xml/goals_numbers.xml',
+            'static/src/xml/goals_home.xml')
+    #: The OWL templates alone — the three gates below are about the compiled
+    #: template scope and not about XML in general.
+    _OWL = ('static/src/xml/goals_board.xml',
+            'static/src/xml/goals_year.xml',
+            'static/src/xml/goals_numbers.xml',
+            'static/src/xml/goals_home.xml')
+    _SCSS = ('static/src/scss/goals.scss',
+             'static/src/scss/portal_goals.scss')
 
     # ------------------------------------------------------------ the word
     def test_the_vendor_name_never_reaches_a_user_visible_string(self):
@@ -960,7 +987,7 @@ class TestGates(GoalsCase):
                                registry_src, re.M))
         self.assertIn('target', known)          # the registry really parsed
         used = set()
-        for name in self._JS + ('static/src/xml/goals_board.xml',):
+        for name in self._JS + self._OWL:
             source = _src(*name.split('/'))
             used |= set(re.findall(r"""\bic\(\s*['"]([A-Za-z0-9]+)['"]""",
                                    source))
@@ -994,20 +1021,31 @@ class TestGates(GoalsCase):
         live: the drawer simply never opened, with nothing on the screen.
         Anything a template needs that is not a property or a method of the
         component belongs in the component."""
-        source = _src('static', 'src', 'xml', 'goals_board.xml')
-        for name in ('Boolean', 'Object.', 'JSON.', 'Number(', 'String(',
-                     'parseInt', 'parseFloat', 'Array.'):
-            self.assertNotIn(
-                name, source,
-                'static/src/xml/goals_board.xml: `%s` is a JavaScript global '
-                'and an OWL template cannot see it' % name)
+        for template in self._OWL:
+            # R118 — THE GATE STRIPS COMMENTS BEFORE IT GREPS, and this is the
+            # third time on this programme that it has had to learn it. The
+            # rule binds what the template COMPILES; the comment beside it is
+            # the sentence that stops the next contributor reintroducing the
+            # bug, and it has to be able to name the thing it is warning
+            # about. The first version of this gate failed on its own warning.
+            source = re.sub(r'<!--.*?-->', '', _src(*template.split('/')),
+                            flags=re.S)
+            for name in ('Boolean', 'Object.', 'JSON.', 'Number(', 'String(',
+                         'parseInt', 'parseFloat', 'Array.'):
+                self.assertNotIn(
+                    name, source,
+                    '%s: `%s` is a JavaScript global and an OWL template '
+                    'cannot see it' % (template, name))
 
     def test_no_reserved_loop_variable_in_the_owl_template(self):
         """R1 — OWL reserves lt/gt/lte/gte as OPERATORS, and `t-as="lt"`
         compiles into a bare `<` that kills the whole template."""
-        source = _src('static', 'src', 'xml', 'goals_board.xml')
-        for bad in ('lt', 'gt', 'lte', 'gte', 'and', 'or', 'not', 'in'):
-            self.assertNotIn('t-as="%s"' % bad, source)
+        for template in self._OWL:
+            source = _src(*template.split('/'))
+            for bad in ('lt', 'gt', 'lte', 'gte', 'and', 'or', 'not', 'in'):
+                self.assertNotIn('t-as="%s"' % bad, source,
+                                 '%s: `%s` is an OWL operator and cannot be '
+                                 'a loop variable' % (template, bad))
 
     # ------------------------------------------------------------- the XML
     def test_every_xml_file_parses(self):
@@ -1030,7 +1068,8 @@ class TestGates(GoalsCase):
         """R128 — an inner `<group>` is a two-column grid and a label-less
         field takes the NARROW cell, so a description box comes out 150px
         wide with a thousand pixels of empty row beside it."""
-        for name in ('views/goal_views.xml',):
+        for name in ('views/goal_views.xml',
+                     'views/goal_year_views.xml'):
             tree = etree.parse(_path(*name.split('/')))
             for field in tree.iter('field'):
                 if field.get('nolabel') != '1':
@@ -1042,14 +1081,31 @@ class TestGates(GoalsCase):
                         '%s: <field name="%s" nolabel="1"> inside a <group> '
                         'needs colspan="2"' % (name, field.get('name')))
 
+
+    def test_no_inherited_view_selects_by_string(self):
+        """VIEW INHERITANCE MAY NOT SELECT BY `string` on this build, and it
+        is not a warning: *"View inheritance may not use attribute 'string' as
+        a selector"* ABORTS THE WHOLE MODULE LOAD. Worse, the error names the
+        CHILD view's own first line rather than the xpath that did it, so the
+        line number in the log points somewhere innocent."""
+        for name in self._XML:
+            tree = etree.parse(_path(*name.split('/')))
+            for node in tree.iter('xpath'):
+                expr = node.get('expr') or ''
+                self.assertNotIn(
+                    '@string', expr,
+                    '%s: an xpath selects by string (%s) — pick a `name`, a '
+                    'hasclass() or a structural anchor' % (name, expr))
+
     def test_no_search_group_carries_a_string_or_expand(self):
         """R129 — Odoo 19 search `<group>` takes NEITHER, and it does not warn:
         it fails RNG validation and ABORTS THE WHOLE MODULE LOAD."""
-        tree = etree.parse(_path('views', 'goal_views.xml'))
-        for search in tree.iter('search'):
-            for group in search.iter('group'):
-                self.assertIsNone(group.get('string'))
-                self.assertIsNone(group.get('expand'))
+        for name in ('views/goal_views.xml', 'views/goal_year_views.xml'):
+            tree = etree.parse(_path(*name.split('/')))
+            for search in tree.iter('search'):
+                for group in search.iter('group'):
+                    self.assertIsNone(group.get('string'), name)
+                    self.assertIsNone(group.get('expand'), name)
 
     def test_no_cron_row_carries_a_removed_column(self):
         """`numbercall` and `doall` were REMOVED from `ir.cron` on Odoo 19 and
@@ -1114,8 +1170,7 @@ class TestGates(GoalsCase):
     def test_no_mixed_unit_min_or_max_in_the_scss(self):
         """Sass evaluates `min()`/`max()` and a px/% pair kills the ENTIRE
         asset bundle, not just this file."""
-        for name in ('static/src/scss/goals.scss',
-                     'static/src/scss/portal_goals.scss'):
+        for name in self._SCSS:
             source = _src(*name.split('/'))
             for call in re.findall(r'\b(?:min|max)\(([^)]*)\)', source):
                 self.assertFalse(
@@ -1128,8 +1183,7 @@ class TestGates(GoalsCase):
         the 100% frame is the element's OWN computed value, which the same
         rule has just set to `opacity: 0`: the surface animates from
         invisible to invisible and stays there."""
-        for name in ('static/src/scss/goals.scss',
-                     'static/src/scss/portal_goals.scss'):
+        for name in self._SCSS:
             source = _src(*name.split('/'))
             for block in re.findall(r'@keyframes[^{]*\{(.*?)\n\}', source,
                                     re.S):

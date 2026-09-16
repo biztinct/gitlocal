@@ -43,11 +43,32 @@ WHAT THIS MODULE IS
     weights add up to, how far along everybody is. A manager sees their team;
     the HR team sees the company.
 
-WHAT IT DELIBERATELY DOES NOT DO YET. Monthly check-ins, the half-way review,
-formal change requests after the lock, the year-end score and the reports lens
-are the next piece of work and are not here.
+  * **A conversation every month.** One row a month per agreed sheet, planned
+    for the day of the month the goal year asks for. Either side writes it up,
+    and what the key results stood at that day is frozen onto it — so the
+    year-end conversation is about a record instead of two people's memories.
+  * **Fair to somebody who arrived in November.** Whether a person gets a
+    half-way review and an end-of-year score is worked out from the day their
+    goals actually start covering, once, and explained to them in a sentence
+    they are emailed and can read on their own page.
+  * **A way to change agreed goals.** A lock that cannot be opened is a lock
+    people work around. Ask, and the same two people who agreed the goals
+    decide it — then the goal says what changed and when, for ever.
+  * **A score that can be explained.** The manager marks each key result out
+    of five, a goal is the average of its key results, and the year is those
+    weighted by what each goal was worth. Nothing shows a number until every
+    mark is in.
+  * **The year, put away.** One press says how many sheets and what is
+    missing, freezes every figure, files the goals and tells everybody what
+    they came out at. Nothing is deleted and it can be undone.
+  * **The numbers.** Who is writing, who is talking, how far the work has got,
+    what people asked to change and how the scores came out — by manager and
+    by part of the business, with a spreadsheet.
+
+WHAT IT DELIBERATELY DOES NOT DO. Calibration and bell curves, any link to
+pay, and 360-degree feedback are not here and are not planned in this shape.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -62,6 +83,13 @@ are the next piece of work and are not here.
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_me_portal',         # the .pbme employee-page kit
         'pb_people_hub',        # the hub this lens joins
+        # B2's two other hubs. Both are JS imports of a soft lens registry —
+        # `INSIGHTS_LENSES` for the numbers and `HOME_LENSES` for the "waiting
+        # on you" card — and a registry you import is a dependency you have,
+        # whether or not the manifest says so. `pb_rnr` and `pb_decision_room`
+        # declare the same two for the same reason.
+        'pb_insights_hub',
+        'pb_home_hub',
         # The joining checklist the kick-off step is added to. Joined by a
         # KEY and not by code — `automation_key` is a plain Char and this
         # module registers its own handler — but the step is shipped as data
@@ -76,19 +104,29 @@ are the next piece of work and are not here.
         'security/pb_goals_security.xml',
         'security/ir.model.access.csv',
         'security/pb_goals_rules.xml',
+        'security/pb_goals_rules_b2.xml',
         'data/ir_cron.xml',
         'data/approval_process.xml',
+        'data/goal_band_data.xml',
         'data/mail_template_data.xml',
+        'data/mail_template_b2.xml',
         'data/journey_step.xml',
         'views/goal_views.xml',
+        'views/goal_year_views.xml',
         'views/portal_templates.xml',
+        'views/portal_templates_b2.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_goals/static/src/scss/goals.scss',
             'pb_goals/static/src/js/goals_board.js',
+            'pb_goals/static/src/js/goals_numbers.js',
+            'pb_goals/static/src/js/goals_home.js',
             'pb_goals/static/src/js/goals_palette.js',
             'pb_goals/static/src/xml/goals_board.xml',
+            'pb_goals/static/src/xml/goals_year.xml',
+            'pb_goals/static/src/xml/goals_numbers.xml',
+            'pb_goals/static/src/xml/goals_home.xml',
         ],
         'web.assets_frontend': [
             'pb_goals/static/src/scss/portal_goals.scss',
