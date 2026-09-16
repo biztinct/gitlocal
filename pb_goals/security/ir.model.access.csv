@@ -1,0 +1,30 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_goal_cycle_staff,Goal year — everybody reads the one they are in,model_pb_goal_cycle,base.group_user,1,0,0,0
+access_pb_goal_cycle_user,Goal year — goals administrator,model_pb_goal_cycle,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_cycle_manager,Goal year — HR lead,model_pb_goal_cycle,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_cycle_admin,Goal year — head of goals,model_pb_goal_cycle,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_set_staff,Goal sheet — mine and my team's,model_pb_goal_set,base.group_user,1,1,0,0
+access_pb_goal_set_portal,Goal sheet — my own on my own page,model_pb_goal_set,base.group_portal,1,1,0,0
+access_pb_goal_set_user,Goal sheet — goals administrator,model_pb_goal_set,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_set_manager,Goal sheet — HR lead,model_pb_goal_set,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_set_admin,Goal sheet — head of goals,model_pb_goal_set,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_staff,Goal — mine to write and my team's to read,model_pb_goal,base.group_user,1,1,1,1
+access_pb_goal_portal,Goal — my own on my own page,model_pb_goal,base.group_portal,1,1,1,1
+access_pb_goal_user,Goal — goals administrator,model_pb_goal,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_manager,Goal — HR lead,model_pb_goal,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_admin,Goal — head of goals,model_pb_goal,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_kr_staff,Key result — mine to write and my team's to read,model_pb_goal_kr,base.group_user,1,1,1,1
+access_pb_goal_kr_portal,Key result — my own on my own page,model_pb_goal_kr,base.group_portal,1,1,1,1
+access_pb_goal_kr_user,Key result — goals administrator,model_pb_goal_kr,pb_goals.group_goals_user,1,1,1,0
+access_pb_goal_kr_manager,Key result — HR lead,model_pb_goal_kr,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_kr_admin,Key result — head of goals,model_pb_goal_kr,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_kr_history_staff,Key result history — read the trail on mine,model_pb_goal_kr_history,base.group_user,1,0,0,0
+access_pb_goal_kr_history_portal,Key result history — read the trail on mine,model_pb_goal_kr_history,base.group_portal,1,0,0,0
+access_pb_goal_kr_history_user,Key result history — goals administrator,model_pb_goal_kr_history,pb_goals.group_goals_user,1,0,0,0
+access_pb_goal_kr_history_manager,Key result history — HR lead,model_pb_goal_kr_history,pb_goals.group_goals_manager,1,1,1,0
+access_pb_goal_kr_history_admin,Key result history — head of goals,model_pb_goal_kr_history,pb_goals.group_goals_admin,1,1,1,1
+access_pb_goal_template_staff,Goal template — everybody reads what they may use,model_pb_goal_template,base.group_user,1,0,0,0
+access_pb_goal_template_portal,Goal template — everybody reads what they may use,model_pb_goal_template,base.group_portal,1,0,0,0
+access_pb_goal_template_user,Goal template — goals administrator,model_pb_goal_template,pb_goals.group_goals_user,1,1,1,1
+access_pb_goal_template_manager,Goal template — HR lead,model_pb_goal_template,pb_goals.group_goals_manager,1,1,1,1
+access_pb_goal_template_admin,Goal template — head of goals,model_pb_goal_template,pb_goals.group_goals_admin,1,1,1,1
