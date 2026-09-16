@@ -646,8 +646,14 @@ class TestSchedules(AssignmentCase):
         self.assertEqual(set(rows.mapped('reason')), {'compliance'})
         self.assertEqual(rows[0].due_date,
                          fields.Date.today() + timedelta(days=30))
-        # and a second run the same night does nothing
+        # and a second run the same night does nothing AND does not move the
+        # date again — pressing "run it now" twice must not push a yearly
+        # course two years out
+        after = schedule.next_run
         self.assertEqual(self.Auto._run_schedules(fields.Date.today()), 0)
+        self.assertEqual(schedule.run_now(), 0)
+        schedule.invalidate_recordset()
+        self.assertEqual(schedule.next_run, after)
 
     def test_t8_somebody_who_had_already_finished_is_not_reassigned(self):
         """FOUND LIVE. An assignment for a course somebody had already

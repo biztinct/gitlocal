@@ -629,7 +629,7 @@
       <div t-if="state.assign" class="pbim-modal-scrim pbtn-scrim"
            t-on-click="closeAssign">
         <div class="pbim-modal pbtn-modal" t-on-click.stop="() => {}">
-          <div class="pbtn-modal-head">
+          <div class="pbtn-modal-head pbtn-modal-head--x">
             <div>
               <div class="pbim-eyebrow">Assign a course</div>
               <h2>Who has to do it, and by when</h2>

@@ -490,6 +490,24 @@
 
 // ------------------------------- the dialog's own rules, at the top level
 .pbtn-modal-act { display: flex; gap: 8px; }
+
+// A HEAD WITH A CLOSE BUTTON IN IT IS A ROW, and E1's is not: its dialogs
+// have a heading and a sub-line and nothing else, so `.pbtn-modal-head` is a
+// block. Adding a button to a block put the × on its own line UNDER the
+// heading, which reads as a second action rather than as a way out. Its own
+// modifier rather than a change to E1's rule, because E1's two dialogs still
+// want the block.
+.pbtn-modal-head--x {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px;
+
+    h2 {
+        margin: 5px 0 0; font-size: 18px; font-weight: 760;
+        color: var(--pbim-ink, #0F172A);
+    }
+    > button { flex: 0 0 auto; }
+}
+
 .pbtn-form {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 16px; margin-bottom: 16px;

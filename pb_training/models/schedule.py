@@ -224,12 +224,19 @@ class PbTrainingSchedule(models.Model):
                 _logger.warning('pb_training: schedule %s could not put %s on '
                                 'course %s', self.id, emp.id,
                                 self.channel_id.id, exc_info=True)
-        self.sudo().write({
-            'last_run': today,
-            'last_count': made,
-            'next_run': (self.next_run or today)
-            + relativedelta(months=max(self.every_months, 1)),
-        })
+        # THE DATE ONLY MOVES WHEN THE ROUND WAS ACTUALLY DUE, and it lands on
+        # the next date in the FUTURE. Rolling on every call meant pressing
+        # "run it now" twice pushed a yearly course two years out — and a
+        # schedule that had been missed for three years came back one year on
+        # and was immediately overdue again. Found live.
+        vals = {'last_run': today, 'last_count': made}
+        nxt = self.next_run or today
+        if nxt <= today:
+            step = relativedelta(months=max(self.every_months, 1))
+            while nxt <= today:
+                nxt += step
+            vals['next_run'] = nxt
+        self.sudo().write(vals)
         _logger.info('pb_training: schedule "%s" put %s %s on %s; next on %s',
                      self.name, made,
                      counted(made, 'person', 'people'),
