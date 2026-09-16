@@ -1074,6 +1074,44 @@ class TestE2Gates(TransactionCase):
                 wide, '%s has group rules but none for the training team'
                 % model)
 
+    def test_t1_every_portal_helper_is_module_prefixed(self):
+        """ALL `CustomerPortal` SUBCLASSES MERGE INTO ONE CLASS, so a private
+        helper named `_notice` here and `_notice` in another module are the
+        same attribute and whichever loads last silently wins.
+
+        Found live: E1's "Marked as done." confirmation had never appeared on
+        any page, because `pb_rnr`'s `_notice` was answering instead and had
+        never heard of the key — and E1's `_problem(self, kw)` had taken the
+        name `pb_offboarding` uses for `_problem(message)`, so a resignation
+        that failed called ours with a string. Nothing about either is visible
+        at runtime.
+
+        The route handlers are exempt: they are named after their routes and
+        are unique by construction.
+        """
+        import ast
+        src = _src('controllers', 'portal.py')
+        tree = ast.parse(src)
+        offenders = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            for item in node.body:
+                if not isinstance(item, (ast.FunctionDef,
+                                         ast.AsyncFunctionDef)):
+                    continue
+                name = item.name
+                if not name.startswith('_') or name.startswith('__'):
+                    continue
+                # a documented override of somebody else's hook is not a clash
+                if name.startswith('_prepare_') or name.startswith('_tr_'):
+                    continue
+                offenders.append(name)
+        self.assertFalse(
+            offenders,
+            'these portal helpers are not module-prefixed and will collide '
+            'with another module sooner or later: %s' % offenders)
+
     def test_t1_the_portal_stylesheet_still_resolves_every_colour(self):
         src = _src('static', 'src', 'scss', 'portal_training.scss')
         self.assertFalse(re.findall(r'var\(--[a-z0-9-]+\)', src),

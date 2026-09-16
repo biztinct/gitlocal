@@ -62,18 +62,34 @@ def _locked_sentence(left):
 
 
 class PbTrainingPortal(CustomerPortal):
+    """EVERY HELPER HERE IS MODULE-PREFIXED, and that is not a style choice.
+
+    ALL `CustomerPortal` SUBCLASSES MERGE INTO ONE CLASS. A helper called
+    `_notice` here and `_notice` in `pb_rnr` are the same attribute on the same
+    class, and whichever module loads last silently wins — so E1's "Marked as
+    done." confirmation never once appeared on a live page, because the praise
+    module's `_notice` was answering instead and had never heard of the key.
+    Worse in the other direction: E1's `_problem(self, kw)` took the name
+    `pb_offboarding` uses for `_problem(message)`, so a resignation that failed
+    called our method with a string and died on `kw.get`.
+
+    Nothing about either is visible at runtime. `pb_rnr` learnt it the same way
+    (its `_rnr_card` docstring records the `_card` clash that took three portal
+    pages down) and the rule it wrote down is this one: on a portal controller,
+    a private helper carries the module's own prefix.
+    """
 
     # --------------------------------------------------------------- helpers
-    def _training(self):
+    def _tr_facade(self):
         return request.env['pb.my.training']
 
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
         if 'training_count' in counters:
-            values['training_count'] = self._training().home_count()
+            values['training_count'] = self._tr_facade().home_count()
         if 'training_team_count' in counters:
             values['training_team_count'] = \
-                self._training().team_overdue_count()
+                self._tr_facade().team_overdue_count()
         return values
 
     # =================================================================
@@ -81,15 +97,15 @@ class PbTrainingPortal(CustomerPortal):
     # =================================================================
     @http.route(['/my/training'], type='http', auth='user', website=True)
     def portal_my_training(self, **kw):
-        data = self._training().home()
+        data = self._tr_facade().home()
         return request.render('pb_training.portal_my_training', {
             'page_name': 'training',
             'me': data,
-            'notice': self._notice(kw.get('ok')),
+            'notice': self._tr_notice(kw.get('ok')),
             'problem': _PROBLEMS.get(kw.get('problem') or '', ''),
         })
 
-    def _notice(self, key):
+    def _tr_notice(self, key):
         return {
             'done': _("Marked as done."),
             'enrolled': _("You are on the course."),
@@ -104,18 +120,18 @@ class PbTrainingPortal(CustomerPortal):
     @http.route(['/my/training/<int:channel_id>'], type='http', auth='user',
                 website=True)
     def portal_training_course(self, channel_id, **kw):
-        course = self._training().course(channel_id)
+        course = self._tr_facade().course(channel_id)
         if not course:
             return request.redirect('/my/training?problem=mine')
         return request.render('pb_training.portal_training_course', {
             'page_name': 'training',
             'course': course,
-            'highlight': self._int(kw.get('from')),
-            'notice': self._notice(kw.get('ok')),
-            'problem': self._problem(kw),
+            'highlight': self._tr_int(kw.get('from')),
+            'notice': self._tr_notice(kw.get('ok')),
+            'problem': self._tr_problem(kw),
         })
 
-    def _problem(self, kw):
+    def _tr_problem(self, kw):
         """The sentence for a refusal code, or nothing.
 
         Anything the query string does not match a code with is nothing at
@@ -124,11 +140,11 @@ class PbTrainingPortal(CustomerPortal):
         """
         code = kw.get('problem') or ''
         if code == 'locked':
-            return _locked_sentence(self._int(kw.get('left')))
+            return _locked_sentence(self._tr_int(kw.get('left')))
         return _PROBLEMS.get(code, '')
 
     @staticmethod
-    def _int(value):
+    def _tr_int(value):
         try:
             return int(value or 0)
         except (TypeError, ValueError):
@@ -140,7 +156,7 @@ class PbTrainingPortal(CustomerPortal):
     @http.route(['/my/training/<int:channel_id>/<int:slide_id>'],
                 type='http', auth='user', website=True)
     def portal_training_lesson(self, channel_id, slide_id, **kw):
-        lesson = self._training().lesson(channel_id, slide_id)
+        lesson = self._tr_facade().lesson(channel_id, slide_id)
         if not lesson:
             return request.redirect('/my/training?problem=mine')
         return request.render('pb_training.portal_training_lesson', {
@@ -162,7 +178,7 @@ class PbTrainingPortal(CustomerPortal):
                 type='http', auth='user', website=True, methods=['POST'])
     def portal_training_done(self, channel_id, slide_id, **post):
         try:
-            self._training().mark_done(channel_id, slide_id)
+            self._tr_facade().mark_done(channel_id, slide_id)
         except UserError:
             return request.redirect('/my/training/%s/%s?problem=quiz'
                                     % (channel_id, slide_id))
@@ -176,7 +192,7 @@ class PbTrainingPortal(CustomerPortal):
         # STRAIGHT ON TO THE NEXT ONE, and back to the course when there is no
         # next one. A person who has just finished a lesson wants the next
         # lesson, not the page they were already on with a tick added to it.
-        nxt = self._int(post.get('next_id'))
+        nxt = self._tr_int(post.get('next_id'))
         if nxt:
             return request.redirect('/my/training/%s/%s' % (channel_id, nxt))
         return request.redirect('/my/training/%s?ok=done&from=%s'
@@ -196,16 +212,16 @@ class PbTrainingPortal(CustomerPortal):
         for key, value in (post or {}).items():
             if not key.startswith('q'):
                 continue
-            chosen.append(self._int(value))
+            chosen.append(self._tr_int(value))
         try:
-            result = self._training().answer_quiz(channel_id, slide_id, chosen)
+            result = self._tr_facade().answer_quiz(channel_id, slide_id, chosen)
         except AccessError:
             return request.redirect('/my/training?problem=mine')
         except UserError:
             return request.redirect('/my/training/%s/%s?problem=lesson'
                                     % (channel_id, slide_id))
         if result.get('passed'):
-            nxt = self._int(post.get('next_id'))
+            nxt = self._tr_int(post.get('next_id'))
             if nxt:
                 return request.redirect('/my/training/%s/%s'
                                         % (channel_id, nxt))
@@ -213,7 +229,7 @@ class PbTrainingPortal(CustomerPortal):
                                     % (channel_id, slide_id))
         # A wrong answer RE-RENDERS rather than redirecting, so the marks
         # against the questions they got wrong survive the round trip.
-        lesson = self._training().lesson(channel_id, slide_id)
+        lesson = self._tr_facade().lesson(channel_id, slide_id)
         if not lesson:
             return request.redirect('/my/training?problem=mine')
         return request.render('pb_training.portal_training_lesson', {
@@ -230,7 +246,7 @@ class PbTrainingPortal(CustomerPortal):
     @http.route(['/my/training/<int:channel_id>/test'], type='http',
                 auth='user', website=True, methods=['POST'])
     def portal_training_test(self, channel_id, **post):
-        answer = self._training().start_test(channel_id)
+        answer = self._tr_facade().start_test(channel_id)
         if answer.get('url'):
             return request.redirect(answer['url'])
         if answer.get('code') == 'mine':
@@ -238,7 +254,7 @@ class PbTrainingPortal(CustomerPortal):
         if answer.get('code') == 'locked':
             return request.redirect(
                 '/my/training/%s?problem=locked&left=%s'
-                % (channel_id, self._int(answer.get('left'))))
+                % (channel_id, self._tr_int(answer.get('left'))))
         return request.redirect('/my/training/%s?problem=%s'
                                 % (channel_id, answer.get('code') or 'denied'))
 
@@ -255,14 +271,14 @@ class PbTrainingPortal(CustomerPortal):
         form buys nothing, exactly as the course id in a URL buys nothing.
         """
         back = '/my/training'
-        channel_id = self._int(post.get('channel_id'))
+        channel_id = self._tr_int(post.get('channel_id'))
         if channel_id:
             back = '/my/training/%s' % channel_id
         try:
-            self._training().ask_more_time(
-                self._int(post.get('assignment_id')),
+            self._tr_facade().ask_more_time(
+                self._tr_int(post.get('assignment_id')),
                 post.get('reason_kind') or 'other',
-                self._int(post.get('days_asked')),
+                self._tr_int(post.get('days_asked')),
                 (post.get('note') or '')[:2000])
         except (AccessError, UserError) as err:
             _logger.info('pb_training: a request for more time was refused '
@@ -283,18 +299,18 @@ class PbTrainingPortal(CustomerPortal):
         somebody who manages nobody is told so rather than shown an empty
         table they will read as a fault.
         """
-        team = self._training().team()
+        team = self._tr_facade().team()
         return request.render('pb_training.portal_training_team', {
             'page_name': 'training',
             'team': team,
-            'notice': self._notice(kw.get('ok')),
-            'problem': self._problem(kw),
+            'notice': self._tr_notice(kw.get('ok')),
+            'problem': self._tr_problem(kw),
         })
 
     @http.route(['/my/training/<int:channel_id>/certificate'], type='http',
                 auth='user', website=True)
     def portal_training_certificate(self, channel_id, **kw):
-        answer = self._training().certificate_url(channel_id)
+        answer = self._tr_facade().certificate_url(channel_id)
         if answer.get('url'):
             return request.redirect(answer['url'])
         if answer.get('code') == 'mine':
