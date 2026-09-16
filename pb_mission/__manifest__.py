@@ -75,7 +75,11 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # 19.0.1.6.0 — IA Cycle 6: the workspace accepts `pb_cmd` on ARRIVAL, so a
     # foreign cockpit can deep link to a lens's own sub-view (Insights' bonus
     # tile → the Overtime desk's bonus review) instead of only to the lens.
-    'version': '19.0.1.9.0',
+    # 19.0.1.10.0 — RIZE W2 D1: the soft lens registry `pb_mission_lens`. A
+    # later module bolts a lens onto this workspace without editing it, exactly
+    # as every other hub in the product already allows — with the dependency
+    # running the other way, so the guests name the category by its string.
+    'version': '19.0.1.10.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

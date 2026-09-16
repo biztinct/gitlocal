@@ -198,6 +198,44 @@ const LENSES = [
 
 const LENS_KEYS = LENSES.map((l) => l.key);
 
+/**
+ * WHERE A LATER MODULE BOLTS A LENS ONTO MISSION CONTROL.
+ *
+ *     registry.category(MISSION_LENSES).add("holidays", {
+ *         key, icon, label, Component, groups,
+ *         props,      // optional, handed to the component verbatim
+ *         features,   // optional context-bar map; default: every segment off
+ *         ownsPersonDrawer,  // optional; default false
+ *     }, { sequence: 20 });
+ *
+ * A REGISTRY rather than an import, and here the direction of the dependency is
+ * the OPPOSITE of every other hub's — which is why the seam matters more, not
+ * less. `pb_mission` DEPENDS ON its seven guests (`pb_today`, `pb_timeoff`,
+ * `pb_driver_checkin` through `pb_today`, …), so a guest can never import this
+ * file back: the manifest graph would be a cycle. Those modules therefore name
+ * the category by its literal string and each carries a test that reads THIS
+ * file and asserts the two spellings still agree.
+ *
+ * The eight shipped lenses carry no sequence, so bolted-on ones start at 20 and
+ * land after them, in registration order.
+ *
+ * An unknown remembered lens key falls back on its own: `_restoreLens` only
+ * accepts a key it can see, and `_resolveAccess` moves off any lens this
+ * persona may not read. A module that is not installed contributes nothing and
+ * nothing errors.
+ */
+export const MISSION_LENSES = "pb_mission_lens";
+
+/**
+ * The context-bar map a bolted-on lens gets unless it says otherwise — one
+ * MODULE-LEVEL object shared by all of them, for exactly the reason the eight
+ * literals above are module-level: it is handed to <WfContextBar/> as a prop,
+ * and a fresh literal would make OWL recreate the bar on every render.
+ */
+const NO_FEATURES = {
+    department: false, week: false, person: false, day: false, search: false,
+};
+
 export class PbMission extends Component {
     static template = "pb_mission.PbMission";
     static components = {
@@ -224,6 +262,14 @@ export class PbMission extends Component {
         // nothing), and `workforceOff` touches it below.
         const feats = featuresState(this.env);
         this._features = feats ? useState(feats) : null;
+
+        // Resolved ONCE, before anything reads a lens key — `_arrival()` and
+        // `_restoreLens()` both run in this setup and both have to be able to
+        // see a bolted-on lens, or a deep link to one would be discarded as an
+        // unknown key. Never in a getter (W21): a fresh array per render would
+        // recreate every guest component on every keystroke.
+        this.allLenses = [...LENSES, ...this.extraLenses()];
+        this.allKeys = this.allLenses.map((l) => l.key);
 
         const arrival = this._arrival();
 
@@ -357,6 +403,32 @@ export class PbMission extends Component {
 
     ic(n, s = 17) { return ic(n, s); }
 
+    /**
+     * Lenses other modules registered, resolved ONCE in setup (never a getter).
+     *
+     * Everything a registration does not say is filled in here rather than at
+     * the call sites, so a bolted-on lens is indistinguishable from a shipped
+     * one everywhere below: the rail, the gate resolution, the arrival routing
+     * and the canvas all read one list.
+     */
+    extraLenses() {
+        return registry.category(MISSION_LENSES).getAll().map((def) => ({
+            key: def.key,
+            icon: def.icon || "circle",
+            label: def.label || def.key,
+            groups: def.groups || [],
+            features: def.features || NO_FEATURES,
+            ownsPersonDrawer: !!def.ownsPersonDrawer,
+            Component: def.Component,
+            props: def.props || { embedded: true },
+        }));
+    }
+
+    /** The bolted-on lenses the canvas draws, in rail order. */
+    get extraLensDefs() {
+        return this.allLenses.filter((l) => l.Component);
+    }
+
     // --------------------------------------------------------------- arrival
     /**
      * What the action that opened the shell asked for.
@@ -371,7 +443,7 @@ export class PbMission extends Component {
      */
     _arrival() {
         const ctx = (this.props.action && this.props.action.context) || {};
-        const lens = LENS_KEYS.includes(ctx.pb_shell_lens) ? ctx.pb_shell_lens : null;
+        const lens = this.allKeys.includes(ctx.pb_shell_lens) ? ctx.pb_shell_lens : null;
         const fwd = {};
         if (ctx.pb_lens) { fwd.pb_lens = ctx.pb_lens; }
         if (ctx.pb_focus) { fwd.pb_focus = ctx.pb_focus; }
@@ -397,7 +469,9 @@ export class PbMission extends Component {
     _restoreLens() {
         try {
             const v = window.localStorage.getItem(LENS_KEY);
-            if (LENS_KEYS.includes(v)) { return v; }
+            // A remembered key whose module has since gone falls through to
+            // Today rather than opening a lens that is not on the rail.
+            if (this.allKeys.includes(v)) { return v; }
         } catch { /* private mode */ }
         // Today: the workspace opens on the question the officer arrives with.
         return "today";
@@ -419,21 +493,21 @@ export class PbMission extends Component {
      * reason. Nothing here is a security boundary; every facade keeps its own.
      */
     async _resolveAccess() {
-        const names = [...new Set(LENSES.flatMap((l) => l.groups))];
+        const names = [...new Set(this.allLenses.flatMap((l) => l.groups))];
         const flags = {};
         await Promise.all(names.map(async (g) => {
             try { flags[g] = await user.hasGroup(g); }
             catch { flags[g] = true; }
         }));
         const allowed = {};
-        for (const l of LENSES) {
+        for (const l of this.allLenses) {
             allowed[l.key] = !l.groups.length || l.groups.some((g) => flags[g]);
         }
         this.state.allowed = allowed;
         // Never open on a lens this persona cannot read — a remembered lens or a
         // stale deep link would otherwise land them on an error state.
         if (!allowed[this.state.lens]) {
-            const first = LENSES.find((l) => allowed[l.key]);
+            const first = this.allLenses.find((l) => allowed[l.key]);
             if (first) { this.state.lens = first.key; }
         }
     }
@@ -456,20 +530,22 @@ export class PbMission extends Component {
             approvals: _t("Approvals"),
         };
         const allowed = this.state.allowed;
-        return LENSES
+        return this.allLenses
             .filter((l) => !allowed || allowed[l.key])
-            .map((l) => ({ key: l.key, icon: l.icon, label: labels[l.key] }));
+            .map((l) => ({ key: l.key, icon: l.icon,
+                           label: labels[l.key] || l.label }));
     }
 
     get lensDef() {
-        return LENSES.find((l) => l.key === this.state.lens) || LENSES[0];
+        return this.allLenses.find((l) => l.key === this.state.lens)
+            || this.allLenses[0];
     }
 
     /** The per-lens context map — a STABLE object per lens (see LENSES). */
     get features() { return this.lensDef.features; }
 
     setLens(key) {
-        if (!LENS_KEYS.includes(key) || this.state.lens === key) { return; }
+        if (!this.allKeys.includes(key) || this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
         this.state.lens = key;
         try { window.localStorage.setItem(LENS_KEY, key); } catch { /* private mode */ }

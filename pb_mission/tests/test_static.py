@@ -47,6 +47,15 @@ _LENSES = [
 ]
 
 
+def _lenses_block(js):
+    """Just the `const LENSES = [...]` literal — the eight lenses this shell
+    SHIPS. Anything a later module bolts on through `MISSION_LENSES` is that
+    module's promise, not this one's, and the gates below must not read it."""
+    start = js.index('const LENSES = [')
+    end = js.index('\n];', start)
+    return js[start:end]
+
+
 def _walk(module, suffixes, skip_tests=False):
     path = get_module_path(module)
     if not path:
@@ -232,6 +241,58 @@ class TestMissionStaticGates(TransactionCase):
         self.assertEqual(
             xml.count('embedded="true"'), len(_LENSES),
             'every lens must be mounted with embedded="true" (W17)')
+
+    # --------------------------------------------- the soft lens registry (D1)
+    def test_a_later_module_can_bolt_a_lens_on_without_editing_this_shell(self):
+        """D1's seam, and the five pieces that make it one.
+
+        Every other hub in the product grew this registry when a module above
+        it needed a lens (R73 pb_payhub, R83 pb_home_hub, R96 pb_insights_hub,
+        R119 pb_settings over categories). Mission Control is the LAST one and
+        the awkward one, because the dependency runs the other way: this module
+        DEPENDS on its seven guests, so a guest can never import this file back.
+        The category name is therefore exported for anything above, and the
+        guests below name the literal string with a gate of their own.
+
+        Five things have to be true together and each fails silently on its
+        own: the category is EXPORTED by name; the list is resolved ONCE in a
+        method rather than in a getter; setup SPREADS it into the one list the
+        rail, the gates and the router all read; the canvas draws a generic
+        branch for it; and the shipped literal is untouched.
+        """
+        js, xml = self._js(), self._xml()
+        self.assertIn('export const MISSION_LENSES = "pb_mission_lens"', js,
+                      'the lens registry category must be exported by name')
+        self.assertIn('extraLenses() {', js,
+                      'lenses are resolved ONCE in a method, never in a getter')
+        self.assertNotIn('get extraLenses', js,
+                         'a getter would rebuild the lens list on every render')
+        self.assertIn('this.allLenses = [...LENSES, ...this.extraLenses()]', js,
+                      'setup must spread the registered lenses into one list')
+        self.assertIn('t-component="xl.Component"', xml,
+                      'the canvas needs one generic branch for bolted-on lenses')
+        self.assertIn('state.lens === xl.key', xml,
+                      'and it is gated on the same state.lens as the eight')
+
+    def test_every_lens_reader_asks_the_whole_list(self):
+        """The bug this gate exists for: a rail that shows a bolted-on lens
+        while `setLens` still checks the shipped array is a button that does
+        nothing, and a deep link to one is discarded as an unknown key. Every
+        reader moved onto `allLenses` / `allKeys` in the same change."""
+        js = self._js()
+        body = js[js.index('export class PbMission'):]
+        self.assertNotIn('LENS_KEYS.includes', body,
+                         'key tests must read allKeys, not the shipped array')
+        self.assertNotIn('LENSES.find', body,
+                         'lens lookup must read allLenses')
+        self.assertNotIn('LENSES.flatMap', body,
+                         'the gate resolution must read allLenses')
+        for needle in ('this.allKeys.includes(ctx.pb_shell_lens)',
+                       'this.allKeys.includes(v)',
+                       'this.allKeys.includes(key)',
+                       'this.allLenses.flatMap',
+                       'this.allLenses.find'):
+            self.assertIn(needle, js, '%s is missing' % needle)
 
     def test_the_shell_owns_exactly_one_context_bar(self):
         """W4/W6: the whole point is one selection, everywhere. Two bars would be
@@ -558,8 +619,15 @@ class TestMissionStaticGates(TransactionCase):
         js, xml = self._js(), self._xml()
         self.assertEqual(js.count('person: true'), 0,
                          'the context bar no longer owns the search')
-        self.assertEqual(js.count('person: false'), len(_LENSES),
-                         'every lens must say so explicitly')
+        # Counted inside the SHIPPED table only. D1 added a module-level
+        # `NO_FEATURES` for bolted-on lenses, which carries the same line for
+        # the same reason — a stable object, never a fresh literal per render —
+        # and counting the whole file would make this gate fail on a rule it
+        # agrees with.
+        self.assertEqual(_lenses_block(js).count('person: false'), len(_LENSES),
+                         'every shipped lens must say so explicitly')
+        self.assertIn('person: false', js[js.index('const NO_FEATURES'):],
+                      'the bolted-on default must say so too')
         self.assertIn('openPalette()', xml)
         self.assertIn('class="pbms-pin"', xml,
                       'the pinned person must stay visible on the bar')

@@ -143,6 +143,23 @@
                          onOpenPerson="_h.onDockPerson"/>
           </div>
 
+          <!-- ================ bolted-on lenses (MISSION_LENSES) ============
+               ONE generic branch for every lens a later module registers, so
+               adding a lens to this workspace never means editing this file
+               again. The component and its props come from the registration;
+               `props` carries `embedded: true` by default, resolved once in
+               `extraLenses()` so the object identity is stable across renders
+               (W21).
+
+               Its own `t-if`, never part of a t-elif chain with the eight
+               above (W23), and `t-key` on the foreach so switching lens
+               remounts exactly as it does for a shipped one. -->
+          <t t-foreach="extraLensDefs" t-as="xl" t-key="xl.key">
+            <div class="pbms-lens" t-if="state.lens === xl.key">
+              <t t-component="xl.Component" t-props="xl.props"/>
+            </div>
+          </t>
+
           <!-- ================== the shell person surface ==================
                ONE drawer for the four lenses that do not bring their own
                (`ownsPersonDrawer` in LENSES). It lives INSIDE the canvas
