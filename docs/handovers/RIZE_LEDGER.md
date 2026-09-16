@@ -267,7 +267,7 @@ without owner approval between them.
 | X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | **DONE** (live on `payobook`, 19.0.1.2.0 — INSTALLED, the only module whose state changed; T1–T11 pass; every customer-named demo row renamed and the whole programme's demo data on one register — see R161–R168) |
 | E1 | pb_training — the learner flow (`/my/training`), the Training lens on a new Learn hub, the door on the public course site, the white-label sweep | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass, 62 unit tests green; `survey` + `website_slides_survey` installed per D15 and TWO auto-install modules came with them — see R173; six live-only defects found and fixed — R171–R180). **Owner checkpoint: the learner flow is waiting to be looked at.** |
 | E2 | pb_training — assignments (day-one / trial period / compliance / one-off / leadership), the chasing and its escalation, "ask for more time" through the Matrix, the trial-period link, compliance schedules, the day-one checklist step, the four new board tabs, due dates + a team page on `/my/training` | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T13 pass, 168 unit tests green; the stock sample courses deleted first under D19; seven live-only defects found and fixed — R182–R190; one additive edit to `pb_demo_seed`, its own commit) |
-| E3 | pb_training | not started |
+| E3 | pb_training — the training allowance and the cost claim, the Matrix route, the award on the one money door, certificates in the vault, the Training lens on Insights with a spreadsheet, and the weekly/monthly pack | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T10 pass, 246 unit tests green; five live-only defects found and fixed — R192–R196; one real pay run touched and reported, R199) |
 | B1–B2 | pb_goals | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
 | C1 | pb_hr_comm | not started |
@@ -2002,3 +2002,113 @@ without owner approval between them.
   about what may be registered stays in `_register_row`. Additive,
   Python-only, no manifest bump (`pb_demo_seed` 19.0.1.2.0): rsync and
   restart.
+
+### E3 (pb_training — the allowance, the claim, the money and the numbers, 2026-09-16)
+
+- **R192 — A `date_field` ON A CHAIN REGISTRATION DECIDES WHO IS ASKED, not
+  just when.** The shim's `_chain_date()` reads the field named in
+  `register_chain(..., date_field=...)` and the engine hands that date to
+  `biz.approval.responsibility.resolve(..., on_date)` — so naming a HISTORICAL
+  field asks "who held this seat back then". A training claim's `paid_on` is
+  the day somebody paid a college, which on a real claim is weeks or months
+  earlier; the request went straight to **blocked** with *"Nobody holds HR lead
+  for Payobook Vietnam JSC yet"* over a seat that was sitting right there with
+  the right person in it, and the Agree button did nothing at all with no error
+  anywhere. The seat on this database starts 15 September and the claim was
+  paid for on 20 August. **An approval asks who holds the seat NOW**, because
+  now is when the decision is being made — which is also what the engine's own
+  `repair()` does when it unsticks a blocked request (`engine.py:1495` uses
+  `context_today`). Name a date field only when the people are genuinely meant
+  to be resolved as of a date in the past. E3 dropped it; `repair()` unstuck
+  the one request that had already blocked.
+- **R193 — A SEAT IS A READ **AND A WRITE**, and read-only produces the worst
+  outcome there is.** `rule_claim_seat` shipped `perm_write="False"` on the
+  reasoning AM60 had recorded — being asked to decide something is not
+  permission to change it. Live, the HR lead pressed Agree, the ROUTE recorded
+  the approval, and the claim stayed on "Waiting on the HR lead": the engine
+  writes the record's own status AS THE PERSON WHO DECIDED, and that person
+  could not write to the record. Nothing was on any screen; the reason was
+  inside the request's own `block_reason` — *"Ngô Bảo Lâm (id=2326) doesn't
+  have 'write' access to: Training cost claim"*. An approval that
+  half-happens is worse than one that is refused. The narrowing belongs in the
+  DOMAIN (`seat_user_ids` is written by the engine and holds only the people it
+  asked about that one record) and never in the permission; create and delete
+  stay shut. **`rule_delay_seat` had the same shape** and escapes it only
+  because a delay's one rung is the person's own manager, whom
+  `rule_delay_mine` already gives write — both were corrected. And because
+  these rules live in a `noupdate="1"` block, **an upgrade cannot correct them
+  on a database that already has them**: the fix travels in
+  `migrations/19.0.1.2.0/post-claims.py`, by xmlid, and only where the rule is
+  still exactly as it shipped.
+- **R194 — `t-else` IS A BRANCH THAT CLAIMS EVERY TAB NOBODY HAS WRITTEN
+  YET.** The board's five tabs ended `t-if / t-elif ×3 / t-else`, with Day one
+  as the catch-all. E3 added a sixth, and Claims rendered UNDERNEATH Day one —
+  both panels, at once, on a screen that otherwise looked perfectly normal. A
+  chain of tabs names every one of them and has no `t-else` at the end.
+- **R195 — A TAB IS DRAWN BEFORE ITS OWN PAYLOAD ARRIVES.** `setTab` writes
+  `state.tab` and OWL re-renders AT ONCE — before the `await` that fetches the
+  tab's data has resolved — so the new panel is rendered once over whatever the
+  INITIAL state holds. `cPack: {}` made `state.cPack.to.length` throw *Cannot
+  read properties of undefined*, which the theme shows as the generic
+  "Something went wrong on our side" dialog with nothing useful in the console
+  (R125's dialog, reached from a new direction). Every collection in a tab's
+  initial state is a collection, and every nested object carries the keys the
+  template reads.
+- **R196 — THE KIT'S `.pbim-stats` CARRIES NO COLUMNS.** It is
+  `display: grid; gap: 12px` and nothing else (`import_kit.scss:93`); every
+  consumer sets its own `grid-template-columns`. A lens that forgets gets one
+  column of full-width rows, which looks like a broken grid rather than a
+  missing rule — six KPI tiles down the left of a 1,500px screen. Found on the
+  Insights Training lens; the board's own `.pbtn-kpis` had it right and was
+  the tell.
+- **R197 — the claim → award → payslip chain, in one paragraph.** An employee
+  raises a claim on `/my/training/claims` with a receipt and a certificate. The
+  Approval Matrix route `training_claim` (one rung, the **HR lead**) decides
+  it. On agreement the claim raises exactly ONE `pb.incentive` of the new kind
+  **`training`**, created already `approved` with `fulfilment = pending` and
+  `period_month` = **the month it was agreed in** (R81: the awards dialog picks
+  by the RUN's month, and `paid_on` can be nine months old), files the
+  uploaded certificate in the employee's vault, and emails them. It stops
+  there. The money moves when somebody puts that award into a pay run from the
+  Awards lens — `pb.oneoff.feed.preview_for_run` → `queue_for_run` — which
+  writes the amount under the scheme's `INCENTV` input component and is
+  idempotent by construction. The claim's `fulfilment` column FOLLOWS the
+  award (`pending` → `queued` → `paid`) through a `write` hook on
+  `pb.incentive` and never leads it. **Nothing in `pb_training` writes a
+  payslip**, and a unit test walks the module's own source to prove it.
+- **R198 — ⌘K, lens and settings numbers after E3.** E3 stayed inside E1's
+  **3900** block: `training_claims` **3960** ("Training claims") and
+  `training_numbers` **3970** ("Training numbers", sublabel *Insights*). B1
+  still starts at **3600**. The Insights hub's four shipped lenses carry no
+  sequence, so bolted-on ones start at 20 — Budget 20 (P9), Hiring 30 (A3),
+  **Training 40** (E3), which is also the right reading order: what a role was
+  budgeted to cost, how long it took to fill, what the person was trained on.
+  "Training" is one word of eight characters and measures comfortably inside
+  the 60px rail label box (R63). This module ships no Settings category: its
+  four dials are `ir.config_parameter` rows and its two tables have their own
+  ⌘K doors.
+- **R199 — the E3 test cast and what was put back.** Demo data stays, every row
+  is named DEMO and every row is on the register (rule 9): **8 rows added to
+  "DEMO HR programme data", which now holds 1,051.** New: allowances **23**
+  (Payobook Vietnam JSC, 2026, 5,000,000 ₫ each person) and **24** (Thái Ngọc
+  Diệp's own, 8,000,000 ₫); claims **54** (Thái Ngọc Diệp, DEMO Advanced
+  spreadsheets for finance, 2,500,000 ₫ — raised on the real portal form,
+  agreed by the HR lead) and **57** (Hồ Thị Trâm, DEMO Food safety refresher,
+  1,200,000 ₫ — typed up by HR, agreed, and the one the money door was proved
+  with); awards **50** and **51**; vault documents **143** (the claim's
+  uploaded certificate) and **145** (the certification PDF for the course Ngô
+  Bảo Lâm passed in E1, filed by the same call the completion hook makes).
+  **A REAL PAY RUN WAS TOUCHED and it is an owner item:** award 51 was queued
+  into run **339** "Demo Payroll June 2026 — Retail" (draft), which put
+  `INCENTV = 1,200,000` on payslip **140174** (Hồ Thị Trâm). The run was NOT
+  confirmed and NOT paid. **Two things were borrowed and both were put back:**
+  `pb_training.group_training_manager` on uid 2065, and the company-5 `hr_lead`
+  seat (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7, so a
+  route could be decided without emailing the owner. Verified group-for-group
+  against a snapshot taken before the first write: all four accounts identical.
+  **No password was reset.** Two claims were made in a dead-end state while
+  R192 and R193 were being found (55 and 56, both minutes old, neither ever
+  outside this session) and were remade rather than repaired. Every mail this
+  phase queued went to an `@example.com` address or to the engine's own
+  approver notifications; all twelve were cancelled in the same session and the
+  outgoing queue is empty.
