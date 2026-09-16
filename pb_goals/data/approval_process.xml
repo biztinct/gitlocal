@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE ONE CATALOGUE ROW THIS MODULE OWNS.
+
+         Every row in the approval catalogue is created by the module that
+         owns the business object, so the catalogue can never claim something
+         is wired up when it is not. That is also what keeps the dependency
+         honest: this module depends on the ENGINE and never on the screen
+         that displays these rows (ledger AM52).
+
+         WITHOUT THIS ROW NOTHING VISIBLY BREAKS, which is why it is worth a
+         comment. `Seed.lay` refuses with one INFO line — "no goal_set row in
+         the catalogue yet" — the install carries on perfectly happily, the
+         module reports success, and a goal sheet sent in simply never reaches
+         anybody's inbox. Found exactly that way on the first live install.
+
+         SEQUENCE 246 puts it with the other people processes and straight
+         after the two training ones, which is where somebody setting up who
+         signs off what will look for it.
+
+         `noupdate="1"` so a business that has reworded or re-sequenced this on
+         a live database keeps its wording.
+         ================================================================== -->
+
+    <record id="process_goal_set" model="biz.approval.process">
+        <field name="key">goal_set</field>
+        <field name="name">Goal sheet</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.goal.set</field>
+        <field name="description">Somebody's goals for the year: what they are going to do, what matters most out of a hundred, and the key results that say whether each one was met.</field>
+        <field name="sequence">246</field>
+    </record>
+
+</odoo>
