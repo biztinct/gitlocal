@@ -1,0 +1,566 @@
+// =====================================================================
+//  The Goals lens — .pbgl-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stats,
+//  .pbim-stat, .pbim-btn, .pbim-busy). This file only says what is SPECIFIC
+//  to a board whose row is a person's goal sheet: the year strip, the
+//  segmented bar, the row, the drawer and the one dialog.
+//
+//  THE KIT'S `.pbim-stats` CARRIES NO COLUMNS (R32/R196). It is
+//  `display: grid; gap: 12px` and nothing else — on purpose, because each
+//  cockpit knows how many numbers it has — so a lens that forgets opens on a
+//  stack of full-width tiles down the left of a 1,500px screen, which looks
+//  like a broken grid rather than a missing rule.
+//
+//  THE DRAWER AND THE DIALOG ARE NOT NESTED UNDER `.pbgl` (R114). A scrim
+//  mounts OUTSIDE the surface that opened it as often as inside, and a
+//  descendant selector makes a dialog's whole appearance depend on where in
+//  the DOM it lands. Own classes, tokens re-declared on the scrim.
+//
+//  THE SHARED INPUT PRIMITIVE IS TOP LEVEL TOO (R135): `.pbgl-in` is used by
+//  the board's search box AND by the weight boxes inside the scrim, and
+//  written under one of them it silently does not reach the other — which is
+//  how four filter pickers end up rendering as raw browser selects beside a
+//  search box that looks like the product.
+//
+//  THERE IS NO DARK PALETTE IN THE PBIM KIT, PRODUCT-WIDE (R134). `biz_theme`
+//  redefines only the `--vu-*` tokens in its dark block, so every RIZE
+//  cockpit renders identically under `data-theme="dark"` and under an
+//  emulated `prefers-color-scheme: dark`. "Validate in light AND dark" on a
+//  pbim cockpit is therefore satisfied by proving every colour RESOLVES,
+//  which is why every rule here carries a literal fallback beside its token.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+//
+//  Every @keyframes is at the TOP LEVEL (R85) — nested inside a selector,
+//  Sass emits it nested too and no browser plays it — and every one declares
+//  BOTH ends (R156), because a `from`-only keyframe under
+//  `animation-fill-mode: both` over a rule that has already set opacity to
+//  zero animates from invisible to invisible and stays there.
+// =====================================================================
+
+@keyframes pbgl-rise {
+    from { transform: translateY(9px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes pbgl-slide {
+    from { transform: translateX(26px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes pbgl-pop {
+    from { transform: scale(0.97); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+// --------------------------------------------------- shared primitives
+.pbgl-in {
+    width: 100%; box-sizing: border-box;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 9px; padding: 8px 12px;
+    font-size: 13px; font-family: inherit;
+    background: var(--pbim-surface, #FFFFFF);
+    color: var(--pbim-ink, #0F172A);
+
+    &:focus {
+        outline: none;
+        border-color: var(--pbim-primary, #4F46E5);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+    }
+    &--w { width: 74px; text-align: right; }
+    &--area { resize: vertical; }
+}
+
+.pbgl-av {
+    width: 34px; height: 34px; border-radius: 50%;
+    object-fit: cover; flex: 0 0 auto;
+    background: var(--pbim-soft, #EEF2FF);
+
+    &--big { width: 52px; height: 52px; }
+}
+
+.pbgl-state {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 11px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; white-space: nowrap;
+    // A chip that carries a SENTENCE must not be title-cased (R33).
+    text-transform: none;
+    background: var(--pbim-soft, #EEF2FF);
+    color: var(--pbim-primary-strong, #3730A3);
+
+    &--ok   { background: #ECFDF5; color: #047857; }
+    &--wait { background: #EEF2FF; color: #3730A3; }
+    &--bad  { background: #FEF2F2; color: #B91C1C; }
+}
+
+.pbgl-track {
+    position: relative; width: 100%; height: 7px;
+    // R178 — the track owns its own box, or a 100% fill draws at 63% and
+    // "finished" looks like "nearly finished" with no error anywhere.
+    padding: 0; box-sizing: border-box; overflow: hidden;
+    border-radius: 999px;
+    background: var(--pbim-line, #E2E8F0);
+}
+.pbgl-fill {
+    height: 100%; box-sizing: border-box; border-radius: 999px;
+    background: var(--pbim-primary, #4F46E5);
+    transition: width 0.4s ease;
+}
+
+.pbgl-x {
+    background: none; border: 0; cursor: pointer;
+    color: var(--pbim-muted, #64748B);
+    padding: 4px; border-radius: 8px; line-height: 0;
+    &:hover { background: var(--pbim-soft, #EEF2FF); }
+}
+
+// ================================================================= board
+.pbgl {
+
+    // ------------------------------------------------------------ header
+    .pbgl-head {
+        display: flex; flex-wrap: wrap; gap: 14px;
+        align-items: flex-start; justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .pbgl-head-id { flex: 1 1 320px; min-width: 0; }
+    .pbgl-head-actions {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+
+    // ------------------------------------------------------- year strip
+    .pbgl-cycles {
+        display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 14px;
+    }
+    .pbgl-cyc {
+        display: flex; flex-direction: column; align-items: flex-start;
+        gap: 2px; padding: 9px 15px; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 11px;
+        background: var(--pbim-surface, #FFFFFF);
+        text-align: left;
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+        }
+        &--open .pbgl-cyc-name::after {
+            content: ""; display: inline-block;
+            width: 7px; height: 7px; margin-left: 7px;
+            border-radius: 50%; background: #10B981;
+            vertical-align: middle;
+        }
+    }
+    .pbgl-cyc-name {
+        font-size: 14px; font-weight: 800;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbgl-cyc-sub {
+        font-size: 11px; color: var(--pbim-muted, #64748B);
+    }
+
+    .pbgl-headline {
+        margin: 0 0 14px; font-size: 14px; line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+        max-width: 860px;
+    }
+
+    // ------------------------------------------------------------ tiles
+    .pbgl-kpis {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        margin-bottom: 16px;
+
+        @media (max-width: 1180px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        @media (max-width: 700px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    .pbgl-kpi {
+        position: relative;
+        padding: 14px 16px; border-radius: 13px;
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+
+        &--ok   { border-color: rgba(4, 120, 87, 0.3); }
+        &--warn { border-color: rgba(180, 83, 9, 0.35); }
+        &--bad  { border-color: rgba(185, 28, 28, 0.35); }
+    }
+    .pbgl-kpi-ic {
+        color: var(--pbim-primary, #4F46E5);
+        line-height: 0; margin-bottom: 7px;
+    }
+    .pbgl-kpi-n {
+        font-size: 25px; font-weight: 800; line-height: 1;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbgl-kpi-l {
+        margin-top: 3px; font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // -------------------------------------------------- the segmented bar
+    .pbgl-bar-wrap { margin-bottom: 16px; }
+    .pbgl-bar {
+        display: flex; width: 100%; height: 11px;
+        padding: 0; box-sizing: border-box; overflow: hidden;
+        border-radius: 999px;
+        background: var(--pbim-line, #E2E8F0);
+    }
+    .pbgl-band { height: 100%; transition: width 0.4s ease; }
+    .pbgl-band--draft      { background: #C7D2FE; }
+    .pbgl-band--returned   { background: #FCA5A5; }
+    .pbgl-band--submitted  { background: #818CF8; }
+    .pbgl-band--manager_ok { background: #6366F1; }
+    .pbgl-band--locked     { background: #10B981; }
+    .pbgl-band--refused    { background: #94A3B8; }
+
+    .pbgl-bar-key {
+        display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px;
+    }
+    .pbgl-bar-k {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+    }
+    .pbgl-dot {
+        width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+    }
+    .pbgl-dot--draft      { background: #C7D2FE; }
+    .pbgl-dot--returned   { background: #FCA5A5; }
+    .pbgl-dot--submitted  { background: #818CF8; }
+    .pbgl-dot--manager_ok { background: #6366F1; }
+    .pbgl-dot--locked     { background: #10B981; }
+    .pbgl-dot--refused    { background: #94A3B8; }
+
+    // ---------------------------------------------------------- filters
+    .pbgl-filters {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        margin-bottom: 10px;
+
+        .pbgl-in { width: 260px; }
+    }
+    .pbgl-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 6px 13px; border-radius: 999px; cursor: pointer;
+        font-size: 12px; font-weight: 700; text-transform: none;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary-strong, #3730A3);
+        }
+        &--clear { color: #B91C1C; }
+        &--bad { background: #FEF2F2; color: #B91C1C;
+                 border-color: rgba(185, 28, 28, 0.3); }
+    }
+
+    .pbgl-facets {
+        display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px;
+    }
+    .pbgl-facet {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 9px; cursor: pointer;
+        font-size: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary-strong, #3730A3);
+        }
+    }
+    .pbgl-facet-n {
+        font-weight: 800; color: var(--pbim-ink, #0F172A);
+    }
+
+    .pbgl-off {
+        display: flex; align-items: center; gap: 10px;
+        padding: 11px 15px; margin-bottom: 14px;
+        border-radius: 11px;
+        background: #FFFBEB; color: #B45309;
+        border: 1px solid rgba(180, 83, 9, 0.24);
+        font-size: 13px;
+    }
+
+    // ------------------------------------------------------------- rows
+    .pbgl-rows { display: grid; gap: 8px; }
+
+    .pbgl-row {
+        display: grid; align-items: center; gap: 14px;
+        grid-template-columns: 34px minmax(160px, 1.6fr) minmax(110px, 1fr)
+                               minmax(110px, 1fr) 62px 96px minmax(120px, 1fr)
+                               auto;
+        width: 100%; text-align: left; cursor: pointer;
+        padding: 12px 16px; border-radius: 13px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+
+        &:hover {
+            border-color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+        }
+        &--late { border-left: 3px solid #EF4444; }
+
+        @media (max-width: 1240px) {
+            grid-template-columns: 34px minmax(140px, 2fr) minmax(90px, 1fr)
+                                   70px minmax(100px, 1fr) auto;
+            .pbgl-row-mg, .pbgl-row-n { display: none; }
+        }
+        // BELOW 760px THE ROW STACKS. A table that scrolls sideways on a
+        // narrow screen hides the column that matters (R187), and here that
+        // column is the due date.
+        @media (max-width: 760px) {
+            grid-template-columns: 34px 1fr;
+            .pbgl-row-due, .pbgl-row-w, .pbgl-row-pr {
+                grid-column: 2; display: flex; gap: 8px; align-items: center;
+            }
+            .pbgl-state { grid-column: 2; justify-self: start; }
+        }
+    }
+    .pbgl-row-id {
+        min-width: 0;
+        strong {
+            display: block; font-size: 14px; font-weight: 700;
+            color: var(--pbim-ink, #0F172A);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        span { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    }
+    .pbgl-lbl {
+        display: block; font-size: 10px; font-weight: 700;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbgl-row-mg span:not(.pbgl-lbl),
+    .pbgl-row-due span:not(.pbgl-lbl),
+    .pbgl-row-n span:not(.pbgl-lbl),
+    .pbgl-row-w span:not(.pbgl-lbl) {
+        font-size: 13px; color: var(--pbim-ink, #0F172A);
+    }
+    .pbgl-row-due em {
+        display: block; font-style: normal; font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbgl-w--bad { color: #B91C1C !important; font-weight: 700; }
+    .pbgl-w--none { color: var(--pbim-muted, #64748B); }
+    .pbgl-row-pr {
+        display: flex; flex-direction: column; gap: 4px;
+        span { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    }
+
+    // ------------------------------------------------------ empty states
+    .pbgl-empty, .pbgl-locked {
+        text-align: center; padding: 48px 24px;
+        h2 { font-size: 18px; font-weight: 800; margin: 0 0 6px; }
+        p { color: var(--pbim-muted, #64748B); margin: 0 auto 14px;
+            max-width: 520px; font-size: 14px; line-height: 1.55; }
+    }
+    .pbgl-empty-ic, .pbgl-locked-ic {
+        width: 66px; height: 66px; border-radius: 50%;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+        display: grid; place-items: center; margin: 0 auto 14px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbgl-row {
+            opacity: 0;
+            animation: pbgl-rise 0.3s ease forwards;
+        }
+        .pbgl-row:nth-child(2) { animation-delay: 0.03s; }
+        .pbgl-row:nth-child(3) { animation-delay: 0.06s; }
+        .pbgl-row:nth-child(4) { animation-delay: 0.09s; }
+        .pbgl-row:nth-child(5) { animation-delay: 0.12s; }
+    }
+}
+
+// ================================================= the scrim and drawer
+// TOP LEVEL, never under `.pbgl` (R114). Tokens re-declared here because a
+// scrim mounts outside the surface that opened it as often as inside.
+.pbgl-scrim {
+    position: fixed; inset: 0; z-index: 1050;
+    display: flex; align-items: stretch; justify-content: flex-end;
+    background: rgba(15, 23, 42, 0.38);
+
+    --pbim-line: #E2E8F0;
+    --pbim-surface: #FFFFFF;
+    --pbim-soft: #EEF2FF;
+    --pbim-ink: #0F172A;
+    --pbim-muted: #64748B;
+    --pbim-primary: #4F46E5;
+    --pbim-primary-strong: #3730A3;
+}
+
+.pbgl-drawer {
+    width: 640px; max-width: 100%;
+    background: var(--pbim-surface, #FFFFFF);
+    overflow-y: auto; overflow-x: hidden;
+    padding: 22px 26px 30px;
+    box-shadow: -8px 0 30px rgba(15, 23, 42, 0.16);
+
+    @media (prefers-reduced-motion: no-preference) {
+        animation: pbgl-slide 0.26s ease;
+    }
+
+    .pbgl-dr-head {
+        display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    .pbgl-dr-id {
+        flex: 1 1 auto; min-width: 0;
+        h2 { margin: 0; font-size: 19px; font-weight: 800;
+             color: var(--pbim-ink, #0F172A); }
+        p { margin: 2px 0 0; font-size: 13px;
+            color: var(--pbim-muted, #64748B); }
+    }
+
+    .pbgl-dr-chips {
+        display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px;
+    }
+    .pbgl-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 11px; border-radius: 999px;
+        font-size: 12px; font-weight: 700; text-transform: none;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+
+        &.on { background: var(--pbim-soft, #EEF2FF);
+               color: var(--pbim-primary-strong, #3730A3);
+               border-color: var(--pbim-primary, #4F46E5); }
+        &--bad { background: #FEF2F2; color: #B91C1C;
+                 border-color: rgba(185, 28, 28, 0.3); }
+    }
+
+    .pbgl-dr-note {
+        display: flex; gap: 11px; align-items: flex-start;
+        padding: 13px 15px; margin-bottom: 16px; border-radius: 11px;
+        background: #FFFBEB; border: 1px solid rgba(180, 83, 9, 0.24);
+        color: #B45309;
+        strong { display: block; font-size: 12px; margin-bottom: 3px; }
+        p { margin: 0; font-size: 13px; color: var(--pbim-ink, #0F172A); }
+
+        &--bad {
+            background: #FEF2F2; color: #B91C1C;
+            border-color: rgba(185, 28, 28, 0.26);
+        }
+    }
+
+    .pbgl-dr-goals { display: grid; gap: 12px; }
+    .pbgl-dr-goal {
+        padding: 14px 16px; border-radius: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbgl-dr-goal-top {
+        display: flex; gap: 14px; align-items: flex-start;
+        justify-content: space-between;
+        strong { font-size: 14px; color: var(--pbim-ink, #0F172A); }
+        p { margin: 3px 0 0; font-size: 13px; line-height: 1.5;
+            color: var(--pbim-muted, #64748B); }
+    }
+    .pbgl-dr-weight {
+        flex: 0 0 auto; text-align: right;
+        label { display: block; font-size: 10px; font-weight: 700;
+                letter-spacing: 0.04em; text-transform: uppercase;
+                color: var(--pbim-muted, #64748B); margin-bottom: 3px; }
+    }
+    .pbgl-w-read {
+        font-size: 18px; font-weight: 800;
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbgl-dr-goal-meta {
+        display: flex; flex-wrap: wrap; gap: 14px; margin: 9px 0 7px;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+    }
+    .pbgl-dr-krs {
+        list-style: none; margin: 11px 0 0; padding: 0; display: grid;
+        gap: 6px;
+        li {
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline;
+            padding: 7px 11px; border-radius: 9px; background: #F8FAFC;
+            font-size: 12px;
+        }
+    }
+    .pbgl-kr-t { flex: 1 1 140px; color: var(--pbim-ink, #0F172A);
+                 font-weight: 600; }
+    .pbgl-kr-n { color: var(--pbim-muted, #64748B); }
+    .pbgl-kr-p { font-weight: 800; color: var(--pbim-primary, #4F46E5); }
+
+    .pbgl-dr-hist {
+        margin-top: 20px;
+        h4 { font-size: 13px; font-weight: 800; margin: 0 0 8px; }
+        ul { list-style: none; margin: 0; padding: 0; display: grid;
+             gap: 5px; }
+        li { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px;
+             padding: 6px 10px; border-radius: 8px; background: #F8FAFC; }
+    }
+    .pbgl-hs-when { color: var(--pbim-muted, #64748B); flex: 0 0 110px; }
+    .pbgl-hs-what { font-weight: 600; color: var(--pbim-ink, #0F172A); }
+    .pbgl-hs-who  { color: var(--pbim-muted, #64748B); }
+    .pbgl-hs-note { flex: 1 1 100%; color: var(--pbim-muted, #64748B); }
+
+    .pbgl-dr-foot {
+        margin-top: 22px; padding-top: 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbgl-dr-word {
+        margin-bottom: 10px; font-size: 13px; font-weight: 700;
+        color: var(--pbim-primary-strong, #3730A3);
+    }
+    .pbgl-dr-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pbgl-back {
+        margin-top: 12px; display: grid; gap: 9px;
+    }
+
+    @media (max-width: 700px) {
+        padding: 18px;
+        .pbgl-dr-goal-top { flex-direction: column; }
+        .pbgl-dr-weight { text-align: left; }
+    }
+}
+
+// ============================================================ the dialog
+.pbgl-dialog {
+    align-self: center; margin: auto;
+    width: 520px; max-width: 92vw;
+    // R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex
+    // box, built for the __head/__body/__foot rails. A free-form dialog
+    // writes its own box or its heading is clipped flush against the edge.
+    display: block; box-sizing: border-box;
+    padding: 22px 24px; overflow: auto;
+    background: var(--pbim-surface, #FFFFFF);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.26);
+
+    @media (prefers-reduced-motion: no-preference) {
+        animation: pbgl-pop 0.2s ease;
+    }
+
+    .pbgl-dg-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; margin-bottom: 10px;
+        h3 { margin: 0; font-size: 17px; font-weight: 800;
+             color: var(--pbim-ink, #0F172A); }
+    }
+    .pbgl-dg-body {
+        margin: 0 0 10px; font-size: 14px; line-height: 1.55;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbgl-dg-small {
+        margin: 0 0 18px; font-size: 12px; line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbgl-dg-foot {
+        display: flex; justify-content: flex-end; gap: 8px;
+    }
+}

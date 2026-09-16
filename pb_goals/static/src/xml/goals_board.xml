@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Goals lens on the People hub.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       `t-name` in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the loop compiles into a bare
+       `&lt;` that kills the whole template (R1). The loops here are `cy`,
+       `st`, `bd`, `dp`, `mg`, `rw`, `gl`, `kr`, `hs` and `sw`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form MERGES with the static class. On a
+       server-side template it writes the Python repr into the attribute and
+       drops the static class (R42).
+
+       A SENTENCE IS BUILT IN ONE EXPRESSION (R34): OWL collapses the newline
+       between a text node and a `t-esc`, so an interleaved sentence loses the
+       space and reads "There are2 sheets".
+
+       The drawer and the dialog are NOT nested under `.pbgl` in the
+       stylesheet (R114) and the scrim is the PARENT of the modal, never its
+       sibling — `.pbim-modal` carries no positioning of its own.
+       ==================================================================== -->
+  <t t-name="pb_goals.PbGoalsBoard">
+    <div class="pbim pbim-page pbgl"
+         t-att-class="{ 'pbgl--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the goals…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ================ the reader has nothing to see ================ -->
+        <div t-if="!state.allowed" class="pbim-panel pbgl-locked">
+          <div class="pbgl-locked-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Goals are for the people they belong to</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ======================= header ======================= -->
+          <div class="pbgl-head">
+            <div class="pbgl-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Goals</h1>
+              <p class="pbim-sub" t-esc="state.scope"/>
+            </div>
+            <div class="pbgl-head-id" t-else="">
+              <p class="pbim-sub" t-esc="state.scope"/>
+            </div>
+            <div class="pbgl-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Read it again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <a t-if="state.myPage" class="pbim-btn ghost" href="/my/goals">
+                <t t-out="ic('user',15)"/> My own goals
+              </a>
+              <button t-if="state.isHr" class="pbim-btn ghost"
+                      t-on-click="openTemplates">
+                <t t-out="ic('sparkles',15)"/> Templates
+              </button>
+              <button t-if="state.isHr" class="pbim-btn ghost"
+                      t-on-click="openCycles">
+                <t t-out="ic('calendar',15)"/> Goal years
+              </button>
+              <button t-if="state.isHr and cycle and cycle.state === 'open'"
+                      class="pbim-btn primary" t-on-click="askBulk"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('users',15)"/> Open it for everyone
+              </button>
+            </div>
+          </div>
+
+          <!-- ================== no goal year at all ==================
+               THE EMPTY STATE TEACHES. A board with nothing on it says what
+               to do next, in the order somebody does it. -->
+          <div t-if="!state.cycles.length" class="pbim-panel pbgl-empty">
+            <div class="pbgl-empty-ic"><t t-out="ic('target',30)"/></div>
+            <h2>No goal year has been set up yet</h2>
+            <p>A goal year is the dates everybody's goals belong to — when it
+               starts, when it ends, and how long somebody gets to write
+               theirs. Make one, open it, and everybody can start.</p>
+            <button t-if="state.isHr" class="pbim-btn primary"
+                    t-on-click="openCycles">
+              <t t-out="ic('plus',15)"/> Set a goal year up
+            </button>
+          </div>
+
+          <t t-else="">
+
+            <!-- ==================== the year strip ==================== -->
+            <div class="pbgl-cycles">
+              <t t-foreach="state.cycles" t-as="cy" t-key="cy.id">
+                <button class="pbgl-cyc"
+                        t-att-class="{ on: cy.id === state.cycleId,
+                                       'pbgl-cyc--open': cy.state === 'open' }"
+                        t-on-click="() => this.pickCycle(cy.id)">
+                  <span class="pbgl-cyc-name" t-esc="cy.name"/>
+                  <span class="pbgl-cyc-sub">
+                    <t t-esc="cy.state_word"/> ·
+                    <t t-esc="cy.sheets"/> sheets
+                  </span>
+                </button>
+              </t>
+            </div>
+
+            <!-- ===================== the headline ===================== -->
+            <p class="pbgl-headline" t-esc="state.headline"/>
+
+            <!-- ======================= the tiles =======================
+                 R196/R32 — `.pbim-stats` is `display: grid` and NOTHING
+                 else; every consumer sets its own columns or it opens on a
+                 stack of full-width tiles that looks like a broken grid. -->
+            <div class="pbim-stats pbgl-kpis">
+              <t t-foreach="state.stats" t-as="st" t-key="st.key">
+                <div class="pbim-stat pbgl-kpi"
+                     t-att-class="{ 'pbgl-kpi--bad': st.tone === 'bad',
+                                    'pbgl-kpi--warn': st.tone === 'warn',
+                                    'pbgl-kpi--ok': st.tone === 'good' }">
+                  <div class="pbgl-kpi-ic"><t t-out="ic(st.icon,17)"/></div>
+                  <div class="pbgl-kpi-n" t-esc="st.value"/>
+                  <div class="pbgl-kpi-l" t-esc="st.label"/>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==================== the segmented bar ====================
+                 THE BANDS KEEP LIFECYCLE ORDER, left to right, because the
+                 bar is read as a journey. A bar that reorders itself as the
+                 numbers change is a bar nobody can read twice. -->
+            <div t-if="state.bar.length" class="pbgl-bar-wrap">
+              <div class="pbgl-bar">
+                <t t-foreach="state.bar" t-as="bd" t-key="bd.key">
+                  <div t-attf-class="pbgl-band pbgl-band--{{bd.key}}"
+                       t-attf-style="width: {{bd.pct}}%"
+                       t-att-title="bd.label + ': ' + bd.count"/>
+                </t>
+              </div>
+              <div class="pbgl-bar-key">
+                <t t-foreach="state.bar" t-as="bd" t-key="bd.key">
+                  <span class="pbgl-bar-k">
+                    <i t-attf-class="pbgl-dot pbgl-dot--{{bd.key}}"/>
+                    <t t-esc="bd.label + ' ' + bd.count"/>
+                  </span>
+                </t>
+              </div>
+            </div>
+
+            <!-- ======================= the filters ======================= -->
+            <div class="pbgl-filters">
+              <input class="pbgl-in" type="search"
+                     placeholder="Search for somebody by name"
+                     t-att-value="state.filters.q" t-on-input="onSearch"/>
+              <button class="pbgl-chip"
+                      t-att-class="{ on: state.filters.mine }"
+                      t-on-click="toggleMine">
+                <t t-out="ic('user',13)"/> Only mine
+              </button>
+              <t t-foreach="state.states" t-as="st" t-key="st.key">
+                <button class="pbgl-chip"
+                        t-att-class="{ on: state.filters.state === st.key }"
+                        t-on-click="() => this.setFilter('state', st.key)">
+                  <t t-esc="st.label"/>
+                </button>
+              </t>
+              <button t-if="anyFilter" class="pbgl-chip pbgl-chip--clear"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',13)"/> Clear
+              </button>
+            </div>
+
+            <div t-if="state.facets.departments.length > 1"
+                 class="pbgl-facets">
+              <t t-foreach="state.facets.departments" t-as="dp" t-key="dp.id">
+                <button class="pbgl-facet"
+                        t-att-class="{ on: state.filters.department_id === dp.id }"
+                        t-on-click="() => this.setFilter('department_id', dp.id)">
+                  <t t-esc="dp.label"/>
+                  <span class="pbgl-facet-n" t-esc="dp.count"/>
+                </button>
+              </t>
+            </div>
+
+            <div t-if="state.isHr and state.facets.managers.length > 1"
+                 class="pbgl-facets">
+              <t t-foreach="state.facets.managers" t-as="mg" t-key="mg.id">
+                <button class="pbgl-facet"
+                        t-att-class="{ on: state.filters.manager_id === mg.id }"
+                        t-on-click="() => this.setFilter('manager_id', mg.id)">
+                  <t t-out="ic('userCheck',13)"/>
+                  <t t-esc="mg.label"/>
+                  <span class="pbgl-facet-n" t-esc="mg.count"/>
+                </button>
+              </t>
+            </div>
+
+            <!-- ==================== the chasing is off ====================
+                 A THING THAT IS OFF AND DOES NOT SAY SO IS REPORTED AS
+                 BROKEN (R54). -->
+            <div t-if="!state.remindersOn" class="pbgl-off">
+              <t t-out="ic('bell',15)"/>
+              <span>Reminders are switched off, so nobody is being chased
+                    about a date. The nightly job still runs and writes down
+                    how many it would have nudged.</span>
+            </div>
+
+            <!-- ======================== the rows ======================== -->
+            <div t-if="!state.rows.length" class="pbim-panel pbgl-empty">
+              <div class="pbgl-empty-ic"><t t-out="ic('search',30)"/></div>
+              <h2 t-if="anyFilter">Nothing matches what you are looking for</h2>
+              <h2 t-else="">Nobody has a goal sheet for this year yet</h2>
+              <p t-if="anyFilter">Clear the filters and have another look.</p>
+              <p t-else="">Open the year for everybody and each person gets a
+                 sheet of their own with a date to write it by.</p>
+              <button t-if="anyFilter" class="pbim-btn ghost"
+                      t-on-click="clearFilters">Clear the filters</button>
+            </div>
+
+            <div t-else="" class="pbgl-rows">
+              <t t-foreach="state.rows" t-as="rw" t-key="rw.id">
+                <button class="pbgl-row"
+                        t-att-class="{ 'pbgl-row--late': rw.overdue }"
+                        t-on-click="() => this.openSheet(rw.id)">
+                  <img class="pbgl-av" t-att-src="rw.avatar" alt=""/>
+                  <div class="pbgl-row-id">
+                    <strong t-esc="rw.name"/>
+                    <span t-esc="rw.job || rw.department"/>
+                  </div>
+                  <div class="pbgl-row-mg">
+                    <span class="pbgl-lbl">Manager</span>
+                    <span t-esc="rw.manager || '—'"/>
+                  </div>
+                  <div class="pbgl-row-due">
+                    <span class="pbgl-lbl">Due</span>
+                    <span t-esc="rw.deadline || '—'"/>
+                    <em t-if="rw.due_words" t-esc="rw.due_words"/>
+                  </div>
+                  <div class="pbgl-row-n">
+                    <span class="pbgl-lbl">Goals</span>
+                    <span t-esc="rw.goals"/>
+                  </div>
+                  <!-- A SHEET WITH NOTHING ON IT HAS NO WEIGHTS TO BE WRONG.
+                       "0 / 100" in red over a sheet nobody has started is a
+                       red mark against somebody for not having done a thing
+                       they were not yet asked to do. -->
+                  <div class="pbgl-row-w">
+                    <span class="pbgl-lbl">Weights</span>
+                    <span t-if="!rw.goals" class="pbgl-w--none">—</span>
+                    <span t-else=""
+                          t-att-class="{ 'pbgl-w--bad': !rw.weights_ok }">
+                      <t t-esc="rw.weight_total + ' / 100'"/>
+                    </span>
+                  </div>
+                  <div class="pbgl-row-pr">
+                    <div class="pbgl-track">
+                      <div class="pbgl-fill"
+                           t-attf-style="width: {{rw.progress}}%"/>
+                    </div>
+                    <span t-esc="rw.progress + '%'"/>
+                  </div>
+                  <span t-attf-class="pbgl-state pbgl-state--{{tone(rw.state)}}">
+                    <t t-out="ic(stateIcon(rw.state),13)"/>
+                    <t t-esc="rw.state_word"/>
+                  </span>
+                </button>
+              </t>
+            </div>
+
+          </t>
+        </t>
+      </div>
+
+      <!-- ====================================================================
+           THE DRAWER. The scrim is the PARENT of the panel (R114) and neither
+           is nested under the board's root class in the stylesheet.
+           ==================================================================== -->
+      <div t-if="state.open" class="pbgl-scrim" t-on-click="closeDrawer">
+        <div class="pbgl-drawer" t-on-click.stop="() => {}">
+
+          <div class="pbgl-dr-head">
+            <img class="pbgl-av pbgl-av--big"
+                 t-att-src="state.sheet.avatar" alt=""/>
+            <div class="pbgl-dr-id">
+              <h2 t-esc="state.sheet.name"/>
+              <p t-esc="drawerSub"/>
+            </div>
+            <button class="pbgl-x" t-on-click="closeDrawer" title="Close">
+              <t t-out="ic('x',17)"/>
+            </button>
+          </div>
+
+          <div class="pbgl-dr-chips">
+            <span t-attf-class="pbgl-state pbgl-state--{{tone(state.sheet.state)}}">
+              <t t-out="ic(stateIcon(state.sheet.state),13)"/>
+              <t t-esc="state.sheet.state_word"/>
+            </span>
+            <span t-if="state.sheet.due_words" class="pbgl-chip on">
+              <t t-out="ic('calendar',13)"/>
+              <t t-esc="state.sheet.due_words"/>
+            </span>
+            <span t-if="state.sheet.locked_on" class="pbgl-chip on">
+              <t t-out="ic('lock',13)"/>
+              <t t-esc="'Locked ' + state.sheet.locked_on.slice(0,10)
+                        + (state.sheet.locked_by ? ' by ' + state.sheet.locked_by : '')"/>
+            </span>
+            <span class="pbgl-chip"
+                  t-att-class="{ 'pbgl-chip--bad': !state.weightsOk }">
+              <t t-esc="'Weights ' + state.weightTotal + ' / '
+                        + state.sheet.weight_target"/>
+            </span>
+          </div>
+
+          <div t-if="state.sheet.return_note" class="pbgl-dr-note">
+            <t t-out="ic('undo',15)"/>
+            <div>
+              <strong>Sent back with this note</strong>
+              <p t-esc="state.sheet.return_note"/>
+            </div>
+          </div>
+
+          <!-- ============ why it is sitting still ============
+               A route that was agreed and then could not be carried out —
+               because a goal was reworded after the sheet went in — leaves
+               the sheet exactly where it was, with the reason buried inside
+               the approval request. Nothing was on any screen until this. -->
+          <div t-if="state.sheet.stuck" class="pbgl-dr-note pbgl-dr-note--bad">
+            <t t-out="ic('alert',15)"/>
+            <div>
+              <strong>This is not moving</strong>
+              <p t-esc="state.sheet.stuck"/>
+            </div>
+          </div>
+
+          <!-- ===================== the goals ===================== -->
+          <div class="pbgl-dr-goals">
+            <t t-foreach="state.sheet.goals" t-as="gl" t-key="gl.id">
+              <div class="pbgl-dr-goal">
+                <div class="pbgl-dr-goal-top">
+                  <div>
+                    <strong t-esc="gl.title"/>
+                    <p t-esc="gl.description"/>
+                  </div>
+                  <div class="pbgl-dr-weight">
+                    <t t-if="state.sheet.may_weight">
+                      <label>Weight</label>
+                      <input type="number" min="0" max="100" step="1"
+                             class="pbgl-in pbgl-in--w"
+                             t-att-value="state.weights[gl.id]"
+                             t-on-input="(ev) => this.onWeight(gl.id, ev)"/>
+                    </t>
+                    <t t-else="">
+                      <span class="pbgl-w-read"
+                            t-esc="gl.weight + '%'"/>
+                    </t>
+                  </div>
+                </div>
+                <div class="pbgl-dr-goal-meta">
+                  <span t-if="gl.to">by <t t-esc="gl.to"/></span>
+                  <span t-if="gl.rating_word">
+                    Their own view: <t t-esc="gl.rating_word"/>
+                  </span>
+                  <span><t t-esc="gl.progress + '% of the way'"/></span>
+                </div>
+                <div class="pbgl-track">
+                  <div class="pbgl-fill"
+                       t-attf-style="width: {{gl.progress}}%"/>
+                </div>
+                <ul class="pbgl-dr-krs">
+                  <li t-foreach="gl.krs" t-as="kr" t-key="kr.id">
+                    <span class="pbgl-kr-t" t-esc="kr.title"/>
+                    <span class="pbgl-kr-n" t-esc="krWords(kr)"/>
+                    <span class="pbgl-kr-p" t-esc="kr.progress + '%'"/>
+                  </li>
+                </ul>
+              </div>
+            </t>
+          </div>
+
+          <!-- ===================== the trail ===================== -->
+          <div t-if="state.sheet.history.length" class="pbgl-dr-hist">
+            <h4>What has moved</h4>
+            <ul>
+              <li t-foreach="state.sheet.history" t-as="hs"
+                  t-key="hs.at + hs.kr">
+                <span class="pbgl-hs-when" t-esc="hs.at"/>
+                <span class="pbgl-hs-what">
+                  <t t-esc="hs.kr + ' → ' + hs.progress + '%'"/>
+                </span>
+                <span class="pbgl-hs-who" t-esc="hs.who"/>
+                <span t-if="hs.note" class="pbgl-hs-note" t-esc="hs.note"/>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ===================== the presses ===================== -->
+          <div class="pbgl-dr-foot">
+            <div t-if="state.weightWord" class="pbgl-dr-word"
+                 t-esc="state.weightWord"/>
+            <div class="pbgl-dr-btns">
+              <button class="pbim-btn ghost"
+                      t-on-click="() => this.openRecord(state.sheet.id)">
+                <t t-out="ic('external',15)"/> Open the record
+              </button>
+              <button t-if="state.sheet.may_send_back" class="pbim-btn ghost"
+                      t-on-click="() => { state.backOpen = !state.backOpen; }">
+                <t t-out="ic('undo',15)"/> Send it back
+              </button>
+              <button t-if="state.sheet.may_weight" class="pbim-btn primary"
+                      t-on-click="saveWeights" t-att-disabled="state.busy">
+                <t t-out="ic('save',15)"/> Save the weights
+              </button>
+            </div>
+            <div t-if="state.backOpen" class="pbgl-back">
+              <textarea class="pbgl-in pbgl-in--area" rows="3"
+                        placeholder="What would you like changed? They read this on their own goals page."
+                        t-model="state.backNote"/>
+              <button class="pbim-btn primary" t-on-click="sendBack"
+                      t-att-disabled="state.busy">
+                Send it back with this note
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           "OPEN IT FOR EVERYONE" — it says how many BEFORE it makes any.
+           ==================================================================== -->
+      <div t-if="state.bulk" class="pbgl-scrim" t-on-click="closeBulk">
+        <div class="pbgl-dialog" t-on-click.stop="() => {}">
+          <div class="pbgl-dg-head">
+            <h3>Open the goal year for everybody</h3>
+            <button class="pbgl-x" t-on-click="closeBulk" title="Close">
+              <t t-out="ic('x',17)"/>
+            </button>
+          </div>
+          <p class="pbgl-dg-body" t-esc="state.bulk.sentence"/>
+          <p class="pbgl-dg-small">Everybody gets an email saying their goals
+             are open and when they are due. Pressing this a second time later
+             picks up anybody who has joined since, and leaves everybody else
+             alone.</p>
+          <div class="pbgl-dg-foot">
+            <button class="pbim-btn ghost" t-on-click="closeBulk">
+              Not now
+            </button>
+            <button class="pbim-btn primary" t-on-click="doBulk"
+                    t-att-disabled="state.busy or !state.bulk.ok">
+              <t t-out="ic('users',15)"/> Open them
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>
