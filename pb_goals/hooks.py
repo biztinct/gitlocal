@@ -48,6 +48,13 @@ def _seed_switches(env):
 
 
 def _seed_route(env):
+    """Both routes, in two separate guards.
+
+    TWO TRIES AND NOT ONE. A catalogue row that has not loaded for one of them
+    would otherwise cost the other its route — and a route that is missing
+    breaks nothing visibly (R208): the install reports success, the version
+    lands, and a request sent in simply never reaches anybody's inbox.
+    """
     try:
         from .models.goal_set_approval import seed_all
         laid = seed_all(env)
@@ -55,4 +62,12 @@ def _seed_route(env):
                      'compan(ies)', laid)
     except Exception:                   # noqa: BLE001 — never fail an install
         _logger.warning('pb_goals: the default goal-sheet route could not be '
+                        'seeded', exc_info=True)
+    try:
+        from .models.change_approval import seed_all_changes
+        laid = seed_all_changes(env)
+        _logger.info('pb_goals: the goal-change route was laid for %s '
+                     'compan(ies)', laid)
+    except Exception:                   # noqa: BLE001 — never fail an install
+        _logger.warning('pb_goals: the default goal-change route could not be '
                         'seeded', exc_info=True)

@@ -33,4 +33,27 @@
         <field name="sequence">246</field>
     </record>
 
+    <!-- ==================================================================
+         THE SECOND ROW, AND IT IS A SEPARATE PROCESS RATHER THAN A SECOND
+         ROUTE ON THE FIRST.
+
+         Deliberately: "should this person's goals be these goals" and "should
+         this agreed goal now change" are different questions, asked months
+         apart, and a business is entitled to answer them with different
+         people. One process with two routes would make that impossible to
+         say; two processes make it a setting.
+
+         SEQUENCE 247, straight after the sheet it is about — which is where
+         somebody setting up who signs off what will look for it.
+         ================================================================== -->
+
+    <record id="process_goal_change" model="biz.approval.process">
+        <field name="key">goal_change</field>
+        <field name="name">Goal change</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.goal.change</field>
+        <field name="description">A request to change goals that have already been agreed and locked: reword one, add one, drop one, or move what each is worth. The same two people who agreed them in the first place decide it.</field>
+        <field name="sequence">247</field>
+    </record>
+
 </odoo>
