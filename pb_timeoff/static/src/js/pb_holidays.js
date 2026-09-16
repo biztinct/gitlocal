@@ -84,17 +84,25 @@ export class PbHolidays extends Component {
      * between them and reads "Next: Tếton Tue" (R34).
      */
     get headline() {
-        const n = this.d.next;
+        const n = this.d.next || this.d.next_ahead;
         if (!n) {
-            return _t("Nothing else is booked as a public holiday this year.");
+            return _t("No public holidays are on any calendar yet.");
         }
         const away = n.days_away;
-        const when = away === 0 ? _t("today")
+        const when = away <= 0 ? _t("today")
             : away === 1 ? _t("tomorrow")
             : _t("%s away", counted(away, _t("day"), _t("days")));
-        return _t("Next: %(what)s at %(where)s on %(when_date)s — %(away)s",
-                  { what: n.name, where: n.company, when_date: n.date,
-                    away: when });
+        const line = _t("Next: %(what)s at %(where)s on %(when_date)s — %(away)s",
+                        { what: n.name, where: n.company,
+                          when_date: n.label || n.date, away: when });
+        // The year being looked at runs out before the question does, so the
+        // sentence says which year it has had to look past. Built as ONE
+        // expression: a sentence split across several `t-esc` nodes loses the
+        // whitespace between them (R34).
+        return this.d.next
+            ? line
+            : _t("Nothing else in %(year)s. %(line)s",
+                 { year: this.state.year, line });
     }
 
     columnNote(col) {

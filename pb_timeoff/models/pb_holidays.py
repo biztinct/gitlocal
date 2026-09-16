@@ -29,9 +29,10 @@ import logging
 from datetime import date, datetime, time
 
 import pytz
+from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -147,7 +148,31 @@ class PbHolidays(models.AbstractModel):
             'companies': columns,
             'can_edit': self._can_edit(),
             'next': next_overall,
+            # THE YEAR BEING LOOKED AT RUNS OUT BEFORE THE QUESTION DOES.
+            # Vietnam has nothing between the 2nd of September and New Year,
+            # so for four months of every year the honest answer to "what is
+            # next" is in the FOLLOWING year — and a headline that stops at
+            # 31 December sends somebody to click through the year strip to
+            # find out. Only sent when the year being viewed has nothing
+            # left, and the sentence says which year it is talking about.
+            'next_ahead': self._safe(self._next_anywhere, default=None)
+            if not next_overall else None,
         }
+
+    @api.model
+    def _next_anywhere(self):
+        """The next public holiday on ANY company's calendar, from today."""
+        today = self._today()
+        best = None
+        for company in self._companies():
+            column = self._safe(
+                lambda c=company: self._column(
+                    c, today, date(today.year + 1, 12, 31), today),
+                default=None)
+            nxt = (column or {}).get('next')
+            if nxt and (best is None or nxt['date'] < best['date']):
+                best = dict(nxt, company=column['name'])
+        return best
 
     @api.model
     def _column(self, company, first, last, today):
@@ -177,6 +202,14 @@ class PbHolidays(models.AbstractModel):
                 'name': row.name or _('Public holiday'),
                 'weekday': day_from.strftime('%a'),
                 'month': day_from.strftime('%b'),
+                # "1 Jan 2027", never "2027-01-01". `format_date` with no
+                # pattern answers the LOCALE's format, and for an en_US
+                # reader that is 01/01/2027 — the first of January to half
+                # the world and the 1st of January to the other half (R108).
+                # Built by hand so it is the same on every screen.
+                'label': '%s %s %s' % (day_from.day,
+                                       day_from.strftime('%b'),
+                                       day_from.year),
                 'day': day_from.day,
                 'days': days,
                 'is_past': day_to < today,
@@ -185,6 +218,7 @@ class PbHolidays(models.AbstractModel):
             out.append(entry)
             if nxt is None and day_to >= today:
                 nxt = {'date': entry['date'], 'name': entry['name'],
+                       'label': entry['label'],
                        'days_away': (day_from - today).days}
 
         country = company.sudo().country_id
@@ -248,28 +282,39 @@ class PbHolidays(models.AbstractModel):
         ])
         if clash:
             return False
-        row = self.env['resource.calendar.leaves'].sudo().create({
-            'name': name,
-            'calendar_id': calendar.id,
-            'date_from': from_utc,
-            'date_to': to_utc,
-            'time_type': 'leave',
-        })
         # THE STOCK CREATE CONVERTS THE TIMES A SECOND TIME, and only when the
         # person writing the holiday is in a different timezone from the
         # calendar. `hr_holidays`' `_prepare_public_holidays_values` reads a
-        # public-holiday create as "these datetimes are in the ACTING USER's
-        # timezone" and shifts them into the calendar's — which is right for
-        # somebody typing into the native form and wrong for a caller that has
-        # already done the conversion properly. Live symptom: a three-day
-        # holiday entered from Vietnam onto a Brussels calendar was stored ten
-        # hours out and read back as FOUR days, with nothing on any screen.
+        # public-holiday CREATE as "these datetimes are in the ACTING USER's
+        # timezone" and shifts them into the calendar's — right for somebody
+        # typing into the native form, wrong for a caller that has already
+        # done the conversion properly. Live symptoms, both found on the real
+        # screen: a three-day holiday entered from Brussels onto a Vietnamese
+        # calendar was stored ten hours out and drawn as FOUR days; and Labour
+        # Day was refused as overlapping Reunification Day, because the
+        # shifted 1 May reached back into the corrected 30 April.
         #
-        # `write` does no such conversion, so the two values are put back
-        # exactly as they were worked out. One extra UPDATE, and the row means
-        # the same thing whoever entered it.
-        if row.date_from != from_utc or row.date_to != to_utc:
+        # `write` does no such conversion. So the row is created A CENTURY OUT
+        # — where nothing can overlap it and the shift is harmless — and then
+        # written to the values that were actually worked out. Two different
+        # days give two different placeholders, so the stock overlap rule
+        # still catches a real clash, on the REAL dates, with its own words.
+        Leaves = self.env['resource.calendar.leaves'].sudo()
+        far = relativedelta(years=100)
+        try:
+            row = Leaves.create({
+                'name': name,
+                'calendar_id': calendar.id,
+                'date_from': from_utc + far,
+                'date_to': to_utc + far,
+                'time_type': 'leave',
+            })
             row.write({'date_from': from_utc, 'date_to': to_utc})
+        except ValidationError as err:
+            raise UserError(_(
+                "%(name)s cannot go on %(company)s's calendar: %(why)s",
+                name=name, company=company.name,
+                why=(err.args and err.args[0]) or '')) from err
         self._register_demo(row, _('Public holidays'))
         return row
 
@@ -330,8 +375,18 @@ class PbHolidays(models.AbstractModel):
             raise UserError(_("There is nothing in the box to add."))
 
         added, already = 0, []
-        for name, day_from, day_to in parsed:
-            if self._create_row(company, calendar, name, day_from, day_to):
+        for number, (name, day_from, day_to) in enumerate(parsed, start=1):
+            try:
+                made = self._create_row(company, calendar, name, day_from,
+                                        day_to)
+            except UserError as err:
+                # A refusal from the calendar itself — two holidays on one day
+                # — has to say WHICH LINE, like every other refusal here, or
+                # the reader has to find it in a year of them.
+                raise UserError(_(
+                    "Line %(n)s: %(why)s",
+                    n=number, why=(err.args and err.args[0]) or '')) from err
+            if made:
                 added += 1
             else:
                 already.append(name)
@@ -348,8 +403,26 @@ class PbHolidays(models.AbstractModel):
             # A row with a resource is one person's own time off. This screen
             # has never shown one and must never delete one.
             raise UserError(_("That day is not on the public calendar."))
+        # Off the demo register too, when it was on it. `pb_demo_seed` copes
+        # with a row that points at nothing (it shows as "no longer there" and
+        # Remove skips it), so this is tidiness rather than a fix — but a
+        # register that lists days the calendar no longer has is a register
+        # somebody has to second-guess.
+        self._forget_demo(row)
         row.unlink()
         return {'ok': True}
+
+    @api.model
+    def _forget_demo(self, records):
+        Row = self.env.get('pb.demo.record')
+        if Row is None or not records:
+            return
+        try:
+            Row.sudo().search([('model_name', '=', records._name),
+                               ('res_id', 'in', records.ids)]).unlink()
+        except Exception:                                   # noqa: BLE001
+            _logger.warning('pb_timeoff: a demo holiday stayed on the '
+                            'register', exc_info=True)
 
     # ---------------------------------------------------------------- demo
     @api.model

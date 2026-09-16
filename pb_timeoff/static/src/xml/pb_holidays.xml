@@ -55,11 +55,15 @@
             <div t-if="!col.rows.length" class="pbim-empty pbhd-empty">
               <span class="pbhd-empty__ic" t-out="ic('calendar', 26)"/>
               <div class="pbhd-empty__t" t-esc="columnNote(col)"/>
-              <button t-if="canEdit and col.has_calendar"
-                      class="pbim-btn pbim-btn-sm"
-                      t-on-click="() => this.openMany(col.id)">
-                <span t-out="ic('plus', 14)"/><span>Paste the year in</span>
-              </button>
+              <div t-if="canEdit and col.has_calendar" class="pbhd-empty__do">
+                <button class="pbim-btn pbim-btn-sm"
+                        t-on-click="() => this.openMany(col.id)">
+                  <span t-out="ic('plus', 14)"/><span>Paste the year in</span>
+                </button>
+                <button class="pbhd-link" t-on-click="() => this.openOne(col.id)">
+                  or add one day
+                </button>
+              </div>
             </div>
 
             <ul t-else="" class="pbhd-list">
@@ -86,16 +90,19 @@
               </li>
             </ul>
 
-            <footer t-if="canEdit and col.has_calendar" class="pbhd-col__f">
+            <!-- The footer is the STANDING door and the empty state is the
+                 teaching one, so only one of them is ever drawn: a column
+                 with nothing on it was offering "Paste the year in" and
+                 "Add a day / Paste a list" underneath it, and a company
+                 with no working hours said the same sentence twice. -->
+            <footer t-if="canEdit and col.has_calendar and col.rows.length"
+                    class="pbhd-col__f">
               <button class="pbim-btn pbim-btn-sm" t-on-click="() => this.openOne(col.id)">
                 <span t-out="ic('plus', 14)"/><span>Add a day</span>
               </button>
               <button class="pbhd-link" t-on-click="() => this.openMany(col.id)">
                 Paste a list
               </button>
-            </footer>
-            <footer t-elif="canEdit" class="pbhd-col__f pbhd-col__f--note">
-              <span t-esc="columnNote(col)"/>
             </footer>
           </section>
         </div>

@@ -80,11 +80,18 @@
             <span>Time off</span>
           </div>
           <h1 class="pbme-h1">Public holidays</h1>
+          <!-- THE YEAR RUNS OUT BEFORE THE QUESTION DOES. Vietnam has
+               nothing between the 2nd of September and New Year, so for four
+               months of every year the honest answer to "what is next" is in
+               the following year — and the facade sends it. The same sentence
+               the Workforce lens shows, so the two screens agree. -->
+          <t t-set="nxt" t-value="hol['next'] or hol.get('next_ahead')"/>
           <div class="pbme-hero-sub">
-            <t t-if="hol['next']">
-              Next: <b t-esc="hol['next']['name']"/> at <t t-esc="hol['next']['company']"/> on <t t-esc="hol['next']['date']"/>
+            <t t-if="nxt">
+              <t t-if="not hol['next']">Nothing else in <t t-esc="hol['year']"/>. </t>
+              Next: <b t-esc="nxt['name']"/> at <t t-esc="nxt['company']"/> on <t t-esc="nxt.get('label') or nxt['date']"/>
             </t>
-            <t t-else="">Nothing else is booked as a public holiday this year.</t>
+            <t t-else="">No public holidays are on any calendar yet.</t>
           </div>
         </div>
 
@@ -119,7 +126,13 @@
                   <t t-set="icon" t-value="'calendar'"/>
                   <t t-set="isz" t-value="26"/>
                 </t>
-                <div>No days on this calendar for <t t-esc="hol['year']"/> yet.</div>
+                <!-- THE SAME TWO SENTENCES THE WORKFORCE LENS SHOWS. A
+                     company with no working hours cannot hold a holiday
+                     calendar at all, and telling an employee "no days yet"
+                     about one is a small lie they would act on. -->
+                <div t-if="not col['has_calendar']">This company has no working hours set
+                  up yet, so it cannot hold a holiday calendar.</div>
+                <div t-else="">No days on this calendar for <t t-esc="hol['year']"/> yet.</div>
               </div>
 
               <ul t-else="" class="pbhp-list">

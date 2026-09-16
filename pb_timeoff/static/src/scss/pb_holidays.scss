@@ -343,3 +343,13 @@
     .pbhd-col:nth-child(4) { animation-delay: .12s; }
     .pbhd-col:nth-child(5) { animation-delay: .16s; }
 }
+
+// The empty column's two doors, side by side under the sentence.
+.pbhd-empty__do {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2px;
+}
