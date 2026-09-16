@@ -127,12 +127,17 @@ class TestFieldStaff(TransactionCase):
             'company_id': self.company.id})
         employee = self.env['hr.employee'].search(
             [('user_id', '=', self.agro_user.id)], limit=1)
-        self.env['hr.leave'].with_context(leave_fast_create=True).create({
+        # NO `leave_fast_create` AND NO STATE WRITE. The fast-create path
+        # skips hr_holidays' own auto-approve, and writing `state` by hand
+        # sends the stock `_check_date` constraint through
+        # `dashboard_warning_message`, which falls over on an empty set. A
+        # "no validation" type is approved by hr_holidays itself at create,
+        # which is what a fixture that needs an APPROVED leave should ask for.
+        self.env['hr.leave'].create({
             'employee_id': employee.id,
             'holiday_status_id': leave_type.id,
             'request_date_from': today,
             'request_date_to': today,
-            'state': 'validate',
         })
         data = self.Map.with_user(self.officer).with_context(
             allowed_company_ids=[self.company.id]).with_company(

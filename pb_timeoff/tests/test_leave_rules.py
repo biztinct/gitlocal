@@ -136,11 +136,19 @@ class TestLeaveRules(TransactionCase):
     # ------------------------------------------------------------------ T5
     def _started_leave(self):
         """A leave that began yesterday, made as the system so the creation
-        itself is not the thing under test."""
-        return self.Leave.with_company(self.company).with_context(
+        itself is not the thing under test.
+
+        RE-BROWSED THROUGH A CLEAN RECORDSET, and that is not tidiness: the
+        fixture is made with `leave_fast_create=True` and `with_user()` KEEPS
+        the context, so every guard below would have been handed the very flag
+        that switches it off. The first run of this file passed four tests for
+        that reason and told nobody.
+        """
+        made = self.Leave.with_company(self.company).with_context(
             leave_fast_create=True).create(
                 self._vals(self.sick_type, self.today - timedelta(days=1),
                            days=2))
+        return self.Leave.browse(made.id)
 
     def test_the_person_who_asked_cannot_move_a_leave_that_has_begun(self):
         leave = self._started_leave()
@@ -156,9 +164,14 @@ class TestLeaveRules(TransactionCase):
         self.assertTrue(leave.exists())
 
     def test_an_officer_still_can(self):
+        """`hr.leave.name` is a COMPUTE over `private_name` and is dropped for
+        a writer without the responsible group, so the substance write these
+        cases are about is a DATE — a plain stored column that can be read
+        back and believed."""
         leave = self._started_leave()
-        leave.with_user(self.officer).write({'name': 'DEMO corrected by HR'})
-        self.assertEqual(leave.name, 'DEMO corrected by HR')
+        wanted = self.today + timedelta(days=4)
+        leave.with_user(self.officer).write({'request_date_to': wanted})
+        self.assertEqual(leave.request_date_to, wanted)
 
     def test_the_lock_does_not_fire_on_a_write_that_is_not_the_leave(self):
         """THE WHOLE REASON THE LOCK IS ON THE SUBSTANCE AND NOT ON THE
@@ -177,19 +190,22 @@ class TestLeaveRules(TransactionCase):
         leave = self._started_leave()
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_timeoff.lock_past', '0')
+        wanted = self.today + timedelta(days=5)
         try:
-            leave.with_user(self.staff).write({'name': 'DEMO changed'})
-            self.assertEqual(leave.name, 'DEMO changed')
+            leave.with_user(self.staff).write({'request_date_to': wanted})
+            self.assertEqual(leave.request_date_to, wanted)
         finally:
             self.env['ir.config_parameter'].sudo().set_param(
                 'pb_timeoff.lock_past', '1')
 
     def test_a_leave_that_has_not_started_is_still_the_persons_own(self):
-        leave = self.Leave.with_company(self.company).with_context(
+        made = self.Leave.with_company(self.company).with_context(
             leave_fast_create=True).create(
                 self._vals(self.plain_type, self.today + timedelta(days=3)))
-        leave.with_user(self.staff).write({'name': 'DEMO changed my mind'})
-        self.assertEqual(leave.name, 'DEMO changed my mind')
+        leave = self.Leave.browse(made.id)
+        wanted = self.today + timedelta(days=6)
+        leave.with_user(self.staff).write({'request_date_to': wanted})
+        self.assertEqual(leave.request_date_to, wanted)
 
 
 @tagged('post_install', '-at_install')

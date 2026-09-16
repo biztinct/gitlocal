@@ -187,7 +187,7 @@
         border: 1px dashed var(--pbim-line, #E2E8F0);
         background: var(--pbim-surface, #ffffff);
 
-        &__f { color: var(--pbim-primary-strong, #453A8C); flex: none; display: inline-flex; }
+        &__f { color: var(--pbim-primary-strong, #5A4BB0); flex: none; display: inline-flex; }
         &__b { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .v {
             font-size: 22px; font-weight: 800; line-height: 1;
@@ -408,7 +408,7 @@
         font-weight: 700;
         text-decoration: none;
         background: var(--pbim-soft, #EDEAF8);
-        color: var(--pbim-primary-strong, #4B3E96);
+        color: var(--pbim-primary-strong, #5A4BB0);
         border: 1px solid transparent;
 
         &:hover { border-color: var(--pbim-primary, #5A4BB0); text-decoration: none; }

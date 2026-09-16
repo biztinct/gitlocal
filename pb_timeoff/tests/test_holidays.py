@@ -111,8 +111,13 @@ class TestHolidaysFacade(TransactionCase):
                        start.isoformat(), (start + timedelta(days=2)).isoformat())
         column = self._mine(self.HolCo.year(self.today.year))
         row = [r for r in column['rows'] if r['name'] == 'DEMO Long weekend'][0]
-        self.assertEqual(row['days'], 3)
-        self.assertEqual(row['date'], start.isoformat())
+        stored = self.env['resource.calendar.leaves'].browse(row['id'])
+        why = 'stored %s → %s, calendar tz %r' % (
+            stored.date_from, stored.date_to, self.calendar.tz)
+        self.assertEqual(row['date'], start.isoformat(), why)
+        self.assertEqual(row['date_to'],
+                         (start + timedelta(days=2)).isoformat(), why)
+        self.assertEqual(row['days'], 3, why)
 
     def test_a_bad_line_is_refused_BY_LINE_and_nothing_is_written(self):
         """Half a year on the calendar and half a year in an error message is
@@ -314,8 +319,17 @@ class TestHolidaysSeams(TransactionCase):
             for name in files:
                 if not name.endswith(('.js', '.xml', '.scss')):
                     continue
-                if emoji.search(_read(os.path.join(root, name))):
-                    bad.append(os.path.join(root, name))
+                path = os.path.join(root, name)
+                text = _read(path)
+                # COMMENTS FIRST (R118's rule, and it bit this very gate):
+                # `pb_timeoff.js` explains the queue's buttons as "one-click
+                # ✓/✗" in its own header. The rule binds what a SCREEN shows.
+                if name.endswith(('.js', '.scss')):
+                    text = _code(text)
+                elif name.endswith('.xml'):
+                    text = re.sub(r'<!--.*?-->', '', text, flags=re.S)
+                if emoji.search(text):
+                    bad.append(path)
         self.assertFalse(bad)
 
     def test_every_icon_the_board_names_is_in_the_shared_registry(self):
@@ -369,7 +383,12 @@ class TestHolidaysSeams(TransactionCase):
             for name in files:
                 if not name.endswith(('.js', '.xml')):
                     continue
-                text = _read(os.path.join(root, name))
+                path = os.path.join(root, name)
+                text = _read(path)
+                if name.endswith('.js'):
+                    text = _code(text)
+                else:
+                    text = re.sub(r'<!--.*?-->', '', text, flags=re.S)
                 if re.search(r'\w\(s\)', text):
-                    bad.append(os.path.join(root, name))
+                    bad.append(path)
         self.assertFalse(bad)

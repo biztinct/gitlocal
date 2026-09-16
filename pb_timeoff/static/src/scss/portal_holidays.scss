@@ -34,7 +34,7 @@
         font-weight: 700;
         text-decoration: none;
 
-        &:hover { border-color: #5A4BB0; color: #4B3E96; text-decoration: none; }
+        &:hover { border-color: #5A4BB0; color: #5A4BB0; text-decoration: none; }
         &.is-on { background: #5A4BB0; border-color: #5A4BB0; color: #fff; }
     }
 
@@ -129,7 +129,7 @@
         font-weight: 800;
         letter-spacing: .04em;
         text-transform: uppercase;
-        color: #4B3E96;
+        color: #5A4BB0;
     }
 }
 

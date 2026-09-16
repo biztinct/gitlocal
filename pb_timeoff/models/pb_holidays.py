@@ -255,6 +255,21 @@ class PbHolidays(models.AbstractModel):
             'date_to': to_utc,
             'time_type': 'leave',
         })
+        # THE STOCK CREATE CONVERTS THE TIMES A SECOND TIME, and only when the
+        # person writing the holiday is in a different timezone from the
+        # calendar. `hr_holidays`' `_prepare_public_holidays_values` reads a
+        # public-holiday create as "these datetimes are in the ACTING USER's
+        # timezone" and shifts them into the calendar's — which is right for
+        # somebody typing into the native form and wrong for a caller that has
+        # already done the conversion properly. Live symptom: a three-day
+        # holiday entered from Vietnam onto a Brussels calendar was stored ten
+        # hours out and read back as FOUR days, with nothing on any screen.
+        #
+        # `write` does no such conversion, so the two values are put back
+        # exactly as they were worked out. One extra UPDATE, and the row means
+        # the same thing whoever entered it.
+        if row.date_from != from_utc or row.date_to != to_utc:
+            row.write({'date_from': from_utc, 'date_to': to_utc})
         self._register_demo(row, _('Public holidays'))
         return row
 

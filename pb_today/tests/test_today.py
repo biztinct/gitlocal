@@ -111,15 +111,30 @@ class TestTodayFacade(TransactionCase):
 
     @classmethod
     def _leave(cls, employee, d):
+        # THE FIXTURE NEEDS AN APPROVED LEAVE, NOT AN APPROVAL JOURNEY.
+        #
+        # This helper used to file an `hr`-validated leave and then press
+        # `action_approve` twice. Since the Approval Matrix retrofit
+        # (`pb_timeoff/models/hr_leave_approval.py`) that press drives a
+        # published ROUTE, and the engine refuses a decision from an account
+        # that was never asked — "This step is not waiting for you" — so six
+        # cases in this file were erroring on their own fixture. Found by
+        # RIZE W2 D1, which is the first phase to run these tests since.
+        #
+        # A "no validation" type is approved by hr_holidays itself inside
+        # `create`, which is the honest way to ask for an approved leave and
+        # is still never a state write.
         lt = cls.env['hr.leave.type'].sudo().with_context(
             active_test=False).search([('name', '=', 'P1b Today Leave')], limit=1)
         if not lt:
             lt = cls.env['hr.leave.type'].sudo().create({
                 'name': 'P1b Today Leave',
                 'requires_allocation': False,
-                'leave_validation_type': 'hr',
+                'leave_validation_type': 'no_validation',
                 'allocation_validation_type': 'hr',
             })
+        elif lt.leave_validation_type != 'no_validation':
+            lt.leave_validation_type = 'no_validation'
         lv = cls.env['hr.leave'].sudo().create({
             'employee_id': employee.id,
             'holiday_status_id': lt.id,
@@ -127,11 +142,6 @@ class TestTodayFacade(TransactionCase):
             'request_date_to': d,
             'name': 'P1b leave',
         })
-        # Approve through the model's own action, never a state write.
-        for _ in range(2):
-            if lv.state == 'validate':
-                break
-            lv.action_approve()
         return lv
 
     # =================================================================== T1.1
