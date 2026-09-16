@@ -245,7 +245,7 @@ class TestTenancyFeatures(TransactionCase):
         expected = {
             'pb_insights_hub': 'insights', 'pb_workforce': 'workforce',
             'pb_lifecycle_hub': 'lifecycle', 'pb_compliance_hub': 'compliance',
-            'learn_journey': 'learn',
+            'learn_hub': 'learn', 'learn_journey': 'learn',
         }
         for tag, key in expected.items():
             items = self.Item.sudo().with_context(active_test=False).search(

@@ -64,6 +64,12 @@ class PbSidebarItem(models.Model):
         'pb_workforce': 'workforce',
         'pb_lifecycle_hub': 'lifecycle',
         'pb_compliance_hub': 'compliance',
+        # RIZE W2 E1 renamed the Learn entry's tag to the hub it now opens.
+        # BOTH spellings stay: the stamp finds the entry by the surface it
+        # opens, and an entry whose tag is not in this map is never stamped at
+        # all — so a fresh install would leave the Learn mission with no part
+        # of the product against it and it would be sold to everybody.
+        'learn_hub': 'learn',
         'learn_journey': 'learn',
     }
 

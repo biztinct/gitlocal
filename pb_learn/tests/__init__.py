@@ -25,3 +25,5 @@ from . import test_nextbest
 # IA Cycle 6 — W108: screen identity vs rail reachability, split apart
 # (and the gate that would have caught the cutover going dark).
 from . import test_reachability
+# RIZE W2 E1 — the Learn mission became a hub with a soft lens registry.
+from . import test_learn_hub

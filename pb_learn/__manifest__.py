@@ -12,7 +12,10 @@
     # screen IDENTITY. The nineteen stations name the hub that reaches them
     # instead of saying "not in your menu", and _capability stops refusing
     # every screen to everybody but a super admin.
-    'version': '19.0.13.2.0',
+    # 19.0.13.3.0 — RIZE W2 E1: the rail opens a Learn HUB whose first lens is
+    # the Journey, with a soft lens registry (`pb_learn_lens`) that a later
+    # module bolts onto. Data + asset change, so it needs a `-u`.
+    'version': '19.0.13.3.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -90,6 +93,13 @@ never hand-edited here).
         'pb_import',
         'pb_import_wizard',
         'pb_payrun_ledgers',
+        # RIZE W2 E1. The shared HubShell the Learn mission is now built from,
+        # and the single Lucide `ic()` registry it draws its brand chip with.
+        # The dependency runs ONE WAY: a module that mounts a lens here depends
+        # on this one and registers through `LEARN_LENSES`, so nothing is
+        # imported back.
+        'pb_hub',
+        'pb_import_kit',
     ],
     'data': [
         'security/learn_security.xml',
@@ -149,6 +159,10 @@ never hand-edited here).
             'pb_learn/static/src/journey/journey.js',
             'pb_learn/static/src/journey/icons.xml',
             'pb_learn/static/src/journey/journey.xml',
+            # RIZE W2 E1 — the Learn mission's shell. AFTER the Journey,
+            # because it imports the Journey's component for its first lens.
+            'pb_learn/static/src/hub/learn_hub.js',
+            'pb_learn/static/src/hub/learn_hub.xml',
             # The always-on Coach, mounted in the web client shell so it
             # reaches every screen without per-screen work.
             'pb_learn/static/src/coach/coach.scss',

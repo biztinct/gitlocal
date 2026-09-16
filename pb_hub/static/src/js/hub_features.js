@@ -73,6 +73,12 @@ export const FEATURE_BY_SURFACE = {
     pb_bank_ocr: "bank_ocr",
     pb_young_worker: "young_workers",
     // -------------------------------------------------------------- Learn
+    // RIZE W2 E1: the rail opens the Learn HUB, and the Journey is its first
+    // lens. Both doors are the same part of the product — an action tag that
+    // is absent from this map is simply ON for every company, so a renamed
+    // door silently unsells a feature.
+    learn_hub: "learn",
+    "pb_learn.action_learn_hub": "learn",
     learn_journey: "learn",
     "pb_learn.action_learn_journey": "learn",
     // ------------------------------------------- inside the Pay Run mission

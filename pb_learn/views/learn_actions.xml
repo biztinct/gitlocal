@@ -10,4 +10,17 @@
         <field name="target">current</field>
     </record>
 
+    <!-- RIZE W2 E1. The Learn MISSION: the shell the rail now opens, with the
+         Journey above as its first lens and a soft registry other modules bolt
+         theirs onto. A RECORD and never a bare tag — a bare tag reaches the
+         shell with no action NAME, and anything returning through a breadcrumb
+         then reads "Unnamed" (W98). `action_learn_journey` above is untouched
+         on purpose: the Coach, the first-login greeting, the scenario runner,
+         PayAI and a command-bar row all name it by its xml-id. -->
+    <record id="action_learn_hub" model="ir.actions.client">
+        <field name="name">Learn</field>
+        <field name="tag">learn_hub</field>
+        <field name="target">current</field>
+    </record>
+
 </odoo>

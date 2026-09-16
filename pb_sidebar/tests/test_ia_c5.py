@@ -139,7 +139,11 @@ MATCH_TAGS = {
         'pb_settings_hub', 'pb_formula_studio', 'pb_structures', 'pb_statutory',
         'pb_integrations', 'pb_import_connector_cockpit',
         'pb_integration_onboarding', 'pb_tenants'],
-    'pb_learn.item_learn_journey': ['learn_journey'],
+    # RIZE W2 E1. The rail now opens the Learn HUB, whose first lens is the
+    # Journey — but the Coach, the first-login greeting, the scenario runner,
+    # PayAI and a command-bar row all still open `learn_journey` by name, and
+    # the entry has to stay lit for both (R126).
+    'pb_learn.item_learn_journey': ['learn_hub', 'learn_journey'],
 }
 
 MATCH_MODELS = {
@@ -540,6 +544,7 @@ class TestIaCycle5MatchMatrix(TransactionCase):
             ('the structures cockpit', dict(tag='pb_structures'), 'Settings'),
             ('the users list', dict(xmlid='base.action_res_users'), 'Settings'),
             ('the formula studio', dict(tag='pb_formula_studio'), 'Settings'),
+            ('the learn hub', dict(tag='learn_hub'), 'Learn'),
             ('the learn journey', dict(tag='learn_journey'), 'Learn'),
             ('the Lifecycle hub', dict(tag='pb_lifecycle_hub'), 'Lifecycle'),
             ('the journeys cockpit', dict(tag='pb_journeys'), 'Lifecycle'),

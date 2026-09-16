@@ -5526,8 +5526,13 @@ const SIDEBAR = {
     xmlid: "item_learn_journey",
     sequence: 10,
     icon: "book-open",
-    actionXmlid: "pb_learn.action_learn_journey",
-    actionTag: "learn_journey",
+    // RIZE W2 E1. The rail opens the Learn HUB, whose first lens is the
+    // Journey. The leaf claims BOTH tags, so the entry stays lit whether
+    // somebody arrived through the rail or through one of the many places
+    // that still open `action_learn_journey` by name (R126).
+    actionXmlid: "pb_learn.action_learn_hub",
+    actionTag: "learn_hub",
+    matchTags: "learn_hub,learn_journey",
     name: B("Learn", "Học cùng Payobook"),
   },
 };

@@ -18,9 +18,9 @@
         <field name="section_id" ref="sec_learn"/>
         <field name="sequence">10</field>
         <field name="icon">book-open</field>
-        <field name="action_xmlid">pb_learn.action_learn_journey</field>
-        <field name="action_tag">learn_journey</field>
-        <field name="match_action_tags">learn_journey</field>
+        <field name="action_xmlid">pb_learn.action_learn_hub</field>
+        <field name="action_tag">learn_hub</field>
+        <field name="match_action_tags">learn_hub,learn_journey</field>
     </record>
 
 </odoo>

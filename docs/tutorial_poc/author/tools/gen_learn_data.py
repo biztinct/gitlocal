@@ -1375,7 +1375,10 @@ def gen_sidebar_item(data, tr):
         ('icon', leaf['icon']),
         ('action_xmlid', leaf['actionXmlid']),
         ('action_tag', leaf['actionTag']),
-        ('match_action_tags', leaf['actionTag']),
+        # A leaf may claim MORE tags than the one it opens: RIZE W2 E1 made
+        # the rail open the Learn hub while a dozen callers still open the
+        # Journey by name, and the entry has to stay lit for both (R126).
+        ('match_action_tags', leaf.get('matchTags') or leaf['actionTag']),
     ])
     tr.add('pb.sidebar.item', 'name', leaf['xmlid'],
            en_of(leaf['name']), vi_of(leaf['name']))
