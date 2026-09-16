@@ -1581,12 +1581,11 @@ class BizApprovalEngine(models.AbstractModel):
                       step=step.title, what=request.title),
                     company=request.company_id, request=request)
             if now >= escalate_after and not step.escalated_at:
-                owner = request.version_id.workflow_id.owner_user_id
-                if owner:
+                for who in self._escalate_to(request, late):
                     self.env['biz.approval.outbox']._queue(
-                        'escalation', owner, request,
+                        'escalation', who, request,
                         payload={'step_title': step.title},
-                        dedupe='escalation-%s' % step.id)
+                        dedupe='escalation-%s-%s' % (step.id, who.id))
                 step.sudo().write({'escalated_at': now})
                 self.env['biz.approval.event']._log(
                     'escalated',
@@ -1596,6 +1595,51 @@ class BizApprovalEngine(models.AbstractModel):
                 if late.get('reassign'):
                     self._late_reassign(request, step)
         return True
+
+    def _escalate_to(self, request, late):
+        """Who hears about a step nobody has decided in time.
+
+        WHO OWNS A ROUTE IS NOT WHO CHASES IT. Until now the one and only
+        escalation address was `workflow.owner_user_id` — whoever published the
+        route, which on a database where the defaults were laid at install time
+        is an administrator. That is the right person to tell when a route is
+        BROKEN and the wrong one to tell when a manager has been sitting on a
+        day-off request for two days: the person who has to do something about
+        that is whoever holds the job the business says looks after it.
+
+        So the `late` block may now name a RESPONSIBILITY — `to_role: 'hr_lead'`
+        — and the holder for the request's own company is told, with the
+        workflow owner as the fallback when nobody holds the seat, so an
+        overdue step is never silently unescalated. A route that names no role
+        behaves exactly as it always has, which is every route on every
+        database today.
+
+        Never the acting approver: they were reminded a day earlier and this
+        is the step PAST them. Never a portal user, never an inactive one —
+        `_queue` refuses both.
+        """
+        owner = request.version_id.workflow_id.owner_user_id
+        role_key = (late or {}).get('to_role')
+        if not role_key:
+            return owner
+        role = self.env['biz.approval.role'].sudo().search(
+            [('key', '=', role_key)], limit=1)
+        if not role:
+            _logger.warning(
+                'biz_approval_workflow: the late block of "%s" names the '
+                'responsibility "%s", which is not in the catalogue',
+                request.title, role_key)
+            return owner
+        row, _via = self.env['biz.approval.responsibility'].resolve(
+            request.company_id, role, [''], fields.Date.context_today(self))
+        people = (row.user_id | row.backup_user_id) if row \
+            else self.env['res.users']
+        # The person the step is waiting ON is not told twice; they were
+        # reminded on their own account a day earlier.
+        waiting = request.step_ids.mapped('seat_ids').filtered(
+            lambda s: s.status == 'open').mapped('acting_user_id')
+        people -= waiting
+        return people or owner
 
     def _late_reassign(self, request, step):
         for seat in step.seat_ids.filtered(

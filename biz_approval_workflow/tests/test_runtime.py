@@ -340,6 +340,81 @@ class TestRuntime(ApprovalCase):
         self.assertEqual(request.state, 'pending',
                          'being late must never approve anything')
 
+    def test_t31c_late_escalates_to_the_named_responsibility(self):
+        """RIZE W2 D1 — WHO OWNS A ROUTE IS NOT WHO CHASES IT.
+
+        Until this change the one and only escalation address was whoever
+        PUBLISHED the route, which on a database where the defaults were laid
+        at install time is an administrator. That is the right person to tell
+        when a route is broken and the wrong one to tell when a manager has sat
+        on a day-off request for two days. A `late` block may now name a
+        responsibility; its holder AND their backup are told, and the person
+        the step is actually waiting on is not told twice.
+        """
+        self.hold(self.role_approver, self.bob, backup=self.carol)
+        flow, _v = self.workflow(
+            build([people_step('s1', [self.alice.id])],
+                  safeguards={'due': {'kind': 'working_days', 'days': 1},
+                              'late': {'remind_days': 1, 'escalate_days': 2,
+                                       'reassign': False,
+                                       'to_role': 'approver'}}),
+            name='Late to a role')
+        self.bind(flow)
+        request = self.reload(self.submit(self.ask())['id'])
+        step = request.step_ids.filtered('included')
+        step.sudo().write(
+            {'due_at': fields.Datetime.now() - timedelta(days=5)})
+        self.engine.escalate_cron()
+        self.engine.escalate_cron()          # idempotent
+        escalations = self.env['biz.approval.outbox'].search([
+            ('request_id', '=', request.id), ('kind', '=', 'escalation')])
+        self.assertEqual(escalations.mapped('user_id'), self.bob | self.carol,
+                         'the seat holder and their backup hear about it')
+        self.assertNotIn(self.alice, escalations.mapped('user_id'),
+                         'the person it is waiting on was reminded already')
+        self.env.invalidate_all()
+        self.assertEqual(request.state, 'pending',
+                         'being late must never approve anything')
+
+    def test_t31d_an_unheld_responsibility_falls_back_to_the_owner(self):
+        """An overdue step is never silently unescalated: a route that names a
+        responsibility nobody holds still tells whoever owns the route."""
+        flow, _v = self.workflow(
+            build([people_step('s1', [self.alice.id])],
+                  safeguards={'due': {'kind': 'working_days', 'days': 1},
+                              'late': {'remind_days': 1, 'escalate_days': 2,
+                                       'reassign': False,
+                                       'to_role': 'approver'}}),
+            name='Late to nobody')
+        self.bind(flow)
+        request = self.reload(self.submit(self.ask())['id'])
+        step = request.step_ids.filtered('included')
+        step.sudo().write(
+            {'due_at': fields.Datetime.now() - timedelta(days=5)})
+        self.engine.escalate_cron()
+        escalations = self.env['biz.approval.outbox'].search([
+            ('request_id', '=', request.id), ('kind', '=', 'escalation')])
+        self.assertEqual(escalations.mapped('user_id'), self.admin_user)
+
+    def test_t31e_a_route_that_names_no_role_is_untouched(self):
+        """Every route on every database before this change, and the reason
+        the addition is safe: no `to_role`, the owner hears about it."""
+        flow, _v = self.workflow(
+            build([people_step('s1', [self.alice.id])],
+                  safeguards={'due': {'kind': 'working_days', 'days': 1},
+                              'late': {'remind_days': 1,
+                                       'escalate_days': 2}}),
+            name='Late the old way')
+        self.bind(flow)
+        request = self.reload(self.submit(self.ask())['id'])
+        step = request.step_ids.filtered('included')
+        step.sudo().write(
+            {'due_at': fields.Datetime.now() - timedelta(days=5)})
+        self.engine.escalate_cron()
+        escalations = self.env['biz.approval.outbox'].search([
+            ('request_id', '=', request.id), ('kind', '=', 'escalation')])
+        self.assertEqual(escalations.mapped('user_id'), self.admin_user)
+
     def test_t31b_late_reassign_moves_the_seat_to_the_backup(self):
         self.hold(self.role_approver, self.alice, backup=self.carol)
         flow, _v = self.workflow(

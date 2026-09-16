@@ -117,13 +117,19 @@ def role_step(title, role, key=None, scope='company', condition=None,
             'min_amount': 0, 'condition': condition}
 
 
-def route(*steps, independent=True, due_days=2, reassign=False):
+def route(*steps, independent=True, due_days=2, reassign=False,
+          escalate_days=2, escalate_role=None):
     """A whole definition document from a list of steps.
 
     Every default route this phase ships has the same safeguards — the person
     who asked cannot approve their own, the same person is not asked twice in
     a row, and a step is chased after two working days — so they are written
     once here rather than eleven times, where they would drift.
+
+    ``escalate_role`` names a RESPONSIBILITY to tell when a step runs past its
+    deadline (`engine._escalate_to`). Left empty — which is every route shipped
+    before RIZE W2 D1 — the escalation goes to whoever published the route, as
+    it always has.
     """
     return {
         'schema_version': 1,
@@ -136,8 +142,9 @@ def route(*steps, independent=True, due_days=2, reassign=False):
             'evidence': [],
             'due': {'kind': 'working_days', 'days': due_days, 'day': 15,
                     'calendar_id': None},
-            'late': {'remind_days': 1, 'escalate_days': 2,
-                     'reassign': reassign},
+            'late': {'remind_days': 1, 'escalate_days': int(escalate_days),
+                     'reassign': reassign,
+                     'to_role': escalate_role or None},
         },
     }
 
