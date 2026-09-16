@@ -662,6 +662,9 @@ class TestSchedules(AssignmentCase):
         assigns it to them again on every single run."""
         dept = self.env['hr.department'].create({'name': 'DEMO Done team'})
         self.e_one.department_id = dept.id
+        # Finished BEFORE the schedule ever ran — which is the whole point,
+        # and which means they have to be on the course first.
+        self.simple._action_add_members(self.u_one.partner_id)
         self._finish(self.u_one, self.simple, [self.simple_lesson])
         schedule = self.env['pb.training.schedule'].create({
             'name': 'DEMO Yearly, for somebody who has done it',
