@@ -377,6 +377,18 @@ class HrLeaveApproval(models.Model):
 
     # ------------------------------------------------------------- the seed
     @api.model
+    def _approval_escalate_days(self):
+        """How long a step may sit past its deadline before the HR lead is
+        told. A dial rather than a number in code (`pb_timeoff.escalate_days`,
+        2) — how long is too long is a business fact."""
+        raw = self.env['ir.config_parameter'].sudo().get_param(
+            'pb_timeoff.escalate_days')
+        try:
+            return max(0, int(raw)) if raw not in (None, False, '') else 2
+        except (TypeError, ValueError):
+            return 2
+
+    @api.model
     def _approval_seed_default(self, company):
         Seed = self.env['biz.approval.seed']
         Seed.fill_role_from_group(company, 'hr_lead', OFFICER_GROUP)
@@ -391,6 +403,15 @@ class HrLeaveApproval(models.Model):
                     _('HR lead'), 'hr_lead',
                     condition={'fact': 'validation_type', 'op': 'in',
                                'value': ['hr', 'both']}),
+                escalate_days=self._approval_escalate_days(),
+                # WHO GETS TOLD WHEN A MANAGER SITS ON A DAY-OFF REQUEST.
+                # Without this the engine's only escalation address is
+                # whoever PUBLISHED the route, which on this database is an
+                # administrator — so the sheet's "tell HR after two days"
+                # reached nobody in HR. It goes through the engine's own late
+                # block; a second chaser of our own is exactly what the
+                # Approval Matrix exists to prevent.
+                escalate_role='hr_lead',
             ),
             binding_note='What each kind of time off already asked for: the '
                          'manager, an officer, or both.',

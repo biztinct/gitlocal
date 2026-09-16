@@ -191,6 +191,18 @@ class PbTimeoff(models.AbstractModel):
             'note': lv.name or '',
             'can_approve': bool(lv.can_approve),
             'can_refuse': bool(getattr(lv, 'can_refuse', True)),
+            # D1 — asked for AFTER the days had gone. A fact written once,
+            # when the request was made, so an ordinary request does not
+            # become backdated by getting old.
+            'backdated': bool(getattr(lv, 'pb_backdated', False)),
+            # …and the certificate, if one came with it. Names only: this
+            # card is a queue, and an officer who wants the file opens the
+            # request.
+            'papers': [
+                {'id': att.id, 'name': att.name or _('Attachment'),
+                 'url': '/web/content/%s?download=true' % att.id}
+                for att in lv.supported_attachment_ids[:4]
+            ] if 'supported_attachment_ids' in lv._fields else [],
         }
 
     def _heatmap(self, first, last):

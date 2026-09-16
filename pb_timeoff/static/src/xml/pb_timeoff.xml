@@ -90,6 +90,19 @@
                     <span class="span"><t t-esc="q.date_from"/> → <t t-esc="q.date_to"/></span>
                     <span class="dur"><t t-esc="fmtDays(q.duration)"/> d</span>
                     <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }}" t-esc="q.state_label"/>
+                    <!-- D1: asked for after the days had gone. Worth seeing
+                         before approving — the pay for that period may
+                         already have been worked out. -->
+                    <span t-if="q.backdated" class="st backdated"
+                          title="Asked for after the days had gone">Backdated</span>
+                  </div>
+                  <div t-if="q.papers.length" class="papers">
+                    <t t-foreach="q.papers" t-as="p" t-key="p.id">
+                      <a class="paper" t-att-href="p.url" t-att-title="p.name"
+                         target="_blank" rel="noopener">
+                        <span t-out="ic('check',12)"/><span t-esc="p.name"/>
+                      </a>
+                    </t>
                   </div>
                   <div t-if="q.note" class="note" t-esc="q.note"/>
                 </div>
