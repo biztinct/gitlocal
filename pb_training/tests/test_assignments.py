@@ -70,6 +70,27 @@ class AssignmentCase(TrainingCase):
             })
             return user, emp
 
+        # THE TEST NEEDS REAL QUESTIONS, and E1's fixture wrote them to
+        # `question_ids` — which is a NON-STORED COMPUTE over
+        # `question_and_page_ids` with no inverse, so the write was accepted,
+        # logged nothing and left the survey empty (R171). Anything that
+        # SCORES an attempt therefore has to put them on the writable field
+        # first, or `total_possible_score` is zero and every pass is a zero.
+        cls.survey.write({'question_and_page_ids': [
+            (0, 0, {'title': 'DEMO Scored Q1',
+                    'question_type': 'simple_choice', 'sequence': 1,
+                    'suggested_answer_ids': [
+                        (0, 0, {'value': 'Right', 'is_correct': True,
+                                'answer_score': 1}),
+                        (0, 0, {'value': 'Wrong', 'answer_score': 0})]}),
+            (0, 0, {'title': 'DEMO Scored Q2',
+                    'question_type': 'simple_choice', 'sequence': 2,
+                    'suggested_answer_ids': [
+                        (0, 0, {'value': 'Right', 'is_correct': True,
+                                'answer_score': 1}),
+                        (0, 0, {'value': 'Wrong', 'answer_score': 0})]}),
+        ]})
+
         cls.u_one, cls.e_one = person('tr.one', 'DEMO Bùi Hữu Dũng')
         cls.u_two, cls.e_two = person('tr.two', 'DEMO Tran Thi Hoa')
         cls.u_three, cls.e_three = person('tr.three', 'DEMO Le Van Nam')
@@ -225,19 +246,48 @@ class TestCompletion(AssignmentCase):
         self.assertTrue(row.completed_on)
 
     def test_t3_passing_the_test_finishes_it_and_keeps_the_score(self):
+        """The attempt is opened through the real door and then SCORED BY A
+        WRITE, never by a create.
+
+        `scoring_percentage` and `scoring_success` are STORED COMPUTES over
+        the answer lines (`survey_user_input.py:53-55`), so a value handed to
+        `create` is overwritten by the compute the moment the row lands — the
+        attempt comes back scored zero and the assignment reads "under way"
+        over a test somebody has passed. A write after the fact sticks,
+        because nothing the write touches is in the compute's `depends`.
+        (R171's shape, from the scoring side.)
+        """
         row = self.Assignment.create({
             'channel_id': self.course.id,
             'employee_id': self.e_one.id,
         })
+        me = self.env['pb.my.training'].with_user(self.u_one)
         self._finish_every_lesson(self.u_one)
-        answer = self.env['survey.user_input'].sudo().create({
-            'survey_id': self.survey.id,
-            'partner_id': self.u_one.partner_id.id,
-            'slide_id': self.test_slide.id,
-            'scoring_percentage': 100.0,
-            'scoring_success': True,
-        })
+        me.start_test(self.course.id)
+        answer = self.env['survey.user_input'].sudo().search(
+            [('survey_id', '=', self.survey.id),
+             ('partner_id', '=', self.u_one.partner_id.id)], limit=1)
+        self.assertTrue(answer, 'the test did not open')
+        self.assertTrue(self.survey.question_count,
+                        'the test has no questions, so nothing can be scored')
+        # ANSWERED PROPERLY, never scored by hand: `_mark_done` rewrites
+        # `predefined_question_ids`, which is in `_compute_scoring_values`'s
+        # own depends — so a score written before it is recomputed straight
+        # back to zero and the pass silently becomes a fail.
+        for question in self.survey.question_and_page_ids.filtered(
+                lambda q: not q.is_page):
+            right = question.suggested_answer_ids.filtered('is_correct')[:1]
+            self.env['survey.user_input.line'].sudo().create({
+                'user_input_id': answer.id,
+                'question_id': question.id,
+                'answer_type': 'suggestion',
+                'suggested_answer_id': right.id,
+            })
         answer._mark_done()
+        self.env.flush_all()
+        answer.invalidate_recordset()
+        self.assertTrue(answer.scoring_success,
+                        'the engine did not score the attempt as a pass')
         row.invalidate_recordset()
         row._refresh_one()
         self.assertEqual(row.state, 'done')
@@ -903,11 +953,18 @@ class TestE2Gates(TransactionCase):
 
     def test_t1_no_cron_carries_a_field_odoo_19_removed(self):
         """`numbercall` and `doall` were REMOVED from ir.cron, and including
-        either ABORTS THE WHOLE MODULE LOAD."""
-        src = self._read('data/ir_cron.xml')
-        self.assertNotIn('numbercall', src)
-        self.assertNotIn('"doall"', src)
-        self.assertNotIn("'doall'", src)
+        either ABORTS THE WHOLE MODULE LOAD.
+
+        COMMENTS ARE STRIPPED FIRST (R118): the sentence that stops the next
+        contributor reintroducing the bug has to be able to name the fields,
+        and a gate that forbids its own warning is a gate that gets deleted.
+        """
+        src = re.sub(r'<!--.*?-->', '', self._read('data/ir_cron.xml'),
+                     flags=re.S)
+        for gone in ('numbercall', 'doall'):
+            self.assertFalse(
+                re.search(r'name="%s"' % gone, src),
+                'the cron carries %s, which aborts the module load' % gone)
 
     def test_t1_the_cron_exists_and_is_active(self):
         cron = self.env.ref('pb_training.cron_training_daily')

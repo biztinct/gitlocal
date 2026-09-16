@@ -472,7 +472,15 @@ class PbTrainingAssignment(models.Model):
         user = self.employee_id.sudo().user_id
         if user and self.due_date:
             try:
-                self.activity_schedule(
+                # `mail_activity_quick_update` STOPS THE ENGINE'S OWN SECOND
+                # EMAIL. `mail.activity.create` notifies the assignee by mail
+                # (mail_activity.py:285-293) unless this key is in the
+                # context — so without it the person gets our "a course has
+                # been added to your training" AND a generic activity
+                # notification about the same thing, in the same second. The
+                # to-do still lands on their list; only the duplicate goes.
+                self.with_context(
+                    mail_activity_quick_update=True).activity_schedule(
                     act_type_xmlid='mail.mail_activity_data_todo',
                     summary=_("Training: %s", self.channel_id.sudo().name
                               or ''),
