@@ -2247,7 +2247,9 @@ without owner approval between them.
   company may have only one open year) and **44** "DEMO Goal year 2026 (small
   team)" (company 2, the seven-person company the "Open it for everyone"
   button was proved on twice); goal sheets **204–211** on company 5,
-  **212–218** on company 2 and **320** for the kick-off joiner; goal templates
+  **197–203** on company 2 and **320** for the kick-off joiner (**205** is the
+  one that went the whole route and is agreed and locked; **206** is the one
+  that was sent back, resubmitted and is waiting on its manager); goal templates
   **13–15**; employees **20637** "DEMO Joiner Quyen" and **20638** "DEMO
   Joiner Trang" with their joining checklists **108/109**, which proved the
   new step both with a goal year open and with none. **Three things were
