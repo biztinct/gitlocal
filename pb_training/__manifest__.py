@@ -35,6 +35,19 @@ WHAT THIS MODULE IS
   * **Who has done what.** One board: the courses, how many are on each, how
     far the average person has got, who has passed the test and who has not
     started.
+  * **A training allowance, and a way to claim a course back.** One figure a
+    year per company, with a figure of their own for anyone who needs one. An
+    employee who pays for an outside course themselves puts the receipt and
+    the certificate on their own page and asks for it back; the HR lead
+    agrees it and it becomes a one-off amount the pay team pays with a pay
+    run. Nothing here writes a payslip.
+  * **The numbers.** How much of what was set has been finished, how many
+    passed the test, who is late and by how long, broken down by department,
+    by course and by why — with a spreadsheet, and a short pack by email
+    every week or every month if you want one.
+  * **Certificates on the employee record.** A test that is passed files its
+    certificate in the person's own document folder, beside their contract and
+    their ID, so it is still there when the course is not.
 
 WHAT IT DELIBERATELY DOES NOT DO. It does not rebuild a video player, a
 progress tracker, a quiz engine, a question bank or a certificate generator.
@@ -43,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -77,6 +90,15 @@ public.
         'pb_probation',         # pb.training.track / item / status
         'biz_approval_workflow',  # the one approval engine (ruling: never a
                                   # new chain)
+        # E3. THE ONE MONEY DOOR AND THE ONE DOCUMENT DRAWER, both named
+        # because this module writes into them. `pb_comp_ben` owns
+        # `pb.incentive` and the one-off pay-run lane an agreed claim becomes
+        # an award on — a reimbursement never touches a payslip any other way;
+        # `pb_employee_vault` owns the document store a certificate is filed
+        # in. `pb_insights_hub` owns the hub the Training numbers lens joins.
+        'pb_comp_ben',
+        'pb_employee_vault',
+        'pb_insights_hub',
     ],
     'data': [
         'security/pb_training_security.xml',
@@ -85,8 +107,10 @@ public.
         'data/ir_cron.xml',
         'data/approval_process.xml',
         'data/mail_template_assignments.xml',
+        'data/mail_template_claims.xml',
         'data/journey_step.xml',
         'views/assignment_views.xml',
+        'views/claim_views.xml',
         'views/training_views.xml',
         'views/portal_templates.xml',
         'views/survey_skin.xml',
@@ -95,8 +119,10 @@ public.
         'web.assets_backend': [
             'pb_training/static/src/scss/training.scss',
             'pb_training/static/src/js/training_board.js',
+            'pb_training/static/src/js/training_numbers.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
+            'pb_training/static/src/xml/training_numbers.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

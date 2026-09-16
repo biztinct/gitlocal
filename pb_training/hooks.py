@@ -51,9 +51,39 @@ _logger = logging.getLogger(__name__)
 
 def post_init_hook(env):
     _seed_switches(env)
+    _seed_routes(env)
     _sweep_mail_templates(env)
     _sweep_rows(env)
     _close_the_public_courses(env)
+
+
+def _seed_routes(env):
+    """The default approval routes, on a database seeing this module for the
+    first time.
+
+    WHY THIS IS HERE AS WELL AS IN A MIGRATION, and it is not a duplicate. A
+    migration runs on a database that already HAS the module and never on a
+    fresh install; `post_init_hook` runs on a fresh install and never on `-u`.
+    The two together are the whole of "every database ends up with a route",
+    and either one alone leaves half of them without one — which does not
+    break anything visibly, and quietly means nobody's inbox ever shows a
+    training request.
+
+    `Seed.lay` asks the database what is already there before it creates
+    anything, so running both on the same database is running one.
+    """
+    for module, label in (('delay_approval', 'more time on a course'),
+                          ('claim_approval', 'training claims')):
+        try:
+            seed_all = __import__(
+                'odoo.addons.pb_training.models.%s' % module,
+                fromlist=['seed_all']).seed_all
+            laid = seed_all(env)
+            _logger.info('pb_training: the "%s" route was laid for %s '
+                         'compan(ies)', label, laid)
+        except Exception:               # noqa: BLE001 — never fail an install
+            _logger.warning('pb_training: the default "%s" route could not be '
+                            'seeded', label, exc_info=True)
 
 
 def _seed_switches(env):
