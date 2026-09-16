@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/training` reuses `pb_me_portal`'s .pbme kit — the same hero, the
+       same cards, the same empty state — so it looks like it was always
+       part of the employee's own area rather than bolted on. Everything
+       specific to training is under .pbtr.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be called
+       from QWeb, so the glyphs these pages use are inlined here, exactly as
+       pb_lifecycle's token pages, pb_me_portal's ess_icon and pb_hiring's
+       hr_icon do. Lucide paths, never emoji.
+
+       W87: the icon name is passed with t-value="'name'", NEVER as a t-set
+       BODY — a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false
+       and every icon falls through to the else branch.
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42): in a server-side
+       template the dict form writes the Python repr into the attribute AND
+       drops the static class. No `t-key` anywhere (R5) — that is an OWL
+       directive. No render key called `request` (R4).
+       ================================================================== -->
+  <template id="tr_icon" name="Training page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbtr-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'checkCircle'"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></t>
+      <t t-elif="icon == 'circle'"><circle cx="12" cy="12" r="9"/></t>
+      <t t-elif="icon == 'play'"><polygon points="6 3 20 12 6 21 6 3"/></t>
+      <t t-elif="icon == 'fileText'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'bookOpen'"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></t>
+      <t t-elif="icon == 'eye'"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></t>
+      <t t-elif="icon == 'checkCheck'"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></t>
+      <t t-elif="icon == 'graduationCap'"><path d="M22 10v6"/><path d="M6 12.5V16c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-3.5"/><path d="M2 10 12 5l10 5-10 5z"/></t>
+      <t t-elif="icon == 'award'"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'alert'"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'download'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></t>
+      <t t-elif="icon == 'arrowRight'"><path d="M5 12h14M12 5l7 7-7 7"/></t>
+      <t t-elif="icon == 'arrowLeft'"><path d="M19 12H5M12 19l-7-7 7-7"/></t>
+      <t t-elif="icon == 'x'"><path d="M18 6 6 18M6 6l12 12"/></t>
+      <t t-elif="icon == 'target'"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></t>
+      <t t-elif="icon == 'sparkles'"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_training" name="Training portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="44">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'training'" class="breadcrumb-item active">My training</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================
+       ALWAYS DRAWN, with a lazily-fetched counter. A card whose PRESENCE is
+       conditional on a counter is never drawn at all, because
+       portal.portal_my_home fetches its counters after the page has
+       rendered (R62). Everybody can be put on a course, so there is nothing
+       to gate on anyway. -->
+  <template id="portal_my_home_training" name="Training home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="44">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My training</t>
+        <t t-set="text">The courses you are on, what is left to do, and the test at the end of each one</t>
+        <t t-set="url" t-value="'/my/training'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'training_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  the notice bar, said once                                        -->
+  <!-- ================================================================= -->
+  <template id="tr_notices" name="Training notices">
+    <div t-if="notice" class="pbtr-notice">
+      <t t-call="pb_training.tr_icon"><t t-set="icon" t-value="'check'"/></t>
+      <span t-esc="notice"/>
+    </div>
+    <div t-if="problem" class="pbtr-notice pbtr-notice--bad">
+      <t t-call="pb_training.tr_icon"><t t-set="icon" t-value="'alert'"/></t>
+      <span t-esc="problem"/>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/training                                                     -->
+  <!-- ================================================================= -->
+  <template id="portal_my_training" name="My training (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+
+        <t t-call="pb_training.tr_notices"/>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your training</t>
+          <t t-set="hero_sub">Everything you have been put on, how far through it you are, and what is left.</t>
+        </t>
+
+        <!-- ==================== the three numbers ==================== -->
+        <div t-if="me['courses']" class="pbme-tiles pbtr-tiles">
+          <div class="pbme-tile">
+            <div class="pbme-tile-l">Under way</div>
+            <div class="pbme-tile-v"><t t-esc="me['in_progress']"/></div>
+            <div class="pbme-tile-y">course<t t-if="me['in_progress'] != 1">s</t> still to finish</div>
+          </div>
+          <div class="pbme-tile">
+            <div class="pbme-tile-l">Finished</div>
+            <div class="pbme-tile-v"><t t-esc="me['finished']"/></div>
+            <div class="pbme-tile-y">done from start to end</div>
+          </div>
+          <div class="pbme-tile">
+            <div class="pbme-tile-l">Tests passed</div>
+            <div class="pbme-tile-v"><t t-esc="me['passed']"/></div>
+            <div class="pbme-tile-y">certificate<t t-if="me['passed'] != 1">s</t> you can download</div>
+          </div>
+        </div>
+
+        <!-- ==================== nothing yet ==================== -->
+        <div t-if="not me['courses']" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'graduationCap'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>Nothing assigned to you yet</h3>
+          <p class="pbme-muted">
+            When the training team puts you on a course it appears here, with
+            its lessons, how far through you are and the test at the end. There
+            is nothing for you to sign up to and nothing to look for.
+          </p>
+        </div>
+
+        <!-- ==================== the courses ==================== -->
+        <div t-if="me['courses']" class="pbtr-grid">
+          <div t-foreach="me['courses']" t-as="crs" class="pbme-card pbtr-course">
+
+            <div class="pbtr-course-top">
+              <div class="pbtr-course-id">
+                <h3 class="pbtr-course-name"><t t-esc="crs['name']"/></h3>
+                <p t-if="crs['blurb']" class="pbtr-course-blurb"><t t-esc="crs['blurb']"/></p>
+              </div>
+              <div t-if="crs['finished']" class="pbtr-done-seal" title="Finished">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'checkCircle'"/>
+                  <t t-set="isz" t-value="22"/>
+                </t>
+              </div>
+            </div>
+
+            <div class="pbtr-bar">
+              <div class="pbtr-bar-fill"
+                   t-attf-style="width: #{crs['percent']}%;"/>
+            </div>
+            <div class="pbtr-bar-say">
+              <span><b t-esc="crs['done']"/> of <t t-esc="crs['total']"/> lessons done</span>
+              <span t-if="crs['duration']" class="pbtr-muted">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'clock'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                <t t-esc="crs['duration']"/>
+              </span>
+            </div>
+
+            <div class="pbtr-chips">
+              <span t-if="crs['test'] == 'locked'" class="pbtr-chip pbtr-chip--wait">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'lock'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                Test locked
+              </span>
+              <span t-if="crs['test'] == 'ready'" class="pbtr-chip pbtr-chip--go">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'target'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                Test ready
+              </span>
+              <span t-if="crs['test'] == 'passed'" class="pbtr-chip pbtr-chip--ok">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'award'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                Passed<t t-if="crs['score'] != None"> · <t t-esc="crs['score']"/>%</t>
+              </span>
+              <span t-if="crs['test'] == 'failed'" class="pbtr-chip pbtr-chip--bad">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'alert'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                Not passed<t t-if="crs['score'] != None"> · <t t-esc="crs['score']"/>%</t>
+              </span>
+            </div>
+
+            <div class="pbtr-course-act">
+              <a t-if="crs['next_id']"
+                 t-attf-href="/my/training/#{crs['id']}/#{crs['next_id']}"
+                 class="pbme-btn pbtr-btn--primary">
+                Continue
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'arrowRight'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+              </a>
+              <a t-attf-href="/my/training/#{crs['id']}" class="pbme-btn">
+                <t t-if="crs['next_id']">All lessons</t>
+                <t t-else="">Open the course</t>
+              </a>
+            </div>
+            <p t-if="crs['next_id']" class="pbtr-nextline">
+              Next: <t t-esc="crs['next_name']"/>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/training/&lt;course&gt;                                      -->
+  <!-- ================================================================= -->
+  <template id="portal_training_course" name="A course (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+
+        <t t-call="pb_training.tr_notices"/>
+
+        <a href="/my/training" class="pbtr-back">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowLeft'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          All my training
+        </a>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Course</t>
+          <t t-set="hero_title" t-value="course['name']"/>
+          <t t-set="hero_sub" t-value="course['blurb']"/>
+        </t>
+
+        <!-- ==================== where they are ==================== -->
+        <div class="pbme-card pbtr-progress">
+          <div class="pbtr-progress-say">
+            <div>
+              <div class="pbtr-progress-n"><t t-esc="course['percent']"/>%</div>
+              <div class="pbtr-muted">
+                <b t-esc="course['done']"/> of <t t-esc="course['total']"/> lessons done<t t-if="course['duration']"> · <t t-esc="course['duration']"/> in all</t>
+              </div>
+            </div>
+            <a t-if="course['next_id']"
+               t-attf-href="/my/training/#{course['id']}/#{course['next_id']}"
+               class="pbme-btn pbtr-btn--primary">
+              <t t-if="course['done']">Carry on</t><t t-else="">Start</t>
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'arrowRight'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+            </a>
+          </div>
+          <div class="pbtr-bar">
+            <div class="pbtr-bar-fill"
+                 t-attf-style="width: #{course['percent']}%;"/>
+          </div>
+        </div>
+
+        <!-- ==================== the lessons ==================== -->
+        <div t-if="not course['groups']" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'bookOpen'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>There is nothing in this course yet</h3>
+          <p class="pbme-muted">The training team is still writing it. It will
+             fill in here as they add lessons.</p>
+        </div>
+
+        <div t-foreach="course['groups']" t-as="grp" class="pbtr-group">
+          <h4 t-if="grp['name']" class="pbtr-group-name"><t t-esc="grp['name']"/></h4>
+          <div class="pbme-card pbtr-lessons">
+            <a t-foreach="grp['lessons']" t-as="lsn"
+               t-attf-href="/my/training/#{course['id']}/#{lsn['id']}"
+               t-attf-class="pbtr-lesson #{lsn['done'] and 'pbtr-lesson--done' or ''} #{lsn['id'] == highlight and 'pbtr-lesson--hi' or ''}">
+              <span t-attf-class="pbtr-tick #{lsn['done'] and 'pbtr-tick--on' or ''}">
+                <t t-if="lsn['done']">
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'check'"/>
+                    <t t-set="isz" t-value="14"/>
+                  </t>
+                </t>
+              </span>
+              <span class="pbtr-lesson-ic">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="lsn['icon']"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+              </span>
+              <span class="pbtr-lesson-main">
+                <span class="pbtr-lesson-name"><t t-esc="lsn['name']"/></span>
+                <span class="pbtr-lesson-meta">
+                  <t t-esc="lsn['kind_word']"/><t t-if="lsn['duration']"> · <t t-esc="lsn['duration']"/></t>
+                </span>
+              </span>
+              <span class="pbtr-lesson-go">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'arrowRight'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ==================== the test ==================== -->
+        <div t-if="course['test']"
+             t-attf-class="pbme-card pbtr-test pbtr-test--#{course['test']['state']}">
+          <div class="pbtr-test-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="course['test']['state'] == 'passed' and 'award' or 'graduationCap'"/>
+              <t t-set="isz" t-value="26"/>
+            </t>
+          </div>
+          <div class="pbtr-test-main">
+            <h4 class="pbtr-test-name"><t t-esc="course['test']['name']"/></h4>
+
+            <!-- locked -->
+            <t t-if="course['test']['state'] == 'locked'">
+              <p class="pbtr-muted">Finish every lesson first —
+                 <b><t t-esc="course['test']['left_words']"/></b> to go.</p>
+            </t>
+
+            <!-- ready -->
+            <t t-if="course['test']['state'] == 'ready'">
+              <p class="pbtr-muted">
+                <t t-esc="course['test']['questions']"/> question<t t-if="course['test']['questions'] != 1">s</t>.
+                Pass mark <t t-esc="course['test']['pass_mark']"/>%.<t t-if="course['test']['time_limit']"> You have <t t-esc="course['test']['time_limit']"/> minutes.</t>
+                <t t-if="course['test']['attempts_left'] != None">
+                  <t t-esc="course['test']['attempts_left']"/> go<t t-if="course['test']['attempts_left'] != 1">es</t> left.
+                </t>
+              </p>
+            </t>
+
+            <!-- passed -->
+            <t t-if="course['test']['state'] == 'passed'">
+              <p class="pbtr-muted">You passed with
+                 <b><t t-esc="course['test']['score']"/>%</b>. Pass mark was
+                 <t t-esc="course['test']['pass_mark']"/>%.</p>
+            </t>
+
+            <!-- not passed -->
+            <t t-if="course['test']['state'] == 'failed'">
+              <p class="pbtr-muted">You scored
+                 <b><t t-esc="course['test']['score']"/>%</b> and the pass mark
+                 is <t t-esc="course['test']['pass_mark']"/>%.<t t-if="course['test']['attempts_left'] != None">
+                 <t t-esc="course['test']['attempts_left']"/> go<t t-if="course['test']['attempts_left'] != 1">es</t> left.</t></p>
+            </t>
+          </div>
+
+          <div class="pbtr-test-act">
+            <form t-if="course['test']['state'] in ('ready', 'failed') and (course['test']['attempts_left'] == None or course['test']['attempts_left'] &gt; 0)"
+                  t-attf-action="/my/training/#{course['id']}/test" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <button type="submit" class="pbme-btn pbtr-btn--primary">
+                <t t-if="course['test']['state'] == 'failed'">Try again</t>
+                <t t-else="">Take the test</t>
+              </button>
+            </form>
+            <a t-if="course['test']['certificate']"
+               t-attf-href="/my/training/#{course['id']}/certificate"
+               class="pbme-btn pbtr-btn--primary">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'download'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+              Download certificate
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/training/&lt;course&gt;/&lt;lesson&gt;                        -->
+  <!-- ================================================================= -->
+  <template id="portal_training_lesson" name="A lesson (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr pbtr-lessonpage">
+
+        <!-- `result` and `chosen` are set on BOTH paths through the
+             controller, never defaulted here: QWeb raises on a name it has
+             never heard of, so a `t-set` reading the name it is defaulting is
+             the very error it was meant to prevent, and a missing key on a
+             `t-if` is a 500 for the whole page. -->
+        <t t-set="notice" t-value="''"/>
+        <t t-call="pb_training.tr_notices"/>
+
+        <a t-attf-href="/my/training/#{lesson['channel_id']}" class="pbtr-back">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowLeft'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          <t t-esc="lesson['channel_name']"/>
+        </a>
+
+        <div class="pbtr-lesson-head">
+          <div>
+            <div class="pbme-eyebrow">
+              Lesson <t t-esc="lesson['position']"/> of <t t-esc="lesson['total']"/>
+              · <t t-esc="lesson['kind_word']"/><t t-if="lesson['duration']"> · <t t-esc="lesson['duration']"/></t>
+            </div>
+            <h1 class="pbme-h1"><t t-esc="lesson['name']"/></h1>
+          </div>
+          <span t-if="lesson['done']" class="pbtr-chip pbtr-chip--ok">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'check'"/>
+              <t t-set="isz" t-value="13"/>
+            </t>
+            Done
+          </span>
+        </div>
+
+        <p t-if="lesson['description']" class="pbtr-lesson-desc">
+          <t t-esc="lesson['description']"/>
+        </p>
+
+        <!-- ==================== what is on the page ==================== -->
+        <div class="pbme-card pbtr-stage">
+          <div t-if="lesson['embed']" class="pbtr-frame">
+            <t t-out="lesson['embed']"/>
+          </div>
+          <div t-elif="lesson['pdf_url']" class="pbtr-frame pbtr-frame--doc">
+            <iframe t-att-src="lesson['pdf_url']" title="Document"
+                    loading="lazy"/>
+          </div>
+          <div t-elif="lesson['image_url']" class="pbtr-image">
+            <img t-att-src="lesson['image_url']" t-att-alt="lesson['name']"/>
+          </div>
+          <div t-elif="lesson['article']" class="pbtr-article">
+            <t t-out="lesson['article']"/>
+          </div>
+          <div t-elif="not lesson['quiz']" class="pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'fileText'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h3>There is nothing in this lesson yet</h3>
+            <p class="pbme-muted">Tell the training team — it has a name but
+               no content behind it.</p>
+          </div>
+
+          <!-- ==================== the quiz ==================== -->
+          <div t-if="lesson['quiz']" class="pbtr-quiz">
+            <div t-if="result" t-attf-class="pbtr-quiz-say #{result['passed'] and 'pbtr-quiz-say--ok' or 'pbtr-quiz-say--bad'}">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="result['passed'] and 'checkCircle' or 'alert'"/>
+                <t t-set="isz" t-value="17"/>
+              </t>
+              <span t-esc="result['message']"/>
+            </div>
+
+            <form t-attf-action="/my/training/#{lesson['channel_id']}/#{lesson['id']}/quiz"
+                  method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="next_id" t-att-value="lesson['next_id']"/>
+
+              <div t-foreach="lesson['questions']" t-as="qst"
+                   t-attf-class="pbtr-q #{result and qst['id'] in result['wrong'] and 'pbtr-q--wrong' or ''} #{result and qst['id'] in result['right'] and 'pbtr-q--right' or ''}">
+                <p class="pbtr-q-text">
+                  <t t-esc="qst['text']"/>
+                  <span t-if="result and qst['id'] in result['wrong']" class="pbtr-q-flag">have another look</span>
+                </p>
+                <label t-foreach="qst['answers']" t-as="ans" class="pbtr-a">
+                  <input type="radio" t-attf-name="q#{qst['id']}"
+                         t-att-value="ans['id']"
+                         t-att-checked="chosen and ans['id'] in chosen and 'checked' or None"/>
+                  <span t-esc="ans['text']"/>
+                </label>
+              </div>
+
+              <button type="submit" class="pbme-btn pbtr-btn--primary">
+                <t t-if="result">Check again</t><t t-else="">Check my answers</t>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ==================== the foot ==================== -->
+        <div class="pbtr-foot">
+          <a t-if="lesson['prev_id']"
+             t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['prev_id']}"
+             class="pbme-btn">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'arrowLeft'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            <t t-esc="lesson['prev_name']"/>
+          </a>
+          <span t-else="" class="pbtr-foot-gap"/>
+
+          <div class="pbtr-foot-main">
+            <form t-if="not lesson['quiz'] and not lesson['done']"
+                  t-attf-action="/my/training/#{lesson['channel_id']}/#{lesson['id']}/done"
+                  method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="next_id" t-att-value="lesson['next_id']"/>
+              <button type="submit" class="pbme-btn pbtr-btn--primary pbtr-btn--big">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'check'"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+                Mark as done
+              </button>
+            </form>
+            <a t-if="lesson['done'] and lesson['next_id']"
+               t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['next_id']}"
+               class="pbme-btn pbtr-btn--primary pbtr-btn--big">
+              Next lesson
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'arrowRight'"/>
+                <t t-set="isz" t-value="16"/>
+              </t>
+            </a>
+            <a t-if="lesson['done'] and not lesson['next_id']"
+               t-attf-href="/my/training/#{lesson['channel_id']}"
+               class="pbme-btn pbtr-btn--primary pbtr-btn--big">
+              Back to the course
+            </a>
+          </div>
+
+          <a t-if="lesson['next_id']"
+             t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['next_id']}"
+             class="pbme-btn pbtr-foot-next">
+            <t t-esc="lesson['next_name']"/>
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'arrowRight'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+          </a>
+          <span t-else="" class="pbtr-foot-gap"/>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

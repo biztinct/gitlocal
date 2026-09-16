@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Training lens.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the whole template dies with a
+       compile error pointing at nothing useful (R1). The loops here are
+       `crs`, `lsn`, `per` and `emp`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form MERGES with the static class. In a
+       server-side `<template>` the same thing writes the Python repr into the
+       attribute and drops the static class (R42).
+
+       Every scrim is a DIRECT CHILD of the root div and holds exactly one
+       `.pbim-modal` (R114/R115).
+       ==================================================================== -->
+  <t t-name="pb_training.PbTrainingBoard">
+    <div class="pbim pbim-page pbtn"
+         t-att-class="{ 'pbtn--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the training board…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no training access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel pbtn-empty">
+          <div class="pbtn-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Training is looked after by the training team</h2>
+          <p>This is where the courses live — what is in each one, who has been
+             put on it, how far they have got and who has passed the test at
+             the end. Your own training is on your employee page; ask your HR
+             administrator if you should be able to run courses from here.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbtn-head">
+            <div class="pbtn-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Training</h1>
+              <p class="pbim-sub">Every course, who is on it, and how far they
+                 have got.</p>
+            </div>
+            <div class="pbtn-head-actions">
+              <button class="pbim-btn ghost" t-on-click="load"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn ghost"
+                      t-on-click="() => this.act('open_questions', {}, { reload: false })"
+                      title="Every question you have written, whichever test it was written for">
+                <t t-out="ic('list',15)"/> Question bank
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="() => this.act('new_test', {}, { reload: false })">
+                <t t-out="ic('target',15)"/> New test
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="() => this.act('new_course', {}, { reload: false })">
+                <t t-out="ic('plus',15)"/> New course
+              </button>
+            </div>
+          </div>
+
+          <!-- ===================== the numbers ===================== -->
+          <div class="pbim-stats pbtn-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('bookOpen',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.courses or 0"/>
+                <div class="l">Courses</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic blue"><t t-out="ic('users',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.members or 0"/>
+                <div class="l">People on a course</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.not_started }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.not_started or 0"/>
+                <div class="l">Not started</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.finished or 0"/>
+                <div class="l">Finished the course</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('award',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n">
+                  <t t-esc="state.kpis.passed or 0"/><span class="pbtn-of">of <t t-esc="state.kpis.taken or 0"/></span>
+                </div>
+                <div class="l">Passed the test</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic teal"><t t-out="ic('target',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="passRate"/>
+                <div class="l">Pass rate</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== the search ===================== -->
+          <div t-if="state.courses.length" class="pbtn-filters">
+            <input class="pbtn-in pbtn-search" type="search"
+                   placeholder="Find a course by name"
+                   t-model="state.search"/>
+            <span class="pbtn-headline" t-esc="headline"/>
+          </div>
+
+          <!-- ============ nothing has been written yet ============ -->
+          <div t-if="!state.courses.length" class="pbim-panel pbtn-empty">
+            <div class="pbtn-empty-ic"><t t-out="ic('graduationCap',30)"/></div>
+            <h2>No courses yet</h2>
+            <p>Three steps and your first course is live:</p>
+            <ol class="pbtn-steps">
+              <li><b>Make a course.</b> Give it a name and drop in the lessons —
+                  a video, a document, something to read, a few questions.</li>
+              <li><b>Add a test, if you want one.</b> A set of questions with a
+                  pass mark. Put it at the end of the course and nobody can take
+                  it until every lesson is done.</li>
+              <li><b>Put people on it.</b> Search for them by name. It appears on
+                  their own training page straight away.</li>
+            </ol>
+            <div class="pbtn-empty-act">
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="() => this.act('new_course', {}, { reload: false })">
+                <t t-out="ic('plus',15)"/> Make the first course
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ found nothing for this search ============ -->
+          <div t-elif="!rows.length" class="pbim-panel pbtn-empty">
+            <div class="pbtn-empty-ic"><t t-out="ic('search',28)"/></div>
+            <h2>No course matches that</h2>
+            <p>There <t t-esc="state.courses.length === 1 ? 'is 1 course' : 'are ' + state.courses.length + ' courses'"/> here. Clear the box to see them all.</p>
+          </div>
+
+          <!-- ===================== the courses ===================== -->
+          <div t-else="" class="pbtn-grid">
+            <div t-foreach="rows" t-as="crs" t-key="crs.id"
+                 class="pbim-panel pbtn-card"
+                 t-att-class="{ 'pbtn-card--on': crs.id === state.openId }"
+                 t-on-click="() => this.openCourse(crs.id)">
+
+              <div class="pbtn-card-top">
+                <h3 class="pbtn-card-name"><t t-esc="crs.name"/></h3>
+                <span t-if="!crs.published" class="pbim-badge draft">
+                  Not published
+                </span>
+              </div>
+
+              <div class="pbtn-card-meta">
+                <span><t t-out="ic('bookOpen',13)"/> <t t-esc="crs.lessons"/> <t t-esc="crs.lessons === 1 ? 'lesson' : 'lessons'"/></span>
+                <span t-if="crs.duration"><t t-out="ic('clock',13)"/> <t t-esc="crs.duration"/></span>
+                <span t-if="crs.has_test"><t t-out="ic('target',13)"/> Test, pass <t t-esc="crs.pass_mark"/>%</span>
+                <span t-else="" class="pbtn-dim"><t t-out="ic('minus',13)"/> No test</span>
+              </div>
+
+              <div class="pbtn-bar">
+                <div class="pbtn-bar-fill"
+                     t-attf-style="width: {{ crs.average }}%;"/>
+              </div>
+              <div class="pbtn-bar-say">
+                <span><b t-esc="crs.average"/>% done on average</span>
+                <span><t t-esc="crs.members"/> <t t-esc="crs.members === 1 ? 'person' : 'people'"/></span>
+              </div>
+
+              <div class="pbtn-chips">
+                <span t-if="crs.not_started" class="pbim-badge warn">
+                  <t t-esc="crs.not_started"/> not started
+                </span>
+                <span t-if="crs.finished" class="pbim-badge ok">
+                  <t t-esc="crs.finished"/> finished
+                </span>
+                <span t-if="crs.passed" class="pbim-badge ok">
+                  <t t-esc="crs.passed"/> passed the test
+                </span>
+                <span t-if="crs.failed" class="pbim-badge err">
+                  <t t-esc="crs.failed"/> have not passed
+                </span>
+                <span t-if="!crs.members" class="pbim-badge warn">
+                  Nobody on it
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ the completion-mail switch, said out loud ============
+               A switch that is off and does not SAY so is reported as broken
+               (R54). -->
+          <p t-if="state.courses.length and !state.completionMail"
+             class="pbtn-note">
+            <t t-out="ic('info',14)"/>
+            Finishing a course does not send anybody an email. Ask your
+            administrator if you want one.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ================================================================
+           THE DRAWER. A direct child of the root, never nested inside the
+           grid: a panel that slides over the page must not inherit the
+           stacking context of a card (R114).
+           ================================================================ -->
+      <div t-if="state.open" class="pbim-modal-scrim pbtn-scrim pbtn-scrim--right"
+           t-on-click="closeDrawer">
+        <div class="pbtn-drawer" t-on-click.stop="() => {}">
+
+          <div class="pbtn-drawer-head">
+            <div class="pbtn-drawer-id">
+              <div class="pbim-eyebrow">Course</div>
+              <h2 class="pbtn-drawer-name"><t t-esc="state.open.name"/></h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer"
+                    title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div class="pbtn-drawer-act">
+            <button t-if="state.open.can_write" class="pbim-btn primary"
+                    t-on-click="openPicker">
+              <t t-out="ic('userPlus',15)"/> Enrol people
+            </button>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.act('open_course', { channel_id: state.open.id }, { reload: false })">
+              <t t-out="ic('pencil',15)"/> Open the course
+            </button>
+            <button t-if="state.open.test" class="pbim-btn ghost"
+                    t-on-click="() => this.act('open_test', { survey_id: state.open.test.id }, { reload: false })">
+              <t t-out="ic('target',15)"/> Open the test
+            </button>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.seeAsLearner(state.open.id)"
+                    title="Opens the employee's own page in a new tab. If you are not on the course yourself it will say so — that page is built round a membership, and that is what an employee sees.">
+              <t t-out="ic('eye',15)"/> See it as a learner
+            </button>
+          </div>
+
+          <!-- ====================== the lessons ====================== -->
+          <div class="pbtn-sec">
+            <h4 class="pbtn-sec-h">
+              What is in it
+              <span class="pbtn-sec-n"><t t-esc="state.open.lessons.length"/></span>
+            </h4>
+            <div t-if="!state.open.lessons.length" class="pbtn-sec-empty">
+              Nothing yet. Open the course and add a video, a document or
+              something to read.
+            </div>
+            <div t-else="" class="pbtn-list">
+              <div t-foreach="state.open.lessons" t-as="lsn" t-key="lsn.id"
+                   class="pbtn-line">
+                <span class="pbtn-line-ic"><t t-out="ic(lsn.icon,15)"/></span>
+                <span class="pbtn-line-main">
+                  <span class="pbtn-line-name"><t t-esc="lsn.name"/></span>
+                  <span class="pbtn-line-meta">
+                    <t t-esc="lsn.kind_word"/><t t-if="lsn.duration"> · <t t-esc="lsn.duration"/></t><t t-if="lsn.section"> · <t t-esc="lsn.section"/></t>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================== the test ====================== -->
+          <div class="pbtn-sec">
+            <h4 class="pbtn-sec-h">The test</h4>
+            <div t-if="!state.open.test" class="pbtn-sec-empty">
+              This course has no test. Make one with <b>New test</b>, then add it
+              to the course as its last item.
+            </div>
+            <div t-else="" class="pbtn-testcard">
+              <div class="pbtn-testcard-ic"><t t-out="ic('graduationCap',20)"/></div>
+              <div>
+                <div class="pbtn-line-name"><t t-esc="state.open.test.name"/></div>
+                <div class="pbtn-line-meta">
+                  <t t-esc="state.open.test.questions"/> <t t-esc="state.open.test.questions === 1 ? 'question' : 'questions'"/>
+                  · pass <t t-esc="state.open.test.pass_mark"/>%
+                  <t t-if="state.open.test.attempts"> · <t t-esc="state.open.test.attempts"/> <t t-esc="state.open.test.attempts === 1 ? 'go' : 'goes'"/></t>
+                  <t t-if="state.open.test.time_limit"> · <t t-esc="state.open.test.time_limit"/> min</t>
+                  <t t-if="state.open.test.certificate"> · certificate</t>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================== the people ====================== -->
+          <div class="pbtn-sec">
+            <h4 class="pbtn-sec-h">
+              Who is on it
+              <span class="pbtn-sec-n"><t t-esc="state.open.people.length"/></span>
+            </h4>
+            <div t-if="!state.open.people.length" class="pbtn-sec-empty">
+              Nobody yet. Press <b>Enrol people</b> and search for them by name.
+            </div>
+            <div t-else="" class="pbtn-list">
+              <div t-foreach="state.open.people" t-as="per" t-key="per.id"
+                   class="pbtn-person">
+                <span class="pbtn-person-main">
+                  <span class="pbtn-line-name"><t t-esc="per.name"/></span>
+                  <span class="pbtn-line-meta">
+                    <t t-esc="statusWord(per)"/> · <t t-esc="per.done"/> done
+                  </span>
+                </span>
+                <span class="pbtn-person-bar">
+                  <span class="pbtn-bar">
+                    <span class="pbtn-bar-fill"
+                          t-attf-style="width: {{ per.percent }}%;"/>
+                  </span>
+                  <span class="pbtn-person-pc"><t t-esc="per.percent"/>%</span>
+                </span>
+                <span t-if="per.test" class="pbim-badge"
+                      t-att-class="per.test === 'passed' ? 'ok' : 'err'">
+                  <t t-esc="testWord(per)"/>
+                </span>
+                <button t-if="state.open.can_write" class="pbim-btn ghost pbtn-x"
+                        t-on-click="() => this.removePerson(per.partner_id)"
+                        title="Take them off the course. What they have already done is kept.">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================================================================
+           THE PEOPLE PICKER. Its own scrim, its own direct child of the
+           root — a dialog nested under the drawer would inherit the
+           drawer's transform and land in the wrong half of the screen.
+           ================================================================ -->
+      <div t-if="state.picker" class="pbim-modal-scrim pbtn-scrim" t-on-click="closePicker">
+        <div class="pbim-modal pbtn-modal" t-on-click.stop="() => {}">
+          <div class="pbtn-modal-head">
+            <h3>Put people on this course</h3>
+            <p class="pbtn-modal-sub">
+              Search by name — accents do not matter. Everybody you pick sees
+              the course on their own training page straight away.
+            </p>
+          </div>
+
+          <div class="pbtn-modal-body">
+            <input class="pbtn-in" type="search" autofocus=""
+                   placeholder="Type a name"
+                   t-att-value="state.pickerTerm"
+                   t-on-input="onPickerTerm"/>
+
+            <div t-if="state.pickerBusy" class="pbtn-sec-empty">Looking…</div>
+            <div t-elif="!state.pickerRows.length" class="pbtn-sec-empty">
+              Nobody in your company matches that. Somebody with no Payobook
+              login cannot be put on a course — ask for their account first.
+            </div>
+            <div t-else="" class="pbtn-picklist">
+              <label t-foreach="state.pickerRows" t-as="emp" t-key="emp.id"
+                     class="pbtn-pick"
+                     t-att-class="{ 'pbtn-pick--on': isPicked(emp.id),
+                                    'pbtn-pick--had': emp.on_it }">
+                <input type="checkbox" t-att-checked="isPicked(emp.id)"
+                       t-on-change="() => this.togglePick(emp.id)"/>
+                <span class="pbtn-pick-main">
+                  <span class="pbtn-line-name"><t t-esc="emp.name"/></span>
+                  <span t-if="emp.email" class="pbtn-line-meta"><t t-esc="emp.email"/></span>
+                </span>
+                <span t-if="emp.on_it" class="pbim-badge warn">Already on it</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="pbtn-modal-foot">
+            <span class="pbtn-picked" t-esc="pickedWord"/>
+            <span class="pbtn-foot-gap"/>
+            <button class="pbim-btn ghost" t-on-click="closePicker">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="confirmEnrol"
+                    t-att-disabled="!state.picked.length or state.busy">
+              <t t-out="ic('check',15)"/> Put them on it
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

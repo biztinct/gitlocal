@@ -1,0 +1,352 @@
+// =====================================================================
+//  The Training lens — .pbtn-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-badge, .pbim-modal, .pbim-modal-scrim). This file only says what
+//  is SPECIFIC to a board whose row is a course: the card, the progress
+//  bar, the drawer and the people picker.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file (ledger).
+//
+//  Every @keyframes is at the TOP LEVEL (R85): nested inside a selector,
+//  Sass emits it nested too and no browser plays it — and every one of them
+//  declares BOTH ends (R156), because a `from`-only keyframe under
+//  `animation-fill-mode: both` over a rule that has already set opacity to
+//  zero animates from invisible to invisible and stays there.
+//
+//  THE DRAWER AND THE DIALOG ARE NOT NESTED UNDER `.pbtn` (R114). A scrim
+//  mounts OUTSIDE the surface that opened it as often as inside, and a
+//  descendant selector makes a dialog's whole appearance depend on where in
+//  the DOM it lands. Own classes, tokens re-declared on the scrim.
+//
+//  The shared INPUT primitive is top level too (R135): it is used by the
+//  board's search box AND by the picker inside the scrim, and written under
+//  one of them it silently does not reach the other.
+// =====================================================================
+
+@keyframes pbtn-rise {
+    from { transform: translateY(9px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes pbtn-slide {
+    from { transform: translateX(26px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+// ------------------------------------------------- the shared primitives
+.pbtn-in {
+    width: 100%; border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 9px; padding: 9px 12px; font: inherit;
+    font-size: 13.5px; color: var(--pbim-text, #334155);
+    background: var(--pbim-surface, #FFFFFF); outline: none;
+
+    &:focus {
+        border-color: var(--pbim-primary, #4F46E5);
+        box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+    }
+}
+
+.pbtn-bar {
+    // PADDING AND BOX-SIZING ARE DECLARED, never left to the cascade. Found
+    // live on the drawer: a 100% bar drew 63% full, because a rule further up
+    // the stylesheet gives a span in that panel `padding: 9px 16px` — so the
+    // fill's containing block was 32px narrower than the track around it and
+    // "finished" looked like "nearly finished". A progress bar that lies
+    // about the one number it exists to show is worse than no bar at all.
+    display: block; height: 7px; border-radius: 999px; padding: 0;
+    box-sizing: border-box;
+    background: var(--pbim-line, #E2E8F0); overflow: hidden;
+}
+.pbtn-bar-fill {
+    display: block; height: 100%; border-radius: 999px; padding: 0;
+    box-sizing: border-box;
+    background: var(--pbim-primary, #4F46E5); min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbtn-bar-fill { transition: width .35s ease; }
+}
+
+.pbtn-line-name {
+    display: block; font-size: 13.5px; font-weight: 650;
+    color: var(--pbim-ink, #0F172A);
+}
+.pbtn-line-meta {
+    display: block; font-size: 11.5px; margin-top: 2px;
+    color: var(--pbim-muted, #64748B);
+}
+.pbtn-sec-empty {
+    padding: 14px 16px; border-radius: 11px;
+    background: var(--pbim-bg, #F8FAFC);
+    color: var(--pbim-muted, #64748B);
+    font-size: 12.5px; line-height: 1.6;
+}
+
+// ==================================================================
+//  the board
+// ==================================================================
+.pbtn {
+    .pbtn-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    &.pbtn--embedded .pbtn-head { margin-bottom: 12px; }
+    .pbtn-head-id { flex: 1 1 320px; min-width: 0; }
+    .pbtn-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // The kit's `.pbim-stats` is a grid with NO COLUMNS on purpose — each
+    // cockpit knows how many numbers it has (R32). Six here, so three rows
+    // of two on a phone and a clean six across a desktop.
+    .pbtn-kpis {
+        grid-template-columns: repeat(6, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1380px) { .pbtn-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .pbtn-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    .pbtn-of {
+        font-size: 12px; font-weight: 600; margin-left: 5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ----------------------------------------------------- the search row
+    .pbtn-filters {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .pbtn-search { width: 280px; flex: 0 1 280px; }
+    .pbtn-headline {
+        font-size: 12.5px; font-weight: 600;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------ the empty state
+    .pbtn-empty {
+        text-align: center; padding: 46px 32px;
+
+        h2 { margin: 0 0 8px; font-size: 19px; font-weight: 740;
+             color: var(--pbim-ink, #0F172A); }
+        p  { margin: 0 auto; max-width: 62ch; font-size: 13.5px;
+             line-height: 1.65; color: var(--pbim-muted, #64748B); }
+    }
+    .pbtn-empty-ic {
+        width: 62px; height: 62px; border-radius: 18px; margin: 0 auto 16px;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbtn-steps {
+        max-width: 60ch; margin: 16px auto 0; padding-left: 20px;
+        text-align: left; font-size: 13.5px; line-height: 1.7;
+        color: var(--pbim-muted, #64748B);
+
+        li + li { margin-top: 9px; }
+        b { color: var(--pbim-ink, #0F172A); }
+    }
+    .pbtn-empty-act { margin-top: 20px; }
+
+    // --------------------------------------------------------- the cards
+    .pbtn-grid {
+        display: grid; gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    @media (max-width: 1380px) { .pbtn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 860px)  { .pbtn-grid { grid-template-columns: 1fr; } }
+
+    .pbtn-card {
+        display: flex; flex-direction: column; gap: 11px;
+        padding: 17px 19px; cursor: pointer;
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.pbtn-card--on {
+            border-color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+        }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbtn-card { transition: border-color .14s, box-shadow .14s;
+                     animation: pbtn-rise .26s ease both; }
+    }
+    .pbtn-card-top {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 10px;
+    }
+    .pbtn-card-name {
+        margin: 0; font-size: 15.5px; font-weight: 730; line-height: 1.35;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbtn-card-meta {
+        display: flex; gap: 14px; flex-wrap: wrap;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+
+        span { display: inline-flex; align-items: center; gap: 5px; }
+        .pbtn-dim { opacity: .65; }
+    }
+    .pbtn-bar-say {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; font-size: 12px; color: var(--pbim-muted, #64748B);
+
+        b { color: var(--pbim-ink, #0F172A); }
+    }
+    .pbtn-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .pbtn-note {
+        display: flex; align-items: center; gap: 8px; margin: 18px 0 0;
+        font-size: 12.5px; color: var(--pbim-muted, #64748B);
+    }
+}
+
+// ==================================================================
+//  the drawer and the dialog — OUTSIDE `.pbtn` (R114)
+// ==================================================================
+// The kit's `.pbim-modal-scrim` does the fixing, the dimming and the
+// centring; this only says that the DRAWER's scrim pins its panel to the
+// right edge rather than floating it in the middle. A second class on the
+// element rather than `:has()`, so the rule says which scrim it is about
+// instead of asking the browser to work it out.
+.pbtn-scrim--right {
+    align-items: stretch; justify-content: flex-end; padding: 0;
+}
+
+.pbtn-drawer {
+    width: 560px; max-width: 100%; height: 100%; overflow-y: auto;
+    background: var(--pbim-surface, #FFFFFF);
+    border-left: 1px solid var(--pbim-line, #E2E8F0);
+    padding: 22px 24px 40px;
+    display: block;
+
+    // The tokens live on `.pbim` and a scrim mounts outside it, so the ones
+    // this panel reads are re-declared here (the kit's own modal does the
+    // same thing for the same reason).
+    --pbim-ink: #0F172A;
+    --pbim-text: #334155;
+    --pbim-muted: #64748B;
+    --pbim-line: #E2E8F0;
+    --pbim-bg: #F8FAFC;
+    --pbim-surface: #FFFFFF;
+    --pbim-soft: #EEF2FF;
+    --pbim-primary: #4F46E5;
+    --pbim-primary-strong: #4338CA;
+    --pbim-ring: rgba(79, 70, 229, .16);
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbtn-drawer { animation: pbtn-slide .24s ease both; }
+}
+
+.pbtn-drawer-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px; margin-bottom: 16px;
+}
+.pbtn-drawer-id { min-width: 0; }
+.pbtn-drawer-name {
+    margin: 4px 0 0; font-size: 19px; font-weight: 750; line-height: 1.3;
+    color: var(--pbim-ink, #0F172A);
+}
+.pbtn-drawer-act {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px;
+}
+
+.pbtn-sec { margin-bottom: 24px; }
+.pbtn-sec-h {
+    display: flex; align-items: center; gap: 9px; margin: 0 0 10px;
+    font-size: 11.5px; font-weight: 780; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--pbim-muted, #64748B);
+}
+.pbtn-sec-n {
+    padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0; background: var(--pbim-bg, #F1F5F9);
+    color: var(--pbim-muted, #64748B);
+}
+.pbtn-list {
+    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 12px;
+    overflow: hidden;
+}
+.pbtn-line, .pbtn-person {
+    display: flex; align-items: center; gap: 11px; padding: 11px 14px;
+
+    & + & { border-top: 1px solid var(--pbim-line, #F1F5F9); }
+}
+.pbtn-line-ic { flex: 0 0 auto; color: var(--pbim-muted, #64748B); }
+.pbtn-line-main, .pbtn-person-main { flex: 1 1 auto; min-width: 0; }
+
+.pbtn-person-bar {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 8px; width: 128px;
+
+    .pbtn-bar { flex: 1 1 auto; }
+}
+.pbtn-person-pc {
+    font-size: 11.5px; font-weight: 700; width: 34px; text-align: right;
+    color: var(--pbim-muted, #64748B);
+}
+.pbtn-x { padding: 4px 7px; flex: 0 0 auto; }
+
+.pbtn-testcard {
+    display: flex; align-items: center; gap: 13px; padding: 15px 16px;
+    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 12px;
+    background: var(--pbim-bg, #F8FAFC);
+}
+.pbtn-testcard-ic { flex: 0 0 auto; color: var(--pbim-primary, #4F46E5); }
+
+// ------------------------------------------------------- the people picker
+.pbtn-modal {
+    // The kit's `.pbim-modal` carries NO padding and IS a column flex box
+    // (R45), which is right for its own __head/__body/__foot rails. This
+    // dialog writes its own contents, so it says so.
+    width: 620px; max-width: 100%; display: flex; flex-direction: column;
+    max-height: 84vh; overflow: hidden;
+
+    --pbim-ink: #0F172A;
+    --pbim-text: #334155;
+    --pbim-muted: #64748B;
+    --pbim-line: #E2E8F0;
+    --pbim-bg: #F8FAFC;
+    --pbim-surface: #FFFFFF;
+    --pbim-soft: #EEF2FF;
+    --pbim-primary: #4F46E5;
+    --pbim-ring: rgba(79, 70, 229, .16);
+}
+.pbtn-modal-head {
+    padding: 22px 24px 14px;
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+    h3 { margin: 0; font-size: 17px; font-weight: 750;
+         color: var(--pbim-ink, #0F172A); }
+}
+.pbtn-modal-sub {
+    margin: 6px 0 0; font-size: 12.5px; line-height: 1.6;
+    color: var(--pbim-muted, #64748B);
+}
+.pbtn-modal-body {
+    padding: 16px 24px; overflow-y: auto; flex: 1 1 auto;
+}
+.pbtn-picklist {
+    margin-top: 12px; border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 12px; overflow: hidden;
+}
+.pbtn-pick {
+    display: flex; align-items: center; gap: 11px; padding: 10px 14px;
+    margin: 0; cursor: pointer;
+
+    & + & { border-top: 1px solid var(--pbim-line, #F1F5F9); }
+    &:hover { background: var(--pbim-bg, #F8FAFC); }
+    &.pbtn-pick--on { background: var(--pbim-soft, #EEF2FF); }
+    &.pbtn-pick--had { opacity: .7; }
+
+    input { flex: 0 0 auto; accent-color: var(--pbim-primary, #4F46E5); }
+}
+.pbtn-pick-main { flex: 1 1 auto; min-width: 0; }
+// R33: the kit's `.pbim-badge` capitalises every word, which is right for a
+// status word ("Passed") and wrong for a phrase — "Already On It" is how a
+// screen announces a programme wrote it. A badge that carries a PHRASE has
+// to say so itself.
+.pbtn-pick .pbim-badge { text-transform: none; }
+.pbtn-modal-foot {
+    display: flex; align-items: center; gap: 9px;
+    padding: 14px 24px; border-top: 1px solid var(--pbim-line, #E2E8F0);
+    background: var(--pbim-bg, #F8FAFC);
+}
+.pbtn-picked {
+    font-size: 12.5px; font-weight: 650; color: var(--pbim-muted, #64748B);
+}
+.pbtn-foot-gap { flex: 1 1 auto; }

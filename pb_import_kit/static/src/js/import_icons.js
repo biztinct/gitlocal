@@ -153,6 +153,16 @@ export const IC = {
     stamp:        '<path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 2 1 2 1 3.5V13"/>',
     hash:         '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
 
+    // RIZE W2 E1 — Training. Lucide `graduation-cap`: the one glyph in the
+    // set that means "a course somebody is put through", as distinct from
+    // `bookOpen` (the product lessons on the same hub) and `award` (the
+    // certificate at the end of one). Added HERE and never to a module-local
+    // map (W2): `ic()` falls back to a plain circle for a name it does not
+    // know, with no error anywhere, so an icon that is missing from the
+    // installed copy of this file draws a blank circle on a live screen and
+    // nothing reports it (R146/R147).
+    graduationCap: '<path d="M22 10v6"/><path d="M6 12.5V16c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-3.5"/><path d="M2 10 12 5l10 5-10 5z"/>',
+
     // CONTRACT DRAWER CD-3 — editing in place. `save` titles the Save bar,
     // `undo` puts back a staged removal, `info` heads the amber "the next pay
     // run will overwrite this" line. Shared registry, never a module-local map
