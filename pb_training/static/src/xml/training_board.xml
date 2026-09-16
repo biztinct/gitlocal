@@ -51,7 +51,7 @@
                  have got.</p>
             </div>
             <div class="pbtn-head-actions">
-              <button class="pbim-btn ghost" t-on-click="load"
+              <button class="pbim-btn ghost" t-on-click="refresh"
                       title="Read the board again">
                 <t t-out="ic('refresh',15)"/>
               </button>

@@ -308,6 +308,20 @@ export class PbTrainingBoard extends Component {
         }
     }
 
+    /**
+     * "Read the board again" means THIS board, whichever tab is showing.
+     *
+     * It used to call `load()`, which reads the courses and nothing else — so
+     * pressing it on the Assignments tab (or Schedules, or Day one) re-read
+     * a list that was not on the screen and left the one that was exactly as
+     * stale as it had been. Found live after a schedule's next date was
+     * corrected underneath an open board.
+     */
+    async refresh() {
+        await this.load();
+        if (this.state.aLoaded) { await this.loadAssignments(); }
+    }
+
     async loadAssignments() {
         this.state.aBusy = true;
         try {

@@ -468,4 +468,18 @@ body:has(.o_survey_form) .modal-body {
 
         .pbtr-chip { text-transform: none; }
     }
+
+    // ON A PHONE THE ROW STACKS, IT DOES NOT SCROLL. A horizontal scroller is
+    // the right answer for a wide table nobody reads on a phone; it is the
+    // wrong answer here, because the column it pushes off the screen is the
+    // DATE — the one thing this page exists to show. Found at 390px: three
+    // names, three progress bars and not one "7 days overdue" anywhere.
+    @media (max-width: 680px) {
+        .pbtr-team { overflow-x: visible; }
+        .pbtr-team-row {
+            grid-template-columns: minmax(0, 1fr);
+            min-width: 0; gap: 9px; padding: 15px 18px;
+        }
+        .pbtr-team-bar { max-width: 260px; }
+    }
 }
