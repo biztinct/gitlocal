@@ -1,0 +1,622 @@
+// =====================================================================
+//  The Announcements calendar — .pbcm-*  and the Home card — .pbch-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stats,
+//  .pbim-stat, .pbim-btn, .pbim-busy). This file only says what is SPECIFIC
+//  to a surface whose hero is a month: the grid, the day, the pill, the side
+//  rail, the drawer.
+//
+//  THE KIT'S `.pbim-stats` CARRIES NO COLUMNS (R32/R196). It is
+//  `display: grid; gap: 12px` and nothing else — on purpose, because each
+//  cockpit knows how many numbers it has — so a lens that forgets opens on a
+//  stack of full-width tiles down the left of a 1,500px screen, which looks
+//  like a broken grid rather than a missing rule.
+//
+//  THE DRAWER IS NOT NESTED UNDER `.pbcm` (R114). A scrim mounts OUTSIDE the
+//  surface that opened it as often as inside, and a descendant selector makes
+//  a dialog's whole appearance depend on where in the DOM it lands. Own
+//  classes, tokens re-declared on the scrim.
+//
+//  THE SHARED INPUT PRIMITIVE IS TOP LEVEL TOO (R135): `.pbcm-in` is used by
+//  the search box AND inside the drawer, and written under one of them it
+//  silently does not reach the other.
+//
+//  THERE IS NO DARK PALETTE IN THE PBIM KIT, PRODUCT-WIDE (R134). `biz_theme`
+//  redefines only the `--vu-*` tokens in its dark block, so every RIZE
+//  cockpit renders identically under `data-theme="dark"` and under an
+//  emulated `prefers-color-scheme: dark`. "Validate in light AND dark" on a
+//  pbim cockpit is therefore satisfied by proving every colour RESOLVES,
+//  which is why every rule here carries a literal fallback beside its token.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+//
+//  Every @keyframes is at the TOP LEVEL (R85) — nested inside a selector,
+//  Sass emits it nested too and no browser plays it — and every one declares
+//  BOTH ends (R156), because a `from`-only keyframe under
+//  `animation-fill-mode: both` over a rule that has already set opacity to
+//  zero animates from invisible to invisible and stays there.
+//
+//  A `flex-basis` IN PIXELS BECOMES A HEIGHT the moment a media query turns
+//  its container into a column (R206), so every basis below is reset to
+//  `auto` in the same query that stacks it.
+// =====================================================================
+
+@keyframes pbcm-rise {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes pbcm-slide {
+    from { transform: translateX(26px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+// --------------------------------------------------- shared primitives
+.pbcm-in {
+    width: 100%; box-sizing: border-box;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 9px; padding: 8px 12px 8px 30px;
+    font-size: 13px; font-family: inherit;
+    background: var(--pbim-surface, #FFFFFF);
+    color: var(--pbim-ink, #0F172A);
+
+    &:focus {
+        outline: none;
+        border-color: var(--pbim-primary, #4F46E5);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+    }
+}
+
+.pbcm-av {
+    width: 30px; height: 30px; border-radius: 50%;
+    object-fit: cover; flex: 0 0 auto;
+    background: var(--pbim-soft, #EEF2FF);
+}
+
+.pbcm-state {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+    // A chip that carries a SENTENCE must not be title-cased (R33).
+    text-transform: none;
+    background: var(--pbim-soft, #EEF2FF);
+    color: var(--pbim-primary-strong, #5A4BB0);
+
+    &--ok   { background: #ECFDF5; color: #047857; }
+    &--go   { background: #EEF2FF; color: #3730A3; }
+    &--wait { background: #FFF7ED; color: #B45309; }
+    &--off  { background: #F1F5F9; color: #64748B; }
+}
+
+// =====================================================================
+//  The calendar
+// =====================================================================
+.pbcm {
+    .pbcm-wrap { padding-bottom: 28px; }
+
+    // --------------------------------------------------------- the head
+    .pbcm-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 6px;
+    }
+    .pbcm-h2 {
+        margin: 0; font-size: 20px; font-weight: 700;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbcm-scope {
+        margin: 4px 0 0; font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pbcm-headline {
+        margin: 10px 0 14px; font-size: 15px; line-height: 1.6;
+        color: var(--pbim-ink, #0F172A);
+    }
+
+    .pbcm-warn {
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 11px 14px; border-radius: 11px; margin-bottom: 14px;
+        background: #FFF7ED; color: #92400E;
+        border: 1px solid #FED7AA;
+        font-size: 13px; line-height: 1.55;
+    }
+
+    // ------------------------------------------------------ the numbers
+    .pbcm-kpis {
+        // THE KIT SETS NO COLUMNS (R196) — every consumer says how many
+        // numbers it has.
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-bottom: 16px;
+
+        @media (max-width: 860px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        @media (max-width: 560px) {
+            grid-template-columns: 1fr;
+        }
+    }
+    .pbcm-kpi {
+        @media (prefers-reduced-motion: no-preference) {
+            opacity: 0;
+            animation: pbcm-rise 0.32s ease both;
+        }
+    }
+    .pbcm-kpi-v {
+        font-size: 26px; font-weight: 700; line-height: 1.1;
+        color: var(--pbim-primary-strong, #5A4BB0);
+    }
+    .pbcm-kpi-l {
+        font-size: 13px; font-weight: 600; margin-top: 3px;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbcm-kpi-s {
+        font-size: 12px; margin-top: 2px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------ the filters
+    .pbcm-filters {
+        display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;
+    }
+    .pbcm-months {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .pbcm-nav {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px; border-radius: 9px; line-height: 0;
+        border: 1px solid var(--pbim-line, #E2E8F0); cursor: pointer;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-ink, #0F172A);
+        &:hover { background: var(--pbim-soft, #EEF2FF); }
+    }
+    .pbcm-month {
+        font-size: 17px; font-weight: 700; min-width: 168px;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbcm-today { margin-left: 2px; }
+    .pbcm-hint {
+        font-size: 11.5px; color: var(--pbim-muted, #64748B);
+    }
+
+    .pbcm-chips, .pbcm-tools {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .pbcm-chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 5px 12px 5px 6px; border-radius: 999px; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        font-size: 12px; font-weight: 600;
+
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary-strong, #5A4BB0);
+        }
+    }
+    .pbcm-chip-s {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 24px; height: 20px; border-radius: 6px;
+        font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-strong, #5A4BB0);
+    }
+    .pbcm-pillbtn {
+        padding: 5px 12px; border-radius: 999px; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        font-size: 12px; font-weight: 600;
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-primary, #4F46E5);
+            color: #FFFFFF;
+        }
+    }
+    .pbcm-search {
+        position: relative; display: inline-flex; align-items: center;
+        width: 240px; max-width: 100%;
+        svg {
+            position: absolute; left: 9px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    // ---------------------------------------------------------- the body
+    .pbcm-body {
+        display: flex; align-items: flex-start; gap: 18px;
+    }
+    .pbcm-cal {
+        flex: 1 1 640px; min-width: 0;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 14px; overflow: hidden;
+        background: var(--pbim-surface, #FFFFFF);
+    }
+    .pbcm-rail {
+        flex: 0 0 316px;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+
+    @media (max-width: 1180px) {
+        .pbcm-body { flex-direction: column; }
+        // R206 — a basis in pixels is a HEIGHT once the row becomes a column.
+        .pbcm-cal, .pbcm-rail { flex: 1 1 auto; width: 100%; }
+    }
+
+    // ----------------------------------------------------------- the month
+    .pbcm-dow {
+        display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+        background: var(--pbim-soft, #EEF2FF);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+        span {
+            padding: 8px 10px; font-size: 11px; font-weight: 700;
+            letter-spacing: 0.6px; text-transform: uppercase;
+            color: var(--pbim-primary-strong, #5A4BB0);
+        }
+    }
+    .pbcm-week {
+        display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        &:last-child { border-bottom: 0; }
+    }
+    .pbcm-day {
+        min-height: 104px; padding: 6px 7px 8px;
+        border-right: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        display: flex; flex-direction: column; gap: 4px;
+        &:last-child { border-right: 0; }
+
+        &--out { background: #FBFCFE; }
+        &--wknd { background: #FAFAFF; }
+        &--today {
+            box-shadow: inset 0 0 0 2px var(--pbim-primary, #4F46E5);
+        }
+        &:hover .pbcm-add { opacity: 1; }
+    }
+    .pbcm-day-h {
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .pbcm-day-n {
+        font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-day--today .pbcm-day-n {
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbcm-day--out .pbcm-day-n { opacity: 0.45; }
+    .pbcm-add {
+        border: 0; background: none; cursor: pointer; line-height: 0;
+        padding: 2px; border-radius: 6px; opacity: 0;
+        color: var(--pbim-primary, #4F46E5);
+        transition: opacity 0.15s ease;
+        &:hover { background: var(--pbim-soft, #EEF2FF); }
+        &:focus { opacity: 1; }
+    }
+
+    // THE SUBJECT IS THE THING, AND IT GETS TWO LINES. Found live: a day
+    // column is about a hundred pixels wide, and a pill laid out as one row
+    // of "time · subject" drew "10:55 DEMO …" — the one word on it that
+    // means anything was the one it cut off. The subject now wraps to two
+    // lines with the time underneath it, and the whole sentence is in the
+    // hover (R187's lesson, reached from a narrow column rather than a
+    // phone).
+    .pbcm-pill {
+        display: block; width: 100%;
+        box-sizing: border-box; text-align: left; cursor: pointer;
+        padding: 5px 7px; border-radius: 8px; border: 1px solid transparent;
+        font-size: 11.5px; line-height: 1.32;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-strong, #5A4BB0);
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+
+        &--ok   { background: #ECFDF5; color: #047857; }
+        &--go   { background: #EEF2FF; color: #3730A3; }
+        &--wait { background: #FFF7ED; color: #B45309; }
+        &--off  {
+            background: #F1F5F9; color: #64748B;
+            text-decoration: line-through;
+        }
+    }
+    .pbcm-pill-s {
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient:
+            vertical; overflow: hidden;
+        font-weight: 600;
+    }
+    .pbcm-pill-f {
+        display: flex; align-items: center; gap: 4px;
+        margin-top: 2px; opacity: 0.78; font-size: 10.5px;
+    }
+    .pbcm-pill-t { font-weight: 700; }
+    .pbcm-pill-r { line-height: 0; }
+
+    .pbcm-empty {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 22px 24px; border-top: 1px solid var(--pbim-line, #E2E8F0);
+        color: var(--pbim-muted, #64748B);
+
+        strong { display: block; font-size: 14px;
+                 color: var(--pbim-ink, #0F172A); }
+        p { margin: 5px 0 0; font-size: 13px; line-height: 1.6; max-width: 62ch; }
+        svg { color: var(--pbim-primary, #4F46E5); flex: 0 0 auto; }
+    }
+
+    .pbcm-shut {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 26px; border-radius: 14px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        strong { display: block; font-size: 15px;
+                 color: var(--pbim-ink, #0F172A); }
+        p { margin: 5px 0 0; font-size: 13px; }
+        svg { color: var(--pbim-primary, #4F46E5); flex: 0 0 auto; }
+    }
+
+    // ------------------------------------------------------------ the rail
+    .pbcm-panel { padding: 0; overflow: hidden; }
+    .pbcm-panel-h {
+        display: flex; align-items: center; gap: 8px;
+        padding: 12px 14px; border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-strong, #5A4BB0);
+        font-size: 13px;
+        strong { flex: 1 1 auto; }
+    }
+    .pbcm-panel-n {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 22px; height: 20px; padding: 0 6px; border-radius: 999px;
+        font-size: 11px; font-weight: 700;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-primary-strong, #5A4BB0);
+    }
+    .pbcm-none {
+        padding: 14px; font-size: 12.5px; line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-note {
+        margin: 10px 14px; padding: 9px 11px; border-radius: 9px;
+        font-size: 12px; line-height: 1.55;
+        background: #FFF7ED; color: #92400E; border: 1px solid #FED7AA;
+
+        &--ok { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+    }
+    .pbcm-row, .pbcm-party {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        box-sizing: border-box; text-align: left;
+        padding: 10px 14px; border: 0; border-top: 1px solid
+            var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbcm-row { cursor: pointer; }
+    .pbcm-row:hover { background: var(--pbim-soft, #EEF2FF); }
+    .pbcm-row-id {
+        flex: 1 1 auto; min-width: 0;
+        display: flex; flex-direction: column; gap: 2px;
+        strong {
+            font-size: 13px; font-weight: 600;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        span {
+            font-size: 11.5px; color: var(--pbim-muted, #64748B);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+    }
+    .pbcm-row-go {
+        flex: 0 0 auto; display: flex; flex-direction: column;
+        align-items: flex-end; gap: 4px;
+    }
+    .pbcm-when {
+        font-size: 11.5px; font-weight: 600; white-space: nowrap;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-years {
+        font-size: 11px; white-space: nowrap;
+        color: var(--pbim-primary-strong, #5A4BB0);
+    }
+}
+
+// =====================================================================
+//  The drawer — top level, never nested under .pbcm (R114)
+// =====================================================================
+.pbcm-scrim {
+    position: fixed; inset: 0; z-index: 1050;
+    display: flex; justify-content: flex-end;
+    background: rgba(15, 23, 42, 0.32);
+}
+
+.pbcm-drawer {
+    width: 520px; max-width: 100%; height: 100%;
+    box-sizing: border-box; overflow: auto;
+    display: flex; flex-direction: column;
+    background: var(--pbim-surface, #FFFFFF);
+    color: var(--pbim-ink, #0F172A);
+    box-shadow: -18px 0 46px rgba(15, 23, 42, 0.18);
+
+    @media (prefers-reduced-motion: no-preference) {
+        opacity: 0;
+        animation: pbcm-slide 0.26s ease both;
+    }
+
+    .pbcm-drawer-h {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 12px; padding: 18px 20px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+        strong { display: block; font-size: 16px; line-height: 1.35; }
+        span { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    }
+    .pbcm-x {
+        background: none; border: 0; cursor: pointer; line-height: 0;
+        padding: 4px; border-radius: 8px;
+        color: var(--pbim-muted, #64748B);
+        &:hover { background: var(--pbim-soft, #EEF2FF); }
+    }
+    .pbcm-drawer-b { padding: 16px 20px 26px; }
+
+    .pbcm-facts {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px; margin-bottom: 14px;
+    }
+    .pbcm-fact {
+        padding: 10px 12px; border-radius: 11px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: #FBFCFE;
+        span { display: block; font-size: 11px;
+               color: var(--pbim-muted, #64748B); }
+        strong { display: block; font-size: 13.5px; margin-top: 2px; }
+    }
+    .pbcm-note {
+        margin: 0 0 12px; padding: 9px 11px; border-radius: 9px;
+        font-size: 12.5px; line-height: 1.55;
+        background: #FFF7ED; color: #92400E; border: 1px solid #FED7AA;
+
+        &--ok { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+    }
+    .pbcm-preview-h {
+        font-size: 11px; font-weight: 700; letter-spacing: 0.6px;
+        text-transform: uppercase; margin: 16px 0 7px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-preview {
+        padding: 14px 16px; border-radius: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        font-size: 13.5px; line-height: 1.7;
+        img { max-width: 100%; height: auto; }
+    }
+    .pbcm-hist-row {
+        display: flex; gap: 10px; padding: 7px 0;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 12.5px; line-height: 1.55;
+        &:last-child { border-bottom: 0; }
+    }
+    .pbcm-hist-w {
+        flex: 0 0 122px; color: var(--pbim-muted, #64748B);
+    }
+    .pbcm-hist-b {
+        flex: 1 1 auto; min-width: 0;
+        p { margin: 0; }
+    }
+    .pbcm-drawer-f {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px;
+    }
+
+    @media (max-width: 620px) {
+        .pbcm-facts { grid-template-columns: 1fr; }
+        // R187 — a row that scrolls sideways on a phone hides the column that
+        // matters; below this width the date goes above the sentence instead.
+        .pbcm-hist-row { flex-direction: column; gap: 2px; }
+        .pbcm-hist-w { flex: 0 0 auto; }
+    }
+}
+
+// =====================================================================
+//  The Home card
+// =====================================================================
+.pbch {
+    .pbch-wrap { padding-bottom: 18px; }
+
+    .pbch-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 14px; flex-wrap: wrap;
+    }
+    .pbch-h2 {
+        margin: 0; font-size: 18px; font-weight: 700;
+        color: var(--pbim-ink, #0F172A);
+    }
+    .pbch-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbch-headline {
+        margin: 8px 0 14px; font-size: 14px; line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbch-rows { display: flex; flex-direction: column; gap: 8px; }
+    .pbch-row, .pbch-party {
+        display: flex; align-items: center; gap: 11px; width: 100%;
+        box-sizing: border-box; text-align: left; cursor: pointer;
+        padding: 11px 13px; border-radius: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-ink, #0F172A);
+
+        &:hover {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+        }
+    }
+    .pbch-row--mine {
+        border-left: 3px solid var(--pbim-primary, #4F46E5);
+    }
+    .pbch-row-ic {
+        flex: 0 0 auto; line-height: 0;
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbch-av {
+        width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+        flex: 0 0 auto; background: var(--pbim-soft, #EEF2FF);
+    }
+    .pbch-row-id {
+        flex: 1 1 auto; min-width: 0;
+        display: flex; flex-direction: column; gap: 2px;
+        strong {
+            font-size: 13.5px; font-weight: 600;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        span {
+            font-size: 11.5px; color: var(--pbim-muted, #64748B);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+    }
+    .pbch-row-go {
+        flex: 0 0 auto; display: flex; flex-direction: column;
+        align-items: flex-end; gap: 4px;
+    }
+    .pbch-when {
+        font-size: 11.5px; font-weight: 600; white-space: nowrap;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbch-state {
+        display: inline-flex; align-items: center;
+        padding: 3px 9px; border-radius: 999px;
+        font-size: 11px; font-weight: 700; white-space: nowrap;
+        text-transform: none;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-strong, #5A4BB0);
+
+        &--ok   { background: #ECFDF5; color: #047857; }
+        &--go   { background: #EEF2FF; color: #3730A3; }
+        &--wait { background: #FFF7ED; color: #B45309; }
+        &--off  { background: #F1F5F9; color: #64748B; }
+    }
+
+    .pbch-clear {
+        display: flex; align-items: flex-start; gap: 12px;
+        padding: 18px 20px; border-radius: 13px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        color: var(--pbim-muted, #64748B);
+        strong { display: block; font-size: 14px;
+                 color: var(--pbim-ink, #0F172A); }
+        p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.6; }
+        svg { color: var(--pbim-primary, #4F46E5); flex: 0 0 auto; }
+    }
+    .pbch-more {
+        margin: 10px 0 0; font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbch-parties {
+        margin-top: 18px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .pbch-parties-h {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 12px; font-weight: 700; letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+}

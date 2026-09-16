@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       THE ANNOUNCEMENTS CALENDAR.
+
+       R1 — loop variables are `wk`, `dy`, `ps`, never a reserved operator
+       name: OWL reserves lt/gt/lte/gte and `t-as="lt"` compiles into a bare
+       `<` that kills the whole template.
+       R205 — no JavaScript global in here; every helper is a component
+       method.
+       R42 — dict `t-att-class` is an OWL thing and is correct here (this is
+       an OWL template and not server-side QWeb), and it MERGES with the
+       static class rather than replacing it.
+       R34 — a sentence split across several `t-esc` nodes loses the
+       whitespace between them, so every sentence is built in ONE expression
+       on the server.
+       ================================================================== -->
+
+  <t t-name="pb_hr_comm.PbHrCommCalendar">
+    <div class="pbim pbim-page pbcm"
+         t-att-class="{ 'pbcm--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <span class="pbim-spin"/>
+      </div>
+
+      <t t-else="">
+
+        <!-- ===================== not for you ===================== -->
+        <div t-if="!state.allowed" class="pbim-wrap">
+          <div class="pbcm-shut">
+            <t t-out="ic('lock',26)"/>
+            <div>
+              <strong>Announcements are looked after by the HR team</strong>
+              <p t-esc="state.why"/>
+            </div>
+          </div>
+        </div>
+
+        <div t-else="" class="pbim-wrap pbcm-wrap">
+
+          <!-- ========================= the head ========================= -->
+          <div class="pbcm-head">
+            <div class="pbcm-head-id">
+              <h1 t-if="!props.embedded" class="pbim-h1">Announcements</h1>
+              <h2 t-else="" class="pbcm-h2">Announcements</h2>
+              <p class="pbcm-scope" t-esc="state.scope"/>
+            </div>
+            <div class="pbcm-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Read it again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn ghost" t-on-click="openTemplates"
+                      t-if="state.mayWrite">
+                <t t-out="ic('layoutList',15)"/> Templates
+              </button>
+              <button class="pbim-btn primary" t-if="state.mayWrite"
+                      t-on-click="() => this.newPost(false)">
+                <t t-out="ic('plus',15)"/> New announcement
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================== the headline ====================== -->
+          <p class="pbcm-headline" t-esc="state.headline"/>
+
+          <!-- a switch that is off SAYS so (R54) -->
+          <div t-if="!state.sendingOn" class="pbcm-warn">
+            <t t-out="ic('alert',16)"/>
+            <span>Announcement emails are switched off, so nothing is being
+                  sent. Everything else still works — turn
+                  pb_hr_comm.send_mail on when you are ready.</span>
+          </div>
+
+          <!-- ========================= the numbers ====================== -->
+          <div class="pbim-stats pbcm-kpis">
+            <t t-foreach="state.stats" t-as="st" t-key="st.key">
+              <div class="pbim-stat pbcm-kpi">
+                <div class="pbcm-kpi-v" t-esc="st.value"/>
+                <div class="pbcm-kpi-l" t-esc="st.label"/>
+                <div class="pbcm-kpi-s" t-esc="st.sub"/>
+              </div>
+            </t>
+          </div>
+
+          <!-- ========================= the filters ====================== -->
+          <div class="pbcm-filters">
+            <div class="pbcm-months">
+              <button class="pbcm-nav" t-on-click="() => this.shiftMonth(-1)"
+                      title="The month before">
+                <t t-out="ic('chevronLeft',16)"/>
+              </button>
+              <span class="pbcm-month" t-esc="state.monthLabel"/>
+              <button class="pbcm-nav" t-on-click="() => this.shiftMonth(1)"
+                      title="The month after">
+                <t t-out="ic('chevron',16)"/>
+              </button>
+              <button class="pbim-btn ghost pbcm-today"
+                      t-on-click="thisMonth">This month</button>
+              <span class="pbcm-hint" t-esc="state.timeNote"/>
+            </div>
+
+            <div class="pbcm-chips" t-if="state.companies.length > 1">
+              <t t-foreach="state.companies" t-as="co" t-key="co.id">
+                <button class="pbcm-chip"
+                        t-att-class="{ 'on': co.on }"
+                        t-on-click="() => this.toggleCompany(co.id)">
+                  <span class="pbcm-chip-s" t-esc="co.short"/>
+                  <span t-esc="co.name"/>
+                </button>
+              </t>
+            </div>
+
+            <div class="pbcm-tools">
+              <t t-foreach="state.states" t-as="st" t-key="st.key">
+                <button class="pbcm-pillbtn"
+                        t-att-class="{ 'on': state.filters.state === st.key }"
+                        t-on-click="() => this.setState(st.key)"
+                        t-esc="st.label"/>
+              </t>
+              <span class="pbcm-search">
+                <t t-out="ic('search',15)"/>
+                <input class="pbcm-in" type="text" placeholder="Find a subject"
+                       t-att-value="state.filters.q" t-on-input="onSearch"/>
+              </span>
+              <button t-if="anyFilter" class="pbim-btn ghost"
+                      t-on-click="clearFilters">Clear</button>
+            </div>
+          </div>
+
+          <!-- ========================== the body ======================== -->
+          <div class="pbcm-body">
+
+            <!-- ======================== the month ======================== -->
+            <div class="pbcm-cal">
+              <div class="pbcm-dow">
+                <t t-foreach="weekdays" t-as="dw" t-key="dw_index">
+                  <span t-esc="dw"/>
+                </t>
+              </div>
+              <t t-foreach="state.weeks" t-as="wk" t-key="wk_index">
+                <div class="pbcm-week">
+                  <t t-foreach="wk" t-as="dy" t-key="dy.date">
+                    <div class="pbcm-day"
+                         t-att-class="{ 'pbcm-day--out': !dy.in_month,
+                                        'pbcm-day--today': dy.today,
+                                        'pbcm-day--wknd': dy.weekend }">
+                      <div class="pbcm-day-h">
+                        <span class="pbcm-day-n" t-esc="dy.day"/>
+                        <button t-if="state.mayWrite" class="pbcm-add"
+                                title="Write one for this day"
+                                t-on-click="() => this.newPost(dy.date)">
+                          <t t-out="ic('plus',13)"/>
+                        </button>
+                      </div>
+                      <t t-foreach="dy.posts" t-as="ps" t-key="ps.id">
+                        <button class="pbcm-pill"
+                                t-att-class="'pbcm-pill--' + ps.tone"
+                                t-att-title="pillTitle(ps)"
+                                t-on-click="() => this.openDrawer(ps.id)">
+                          <span class="pbcm-pill-s" t-esc="ps.subject"/>
+                          <span class="pbcm-pill-f">
+                            <span class="pbcm-pill-t" t-esc="ps.time"/>
+                            <span t-if="ps.recurring" class="pbcm-pill-r">
+                              <t t-out="ic('repeat',11)"/>
+                            </span>
+                          </span>
+                        </button>
+                      </t>
+                    </div>
+                  </t>
+                </div>
+              </t>
+
+              <div t-if="!state.rows.length" class="pbcm-empty">
+                <t t-out="ic('megaphone',26)"/>
+                <div>
+                  <strong>Nothing is going out this month</strong>
+                  <p>An announcement is anything the company tells its people
+                     — a town hall, a public holiday, a change to the canteen.
+                     Press the plus on a day to write one, and it will send
+                     itself at the time you pick.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========================= the rail ======================== -->
+            <div class="pbcm-rail">
+
+              <div class="pbim-panel pbcm-panel">
+                <div class="pbcm-panel-h">
+                  <t t-out="ic('clock',16)"/>
+                  <strong>Coming up</strong>
+                  <span class="pbcm-panel-n" t-esc="state.coming.length"/>
+                </div>
+                <div t-if="!state.coming.length" class="pbcm-none">
+                  Nothing is booked for the next fortnight.
+                </div>
+                <t t-foreach="state.coming" t-as="ps" t-key="ps.id">
+                  <button class="pbcm-row"
+                          t-on-click="() => this.openDrawer(ps.id)">
+                    <img class="pbcm-av" t-att-src="ps.avatar"
+                         t-att-alt="ps.responsible"/>
+                    <span class="pbcm-row-id">
+                      <strong t-esc="ps.subject"/>
+                      <span t-esc="ps.audience"/>
+                    </span>
+                    <span class="pbcm-row-go">
+                      <span class="pbcm-when" t-esc="ps.when_words"/>
+                      <span class="pbcm-state"
+                            t-att-class="'pbcm-state--' + ps.tone"
+                            t-esc="ps.state_word"/>
+                    </span>
+                  </button>
+                </t>
+              </div>
+
+              <div class="pbim-panel pbcm-panel">
+                <div class="pbcm-panel-h">
+                  <t t-out="ic('cake',16)"/>
+                  <strong>This week</strong>
+                  <span class="pbcm-panel-n" t-esc="state.celebrations.length"/>
+                </div>
+                <div t-if="!state.cardsOn" class="pbcm-note">
+                  Birthday and anniversary cards are switched off, so nobody is
+                  being emailed. Turn <t t-esc="state.cardsSwitch"/> on to send
+                  them.
+                </div>
+                <div t-if="!state.celebrations.length" class="pbcm-none">
+                  Nobody in these companies is celebrating this week.
+                </div>
+                <t t-foreach="state.celebrations" t-as="ce" t-key="ce.name + ce.day_label + ce.kind">
+                  <div class="pbcm-party">
+                    <img class="pbcm-av" t-att-src="ce.avatar"
+                         t-att-alt="ce.name"/>
+                    <span class="pbcm-row-id">
+                      <strong t-esc="ce.name"/>
+                      <span t-esc="ce.department"/>
+                    </span>
+                    <span class="pbcm-row-go">
+                      <span class="pbcm-when" t-esc="ce.day_label"/>
+                      <span class="pbcm-years" t-esc="ce.years_label"/>
+                    </span>
+                  </div>
+                </t>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </t>
+
+      <!-- ========================== the drawer ==========================
+           R114 — THE SCRIM IS THE PARENT AND THE PANEL IS ITS CHILD, and
+           neither is nested under the cockpit's root class in the
+           stylesheet: a scrim mounts outside the surface that opened it as
+           often as inside.
+           =============================================================== -->
+      <div t-if="state.open" class="pbcm-scrim" t-on-click="closeDrawer">
+        <div class="pbcm-drawer" t-on-click.stop="() => {}">
+
+          <div class="pbcm-drawer-h">
+            <div>
+              <strong t-esc="state.post.subject"/>
+              <span t-esc="drawerSub"/>
+            </div>
+            <button class="pbcm-x" t-on-click="closeDrawer"
+                    title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div t-if="!state.post.ok" class="pbcm-drawer-b">
+            <div class="pbim-busy"><span class="pbim-spin"/></div>
+          </div>
+
+          <div t-else="" class="pbcm-drawer-b">
+
+            <div class="pbcm-facts">
+              <div class="pbcm-fact">
+                <span>Goes out</span>
+                <strong t-esc="state.post.when_label"/>
+              </div>
+              <div class="pbcm-fact">
+                <span>Who gets it</span>
+                <strong t-esc="state.post.audience"/>
+              </div>
+              <div class="pbcm-fact">
+                <span>How many</span>
+                <strong t-esc="state.post.with_email"/>
+              </div>
+              <div class="pbcm-fact">
+                <span>Status</span>
+                <strong t-esc="state.post.state_word"/>
+              </div>
+            </div>
+
+            <div t-if="state.post.no_email" class="pbcm-note">
+              <t t-esc="state.post.no_email"/> in this audience have no work
+              email and will not get it.
+            </div>
+
+            <div t-if="state.post.editable_now" class="pbcm-note pbcm-note--ok">
+              It can still be changed until
+              <t t-esc="state.post.locked_from"/>.
+            </div>
+            <div t-else="" class="pbcm-note">
+              Only the HR lead can change this now — the last moment to change
+              it was <t t-esc="state.post.locked_from"/>.
+            </div>
+
+            <div class="pbcm-body-preview">
+              <div class="pbcm-preview-h">What it says</div>
+              <div class="pbcm-preview" t-out="html(state.post.body)"/>
+            </div>
+
+            <div t-if="state.post.history.length" class="pbcm-hist">
+              <div class="pbcm-preview-h">What has happened to it</div>
+              <t t-foreach="state.post.history" t-as="hs" t-key="hs.id">
+                <div class="pbcm-hist-row">
+                  <span class="pbcm-hist-w" t-esc="hs.when"/>
+                  <span class="pbcm-hist-b" t-out="html(hs.body)"/>
+                </div>
+              </t>
+            </div>
+
+            <div class="pbcm-drawer-f">
+              <button class="pbim-btn primary"
+                      t-on-click="() => this.openPost(state.post.id)">
+                <t t-out="ic('external',15)"/> Open it
+              </button>
+              <button t-if="state.post.may_edit" class="pbim-btn ghost"
+                      t-on-click="() => this.checkAudience(state.post.id)">
+                <t t-out="ic('users',15)"/> Check who gets it
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>
