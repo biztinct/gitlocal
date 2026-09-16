@@ -308,6 +308,14 @@ export const IC = {
     // back to a plain circle with NO error for a name the set has never heard
     // of (R146), so a new glyph belongs here and only here.
     camera:       '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
+    // RIZE W2 C1 — announcements. Lucide's `megaphone` is the one glyph the
+    // set had not got for "the company is about to tell everybody something",
+    // and it is the lens icon, the calendar pill and the Home row. `ic()`
+    // falls back to a plain circle with NO error for a name the set has never
+    // heard of (R146), so a new glyph belongs here and only here — and the
+    // INSTALLED copy is what a screen draws from, which is why the deploy
+    // ships this file (R147).
+    megaphone:    '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
 };
 
 /**
