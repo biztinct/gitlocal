@@ -51,6 +51,36 @@ const STATE_ICON = {
     manager_ok: "clock",
     refused: "xCircle",
     locked: "lock",
+    closed: "archive",
+};
+
+/**
+ * THE FIVE TABS, NAMED (B2).
+ *
+ * A CHAIN OF TABS NAMES EVERY ONE OF THEM AND HAS NO `t-else` AT THE END
+ * (R194). A catch-all branch claims every tab nobody has written yet, and the
+ * symptom is two panels rendering at once on a screen that otherwise looks
+ * perfectly normal.
+ *
+ * The order is the order of the year: who has written theirs, are we talking
+ * about them, are the reviews written up, what has been asked to change, and
+ * what it all came out at.
+ */
+const TABS = [
+    { key: "sheets", label: _t("Goal sheets"), icon: "target" },
+    { key: "checkins", label: _t("Monthly conversations"), icon: "calendar" },
+    { key: "reviews", label: _t("Reviews"), icon: "award" },
+    { key: "changes", label: _t("Changes asked for"), icon: "repeat" },
+    { key: "scores", label: _t("Scores"), icon: "trendingUp" },
+];
+
+const CHECKIN_TONE = { planned: "wait", done: "ok", missed: "bad" };
+const CHANGE_TONE = {
+    draft: "wait",
+    submitted: "wait",
+    manager_ok: "wait",
+    approved: "ok",
+    refused: "bad",
 };
 
 export class PbGoalsBoard extends Component {
@@ -94,6 +124,47 @@ export class PbGoalsBoard extends Component {
             backNote: "",
             backOpen: false,
             bulk: null,
+
+            // ============================================== B2: the year
+            // EVERY COLLECTION IN THE INITIAL STATE IS A COLLECTION AND
+            // EVERY NESTED OBJECT CARRIES THE KEYS THE TEMPLATE READS
+            // (R195). A tab is rendered ONCE over this state before the
+            // `await` that fetches its data has resolved, so a `{}` where
+            // the template reads `.length` throws "Cannot read properties
+            // of undefined" — which the theme shows as the generic
+            // "something went wrong" dialog with nothing in the console.
+            tab: "sheets",
+            year: { rows: [], stats: [], headline: "", tab: "" },
+            yearBusy: false,
+            // The drawer's new sections.
+            checkins: [],
+            reviews: [],
+            changes: [],
+            audit: [],
+            scores: { goals: [], sentence: "", scored: false, band: "" },
+            applicability: { note: "", mid_year: true, year_end: true },
+            scoreOptions: [],
+            mayScore: false,
+            mayCheckin: false,
+            mayChange: false,
+            sheetClosed: false,
+            // The three little forms the drawer opens.
+            checkinOpen: 0,
+            checkinNote: "",
+            checkinBlockers: "",
+            reviewOpen: 0,
+            reviewNote: "",
+            changeOpen: false,
+            changeKind: "edit",
+            changeGoalId: 0,
+            changeTitle: "",
+            changeDescription: "",
+            changeDate: "",
+            changeKrs: "",
+            changeReason: "",
+            marks: {},
+            closing: null,
+            closeAnyway: false,
         });
 
         onWillStart(async () => {
@@ -105,6 +176,10 @@ export class PbGoalsBoard extends Component {
 
     tone(key) { return STATE_TONE[key] || "wait"; }
     stateIcon(key) { return STATE_ICON[key] || "circle"; }
+    checkinTone(key) { return CHECKIN_TONE[key] || "wait"; }
+    changeTone(key) { return CHANGE_TONE[key] || "wait"; }
+
+    get tabs() { return TABS; }
 
     get cycle() {
         return this.state.cycles.find((c) => c.id === this.state.cycleId)
@@ -180,7 +255,63 @@ export class PbGoalsBoard extends Component {
 
     async pickCycle(id) {
         this.state.cycleId = Number(id) || 0;
+        await this.reload();
+    }
+
+    /**
+     * "READ IT AGAIN" MUST READ WHAT IS ON THE SCREEN (R188).
+     *
+     * The board grew four more payloads in B2, and a refresh that only ever
+     * re-read the goal sheets would leave whichever of the other four was
+     * showing exactly as stale as it was — found live on another module's
+     * board when a date was corrected underneath an open screen and the
+     * button would not pick it up.
+     */
+    async reload() {
         await this.load();
+        if (this.state.tab !== "sheets") {
+            await this.loadYear();
+        }
+    }
+
+    async setTab(key) {
+        if (this.state.tab === key) { return; }
+        this.state.tab = key;
+        if (key === "sheets") { return; }
+        // A TAB IS DRAWN BEFORE ITS OWN PAYLOAD ARRIVES (R195): OWL
+        // re-renders the moment `state.tab` changes, which is before the
+        // await below has resolved. The panel is therefore rendered once
+        // over the PREVIOUS tab's rows — harmless, because every row shape
+        // the templates read is guarded — and then again over its own.
+        this.state.year = { rows: [], stats: [], headline: "", tab: key };
+        await this.loadYear();
+    }
+
+    async loadYear() {
+        this.state.yearBusy = true;
+        try {
+            const d = await this.orm.call("pb.goals", "get_year", [
+                this.state.cycleId, this.state.tab,
+                { state: this.state.filters.state || "" },
+            ]);
+            if (d.allowed === false) {
+                this.state.year = { rows: [], stats: [],
+                                    headline: d.why || "", tab: this.state.tab };
+                return;
+            }
+            this.state.year = {
+                rows: d.rows || [],
+                stats: d.stats || [],
+                headline: d.headline || "",
+                tab: d.tab || this.state.tab,
+            };
+        } catch (e) {
+            this.state.year = { rows: [], stats: [], tab: this.state.tab,
+                                headline: _t("That could not be read.") };
+            console.warn("pb_goals: the year could not be read", e);
+        } finally {
+            this.state.yearBusy = false;
+        }
     }
 
     /** A chip that is already on is a chip that turns off — otherwise the
@@ -233,6 +364,35 @@ export class PbGoalsBoard extends Component {
             this.state.weightWord = "";
             this.state.backNote = "";
             this.state.backOpen = false;
+            // ---------------------------------------------- B2's sections
+            this.state.checkins = d.checkins || [];
+            this.state.reviews = d.reviews || [];
+            this.state.changes = d.changes || [];
+            this.state.audit = d.audit || [];
+            this.state.scores = Object.assign(
+                { goals: [], sentence: "", scored: false, band: "" },
+                d.scores || {});
+            this.state.applicability = Object.assign(
+                { note: "", mid_year: true, year_end: true },
+                d.applicability || {});
+            this.state.scoreOptions = d.score_options || [];
+            this.state.mayScore = !!d.may_score;
+            this.state.mayCheckin = !!d.may_checkin;
+            this.state.mayChange = !!d.may_change;
+            this.state.sheetClosed = !!d.closed;
+            this.state.marks = {};
+            for (const goal of this.state.scores.goals || []) {
+                for (const kr of goal.krs || []) {
+                    this.state.marks[kr.id] = kr.score || "";
+                }
+            }
+            this.state.checkinOpen = 0;
+            this.state.checkinNote = "";
+            this.state.checkinBlockers = "";
+            this.state.reviewOpen = 0;
+            this.state.reviewNote = "";
+            this.state.changeOpen = false;
+            this.state.changeReason = "";
             this.state.open = true;
         } catch (e) {
             this.notif.add(_t("That one could not be opened."),
@@ -388,6 +548,247 @@ export class PbGoalsBoard extends Component {
     share(value, top) {
         if (!top) { return 0; }
         return Math.round((Number(value || 0) / Number(top)) * 100);
+    }
+
+    // =================================================================
+    //  B2 — the monthly conversation
+    // =================================================================
+    openCheckinForm(id) {
+        this.state.checkinOpen = this.state.checkinOpen === id ? 0 : id;
+        this.state.checkinNote = "";
+        this.state.checkinBlockers = "";
+    }
+
+    async writeUpCheckin() {
+        const note = (this.state.checkinNote || "").trim();
+        if (!note) {
+            this.notif.add(
+                _t("Write a line about what moved this month — a check-in "
+                   + "with nothing on it cannot be read next March."),
+                { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "write_up_checkin",
+                [this.state.checkinOpen, note, this.state.checkinBlockers]);
+            this.notif.add(d.sentence || _t("Written up."),
+                           { type: "success" });
+            this.state.checkinOpen = 0;
+            await this.openSheet(this.state.sheet.id);
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // =================================================================
+    //  B2 — the two reviews
+    // =================================================================
+    openReviewForm(id) {
+        this.state.reviewOpen = this.state.reviewOpen === id ? 0 : id;
+        this.state.reviewNote = "";
+    }
+
+    async writeUpReview() {
+        const note = (this.state.reviewNote || "").trim();
+        if (!note) {
+            this.notif.add(
+                _t("Write up what was said. This is the one row somebody "
+                   + "will want to read next year."), { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "write_up_review",
+                [this.state.reviewOpen, note]);
+            this.notif.add(d.sentence || _t("Written up."),
+                           { type: "success" });
+            this.state.reviewOpen = 0;
+            await this.openSheet(this.state.sheet.id);
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // =================================================================
+    //  B2 — scoring
+    // =================================================================
+    onMark(krId, ev) {
+        this.state.marks[krId] = ev.target.value || "";
+    }
+
+    /** How many marks are still missing, so the button can say so. */
+    get marksLeft() {
+        let left = 0;
+        for (const key of Object.keys(this.state.marks)) {
+            if (!this.state.marks[key]) { left += 1; }
+        }
+        return left;
+    }
+
+    async saveMarks() {
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "score_key_results",
+                [this.state.sheet.id, this.state.marks]);
+            this.notif.add(d.sentence || _t("Saved."),
+                           { type: d.scored ? "success" : "info" });
+            await this.openSheet(this.state.sheet.id);
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    async markGoalDone(goalId, done) {
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "mark_goal_done", [goalId, done]);
+            this.notif.add(d.sentence || _t("Saved."), { type: "success" });
+            await this.openSheet(this.state.sheet.id);
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // =================================================================
+    //  B2 — asking to change agreed goals
+    // =================================================================
+    openChangeForm(kind, goalId) {
+        this.state.changeOpen = true;
+        this.state.changeKind = kind || "edit";
+        this.state.changeGoalId = Number(goalId) || 0;
+        const goal = (this.state.sheet.goals || []).find(
+            (g) => g.id === this.state.changeGoalId);
+        this.state.changeTitle = goal ? goal.title : "";
+        this.state.changeDescription = goal ? goal.description : "";
+        this.state.changeDate = goal ? goal.to : "";
+        this.state.changeKrs = "";
+        this.state.changeReason = "";
+    }
+
+    closeChangeForm() { this.state.changeOpen = false; }
+
+    async askChange() {
+        const reason = (this.state.changeReason || "").trim();
+        if (!reason) {
+            this.notif.add(
+                _t("Say why. A request to change agreed goals with no reason "
+                   + "on it is a request nobody can decide."),
+                { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        try {
+            const values = {
+                title: this.state.changeTitle,
+                description: this.state.changeDescription,
+                date_end: this.state.changeDate || false,
+                kr_titles: (this.state.changeKrs || "").split("\n"),
+            };
+            const d = await this.orm.call("pb.goals", "ask_for_change", [
+                this.state.sheet.id, this.state.changeKind, values, reason,
+                this.state.changeGoalId || null,
+            ]);
+            this.notif.add(d.sentence || _t("Asked."), { type: "success" });
+            this.state.changeOpen = false;
+            await this.openSheet(this.state.sheet.id);
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    async decideChange(changeId, action) {
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "decide_change", [changeId, action, ""]);
+            this.notif.add(d.sentence || _t("Done."), { type: "success" });
+            if (this.state.open && this.state.sheet.id) {
+                await this.openSheet(this.state.sheet.id);
+            }
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // =================================================================
+    //  B2 — closing the year
+    // =================================================================
+    /** IT SAYS HOW MANY AND WHAT IS MISSING BEFORE IT DOES ANYTHING (R54). */
+    async askClose() {
+        if (!this.state.cycleId) { return; }
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call(
+                "pb.goals", "preview_close", [this.state.cycleId]);
+            this.state.closing = d;
+            this.state.closeAnyway = false;
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    closeClosing() { this.state.closing = null; }
+
+    toggleCloseAnyway() {
+        this.state.closeAnyway = !this.state.closeAnyway;
+    }
+
+    async doClose() {
+        this.state.busy = true;
+        try {
+            const d = await this.orm.call("pb.goals", "close_cycle", [
+                this.state.cycleId, this.state.closeAnyway]);
+            this.notif.add(d.sentence || _t("The year is closed."),
+                           { type: "success" });
+            this.state.closing = null;
+            await this.reload();
+        } catch (e) {
+            this.notif.add(this.constructor.reason(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // =================================================================
+    //  B2 — the doors
+    // =================================================================
+    async openCheckinRecord(id) {
+        const action = await this.orm.call("pb.goals", "open_checkin", [id]);
+        await this.action.doAction(action);
+    }
+
+    async openChangeRecord(id) {
+        const action = await this.orm.call("pb.goals", "open_change", [id]);
+        await this.action.doAction(action);
+    }
+
+    async openNumbers() {
+        const action = await this.orm.call("pb.goals", "open_numbers", []);
+        await this.action.doAction(action);
     }
 }
 

@@ -230,6 +230,12 @@
             </div>
           </div>
 
+          <!-- ============ B2 — this month, the reviews, the score ============
+               Kept in one place so the page reads as a year rather than as a
+               list of features: what is happening now, what happens next, and
+               where it has got to. -->
+          <t t-call="pb_goals.gl_year"/>
+
           <!-- ===================== the goals ===================== -->
           <div t-if="not me['goals']" class="pbme-empty pbgl-empty">
             <div class="pbme-empty-ic">
@@ -363,6 +369,107 @@
                   </details>
                 </div>
 
+                <!-- ====== B2 — finishing one, and asking to change it ======
+                     TWO PRESSES THAT ONLY EXIST AFTER THE LOCK. Saying "this
+                     one is done" is not a score and does not pretend to be;
+                     asking to change an agreed goal is the one way to move it
+                     and goes to the same two people who agreed it. -->
+                <div t-if="me['locked'] and not me.get('closed')"
+                     class="pbgl-goal-actions">
+                  <form t-if="not gl.get('done')" method="post"
+                        t-attf-action="/my/goals/goal/#{gl['id']}/complete">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="done" value="1"/>
+                    <button type="submit" class="pbme-btn pbgl-btn--small">
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'check'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Mark it finished
+                    </button>
+                  </form>
+                  <form t-if="gl.get('done')" method="post"
+                        t-attf-action="/my/goals/goal/#{gl['id']}/complete">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="done" value="0"/>
+                    <button type="submit" class="pbgl-btn--ghost">
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'undo'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Not finished after all
+                    </button>
+                  </form>
+                  <details t-if="me['may_change']" class="pbgl-edit">
+                    <summary>
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'repeat'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Ask to change this goal
+                    </summary>
+                    <form method="post" class="pbgl-form"
+                          action="/my/goals/change">
+                      <input type="hidden" name="csrf_token"
+                             t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="kind" value="edit"/>
+                      <input type="hidden" name="goal_id"
+                             t-att-value="gl['id']"/>
+                      <label class="pbgl-f pbgl-f--wide">
+                        <span>What it should say instead</span>
+                        <input type="text" name="title" maxlength="200"
+                               t-att-value="gl['title']"/>
+                      </label>
+                      <label class="pbgl-f pbgl-f--wide">
+                        <span>Why it matters and what good looks like</span>
+                        <textarea name="description" rows="3"><t t-esc="gl['description']"/></textarea>
+                      </label>
+                      <label class="pbgl-f">
+                        <span>Done by</span>
+                        <input type="date" name="date_end"
+                               t-att-value="gl['to']"/>
+                      </label>
+                      <label class="pbgl-f pbgl-f--wide">
+                        <span>Why this has to change</span>
+                        <textarea name="reason" rows="3" required="required"
+                                  placeholder="What changed in the business. This is the whole of what your manager and the HR team have to go on."/>
+                      </label>
+                      <button type="submit"
+                              class="pbme-btn pbgl-btn--primary">
+                        Ask for it
+                      </button>
+                    </form>
+                  </details>
+                  <details t-if="me['may_change']" class="pbgl-edit">
+                    <summary>
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'trash'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Ask to drop it
+                    </summary>
+                    <form method="post" class="pbgl-form"
+                          action="/my/goals/change">
+                      <input type="hidden" name="csrf_token"
+                             t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="kind" value="drop"/>
+                      <input type="hidden" name="goal_id"
+                             t-att-value="gl['id']"/>
+                      <label class="pbgl-f pbgl-f--wide">
+                        <span>Why this goal no longer makes sense</span>
+                        <textarea name="reason" rows="3" required="required"
+                                  placeholder="What changed. Dropping a goal does not change what the others are worth — ask your manager if the weights should move too."/>
+                      </label>
+                      <button type="submit"
+                              class="pbme-btn pbgl-btn--primary">
+                        Ask for it
+                      </button>
+                    </form>
+                  </details>
+                </div>
+
                 <!-- ============ editing the goal itself ============ -->
                 <div t-if="me['editable']" class="pbgl-goal-actions">
                   <details class="pbgl-edit">
@@ -484,7 +591,11 @@
             </div>
           </t>
 
-          <!-- ================= last year's ================= -->
+          <!-- ================= last year's =================
+               A CLOSED YEAR IS A DOOR AND NOT A LINE OF TEXT (B2). The whole
+               of it — every goal, every key result and the mark each one was
+               given — is one press away, read from the copy frozen the day it
+               was put away rather than worked out again. -->
           <div t-if="me['others']" class="pbgl-others">
             <h4>Other years</h4>
             <ul>
@@ -492,6 +603,14 @@
                 <strong t-esc="ot['cycle']"/>
                 <span t-esc="ot['state_word']"/>
                 <span><t t-esc="ot['progress']"/>% of the way</span>
+                <span t-if="ot.get('score') is not None" class="pbgl-chip">
+                  <t t-esc="ot['score']"/> out of 5
+                  <t t-if="ot.get('band')"> · <t t-esc="ot['band']"/></t>
+                </span>
+                <a t-if="ot.get('closed')" class="pbgl-others-open"
+                   t-attf-href="/my/goals/year/#{ot['id']}">
+                  See the whole year
+                </a>
               </li>
             </ul>
           </div>

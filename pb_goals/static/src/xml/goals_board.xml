@@ -55,9 +55,17 @@
               <p class="pbim-sub" t-esc="state.scope"/>
             </div>
             <div class="pbgl-head-actions">
-              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+              <!-- R188 — "READ IT AGAIN" MUST READ WHAT IS ON THE SCREEN.
+                   `reload()` re-reads the sheets AND whichever of the four
+                   other tabs is showing; `load()` alone would leave the tab
+                   somebody is actually looking at exactly as stale. -->
+              <button class="pbim-btn ghost" t-on-click="() => this.reload()"
                       title="Read it again">
                 <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.isHr" class="pbim-btn ghost"
+                      t-on-click="openNumbers">
+                <t t-out="ic('barChart',15)"/> The numbers
               </button>
               <a t-if="state.myPage" class="pbim-btn ghost" href="/my/goals">
                 <t t-out="ic('user',15)"/> My own goals
@@ -69,6 +77,11 @@
               <button t-if="state.isHr" class="pbim-btn ghost"
                       t-on-click="openCycles">
                 <t t-out="ic('calendar',15)"/> Goal years
+              </button>
+              <button t-if="state.isHr and cycle and cycle.state === 'open'"
+                      class="pbim-btn ghost" t-on-click="askClose"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('archive',15)"/> Close the year
               </button>
               <button t-if="state.isHr and cycle and cycle.state === 'open'"
                       class="pbim-btn primary" t-on-click="askBulk"
@@ -111,8 +124,41 @@
               </t>
             </div>
 
-            <!-- ===================== the headline ===================== -->
-            <p class="pbgl-headline" t-esc="state.headline"/>
+            <!-- ===================== the headline =====================
+                 ONLY ON THE TAB IT IS ABOUT (B2). Left unconditional it
+                 stayed on screen while another tab was showing, so the
+                 conversations tab opened under a sentence about how many goal
+                 sheets had been agreed — two headlines, one of them answering
+                 a question nobody had asked. Found live. -->
+            <p t-if="state.tab === 'sheets'" class="pbgl-headline"
+               t-esc="state.headline"/>
+
+            <!-- ======================== the tabs ========================
+                 THE YEAR, NOT JUST THE SETTING-UP OF IT (B2). The first tab
+                 is B1's board; the other four are what has happened to the
+                 goals since they were agreed.
+
+                 R194 — A CHAIN OF TABS NAMES EVERY ONE OF THEM AND HAS NO
+                 `t-else` AT THE END. A catch-all branch claims every tab
+                 nobody has written yet, and the symptom is two panels
+                 rendering at once on a screen that otherwise looks perfectly
+                 normal. -->
+            <div class="pbgl-tabs">
+              <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+                <button class="pbgl-tab"
+                        t-att-class="{ 'on': state.tab === tb.key }"
+                        t-on-click="() => this.setTab(tb.key)">
+                  <t t-out="ic(tb.icon,15)"/>
+                  <span t-esc="tb.label"/>
+                </button>
+              </t>
+            </div>
+
+            <t t-if="state.tab !== 'sheets'">
+              <t t-call="pb_goals.GoalsYearPanel"/>
+            </t>
+
+            <t t-if="state.tab === 'sheets'">
 
             <!-- ======================= the tiles =======================
                  R196/R32 — `.pbim-stats` is `display: grid` and NOTHING
@@ -273,6 +319,8 @@
               </t>
             </div>
 
+            </t><!-- end of the goal-sheets tab -->
+
           </t>
         </t>
       </div>
@@ -383,6 +431,9 @@
             </t>
           </div>
 
+          <!-- ============= B2 — the year, in the drawer ============= -->
+          <t t-call="pb_goals.GoalsDrawerYear"/>
+
           <!-- ===================== the trail ===================== -->
           <div t-if="state.sheet.history.length" class="pbgl-dr-hist">
             <h4>What has moved</h4>
@@ -411,6 +462,15 @@
               <button t-if="state.sheet.may_send_back" class="pbim-btn ghost"
                       t-on-click="() => { state.backOpen = !state.backOpen; }">
                 <t t-out="ic('undo',15)"/> Send it back
+              </button>
+              <button t-if="state.mayChange" class="pbim-btn ghost"
+                      t-on-click="() => this.openChangeForm('add', 0)">
+                <t t-out="ic('repeat',15)"/> Ask to change these
+              </button>
+              <button t-if="state.mayScore and !state.sheetClosed and state.scores.goals.length"
+                      class="pbim-btn primary" t-on-click="saveMarks"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('award',15)"/> Save the scores
               </button>
               <button t-if="state.sheet.may_weight" class="pbim-btn primary"
                       t-on-click="saveWeights" t-att-disabled="state.busy">
@@ -458,6 +518,53 @@
           </div>
         </div>
       </div>
+
+      <!-- ====================================================================
+           CLOSING THE YEAR — the same rule as the button above (R54): it says
+           how many and what is missing BEFORE it does anything, and it says
+           out loud that it can be undone, because that is most of why anybody
+           will press it.
+           ==================================================================== -->
+      <div t-if="state.closing" class="pbgl-scrim" t-on-click="closeClosing">
+        <div class="pbgl-dialog" t-on-click.stop="() => {}">
+          <div class="pbgl-dg-head">
+            <h3>Score the year and close it</h3>
+            <button class="pbgl-x" t-on-click="closeClosing" title="Close">
+              <t t-out="ic('x',17)"/>
+            </button>
+          </div>
+          <p class="pbgl-dg-body" t-esc="state.closing.sentence"/>
+          <div t-if="state.closing.names.length" class="pbgl-dg-names">
+            <t t-foreach="state.closing.names" t-as="nm" t-key="nm_index">
+              <span class="pbgl-chip" t-esc="nm"/>
+            </t>
+          </div>
+          <p class="pbgl-dg-small">Every score is frozen as it stands today,
+             the goals are filed, and everybody whose sheet was scored gets an
+             email saying what they came out at. Nothing is deleted and the
+             year can be reopened.</p>
+          <label t-if="!state.closing.can_close" class="pbgl-dg-tick">
+            <input type="checkbox" t-att-checked="state.closeAnyway"
+                   t-on-change="toggleCloseAnyway"/>
+            <span>Close it anyway, without the missing scores. How many were
+                  missing is written on the year's own record.</span>
+          </label>
+          <div class="pbgl-dg-foot">
+            <button class="pbim-btn ghost" t-on-click="closeClosing">
+              Not now
+            </button>
+            <button class="pbim-btn primary" t-on-click="doClose"
+                    t-att-disabled="state.busy or (!state.closing.can_close and !state.closeAnyway)">
+              <t t-out="ic('archive',15)"/> Close the year
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           ASKING TO CHANGE AGREED GOALS.
+           ==================================================================== -->
+      <t t-call="pb_goals.GoalsChangeDialog"/>
 
     </div>
   </t>

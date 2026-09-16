@@ -58,6 +58,14 @@ class PbGoalsPortal(CustomerPortal):
             'sent': _("Sent to your manager. You will get an email either "
                       "way."),
             'moved': _("Progress saved."),
+            # ------------------------------------------------------- B2
+            'checkin': _("Written up. Your manager can see it."),
+            'asked': _("Asked. Your manager looks at it first, then the HR "
+                       "team."),
+            'said': _("Saved. Your manager reads this when they write the "
+                      "review up."),
+            'complete': _("Marked complete."),
+            'reopened': _("Open again."),
         }.get(key or '', '')
 
     def _gl_problem(self, key):
@@ -218,3 +226,64 @@ class PbGoalsPortal(CustomerPortal):
                 methods=['POST'])
     def portal_goals_submit(self, **post):
         return self._gl_run(lambda: self._gl_facade().submit(), ok='sent')
+
+    # =================================================================
+    #  B2 — the rest of the year
+    #
+    #  SAME SHAPE AS EVERY ROUTE ABOVE: the route proves who is asking, the
+    #  facade holds every rule, and `_gl_run` turns any refusal into a
+    #  sentence on the page. No route takes an employee id.
+    # =================================================================
+    @http.route(['/my/goals/checkin/<int:checkin_id>'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_goals_checkin(self, checkin_id, **post):
+        """Write up this month's conversation. Either side may."""
+        return self._gl_run(lambda: self._gl_facade().write_up_checkin(
+            checkin_id, post.get('note') or '',
+            post.get('blockers') or ''), ok='checkin')
+
+    @http.route(['/my/goals/review/<int:review_id>/say'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_goals_review_say(self, review_id, **post):
+        """What the employee wants on the record before it is written up."""
+        return self._gl_run(lambda: self._gl_facade().say_on_review(
+            review_id, post.get('note') or ''), ok='said')
+
+    @http.route(['/my/goals/goal/<int:goal_id>/complete'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_goal_complete(self, goal_id, **post):
+        done = (post.get('done') or '1') not in ('0', 'false', 'no')
+        return self._gl_run(
+            lambda: self._gl_facade().mark_goal_done(goal_id, done),
+            ok='complete' if done else 'reopened')
+
+    @http.route(['/my/goals/change'], type='http', auth='user', website=True,
+                methods=['POST'])
+    def portal_goals_change(self, **post):
+        """Ask to change goals that have already been agreed."""
+        kind = post.get('kind') or 'edit'
+        goal_id = post.get('goal_id') or False
+        values = {
+            'title': post.get('title'),
+            'description': post.get('description'),
+            'date_end': post.get('date_end') or False,
+            'kr_titles': [line for line in
+                          (post.get('kr_titles') or '').splitlines()],
+        }
+        return self._gl_run(lambda: self._gl_facade().ask_for_change(
+            kind, values, post.get('reason') or '',
+            int(goal_id) if goal_id else None), ok='asked')
+
+    @http.route(['/my/goals/year/<int:set_id>'], type='http', auth='user',
+                website=True)
+    def portal_goals_past_year(self, set_id, **kw):
+        """A year that has been closed, read from the copy frozen that day."""
+        try:
+            data = self._gl_facade().past_year(set_id)
+        except (UserError, AccessError) as err:
+            return self._gl_back(flash=str(
+                err.args[0] if err.args else ''))
+        return request.render('pb_goals.portal_goals_past_year', {
+            'page_name': 'goals',
+            'year': data,
+        })
