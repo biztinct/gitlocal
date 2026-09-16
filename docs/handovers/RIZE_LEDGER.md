@@ -281,7 +281,7 @@ without owner approval between them.
 | B1 | pb_goals — goal years, the goal sheet with weighted goals and key results, the manager + HR-lead route, templates, the joining-checklist kick-off, `/my/goals`, the Goals lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 80 unit tests green; `pb_goals` is the ONLY module whose state changed; ten live-only defects found and fixed — see R200–R211) |
 | B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | **DONE** (live on `payobook`, 19.0.1.1.0 with its migration, T1–T11 pass, 179 unit tests green; `pb_goals` is the ONLY module whose state changed; nine live-only defects found and fixed — one of them a B1 defect that had been live since B1 — see R212–R224) |
 | D1 | pb_timeoff + pb_driver_checkin — public holidays for everybody (a Workforce lens + `/my/holidays`), escalation to the HR lead, the backdating rules and the sick-leave exception, the past-leave lock, the carry-forward watch, the Field staff group and the field check-in chip, and Mission Control's soft lens registry | **DONE** (live on `payobook`: `pb_timeoff` 19.0.1.4.1 with its migration, `pb_driver_checkin` 19.0.1.5.0, `pb_today` 19.0.1.5.0, `pb_mission` 19.0.1.10.0, `biz_approval_workflow` Python-only; T1–T10 pass, 110 unit tests green; NO module was installed or uninstalled; eight live-only defects found and fixed — see R225–R234) |
-| C1 | pb_hr_comm | not started |
+| C1 | pb_hr_comm — the communication calendar, scheduled and recurring announcements, the audience, the two-day reminder and the edit window, the optional sign-off, the Announcements lens, the Home card, and the birthday and anniversary cards | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 78 unit tests green; `pb_hr_comm` is the ONLY module whose state changed; one additive icon in `pb_import_kit`; seven live-only defects found and fixed — see R235–R242) |
 
 ## Gotchas discovered during RIZE phases (append here)
 
@@ -2577,3 +2577,124 @@ without owner approval between them.
   of Paid Time Off to Anita Oliver") went with them. None had been sent, none
   addressed a real person, and nothing that was cancelled can now go out — but
   the next phase should match on its OWN subjects and not on a word.
+
+### C1 (pb_hr_comm — the communication calendar, 2026-09-16)
+
+- **R235 — THE TIME A SCREEN SAYS IS THE TIME SOMEBODY ACTS ON, AND THERE ARE
+  TWO RIGHT ANSWERS.** `fields.Datetime.to_string` prints UTC, so the first
+  live reminder told a Vietnamese reader their announcement went out at
+  "2026-09-18 10:57:24" — the right moment, in the wrong time zone, in a shape
+  nobody says out loud. Seven hours is enough to be a different working day.
+  The fix is two helpers and a rule about which to use. **An EMAIL is read by
+  ONE person, so it says the time in THEIR zone** (`local_words(env, when,
+  user)`); **a shared surface is read by several people in several countries
+  about one moment that belongs to the company publishing it, so it says the
+  COMPANY'S time** (`company_words(env, when, company)`, the zone off
+  `company.resource_calendar_id.tz` — `res.company` has no zone of its own).
+  Mixing them is visible: the drawer said "1:59 pm" directly above a history
+  line saying "9:59 pm" about the same announcement. The GRID has to agree
+  with the drawer too (`company_dt`), or a post sits on Friday in the reader's
+  zone and Saturday in the company's — and the screen says which it is using,
+  once, in a muted line ("Times are each company's own"). The one surface left
+  in the reader's zone is the NATIVE FORM, because that is the framework's own
+  convention and fighting it would be a third answer; its field help says so.
+- **R236 — A COMMENT-BLIND GATE FAILS ON THE FILE THAT EXPLAINS IT, and that
+  is now four times on this programme.** R118 recorded it for the white-label
+  gate and R231 for the emoji and plural gates. C1 added two more: the
+  reserved-loop-variable gate failed on its own template header, which quotes
+  `t-as="lt"` as the thing not to write, and the mail-template gate failed on
+  the header that warns about `t-key` and dict `t-att-class` by name. **Every
+  source gate strips comments first, whatever it is looking for** — and the
+  rule is now general enough that a new gate should start from `re.sub(r'<!--
+  .*?-->', '', source, flags=re.S)` or the AST, never from the raw text.
+- **R237 — A CALENDAR PILL IS A HUNDRED PIXELS WIDE AND THE SUBJECT IS THE
+  ONLY THING ON IT THAT MEANS ANYTHING.** Laid out as one row of "time ·
+  subject", every pill on the live board read "10:55 DEMO …": the time, which
+  nobody scans a month for, and an ellipsis where the announcement was. R187's
+  lesson reached from a narrow column rather than a phone — the check is
+  arithmetic, not appearance (read the pill's text content at the real width
+  and look for the word you came for). The subject now takes two clamped lines
+  with the time under it, and the whole sentence — time, subject, audience,
+  status — is in the `title`, because a calendar's job is to show WHEN and the
+  drawer is one click away.
+- **R238 — THE IDEMPOTENCY RULE IS A ROW, AND THAT IS WHAT MAKES A BURST CAP
+  SAFE.** An announcement to four and a half thousand people cannot go out in
+  one breath, so the sender queues `pb_hr_comm.burst_cap` (500) and comes back
+  ten minutes later. Anything that decides "have we already told this person"
+  from a status, a stamp or a count is guessing, and the guess is wrong in
+  exactly the case the cap exists for — a pass that stopped half way through.
+  `pb.hr.comm.delivery` carries one row per (post, person) with a unique index
+  on the pair, and the sender skips whoever has one: Postgres decides, not
+  Python (R21/R49 from a third direction). It is also the only honest answer
+  to "did so-and-so get it" six months later. Proven live by capping at two
+  over a three-person audience and running twice.
+- **R239 — A REVERT CHANGES WHAT THE TEST ACCOUNT CAN SEE, so read the board
+  BEFORE you give the groups back.** Five minutes after the C1 reverts the
+  calendar showed two announcements where it had shown eight, which looks
+  exactly like six records having been deleted by an upgrade. They were all
+  there in Postgres: the validator no longer held any announcements group, so
+  the only rules that applied were the company rule and the SEAT rule — and
+  the two rows on the board were precisely the two the published route had
+  asked that account to decide. The permission design working, read as a data
+  loss. Check the database before believing a screen, and take the final
+  screenshots before the reverts.
+- **R240 — `hr.employee.department_id` IS SEARCHABLE EVEN THOUGH IT IS NOT A
+  COLUMN.** R14 records that Odoo 19 keeps employment fields on a version
+  record and that raw SQL for `department_id` fails; what it does not say is
+  that `hr.employee` `_inherits` `hr.version`, so the ORM resolves
+  `search([('department_id', 'in', ids)])` through the delegation and an
+  audience expansion needs no join of its own. The read is still AS THE SYSTEM
+  (R56): one field of an employee prefetches forty, about forty of which sit
+  behind payroll groups on this build, so a country HR user asking who is in
+  their own audience would otherwise get an AccessError naming fields nobody
+  asked for. Also verified live: department 657 (Quality Assurance) now holds
+  three people and 656 (Facilities) twelve — the wave-1 test cast moved, and a
+  handover naming "8 test people in 657" is out of date.
+- **R241 — ⌘K, lens and settings numbers after C1.** C1 took the **3700**
+  block as the wave plan says: `comm_calendar` **3700** ("Announcements",
+  People), `comm_new` **3710** ("Write an announcement"), `comm_templates`
+  **3720**, `comm_celebrations` **3730** ("Birthdays and anniversaries this
+  week" — the same screen as 3700 reached by the other word, with the sublabel
+  saying where it lands) and `comm_mine` **3740** ("Announcements I look
+  after", open to everybody with a login). On the People hub the shipped
+  lenses are Employees, Contracts, Records 40, Pay 45, Where they work, Assets
+  50, Praise 60, Goals 70 — so **Announcements is 80**, and the label is
+  **"Announce"**, which measures **58px** in the 60px rail label box (R63);
+  "Announcements" is thirteen characters with no break in it and would have
+  spilled like "Improvement" and "Recognition" did. On the Home hub Wall is
+  20, the Decision Room 30 and Goals 40, so **"Coming up" is 50**: 35 was free
+  and was deliberately not used — every sequence in every hub in this product
+  is a multiple of ten, and the two cards that need somebody to DO something
+  belong above the one that is telling them about something. The Settings
+  category **Announcements is 50** (Vendors 20, Access 30, Approvals and
+  Hiring 40) with two cards, Templates and Who looks after them.
+- **R242 — the C1 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **24 rows added
+  to "DEMO HR programme data", which now holds 1,251.** New: announcements
+  **97** "DEMO Town hall" (sent to three people with a poster attached), **98**
+  "DEMO Canteen closed on Friday" (scheduled, the one the two-day reminder was
+  proved on), **99–102** "DEMO Monthly safety note" (the recurring chain, the
+  last of which stopped itself), **103** "DEMO Pay day moves to the 25th" (the
+  one that went through the sign-off route and was agreed) and **104** "DEMO
+  Car park closed for resurfacing" (sent back with a note, then scheduled with
+  sign-off switched off again); 15 delivery rows and one poster attachment.
+  **Two things were borrowed and both were put back:**
+  `pb_hr_comm.group_comm_manager` on uid 2065 and the company-5 `hr_lead` seat
+  (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7, so a route
+  could be decided without emailing the owner. Verified group-for-group
+  against a snapshot taken before the first write: **identical, with no
+  exceptions** (uid 1 and uid 2 hold `group_comm_admin`, which the module's
+  own security data grants to `base.user_root`/`base.user_admin` exactly as
+  `pb_goals` and `pb_training` do, and which was already true in the
+  snapshot). **No password was reset**; `RizeP0!2026`, `RizeP4!2026` and
+  `RizeP9!2026` were all used for real logins during the phase and all three
+  work. The HR rung of the demo route was moved to `diep.thai` by reassignment
+  because the engine's independence safeguard correctly refuses the account
+  that raised the request (R215), and the seat key is the one off
+  `can_move_it` (`u2065`) and never the step key. Every mail this phase queued
+  went to an `@example.com` address or was an engine notification with no
+  address at all; all twenty-three were cancelled by matching THIS PHASE'S OWN
+  SUBJECTS and nothing else (D1's sweep over-matched on a word, R234). The
+  outgoing queue holds only the three fleet-monitor alerts to the owner that
+  were already there. All six switches read their shipped values at the end,
+  and `pb_rnr.anniv_mail` is still **0** (D17).
