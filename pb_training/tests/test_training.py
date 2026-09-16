@@ -595,6 +595,20 @@ class TestTheBoard(TrainingCase):
 @tagged('post_install', '-at_install')
 class TestTheStockPageGate(TransactionCase):
 
+    def test_every_switch_has_a_row_an_administrator_can_find(self):
+        """`post_init_hook` fires on INSTALL ONLY, so a switch ADDED after a
+        database already has the module never gets a row — and a switch
+        nobody can find is a switch nobody can turn. The migration beside the
+        hook is what closes that, and this is what notices when the pair
+        falls out of step."""
+        from odoo.addons.pb_training.models.training_common import DEFAULTS
+        icp = self.env['ir.config_parameter'].sudo()
+        missing = [k for k in DEFAULTS if not icp.get_param(k)]
+        self.assertFalse(
+            missing,
+            'these switches have no row: %s — add a migration beside the '
+            'post_init_hook' % missing)
+
     def test_the_switch_ships_on(self):
         from odoo.addons.pb_training.models.training_common import (
             P_STOCK_PAGES, flag)
