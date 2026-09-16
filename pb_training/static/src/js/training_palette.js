@@ -105,3 +105,28 @@ palette.add("training_my", {
     requires: "pb_training_board",
     action: { xmlid: "pb_training.action_my_training" },
 }, { sequence: 3930 });
+
+/* -------------------------------------------------------------- E2 rows ---
+ * Still inside E's 3900 block; B1 starts at 3600 per the wave plan. Both are
+ * XMLIDs, because a bare tag is synthesised with no action NAME and anything
+ * returning through a breadcrumb then lands on a crumb labelled "Unnamed".
+ */
+palette.add("training_assignments", {
+    id: "training_assignments",
+    label: _t("Training assignments"),
+    sublabel: _t("Training"),
+    icon: "userCheck",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: "pb_training.action_pb_training_assignments" },
+}, { sequence: 3940 });
+
+palette.add("training_schedules", {
+    id: "training_schedules",
+    label: _t("Compliance schedules"),
+    sublabel: _t("Training"),
+    icon: "repeat",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: "pb_training.action_pb_training_schedules" },
+}, { sequence: 3950 });

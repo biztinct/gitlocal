@@ -695,7 +695,8 @@ class TestSourceGates(TransactionCase):
         every template in the file down with it (R35). Section rules use `=`."""
         for parts in (('static', 'src', 'xml', 'training_board.xml'),
                       ('views', 'portal_templates.xml'),
-                      ('views', 'training_views.xml')):
+                      ('views', 'training_views.xml'),
+                      ('views', 'assignment_views.xml')):
             for body in re.findall(r'<!--(.*?)-->', _src(*parts), flags=re.S):
                 self.assertFalse(
                     re.search(r'--', body),
@@ -739,7 +740,10 @@ class TestSourceGates(TransactionCase):
         for parts in (('static', 'src', 'xml', 'training_board.xml'),
                       ('views', 'training_views.xml'),
                       ('views', 'portal_templates.xml'),
-                      ('security', 'pb_training_security.xml')):
+                      ('views', 'assignment_views.xml'),
+                      ('data', 'mail_template_assignments.xml'),
+                      ('security', 'pb_training_security.xml'),
+                      ('security', 'pb_training_rules.xml')):
             src = re.sub(r'<!--.*?-->', '', _src(*parts), flags=re.S)
             self.assertNotIn('Odoo', src,
                              '%s shows the word Odoo to a user' % parts[-1])
@@ -748,6 +752,11 @@ class TestSourceGates(TransactionCase):
         # taken out — `_()` is what reaches a screen.
         for parts in (('models', 'pb_training.py'),
                       ('models', 'pb_my_training.py'),
+                      ('models', 'assignment.py'),
+                      ('models', 'delay.py'),
+                      ('models', 'schedule.py'),
+                      ('models', 'automation.py'),
+                      ('models', 'journey_ext.py'),
                       ('controllers', 'portal.py')):
             for text in re.findall(r'_\(\s*"((?:[^"\\]|\\.)*)"', _src(*parts)):
                 self.assertNotIn('Odoo', text)
@@ -759,15 +768,19 @@ class TestSourceGates(TransactionCase):
         for parts in (('models', 'pb_my_training.py'),
                       ('models', 'pb_training.py'),
                       ('controllers', 'portal.py'),
+                      ('models', 'assignment.py'),
+                      ('models', 'schedule.py'),
                       ('static', 'src', 'xml', 'training_board.xml'),
-                      ('views', 'portal_templates.xml')):
+                      ('views', 'portal_templates.xml'),
+                      ('views', 'assignment_views.xml')):
             src = _src(*parts)
             self.assertFalse(re.search(r'\w\(s\)', src),
                              '%s has a bracketed plural' % parts[-1])
 
     def test_no_emoji_anywhere_a_user_can_see(self):
         for parts in (('static', 'src', 'xml', 'training_board.xml'),
-                      ('views', 'portal_templates.xml')):
+                      ('views', 'portal_templates.xml'),
+                      ('views', 'assignment_views.xml')):
             src = _src(*parts)
             self.assertFalse(
                 re.search(r'[\U0001F300-\U0001FAFF✀-➿]', src),
@@ -811,7 +824,8 @@ class TestSourceGates(TransactionCase):
         thousand pixels of empty row beside it (R128)."""
         from lxml import etree
         offenders = []
-        for parts in (('views', 'training_views.xml'),):
+        for parts in (('views', 'training_views.xml'),
+                      ('views', 'assignment_views.xml')):
             tree = etree.fromstring(_src(*parts).encode('utf-8'))
             for field in tree.iter('field'):
                 if field.get('nolabel') != '1':

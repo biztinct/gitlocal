@@ -68,8 +68,53 @@
                       t-on-click="() => this.act('new_course', {}, { reload: false })">
                 <t t-out="ic('plus',15)"/> New course
               </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="() => this.openAssign(0)"
+                      title="Pick a course, pick the people, say by when">
+                <t t-out="ic('userPlus',15)"/> Assign a course
+              </button>
             </div>
           </div>
+
+          <!-- ================================================================
+               THE TABS. Two different questions, not one list with a filter:
+               Courses is "what is in the library", Assignments is "who still
+               owes what". They have different orders, different numbers and
+               different empty states, so they are tabs.
+               ================================================================ -->
+          <div class="pbtn-tabs" role="tablist">
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'courses' }"
+                    t-on-click="() => this.setTab('courses')">
+              <t t-out="ic('bookOpen',15)"/> Courses
+            </button>
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'assignments' }"
+                    t-on-click="() => this.setTab('assignments')">
+              <t t-out="ic('userCheck',15)"/> Assignments
+              <span t-if="state.aLoaded and state.aKpis.overdue"
+                    class="pbtn-tab-n"><t t-esc="state.aKpis.overdue"/></span>
+            </button>
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'requests' }"
+                    t-on-click="() => this.setTab('requests')">
+              <t t-out="ic('clock',15)"/> More time
+              <span t-if="state.aLoaded and state.aKpis.waiting"
+                    class="pbtn-tab-n"><t t-esc="state.aKpis.waiting"/></span>
+            </button>
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'schedules' }"
+                    t-on-click="() => this.setTab('schedules')">
+              <t t-out="ic('repeat',15)"/> Comes round again
+            </button>
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'rules' }"
+                    t-on-click="() => this.setTab('rules')">
+              <t t-out="ic('sunrise',15)"/> Day one
+            </button>
+          </div>
+
+          <t t-if="state.tab === 'courses'">
 
           <!-- ===================== the numbers ===================== -->
           <div class="pbim-stats pbtn-kpis">
@@ -216,7 +261,469 @@
             administrator if you want one.
           </p>
 
+          </t>
+
+          <!-- ================================================================
+               ASSIGNMENTS — who still owes what.
+
+               PROBLEM FIRST (R113): the server orders these with the most
+               overdue row at the top and nothing here re-sorts. A second
+               opinion written in JavaScript would only ever disagree with the
+               one that counts.
+               ================================================================ -->
+          <t t-elif="state.tab === 'assignments'">
+
+            <div t-if="state.aBusy and !state.aLoaded" class="pbim-busy">
+              <div class="pbim-spin"/><span>Reading the assignments…</span>
+            </div>
+
+            <t t-else="">
+              <div class="pbim-stats pbtn-kpis pbtn-kpis--4">
+                <div class="pbim-stat" t-att-class="{ err: state.aKpis.overdue }">
+                  <div class="pbim-stat-ic red"><t t-out="ic('alert',21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n" t-esc="state.aKpis.overdue or 0"/>
+                    <div class="l">Past its date</div>
+                  </div>
+                </div>
+                <div class="pbim-stat">
+                  <div class="pbim-stat-ic amber"><t t-out="ic('calendar',21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n" t-esc="state.aKpis.due_week or 0"/>
+                    <div class="l">Due in the next week</div>
+                  </div>
+                </div>
+                <div class="pbim-stat">
+                  <div class="pbim-stat-ic blue"><t t-out="ic('clock',21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n" t-esc="state.aKpis.waiting or 0"/>
+                    <div class="l">Waiting on a manager</div>
+                  </div>
+                </div>
+                <div class="pbim-stat">
+                  <div class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n" t-esc="state.aKpis.done_month or 0"/>
+                    <div class="l">Finished this month</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pbtn-filters">
+                <input class="pbtn-in pbtn-search" type="search"
+                       placeholder="Find a person or a course"
+                       t-att-value="state.aFilters.term"
+                       t-on-input="onAssignTerm"/>
+                <button class="pbim-btn ghost"
+                        t-att-class="{ on: state.aFilters.include_done }"
+                        t-on-click="toggleDone">
+                  <t t-out="ic('checkCheck',14)"/> Show finished ones too
+                </button>
+                <button t-if="state.canWrite" class="pbim-btn ghost"
+                        t-on-click="runReminders"
+                        title="Do now exactly what the nightly job does">
+                  <t t-out="ic('send',14)"/> Send the reminders now
+                </button>
+                <span class="pbtn-headline" t-esc="aHeadline"/>
+              </div>
+
+              <!-- the facets, counted over the rows on the screen (R80) -->
+              <div t-if="state.aRows.length" class="pbtn-facets">
+                <span class="pbtn-facet-l">Why:</span>
+                <button t-foreach="state.aFacets.reason or []" t-as="fct"
+                        t-key="fct.key" class="pbtn-facet"
+                        t-att-class="{ on: state.aFilters.reason === fct.key }"
+                        t-on-click="() => this.setFilter('reason', fct.key)">
+                  <t t-esc="fct.label"/> <b t-esc="fct.count"/>
+                </button>
+                <span class="pbtn-facet-l">How far:</span>
+                <button t-foreach="state.aFacets.state or []" t-as="fct"
+                        t-key="fct.key" class="pbtn-facet"
+                        t-att-class="{ on: state.aFilters.state === fct.key }"
+                        t-on-click="() => this.setFilter('state', fct.key)">
+                  <t t-esc="fct.label"/> <b t-esc="fct.count"/>
+                </button>
+              </div>
+
+              <div t-if="!state.aRows.length" class="pbim-panel pbtn-empty">
+                <div class="pbtn-empty-ic"><t t-out="ic('userCheck',30)"/></div>
+                <h2>Nobody has been put on a course yet</h2>
+                <p>An assignment is a course somebody has to finish by a date.
+                   Everybody you pick sees it on their own training page
+                   straight away, is reminded as the date comes up, and can ask
+                   their manager for more time if they need it.</p>
+                <div class="pbtn-empty-act">
+                  <button t-if="state.canWrite" class="pbim-btn primary"
+                          t-on-click="() => this.openAssign(0)">
+                    <t t-out="ic('userPlus',15)"/> Assign the first course
+                  </button>
+                </div>
+              </div>
+
+              <div t-else="" class="pbim-panel pbtn-table">
+                <div class="pbtn-tr pbtn-tr--head">
+                  <div class="pbtn-td pbtn-td--who">Who</div>
+                  <div class="pbtn-td pbtn-td--course">Course</div>
+                  <div class="pbtn-td">Why</div>
+                  <div class="pbtn-td">By when</div>
+                  <div class="pbtn-td">How far</div>
+                  <div class="pbtn-td pbtn-td--act"/>
+                </div>
+                <div t-foreach="state.aRows" t-as="asg" t-key="asg.id"
+                     class="pbtn-tr"
+                     t-att-class="{ 'pbtn-tr--late': asg.state === 'overdue' }">
+                  <div class="pbtn-td pbtn-td--who">
+                    <b t-esc="asg.who"/>
+                    <span t-if="asg.department" class="pbtn-dim"
+                          t-esc="asg.department"/>
+                  </div>
+                  <div class="pbtn-td pbtn-td--course">
+                    <span t-esc="asg.course"/>
+                    <span t-if="asg.probation" class="pbim-badge warn">
+                      Trial period waits for it
+                    </span>
+                  </div>
+                  <div class="pbtn-td"><t t-esc="asg.reason_word"/></div>
+                  <div class="pbtn-td">
+                    <span t-esc="asg.due_words"/>
+                    <span class="pbtn-dim" t-esc="asg.due"/>
+                  </div>
+                  <div class="pbtn-td">
+                    <div class="pbtn-bar pbtn-bar--sm">
+                      <div class="pbtn-bar-fill"
+                           t-attf-style="width: {{ asg.percent }}%;"/>
+                    </div>
+                    <span class="pbtn-chip" t-att-class="stateClass(asg.state)"
+                          t-esc="stateWord(asg.state)"/>
+                    <span t-if="asg.score !== null" class="pbtn-dim">
+                      <t t-esc="asg.score"/>%
+                    </span>
+                  </div>
+                  <div class="pbtn-td pbtn-td--act">
+                    <button class="pbim-btn ghost"
+                            t-on-click="() => this.openAssignment(asg.id)"
+                            title="Open the assignment">
+                      <t t-out="ic('external',14)"/>
+                    </button>
+                    <button t-if="state.canWrite and asg.state !== 'done'"
+                            class="pbim-btn ghost"
+                            t-on-click="() => this.dropAssignment(asg.id)"
+                            title="Take it off their list. What they have already done is kept.">
+                      <t t-out="ic('trash',14)"/>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <p t-if="state.aLoaded and !state.aSwitches.reminders"
+                 class="pbtn-note">
+                <t t-out="ic('info',14)"/>
+                Nobody is being chased: the reminders are switched off. Ask
+                your administrator to turn them on.
+              </p>
+            </t>
+          </t>
+
+          <!-- ================================================================
+               MORE TIME — the requests, the ones waiting on somebody first.
+               ================================================================ -->
+          <t t-elif="state.tab === 'requests'">
+            <div t-if="!state.aDelays.length" class="pbim-panel pbtn-empty">
+              <div class="pbtn-empty-ic"><t t-out="ic('clock',30)"/></div>
+              <h2>Nobody has asked for more time</h2>
+              <p>When somebody cannot finish a course by its date they ask
+                 their manager for longer from their own training page, and say
+                 why. The request appears here and in their manager's
+                 approvals, and an agreed one moves the date by itself.</p>
+            </div>
+            <div t-else="" class="pbim-panel pbtn-table">
+              <div class="pbtn-tr pbtn-tr--head">
+                <div class="pbtn-td pbtn-td--who">Who</div>
+                <div class="pbtn-td pbtn-td--course">Course</div>
+                <div class="pbtn-td">Why</div>
+                <div class="pbtn-td">Asking for</div>
+                <div class="pbtn-td">Where it is</div>
+                <div class="pbtn-td pbtn-td--act"/>
+              </div>
+              <div t-foreach="state.aDelays" t-as="dly" t-key="dly.id"
+                   class="pbtn-tr">
+                <div class="pbtn-td pbtn-td--who">
+                  <b t-esc="dly.who"/>
+                  <span t-if="dly.manager" class="pbtn-dim">
+                    Manager: <t t-esc="dly.manager"/>
+                  </span>
+                </div>
+                <div class="pbtn-td pbtn-td--course" t-esc="dly.course"/>
+                <div class="pbtn-td">
+                  <span t-esc="dly.kind"/>
+                  <span t-if="dly.note" class="pbtn-dim" t-esc="dly.note"/>
+                </div>
+                <div class="pbtn-td">
+                  <t t-esc="dly.days"/> <t t-esc="dly.days === 1 ? 'day' : 'days'"/>
+                  <span t-if="dly.now" class="pbtn-dim">
+                    now <t t-esc="dly.now"/>
+                  </span>
+                </div>
+                <div class="pbtn-td">
+                  <span class="pbtn-chip"
+                        t-att-class="{ 'pbtn-chip--wait': dly.state === 'submitted', 'pbtn-chip--ok': dly.state === 'approved', 'pbtn-chip--bad': dly.state === 'refused' }"
+                        t-esc="dly.state_word"/>
+                </div>
+                <div class="pbtn-td pbtn-td--act">
+                  <button class="pbim-btn ghost"
+                          t-on-click="() => this.openDelay(dly.id)"
+                          title="Open the request">
+                    <t t-out="ic('external',14)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <!-- ================================================================
+               COMES ROUND AGAIN — the compliance schedules.
+               ================================================================ -->
+          <t t-elif="state.tab === 'schedules'">
+            <div class="pbtn-filters">
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="() => this.actA('new_schedule', {})">
+                <t t-out="ic('plus',15)"/> New schedule
+              </button>
+              <button class="pbim-btn ghost"
+                      t-on-click="() => this.actA('open_schedules', {})">
+                <t t-out="ic('list',14)"/> All of them
+              </button>
+            </div>
+            <div t-if="!state.aSchedules.length" class="pbim-panel pbtn-empty">
+              <div class="pbtn-empty-ic"><t t-out="ic('repeat',30)"/></div>
+              <h2>Nothing comes round again yet</h2>
+              <p>A schedule is for the training that has to be done again and
+                 again — fire safety every year, food handling every two. Say
+                 which course, who it is for and how often, and it assigns
+                 itself from then on. Nobody is ever put on the same course
+                 twice.</p>
+              <div class="pbtn-empty-act">
+                <button t-if="state.canWrite" class="pbim-btn primary"
+                        t-on-click="() => this.actA('new_schedule', {})">
+                  <t t-out="ic('plus',15)"/> Set up the first one
+                </button>
+              </div>
+            </div>
+            <div t-else="" class="pbim-panel pbtn-table">
+              <div class="pbtn-tr pbtn-tr--head">
+                <div class="pbtn-td pbtn-td--course">What</div>
+                <div class="pbtn-td pbtn-td--course">Course</div>
+                <div class="pbtn-td">Who</div>
+                <div class="pbtn-td">How often</div>
+                <div class="pbtn-td">Next time</div>
+                <div class="pbtn-td">Last time</div>
+              </div>
+              <div t-foreach="state.aSchedules" t-as="sch" t-key="sch.id"
+                   class="pbtn-tr"
+                   t-att-class="{ 'pbtn-tr--late': sch.overdue }">
+                <div class="pbtn-td pbtn-td--course">
+                  <b t-esc="sch.name"/>
+                  <span t-if="!sch.active" class="pbim-badge draft">Switched off</span>
+                </div>
+                <div class="pbtn-td pbtn-td--course" t-esc="sch.course"/>
+                <div class="pbtn-td">
+                  <span t-esc="sch.audience"/>
+                  <span t-if="sch.where" class="pbtn-dim" t-esc="sch.where"/>
+                </div>
+                <div class="pbtn-td">
+                  every <t t-esc="sch.every_months"/> months,
+                  <t t-esc="sch.due_days"/> days to do it
+                </div>
+                <div class="pbtn-td" t-esc="sch.next_run"/>
+                <div class="pbtn-td">
+                  <t t-if="sch.last_run">
+                    <t t-esc="sch.last_run"/>
+                    <span class="pbtn-dim">
+                      <t t-esc="sch.last_count"/> <t t-esc="sch.last_count === 1 ? 'person' : 'people'"/>
+                    </span>
+                  </t>
+                  <span t-else="" class="pbtn-dim">not yet</span>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <!-- ================================================================
+               DAY ONE — what a new joiner is put on when they arrive.
+               ================================================================ -->
+          <t t-else="">
+            <div class="pbtn-filters">
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="() => this.actA('new_rule', {})">
+                <t t-out="ic('plus',15)"/> New day-one rule
+              </button>
+              <button class="pbim-btn ghost"
+                      t-on-click="() => this.actA('open_rules', {})">
+                <t t-out="ic('list',14)"/> All of them
+              </button>
+            </div>
+            <p t-if="!state.aSwitches.day1" class="pbtn-note">
+              <t t-out="ic('info',14)"/>
+              Day-one courses are switched off, so nothing is assigned
+              automatically yet. The step still appears on a new joiner's
+              checklist and says what it would have done. Ask your
+              administrator to turn it on when the courses below are the right
+              ones.
+            </p>
+            <div t-if="!state.aRules.length" class="pbim-panel pbtn-empty">
+              <div class="pbtn-empty-ic"><t t-out="ic('sunrise',30)"/></div>
+              <h2>Say what a new joiner does first</h2>
+              <p>A day-one rule is the induction: the courses everybody — or
+                 everybody in one part of the business — is put on when they
+                 arrive, and how long they get. It runs from the joining
+                 checklist, on their first day, and nobody has to remember
+                 it.</p>
+              <div class="pbtn-empty-act">
+                <button t-if="state.canWrite" class="pbim-btn primary"
+                        t-on-click="() => this.actA('new_rule', {})">
+                  <t t-out="ic('plus',15)"/> Write the first rule
+                </button>
+              </div>
+            </div>
+            <div t-else="" class="pbim-panel pbtn-table">
+              <div class="pbtn-tr pbtn-tr--head">
+                <div class="pbtn-td pbtn-td--course">What</div>
+                <div class="pbtn-td pbtn-td--course">Courses</div>
+                <div class="pbtn-td">Who it is about</div>
+                <div class="pbtn-td">Days they get</div>
+              </div>
+              <div t-foreach="state.aRules" t-as="rul" t-key="rul.id"
+                   class="pbtn-tr">
+                <div class="pbtn-td pbtn-td--course">
+                  <b t-esc="rul.name"/>
+                  <span t-if="!rul.active" class="pbim-badge draft">Switched off</span>
+                </div>
+                <div class="pbtn-td pbtn-td--course">
+                  <span t-foreach="rul.courses" t-as="cnm" t-key="cnm"
+                        class="pbim-badge" t-esc="cnm"/>
+                </div>
+                <div class="pbtn-td">
+                  <t t-if="!rul.departments.length and !rul.jobs.length">
+                    Everybody who joins
+                  </t>
+                  <t t-else="">
+                    <span t-foreach="rul.departments" t-as="dnm" t-key="dnm"
+                          class="pbim-badge" t-esc="dnm"/>
+                    <span t-foreach="rul.jobs" t-as="jnm" t-key="jnm"
+                          class="pbim-badge" t-esc="jnm"/>
+                  </t>
+                </div>
+                <div class="pbtn-td" t-esc="rul.due_days"/>
+              </div>
+            </div>
+          </t>
+
         </t>
+      </div>
+
+      <!-- ================================================================
+           "ASSIGN A COURSE" — a direct child of the root, holding exactly one
+           modal (R114/R115). The scrim is what centres and dims; the modal is
+           its child; neither is nested under the grid.
+           ================================================================ -->
+      <div t-if="state.assign" class="pbim-modal-scrim pbtn-scrim"
+           t-on-click="closeAssign">
+        <div class="pbim-modal pbtn-modal" t-on-click.stop="() => {}">
+          <div class="pbtn-modal-head">
+            <div>
+              <div class="pbim-eyebrow">Assign a course</div>
+              <h2>Who has to do it, and by when</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeAssign"
+                    title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div class="pbtn-modal-body">
+            <div class="pbtn-form">
+              <label class="pbtn-lbl">Course
+                <select class="pbtn-in" t-model="state.assignCourse">
+                  <option t-foreach="state.courses" t-as="crs" t-key="crs.id"
+                          t-att-value="crs.id" t-esc="crs.name"/>
+                </select>
+              </label>
+              <label class="pbtn-lbl">Why
+                <select class="pbtn-in" t-model="state.assignReason">
+                  <option t-foreach="state.aReasons" t-as="rsn" t-key="rsn.key"
+                          t-att-value="rsn.key" t-esc="rsn.label"/>
+                </select>
+              </label>
+              <label class="pbtn-lbl">To be finished by
+                <input class="pbtn-in" type="date" t-model="state.assignDue"/>
+              </label>
+              <label class="pbtn-lbl pbtn-lbl--check">
+                <input type="checkbox" t-model="state.assignProbation"/>
+                Their trial period waits for it
+              </label>
+            </div>
+
+            <div class="pbtn-expand">
+              <span class="pbtn-facet-l">Add a whole group:</span>
+              <select class="pbtn-in" t-model="state.expandKind">
+                <option value="department">A part of the business</option>
+                <option value="job">A job</option>
+                <option value="company">Everybody here</option>
+              </select>
+              <select class="pbtn-in" t-model.number="state.expandValue"
+                      t-if="state.expandKind === 'department'">
+                <option value="0">Pick one…</option>
+                <option t-foreach="state.groups.departments" t-as="dep"
+                        t-key="dep.id" t-att-value="dep.id" t-esc="dep.name"/>
+              </select>
+              <select class="pbtn-in" t-model.number="state.expandValue"
+                      t-if="state.expandKind === 'job'">
+                <option value="0">Pick one…</option>
+                <option t-foreach="state.groups.jobs" t-as="job" t-key="job.id"
+                        t-att-value="job.id" t-esc="job.name"/>
+              </select>
+              <button class="pbim-btn ghost" t-on-click="expand">
+                <t t-out="ic('users',14)"/> Add them all
+              </button>
+            </div>
+
+            <input class="pbtn-in pbtn-search" type="search"
+                   placeholder="Find somebody by name — accents and all"
+                   t-att-value="state.assignTerm"
+                   t-on-input="onAssignTermInput"/>
+
+            <div t-if="state.assignBusy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Looking…</span>
+            </div>
+            <div t-elif="!state.assignRows.length" class="pbtn-nobody">
+              Nobody matches that. Everybody here who has a Payobook login can
+              be put on a course.
+            </div>
+            <div t-else="" class="pbtn-picklist">
+              <label t-foreach="state.assignRows" t-as="emp" t-key="emp.id"
+                     class="pbtn-pick"
+                     t-att-class="{ 'pbtn-pick--on': isAssignPicked(emp.id),
+                                    'pbtn-pick--had': emp.on_it }">
+                <input type="checkbox" t-att-checked="isAssignPicked(emp.id)"
+                       t-on-change="() => this.toggleAssignPick(emp.id)"/>
+                <span class="pbtn-pick-main" t-esc="emp.name"/>
+                <span t-if="emp.on_it" class="pbim-badge">already on the course</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="pbtn-modal-foot">
+            <span class="pbtn-picked" t-esc="assignPickedWord"/>
+            <span class="pbtn-foot-gap"/>
+            <button class="pbim-btn ghost" t-on-click="closeAssign">
+              Cancel
+            </button>
+            <button class="pbim-btn primary" t-on-click="confirmAssign"
+                    t-att-disabled="!state.assignPicked.length || !state.assignCourse">
+              <t t-out="ic('userPlus',15)"/> Put them on it
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- ================================================================

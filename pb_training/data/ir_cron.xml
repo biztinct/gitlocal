@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE JOB, ONCE A MORNING.
+
+         `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         It is one job and not three because the three things it does are the
+         same question asked in order: what has changed overnight, what does
+         a schedule owe today, and who has to be told. A person reading the
+         log wants one line with the numbers in it, not three lines to add up.
+
+         The switch `pb_training.reminders` silences the CHASING without
+         disabling this row, so a business that has turned it off can still
+         see the job is there and the log still reports what it would have
+         sent — a thing that is off and does not say so is reported as broken
+         (R54).
+         ================================================================== -->
+
+    <record id="cron_training_daily" model="ir.cron">
+        <field name="name">Training: bring the assignments up to date, run the schedules and chase what is late</field>
+        <field name="model_id" ref="model_pb_training_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_daily()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

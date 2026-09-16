@@ -48,6 +48,11 @@ _PROBLEMS = {
     'no_certificate': _("This test does not come with a certificate."),
     'not_passed_yet': _("The certificate is ready once you have passed the "
                         "test."),
+    # E2
+    'no_team': _("You do not manage anybody, so there is no team page to "
+                 "show."),
+    'delay': _("That request could not be sent. Try again, and tell the "
+               "training team if it keeps happening."),
 }
 
 
@@ -66,6 +71,9 @@ class PbTrainingPortal(CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
         if 'training_count' in counters:
             values['training_count'] = self._training().home_count()
+        if 'training_team_count' in counters:
+            values['training_team_count'] = \
+                self._training().team_overdue_count()
         return values
 
     # =================================================================
@@ -85,6 +93,9 @@ class PbTrainingPortal(CustomerPortal):
         return {
             'done': _("Marked as done."),
             'enrolled': _("You are on the course."),
+            # E2
+            'asked': _("Asked. Your manager will see it and you will get an "
+                       "email either way."),
         }.get(key or '', '')
 
     # =================================================================
@@ -230,6 +241,55 @@ class PbTrainingPortal(CustomerPortal):
                 % (channel_id, self._int(answer.get('left'))))
         return request.redirect('/my/training/%s?problem=%s'
                                 % (channel_id, answer.get('code') or 'denied'))
+
+    # =================================================================
+    #  E2 — asking for more time, and the manager's own page
+    # =================================================================
+    @http.route(['/my/training/delay'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_training_delay(self, **post):
+        """Ask for more time. ONE press, and the request is already in.
+
+        The form posts the assignment it is about, and the model re-proves
+        ownership from the session before it writes anything — the id in the
+        form buys nothing, exactly as the course id in a URL buys nothing.
+        """
+        back = '/my/training'
+        channel_id = self._int(post.get('channel_id'))
+        if channel_id:
+            back = '/my/training/%s' % channel_id
+        try:
+            self._training().ask_more_time(
+                self._int(post.get('assignment_id')),
+                post.get('reason_kind') or 'other',
+                self._int(post.get('days_asked')),
+                (post.get('note') or '')[:2000])
+        except (AccessError, UserError) as err:
+            _logger.info('pb_training: a request for more time was refused '
+                         '(%s)', err)
+            return request.redirect('%s?problem=delay' % back)
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a request for more time could not '
+                            'be sent', exc_info=True)
+            return request.redirect('%s?problem=delay' % back)
+        return request.redirect('%s?ok=asked' % back)
+
+    @http.route(['/my/training/team'], type='http', auth='user', website=True)
+    def portal_training_team(self, **kw):
+        """A manager's own view of their team's training.
+
+        NOT A PERMISSION, A RELATIONSHIP: the page shows the people whose
+        `parent_id` is the caller's own employee record and nobody else, and
+        somebody who manages nobody is told so rather than shown an empty
+        table they will read as a fault.
+        """
+        team = self._training().team()
+        return request.render('pb_training.portal_training_team', {
+            'page_name': 'training',
+            'team': team,
+            'notice': self._notice(kw.get('ok')),
+            'problem': self._problem(kw),
+        })
 
     @http.route(['/my/training/<int:channel_id>/certificate'], type='http',
                 auth='user', website=True)

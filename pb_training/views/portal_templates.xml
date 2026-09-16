@@ -78,6 +78,107 @@
     </xpath>
   </template>
 
+  <!-- ============ the manager's card ============
+       A SECOND CARD AND NOT A LINE ON THE FIRST ONE: "my training" and "my
+       team's training" are two different jobs done by two different people
+       on two different days. Eagerly-counted like the first (R62). -->
+  <template id="portal_my_home_training_team" name="Team training home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="45">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My team's training</t>
+        <t t-set="text">Who in your team still has a course to finish, and who is past their date</t>
+        <t t-set="url" t-value="'/my/training/team'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'training_team_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  E2 — the due date, the reason, and the way out                   -->
+  <!--                                                                   -->
+  <!--  Called with `asg` (the assignment block) and `channel_id`. Said   -->
+  <!--  once so the tile on the front page and the course page can never  -->
+  <!--  disagree about a date.                                            -->
+  <!--                                                                   -->
+  <!--  `t-attf-class` and NEVER a dict `t-att-class` (R42): in a          -->
+  <!--  server-side template the dict form writes the Python repr into the -->
+  <!--  attribute AND drops the static class.                              -->
+  <!-- ================================================================= -->
+  <template id="tr_due" name="Training due date">
+    <div t-if="asg" class="pbtr-due">
+      <span t-attf-class="pbtr-chip #{asg['late'] and 'pbtr-chip--bad' or (asg['state'] == 'done' and 'pbtr-chip--ok' or 'pbtr-chip--wait')}">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="asg['late'] and 'alert' or 'clock'"/>
+          <t t-set="isz" t-value="13"/>
+        </t>
+        <t t-esc="asg['due_words']"/>
+      </span>
+      <span class="pbtr-chip"><t t-esc="asg['reason_word']"/></span>
+      <span t-if="asg['probation']" class="pbtr-chip pbtr-chip--wait">
+        Your trial period waits for it
+      </span>
+      <span t-if="asg['delay'] and asg['delay']['state'] == 'submitted'"
+            class="pbtr-chip pbtr-chip--wait">
+        More time asked for · <t t-esc="asg['delay']['days']"/> days
+      </span>
+      <span t-if="asg['delay'] and asg['delay']['state'] == 'approved'"
+            class="pbtr-chip pbtr-chip--ok">
+        More time agreed
+      </span>
+      <span t-if="asg['delay'] and asg['delay']['state'] == 'refused'"
+            class="pbtr-chip pbtr-chip--bad">
+        More time was not agreed
+      </span>
+    </div>
+  </template>
+
+  <!-- The form itself. A `<details>` rather than a dialog, because the whole
+       employee area is server-rendered and a form that needs JavaScript to
+       open is a form that does not open on a phone with a bad connection. -->
+  <template id="tr_ask" name="Ask for more time">
+    <details t-if="asg and asg['can_ask']" class="pbtr-ask">
+      <summary class="pbme-btn pbtr-ask-open">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="'clock'"/>
+          <t t-set="isz" t-value="15"/>
+        </t>
+        Ask for more time
+      </summary>
+      <form action="/my/training/delay" method="post" class="pbtr-ask-form">
+        <input type="hidden" name="csrf_token"
+               t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="assignment_id" t-att-value="asg['id']"/>
+        <input type="hidden" name="channel_id" t-att-value="channel_id"/>
+        <label class="pbtr-f">
+          <span>Why</span>
+          <select name="reason_kind">
+            <option t-foreach="delay_kinds" t-as="dk" t-key="dk['key']"
+                    t-att-value="dk['key']" t-esc="dk['label']"/>
+          </select>
+        </label>
+        <label class="pbtr-f">
+          <span>How many more days</span>
+          <input type="number" name="days_asked" value="7" min="1" max="90"/>
+        </label>
+        <label class="pbtr-f pbtr-f--wide">
+          <span>Anything you want to add</span>
+          <textarea name="note" rows="2"
+                    placeholder="A line is enough. Your manager reads this."/>
+        </label>
+        <button type="submit" class="pbme-btn pbtr-btn--primary">
+          Send it to my manager
+        </button>
+        <p class="pbtr-ask-note">
+          Your manager decides. Nothing chases you while they are looking at
+          it, and you get an email either way.
+        </p>
+      </form>
+    </details>
+  </template>
+
   <!-- ================================================================= -->
   <!--  the notice bar, said once                                        -->
   <!-- ================================================================= -->
@@ -105,6 +206,32 @@
           <t t-set="hero_title">Your training</t>
           <t t-set="hero_sub">Everything you have been put on, how far through it you are, and what is left.</t>
         </t>
+
+        <!-- A LINE THAT ONLY APPEARS WHEN IT IS TRUE. A page headed "Your
+             training" that says "nothing is late" every day teaches people
+             to stop reading it. -->
+        <div t-if="me.get('overdue')" class="pbtr-alarm">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'alert'"/>
+            <t t-set="isz" t-value="18"/>
+          </t>
+          <span>
+            <t t-if="me['overdue'] == 1">One of your courses is past its date.</t>
+            <t t-else=""><t t-esc="me['overdue']"/> of your courses are past their date.</t>
+            If you cannot finish in time, ask your manager for longer — it is
+            better than the date going past.
+          </span>
+        </div>
+
+        <p t-if="me.get('manages')" class="pbtr-teamline">
+          <a href="/my/training/team" class="pbme-btn">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'checkCheck'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            See my team's training
+          </a>
+        </p>
 
         <!-- ==================== the three numbers ==================== -->
         <div t-if="me['courses']" class="pbme-tiles pbtr-tiles">
@@ -157,6 +284,10 @@
                 </t>
               </div>
             </div>
+
+            <t t-call="pb_training.tr_due">
+              <t t-set="asg" t-value="crs.get('assignment')"/>
+            </t>
 
             <div class="pbtr-bar">
               <div class="pbtr-bar-fill"
@@ -222,6 +353,12 @@
             <p t-if="crs['next_id']" class="pbtr-nextline">
               Next: <t t-esc="crs['next_name']"/>
             </p>
+
+            <t t-call="pb_training.tr_ask">
+              <t t-set="asg" t-value="crs.get('assignment')"/>
+              <t t-set="channel_id" t-value="crs['id']"/>
+              <t t-set="delay_kinds" t-value="me.get('delay_kinds') or []"/>
+            </t>
           </div>
         </div>
 
@@ -251,6 +388,18 @@
           <t t-set="hero_title" t-value="course['name']"/>
           <t t-set="hero_sub" t-value="course['blurb']"/>
         </t>
+
+        <!-- ==================== by when, and why ==================== -->
+        <div t-if="course.get('assignment')" class="pbme-card pbtr-duecard">
+          <t t-call="pb_training.tr_due">
+            <t t-set="asg" t-value="course.get('assignment')"/>
+          </t>
+          <t t-call="pb_training.tr_ask">
+            <t t-set="asg" t-value="course.get('assignment')"/>
+            <t t-set="channel_id" t-value="course['id']"/>
+            <t t-set="delay_kinds" t-value="course.get('delay_kinds') or []"/>
+          </t>
+        </div>
 
         <!-- ==================== where they are ==================== -->
         <div class="pbme-card pbtr-progress">
@@ -557,6 +706,118 @@
           </a>
           <span t-else="" class="pbtr-foot-gap"/>
         </div>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/training/team — a manager's own view                         -->
+  <!--                                                                   -->
+  <!--  NOT A PERMISSION, A RELATIONSHIP. It shows the people whose       -->
+  <!--  manager the caller is and nobody else, and somebody who manages   -->
+  <!--  nobody is TOLD SO rather than shown an empty table they would     -->
+  <!--  read as a fault.                                                  -->
+  <!-- ================================================================= -->
+  <template id="portal_training_team" name="My team's training (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+
+        <t t-call="pb_training.tr_notices"/>
+
+        <a href="/my/training" class="pbtr-back">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowLeft'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          My own training
+        </a>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your team's training</t>
+          <t t-set="hero_sub">Who still has a course to finish, and who is past their date.</t>
+        </t>
+
+        <div t-if="not team['manages']" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'checkCheck'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>Nobody reports to you</h3>
+          <p class="pbme-muted">
+            This page shows the training of the people you manage. The day
+            somebody is put under you it fills in by itself — there is nothing
+            to set up. Your own training is on your own page.
+          </p>
+        </div>
+
+        <t t-else="">
+          <div class="pbme-tiles pbtr-tiles">
+            <div class="pbme-tile">
+              <div class="pbme-tile-l">Past their date</div>
+              <div class="pbme-tile-v"><t t-esc="team['overdue']"/></div>
+              <div class="pbme-tile-y">need a word from you</div>
+            </div>
+            <div class="pbme-tile">
+              <div class="pbme-tile-l">Still to do</div>
+              <div class="pbme-tile-v"><t t-esc="team['due']"/></div>
+              <div class="pbme-tile-y">courses in hand</div>
+            </div>
+            <div class="pbme-tile">
+              <div class="pbme-tile-l">Finished</div>
+              <div class="pbme-tile-v"><t t-esc="team['done']"/></div>
+              <div class="pbme-tile-y">done from start to end</div>
+            </div>
+          </div>
+
+          <div t-if="not team['rows']" class="pbme-card pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'graduationCap'"/>
+                <t t-set="isz" t-value="30"/>
+              </t>
+            </div>
+            <h3>Nobody in your team is on a course</h3>
+            <p class="pbme-muted">
+              You look after <t t-esc="team['people']"/>
+              <t t-esc="team['people_words']"/>. When the training team puts
+              one of them on a course it appears here, with the date it has to
+              be finished by.
+            </p>
+          </div>
+
+          <div t-else="" class="pbme-card pbtr-team">
+            <div t-foreach="team['rows']" t-as="row"
+                 t-attf-class="pbtr-team-row #{row['state'] == 'overdue' and 'pbtr-team-row--late' or ''}">
+              <div class="pbtr-team-who">
+                <b t-esc="row['who']"/>
+                <span class="pbtr-muted" t-esc="row['course']"/>
+              </div>
+              <div class="pbtr-team-bar">
+                <div class="pbtr-bar">
+                  <div class="pbtr-bar-fill"
+                       t-attf-style="width: #{row['percent']}%;"/>
+                </div>
+                <span class="pbtr-muted">
+                  <t t-esc="row['done']"/> of <t t-esc="row['total']"/> lessons
+                </span>
+              </div>
+              <div class="pbtr-team-when">
+                <span t-attf-class="pbtr-chip #{row['state'] == 'overdue' and 'pbtr-chip--bad' or (row['state'] == 'done' and 'pbtr-chip--ok' or 'pbtr-chip--wait')}">
+                  <t t-esc="row['due_words']"/>
+                </span>
+                <span class="pbtr-muted" t-esc="row['reason_word']"/>
+              </div>
+            </div>
+          </div>
+
+          <p class="pbtr-teamnote">
+            If somebody needs longer, they ask from their own training page and
+            the request comes to you to agree or turn down.
+          </p>
+        </t>
 
       </div>
     </t>

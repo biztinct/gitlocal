@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE ONE CATALOGUE ROW THIS MODULE OWNS.
+
+         Every row in the approval catalogue is created by the module that
+         owns the business object, so the catalogue can never claim something
+         is wired up when it is not. That is also what keeps the dependency
+         honest: this module depends on the ENGINE and never on the screen
+         that displays these rows (ledger AM52).
+
+         `noupdate="1"` so a business that has reworded or re-sequenced this
+         on a live database keeps its wording.
+         ================================================================== -->
+
+    <record id="process_training_delay" model="biz.approval.process">
+        <field name="key">training_delay</field>
+        <field name="name">More time on a course</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.training.delay</field>
+        <field name="description">Somebody asking for longer to finish a course they have been put on, and why.</field>
+        <field name="sequence">240</field>
+    </record>
+
+</odoo>

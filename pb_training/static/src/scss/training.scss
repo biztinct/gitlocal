@@ -350,3 +350,177 @@
     font-size: 12.5px; font-weight: 650; color: var(--pbim-muted, #64748B);
 }
 .pbtn-foot-gap { flex: 1 1 auto; }
+
+// =====================================================================
+//  E2 — the tabs, the assignment table and the "assign a course" dialog
+//
+//  The table is a GRID OF DIVS and not a `<table>`, because the same rows
+//  have to stack on a narrow screen and a table cannot. Every wide surface
+//  scrolls inside its own container rather than pushing the page sideways.
+//
+//  The tabs, the facets and the chips are nested under `.pbtn` (they are
+//  part of the board); the dialog's own rules stay at the TOP LEVEL beside
+//  the drawer's, because a scrim mounts outside the surface that opened it
+//  as often as inside (R114).
+// =====================================================================
+.pbtn {
+
+    // ------------------------------------------------------------- tabs
+    .pbtn-tabs {
+        display: flex; gap: 4px; flex-wrap: wrap;
+        margin: 0 0 18px; padding: 4px;
+        border-radius: 12px;
+        background: var(--pbim-bg, #F8FAFC);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtn-tab {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 14px; border: 0; border-radius: 9px;
+        font: inherit; font-size: 13px; font-weight: 640;
+        color: var(--pbim-muted, #64748B);
+        background: transparent; cursor: pointer;
+
+        @media (prefers-reduced-motion: no-preference) {
+            transition: background .16s ease, color .16s ease;
+        }
+        &:hover { color: var(--pbim-ink, #0F172A); }
+        &.on {
+            background: var(--pbim-surface, #FFFFFF);
+            color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, .07);
+        }
+        svg { flex: 0 0 auto; }
+    }
+    .pbtn-tab-n {
+        display: inline-grid; place-items: center;
+        min-width: 19px; height: 19px; padding: 0 5px;
+        border-radius: 999px; font-size: 11px; font-weight: 750;
+        color: #FFFFFF; background: var(--pbim-danger, #DC2626);
+    }
+
+    .pbtn-kpis--4 { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 980px) { .pbtn-kpis--4 { grid-template-columns: repeat(2, 1fr); } }
+
+    // ------------------------------------------------------------ facets
+    .pbtn-facets {
+        display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .pbtn-facet-l {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+        margin-left: 4px;
+
+        &:first-child { margin-left: 0; }
+    }
+    .pbtn-facet {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 999px; cursor: pointer;
+        font: inherit; font-size: 12.5px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-text, #334155);
+
+        b { font-weight: 750; color: var(--pbim-ink, #0F172A); }
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary, #4F46E5);
+            b { color: inherit; }
+        }
+    }
+
+    // ------------------------------------------------------------- table
+    // Wide content scrolls INSIDE its own box; the page body never scrolls
+    // sideways.
+    .pbtn-table { padding: 0; overflow-x: auto; }
+    .pbtn-tr {
+        display: grid;
+        grid-template-columns: 1.4fr 1.6fr .8fr 1fr 1.2fr 96px;
+        align-items: center; gap: 12px;
+        padding: 11px 18px; min-width: 860px;
+
+        & + & { border-top: 1px solid var(--pbim-line, #F1F5F9); }
+        &:not(.pbtn-tr--head):hover { background: var(--pbim-bg, #F8FAFC); }
+    }
+    .pbtn-tr--head {
+        font-size: 11.5px; font-weight: 750; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+        background: var(--pbim-bg, #F8FAFC);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtn-tr--late { box-shadow: inset 3px 0 0 var(--pbim-danger, #DC2626); }
+    .pbtn-td {
+        min-width: 0; font-size: 13px; color: var(--pbim-text, #334155);
+        display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
+
+        b { font-weight: 700; color: var(--pbim-ink, #0F172A); }
+        .pbtn-dim { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+        .pbim-badge { text-transform: none; }
+    }
+    .pbtn-td--act {
+        flex-direction: row; align-items: center; justify-content: flex-end;
+        gap: 4px;
+    }
+    .pbtn-bar--sm { height: 5px; width: 100%; max-width: 130px; }
+
+    .pbtn-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px;
+        font-size: 11.5px; font-weight: 700;
+        background: var(--pbim-bg, #F8FAFC);
+        color: var(--pbim-muted, #64748B);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtn-chip--bad {
+        background: #FEF2F2; color: #B91C1C; border-color: #FECACA;
+    }
+    .pbtn-chip--wait {
+        background: #FFFBEB; color: #B45309; border-color: #FDE68A;
+    }
+    .pbtn-chip--ok {
+        background: #ECFDF5; color: #047857; border-color: #A7F3D0;
+    }
+    .pbtn-chip--go {
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5); border-color: #C7D2FE;
+    }
+}
+
+// ------------------------------- the dialog's own rules, at the top level
+.pbtn-modal-act { display: flex; gap: 8px; }
+.pbtn-form {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px; margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+    .pbtn-form { grid-template-columns: minmax(0, 1fr); }
+}
+.pbtn-lbl {
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: 12px; font-weight: 700; letter-spacing: .02em;
+    color: var(--pbim-muted, #64748B);
+
+    &.pbtn-lbl--check {
+        flex-direction: row; align-items: center; gap: 9px;
+        align-self: end; padding-bottom: 9px;
+        font-weight: 640; text-transform: none;
+        input { accent-color: var(--pbim-primary, #4F46E5); }
+    }
+}
+.pbtn-expand {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 12px 14px; margin-bottom: 14px;
+    border-radius: 11px;
+    background: var(--pbim-bg, #F8FAFC);
+    border: 1px dashed var(--pbim-line, #E2E8F0);
+
+    .pbtn-in { width: auto; flex: 0 1 200px; }
+}
+.pbtn-nobody {
+    padding: 22px 16px; text-align: center; font-size: 13px;
+    line-height: 1.6; color: var(--pbim-muted, #64748B);
+    border: 1px dashed var(--pbim-line, #E2E8F0); border-radius: 12px;
+    margin-top: 12px;
+}

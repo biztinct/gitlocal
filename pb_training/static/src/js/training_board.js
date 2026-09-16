@@ -61,6 +61,41 @@ export class PbTrainingBoard extends Component {
             pickerRows: [],
             picked: [],
             pickerBusy: false,
+
+            // ---------------------------------------------------- E2
+            // WHICH QUESTION THE BOARD IS ANSWERING. Courses is "what is in
+            // the library"; Assignments is "who still owes what". They are
+            // different questions with different orders and different
+            // tiles, so they are tabs rather than one list with a filter on
+            // it.
+            tab: "courses",
+            aLoaded: false,
+            aBusy: false,
+            aRows: [],
+            aKpis: {},
+            aFacets: {},
+            aDelays: [],
+            aSchedules: [],
+            aRules: [],
+            aReasons: [],
+            aStates: [],
+            aSwitches: {},
+            aFilters: { reason: "", state: "", department_id: 0, term: "",
+                        include_done: false },
+
+            // the "Assign a course" dialog
+            assign: false,
+            assignCourse: 0,
+            assignReason: "adhoc",
+            assignDue: "",
+            assignProbation: false,
+            assignTerm: "",
+            assignRows: [],
+            assignPicked: [],
+            assignBusy: false,
+            groups: { departments: [], jobs: [] },
+            expandKind: "department",
+            expandValue: 0,
         });
 
         onWillStart(async () => { await this.load(); });
@@ -261,6 +296,256 @@ export class PbTrainingBoard extends Component {
         if (row.status === "completed") { return _t("Finished"); }
         if (!row.percent) { return _t("Not started"); }
         return _t("Under way");
+    }
+
+    // =====================================================================
+    //  E2 — the Assignments tab
+    // =====================================================================
+    async setTab(tab) {
+        this.state.tab = tab;
+        if (tab !== "courses" && !this.state.aLoaded) {
+            await this.loadAssignments();
+        }
+    }
+
+    async loadAssignments() {
+        this.state.aBusy = true;
+        try {
+            const d = await this.orm.call("pb.training", "get_assignments",
+                                          [this.assignFilters()]);
+            Object.assign(this.state, {
+                aRows: d.rows || [],
+                aKpis: d.kpis || {},
+                aFacets: d.facets || {},
+                aDelays: d.delays || [],
+                aSchedules: d.schedules || [],
+                aRules: d.rules || [],
+                aReasons: d.reasons || [],
+                aStates: d.states || [],
+                aSwitches: d.switches || {},
+                aLoaded: true,
+            });
+        } catch (e) {
+            this.state.aLoaded = true;
+            console.warn("pb_training: the assignments could not be read", e);
+            this.notif.add(
+                (e && e.data && e.data.message)
+                || _t("The assignments could not be read."),
+                { type: "danger" });
+        } finally {
+            this.state.aBusy = false;
+        }
+    }
+
+    /** Only the filters that are actually set — an empty one is not a filter. */
+    assignFilters() {
+        const f = this.state.aFilters;
+        const out = {};
+        if (f.reason) { out.reason = f.reason; }
+        if (f.state) { out.state = f.state; }
+        if (f.department_id) { out.department_id = f.department_id; }
+        if (f.term) { out.term = f.term; }
+        if (f.include_done) { out.include_done = true; }
+        return out;
+    }
+
+    async setFilter(key, value) {
+        // A CHIP THAT IS ALREADY ON IS A CHIP THAT TURNS OFF. Otherwise the
+        // only way back to everything is a reload, which is a dead end.
+        this.state.aFilters[key] =
+            this.state.aFilters[key] === value ? "" : value;
+        await this.loadAssignments();
+    }
+
+    onAssignTerm(ev) {
+        this.state.aFilters.term = ev.target.value;
+        clearTimeout(this._aTimer);
+        this._aTimer = setTimeout(() => this.loadAssignments(), 250);
+    }
+
+    async toggleDone() {
+        this.state.aFilters.include_done = !this.state.aFilters.include_done;
+        await this.loadAssignments();
+    }
+
+    get aHeadline() {
+        const k = this.state.aKpis || {};
+        if (!k.total) { return ""; }
+        const bits = [
+            k.total === 1 ? _t("1 assignment") : _t("%s assignments", k.total),
+        ];
+        if (k.overdue) {
+            bits.push(k.overdue === 1 ? _t("1 is past its date")
+                : _t("%s are past their date", k.overdue));
+        }
+        return bits.join(" · ");
+    }
+
+    stateWord(key) {
+        const row = (this.state.aStates || []).find((s) => s.key === key);
+        return row ? row.label : key;
+    }
+
+    /** The chip class for a state — problem first, so late is loud. */
+    stateClass(key) {
+        if (key === "overdue") { return "pbtn-chip--bad"; }
+        if (key === "excused") { return "pbtn-chip--wait"; }
+        if (key === "done") { return "pbtn-chip--ok"; }
+        if (key === "in_progress") { return "pbtn-chip--go"; }
+        return "";
+    }
+
+    // ---------------------------------------------------- the assign dialog
+    async openAssign(channelId = 0) {
+        this.state.assign = true;
+        this.state.assignCourse = channelId || (this.state.courses[0] || {}).id
+            || 0;
+        this.state.assignReason = "adhoc";
+        this.state.assignProbation = false;
+        this.state.assignTerm = "";
+        this.state.assignPicked = [];
+        this.state.assignDue = this.defaultDue();
+        try {
+            this.state.groups = await this.orm.call("pb.training",
+                                                    "departments", []);
+        } catch (e) {
+            console.warn("pb_training: the group lists could not be read", e);
+            this.state.groups = { departments: [], jobs: [] };
+        }
+        await this.searchAssignPeople();
+    }
+
+    /** Today plus whatever the company has set, as a yyyy-mm-dd string. */
+    defaultDue() {
+        const days = (this.state.aSwitches || {}).default_due_days || 14;
+        const when = new Date();
+        when.setDate(when.getDate() + days);
+        return when.toISOString().slice(0, 10);
+    }
+
+    closeAssign() {
+        this.state.assign = false;
+        this.state.assignRows = [];
+        this.state.assignPicked = [];
+    }
+
+    async searchAssignPeople() {
+        this.state.assignBusy = true;
+        try {
+            this.state.assignRows = await this.orm.call(
+                "pb.training", "search_people",
+                [this.state.assignTerm, this.state.assignCourse]);
+        } catch (e) {
+            console.warn("pb_training: the people search failed", e);
+            this.state.assignRows = [];
+        } finally {
+            this.state.assignBusy = false;
+        }
+    }
+
+    onAssignTermInput(ev) {
+        this.state.assignTerm = ev.target.value;
+        clearTimeout(this._assignTimer);
+        this._assignTimer = setTimeout(() => this.searchAssignPeople(), 220);
+    }
+
+    toggleAssignPick(id) {
+        const at = this.state.assignPicked.indexOf(id);
+        if (at === -1) { this.state.assignPicked.push(id); }
+        else { this.state.assignPicked.splice(at, 1); }
+    }
+
+    isAssignPicked(id) { return this.state.assignPicked.includes(id); }
+
+    get assignPickedWord() {
+        const n = this.state.assignPicked.length;
+        if (!n) { return _t("Nobody picked yet"); }
+        return n === 1 ? _t("1 person picked") : _t("%s people picked", n);
+    }
+
+    /** Bulk ergonomics: a whole department, a whole job, everybody here. */
+    async expand() {
+        this.state.assignBusy = true;
+        try {
+            const res = await this.orm.call("pb.training", "expand_people",
+                                            [this.state.expandKind,
+                                             this.state.expandValue]);
+            const ids = (res.people || []).map((p) => p.id);
+            for (const id of ids) {
+                if (!this.state.assignPicked.includes(id)) {
+                    this.state.assignPicked.push(id);
+                }
+            }
+            // The picked people have to be VISIBLE or the count is a claim
+            // nobody can check.
+            this.state.assignTerm = "";
+            this.state.assignRows = (res.people || []).map((p) => ({
+                id: p.id, name: p.name, partner_id: 0, email: "",
+                on_it: false,
+            }));
+            this.notif.add(res.message, { type: "success" });
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("That group could not be opened up."),
+                           { type: "danger" });
+        } finally {
+            this.state.assignBusy = false;
+        }
+    }
+
+    async confirmAssign() {
+        if (!this.state.assignPicked.length || !this.state.assignCourse) {
+            return;
+        }
+        const res = await this.actA("assign", {
+            channel_id: this.state.assignCourse,
+            employee_ids: this.state.assignPicked.slice(),
+            reason: this.state.assignReason,
+            due_date: this.state.assignDue || false,
+            counts_for_probation: this.state.assignProbation,
+        });
+        if (res) { this.closeAssign(); }
+    }
+
+    /** The same dispatcher as `act`, but it refreshes the Assignments tab. */
+    async actA(verb, payload = {}) {
+        this.state.aBusy = true;
+        try {
+            const res = await this.orm.call("pb.training", "act",
+                                            [verb, payload]);
+            if (res && res.type) {
+                await this.action.doAction(res);
+                return res;
+            }
+            if (res && res.message) {
+                this.notif.add(res.message, { type: "success" });
+            }
+            await this.loadAssignments();
+            await this.load();
+            return res;
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("That did not work."), { type: "danger" });
+            return null;
+        } finally {
+            this.state.aBusy = false;
+        }
+    }
+
+    async dropAssignment(id) {
+        await this.actA("drop", { assignment_id: id });
+    }
+
+    async openAssignment(id) {
+        await this.actA("open_assignment", { assignment_id: id });
+    }
+
+    async openDelay(id) {
+        await this.actA("open_delay", { delay_id: id });
+    }
+
+    async runReminders() {
+        await this.actA("run_reminders", {});
     }
 }
 

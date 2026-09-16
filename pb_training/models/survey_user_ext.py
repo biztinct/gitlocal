@@ -40,6 +40,34 @@ _logger = logging.getLogger(__name__)
 class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
+    def _mark_done(self):
+        """Finishing a test moves the assignment it belongs to, at once.
+
+        E2. Without this the state is still RIGHT — every read refreshes and
+        the nightly job sweeps — but only after the next page load, so
+        somebody who has just passed would watch their own page say "Overdue"
+        underneath the certificate. Inside its own savepoint (R131): a failure
+        here must never be able to undo an attempt somebody really finished.
+        """
+        result = super()._mark_done()
+        for answer in self:
+            slide = answer.slide_id
+            partner = answer.partner_id
+            if not slide or not partner or 'pb.training.assignment' \
+                    not in self.env:
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    self.env['pb.training.assignment'].sudo().search([
+                        ('channel_id', '=', slide.channel_id.id),
+                        ('partner_id', '=', partner.id),
+                    ])._refresh()
+            except Exception:           # noqa: BLE001 — never lose an attempt
+                _logger.warning('pb_training: a test was finished but the '
+                                'assignment could not be brought up to date',
+                                exc_info=True)
+        return result
+
     def _check_for_failed_attempt(self):
         if flag(self.env, P_UNENROL_ON_FAIL):
             return super()._check_for_failed_attempt()

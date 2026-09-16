@@ -43,7 +43,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -66,9 +66,27 @@ public.
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_me_portal',         # the .pbme employee-page kit
         'pb_learn',             # the hub this lens joins
+        # E2. The trial-period gate is joined by DATA and not by code — one
+        # column on `pb.training.status` — so the module that owns that table
+        # is a real dependency (it brings the joining checklist and the
+        # approval engine with it, both of which E2 also uses; they are named
+        # anyway, because a dependency you rely on and do not declare is a
+        # dependency that disappears the day somebody re-orders the other
+        # module's own list).
+        'pb_onboarding',        # the joining checklist the day-one step joins
+        'pb_probation',         # pb.training.track / item / status
+        'biz_approval_workflow',  # the one approval engine (ruling: never a
+                                  # new chain)
     ],
     'data': [
         'security/pb_training_security.xml',
+        'security/ir.model.access.csv',
+        'security/pb_training_rules.xml',
+        'data/ir_cron.xml',
+        'data/approval_process.xml',
+        'data/mail_template_assignments.xml',
+        'data/journey_step.xml',
+        'views/assignment_views.xml',
         'views/training_views.xml',
         'views/portal_templates.xml',
         'views/survey_skin.xml',

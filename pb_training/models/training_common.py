@@ -33,6 +33,16 @@ P_UNENROL_ON_FAIL = 'pb_training.unenrol_on_failed_test'
 P_PEOPLE_LIMIT = 'pb_training.people_limit'
 P_COURSE_LIMIT = 'pb_training.course_limit'
 
+# ------------------------------------------------------------------ E2 dials
+P_REMINDERS = 'pb_training.reminders'
+P_DAY1_AUTO = 'pb_training.day1_auto'
+P_MANAGER_DAYS = 'pb_training.manager_escalate_days'
+P_HR_DAYS = 'pb_training.hr_escalate_days'
+P_DEFAULT_DUE = 'pb_training.default_due_days'
+P_REMINDER_CAP = 'pb_training.reminder_cap'
+P_ASSIGN_LIMIT = 'pb_training.assignment_limit'
+P_BULK_CAP = 'pb_training.bulk_assign_cap'
+
 DEFAULTS = {
     # ON. The pages that came with the content engine are a PUBLIC WEB SITE
     # with a course catalogue, a member leaderboard and a public profile per
@@ -57,7 +67,95 @@ DEFAULTS = {
     # five thousand people can widen the people picker without a deploy.
     P_PEOPLE_LIMIT: '40',
     P_COURSE_LIMIT: '200',
+    # ON. The chasing is the whole point of an assignment: a due date nobody
+    # is reminded of is a wish. It is a switch because a company mid-rollout
+    # may not want the first night to write to four thousand people, and a
+    # switch that is off SAYS so on the board (R54).
+    P_REMINDERS: '1',
+    # OFF until somebody points it at a real course. On, a new joiner's
+    # checklist assigns the day-one courses by itself; off, the step settles
+    # with a note saying what it WOULD have assigned, so the first night after
+    # an install never emails anybody.
+    P_DAY1_AUTO: '0',
+    # How long a thing may be overdue before the chase widens. Two days to
+    # their manager, five to the HR lead — both dials, because a company that
+    # trains people monthly and one that trains them yearly do not mean the
+    # same thing by "late".
+    P_MANAGER_DAYS: '2',
+    P_HR_DAYS: '5',
+    # A fortnight is the default answer to "by when", and it is only a
+    # default: every assignment carries its own date.
+    P_DEFAULT_DUE: '14',
+    # A CAP THAT IS RIGHT FOR A SCREEN IS A BUG IN A JOB (R76), so the job's
+    # cap is its own dial and it is a safety rail rather than a page size: it
+    # exists so a misconfigured schedule cannot mail the whole company twice.
+    # The job logs honestly when it hits it.
+    P_REMINDER_CAP: '400',
+    # Screen caps.
+    P_ASSIGN_LIMIT: '400',
+    P_BULK_CAP: '200',
 }
+
+# =========================================================================
+#  E2 — what an assignment IS, in the words on the screen
+# =========================================================================
+#: WHY somebody was put on a course. It is not decoration: the reason decides
+#: whether the trial period waits for it, whether the day-one rules made it,
+#: and what the chasing email says.
+ASSIGN_REASONS = [
+    ('day_one', 'Day one'),
+    ('probation', 'Trial period'),
+    ('compliance', 'Compliance'),
+    ('adhoc', 'One-off'),
+    ('leadership', 'Leadership programme'),
+]
+ASSIGN_REASON_LABEL = dict(ASSIGN_REASONS)
+
+#: HOW FAR IT HAS GOT. Every one of these is written by the same method, so
+#: the board, the employee's page and the nightly job can never disagree.
+ASSIGN_STATES = [
+    ('assigned', 'Not started'),
+    ('in_progress', 'Under way'),
+    ('overdue', 'Overdue'),
+    ('excused', 'More time agreed'),
+    ('done', 'Finished'),
+]
+ASSIGN_STATE_LABEL = dict(ASSIGN_STATES)
+
+#: The states that still need doing. An assignment leaves this set exactly
+#: once, when the course is finished — which is what makes "one open
+#: assignment per person per course" a rule somebody can understand.
+ASSIGN_OPEN = ('assigned', 'in_progress', 'overdue', 'excused')
+
+#: Why somebody is asking for more time. Three answers and an "anything else",
+#: because a list that cannot say "something else" is a list people lie to.
+DELAY_KINDS = [
+    ('sick', 'I have been off sick'),
+    ('emergency', 'A family or personal emergency'),
+    ('other', 'Something else'),
+]
+DELAY_KIND_LABEL = dict(DELAY_KINDS)
+
+DELAY_STATES = [
+    ('draft', 'Not sent yet'),
+    ('submitted', 'Waiting on their manager'),
+    ('approved', 'More time agreed'),
+    ('refused', 'Turned down'),
+]
+DELAY_STATE_LABEL = dict(DELAY_STATES)
+
+#: Who a compliance schedule is for.
+SCHEDULE_AUDIENCES = [
+    ('company', 'Everybody in one company'),
+    ('department', 'One part of the business'),
+    ('job', 'Everybody doing one job'),
+    ('everyone', 'Everybody, in every company'),
+]
+
+#: The most days a delay request may ask for in one go. Longer than this and
+#: the honest answer is a new due date typed by the training team, not an
+#: extension nobody can read the end of.
+DELAY_MAX_DAYS = 90
 
 # ------------------------------------------------------------- the choices
 #: What a lesson IS, in the words on the screen. The stored values are the
@@ -194,3 +292,32 @@ def duration_words(mins):
     if not rest:
         return '%s hr' % hrs
     return '%s hr %s min' % (hrs, rest)
+
+
+def due_words(due, today):
+    """"Due today", "3 days left", "8 days overdue" — the sentence, whole.
+
+    THE WHOLE SENTENCE AND NEVER A FRAME WITH A NUMBER IN IT (R117): "%s days
+    left" is ungrammatical for exactly one of its values, and a translator
+    handed the frame and the number separately cannot fix a plural they were
+    never given. There are five outcomes here and each one is written out.
+    """
+    if not due:
+        return ''
+    days = (due - today).days
+    if days == 0:
+        return 'Due today'
+    if days == 1:
+        return '1 day left'
+    if days > 1:
+        return '%s days left' % days
+    if days == -1:
+        return '1 day overdue'
+    return '%s days overdue' % (-days)
+
+
+def days_over(due, today):
+    """How many days late, or 0 for something that is not late yet."""
+    if not due:
+        return 0
+    return max((today - due).days, 0)
