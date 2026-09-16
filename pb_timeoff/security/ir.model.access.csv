@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_timeoff_carry_log_user,pb.timeoff.carry.log employee read,model_pb_timeoff_carry_log,base.group_user,1,0,0,0
+access_pb_timeoff_carry_log_officer,pb.timeoff.carry.log officer,model_pb_timeoff_carry_log,hr_holidays.group_hr_holidays_user,1,1,1,0
+access_pb_timeoff_carry_log_manager,pb.timeoff.carry.log manager,model_pb_timeoff_carry_log,hr_holidays.group_hr_holidays_manager,1,1,1,1

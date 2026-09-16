@@ -22,7 +22,10 @@ HR/officer gated (hr_holidays.group_hr_holidays_user | hr.group_hr_manager |
 om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.3.0',
+    # 19.0.1.4.0 — RIZE W2 D1: public holidays for everybody (a Mission
+    # Control lens + `/my/holidays`), escalation to the HR lead, the
+    # backdating rules, the past-leave lock and the carry-forward watch.
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -33,18 +36,34 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
         'om_hr_payroll',   # hr.leave.type.code, payroll-manager group
         'pb_sidebar',
         'pb_import_kit',
+        'pb_hub',          # the ⌘K palette registry
+        'pb_me_portal',    # the .pbme employee-page kit (/my/holidays)
+        'portal',
+        'website',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'security/pb_timeoff_security.xml',
         'views/pb_timeoff_action.xml',
+        'views/hr_leave_type_views.xml',
+        'views/portal_holidays.xml',
         'data/pb_sidebar.xml',
+        'data/mail_template.xml',
+        'data/pb_timeoff_config.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_timeoff/static/src/scss/pb_timeoff.scss',
+            'pb_timeoff/static/src/scss/pb_holidays.scss',
             'pb_timeoff/static/src/js/pbto_icons.js',
             'pb_timeoff/static/src/js/pb_timeoff.js',
+            'pb_timeoff/static/src/js/pb_holidays.js',
+            'pb_timeoff/static/src/js/timeoff_palette.js',
             'pb_timeoff/static/src/xml/pb_timeoff.xml',
+            'pb_timeoff/static/src/xml/pb_holidays.xml',
+        ],
+        'web.assets_frontend': [
+            'pb_timeoff/static/src/scss/portal_holidays.scss',
         ],
     },
     'installable': True,
