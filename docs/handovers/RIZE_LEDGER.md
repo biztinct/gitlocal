@@ -230,6 +230,15 @@ without owner approval between them.
   (`RIZE_W2_PX1_DEMO_SWEEP.md`, after A3, before E1). Binding rule 9. The owner
   never presses Remove on `payobook` by accident: it goes through the demo-data
   approval on a non-demo database.
+- **D19 (2026-09-16) — the content engine's stock sample courses are DELETED
+  from `payobook`.** Furniture, gardening, trees and wood: seven courses the
+  E-Learning demo data installed, with their lessons, sections, memberships,
+  progress, in-lesson questions, extra resources, tag catalogue, star ratings
+  and the one sample certification tied to them. An authorised data deletion,
+  identified by XMLID ORIGIN and never by name, listed before it was carried
+  out, done through the ORM as the system with tracking off. Done by E2 before
+  anything else, so its tests never saw those rows. What was found and what
+  was deliberately left is in R182.
 
 ## Phase plan & status
 
@@ -257,7 +266,8 @@ without owner approval between them.
 | A3 | pb_hiring — the background check, the document request, the offer (letter, candidate page, signed copy), the closure into a joiner, recruiter cover, the agency link and the Hiring numbers lens | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T14 pass, 201 unit tests green; six live-only defects found and fixed — see R153–R160) |
 | X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | **DONE** (live on `payobook`, 19.0.1.2.0 — INSTALLED, the only module whose state changed; T1–T11 pass; every customer-named demo row renamed and the whole programme's demo data on one register — see R161–R168) |
 | E1 | pb_training — the learner flow (`/my/training`), the Training lens on a new Learn hub, the door on the public course site, the white-label sweep | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass, 62 unit tests green; `survey` + `website_slides_survey` installed per D15 and TWO auto-install modules came with them — see R173; six live-only defects found and fixed — R171–R180). **Owner checkpoint: the learner flow is waiting to be looked at.** |
-| E2–E3 | pb_training | not started |
+| E2 | pb_training — assignments (day-one / trial period / compliance / one-off / leadership), the chasing and its escalation, "ask for more time" through the Matrix, the trial-period link, compliance schedules, the day-one checklist step, the four new board tabs, due dates + a team page on `/my/training` | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T13 pass, 168 unit tests green; the stock sample courses deleted first under D19; seven live-only defects found and fixed — R182–R190; one additive edit to `pb_demo_seed`, its own commit) |
+| E3 | pb_training | not started |
 | B1–B2 | pb_goals | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
 | C1 | pb_hr_comm | not started |
@@ -1854,3 +1864,141 @@ without owner approval between them.
   values (`RizeP7!2026` on 1984, `RizeP4!2026` on 2326). Every mail this
   phase queued was cancelled in the same session; the outgoing queue is
   empty.
+
+### E2 (pb_training — assignments, chasing and the way out, 2026-09-16)
+
+- **R182 — THE D19 DELETION, WHAT IT TOOK AND WHAT IT DELIBERATELY DID NOT.**
+  Identified by XMLID ORIGIN and never by name, exactly as the ruling says:
+  the seven `slide.channel` rows carrying an `ir_model_data` row from
+  `website_slides` (ids 1–7 — Basics of Gardening, Taking care of Trees,
+  Trees Wood and Gardens, Choose your wood!, Furniture Technical
+  Specifications, Basics of Furniture Creation, DIY Furniture). Deleted with
+  them: 39 slides (10 of them sections, 2 certification slides), 12
+  memberships, 16 per-lesson progress rows, 7 in-lesson questions and their 17
+  answers, 11 extra resources, the 8 course tags / 3 tag groups / 6 lesson
+  tags the same demo shipped, 5 star ratings, survey 6 "Furniture Creation
+  Certification" with its 4 questions and 2 attempts, and 56 orphaned
+  `ir_model_data` rows left behind by the cascade. **A real-looking membership
+  was among them and the owner ruled it goes anyway**: the OWNER'S OWN ACCOUNT
+  (uid 2, Mitchell Admin) was enrolled on six of the seven — the content
+  engine enrols whoever created a course (R175), and the demo data was created
+  by the install. **Deliberately left:** course 27 and everything on the demo
+  register; surveys 1–5 (`Feedback Form`, `MyCompany Vendor Certification`,
+  `Burger Quiz`, `Food Preferences`, `Let's connect!`), which are the survey
+  and CRM modules' own demo rows and are not tied to any course — **survey 2
+  is a certification and therefore still shows on Training → Tests, and is an
+  owner item**; and the five `website_slides` gamification badges and
+  challenges, which are karma configuration rather than sample content.
+  **AND IT CAN COME BACK.** `ir_module_module.demo` is still TRUE for
+  `website_slides`, `website_slides_survey` and `survey`, so a future
+  `-u website_slides` re-seeds all seven courses. Nothing E2 or E3 does
+  upgrades that module; anybody who does should expect them back.
+- **R183 — `mail.activity.create` EMAILS THE ASSIGNEE, and the switch that
+  stops it is a context key.** `mail_activity.py:285-293` notifies every new
+  activity whose `user_id` is not the acting user, unless
+  `mail_activity_quick_update` is in the context. So putting a to-do on
+  somebody's list as a courtesy sent them a second, generically worded message
+  in the same second as the module's own "a course has been added to your
+  training". The to-do is worth keeping and the duplicate is not. **Any phase
+  that calls `activity_schedule` beside its own email needs this key**, and
+  the way to find it is to count `mail.mail` rows around the write rather than
+  to read the ones you meant to send.
+- **R184 — "IS IT OPEN" IS NOT THE QUESTION A RECURRING SCHEDULE IS ASKING.**
+  A compliance schedule skipped anybody with an OPEN assignment for its
+  course. Right for somebody still working through it; wrong for somebody who
+  had ALREADY FINISHED the course before the schedule first ran — their
+  assignment is created `done` in the same breath (which is honest), it is
+  therefore not open, and the next run assigns it again. On a nightly job that
+  is one row per person per night, for ever, with a cheerful count in the log.
+  Found live the moment the audience happened to include somebody who had
+  finished the demo course: "run it twice" answered 3 and then 1. The real
+  question is the one the schedule is about — has THIS schedule already asked
+  THIS person within the period it comes round in — so the second skip is
+  `schedule_id` plus `assigned_on >= today − every_months + 1 day`. Both skips
+  are kept: the first stops a schedule stacking on an ad-hoc assignment, the
+  second stops it stacking on itself.
+- **R185 — A "RUN IT NOW" BUTTON MUST NOT MOVE THE CALENDAR.** The same
+  method rolled `next_run` on every call, so pressing it twice pushed a
+  twelve-month course to 2028 — and a schedule that had been missed for three
+  years came back one cycle on and was immediately overdue again. It now moves
+  the date only when the round was actually DUE, and walks it to the next date
+  in the FUTURE rather than one step on. (R53 says a "run it now" button must
+  do exactly what the night does; this is the other half — it must not do
+  anything the night would not.)
+- **R186 — ALL `CustomerPortal` SUBCLASSES MERGE INTO ONE CLASS, and this is
+  the third time it has bitten this programme.** A private helper named
+  `_notice` in `pb_training` and `_notice` in `pb_rnr` are the same attribute
+  on the same class; whichever module loads last silently wins. Two live
+  consequences, both invisible at runtime and both found by chasing ONE
+  missing sentence: **E1's "Marked as done." confirmation had never appeared
+  on any page since E1 shipped**, because the praise module's `_notice` was
+  answering and had never heard of the key; and E1's `_problem(self, kw)` had
+  taken the name `pb_offboarding` uses for `_problem(message)`, so a
+  resignation that failed called ours with a string and died on `kw.get` — an
+  error page on the one path that exists to explain an error. `pb_rnr`'s own
+  `_rnr_card` docstring records the same clash over `_card` taking three
+  portal pages down. **THE RULE: on a portal controller every private helper
+  carries the module's own prefix**, and `pb_training` now has a test that
+  walks the controller's AST and fails on any that does not. Framework hooks
+  (`_prepare_*`) are the exception and are overridden on purpose.
+- **R187 — A TABLE THAT SCROLLS SIDEWAYS ON A PHONE HIDES THE COLUMN THAT
+  MATTERS.** `/my/training/team` was a three-column grid with a 620px floor
+  inside an `overflow-x: auto` box — which is the right answer for a wide
+  table nobody reads on a phone and the wrong one here, because the column it
+  pushed off the screen was the DUE DATE, the single thing the page exists to
+  show. At 390px: four names, four progress bars and not one "7 days overdue"
+  anywhere, with no scrollbar visible to say there was more. Below 680px the
+  row stacks. The check is arithmetic, not appearance: read the row's text
+  content at 390px and look for the value you came for.
+- **R188 — "READ IT AGAIN" MUST READ WHAT IS ON THE SCREEN.** The board's
+  refresh button called the courses reader, so pressing it on any of the four
+  new tabs re-read a list that was not showing and left the one that was
+  exactly as stale. Found when a schedule's date was corrected underneath an
+  open board and the button would not pick it up. Any cockpit that grows a
+  second payload has to grow its refresh with it.
+- **R189 — ⌘K, lens and settings numbers after E2.** E2 stayed inside E1's
+  **3900** block: `training_assignments` **3940** ("Training assignments") and
+  `training_schedules` **3950** ("Compliance schedules"). B1 still starts at
+  **3600**. The Learn hub's Training lens is still sequence 20. **Worth
+  knowing before adding another:** `pb_probation` already owns a palette row
+  labelled **"Training courses"** (sublabel *Probation*), so searching
+  "training" in the command bar now returns seven rows, two of which open
+  different screens about training. Not a defect of either module — the
+  trial-period tracker really is called that — but the next phase to touch
+  either should consider re-wording one of them.
+- **R190 — the E2 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **62 rows added
+  to "DEMO HR programme data", which now holds 1,043.** New: assignments
+  **127** (Thái Ngọc Diệp, trial period, the one the delay route was proved
+  on), **129** (Bùi Hữu Bảo, compliance, overdue — the employee-nudge proof),
+  **131** (DEMO Joiner Mai, one-off, 7 days overdue — the manager and HR-lead
+  proof), **132** (DEMO Joiner Khanh, day one, from rule 19) and **133–135**
+  (the Facilities schedule's three); delays **13** (agreed, +5 days) and **14**
+  (turned down); day-one rule **19** "DEMO Induction"; schedules **7** "DEMO
+  Fire safety, every year" and **8** "DEMO Site safety, every year"; the
+  "Assigned training" track **7** with item **13** and status **46**; users
+  **5583**/**5584** and employees **20208**/**20209** — `demo.joiner@` and
+  `demo.joiner2@example.com`, "DEMO Joiner Mai" and "DEMO Joiner Khanh", both
+  reporting to 17122 — and joining checklist **87**. **Two things were
+  borrowed and both were put back:** `pb_training.group_training_manager` on
+  uid 2065 (granted for the D19 deletion and the board, removed at the end)
+  and the company-5 `hr_lead` responsibility seat (uid 2 → 2065 → uid 2, so
+  the HR escalation could be proved without emailing the owner). Verified
+  group-for-group against a snapshot taken before the first write: all seven
+  accounts identical. **No password was reset** — `RizeP0!2026`,
+  `RizeP9!2026` and `RizeP4!2026` all still work, and the two demo joiners
+  have no password at all. **No employee's manager was changed**: the handover
+  offered to re-point ess1.demo's `parent_id` at 17122 and it was not needed,
+  because `diep.thai` already reports to `lam.ngo`. Every mail this phase sent
+  went to an `@example.com` or `@payobook.com` address and was cancelled in
+  the same session; the outgoing queue is empty.
+- **R191 — `pb.demo.seed.register_ids` now exists, and R176 is closed.**
+  `register()` takes a recordset and a recordset does not survive JSON-RPC, so
+  everything a browser session or a validation script created had to be
+  registered afterwards from inside the server — which is exactly the step
+  somebody forgets, and a demo record that is not on the register is a demo
+  record the Remove button leaves behind. `register_ids(model_name, ids,
+  label, last)` browses and hands over to the existing method; every rule
+  about what may be registered stays in `_register_row`. Additive,
+  Python-only, no manifest bump (`pb_demo_seed` 19.0.1.2.0): rsync and
+  restart.
