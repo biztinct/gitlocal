@@ -43,7 +43,9 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { LEARN_LENSES } from "@pb_learn/hub/learn_hub";
+import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
+import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -130,3 +132,59 @@ palette.add("training_schedules", {
     requires: "pb_training_board",
     action: { xmlid: "pb_training.action_pb_training_schedules" },
 }, { sequence: 3950 });
+
+/* --------------------------------------------- E3, the Insights lens ----
+ * `pb_insights_hub`'s four shipped lenses carry no sequence, so bolted-on
+ * ones start at 20: P9 took Budget 20, A3 took Hiring 30, so Training takes
+ * **40** and lands after them. That is also the right reading order — what a
+ * role was budgeted to cost, how long it took to fill, and then what the
+ * person was trained on once they arrived.
+ *
+ * ITS OWN GATE AND NOT THE HUB'S (R97). A trainer holds no analytics group
+ * and a data analyst holds no training group, so this lens's readers are
+ * genuinely not the hub's usual readers. `pb.training.analytics._can_read()`
+ * enforces the real one independently; this only decides whether the lens is
+ * OFFERED.
+ *
+ * "Training" is one word of eight characters. The lens rail's label box is
+ * 60px and wraps between words but never inside one (R63), so what matters is
+ * the longest WORD — the two labels that spilled ("Improvement",
+ * "Recognition") were eleven characters with no break in them. It is also the
+ * same word this module already uses on the Learn hub, which is the point:
+ * one thing, one name, wherever a reader meets it.
+ */
+registry.category(INSIGHTS_LENSES).add("training", {
+    key: "training",
+    icon: "graduationCap",
+    label: _t("Training"),
+    Component: PbTrainingNumbers,
+    groups: TRAINING_GATE.concat(["base.group_system"]),
+}, { sequence: 40 });
+
+/* -------------------------------------------------------------- E3 rows ---
+ * Still inside E's 3900 block; B1 starts at 3600 per the wave plan. Both are
+ * XMLIDs, because a bare tag is synthesised with no action NAME and anything
+ * returning through a breadcrumb then lands on a crumb labelled "Unnamed".
+ */
+palette.add("training_claims", {
+    id: "training_claims",
+    label: _t("Training claims"),
+    sublabel: _t("Training"),
+    icon: "receipt",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: "pb_training.action_pb_training_claims" },
+}, { sequence: 3960 });
+
+// The presence probe is the LENS's own action tag and not the board's: a
+// build that shipped the board and not the numbers must not offer a door into
+// a screen that is not there.
+palette.add("training_numbers", {
+    id: "training_numbers",
+    label: _t("Training numbers"),
+    sublabel: _t("Insights"),
+    icon: "barChart",
+    groups: TRAINING_GATE.concat(["base.group_system"]),
+    requires: "pb_training_numbers",
+    action: { xmlid: "pb_training.action_pb_training_numbers" },
+}, { sequence: 3970 });

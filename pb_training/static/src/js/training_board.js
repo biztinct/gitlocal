@@ -96,6 +96,34 @@ export class PbTrainingBoard extends Component {
             groups: { departments: [], jobs: [] },
             expandKind: "department",
             expandValue: 0,
+
+            // ---------------------------------------------------- E3
+            // A THIRD QUESTION AND THEREFORE A THIRD TAB. Courses is "what
+            // is in the library", Assignments is "who still owes what",
+            // Claims is "whose money is waiting on me". Different orders,
+            // different numbers, different empty states.
+            cLoaded: false,
+            cBusy: false,
+            cRows: [],
+            cKpis: {},
+            cAllowances: [],
+            cStates: [],
+            // EVERY COLLECTION IN THE INITIAL STATE IS A COLLECTION, never
+            // an empty object. `setTab` writes `state.tab` and OWL re-renders
+            // AT ONCE — before the `await` that fetches the payload has
+            // resolved — so the tab is drawn once over whatever the initial
+            // state holds. `{}` here made `state.cPack.to.length` throw
+            // `Cannot read properties of undefined`, which the theme shows as
+            // the generic "Something went wrong on our side" dialog with
+            // nothing useful in the console.
+            cPack: { to: [], on: false, period: "monthly", next_label: "",
+                     last: "", sent_already: false },
+            cOverAllowed: false,
+            cFilters: { state: "", term: "" },
+            // the "why not" dialog
+            refuse: false,
+            refuseId: 0,
+            refuseNote: "",
         });
 
         onWillStart(async () => { await this.load(); });
@@ -303,6 +331,10 @@ export class PbTrainingBoard extends Component {
     // =====================================================================
     async setTab(tab) {
         this.state.tab = tab;
+        if (tab === "claims") {
+            if (!this.state.cLoaded) { await this.loadClaims(); }
+            return;
+        }
         if (tab !== "courses" && !this.state.aLoaded) {
             await this.loadAssignments();
         }
@@ -320,6 +352,7 @@ export class PbTrainingBoard extends Component {
     async refresh() {
         await this.load();
         if (this.state.aLoaded) { await this.loadAssignments(); }
+        if (this.state.cLoaded) { await this.loadClaims(); }
     }
 
     async loadAssignments() {
@@ -560,6 +593,138 @@ export class PbTrainingBoard extends Component {
 
     async runReminders() {
         await this.actA("run_reminders", {});
+    }
+
+    // =====================================================================
+    //  E3 — the Claims tab
+    // =====================================================================
+    async loadClaims() {
+        this.state.cBusy = true;
+        try {
+            const f = this.state.cFilters;
+            const filters = {};
+            if (f.state) { filters.state = f.state; }
+            if (f.term) { filters.term = f.term; }
+            const d = await this.orm.call("pb.training", "get_claims",
+                                          [filters]);
+            Object.assign(this.state, {
+                cRows: d.rows || [],
+                cKpis: d.kpis || {},
+                cAllowances: d.allowances || [],
+                cStates: d.states || [],
+                cPack: d.pack || {},
+                cOverAllowed: !!d.over_allowed,
+                cLoaded: true,
+            });
+        } catch (e) {
+            this.state.cLoaded = true;
+            console.warn("pb_training: the claims could not be read", e);
+            this.notif.add((e && e.data && e.data.message)
+                || _t("The claims could not be read."), { type: "danger" });
+        } finally {
+            this.state.cBusy = false;
+        }
+    }
+
+    /** The same dispatcher as `act`, but it refreshes the Claims tab. */
+    async actC(verb, payload = {}) {
+        this.state.cBusy = true;
+        try {
+            const res = await this.orm.call("pb.training", "act",
+                                            [verb, payload]);
+            if (res && res.type) {
+                await this.action.doAction(res);
+                return res;
+            }
+            if (res && res.message) {
+                this.notif.add(res.message, { type: "success" });
+            }
+            await this.loadClaims();
+            return res;
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("That did not work."), { type: "danger" });
+            return null;
+        } finally {
+            this.state.cBusy = false;
+        }
+    }
+
+    async setClaimFilter(value) {
+        // A CHIP THAT IS ALREADY ON IS A CHIP THAT TURNS OFF.
+        this.state.cFilters.state =
+            this.state.cFilters.state === value ? "" : value;
+        await this.loadClaims();
+    }
+
+    onClaimTerm(ev) {
+        this.state.cFilters.term = ev.target.value;
+        clearTimeout(this._cTimer);
+        this._cTimer = setTimeout(() => this.loadClaims(), 250);
+    }
+
+    get cHeadline() {
+        const k = this.state.cKpis || {};
+        if (!k.total) { return ""; }
+        const bits = [];
+        if (k.waiting) {
+            bits.push(k.waiting === 1
+                ? _t("1 claim is waiting on you")
+                : _t("%s claims are waiting on you", k.waiting));
+        }
+        if (k.unpaid) {
+            bits.push(k.unpaid === 1
+                ? _t("1 is agreed and not paid yet")
+                : _t("%s are agreed and not paid yet", k.unpaid));
+        }
+        if (!bits.length) {
+            bits.push(_t("Nothing is waiting on anybody"));
+        }
+        return bits.join(" · ");
+    }
+
+    claimClass(row) {
+        if (row.state === "submitted") { return "wait"; }
+        if (row.state === "refused") { return "bad"; }
+        if (row.state === "approved") { return "ok"; }
+        return "";
+    }
+
+    async approveClaim(id) {
+        await this.actC("approve_claim", { claim_id: id });
+    }
+
+    openRefuse(id) {
+        this.state.refuse = true;
+        this.state.refuseId = id;
+        this.state.refuseNote = "";
+    }
+
+    closeRefuse() {
+        this.state.refuse = false;
+        this.state.refuseId = 0;
+        this.state.refuseNote = "";
+    }
+
+    async confirmRefuse() {
+        if (!this.state.refuseNote.trim()) { return; }
+        const res = await this.actC("refuse_claim", {
+            claim_id: this.state.refuseId,
+            note: this.state.refuseNote,
+        });
+        if (res) { this.closeRefuse(); }
+    }
+
+    async openClaim(id) {
+        await this.actC("open_claim", { claim_id: id });
+    }
+
+    async openAward(id) {
+        await this.actC("open_award", { incentive_id: id });
+    }
+
+    async sendPack() {
+        await this.actC("send_pack", {});
     }
 }
 

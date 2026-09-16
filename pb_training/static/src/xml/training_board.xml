@@ -112,6 +112,14 @@
                     t-on-click="() => this.setTab('rules')">
               <t t-out="ic('sunrise',15)"/> Day one
             </button>
+            <!-- E3. A THIRD QUESTION: whose money is waiting on me. -->
+            <button class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'claims' }"
+                    t-on-click="() => this.setTab('claims')">
+              <t t-out="ic('receipt',15)"/> Claims
+              <span t-if="state.cLoaded and state.cKpis.waiting"
+                    class="pbtn-tab-n"><t t-esc="state.cKpis.waiting"/></span>
+            </button>
           </div>
 
           <t t-if="state.tab === 'courses'">
@@ -550,8 +558,14 @@
 
           <!-- ================================================================
                DAY ONE — what a new joiner is put on when they arrive.
+
+               `t-elif` AND NOT `t-else`. It was the catch-all until E3 added a
+               sixth tab, and a catch-all is a branch that claims every tab
+               nobody has written yet: Claims rendered underneath Day one, both
+               at once, on a screen that otherwise looked fine. A chain of tabs
+               names every one of them.
                ================================================================ -->
-          <t t-else="">
+          <t t-elif="state.tab === 'rules'">
             <div class="pbtn-filters">
               <button t-if="state.canWrite" class="pbim-btn primary"
                       t-on-click="() => this.actA('new_rule', {})">
@@ -618,7 +632,252 @@
             </div>
           </t>
 
+          <!-- =================================================================
+               E3 — CLAIMS. Whose money is waiting on somebody.
+
+               THE ALLOWANCE PANEL IS ABOVE THE QUEUE and not beside it: a
+               queue of claims with no sight of the budget they come out of is
+               a queue somebody agrees one at a time until the money is gone.
+               ================================================================= -->
+          <t t-elif="state.tab === 'claims'">
+
+            <div class="pbim-stats pbtn-kpis">
+              <div class="pbim-stat">
+                <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
+                <div class="pbim-stat-tx">
+                  <div class="n" t-esc="state.cKpis.waiting or 0"/>
+                  <div class="l">Waiting on you</div>
+                </div>
+              </div>
+              <div class="pbim-stat">
+                <div class="pbim-stat-ic green"><t t-out="ic('checkCheck',21)"/></div>
+                <div class="pbim-stat-tx">
+                  <div class="n" t-esc="state.cKpis.agreed or 0"/>
+                  <div class="l">Agreed this list</div>
+                </div>
+              </div>
+              <div class="pbim-stat">
+                <div class="pbim-stat-ic blue"><t t-out="ic('wallet',21)"/></div>
+                <div class="pbim-stat-tx">
+                  <div class="n" t-esc="state.cKpis.unpaid or 0"/>
+                  <div class="l">Agreed, not paid yet</div>
+                </div>
+              </div>
+              <div class="pbim-stat">
+                <div class="pbim-stat-ic"><t t-out="ic('receipt',21)"/></div>
+                <div class="pbim-stat-tx">
+                  <div class="n" t-esc="state.cKpis.total or 0"/>
+                  <div class="l">Claims in all</div>
+                </div>
+              </div>
+            </div>
+
+            <p t-if="cHeadline" class="pbim-sub pbtn-headline"
+               t-esc="cHeadline"/>
+
+            <!-- ============ the allowance behind it ============ -->
+            <div class="pbtn-wallets">
+              <div t-foreach="state.cAllowances" t-as="alw"
+                   t-key="alw.company_id" class="pbtn-wallet">
+                <div class="pbtn-wallet-co">
+                  <t t-esc="alw.company"/> · <t t-esc="alw.year"/>
+                </div>
+                <t t-if="alw.set">
+                  <div class="pbtn-wallet-v" t-esc="alw.amount_words"/>
+                  <div class="pbtn-wallet-sub">
+                    each person, per year · <t t-esc="alw.agreed_words"/>
+                    agreed so far
+                  </div>
+                </t>
+                <t t-else="">
+                  <div class="pbtn-wallet-v">Not set</div>
+                  <div class="pbtn-wallet-sub">
+                    Nobody here can claim a course back until a figure is set
+                    for <t t-esc="alw.year"/>.
+                  </div>
+                </t>
+                <div t-if="alw.people.length" class="pbtn-wallet-people">
+                  <span t-foreach="alw.people" t-as="ovr" t-key="ovr.id"
+                        class="pbim-badge">
+                    <t t-esc="ovr.who"/> · <t t-esc="ovr.amount_words"/>
+                  </span>
+                </div>
+                <div class="pbtn-wallet-people">
+                  <button t-if="state.canWrite" class="pbim-btn ghost"
+                          t-on-click="() => this.actC('open_allowances', {})">
+                    <t t-out="ic('sliders',14)"/> Set the allowances
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ the filter bar ============ -->
+            <div class="pbtn-filters">
+              <input class="pbtn-in pbtn-search" type="search"
+                     placeholder="Find a person or a course…"
+                     t-att-value="state.cFilters.term"
+                     t-on-input="onClaimTerm"/>
+              <t t-foreach="state.cStates" t-as="cst" t-key="cst.key">
+                <button class="pbtn-chip"
+                        t-att-class="{ on: state.cFilters.state === cst.key }"
+                        t-on-click="() => this.setClaimFilter(cst.key)">
+                  <t t-esc="cst.label"/>
+                </button>
+              </t>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="() => this.actC('new_claim', {})">
+                <t t-out="ic('plus',14)"/> Type one up
+              </button>
+            </div>
+
+            <!-- ============ nothing yet ============ -->
+            <div t-if="!state.cRows.length" class="pbim-panel pbtn-empty">
+              <div class="pbtn-empty-ic"><t t-out="ic('receipt',30)"/></div>
+              <h2>Nobody has claimed a course back yet</h2>
+              <p>A claim is somebody asking to be paid back for a course they
+                 paid for themselves. They raise it on their own training page
+                 with the receipt and the certificate; you agree it here, and
+                 it becomes a one-off amount the pay team puts into a pay run.
+                 Set an allowance first, so there is a figure to claim
+                 against.</p>
+            </div>
+
+            <!-- ============ the queue ============ -->
+            <div t-else="" class="pbtn-claims">
+              <div t-foreach="state.cRows" t-as="clm" t-key="clm.id"
+                   class="pbtn-claim" t-att-class="claimClass(clm)">
+                <div class="pbtn-claim-who">
+                  <b t-esc="clm.who"/>
+                  <span>
+                    <t t-esc="clm.course"/><t t-if="clm.provider"> ·
+                      <t t-esc="clm.provider"/></t>
+                  </span>
+                </div>
+                <div class="pbtn-claim-money" t-esc="clm.amount_words"/>
+                <div class="pbtn-claim-chips">
+                  <span class="pbim-badge" t-esc="clm.state_word"/>
+                  <span t-if="clm.fulfilment_word" class="pbim-badge"
+                        t-esc="clm.fulfilment_word"/>
+                  <span t-if="clm.over_allowance" class="pbim-badge draft">
+                    Over the allowance
+                  </span>
+                  <span t-if="!clm.has_invoice or !clm.has_certificate"
+                        class="pbim-badge draft">Missing a file</span>
+                </div>
+                <div class="pbtn-claim-acts">
+                  <a t-if="clm.has_invoice" class="pbim-btn ghost"
+                     t-att-href="clm.invoice_url" target="_blank"
+                     title="The receipt">
+                    <t t-out="ic('receipt',14)"/>
+                  </a>
+                  <a t-if="clm.has_certificate" class="pbim-btn ghost"
+                     t-att-href="clm.certificate_url" target="_blank"
+                     title="The certificate">
+                    <t t-out="ic('award',14)"/>
+                  </a>
+                  <button class="pbim-btn ghost"
+                          t-on-click="() => this.openClaim(clm.id)"
+                          title="Open the claim">
+                    <t t-out="ic('external',14)"/>
+                  </button>
+                  <button t-if="clm.incentive_id" class="pbim-btn ghost"
+                          t-on-click="() => this.openAward(clm.incentive_id)"
+                          title="The award it became — the pay team puts this into a pay run">
+                    <t t-out="ic('banknote',14)"/>
+                  </button>
+                  <t t-if="state.canWrite and clm.state === 'submitted'">
+                    <button class="pbim-btn ghost"
+                            t-on-click="() => this.openRefuse(clm.id)">
+                      Turn down
+                    </button>
+                    <button class="pbim-btn primary"
+                            t-on-click="() => this.approveClaim(clm.id)">
+                      <t t-out="ic('check',14)"/> Agree
+                    </button>
+                  </t>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ the pack ============
+                 R54: a thing that is off and does not SAY so is reported as
+                 broken. The line says which it is, and what would go where. -->
+            <div class="pbtn-packline">
+              <t t-out="ic('mail',15)"/>
+              <t t-if="state.cPack.on">
+                <span>
+                  The <t t-esc="state.cPack.period === 'weekly' ? 'weekly' : 'monthly'"/>
+                  training pack goes to
+                  <b t-esc="(state.cPack.to or []).join(', ')"/>.
+                  <t t-if="state.cPack.sent_already">
+                    The <t t-esc="state.cPack.next_label"/> one has already gone
+                    out.
+                  </t>
+                  <t t-else="">
+                    The <t t-esc="state.cPack.next_label"/> one has not gone out
+                    yet.
+                  </t>
+                </span>
+              </t>
+              <t t-else="">
+                <span>
+                  The training pack is switched off, so nothing is emailed.
+                  <t t-if="(state.cPack.to or []).length">
+                    Switched on it would go to
+                    <b t-esc="(state.cPack.to or []).join(', ')"/>.
+                  </t>
+                  <t t-else="">
+                    No address has been set for it yet.
+                  </t>
+                </span>
+              </t>
+              <button t-if="state.canAdmin" class="pbim-btn ghost"
+                      t-on-click="sendPack"
+                      title="Send it now, exactly as the nightly job would">
+                <t t-out="ic('send',14)"/> Send it now
+              </button>
+            </div>
+
+          </t>
+
         </t>
+      </div>
+
+      <!-- ================================================================
+           "WHY NOT" — a direct child of the root, holding exactly one modal
+           (R114/R115). SAYING WHY IS NOT OPTIONAL: somebody is being told no
+           about money they have already spent, and a refusal with no reason
+           is one they will ask about in an email instead.
+           ================================================================ -->
+      <div t-if="state.refuse" class="pbim-modal-scrim pbtn-scrim"
+           t-on-click="closeRefuse">
+        <div class="pbim-modal pbtn-modal pbtn-modal--sm"
+             t-on-click.stop="() => {}">
+          <div class="pbtn-modal-head pbtn-modal-head--x">
+            <div>
+              <h3>Turn this claim down</h3>
+              <p class="pbtn-modal-sub">They get this in an email, and it is
+                 on their own page.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeRefuse">
+              <t t-out="ic('x',15)"/>
+            </button>
+          </div>
+          <div class="pbtn-modal-body">
+            <textarea class="pbtn-in" rows="4" t-model="state.refuseNote"
+                      placeholder="Say why. One line is enough — for example, the receipt is for a conference rather than a course."/>
+          </div>
+          <div class="pbtn-modal-foot">
+            <button class="pbim-btn ghost" t-on-click="closeRefuse">
+              Leave it
+            </button>
+            <button class="pbim-btn primary"
+                    t-att-disabled="!state.refuseNote.trim() or state.cBusy"
+                    t-on-click="confirmRefuse">
+              Turn it down
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- ================================================================

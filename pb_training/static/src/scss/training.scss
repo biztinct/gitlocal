@@ -296,6 +296,10 @@
     width: 620px; max-width: 100%; display: flex; flex-direction: column;
     max-height: 84vh; overflow: hidden;
 
+    // E3: the "why not" box is one textarea and two buttons. A 620px dialog
+    // around it is a dialog that looks like it lost its contents.
+    &.pbtn-modal--sm { width: 460px; }
+
     --pbim-ink: #0F172A;
     --pbim-text: #334155;
     --pbim-muted: #64748B;
@@ -541,4 +545,313 @@
     line-height: 1.6; color: var(--pbim-muted, #64748B);
     border: 1px dashed var(--pbim-line, #E2E8F0); border-radius: 12px;
     margin-top: 12px;
+}
+
+
+// =====================================================================
+//  E3 — the Claims tab, and the Training lens on Insights (.pbtnm-*).
+//
+//  EVERY COLOUR IS A TOKEN WITH A LITERAL FALLBACK BESIDE IT. The pbim kit
+//  has no dark palette product-wide (R134/R20) — that is a biz_theme job
+//  with a blast radius of every screen and not a feature phase's — so what
+//  "validated in both themes" means here is that every colour RESOLVES
+//  under `data-theme="dark"` as well as without it, which is what the
+//  fallbacks are for.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file (ledger).
+//
+//  Every @keyframes is at the TOP LEVEL (R85) — nested inside a selector,
+//  Sass emits it nested and no browser plays it — and both ends are
+//  declared (R156).
+// =====================================================================
+
+// ------------------------------------------------------ the Claims tab
+.pbtn {
+    // THE ALLOWANCE PANEL SITS ABOVE THE QUEUE and not beside it. A queue of
+    // claims with no sight of the budget they come out of is a queue somebody
+    // approves one at a time until the money is gone.
+    .pbtn-wallets {
+        display: grid; gap: 12px; margin-bottom: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .pbtn-wallet {
+        padding: 16px 18px; border-radius: 14px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+    }
+    .pbtn-wallet-co {
+        font-size: 11px; font-weight: 700; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+    }
+    .pbtn-wallet-v {
+        font-size: 22px; font-weight: 800; line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-text, #0F172A); margin: 4px 0 2px;
+    }
+    .pbtn-wallet-sub {
+        font-size: 12px; color: var(--pbim-muted, #64748B); line-height: 1.5;
+    }
+    .pbtn-wallet-people {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+    }
+
+    // ----------------------------------------------------- a claim row
+    .pbtn-claims { display: flex; flex-direction: column; gap: 10px; }
+    .pbtn-claim {
+        display: grid; gap: 12px; align-items: center;
+        grid-template-columns: 1.4fr 1fr .9fr auto;
+        padding: 14px 16px; border-radius: 14px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: pbtn-rise .26s ease both;
+        }
+        &.wait { box-shadow: inset 3px 0 0 var(--pbim-amber, #D97706); }
+        &.ok   { box-shadow: inset 3px 0 0 var(--pbim-green, #059669); }
+        &.bad  { box-shadow: inset 3px 0 0 var(--pbim-rose, #E11D48); }
+    }
+    .pbtn-claim-who {
+        display: flex; flex-direction: column; gap: 3px; min-width: 0;
+
+        b { font-size: 13.5px; font-weight: 700;
+            color: var(--pbim-text, #0F172A); }
+        span { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    }
+    .pbtn-claim-money {
+        font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums;
+        color: var(--pbim-text, #0F172A);
+    }
+    .pbtn-claim-chips {
+        display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+
+        // R33: the kit upper-cases a badge, which is right for a status word
+        // ("Agreed") and wrong for a sentence — "Waiting On The HR Lead" is
+        // a phrase a machine typed. These carry sentences.
+        .pbim-badge { text-transform: none; }
+    }
+    .pbtn-claim-acts {
+        display: flex; gap: 7px; align-items: center; justify-self: end;
+    }
+
+    // ON A NARROW SCREEN THE ROW STACKS, IT DOES NOT SCROLL SIDEWAYS. The
+    // column a horizontal scroller pushes off is always the last one, and
+    // here the last one is the buttons — a queue you cannot act on (R187).
+    @media (max-width: 900px) {
+        .pbtn-claim {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 9px;
+        }
+        .pbtn-claim-acts { justify-self: start; }
+    }
+
+    .pbtn-packline {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-top: 14px; padding: 12px 16px; border-radius: 12px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        background: var(--pbim-soft, #EEF2FF);
+        font-size: 12.5px; color: var(--pbim-muted, #64748B);
+    }
+}
+
+// ============================================ the Insights lens (.pbtnm)
+.pbtnm {
+    .pbtnm-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    &.pbtnm--embedded .pbtnm-head { margin-bottom: 10px; }
+    .pbtnm-head-actions { display: flex; gap: 8px; align-items: center; }
+
+    // ------------------------------------------------------- the range
+    .pbtnm-range,
+    .pbtnm-filters {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .pbtnm-chip {
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 999px;
+        padding: 6px 13px; font-size: 12.5px; font-weight: 650;
+        color: var(--pbim-muted, #64748B);
+        background: var(--pbim-surface, #FFFFFF); cursor: pointer;
+
+        &:hover { border-color: var(--pbim-primary, #4F46E5); }
+        &.on {
+            border-color: var(--pbim-primary, #4F46E5);
+            background: var(--pbim-soft, #EEF2FF);
+            color: var(--pbim-primary-strong, #3730A3);
+        }
+    }
+    .pbtnm-dates { display: flex; align-items: center; gap: 8px; }
+    .pbtnm-to { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    .pbtnm-in {
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 9px;
+        padding: 7px 11px; font: inherit; font-size: 13px;
+        color: var(--pbim-text, #334155);
+        background: var(--pbim-surface, #FFFFFF); outline: none;
+        max-width: 240px;
+
+        &:focus {
+            border-color: var(--pbim-primary, #4F46E5);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79, 70, 229, .16));
+        }
+    }
+
+    // ------------------------------------------------- the one sentence
+    .pbtnm-headline {
+        display: flex; align-items: center; gap: 13px;
+        padding: 15px 18px; margin-bottom: 14px;
+
+        p { margin: 0; font-size: 14.5px; font-weight: 650;
+            color: var(--pbim-text, #0F172A); }
+    }
+    .pbtnm-headline-ic {
+        width: 38px; height: 38px; border-radius: 11px; flex: none;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+    }
+
+    // THE KIT'S `.pbim-stats` CARRIES NO COLUMNS — every consumer sets its
+    // own, and one that forgets gets a single column of full-width rows that
+    // looks like a broken grid rather than a missing rule. Six tiles, then
+    // three, then two.
+    .pbtnm-kpis {
+        grid-template-columns: repeat(6, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1380px) { .pbtnm-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .pbtnm-kpis { grid-template-columns: repeat(2, 1fr); } }
+    .pbtnm-stat .y {
+        font-size: 11px; color: var(--pbim-muted, #64748B); line-height: 1.4;
+    }
+
+    // -------------------------------------------------------- the trend
+    .pbtnm-trend { padding: 16px 18px; margin-bottom: 16px; }
+    .pbtnm-bars {
+        display: flex; align-items: flex-end; gap: 10px;
+        height: 132px; padding: 8px 0 0;
+    }
+    .pbtnm-week {
+        flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
+        align-items: center; gap: 6px; height: 100%;
+    }
+    .pbtnm-week-pair {
+        display: flex; align-items: flex-end; gap: 3px;
+        width: 100%; flex: 1 1 auto; justify-content: center;
+    }
+    .pbtnm-week-set,
+    .pbtnm-week-done {
+        display: block; width: 44%; max-width: 20px; border-radius: 4px 4px 0 0;
+        box-sizing: border-box; padding: 0;
+
+        @media (prefers-reduced-motion: no-preference) {
+            transition: height .35s ease;
+        }
+    }
+    .pbtnm-week-set  { background: var(--pbim-primary, #4F46E5); }
+    .pbtnm-week-done { background: var(--pbim-green, #059669); }
+    .pbtnm-week-l {
+        font-size: 10.5px; color: var(--pbim-muted, #64748B);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    .pbtnm-legend {
+        display: flex; gap: 16px; margin-top: 12px;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+
+        span { display: inline-flex; align-items: center; gap: 6px; }
+    }
+    .pbtnm-key {
+        width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+    }
+    .pbtnm-key--set  { background: var(--pbim-primary, #4F46E5); }
+    .pbtnm-key--done { background: var(--pbim-green, #059669); }
+
+    // ------------------------------------------------------ the splits
+    .pbtnm-grid {
+        display: grid; gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        margin-bottom: 16px;
+    }
+    .pbtnm-table { padding: 16px 18px; }
+    .pbtnm-table-head {
+        margin-bottom: 12px;
+
+        h3 {
+            display: flex; align-items: center; gap: 8px; margin: 0 0 4px;
+            font-size: 14px; font-weight: 750;
+            color: var(--pbim-text, #0F172A);
+        }
+        p { margin: 0; font-size: 12px; line-height: 1.55;
+            color: var(--pbim-muted, #64748B); }
+    }
+    .pbtnm-row {
+        display: grid; gap: 4px 12px; align-items: center;
+        grid-template-columns: 1.2fr 1fr auto;
+        grid-template-areas: "name bar n" "sub sub sub";
+        padding: 9px 0;
+
+        & + & { border-top: 1px solid var(--pbim-line, #E2E8F0); }
+        &.bad .pbtnm-row-n { color: var(--pbim-rose, #E11D48); }
+    }
+    .pbtnm-row-name {
+        grid-area: name; font-size: 13px; font-weight: 650; min-width: 0;
+        color: var(--pbim-text, #0F172A);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbtnm-bar {
+        grid-area: bar; display: block; height: 7px; padding: 0;
+        box-sizing: border-box; border-radius: 999px; overflow: hidden;
+        background: var(--pbim-line, #E2E8F0);
+
+        // PADDING AND BOX-SIZING ARE DECLARED on the fill too (R178): a rule
+        // further up the cascade gives a bare span padding in some panels,
+        // and the fill's containing block is then narrower than the track —
+        // so "100%" draws at 63% with nothing anywhere to say why.
+        span {
+            display: block; height: 100%; padding: 0; box-sizing: border-box;
+            border-radius: 999px;
+            background: var(--pbim-primary, #4F46E5);
+        }
+    }
+    .pbtnm-row-n {
+        grid-area: n; font-size: 13.5px; font-weight: 750;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-text, #0F172A);
+    }
+    .pbtnm-row-sub {
+        grid-area: sub; font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // -------------------------------------------------------- the money
+    .pbtnm-money { padding: 16px 18px; }
+    .pbtnm-money-row {
+        display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    }
+    .pbtnm-money-v {
+        font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums;
+        color: var(--pbim-text, #0F172A);
+    }
+    .pbtnm-money-l {
+        font-size: 12.5px; color: var(--pbim-muted, #64748B); line-height: 1.5;
+    }
+
+    // -------------------------------------------------------- the empty
+    .pbtnm-empty {
+        text-align: center; padding: 42px 26px;
+
+        h2 { margin: 12px 0 8px; font-size: 18px; font-weight: 750;
+             color: var(--pbim-text, #0F172A); }
+        p { margin: 0 auto 16px; max-width: 520px; font-size: 13.5px;
+            line-height: 1.65; color: var(--pbim-muted, #64748B); }
+    }
+    .pbtnm-empty-ic {
+        width: 62px; height: 62px; border-radius: 18px; margin: 0 auto;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+    }
 }
