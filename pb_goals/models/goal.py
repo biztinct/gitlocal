@@ -150,7 +150,13 @@ class PbGoal(models.Model):
     #: and the plan is what the lock is about. `locked` itself is here because
     #: the lock has to be able to set it, and `sequence` because reordering a
     #: list is not changing it.
-    _AFTER_LOCK = {'locked', 'sequence', 'progress', 'kr_count'}
+    #: B2 added five more: marking a goal COMPLETE, the score that follows
+    #: from its key results, and the archive flag the year-end close sets.
+    #: None of them is the plan — they are what happened to the plan — and a
+    #: lock that refused them would freeze the very columns the rest of the
+    #: year is about.
+    _AFTER_LOCK = {'locked', 'sequence', 'progress', 'kr_count',
+                   'done_at', 'done_by_id', 'score', 'scored', 'active'}
     #: The columns the EMPLOYEE may never write, locked or not. Weight is the
     #: manager's word (and the record rule enforces it as well — a rule and a
     #: guard, because a rule cannot say "this field but not that one").

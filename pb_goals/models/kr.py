@@ -73,7 +73,19 @@ class PbGoalKr(models.Model):
             kr.display_name = kr.title or _('Key result')
 
     #: The columns a LOCKED key result still accepts — the work, not the plan.
-    _AFTER_LOCK = {'current', 'progress', 'last_moved_on', 'sequence'}
+    #: B2 added the score and its stamps: a mark out of five is a statement
+    #: ABOUT the plan and is made months after it was frozen, so a lock that
+    #: refused it would make the year unscoreable.
+    _AFTER_LOCK = {'current', 'progress', 'last_moved_on', 'sequence',
+                   'score', 'score_value', 'scored_at', 'scored_by_id'}
+
+    #: THE SCORE IS NOT THE EMPLOYEE'S WORD (B2). The employee already said
+    #: what they thought in April — that is `self_rating` on the goal, and it
+    #: is a different question asked of a different person. A record rule is a
+    #: domain and cannot say "this field but not that one", so the rule lets
+    #: somebody write their own key results and this says which columns are
+    #: not theirs.
+    _MANAGER_ONLY = {'score', 'scored_at', 'scored_by_id'}
 
     def write(self, vals):
         """Write the trail as well as the value, in that order.
@@ -83,6 +95,22 @@ class PbGoalKr(models.Model):
         the new value twice is not a trail.
         """
         before = {kr.id: (kr.progress, kr.current) for kr in self}
+        if not self.env.su and (set(vals) & self._MANAGER_ONLY):
+            # READ AS THE SYSTEM (R56/R104). The person writing a score is by
+            # design the employee's own MANAGER, who holds no HR group — and
+            # one field of an `hr.employee` prefetches forty, about forty of
+            # which sit behind payroll groups. A guard that reads it as the
+            # caller turns "the manager scored a key result" into an
+            # AccessError naming forty fields nobody asked for. The security
+            # boundary is the record rule that found the row, not this read.
+            mine = self.filtered(
+                lambda k: k.sudo().employee_id.user_id.id == self.env.uid)
+            if mine and not self.env.user.has_group(
+                    'pb_goals.group_goals_manager'):
+                raise UserError(_(
+                    "How a key result went is your manager's word, not "
+                    "yours. What you think of it is the rating you gave when "
+                    "you wrote the goal."))
         if not self.env.su and (set(vals) - self._AFTER_LOCK):
             locked = self.filtered(lambda k: k.goal_id.locked)
             if locked:
