@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/holidays` reuses `pb_me_portal`'s .pbme kit — the same hero, the
+       same cards, the same empty state — so it reads as part of the
+       employee's own area rather than bolted on. Everything specific to
+       holidays is under .pbhp.
+
+       ICONS: the backend's `ic()` registry is a JS module and cannot be
+       called from QWeb, so the glyphs here are inlined exactly as
+       `pb_goals`' `gl_icon`, `pb_hiring`'s `hr_icon` and `pb_training`'s
+       `tr_icon` do. Lucide paths, never emoji.
+
+       W87: the icon name is passed with `t-value="'name'"`, NEVER as a
+       `t-set` BODY — a body is rendered QWeb and on a `website=True` page the
+       editor's branding wraps it in markup, so every comparison silently goes
+       false and every icon falls through to the else branch.
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42): in a server-side
+       template the dict form writes the Python repr into the attribute AND
+       drops the static class. No `t-key` anywhere (R5) — that is an OWL
+       directive. No render key called `request` (R4).
+
+       Section comments are ruled with `=` and never with hyphens (R35).
+       ================================================================== -->
+
+  <template id="hp_icon" name="Holidays page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbhp-ic">
+      <t t-if="icon == 'sun'"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></t>
+      <t t-elif="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'globe'"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_holidays" name="Holidays portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="47">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'holidays'" class="breadcrumb-item active">Public holidays</li>
+    </xpath>
+  </template>
+
+  <!-- ============================= home card ============================
+       ALWAYS DRAWN. A card whose PRESENCE is conditional on a counter is
+       never drawn at all, because `portal.portal_my_home` fetches its
+       counters AFTER the page has rendered (R62) — and there is nothing to
+       gate on anyway: every employee has a public-holiday calendar.
+
+       The subtitle names the NEXT holiday, which is the eagerly computed key
+       `pb_holidays_next`. It is set on every path through
+       `_prepare_portal_layout_values`, including the failure, because QWeb
+       raises on a name it has never heard of. -->
+  <template id="portal_my_home_holidays" name="Holidays home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="47">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Public holidays</t>
+        <t t-set="text" t-value="pb_holidays_next or 'Which days the company is closed this year, in every country we work in'"/>
+        <t t-set="url" t-value="'/my/holidays'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'pb_holidays_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================== the page ============================= -->
+  <template id="portal_my_holidays" name="My public holidays">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhp">
+
+        <div class="pbme-hero">
+          <div class="pbme-eyebrow">
+            <t t-call="pb_timeoff.hp_icon"><t t-set="icon" t-value="'sun'"/></t>
+            <span>Time off</span>
+          </div>
+          <h1 class="pbme-h1">Public holidays</h1>
+          <div class="pbme-hero-sub">
+            <t t-if="hol['next']">
+              Next: <b t-esc="hol['next']['name']"/> at <t t-esc="hol['next']['company']"/> on <t t-esc="hol['next']['date']"/>
+            </t>
+            <t t-else="">Nothing else is booked as a public holiday this year.</t>
+          </div>
+        </div>
+
+        <!-- The year strip. A plain link per year, because this page has no
+             JavaScript of its own and a link is a thing a browser already
+             knows how to do. -->
+        <div class="pbhp-years">
+          <t t-foreach="hol['years']" t-as="y">
+            <a t-attf-href="/my/holidays?year=#{y}"
+               t-attf-class="pbhp-year #{y == hol['year'] and 'is-on' or ''}">
+              <t t-esc="y"/>
+            </a>
+          </t>
+        </div>
+
+        <div class="pbhp-cols">
+          <t t-foreach="hol['companies']" t-as="col">
+            <div class="pbme-card pbhp-col">
+              <div class="pbhp-col-h">
+                <div>
+                  <div class="pbme-card-title" t-esc="col['name']"/>
+                  <div class="pbme-muted pbhp-country">
+                    <t t-if="col['country']"><t t-esc="col['country']"/></t>
+                    <t t-else="">No country set</t>
+                  </div>
+                </div>
+                <span class="pbme-badge" t-esc="col['count']"/>
+              </div>
+
+              <div t-if="not col['rows']" class="pbme-empty pbhp-none">
+                <t t-call="pb_timeoff.hp_icon">
+                  <t t-set="icon" t-value="'calendar'"/>
+                  <t t-set="isz" t-value="26"/>
+                </t>
+                <div>No days on this calendar for <t t-esc="hol['year']"/> yet.</div>
+              </div>
+
+              <ul t-else="" class="pbhp-list">
+                <li t-foreach="col['rows']" t-as="row"
+                    t-attf-class="pbhp-row #{row['is_past'] and 'is-past' or ''} #{row['is_today'] and 'is-today' or ''}">
+                  <span class="pbhp-date">
+                    <span class="pbhp-d" t-esc="row['day']"/>
+                    <span class="pbhp-m" t-esc="row['month']"/>
+                  </span>
+                  <span class="pbhp-body">
+                    <span class="pbhp-n" t-esc="row['name']"/>
+                    <span class="pbhp-meta">
+                      <t t-esc="row['weekday']"/><t t-if="row['days'] &gt; 1"> · <t t-esc="row['days']"/> days</t>
+                    </span>
+                  </span>
+                  <span t-if="row['is_today']" class="pbhp-today">Today</span>
+                </li>
+              </ul>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

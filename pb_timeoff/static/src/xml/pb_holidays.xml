@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_timeoff.PbHolidays">
+    <div class="pbim pbim-page pbhd" t-att-class="{ 'pbhd--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the holiday calendar…</span>
+      </div>
+
+      <div t-else="" class="pbhd-wrap">
+
+        <!-- ============================ hero ============================
+             The headline is ONE expression (R34): a sentence split across
+             several t-esc nodes loses the whitespace between them. -->
+        <div class="pbim-hero pbhd-hero">
+          <div t-if="!props.embedded" class="pbhd-hero__id">
+            <div class="pbim-eyebrow">
+              <span class="pbhd-i" t-out="ic('sun', 15)"/> Time off
+            </div>
+            <h1 class="pbim-h1">Public holidays</h1>
+          </div>
+          <div class="pbhd-headline">
+            <span class="pbhd-headline__ic" t-out="ic('sun', 20)"/>
+            <span class="pbhd-headline__tx" t-esc="headline"/>
+          </div>
+          <div class="pbhd-years" role="group" aria-label="Year">
+            <button t-foreach="years" t-as="y" t-key="y"
+                    class="pbhd-year"
+                    t-att-class="{ 'is-on': y === state.year }"
+                    t-att-aria-current="y === state.year ? 'true' : false"
+                    t-on-click="() => this.pickYear(y)">
+              <span t-esc="y"/>
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================= the columns ========================= -->
+        <div class="pbhd-cols">
+          <section t-foreach="columns" t-as="col" t-key="col.id" class="pbhd-col">
+
+            <header class="pbhd-col__h">
+              <div class="pbhd-col__id">
+                <div class="pbhd-col__name" t-esc="col.name"/>
+                <div class="pbhd-col__country">
+                  <t t-if="col.country"><t t-esc="col.country"/></t>
+                  <t t-else="">No country set</t>
+                </div>
+              </div>
+              <span class="pbim-badge pbhd-count" t-esc="col.count"/>
+            </header>
+
+            <!-- An empty column TEACHES: it says which year it is empty for
+                 and, for somebody who may fix it, offers the door. -->
+            <div t-if="!col.rows.length" class="pbim-empty pbhd-empty">
+              <span class="pbhd-empty__ic" t-out="ic('calendar', 26)"/>
+              <div class="pbhd-empty__t" t-esc="columnNote(col)"/>
+              <button t-if="canEdit and col.has_calendar"
+                      class="pbim-btn pbim-btn-sm"
+                      t-on-click="() => this.openMany(col.id)">
+                <span t-out="ic('plus', 14)"/><span>Paste the year in</span>
+              </button>
+            </div>
+
+            <ul t-else="" class="pbhd-list">
+              <li t-foreach="col.rows" t-as="row" t-key="row.id"
+                  class="pbhd-row"
+                  t-att-class="{ 'is-past': row.is_past, 'is-today': row.is_today }">
+                <span class="pbhd-date">
+                  <span class="pbhd-date__d" t-esc="row.day"/>
+                  <span class="pbhd-date__m" t-esc="row.month"/>
+                </span>
+                <span class="pbhd-row__body">
+                  <span class="pbhd-row__n" t-esc="row.name"/>
+                  <span class="pbhd-row__m">
+                    <t t-esc="row.weekday"/>
+                    <t t-if="row.days > 1"> · <t t-esc="row.days"/> days</t>
+                  </span>
+                </span>
+                <span t-if="row.is_today" class="pbhd-today">Today</span>
+                <button t-if="canEdit" class="pbhd-x" title="Take this day off the calendar"
+                        aria-label="Take this day off the calendar"
+                        t-on-click="() => this.remove(row)">
+                  <span t-out="ic('x', 13)"/>
+                </button>
+              </li>
+            </ul>
+
+            <footer t-if="canEdit and col.has_calendar" class="pbhd-col__f">
+              <button class="pbim-btn pbim-btn-sm" t-on-click="() => this.openOne(col.id)">
+                <span t-out="ic('plus', 14)"/><span>Add a day</span>
+              </button>
+              <button class="pbhd-link" t-on-click="() => this.openMany(col.id)">
+                Paste a list
+              </button>
+            </footer>
+            <footer t-elif="canEdit" class="pbhd-col__f pbhd-col__f--note">
+              <span t-esc="columnNote(col)"/>
+            </footer>
+          </section>
+        </div>
+      </div>
+
+      <!-- ============================ dialogs ============================
+           The kit's scrim is the positioned element and the modal is its
+           CHILD (R114); the modal carries no padding of its own, which is why
+           the head / body / foot rails are used rather than free-form
+           content (R45). -->
+      <div t-if="state.dialog" class="pbim pbim-modal-scrim"
+           t-on-click="() => this.closeDialog()">
+        <div class="pbim-modal is-narrow" t-on-click.stop="() => {}">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">
+                <t t-if="state.dialog.mode === 'one'">Add a public holiday</t>
+                <t t-else="">Paste a year of holidays</t>
+              </div>
+              <div class="pbim-modal__sub" t-esc="dialogCompany.name"/>
+            </div>
+            <span class="pbim-modal__sp"/>
+            <button class="pbim-modal__x" t-on-click="() => this.closeDialog()"
+                    aria-label="Close">
+              <span t-out="ic('x', 15)"/>
+            </button>
+          </div>
+
+          <div class="pbim-modal__body pbhd-form">
+            <t t-if="state.dialog.mode === 'one'">
+              <label class="pbhd-lab">What is it called?</label>
+              <input class="pbhd-in" type="text" placeholder="Reunification Day"
+                     t-att-value="state.form.name"
+                     t-on-input="(ev) => this.onField('name', ev)"/>
+              <div class="pbhd-two">
+                <div>
+                  <label class="pbhd-lab">First day</label>
+                  <input class="pbhd-in" type="date" t-att-value="state.form.date_from"
+                         t-on-input="(ev) => this.onField('date_from', ev)"/>
+                </div>
+                <div>
+                  <label class="pbhd-lab">Last day <span class="pbhd-opt">only if it runs on</span></label>
+                  <input class="pbhd-in" type="date" t-att-value="state.form.date_to"
+                         t-on-input="(ev) => this.onField('date_to', ev)"/>
+                </div>
+              </div>
+            </t>
+            <t t-else="">
+              <label class="pbhd-lab">One holiday a line</label>
+              <div class="pbim-note pbhd-help">
+                A name, a vertical bar and a date. Add a second date after
+                another bar when the holiday runs over several days.
+              </div>
+              <textarea class="pbhd-in pbhd-ta" rows="9"
+                        placeholder="Tết | 2026-02-16 | 2026-02-20&#10;Hùng Kings | 2026-04-26&#10;Reunification Day | 2026-04-30&#10;Labour Day | 2026-05-01&#10;National Day | 2026-09-02"
+                        t-on-input="(ev) => this.onField('lines', ev)"><t t-esc="state.form.lines"/></textarea>
+            </t>
+          </div>
+
+          <div class="pbim-modal__foot">
+            <button class="pbhd-link" t-on-click="() => this.closeDialog()">Cancel</button>
+            <span class="pbim-modal__sp"/>
+            <button t-if="state.dialog.mode === 'one'" class="pbim-btn"
+                    t-att-disabled="!canSaveOne or state.busy"
+                    t-on-click="() => this.saveOne()">Add it</button>
+            <button t-else="" class="pbim-btn"
+                    t-att-disabled="!canSaveMany or state.busy"
+                    t-on-click="() => this.saveMany()">Add them</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
