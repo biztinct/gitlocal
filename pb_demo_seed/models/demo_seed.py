@@ -206,6 +206,34 @@ class PbDemoSeed(models.Model):
         return self.env.company
 
     @api.model
+    def register_ids(self, model_name, ids, label=None, last=False):
+        """The same door, for a caller that only has IDS.
+
+        WHY THIS EXISTS (ledger R176). `register()` takes a RECORDSET, and a
+        recordset does not survive JSON-RPC: it arrives as a plain integer and
+        the first `records._name` dies with *'int' object has no attribute
+        '_name'*. So everything a browser session or a validation script
+        creates had to be registered afterwards from inside the server, which
+        is exactly the step somebody forgets — and a demo record that is not
+        on the register is a demo record the Remove button leaves behind.
+
+        It is a thin door and deliberately so: the browse happens here and
+        every rule about WHAT may be registered stays in `_register_row`,
+        which is still the only place a register row is written.
+        """
+        model = self.env.get(model_name)
+        if model is None:
+            _logger.warning("pb_demo_seed: there is no %s on this database",
+                            model_name)
+            return 0
+        wanted = [int(one) for one in (ids or []) if one]
+        if not wanted:
+            return 0
+        records = model.sudo().with_context(active_test=False).browse(
+            wanted).exists()
+        return self.register(records, label=label, last=last)
+
+    @api.model
     def register(self, records, label=None, last=False):
         """Put records the product made onto the programme register.
 
